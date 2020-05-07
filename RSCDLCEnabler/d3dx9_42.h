@@ -1,0 +1,2 @@
+bool InitProxy();
+void ShutdownProxy();
