@@ -15,13 +15,16 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FindSignature.cpp" />
     <ClCompile Include="Patch.cpp" />
+    <ClCompile Include="RandomMemStuff.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h" />
     <ClInclude Include="FindSignature.h" />
     <ClInclude Include="Patch.h" />
+    <ClInclude Include="RandomMemStuff.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CKeyEvents.cpp" />
     <None Include="d3dx9_42.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

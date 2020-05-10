@@ -27,6 +27,9 @@
     <ClCompile Include="Patch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RandomMemStuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FindSignature.h">
@@ -38,10 +41,16 @@
     <ClInclude Include="Patch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RandomMemStuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="CKeyEvents.cpp">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>
