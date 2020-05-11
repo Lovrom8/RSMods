@@ -130,21 +130,9 @@ void __declspec(naked) hookFunc() {
 		pushad
 		mov ebx, 0x33
 		add ebx, esi
-		mov byte ptr[eax + 0x6], bl
-		mov byte ptr[eax + 0x2], 0x30
-		popad
-		jmp[hookBackAddr]
-	}
-}
-
-void __declspec(naked) hookFunc2() {
-	__asm {
-		mov ecx, dword ptr ds : [0x135CB7C]
-		pushad	
-		mov ebx, 0x35
-		add ebx, esi
-		mov byte ptr[eax + 0x6], bl
-		mov byte ptr[eax + 0x2], 0x30
+		mov byte ptr[eax + 0x6], bl  
+		mov byte ptr[eax + 0x2], 0x30 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ...
+		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
 		popad
 		jmp[hookBackAddr]
 	}
@@ -159,21 +147,8 @@ void RandomMemStuff::HookSongLists() {
 
 	placeHook((void*)hookAddr, hookFunc, len);
 
-	std::string game_stage = "hooked";
-	MessageBoxA(NULL, game_stage.c_str(), "", 0);
-}
-
-void RandomMemStuff::HookSongLists2() {
-	PatchSongLists();
-
-	int len = 6;
-	DWORD hookAddr = 0x01529f2b;
-	hookBackAddr = hookAddr + len;
-
-	placeHook((void*)hookAddr, hookFunc2, len);
-
-	std::string game_stage = "hooked2";
-	MessageBoxA(NULL, game_stage.c_str(), "", 0);
+	//std::string game_stage = "hooked";
+	//MessageBoxA(NULL, game_stage.c_str(), "", 0);
 }
 
 RandomMemStuff::~RandomMemStuff()

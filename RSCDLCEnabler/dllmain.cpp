@@ -38,7 +38,7 @@ DWORD WINAPI MainThread(void*) {
 		}
 
 		if (GetAsyncKeyState('J') & 1) {
-			mem.HookSongLists2();
+
 		}
 
 		if (GetAsyncKeyState('K') & 1) {
