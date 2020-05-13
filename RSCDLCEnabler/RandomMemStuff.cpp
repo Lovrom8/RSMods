@@ -1,6 +1,7 @@
 #include "RandomMemStuff.h"
 
 
+
 RandomMemStuff::RandomMemStuff()
 {
 
@@ -91,6 +92,8 @@ DWORD hookAddr_MissingLocalization = 0x01834790;
 
 int len = 0;
 Patch patch;
+std::vector<std::string> songTitles(6);
+std::string newish = "bratec";
 
 void __declspec(naked) hook_fakeTitles() {
 	//ESI = INDEX
@@ -132,6 +135,7 @@ void __declspec(naked) hook_basicCustomTitles() {
 }
 
 /*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
+Quite likely, this one is better for 
 */
 char __stdcall missingLocalization(int number, char* text) {
 	const int buffer_size = 10;
@@ -141,18 +145,18 @@ char __stdcall missingLocalization(int number, char* text) {
 
 	switch (number)
 	{
-	case 46960:
-		return (char)"Song list the first";
-	case 46961:
-		return (char)"the second one";
-	case 46962:
-		return (char)"third dong";
-	case 46963:
-		return (char)"4th bong";
-	case 46964:
-		return (char)"honk honk";
+	case 46964: //either start from 46964 or change mov ebx, 0x33 to mov ebx, 0x2F in hook_fakeTitles to start from 0
+		return (char)songTitles[0].c_str();
 	case 46965:
-		return (char)"upside-down mirrored 9";
+		return (char)songTitles[1].c_str();
+	case 46966:
+		return (char)songTitles[2].c_str();
+	case 46967:
+		return (char)songTitles[3].c_str();
+	case 46968:
+		return (char)songTitles[4].c_str();
+	case 46969:
+		return (char)songTitles[5].c_str();
 	default:
 		return (char)str;
 	}
@@ -228,12 +232,23 @@ void RandomMemStuff::HookSongListsKoko() {
 	len = 5;
 	hookBackAddr_missingLocalization = hookAddr_MissingLocalization + len;
 
-
 	//Skip less printf parameters if those have been removed
 	patch.PatchAdr((BYTE*)patch_sprintfArg, (BYTE*)"\x04", 1);
 
 	patch.PlaceHook((void*)hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
+
+bool RandomMemStuff::LoadSettings() {
+	INIReader reader("RSMods.ini");
+	if (reader.ParseError() != 0) {
+		//do sth
+		return false;
+	}
+
+	for (int i = 0; i < 6; i++)
+		songTitles[i] = reader.Get("SongListTitles", "SongListTitle_" + std::to_string(i+1), "SONG LIST");
+}
+
 
 RandomMemStuff::~RandomMemStuff()
 {

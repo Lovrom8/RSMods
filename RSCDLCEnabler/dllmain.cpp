@@ -22,6 +22,7 @@ DWORD WINAPI MainThread(void*) {
 
 	bool loftEnabled = true;
 
+	mem.LoadSettings();
 
 	while (true) {
 
