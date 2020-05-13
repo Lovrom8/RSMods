@@ -15,9 +15,10 @@ public:
 	void ToggleLoft();
 	void ToggleLoftWhenSongStarts();
 	void ShowSongTimer();
-	void PatchSongLists();
+	void PatchSongListAppendages();
 	void HookSongLists();
-	void HookSongLists2();
+	void HookSongListsKoko();
+	void SetFakeListNames();
 
 	uintptr_t FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets);
 	

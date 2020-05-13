@@ -72,83 +72,167 @@ void RandomMemStuff::ShowSongTimer() {
 
 	std::string valStr = std::to_string(*(float*)addrTimer);
 	MessageBoxA(NULL, valStr.c_str(), "", 0);
-
-	
-	/*
-	float val = *(float*)addrTimer;
-
-	std::string valStr = std::to_string(val);
-	MessageBoxA(NULL, valStr.c_str(), "", 0);
-		
-	uintptr_t addrState = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C494, { 0xBC, 0x0 });
-	//uintptr_t addrState = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C5AC, { 0x18, 0x18, 0xC, 0x27C });
-	std::string game_stage = *(std::string*)addrState;
-	MessageBoxA(NULL, game_stage.c_str(), "", 0);
-	/**/
 }
 
-void RandomMemStuff::PatchSongLists() {
-	Patch((BYTE*)0x01529f98, (UINT*)"\x58\x58\x90\x90\x90", 5);
-	Patch((BYTE*)0x0152a006, (UINT*)"\x5A\x5A\x90\x90\x90", 5);
-}
 
-bool placeHook(void * hookSpot, void * ourFunct, int len)
-{
-	if (len < 5)
-	{
-		return false;
-	}
 
-	DWORD oldProtect;
-	if (!VirtualProtect(hookSpot, len, PAGE_EXECUTE_READWRITE, &oldProtect))
-	{
-		return false;
-	}
+DWORD func_getStringFromCSV = 0x017B7A3E;
+DWORD func_getLocalizedString = 0x01395763;
+DWORD func_appendString = 0x01395488; //for reference purposes
 
-	memset(hookSpot, 0x90, len);
+DWORD patch_addedSpaces = 0x01529f98;
+DWORD patch_addedNumbers = 0x0152a006;
+DWORD patch_sprintfArg = 0x0183479C;
 
-	DWORD relativeAddr = ((DWORD)ourFunct - (DWORD)hookSpot) - 5;
+DWORD hookBackAddr_FakeTitles, hookBackAddr_CustomNames, hookBackAddr_missingLocalization;
+DWORD hookAddr_ModifyLocalized = 0x01529F2B;
+DWORD hookAddr_ModifyCleanString = 0x01529F61;
+DWORD hookAddr_MissingLocalization = 0x01834790;
 
-	*(BYTE*)hookSpot = 0xE9;
-	*(DWORD*)((DWORD)hookSpot + 1) = relativeAddr;
+int len = 0;
+Patch patch;
 
-	DWORD backup;
-	if (!VirtualProtect(hookSpot, len, oldProtect, &backup))
-	{
-		return false;
-	}
-
-	return true;
-}
-
-DWORD hookBackAddr;
-void __declspec(naked) hookFunc() {
+void __declspec(naked) hook_fakeTitles() {
 	//ESI = INDEX
 	//EAX = char* str "$[36969]SONG LIST"
 	__asm {
 		mov ecx, dword ptr ds : [0x135CB7C]
 		pushad
-		mov ebx, 0x33
+		mov ebx, 0x33 //sets the last number 
 		add ebx, esi
 		mov byte ptr[eax + 0x6], bl  
-		mov byte ptr[eax + 0x2], 0x30 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ...
+		mov byte ptr[eax + 0x2], 0x34 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ... | with 0x34, there's no string with key [4696x] - it returns the whole thing back
 		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
 		popad
-		jmp[hookBackAddr]
+		jmp[hookBackAddr_FakeTitles]
 	}
 }
 
+//At 0x01529F61, into EAX is saved pointer to: either the clean string (if index exists) or a string without the $[] part (eg. either it becomes SONG LIST or #46967#SONG LIST
+//so prolly a good place to hook - check if it contains # and check the last digit to determine which index to put out
+
+/* My version for custom song list names, by using the 0x01529F61 method */
+
+void __declspec(naked) hook_basicCustomTitles() {
+	__asm {
+		lea eax, dword ptr ss : [ebp - 0x80] // ebp-0x80 = pointer to the "clean" string address
+		pushad
+
+		mov ebx, [eax] //dereference it first
+		cmp byte ptr[ebx], '#'
+		jne GTFO
+	
+		mov byte ptr[ebx+3], 0x35 //very basic, not as developed as Koko's
+		mov byte ptr[ebx+7], 0x44
+
+		GTFO:
+		popad
+		jmp[hookBackAddr_CustomNames]
+	}
+}
+
+/*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
+*/
+char __stdcall missingLocalization(int number, char* text) {
+	const int buffer_size = 10;
+	char str[buffer_size];
+	sprintf_s(&str[0], buffer_size, "%d", number);
+	//MsgBoxA(str, "Missing locale str");
+
+	switch (number)
+	{
+	case 46960:
+		return (char)"Song list the first";
+	case 46961:
+		return (char)"the second one";
+	case 46962:
+		return (char)"third dong";
+	case 46963:
+		return (char)"4th bong";
+	case 46964:
+		return (char)"honk honk";
+	case 46965:
+		return (char)"upside-down mirrored 9";
+	default:
+		return (char)str;
+	}
+}
+
+void __declspec(naked) missingLocalizationHookFunc() {
+	__asm {
+		push ecx
+		push edx
+		push esp
+
+		push[esp + 0x10]
+		push eax
+		call missingLocalization
+
+		pop esp
+		pop edx
+		pop ecx
+
+		add esp, 0x8
+		push eax
+		jmp[hookBackAddr_missingLocalization]
+	}
+}
+
+/* NOTE TO SELF: don't hook just before a conditional jump :D
+//DWORD hookAddrCustom = 0x013957DD;	
+void __declspec(naked) songListCustomHook() { 
+	__asm { //ECX = "$[4696x]SONG LIST"
+		mov esi, DWORD PTR[esi] 
+		cmp DWORD PTR[ebp + 0xC], ecx //OG part
+
+		pushad
+		//pushfd
+
+		//cmp byte ptr [ecx + 0x2], 0x34
+		//JNZ GTFO //CMP compares chars by division, so if diff > 0 -> not equal
+		nop
+
+		GTFO:
+		popad
+		jmp[hookBackAddr2]
+	}
+}
+*/
+
+void RandomMemStuff::PatchSongListAppendages() {
+	patch.PatchAdr((BYTE*)patch_addedSpaces, (UINT*)"\x58\x58\x90\x90\x90", 5); //patch out " "
+	patch.PatchAdr((BYTE*)patch_addedNumbers, (UINT*)"\x5A\x5A\x90\x90\x90", 5); //patch 1-6
+}
+
+void RandomMemStuff::SetFakeListNames() {
+	PatchSongListAppendages();
+
+	len = 6;
+
+	hookBackAddr_FakeTitles = hookAddr_ModifyLocalized + len;
+	patch.PlaceHook((void*)hookAddr_ModifyLocalized, hook_fakeTitles, len);
+}
+
 void RandomMemStuff::HookSongLists() {
-	PatchSongLists();
+	SetFakeListNames();
 
-	int len = 6;
-	DWORD hookAddr = 0x01529f2b;
-	hookBackAddr = hookAddr + len;
+	len = 6;
+	hookBackAddr_CustomNames = hookAddr_ModifyCleanString + len;
 
-	placeHook((void*)hookAddr, hookFunc, len);
+	patch.PlaceHook((void*)hookAddr_ModifyCleanString, hook_basicCustomTitles, len);
+}
 
-	//std::string game_stage = "hooked";
-	//MessageBoxA(NULL, game_stage.c_str(), "", 0);
+void RandomMemStuff::HookSongListsKoko() {
+	SetFakeListNames();
+
+	len = 5;
+	hookBackAddr_missingLocalization = hookAddr_MissingLocalization + len;
+
+
+	//Skip less printf parameters if those have been removed
+	patch.PatchAdr((BYTE*)patch_sprintfArg, (BYTE*)"\x04", 1);
+
+	patch.PlaceHook((void*)hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
 
 RandomMemStuff::~RandomMemStuff()

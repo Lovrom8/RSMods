@@ -8,16 +8,18 @@
 #include "RandomMemStuff.h"
 
 DWORD WINAPI MainThread(void*) {	
+	RandomMemStuff mem;
+	Patch patch;
+
 	uint8_t* VerifySignatureOffset = FindPattern(0x01377000, 0x00DDE000, (uint8_t*)"\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3", "x????xxxxx");
 
 	if (VerifySignatureOffset) {
-		if (!Patch(VerifySignatureOffset + 8, "\xB3\x01", 2))
+		if (!patch.PatchAdr(VerifySignatureOffset + 8, "\xB3\x01", 2))
 			printf("Failed to patch verify_signature!\n");
 		else
 			printf("Patch verify_signature success!\n");
 	}
 
-	RandomMemStuff mem;
 	bool loftEnabled = true;
 
 
@@ -33,15 +35,15 @@ DWORD WINAPI MainThread(void*) {
 			mem.DecreaseVolume(5);
 		}*/
 
-		if (GetAsyncKeyState(VK_INSERT) & 1) {
+		if (GetAsyncKeyState('L') & 1) {
 			mem.HookSongLists();
 		}
 
-		if (GetAsyncKeyState('J') & 1) {
-
+		if (GetAsyncKeyState('K')) {
+			mem.HookSongListsKoko();
 		}
 
-		if (GetAsyncKeyState('K') & 1) {
+		if (GetAsyncKeyState('T') & 1) {
 			mem.ToggleLoft();
 		}
 
