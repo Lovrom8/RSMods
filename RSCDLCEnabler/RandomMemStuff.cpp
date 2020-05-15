@@ -144,7 +144,7 @@ void __declspec(naked) hook_basicCustomTitles() {
 }
 
 /*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
-Quite likely, this one is better for 
+Quite likely, this one is better in our use case, since we want to grab titles from a file, which is done more conveniently in a regular CPP function without the ASM 
 */
 char __stdcall missingLocalization(int number, char* text) {
 	const int buffer_size = 10;
