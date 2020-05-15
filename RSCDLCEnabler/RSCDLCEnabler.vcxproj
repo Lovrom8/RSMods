@@ -16,6 +16,7 @@
     <ClCompile Include="FindSignature.cpp" />
     <ClCompile Include="Patch.cpp" />
     <ClCompile Include="RandomMemStuff.cpp" />
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h" />
@@ -23,6 +24,7 @@
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="Patch.h" />
     <ClInclude Include="RandomMemStuff.h" />
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CKeyEvents.cpp" />

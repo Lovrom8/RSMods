@@ -3,6 +3,7 @@
 #include <string>
 #include "Patch.h"
 #include "IniReader.h"
+#include "Settings.h"
 
 #pragma once
 class RandomMemStuff
@@ -20,9 +21,8 @@ public:
 	void HookSongLists();
 	void HookSongListsKoko();
 	void SetFakeListNames();
-	bool LoadSettings();
+	void LoadSettings();
 
 	uintptr_t FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets);
-	
 };
 

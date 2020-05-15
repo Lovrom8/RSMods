@@ -57,17 +57,24 @@ void RandomMemStuff::ToggleLoftWhenSongStarts() {
 	uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C5AC, { 0xB0, 0x538, 0x8 });
 	uintptr_t addrLoft = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C4EC, { 0x108, 0x14, 0x28, 0x7C });
 
+	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
+		if (addrLoft && *(float*)addrLoft != 10) { //if loft is disabled
+			*(float*)addrLoft = 10;
+		}
+		return;
+	}
+
 	if (*(float*)addrLoft != 10)
 		return;
 
-	return;
 	if (*(float*)addrTimer >= 0.1 )
 		*(float*)addrLoft = 10000;
 }
 
 void RandomMemStuff::ShowSongTimer() {
-	uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x01567AB0, { 0x80, 0x20, 0x10C, 0x244 });
-	
+	//uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C5AC, { 0xB0, 0x538, 0x8 });
+	uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C4EC, { 0x108, 0x14, 0x28, 0x7C });
+
 	if (!addrTimer)
 		return;
 
@@ -92,6 +99,8 @@ DWORD hookAddr_MissingLocalization = 0x01834790;
 
 int len = 0;
 Patch patch;
+Settings settings;
+
 std::vector<std::string> songTitles(6);
 std::string newish = "bratec";
 
@@ -227,7 +236,7 @@ void RandomMemStuff::HookSongLists() {
 }
 
 void RandomMemStuff::HookSongListsKoko() {
-	SetFakeListNames();
+    SetFakeListNames();
 
 	len = 5;
 	hookBackAddr_missingLocalization = hookAddr_MissingLocalization + len;
@@ -238,15 +247,8 @@ void RandomMemStuff::HookSongListsKoko() {
 	patch.PlaceHook((void*)hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
 
-bool RandomMemStuff::LoadSettings() {
-	INIReader reader("RSMods.ini");
-	if (reader.ParseError() != 0) {
-		//do sth
-		return false;
-	}
-
-	for (int i = 0; i < 6; i++)
-		songTitles[i] = reader.Get("SongListTitles", "SongListTitle_" + std::to_string(i+1), "SONG LIST");
+void RandomMemStuff::LoadSettings() {
+	songTitles = settings.GetCustomSongTitles();
 }
 
 
