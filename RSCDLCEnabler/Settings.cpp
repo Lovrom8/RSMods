@@ -1,43 +1,55 @@
 #include "Settings.h"
 #include "INIReader.h"
+#include "windows.h"
 
-Settings::Settings()
+cSettings Settings;
+
+cSettings::cSettings()
 {
-	Settings::keyBinds = { 
+	cSettings::keyBinds = { 
 	{"VolumeUp",  'O'},
 	{"VolumeDown", 'I'},
-	{"CustomTitlesSimple", 'L'},
-	{"CustomTitlesBetter", 'K'},
-	{"ToggleLoft", 'T'}
+	{"CustomSongListTitles", 'K'},
+	{"ToggleLoft", 'T'},
+	{"ForceEnumeration", 'F'}
 	};
 }
 
 
-char Settings::GetKeyBind(std::string name) {
+char cSettings::GetKeyBind(std::string name) {
 	return keyBinds[name];
 }
 
-void Settings::ReadKeyBinds() {
+void cSettings::ReadKeyBinds() {
 	INIReader reader("RSMods.ini");
 	if (reader.ParseError() != 0)
 		return;
 
-	//Settings::keyBinds["VolumeUp"] = reader.Get("Keybinds", "VolumeUp", "O")[0];
-	Settings::keyBinds = {
+	//cSettings::keyBinds["VolumeUp"] = reader.Get("Keybinds", "VolumeUp", "O")[0];
+	cSettings::keyBinds = {
 	{ "VolumeUp", reader.Get("Keybinds", "VolumeUp", "O")[0] },
 	{ "VolumeDown",  reader.Get("Keybinds", "VolumeDown", "I")[0] },
-	{ "CustomTitlesSimple", reader.Get("Keybinds", "CustomTitlesSimple", "L")[0]},
-	{ "CustomTitlesBetter", reader.Get("Keybinds", "CustomTitlesBetter", "K")[0] },
-	{ "ToggleLoft", reader.Get("Keybinds", "ToggleLoft", "T")[0] }
+	{ "CustomSongListTitles", reader.Get("Keybinds", "CustomTitlesBetter", "K")[0] },
+	{ "ToggleLoft", reader.Get("Keybinds", "ToggleLoft", "T")[0] },
+	{ "ForceEnumeration", reader.Get("Keybinds", "ForceEnumeration", "F")[0]}
 	};
 }
 
-Settings::~Settings()
-{
+int cSettings::GetModSetting(std::string name) {
+	return customSettings[name];
 }
 
+void cSettings::ReadModSettings() {
+	INIReader reader("RSMods.ini");
+	if (reader.ParseError() != 0)
+		return;
 
-std::vector<std::string> Settings::GetCustomSongTitles() {
+	cSettings::customSettings = {
+		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)}
+	};
+}
+
+std::vector<std::string> cSettings::GetCustomSongTitles() {
 	INIReader reader("RSMods.ini");
 	std::vector<std::string> retList(6);
 
@@ -51,3 +63,4 @@ std::vector<std::string> Settings::GetCustomSongTitles() {
 	
 	return retList;
 }
+

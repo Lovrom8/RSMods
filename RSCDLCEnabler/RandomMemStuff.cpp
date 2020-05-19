@@ -1,29 +1,126 @@
 #include "RandomMemStuff.h"
 
+int len = 0;
+
+std::vector<std::string> songTitles(6);
+
+byte getLowestStringTuning() {
+	uintptr_t addrTuning = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_tuning, Offsets.ptr_tuningOffsets);
+
+	if (!addrTuning)
+		return NULL;
+
+	return *(BYTE*)addrTuning;
+}
+
+uintptr_t GetStringColor(uintptr_t stringnum, string_state state) {
+	uintptr_t edx = stringnum;
+	uintptr_t eax = 0;
+	uintptr_t magic1 = Offsets.ptr_stringColor;
+
+	uintptr_t ecx = MemUtil.ReadPtr(magic1);
+
+	if (!ecx)
+		return NULL; 
+
+	eax = MemUtil.ReadPtr( ecx + eax * 0x4 + 0x348);
+
+	if (eax >= 2) {
+		return NULL;
+	}
+
+	eax = eax * 0xA8;
+	eax += edx;
+
+	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + state);
+
+	return eax;
+}
+
+void RandomMemStuff::Toggle7StringMode() {
+	uintptr_t string1 = GetStringColor(0, normal);
+	uintptr_t string2 = GetStringColor(1, normal);
+
+	if (!string1)
+		return;
+
+	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
+	uintptr_t addrLoft = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
+
+	if (!addrTimer) {
+		return;
+	}
 
 
-RandomMemStuff::RandomMemStuff()
-{
+	byte currTuning = getLowestStringTuning();
+	if (currTuning == 0 || currTuning > 252) { //tunings are in negative values*, so things go backwards ;) 
+		Color c = Color();
+		c.r = 1.f;
+		c.g = 0.f;
+		c.b = 0.f;
+
+		*(Color*)string1 = c;
+	}
+	else {
+		Color c = Color();
+		c.r = 1.f;
+		c.g = 0.f;
+		c.b = 0.f;
+
+		float h = 50.f;
+		c.setH(h);
+
+		*(Color*)string1 = c;
+
+		/*h = 75.0f;
+		c.setH(h);
+
+		*(Color*)string2 = c; */
+	}
+
 
 }
 
-uintptr_t RandomMemStuff::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets)
-{
-	uintptr_t addr = ptr;
-	for (unsigned int i = 0; i < offsets.size(); ++i)
-	{
-		addr = *(uintptr_t*)addr;
+void RandomMemStuff::DoRainbow() {
+	std::vector<uintptr_t> stringsNormal;
+	std::vector<uintptr_t> stringsHigh;
+	std::vector<uintptr_t> stringsDisabled;
 
-		if (addr == NULL)
-			return NULL;
-
-		addr += offsets[i];
+	for (int i = 0; i < 6; i++) {
+		stringsNormal.push_back(GetStringColor(i, normal));
+		stringsHigh.push_back(GetStringColor(i, highlight));
+		stringsDisabled.push_back(GetStringColor(i, disabled));
 	}
-	return addr;
+
+	Color c = Color();
+	c.r = 1.f;
+	c.g = 0.f;
+	c.b = 0.f;
+
+	float h = 0.f;
+	float speed = 2.f;
+	float stringOffset = 20.f;
+
+	while (true) {
+
+		h += speed;
+		if (h >= 360.f) { h = 0.f; }
+		
+		for (int i = 0; i < 6; i++) {
+			c.setH(h + (stringOffset*i));
+
+			*(Color*)stringsNormal[i] = c;
+			*(Color*)stringsHigh[i] = c;
+			*(Color*)stringsDisabled[i] = c;
+		}
+
+		Sleep(16);
+	}
+
 }
 
 void RandomMemStuff::AddVolume(float add) {
-	uintptr_t addr = FindDMAAddy( (uintptr_t)GetModuleHandle(NULL) + 0x00F4E91C, { 0x28, 0x7C0, 0x214, 0x7F4, 0xDC });
+	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
 
 	float val = *(float*)addr;
 
@@ -34,7 +131,7 @@ void RandomMemStuff::AddVolume(float add) {
 }
 
 void RandomMemStuff::DecreaseVolume(float remove) {
-	uintptr_t addr = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F4E91C, { 0x28, 0x7C0, 0x214, 0x7F4, 0xDC });
+	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
 
 	float val = *(float*)addr;
 
@@ -45,7 +142,7 @@ void RandomMemStuff::DecreaseVolume(float remove) {
 }
 
 void RandomMemStuff::ToggleLoft() {
-	uintptr_t addr = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C4EC, { 0x108, 0x14, 0x28, 0x7C  });
+	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
 
 	if (*(float*)addr == 10)
 		*(float*)addr = 10000;
@@ -54,12 +151,12 @@ void RandomMemStuff::ToggleLoft() {
 }
 
 void RandomMemStuff::ToggleLoftWhenSongStarts() {
-	uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C5AC, { 0xB0, 0x538, 0x8 });
-	uintptr_t addrLoft = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C4EC, { 0x108, 0x14, 0x28, 0x7C });
+	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
+	uintptr_t addrLoft = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
 
 	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
-		if (addrLoft && *(float*)addrLoft != 10) { //if loft is disabled
-			*(float*)addrLoft = 10;
+		if (addrLoft && *(float*)addrLoft != 10) { //if we are loaded far enough && loft is disabled
+			*(float*)addrLoft = 10; //enable it
 		}
 		return;
 	}
@@ -72,8 +169,7 @@ void RandomMemStuff::ToggleLoftWhenSongStarts() {
 }
 
 void RandomMemStuff::ShowSongTimer() {
-	//uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C5AC, { 0xB0, 0x538, 0x8 });
-	uintptr_t addrTimer = FindDMAAddy((uintptr_t)GetModuleHandle(NULL) + 0x00F5C4EC, { 0x108, 0x14, 0x28, 0x7C });
+	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
 
 	if (!addrTimer)
 		return;
@@ -82,27 +178,15 @@ void RandomMemStuff::ShowSongTimer() {
 	MessageBoxA(NULL, valStr.c_str(), "", 0);
 }
 
+void RandomMemStuff::ShowCurrentTuning() {
+	byte lowestStringTuning = getLowestStringTuning();
+	if (lowestStringTuning == NULL)
+		return;
 
 
-DWORD func_getStringFromCSV = 0x017B7A3E;
-DWORD func_getLocalizedString = 0x01395763;
-DWORD func_appendString = 0x01395488; //for reference purposes
-
-DWORD patch_addedSpaces = 0x01529f98;
-DWORD patch_addedNumbers = 0x0152a006;
-DWORD patch_sprintfArg = 0x0183479C;
-
-DWORD hookBackAddr_FakeTitles, hookBackAddr_CustomNames, hookBackAddr_missingLocalization;
-DWORD hookAddr_ModifyLocalized = 0x01529F2B;
-DWORD hookAddr_ModifyCleanString = 0x01529F61;
-DWORD hookAddr_MissingLocalization = 0x01834790;
-
-int len = 0;
-Patch patch;
-Settings settings;
-
-std::vector<std::string> songTitles(6);
-std::string newish = "bratec";
+	std::string valStr = std::to_string(lowestStringTuning);
+	MessageBoxA(NULL, valStr.c_str(), "", 0);
+}	
 
 void __declspec(naked) hook_fakeTitles() {
 	//ESI = INDEX
@@ -116,30 +200,7 @@ void __declspec(naked) hook_fakeTitles() {
 		mov byte ptr[eax + 0x2], 0x34 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ... | with 0x34, there's no string with key [4696x] - it returns the whole thing back
 		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
 		popad
-		jmp[hookBackAddr_FakeTitles]
-	}
-}
-
-//At 0x01529F61, into EAX is saved pointer to: either the clean string (if index exists) or a string without the $[] part (eg. either it becomes SONG LIST or #46967#SONG LIST
-//so prolly a good place to hook - check if it contains # and check the last digit to determine which index to put out
-
-/* My version for custom song list names, by using the 0x01529F61 method */
-
-void __declspec(naked) hook_basicCustomTitles() {
-	__asm {
-		lea eax, dword ptr ss : [ebp - 0x80] // ebp-0x80 = pointer to the "clean" string address
-		pushad
-
-		mov ebx, [eax] //dereference it first
-		cmp byte ptr[ebx], '#'
-		jne GTFO
-	
-		mov byte ptr[ebx+3], 0x35 //very basic, not as developed as Koko's
-		mov byte ptr[ebx+7], 0x44
-
-		GTFO:
-		popad
-		jmp[hookBackAddr_CustomNames]
+		jmp[Offsets.hookBackAddr_FakeTitles]
 	}
 }
 
@@ -187,34 +248,21 @@ void __declspec(naked) missingLocalizationHookFunc() {
 
 		add esp, 0x8
 		push eax
-		jmp[hookBackAddr_missingLocalization]
+		jmp[Offsets.hookBackAddr_missingLocalization]
 	}
 }
 
-/* NOTE TO SELF: don't hook just before a conditional jump :D
-//DWORD hookAddrCustom = 0x013957DD;	
-void __declspec(naked) songListCustomHook() { 
-	__asm { //ECX = "$[4696x]SONG LIST"
-		mov esi, DWORD PTR[esi] 
-		cmp DWORD PTR[ebp + 0xC], ecx //OG part
 
-		pushad
-		//pushfd
+void RandomMemStuff::EnumerateBrah() {
+	uintptr_t rsSteamServiceFlagsPtr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_enumerateService, Offsets.ptr_enumerateServiceOffsets);
 
-		//cmp byte ptr [ecx + 0x2], 0x34
-		//JNZ GTFO //CMP compares chars by division, so if diff > 0 -> not equal
-		nop
-
-		GTFO:
-		popad
-		jmp[hookBackAddr2]
-	}
+	*(BYTE*)rsSteamServiceFlagsPtr = 1;
+	*(BYTE*)(rsSteamServiceFlagsPtr + 1) = 1;
 }
-*/
 
 void RandomMemStuff::PatchSongListAppendages() {
-	patch.PatchAdr((BYTE*)patch_addedSpaces, (UINT*)"\x58\x58\x90\x90\x90", 5); //patch out " "
-	patch.PatchAdr((BYTE*)patch_addedNumbers, (UINT*)"\x5A\x5A\x90\x90\x90", 5); //patch 1-6
+	MemUtil.PatchAdr((BYTE*)Offsets.patch_addedSpaces, (UINT*)Offsets.patch_ListSpaces, 5); //MemUtil out " "
+	MemUtil.PatchAdr((BYTE*)Offsets.patch_addedNumbers, (UINT*)Offsets.patch_ListNumbers, 5); //MemUtil 1-6
 }
 
 void RandomMemStuff::SetFakeListNames() {
@@ -222,36 +270,22 @@ void RandomMemStuff::SetFakeListNames() {
 
 	len = 6;
 
-	hookBackAddr_FakeTitles = hookAddr_ModifyLocalized + len;
-	patch.PlaceHook((void*)hookAddr_ModifyLocalized, hook_fakeTitles, len);
-}
-
-void RandomMemStuff::HookSongLists() {
-	SetFakeListNames();
-
-	len = 6;
-	hookBackAddr_CustomNames = hookAddr_ModifyCleanString + len;
-
-	patch.PlaceHook((void*)hookAddr_ModifyCleanString, hook_basicCustomTitles, len);
+	Offsets.hookBackAddr_FakeTitles = Offsets.hookAddr_ModifyLocalized + len;
+	MemUtil.PlaceHook((void*)Offsets.hookAddr_ModifyLocalized, hook_fakeTitles, len);
 }
 
 void RandomMemStuff::HookSongListsKoko() {
     SetFakeListNames();
 
 	len = 5;
-	hookBackAddr_missingLocalization = hookAddr_MissingLocalization + len;
+	Offsets.hookBackAddr_missingLocalization = Offsets.hookAddr_MissingLocalization + len;
 
 	//Skip less printf parameters if those have been removed
-	patch.PatchAdr((BYTE*)patch_sprintfArg, (BYTE*)"\x04", 1);
+	MemUtil.PatchAdr((BYTE*)Offsets.patch_sprintfArg, (BYTE*)Offsets.patch_SprintfArgs, 1);
 
-	patch.PlaceHook((void*)hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
+	MemUtil.PlaceHook((void*)Offsets.hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
 
 void RandomMemStuff::LoadSettings() {
-	songTitles = settings.GetCustomSongTitles();
-}
-
-
-RandomMemStuff::~RandomMemStuff()
-{
+	songTitles = Settings.GetCustomSongTitles();
 }

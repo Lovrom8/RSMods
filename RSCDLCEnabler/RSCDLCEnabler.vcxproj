@@ -11,23 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="d3dx9_42.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FindSignature.cpp" />
-    <ClCompile Include="Patch.cpp" />
+    <ClCompile Include="D3DX9_42.cpp" />
+    <ClCompile Include="DLLMain.cpp" />
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="MemUtil.cpp" />
+    <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="RandomMemStuff.cpp" />
+    <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3dx9_42.h" />
-    <ClInclude Include="FindSignature.h" />
+    <ClInclude Include="D3DX9_42.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="INIReader.h" />
-    <ClInclude Include="Patch.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="MemUtil.h" />
+    <ClInclude Include="Offsets.h" />
     <ClInclude Include="RandomMemStuff.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="Structs.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CKeyEvents.cpp" />
     <None Include="d3dx9_42.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -45,7 +49,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -80,7 +84,7 @@
       <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "E:\Games\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
+      <Command>copy /Y "$(TargetPath)" "C:\Games\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
@@ -106,6 +110,7 @@
       <AdditionalLibraryDirectories>SDK Path\Lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
+      <Command>copy /Y "$(TargetPath)" "C:\Games\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
       <Command>copy /Y "$(TargetPath)" "$(SolutionDir)D3DX9_42.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>

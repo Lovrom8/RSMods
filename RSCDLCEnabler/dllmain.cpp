@@ -1,28 +1,25 @@
-#include <windows.h>
-#include <string>
-
 #include "d3dx9_42.h"
-#include "FindSignature.h"
-#include "Patch.h"
-#include <cstdlib>
 #include "RandomMemStuff.h"
 
-DWORD WINAPI MainThread(void*) {	
-	RandomMemStuff mem;
-	Patch patch;
-
-	uint8_t* VerifySignatureOffset = FindPattern(0x01377000, 0x00DDE000, (uint8_t*)"\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3", "x????xxxxx");
+void PatchCDLCCheck() {
+	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
 
 	if (VerifySignatureOffset) {
-		if (!patch.PatchAdr(VerifySignatureOffset + 8, "\xB3\x01", 2))
+		if (!MemUtil.PatchAdr(VerifySignatureOffset + 8, (UINT*)Offsets.patch_CDLCCheck, 2))
 			printf("Failed to patch verify_signature!\n");
 		else
 			printf("Patch verify_signature success!\n");
 	}
+}
 
-	bool loftEnabled = true;
+DWORD WINAPI MainThread(void*) {	
+	RandomMemStuff mem;
+
+	Offsets.Initialize();
+	PatchCDLCCheck();
 
 	mem.LoadSettings();
+	Settings.ReadKeyBinds();
 
 	while (true) {
 
@@ -36,20 +33,30 @@ DWORD WINAPI MainThread(void*) {
 			mem.DecreaseVolume(5);
 		}*/
 
-		if (GetAsyncKeyState('L') & 1) {
-			mem.HookSongLists();
+		//mem.ToggleLoftWhenSongStarts();
+		
+		if (GetAsyncKeyState('J') & 0x1) {
+			mem.DoRainbow();
 		}
 
-		if (GetAsyncKeyState('K')) {
+		if (GetAsyncKeyState('X') & 0x1) {
+			mem.ShowCurrentTuning();
+		}
+
+		if (GetAsyncKeyState(Settings.GetKeyBind("CustomSongListTitles")) & 0x1) {
 			mem.HookSongListsKoko();
 		}
 
-		if (GetAsyncKeyState('T') & 1) {
+		if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoft")) & 0x1) {
 			mem.ToggleLoft();
 		}
 
+		if (GetAsyncKeyState(Settings.GetKeyBind("ForceEnumeration")) & 0x8000) {
+			mem.EnumerateBrah();
+		}
+	
 		//mem.ToggleLoftWhenSongStarts();
-
+		//mem.Toggle7StringMode();
 	}
 	
 
