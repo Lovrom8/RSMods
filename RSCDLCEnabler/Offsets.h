@@ -18,6 +18,9 @@ public:
 	uintptr_t ptr_tuning = 0x00F5C4D8;
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
 
+	uintptr_t ptr_currentMenu = 0x00F5C5B4;
+	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x14, 0x34, 0x28, 0x8C, 0x0 };
+
 	uintptr_t func_getStringFromCSV = 0x017B7A3E;
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes

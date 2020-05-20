@@ -21,9 +21,9 @@ uintptr_t GetStringColor(uintptr_t stringnum, string_state state) {
 	uintptr_t ecx = MemUtil.ReadPtr(magic1);
 
 	if (!ecx)
-		return NULL; 
+		return NULL;
 
-	eax = MemUtil.ReadPtr( ecx + eax * 0x4 + 0x348);
+	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + 0x348);
 
 	if (eax >= 2) {
 		return NULL;
@@ -105,7 +105,7 @@ void RandomMemStuff::DoRainbow() {
 
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
-		
+
 		for (int i = 0; i < 6; i++) {
 			c.setH(h + (stringOffset*i));
 
@@ -124,10 +124,10 @@ void RandomMemStuff::AddVolume(float add) {
 
 	float val = *(float*)addr;
 
-	if (val+add >= 100.0f)
+	if (val + add >= 100.0f)
 		return;
 
-	 *(float*)addr = val+add;
+	*(float*)addr = val + add;
 }
 
 void RandomMemStuff::DecreaseVolume(float remove) {
@@ -150,9 +150,28 @@ void RandomMemStuff::ToggleLoft() {
 		*(float*)addr = 10;
 }
 
+std::string GetCurrentMenu() {
+	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets);
+
+	if (!currentMenuAdr)
+		return "";
+
+	std::string currentMenu((char*)currentMenuAdr);
+
+	return currentMenu;
+}
+
 void RandomMemStuff::ToggleLoftWhenSongStarts() {
 	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
 	uintptr_t addrLoft = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
+
+	if (addrLoft && *(float*)addrLoft != 10) { //it gets initialized at the login menu, so reading before crashes the game hence we use this as a sort-of check... not the best, but hey
+		std::string currentMenu = GetCurrentMenu();
+		if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause")
+				*(float*)addrLoft = 10;
+		
+		return;
+	}
 
 	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
 		if (addrLoft && *(float*)addrLoft != 10) { //if we are loaded far enough && loft is disabled
@@ -161,10 +180,14 @@ void RandomMemStuff::ToggleLoftWhenSongStarts() {
 		return;
 	}
 
+	std::string currentMenu = GetCurrentMenu(); //also by no means something that should be done (twice in a row), buuuuut... for now it will do
+	if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause")
+		return;
+
 	if (*(float*)addrLoft != 10)
 		return;
 
-	if (*(float*)addrTimer >= 0.1 )
+	if (*(float*)addrTimer >= 0.1)
 		*(float*)addrLoft = 10000;
 }
 
@@ -178,6 +201,8 @@ void RandomMemStuff::ShowSongTimer() {
 	MessageBoxA(NULL, valStr.c_str(), "", 0);
 }
 
+
+
 void RandomMemStuff::ShowCurrentTuning() {
 	byte lowestStringTuning = getLowestStringTuning();
 	if (lowestStringTuning == NULL)
@@ -186,7 +211,7 @@ void RandomMemStuff::ShowCurrentTuning() {
 
 	std::string valStr = std::to_string(lowestStringTuning);
 	MessageBoxA(NULL, valStr.c_str(), "", 0);
-}	
+}
 
 void __declspec(naked) hook_fakeTitles() {
 	//ESI = INDEX
@@ -196,7 +221,7 @@ void __declspec(naked) hook_fakeTitles() {
 		pushad
 		mov ebx, 0x33 //sets the last number 
 		add ebx, esi
-		mov byte ptr[eax + 0x6], bl  
+		mov byte ptr[eax + 0x6], bl
 		mov byte ptr[eax + 0x2], 0x34 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ... | with 0x34, there's no string with key [4696x] - it returns the whole thing back
 		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
 		popad
@@ -205,7 +230,7 @@ void __declspec(naked) hook_fakeTitles() {
 }
 
 /*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
-Quite likely, this one is better in our use case, since we want to grab titles from a file, which is done more conveniently in a regular CPP function without the ASM 
+Quite likely, this one is better in our use case, since we want to grab titles from a file, which is done more conveniently in a regular CPP function without the ASM
 */
 char __stdcall missingLocalization(int number, char* text) {
 	const int buffer_size = 10;
@@ -275,7 +300,7 @@ void RandomMemStuff::SetFakeListNames() {
 }
 
 void RandomMemStuff::HookSongListsKoko() {
-    SetFakeListNames();
+	SetFakeListNames();
 
 	len = 5;
 	Offsets.hookBackAddr_missingLocalization = Offsets.hookAddr_MissingLocalization + len;
