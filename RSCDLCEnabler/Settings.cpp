@@ -215,7 +215,7 @@ void cSettings::ReadKeyBinds() {
 		{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
 		{ "ShowSongTimerKey", reader.Get("Keybinds", "ShowSongTimerKey", "N")},
 		{ "ForceReEnumerationKey", reader.Get("Keybinds", "ForceReEnumerationKey", "F")},
-		{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "F")},
+		{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "V")},
 	// Mods Enabled / Disabled
 		{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoftEnabled", "true")},
 		{"AddVolumeEnabled", reader.Get("Toggle Switches", "AddVolumeEnabled", "false")},
