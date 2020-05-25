@@ -12,6 +12,7 @@ public:
 	void ReadModSettings();
 	int GetModSetting(std::string name);
 	int GetVKCodeForString(std::string vkString);
+	std::string ReturnToggleValue(std::string name);
 
 private:
 	std::map<std::string, std::string> keyBinds;

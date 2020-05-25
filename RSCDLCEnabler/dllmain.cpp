@@ -20,43 +20,41 @@ DWORD WINAPI MainThread(void*) {
 
 	mem.LoadSettings();
 	Settings.ReadKeyBinds();
+	mem.HookSongListsKoko();
 
 	while (true) {
 
 		Sleep(100);
-		 
-		/*if (GetAsyncKeyState(VK_INSERT) & 1) {
-			mem.AddVolume(5);
-		}
-
-		if (GetAsyncKeyState(VK_END) & 1) {
-			mem.DecreaseVolume(5);
-		}*/
-
-		//mem.ToggleLoftWhenSongStarts();
 		
-		if (GetAsyncKeyState('J') & 0x1) {
-			mem.DoRainbow();
-		}
-
-		if (GetAsyncKeyState('X') & 0x1) {
-			mem.ShowCurrentTuning();
-		}
-
-		if (GetAsyncKeyState(Settings.GetKeyBind("CustomSongListTitles")) & 0x1) {
+		// Mods
+			if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" & 0x1) { // Toggle Loft
+				mem.ToggleLoft();
+			}
+			// Buggy
+			if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & Settings.ReturnToggleValue("AddVolumeEnabled") == "true" & 0x1) { // Add Volume / Volume Up
+				mem.AddVolume(5);
+			}
+			if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true" & 0x1) { // Decrease Volume / Volume Down
+				mem.DecreaseVolume(5);
+			}
+			if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true" & 0x1) { // Show Song Timer
+				mem.ShowSongTimer();
+			}
+			if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "true" & 0x8000) { // Force ReEnumeration (Manual)
+				mem.EnumerateBrah();
+			}
+			if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true" & 0x1) { // Rainbow Strings
+				mem.DoRainbow();
+			}
+		// Dev Commands
+			if (GetAsyncKeyState('X') & 0x1) {
+				mem.ShowCurrentTuning();
+			}
+		/* Disabled commands
+			mem.ToggleLoftWhenSongStarts();
+			mem.Toggle7StringMode();
 			mem.HookSongListsKoko();
-		}
-
-		if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoft")) & 0x1) {
-			mem.ToggleLoft();
-		}
-
-		if (GetAsyncKeyState(Settings.GetKeyBind("ForceEnumeration")) & 0x8000) {
-			mem.EnumerateBrah();
-		}
-	
-		//mem.ToggleLoftWhenSongStarts();
-		//mem.Toggle7StringMode();
+		*/
 	}
 	
 

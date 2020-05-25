@@ -208,16 +208,31 @@ void cSettings::ReadKeyBinds() {
 
 	//cSettings::keyBinds["VolumeUp"] = reader.Get("Keybinds", "VolumeUp", "O")[0];
 	cSettings::keyBinds = {
-	{ "VolumeUp", reader.Get("Keybinds", "VolumeUp", "O") },
-	{ "VolumeDown",  reader.Get("Keybinds", "VolumeDown", "I") },
-	{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
-	{ "ToggleLoft", reader.Get("Keybinds", "ToggleLoft", "T") },
-	{ "ForceEnumeration", reader.Get("Keybinds", "ForceEnumeration", "F")}
+	// Mods
+		{ "ToggleLoftKey", reader.Get("Keybinds", "ToggleLoftKey", "T") },
+		{ "AddVolumeKey", reader.Get("Keybinds", "AddVolumeKey", "O") },
+		{ "DecreaseVolumeKey",  reader.Get("Keybinds", "DecreaseVolumeKey", "I") },
+		{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
+		{ "ShowSongTimerKey", reader.Get("Keybinds", "ShowSongTimerKey", "N")},
+		{ "ForceReEnumerationKey", reader.Get("Keybinds", "ForceReEnumerationKey", "F")},
+		{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "F")},
+	// Mods Enabled / Disabled
+		{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoftEnabled", "true")},
+		{"AddVolumeEnabled", reader.Get("Toggle Switches", "AddVolumeEnabled", "false")},
+		{"DecreaseVolumeEnabled", reader.Get("Toggle Switches", "DecreaseVolumeEnabled", "false")},
+		{"ShowSongTimerEnabled", reader.Get("Toggle Switches", "ShowSongTimerEnabled", "true")},
+		{"ForceReEnumerationEnabled", reader.Get("Toggle Switches", "ForceReEnumerationEnabled", "true")},
+		{"RainbowStringsEnabled", reader.Get("Toggle Switches", "RainbowStringsEnabled", "false")},
+		{"ExtendedRangeEnabled", reader.Get("Toggle Switches", "ExtendedRangeEnabled", "true")}
 	};
 }
 
 int cSettings::GetModSetting(std::string name) {
 	return customSettings[name];
+}
+
+std::string cSettings::ReturnToggleValue(std::string name) {
+	return keyBinds[name];
 }
 
 void cSettings::ReadModSettings() {
