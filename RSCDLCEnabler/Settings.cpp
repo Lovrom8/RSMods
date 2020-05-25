@@ -210,7 +210,7 @@ void cSettings::ReadKeyBinds() {
 	cSettings::keyBinds = {
 	{ "VolumeUp", reader.Get("Keybinds", "VolumeUp", "O") },
 	{ "VolumeDown",  reader.Get("Keybinds", "VolumeDown", "I") },
-	{ "CustomSongListTitles", reader.Get("Keybinds", "CustomTitlesBetter", "K")},
+	{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
 	{ "ToggleLoft", reader.Get("Keybinds", "ToggleLoft", "T") },
 	{ "ForceEnumeration", reader.Get("Keybinds", "ForceEnumeration", "F")}
 	};
