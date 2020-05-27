@@ -40,7 +40,7 @@ DWORD WINAPI MainThread(void*) {
 			if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true" & 0x1) { // Show Song Timer
 				mem.ShowSongTimer();
 			}
-			if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "true" & 0x8000) { // Force ReEnumeration (Manual)
+			if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual" & 0x8000) { // Force ReEnumeration (Manual)
 				mem.EnumerateBrah();
 			}
 			if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true" & 0x1) { // Rainbow Strings
