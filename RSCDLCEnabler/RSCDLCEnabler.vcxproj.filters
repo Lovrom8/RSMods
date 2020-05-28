@@ -39,6 +39,9 @@
     <ClCompile Include="Scrapped.hpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Enumeration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

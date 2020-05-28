@@ -1,5 +1,5 @@
 #include "RandomMemStuff.h"
-
+#include <fstream>
 int len = 0;
 
 std::vector<std::string> songTitles(6);
@@ -204,6 +204,37 @@ void RandomMemStuff::ShowSongTimer() {
 
 
 void RandomMemStuff::ShowCurrentTuning() {
+    //98.432
+
+	std::ofstream fout;
+
+	
+	uintptr_t firstAdr = 0x1a0a51A; //just some tests for restoring DDS files
+	uintptr_t secondAdr = 0x01a0a544;
+	uintptr_t thirdAdr = 0x1CF85D7;
+
+	byte out[98432];
+	fout.open("img1.dds", std::ios::binary | std::ios::out);
+	for (int i = 0; i < 98432; i++) {
+		out[i] = *(byte*)(firstAdr + i);
+	}
+	fout.write((char*)out, sizeof(out));
+	fout.close();
+
+	fout.open("img2.dds", std::ios::binary | std::ios::out);
+	for (int i = 0; i < 98432; i++) {
+		out[i] = *(byte*)(secondAdr + i);
+	}
+	fout.write((char*)out, sizeof(out));
+	fout.close();
+	fout.open("img3.dds", std::ios::binary | std::ios::out);
+	for (int i = 0; i < 98432; i++) {
+		out[i] = *(byte*)(thirdAdr + i);
+	}
+	fout.write((char*)out, sizeof(out));
+	fout.close();
+
+
 	byte lowestStringTuning = getLowestStringTuning();
 	if (lowestStringTuning == NULL)
 		return;
@@ -277,13 +308,6 @@ void __declspec(naked) missingLocalizationHookFunc() {
 	}
 }
 
-
-void RandomMemStuff::EnumerateBrah() {
-	uintptr_t rsSteamServiceFlagsPtr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_enumerateService, Offsets.ptr_enumerateServiceOffsets);
-
-	*(BYTE*)rsSteamServiceFlagsPtr = 1;
-	*(BYTE*)(rsSteamServiceFlagsPtr + 1) = 1;
-}
 
 void RandomMemStuff::PatchSongListAppendages() {
 	MemUtil.PatchAdr((BYTE*)Offsets.patch_addedSpaces, (UINT*)Offsets.patch_ListSpaces, 5); //MemUtil out " "

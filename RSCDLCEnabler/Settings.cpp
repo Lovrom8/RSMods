@@ -13,6 +13,11 @@ cSettings::cSettings()
 	{"ToggleLoft", "T"},
 	{"ForceEnumeration", "F"}
 	};
+
+	customSettings = {
+		{"ExtendedRangeMode", -5 },
+		{"CheckForNewSongsInterval", 5000}
+	};
 	
 	cSettings::keyMap = { //talk about taking the easy way out ;)
 		{ "VK_LBUTTON" , 0x01 },
@@ -241,7 +246,8 @@ void cSettings::ReadModSettings() {
 		return;
 
 	cSettings::customSettings = {
-		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)}
+		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
+		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)}
 	};
 }
 

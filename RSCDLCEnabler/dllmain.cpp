@@ -1,5 +1,6 @@
 #include "d3dx9_42.h"
 #include "RandomMemStuff.h"
+#include "Enumeration.h"
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -41,7 +42,7 @@ DWORD WINAPI MainThread(void*) {
 				mem.ShowSongTimer();
 			}
 			if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual" & 0x8000) { // Force ReEnumeration (Manual)
-				mem.EnumerateBrah();
+				Enumeration.ForceEnumeration();
 			}
 			if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true" & 0x1) { // Rainbow Strings
 				mem.DoRainbow();
@@ -62,8 +63,31 @@ DWORD WINAPI MainThread(void*) {
 }
 
 
+
+DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
+	Sleep(30000); //wait for a minute, should give enough time for the initial stuff to get done
+
+	Settings.ReadModSettings();
+
+	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
+
+	while (true) {
+		oldDLCCount = newDLCCount;
+		newDLCCount = Enumeration.GetCurrentDLCCount();
+
+		if (oldDLCCount != newDLCCount)
+			Enumeration.ForceEnumeration();
+
+		Sleep(Settings.GetModSetting("CheckForNewSongsInterval"));
+	}
+
+	return 0;
+}
+
+
 void Initialize(void) {
 	CreateThread(NULL, 0, MainThread, NULL, NULL, 0);
+	CreateThread(NULL, 0, EnumerationThread, NULL, NULL, 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
