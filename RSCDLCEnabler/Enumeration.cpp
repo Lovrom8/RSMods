@@ -14,7 +14,7 @@ void cEnum::ForceEnumeration() {
 
 int cEnum::GetFileCount(std::filesystem::path path) {
 	using std::filesystem::recursive_directory_iterator;
-	return std::distance(recursive_directory_iterator(path), recursive_directory_iterator{});
+	return std::distance(recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink), recursive_directory_iterator{});
 }
 
 int cEnum::GetCurrentDLCCount() {
