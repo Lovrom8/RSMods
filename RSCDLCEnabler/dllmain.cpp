@@ -67,16 +67,19 @@ DWORD WINAPI MainThread(void*) {
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for a minute, should give enough time for the initial stuff to get done
 
+	Settings.ReadKeyBinds(); //YIC
 	Settings.ReadModSettings();
-
+	
 	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
 	while (true) {
-		oldDLCCount = newDLCCount;
-		newDLCCount = Enumeration.GetCurrentDLCCount();
+		if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "true") {
+			oldDLCCount = newDLCCount;
+			newDLCCount = Enumeration.GetCurrentDLCCount();
 
-		if (oldDLCCount != newDLCCount)
-			Enumeration.ForceEnumeration();
+			if (oldDLCCount != newDLCCount)
+				Enumeration.ForceEnumeration();
+		}
 
 		Sleep(Settings.GetModSetting("CheckForNewSongsInterval"));
 	}
