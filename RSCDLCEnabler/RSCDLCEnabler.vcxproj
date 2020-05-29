@@ -29,6 +29,17 @@
   <ItemGroup>
     <ClInclude Include="detours.h" />
     <ClInclude Include="D3DX9_42.h" />
+    <ClInclude Include="DirectX\d3d9.h" />
+    <ClInclude Include="DirectX\d3dx9.h" />
+    <ClInclude Include="DirectX\d3dx9anim.h" />
+    <ClInclude Include="DirectX\d3dx9core.h" />
+    <ClInclude Include="DirectX\d3dx9effect.h" />
+    <ClInclude Include="DirectX\d3dx9math.h" />
+    <ClInclude Include="DirectX\d3dx9mesh.h" />
+    <ClInclude Include="DirectX\d3dx9shader.h" />
+    <ClInclude Include="DirectX\d3dx9shape.h" />
+    <ClInclude Include="DirectX\d3dx9tex.h" />
+    <ClInclude Include="DirectX\d3dx9xof.h" />
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
@@ -49,14 +60,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def" />
+    <None Include="DirectX\d3dx9math.inl" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />
+    <Library Include="DirectX\d3d9.lib" />
+    <Library Include="DirectX\d3dx9.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RSCDLCEnabler</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -88,8 +103,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(DXSDK_DIR)Lib\x86;</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,6 +113,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

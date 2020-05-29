@@ -16,6 +16,9 @@
     <Filter Include="ImGUI">
       <UniqueIdentifier>{928903e3-aea4-4d1d-a828-c49f6c847b28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DirectX">
+      <UniqueIdentifier>{9587255a-88e0-485b-9910-d3fb12662ba1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -119,15 +122,57 @@
     <ClInclude Include="ImGUI\imgui.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
+    <ClInclude Include="DirectX\d3dx9effect.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9math.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9mesh.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9shader.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9shape.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9tex.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9xof.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3d9.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9anim.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\d3dx9core.h">
+      <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="DirectX\d3dx9math.inl">
+      <Filter>Header Files\DirectX</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib">
       <Filter>Header Files</Filter>
+    </Library>
+    <Library Include="DirectX\d3d9.lib">
+      <Filter>Header Files\DirectX</Filter>
+    </Library>
+    <Library Include="DirectX\d3dx9.lib">
+      <Filter>Header Files\DirectX</Filter>
     </Library>
   </ItemGroup>
 </Project>
