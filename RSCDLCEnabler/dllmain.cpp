@@ -33,7 +33,7 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
 	while (true) {
-		if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "true") {
+		if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
 			newDLCCount = Enumeration.GetCurrentDLCCount();
 
