@@ -145,25 +145,40 @@ DWORD WINAPI MainThread(void*) {
 		Sleep(100);
 		
 		// Mods
-			if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" & 0x1) { // Toggle Loft
-				mem.ToggleLoft();
+			if (Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+				if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & 0x1) { // Toggle Loft
+					mem.ToggleLoft();
+				}
 			}
-			// Buggy
-			if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & Settings.ReturnToggleValue("AddVolumeEnabled") == "true" & 0x1) { // Add Volume / Volume Up
-				mem.AddVolume(5);
+			/* Buggy?
+				if (Settings.ReturnToggleValue("AddVolumeEnabled") == "true") { // Add Volume / Volume Up
+					if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & 0x1) { 
+						mem.AddVolume(5);
+					}
+				}
+				if (Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") { // Decrease Volume / Volume Down
+					if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & 0x1) { 
+						mem.DecreaseVolume(5);
+					}
+				}
+			*/
+			if (Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") { // Show Song Timer
+				if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & 0x1) { 
+					mem.ShowSongTimer();
+				}
 			}
-			if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true" & 0x1) { // Decrease Volume / Volume Down
-				mem.DecreaseVolume(5);
+			if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") { // Force ReEnumeration (Manual)
+				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1) { 
+					Enumeration.ForceEnumeration();
+				}
 			}
-			if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true" & 0x1) { // Show Song Timer
-				mem.ShowSongTimer();
+			
+			if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") { // Rainbow Strings
+				if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & 0x1) {
+					mem.DoRainbow();
+				}
 			}
-			if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual" & 0x8000) { // Force ReEnumeration (Manual)
-				Enumeration.ForceEnumeration();
-			}
-			if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true" & 0x1) { // Rainbow Strings
-				mem.DoRainbow();
-			}
+			
 		// Dev Commands
 			if (GetAsyncKeyState('X') & 0x1) {
 				mem.ShowCurrentTuning();
