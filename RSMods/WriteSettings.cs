@@ -1,17 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace RSModsConsole
 {
     class WriteSettings
     {
-        public readonly static string dumpLocation = "RSMods.ini";
+        public static string dumpLocation = "RSMods.ini";
+        public static string guiSettings = "GUI_Settings.ini";
         readonly static string[] StringArray = new String[23];
+
         public static void ModifyINI(string[] StringArray)
         {
-            var dumpINI = File.Create(@dumpLocation);
+            var dumpINI = File.Create(WhereIsRocksmith());
             dumpINI.Close();
-            File.WriteAllLines(@dumpLocation, StringArray);
+            File.WriteAllLines(WhereIsRocksmith(), StringArray);
         }
 
         public static void NoSettingsDetected()
@@ -40,9 +44,78 @@ namespace RSModsConsole
                 StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + "manual"; // Force ReEnumeration Manual / Automatic / Disabled
                 StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "true";
                 StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "true";
-                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "DropB";
+                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "B";
                 ModifyINI(StringArray);
             }
+        }
+        public static string WhereIsRocksmith()
+        {
+            if (File.Exists(@guiSettings)) // If there is already a save file
+            {
+                if (ReadSettings.SavedRocksmithLocation() != "")
+                {
+                    dumpLocation = Path.Combine(ReadSettings.SavedRocksmithLocation(), @dumpLocation);
+                    return dumpLocation;
+                }
+            }
+
+            if (File.Exists(@"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Rocksmith2014\\Rocksmith2014.exe")) { // If Rocksmith is in the default location
+                WriteRocksmithLocation(@"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Rocksmith2014\\");
+                return Path.Combine("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Rocksmith2014\\", @dumpLocation);
+            }
+            else // User has Rocksmith not in the default spot
+            {
+                FolderBrowserDialog AskUserLocation = new FolderBrowserDialog();
+                AskUserLocation.RootFolder = Environment.SpecialFolder.MyComputer;
+                AskUserLocation.Description = "Where is your Rocksmith Installed at?";
+                if (AskUserLocation.ShowDialog() == DialogResult.OK)
+                {
+                    if (File.Exists(@AskUserLocation.SelectedPath + "\\Rocksmith2014.exe"))
+                    {
+                        WriteRocksmithLocation(@AskUserLocation.SelectedPath + "\\");
+                        dumpLocation = Path.Combine(@AskUserLocation.SelectedPath, @dumpLocation);
+                        return dumpLocation;
+                    }
+                    else
+                    {
+                        MessageBox.Show("The folder you selected ''" + AskUserLocation.SelectedPath + "'' does not contain Rocksmith 2014.", "Rocksmith Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        WhereIsRocksmith();
+                    }                    
+                }
+                else
+                {
+                    Environment.Exit(1);
+                    return "exit";
+                }
+                return WhereIsRocksmith();
+            }
+        }
+        private static void WriteRocksmithLocation(string rocksmithLocation)
+        {
+            if (!IsVoid(rocksmithLocation))
+            {
+                var dumpGUI = File.Create(@guiSettings);
+                dumpGUI.Close();
+                File.WriteAllText(@guiSettings, (ReadSettings.RocksmithInstallLocationIdentifier + rocksmithLocation));
+                return;
+            }
+            else
+            {
+                MessageBox.Show("You're pretty stupid. The DLL that works with this GUI, doesn't support pirated copies.", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Process.Start("chrome.exe", "https://store.steampowered.com/app/221680/");
+                Environment.Exit(1);
+                return;
+            }
+        }
+
+        private static bool IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
+        {
+            return
+                File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) ||
+                File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) ||
+                File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) ||
+                File.Exists(Path.Combine(installLocation, "Codex.ini")) ||
+                File.Exists(Path.Combine(installLocation, "Skidrow.ini"));
         }
     }
 }

@@ -9,6 +9,7 @@ namespace RSMods
     {
         public MainForm()
         {
+            WriteSettings.WhereIsRocksmith(); // Creates GUI Settings File
             WriteSettings.NoSettingsDetected(); // Creates Settings File
             InitializeComponent();
 
@@ -253,47 +254,47 @@ namespace RSMods
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
-                    SaveChanges(20, "DropD");
+                    SaveChanges(20, "D");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(1))
                 {
-                    SaveChanges(20, "DropC#");
+                    SaveChanges(20, "C#");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(2))
                 {
-                    SaveChanges(20, "DropC");
+                    SaveChanges(20, "C");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(3))
                 {
-                    SaveChanges(20, "DropB");
+                    SaveChanges(20, "B");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(4))
                 {
-                    SaveChanges(20, "DropA#");
+                    SaveChanges(20, "A#");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(5))
                 {
-                    SaveChanges(20, "DropA");
+                    SaveChanges(20, "A");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(6))
                 {
-                    SaveChanges(20, "DropG#");
+                    SaveChanges(20, "G#");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(7))
                 {
-                    SaveChanges(20, "DropG");
+                    SaveChanges(20, "G");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(8))
                 {
-                    SaveChanges(20, "DropF#");
+                    SaveChanges(20, "F#");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(9))
                 {
-                    SaveChanges(20, "DropF");
+                    SaveChanges(20, "F");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(10))
                 {
-                    SaveChanges(20, "DropE");
+                    SaveChanges(20, "Octave");
                 }
             RefreshForm();
         }

@@ -6,7 +6,8 @@ namespace RSModsConsole
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeTuning;
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeTuning,
+                             RocksmithInstallLocation;
 
         public static string
             Songlist1Identifier = "SongListTitle_1 = ",
@@ -31,6 +32,9 @@ namespace RSModsConsole
             RainbowStringsEnabledIdentifier = "RainbowStringsEnabled = ",
             ExtendedRangeEnabledIdentifier = "ExtendedRangeEnabled = ",
             ExtendedRangeTuningIdentifier = "ExtendedRangeTuning = ";
+
+        public static string
+            RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
 
         public static string ProcessSettings(int grab)
         {
@@ -287,6 +291,19 @@ namespace RSModsConsole
                 }
             }
             return "";
-        } 
+        }
+
+        public static string SavedRocksmithLocation()
+        {
+            foreach (string currentLine in File.ReadLines(@WriteSettings.guiSettings))
+                {
+                    if(currentLine.Contains(RocksmithInstallLocationIdentifier))
+                    {
+                        RocksmithInstallLocation = currentLine.Substring(RocksmithInstallLocationIdentifier.Length, (currentLine.Length - RocksmithInstallLocationIdentifier.Length));
+                        return RocksmithInstallLocation;
+                    }
+                }
+            return "";
+        }
     }
 }
