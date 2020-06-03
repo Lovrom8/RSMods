@@ -24,5 +24,6 @@ public:
 	void ShowCurrentTuning();
 	void DoRainbow();
 	void Toggle7StringMode();
+	bool LoadModsWhenSongsLoad(std::string ModToRun);
 };
 

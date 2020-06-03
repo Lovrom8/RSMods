@@ -13,5 +13,8 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 	return forceEnumeration(rs_dlc_service_flags);
 }
 
-typedef HRESULT(__stdcall * f_EndScene)(IDirect3DDevice9 * pDevice); // Our function prototype 
+typedef HRESULT(__stdcall *f_EndScene)(IDirect3DDevice9 *pDevice);
 f_EndScene oEndScene; // Original Endscene
+
+typedef HRESULT(__stdcall* f_Reset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
+f_Reset oReset;

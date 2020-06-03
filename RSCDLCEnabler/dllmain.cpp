@@ -25,7 +25,7 @@ void PatchCDLCCheck() {
 int EnumSliderVal = 10000;
 
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
-	Sleep(30000); //wait for a minute, should give enough time for the initial stuff to get done
+	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
 	Settings.ReadKeyBinds(); //YIC
 	Settings.ReadModSettings();
@@ -54,6 +54,7 @@ WNDPROC oWndProc;
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
 
+RandomMemStuff mem;
 
 LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
@@ -64,14 +65,17 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 
 
-HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9 * pDevice) 
-{
+void ReadHotkeys() {
+	if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
+		mem.ToggleLoft();
+																			
+	//if (ImGui::IsKeyReleased(VK_SPACE))
+
+}
+
+HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 * pDevice) {
 	static bool init = false;
 	if (!init) {
-		/*char fontPath[MAX_PATH];
-		GetWindowsDirectoryA(fontPath, sizeof(fontPath));
-		strcat_s(fontPath, "\\Fonts\\calibri.ttf");*/
-
 		init = true;
 
 		ImGui::CreateContext();
@@ -89,6 +93,10 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9 * pDevice)
 
 	ImGui::Begin("RS Modz");
 	ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
+	
+	/* New place for keybinds */
+	ReadHotkeys();
+
 	ImGui::End();
 
 	ImGui::EndFrame();
@@ -99,7 +107,16 @@ HRESULT __stdcall Hooked_EndScene(IDirect3DDevice9 * pDevice)
 	return oEndScene(pDevice); // Call original ensdcene so the game can draw
 }
 
-uintptr_t ptr_createD3D_Device = 0x135DD50;
+HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPresentationParameters) { //gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+
+	HRESULT ResetReturn = oReset(pD3D9, pPresentationParameters);
+
+	ImGui_ImplDX9_CreateDeviceObjects(); 
+
+	return ResetReturn;
+}
+
 void GUI() {
 	Sleep(5000);
 	HWND  window = FindWindowA(NULL, windowName);
@@ -124,13 +141,12 @@ void GUI() {
 	if (Device)
 		Device->Release(), Device = nullptr;
 
-	oEndScene = (f_EndScene)DetourFunction((PBYTE)pVTable[42], (PBYTE)Hooked_EndScene);
+	oEndScene = (f_EndScene)DetourFunction((PBYTE)pVTable[42], (PBYTE)Hook_EndScene);
+	oReset = (f_Reset)DetourFunction((PBYTE)pVTable[16], (PBYTE)Hook_Reset);
 }
 
 
 DWORD WINAPI MainThread(void*) {	
-	RandomMemStuff mem;
-
 	Offsets.Initialize();
 	PatchCDLCCheck();
 
@@ -145,44 +161,39 @@ DWORD WINAPI MainThread(void*) {
 		Sleep(100);
 		
 		// Mods
-			if (Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
-				if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & 0x1) { // Toggle Loft
-					mem.ToggleLoft();
-				}
-			}
+			/*if (Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") 
+				if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & 0x1) // Toggle Loft
+					mem.ToggleLoft();*/
+		
 			/* Buggy?
-				if (Settings.ReturnToggleValue("AddVolumeEnabled") == "true") { // Add Volume / Volume Up
-					if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & 0x1) { 
+				if (Settings.ReturnToggleValue("AddVolumeEnabled") == "true") // Add Volume / Volume Up
+					if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & 0x1) 
 						mem.AddVolume(5);
-					}
-				}
-				if (Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") { // Decrease Volume / Volume Down
-					if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & 0x1) { 
-						mem.DecreaseVolume(5);
-					}
-				}
-			*/
-			if (Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") { // Show Song Timer
-				if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & 0x1) { 
-					mem.ShowSongTimer();
-				}
-			}
-			if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") { // Force ReEnumeration (Manual)
-				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1) { 
-					Enumeration.ForceEnumeration();
-				}
-			}
 			
-			if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") { // Rainbow Strings
-				if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & 0x1) {
+				if (Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true")  // Decrease Volume / Volume Down
+					if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & 0x1)
+						mem.DecreaseVolume(5);
+			*/
+			if (Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true")  // Show Song Timer
+				if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & 0x1)
+					mem.ShowSongTimer();
+				
+			if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") // Force ReEnumeration (Manual)
+				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1) 
+					Enumeration.ForceEnumeration();
+		
+			if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") // Rainbow Strings
+				if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & 0x1)
 					mem.DoRainbow();
-				}
-			}
+					//mem.LoadModsWhenSongsLoad("RainbowStrings");
+
+			if (ImGui::IsKeyPressed(VK_SPACE))
+				MessageBoxA(NULL, "y", NULL, NULL);
 			
 		// Dev Commands
-			if (GetAsyncKeyState('X') & 0x1) {
+			if (GetAsyncKeyState('X') & 0x1) 
 				mem.ShowCurrentTuning();
-			}
+		
 		/* Disabled commands
 			mem.ToggleLoftWhenSongStarts();
 			mem.Toggle7StringMode();
@@ -198,7 +209,7 @@ DWORD WINAPI MainThread(void*) {
 
 void Initialize(void) {
 	CreateThread(NULL, 0, MainThread, NULL, NULL, 0);
-	CreateThread(NULL, 0, EnumerationThread, NULL, NULL, 0);
+	//CreateThread(NULL, 0, EnumerationThread, NULL, NULL, 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {

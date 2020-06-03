@@ -81,6 +81,43 @@ void RandomMemStuff::Toggle7StringMode() {
 
 }
 
+std::string GetCurrentMenu() {
+	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets);
+
+	if (!currentMenuAdr)
+		return "";
+
+	std::string currentMenu((char*)currentMenuAdr);
+
+	return currentMenu;
+}
+
+
+bool RandomMemStuff::LoadModsWhenSongsLoad(std::string ModToRun) {
+	MessageBoxA(NULL, GetCurrentMenu().c_str(), NULL, NULL);
+	std::string currentMenu = GetCurrentMenu();
+
+	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
+	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
+		return false;
+	}
+
+	
+	if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause") {
+		// Toggle Loft Will Break Lesson Mode
+		if (ModToRun == "RainbowStrings") {
+			return true;
+		}
+		return false;
+	}
+	if (currentMenu == "ScoreAttack_Game" || currentMenu == "ScoreAttack_Pause" || currentMenu == "LAS_Game" || currentMenu == "LAS_Pause" || currentMenu == "LearnASong_Pause" || currentMenu == "LearnASong_Game") {
+		if (ModToRun == "RainbowStrings") {
+			return true;
+		}
+	}
+	return false;
+}
+
 void RandomMemStuff::DoRainbow() {
 	std::vector<uintptr_t> stringsNormal;
 	std::vector<uintptr_t> stringsHigh;
@@ -150,17 +187,6 @@ void RandomMemStuff::ToggleLoft() {
 		*(float*)addr = 10;
 }
 
-std::string GetCurrentMenu() {
-	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets);
-
-	if (!currentMenuAdr)
-		return "";
-
-	std::string currentMenu((char*)currentMenuAdr);
-
-	return currentMenu;
-}
-
 void RandomMemStuff::ToggleLoftWhenSongStarts() {
 	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
 	uintptr_t addrLoft = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
@@ -183,7 +209,7 @@ void RandomMemStuff::ToggleLoftWhenSongStarts() {
 	std::string currentMenu = GetCurrentMenu(); //also by no means something that should be done (twice in a row), buuuuut... for now it will do
 	if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause")
 		return;
-
+		
 	if (*(float*)addrLoft != 10)
 		return;
 
