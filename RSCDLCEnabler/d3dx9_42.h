@@ -1,2 +1,0 @@
-bool InitProxy();
-void ShutdownProxy();
