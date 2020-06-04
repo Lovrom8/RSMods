@@ -4,11 +4,18 @@
 #include "detours.h"
 #include "Functions.h"
 
-
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_dx9.h"
 #include "ImGUI/imgui_impl_win32.h"
 #include "ImGUI/RobotoFont.cpp""
+
+const char* windowName = "Rocksmith 2014";
+WNDPROC oWndProc;
+
+RandomMemStuff mem;
+
+IDirect3DDevice9* pD3DDevice = nullptr;
+void* d3d9Device[119];
 
 
 void PatchCDLCCheck() {
@@ -48,13 +55,6 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	return 0;
 }
 
-const char* windowName = "Rocksmith 2014";
-WNDPROC oWndProc;
-
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
-
-RandomMemStuff mem;
 
 LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
@@ -73,8 +73,9 @@ void ReadHotkeys() {
 
 }
 
-HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 * pDevice) {
+HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	static bool init = false;
+
 	if (!init) {
 		init = true;
 
@@ -117,34 +118,48 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPre
 	return ResetReturn;
 }
 
-void GUI() {
-	Sleep(5000);
-	HWND  window = FindWindowA(NULL, windowName);
+bool GetD3D9Device(void** pTable, size_t Size) {
+	HWND window = FindWindowA(NULL, windowName);
 	oWndProc = (WNDPROC)SetWindowLongPtr(window, GWL_WNDPROC, (LONG_PTR)WndProc);
-	
-	IDirect3D9 * pD3D = Direct3DCreate9(D3D_SDK_VERSION);
-	if (!pD3D)
-		return;
-		
-	D3DPRESENT_PARAMETERS d3dpp{ 0 };
-	d3dpp.hDeviceWindow = window, d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD, d3dpp.Windowed = TRUE;
 
-	IDirect3DDevice9 *Device = nullptr; //create a dummy D3D9 device
-	if (FAILED(pD3D->CreateDevice(0, D3DDEVTYPE_HAL, d3dpp.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &Device)))
+	IDirect3D9* pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	if (!pD3D)
+		return false;
+
+	IDirect3DDevice9* Device = nullptr; //create a dummy D3D9 device
+	D3DPRESENT_PARAMETERS d3dpp{ 0 };
+	d3dpp.hDeviceWindow = window, d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD, d3dpp.Windowed = false;
+
+	HRESULT dummyDeviceCreated = pD3D->CreateDevice(0, D3DDEVTYPE_HAL, d3dpp.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &Device);
+	if (dummyDeviceCreated != S_OK)
 	{
-		pD3D->Release();
-		return;
+		d3dpp.Windowed = !d3dpp.Windowed;
+
+		dummyDeviceCreated = pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, d3dpp.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &Device);
+
+		if (dummyDeviceCreated != S_OK)
+		{
+			pD3D->Release();
+			return false;
+		}
 	}
 
-	void ** pVTable = *reinterpret_cast<void***>(Device);
+	memcpy(pTable, *reinterpret_cast<void***>(Device), Size);
 
 	if (Device)
 		Device->Release(), Device = nullptr;
+	pD3D->Release();
 
-	oEndScene = (f_EndScene)DetourFunction((PBYTE)pVTable[42], (PBYTE)Hook_EndScene);
-	oReset = (f_Reset)DetourFunction((PBYTE)pVTable[16], (PBYTE)Hook_Reset);
+	return true;
 }
 
+void GUI() {
+	Sleep(5000);
+	if (GetD3D9Device(d3d9Device, sizeof(d3d9Device))) {
+		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)d3d9Device[42], (PBYTE)Hook_EndScene, 7);
+		oReset = (f_Reset)MemUtil.TrampHook((PBYTE)d3d9Device[16], (PBYTE)Hook_Reset, 7);
+	}
+}
 
 DWORD WINAPI MainThread(void*) {	
 	Offsets.Initialize();
@@ -187,9 +202,6 @@ DWORD WINAPI MainThread(void*) {
 					mem.DoRainbow();
 					//mem.LoadModsWhenSongsLoad("RainbowStrings");
 
-			if (ImGui::IsKeyPressed(VK_SPACE))
-				MessageBoxA(NULL, "y", NULL, NULL);
-			
 		// Dev Commands
 			if (GetAsyncKeyState('X') & 0x1) 
 				mem.ShowCurrentTuning();

@@ -40,6 +40,32 @@ bool cMemUtil::PlaceHook(void * hookSpot, void * ourFunct, int len)
 	return true;
 }
 
+PBYTE cMemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
+{
+	if (len < 5) return 0;
+
+	// Create the gateway (len + 5 for the overwritten bytes + the jmp)
+	PBYTE gateway = (PBYTE)VirtualAlloc(0, len + 5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+	// Put the bytes that will be overwritten in the gateway
+	memcpy(gateway, src, len);
+
+	// Get the gateway to destination addy
+	uintptr_t gateJmpAddy = (uintptr_t)(src - gateway - 5);
+
+	// Add the jmp opcode to the end of the gateway
+	*(gateway + len) = (char)0xE9;
+
+	// Add the address to the jmp
+	*(uintptr_t*)(gateway + len + 1) = gateJmpAddy;
+
+	// Place the hook at the destination
+	if (MemUtil.PlaceHook(src, dst, len))
+		return gateway;
+	else
+		return nullptr;
+}
+
 uintptr_t cMemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets)
 {
 	uintptr_t addr = ptr;
