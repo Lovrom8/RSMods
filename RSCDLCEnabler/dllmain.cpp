@@ -16,7 +16,7 @@ RandomMemStuff mem;
 
 IDirect3DDevice9* pD3DDevice = nullptr;
 void* d3d9Device[119];
-
+bool menuEnabled=false;
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -68,8 +68,9 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 void ReadHotkeys() {
 	if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
 		mem.ToggleLoft();
-																			
-	//if (ImGui::IsKeyReleased(VK_SPACE))
+
+	if (ImGui::IsKeyReleased(Settings.GetKeyBind("MenuToggleKey")))
+		menuEnabled = !menuEnabled;
 
 }
 
@@ -87,18 +88,19 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		ImGui_ImplDX9_Init(pDevice);
 	}
 
-
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
+
 	ImGui::NewFrame();
 
-	ImGui::Begin("RS Modz");
-	ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
-	
+	if (menuEnabled) {
+		ImGui::Begin("RS Modz");
+		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
+		ImGui::End();
+	}
+
 	/* New place for keybinds */
 	ReadHotkeys();
-
-	ImGui::End();
 
 	ImGui::EndFrame();
 	ImGui::Render();

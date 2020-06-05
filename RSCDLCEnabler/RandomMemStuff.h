@@ -20,7 +20,6 @@ public:
 	void HookSongListsKoko();
 	void SetFakeListNames();
 	void LoadSettings();
-	void EnumerateBrah();
 	void ShowCurrentTuning();
 	void DoRainbow();
 	void Toggle7StringMode();

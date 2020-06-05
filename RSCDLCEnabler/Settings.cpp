@@ -14,6 +14,7 @@ cSettings::cSettings()
 	{"ShowSongTimerKey", "S"},
 	{"ForceReEnumerationKey", "F"},
 	{"RainbowStringsKey", "R"},
+	{"MenuToggleKey", "M"},
 	//
 	{"ForceReEnumerationEnabled", "automatic"},
 	{"ToggleLoftEnabled", "true"},
@@ -231,6 +232,7 @@ void cSettings::ReadKeyBinds() {
 			{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
 			{ "ShowSongTimerKey", reader.Get("Keybinds", "ShowSongTimerKey", "N")},
 			{ "ForceReEnumerationKey", reader.Get("Keybinds", "ForceReEnumerationKey", "F")},
+			{ "MenuToggleKey", reader.Get("Keybinds", "MenuToggleKey", "M")},
 			{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "V")},
 			// Mods Enabled / Disabled
 				{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoftEnabled", "true")},

@@ -122,7 +122,7 @@
       <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "C:\Games\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
+      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
@@ -150,7 +150,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "C:\Games\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
+      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
       <Command>copy /Y "$(TargetPath)" "$(SolutionDir)D3DX9_42.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
