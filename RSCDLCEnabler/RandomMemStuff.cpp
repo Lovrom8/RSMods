@@ -2,6 +2,9 @@
 #include <fstream>
 int len = 0;
 
+#include <iostream>
+
+
 std::vector<std::string> songTitles(6);
 
 byte getLowestStringTuning() {
@@ -51,18 +54,20 @@ void RandomMemStuff::Toggle7StringMode() {
 		return;
 	}
 
-
 	byte currTuning = getLowestStringTuning();
 	if (currTuning == 0 || currTuning > 252) { //tunings are in negative values*, so things go backwards ;) 
-		Color c = Color();
+		/*Color c = Color();
 		c.r = 1.f;
 		c.g = 0.f;
 		c.b = 0.f;
+		*(Color*)string1 = c
 
-		*(Color*)string1 = c;
+		*/
+
+		Is7StringSong = false;
 	}
 	else {
-		Color c = Color();
+		/*Color c = Color();
 		c.r = 1.f;
 		c.g = 0.f;
 		c.b = 0.f;
@@ -71,14 +76,15 @@ void RandomMemStuff::Toggle7StringMode() {
 		c.setH(h);
 
 		*(Color*)string1 = c;
+		*/
 
 		/*h = 75.0f;
 		c.setH(h);
 
 		*(Color*)string2 = c; */
+	
+		Is7StringSong = true;
 	}
-
-
 }
 
 std::string GetCurrentMenu() {

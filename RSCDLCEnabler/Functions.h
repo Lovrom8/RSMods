@@ -13,11 +13,17 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 	return forceEnumeration(rs_dlc_service_flags);
 }
 
-typedef HRESULT(APIENTRY* f_Reset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
-f_Reset oReset;
+typedef HRESULT(APIENTRY* tReset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
+tReset oReset;
 
 typedef HRESULT(APIENTRY* tEndScene)(IDirect3DDevice9* pDevice);
 tEndScene oEndScene = nullptr;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+
+typedef HRESULT(WINAPI* tDrawIndexedPrimitive)(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
+tDrawIndexedPrimitive oDrawIndexedPrimitive;
+
+typedef HRESULT(WINAPI* tBeginScene)(IDirect3DDevice9* pDevice);
+tBeginScene oBeginScene;

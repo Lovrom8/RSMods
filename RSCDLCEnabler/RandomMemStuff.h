@@ -24,5 +24,6 @@ public:
 	void DoRainbow();
 	void Toggle7StringMode();
 	bool LoadModsWhenSongsLoad(std::string ModToRun);
+	bool Is7StringSong=false;
 };
 

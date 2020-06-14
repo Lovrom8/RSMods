@@ -3,6 +3,8 @@
 #include "Enumeration.h"
 #include "detours.h"
 #include "Functions.h"
+#include "Utils.h"
+#include "D3D.h"
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_dx9.h"
@@ -14,9 +16,14 @@ WNDPROC oWndProc;
 
 RandomMemStuff mem;
 
-IDirect3DDevice9* pD3DDevice = nullptr;
 void* d3d9Device[119];
-bool menuEnabled=false;
+bool menuEnabled=true; //whole menu is kinda bugged right now :(
+
+UINT mStartregister;
+UINT mVectorCount;
+
+LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
+LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven;
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -56,15 +63,6 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 }
 
 
-LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-	if (true && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-		return true;
-
-	return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
-}
-
-
 void ReadHotkeys() {
 	if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
 		mem.ToggleLoft();
@@ -73,6 +71,8 @@ void ReadHotkeys() {
 		menuEnabled = !menuEnabled;
 
 }
+
+HWND hNewWnd = NULL;
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	static bool init = false;
@@ -83,15 +83,46 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
-
-		ImGui_ImplWin32_Init(FindWindowA(NULL, windowName));
+		
+		ImGui_ImplWin32_Init(hNewWnd);
 		ImGui_ImplDX9_Init(pDevice);
+
+		GenerateTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
+		GenerateTexture(pDevice, &Green, D3DCOLOR_RGBA(0, 255, 0, 255));
+		GenerateTexture(pDevice, &Blue, D3DCOLOR_ARGB(255, 0, 0, 255));
+		GenerateTexture(pDevice, &Yellow, D3DCOLOR_ARGB(255, 255, 255, 0));
+		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible"
+		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven);
+
+		std::cout << "ImGUI Init";
 	}
 
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 
 	ImGui::NewFrame();
+
+	static auto is_down = false;
+	static auto is_clicked = false;
+	if (GetAsyncKeyState(VK_INSERT))
+	{
+		is_clicked = false;
+		is_down = true;
+	}
+	else if (!GetAsyncKeyState(VK_INSERT) && is_down)
+	{
+		is_clicked = true;
+		is_down = false;
+	}
+	else {
+		is_clicked = false;
+		is_down = false;
+	}
+
+	if (is_clicked)
+	{
+		menuEnabled = !menuEnabled;
+	}
 
 	if (menuEnabled) {
 		ImGui::Begin("RS Modz");
@@ -120,47 +151,93 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPre
 	return ResetReturn;
 }
 
-bool GetD3D9Device(void** pTable, size_t Size) {
-	HWND window = FindWindowA(NULL, windowName);
-	oWndProc = (WNDPROC)SetWindowLongPtr(window, GWL_WNDPROC, (LONG_PTR)WndProc);
+LPDIRECT3DVERTEXBUFFER9 Stream_Data;
+UINT Offset = 0, Stride = 0;
 
-	IDirect3D9* pD3D = Direct3DCreate9(D3D_SDK_VERSION);
-	if (!pD3D)
-		return false;
+int stage = 0;
+HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount)  {
+	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
+		Stream_Data->Release();
 
-	IDirect3DDevice9* Device = nullptr; //create a dummy D3D9 device
-	D3DPRESENT_PARAMETERS d3dpp{ 0 };
-	d3dpp.hDeviceWindow = window, d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD, d3dpp.Windowed = false;
+	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD) { //change all pieces of textures
+		DWORD origZFunc;
+		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-	HRESULT dummyDeviceCreated = pD3D->CreateDevice(0, D3DDEVTYPE_HAL, d3dpp.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &Device);
-	if (dummyDeviceCreated != S_OK)
-	{
-		d3dpp.Windowed = !d3dpp.Windowed;
+		//if (GetAsyncKeyState(VK_END) & 1)
+		//	stage++;
 
-		dummyDeviceCreated = pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, d3dpp.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &Device);
+		if (mem.Is7StringSong) 
+			pDevice->SetTexture(1, gradientTextureSeven);
+		else 
+			pDevice->SetTexture(1, gradientTextureNormal);
 
-		if (dummyDeviceCreated != S_OK)
-		{
-			pD3D->Release();
-			return false;
-		}
+		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+	}
+	else if ( SKYLINE1 || SKYLINE2 || SKYLINE3 || SKYLINE4) //disable skyline, SKYLINE4 is for when it's paused
+		return D3D_OK;
+
+
+	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+}
+
+HRESULT APIENTRY Hook_BeginScene(LPDIRECT3DDEVICE9 pD3D9) {
+	return oBeginScene(pD3D9);
+}
+
+LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+	if(ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+DWORD* GetD3DDevice() {
+	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"RS_DX",NULL };
+	RegisterClassEx(&wc);
+	
+	hNewWnd = CreateWindow(L"RS_DX", NULL, WS_OVERLAPPEDWINDOW, 100, 100, 300, 300, GetDesktopWindow(), NULL, wc.hInstance, NULL);
+	LPDIRECT3D9 pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	if (!pD3D) {
+		UnregisterClass(L"RS_DX", wc.hInstance);
+		return NULL;
+	}
+		
+
+	D3DPRESENT_PARAMETERS d3dpp;
+	ZeroMemory(&d3dpp, sizeof(d3dpp));
+	d3dpp.Windowed = TRUE;
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
+
+	LPDIRECT3DDEVICE9 pd3dDevice;
+	pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hNewWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pd3dDevice);
+	if (pd3dDevice == NULL) {
+		pD3D->Release();
+		UnregisterClass(L"RS_DX", wc.hInstance);
+		return NULL;
 	}
 
-	memcpy(pTable, *reinterpret_cast<void***>(Device), Size);
+	DWORD* pVTable = (DWORD*)pd3dDevice;
+	pVTable = (DWORD*)pVTable[0];
+	DestroyWindow(hNewWnd);
 
-	if (Device)
-		Device->Release(), Device = nullptr;
-	pD3D->Release();
-
-	return true;
+	return pVTable;
 }
 
 void GUI() {
 	Sleep(5000);
-	if (GetD3D9Device(d3d9Device, sizeof(d3d9Device))) {
-		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)d3d9Device[42], (PBYTE)Hook_EndScene, 7);
-		oReset = (f_Reset)MemUtil.TrampHook((PBYTE)d3d9Device[16], (PBYTE)Hook_Reset, 7);
+
+	DWORD* vTable = GetD3DDevice();
+
+	if (vTable != NULL) {
+		oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[41], (PBYTE)Hook_BeginScene, 7);
+		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[42], (PBYTE)Hook_EndScene, 7);
+		oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);
+		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[82], (PBYTE)Hook_DIP, 5);
 	}
+	else
+		std::cout << "Could not initialize D3D stuff" << std::endl;
 }
 
 DWORD WINAPI MainThread(void*) {	
@@ -199,19 +276,20 @@ DWORD WINAPI MainThread(void*) {
 				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1) 
 					Enumeration.ForceEnumeration();
 		
-			if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") // Rainbow Strings
+		/*	if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") // Rainbow Strings
 				if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & 0x1)
 					mem.DoRainbow();
 					//mem.LoadModsWhenSongsLoad("RainbowStrings");
+					*/
 
 		// Dev Commands
 			if (GetAsyncKeyState('X') & 0x1) 
 				mem.ShowCurrentTuning();
 		
+			mem.Toggle7StringMode();
+
 		/* Disabled commands
 			mem.ToggleLoftWhenSongStarts();
-			mem.Toggle7StringMode();
-			mem.HookSongListsKoko();
 		*/
 	}
 	
@@ -229,11 +307,19 @@ void Initialize(void) {
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
+		AllocConsole();
+		freopen("CONIN$", "r", stdin);
+		freopen("CONOUT$", "w", stdout);
+		DisableThreadLibraryCalls(hModule);
+
 		InitProxy();
 		Initialize();
 		return TRUE;
 	case DLL_PROCESS_DETACH:
 		ShutdownProxy();
+		ImGui_ImplWin32_Shutdown();
+		ImGui_ImplDX9_Shutdown();
+		ImGui::DestroyContext();
 		return TRUE;
 	}
 	return TRUE;

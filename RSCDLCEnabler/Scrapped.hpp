@@ -71,3 +71,59 @@ void __declspec(naked) hook_basicCustomTitles() {
 	MemUtil.PlaceHook((void*)hookAddr_ModifyCleanString, hook_basicCustomTitles, len);
 }
 }*/
+
+/*-----------------------DX CRAP ----------------------*/
+
+/* //std::string  out((char*)D3DX9.D3DCreate);
+	//std::string out((char*)NULL);
+
+	char winpath[MAX_PATH];
+	HINSTANCE hL;
+	BYTE* D3DCreate;
+	GetSystemDirectoryA(winpath, sizeof(winpath));
+	strcat_s(winpath, "\\d3d9.dll");
+
+	hL = LoadLibraryA(winpath);
+
+	if(!hL)
+		MessageBoxA(NULL, "y", NULL, NULL);
+
+	D3DCreate = (BYTE*)GetProcAddress(hL, "Direct3DCreate9");
+
+
+
+	//oDirect3DCreate9 = (tDirect3DCreate9)DetourFunction(D3DCreate, (PBYTE)hkDirect3DCreate9);
+	oDirect3DCreate9 = (tDirect3DCreate9)MemUtil.TrampHook(D3DCreate, (PBYTE)hkDirect3DCreate9, 7);
+
+	while (g_Device == NULL) Sleep(100);
+
+	if (g_Device == NULL)
+		MessageBoxA(NULL, "z", NULL, NULL);
+
+	DWORD* pVTable = (DWORD*)g_Device;
+	pVTable = (DWORD*)pVTable[0];
+
+	if (pVTable == NULL)
+		MessageBoxA(NULL, "bb", NULL, NULL);
+		*/
+
+		//PBYTE pVtable = (BYTE*)0x135dd50;
+
+		//oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE) (void*)0x135dd50 + 42, (PBYTE)Hook_EndScene, 5);
+		//oEndScene = (tEndScene)DetourFunction((PBYTE)(*(DWORD*)0x135dd50 + 42), (PBYTE)Hook_EndScene);
+		//oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)(*(DWORD*)0x135dd50 + 42), (PBYTE)Hook_EndScene, 5);
+
+/*--------------------------------------------------------------------*/
+
+/*
+
+void showptr() {
+	//char temp_buffer[64];
+//sprintf(temp_buffer, "%p", (void*)D3DCreate);
+//MessageBoxA(0, temp_buffer, "Pointer value", MB_OK);
+}
+
+//	DWORD* dVtable = (DWORD*)0x135dd50;
+//	dVtable = (DWORD*)dVtable[0];
+
+*/

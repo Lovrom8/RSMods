@@ -1,6 +1,5 @@
-#include <windows.h>
+#include "windows.h"
 #pragma pack(1)
-
 
 FARPROC p[329] = { 0 };
 HINSTANCE hL;
@@ -351,6 +350,7 @@ bool InitProxy() {
 	p[326] = GetProcAddress(hL, "D3DXVec4Transform");
 	p[327] = GetProcAddress(hL, "D3DXVec4TransformArray");
 	p[328] = GetProcAddress(hL, "D3DXWeldVertices");
+
 
 	return true;
 }

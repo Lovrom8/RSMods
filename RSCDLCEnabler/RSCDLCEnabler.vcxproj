@@ -27,6 +27,7 @@
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D3D.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="D3DX9_42.h" />
     <ClInclude Include="DirectX\d3d9.h" />
@@ -57,6 +58,7 @@
     <ClInclude Include="RandomMemStuff.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Structs.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def" />

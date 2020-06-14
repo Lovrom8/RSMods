@@ -155,6 +155,12 @@
     <ClInclude Include="DirectX\d3dx9core.h">
       <Filter>Header Files\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">
