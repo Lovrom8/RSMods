@@ -78,6 +78,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProc(oWndProc, hWnd, msg, wParam, lParam);
 }
 
+INT currStride;
+
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	static bool init = false;
 
@@ -106,6 +108,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		GenerateTexture(pDevice, &Yellow, D3DCOLOR_ARGB(255, 255, 255, 0));
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible"
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven);
+		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture);
 
 		std::cout << "ImGUI Init";
 	}
@@ -140,6 +143,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	if (menuEnabled) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
+		ImGui::SliderInt("Curr Slide", &currStride, 0, 10000);
 		ImGui::End();
 	}
 
@@ -168,16 +172,43 @@ LPDIRECT3DVERTEXBUFFER9 Stream_Data;
 UINT Offset = 0, Stride = 0;
 
 int stage = 0;
+bool rsDisco = false, setAllToNoteGradientTexture = false;
+
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount)  {
+	//pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD) { //change all pieces of note head's textures
+	Mesh current(Stride, primCount, NumVertices);
+
+	if (GetAsyncKeyState(VK_UP) & 1)
+		currStride++;
+	if (GetAsyncKeyState(VK_DOWN) & 1)
+		currStride--;
+
+	if (GetAsyncKeyState(VK_DELETE) & 1)
+		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+
+	if (Stride == currStride)
+		pDevice->SetTexture(1, Green);
+	
+	if (rsDisco) {
+		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	}
+
+	if (setAllToNoteGradientTexture) {
+		pDevice->SetTexture(currStride, gradientTextureSeven);
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	}
+
+
+	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF || (TRAIL1 || TRAIL2 || TRAIL3 || TRAIL4 || TRAIL5 || TRAIL6)){ //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-		//if (GetAsyncKeyState(VK_END) & 1)
-		//	stage++;
+
 
 		if (mem.Is7StringSong) 
 			pDevice->SetTexture(1, gradientTextureSeven);
@@ -185,10 +216,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			pDevice->SetTexture(1, gradientTextureNormal);
 
 		//Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
-	}
-	else if ( SKYLINE1 || SKYLINE2 || SKYLINE3 || SKYLINE4) //disable skyline, SKYLINE4 is for when it's paused
+	}else if (IsToBeRemoved(skyline, current))
 		return D3D_OK;
+	
 
+
+	if(Stride == 34)
+		pDevice->SetTexture(1, Green);
 
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
