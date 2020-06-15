@@ -27,3 +27,7 @@ tDrawIndexedPrimitive oDrawIndexedPrimitive;
 
 typedef HRESULT(WINAPI* tBeginScene)(IDirect3DDevice9* pDevice);
 tBeginScene oBeginScene;
+
+typedef HRESULT(WINAPI* tDrawPrimitive)(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount);
+tDrawPrimitive oDrawPrimitive;
+

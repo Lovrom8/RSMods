@@ -62,7 +62,8 @@ bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 	return false;
 }
 
-std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208} };
+std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}, {20, 2, 4}, {16, 18, 16}, {8, 20, 16} };
+//, {8, 10, 8}, removes a bit too much
 
 #define SKYLINE1 (Stride == 16 && primCount == 66 && NumVertices == 132) 
 #define SKYLINE2 (Stride == 16 && primCount == 38 && NumVertices == 76)

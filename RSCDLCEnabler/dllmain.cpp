@@ -174,9 +174,21 @@ UINT Offset = 0, Stride = 0;
 int stage = 0;
 bool rsDisco = false, setAllToNoteGradientTexture = false;
 
+HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount) {
+	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
+		Stream_Data->Release();
+
+	if (Stride == 12) { //Stride 12 = tails PogU
+		if (mem.Is7StringSong)
+			pDevice->SetTexture(1, gradientTextureSeven);
+		else
+			pDevice->SetTexture(1, gradientTextureNormal);
+	}
+
+	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
+}
+
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount)  {
-	//pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
@@ -190,9 +202,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_DELETE) & 1)
 		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 
-	if (Stride == currStride)
-		pDevice->SetTexture(1, Green);
-	
 	if (rsDisco) {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -204,26 +213,17 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	}
 
 
-	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF || (TRAIL1 || TRAIL2 || TRAIL3 || TRAIL4 || TRAIL5 || TRAIL6)){ //change all pieces of note head's textures
+	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF){ //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
-
-
 
 		if (mem.Is7StringSong) 
 			pDevice->SetTexture(1, gradientTextureSeven);
 		else 
 			pDevice->SetTexture(1, gradientTextureNormal);
-
-		//Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 	}else if (IsToBeRemoved(skyline, current))
 		return D3D_OK;
 	
-
-
-	if(Stride == 34)
-		pDevice->SetTexture(1, Green);
-
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
 
@@ -278,6 +278,7 @@ void GUI() {
 		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[42], (PBYTE)Hook_EndScene, 7);
 		oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);
 		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[82], (PBYTE)Hook_DIP, 5);
+		oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[81], (PBYTE)Hook_DP, 7);
 	}
 	else
 		std::cout << "Could not initialize D3D stuff" << std::endl;
