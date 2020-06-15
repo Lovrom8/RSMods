@@ -37,3 +37,9 @@ HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex,
 #define NOTE_HEAD_SYMBOLS (Stride == 36 && primCount == 100 && NumVertices == 200)
 #define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && primCount == 2 && NumVertices == 4)
 
+
+UINT mStartregister;
+UINT mVectorCount;
+
+LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
+LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven;

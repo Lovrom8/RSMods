@@ -12,18 +12,11 @@
 #include "ImGUI/RobotoFont.cpp""
 
 const char* windowName = "Rocksmith 2014";
-WNDPROC oWndProc;
 
 RandomMemStuff mem;
 
 void* d3d9Device[119];
 bool menuEnabled=true; //whole menu is kinda bugged right now :(
-
-UINT mStartregister;
-UINT mVectorCount;
-
-LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven;
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -73,6 +66,17 @@ void ReadHotkeys() {
 }
 
 HWND hNewWnd = NULL;
+WNDPROC oWndProc = NULL;
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
+		return true;
+
+	return CallWindowProc(oWndProc, hWnd, msg, wParam, lParam);
+}
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	static bool init = false;
@@ -83,9 +87,18 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
-		
+
+		D3DDEVICE_CREATION_PARAMETERS d3dcp;
+		pDevice->GetCreationParameters(&d3dcp);
+		hNewWnd = d3dcp.hFocusWindow;
+
+		oWndProc = (WNDPROC)SetWindowLongPtr(hNewWnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
+
+
 		ImGui_ImplWin32_Init(hNewWnd);
 		ImGui_ImplDX9_Init(pDevice);
+		ImGui::GetIO().ImeWindowHandle = hNewWnd;
+
 
 		GenerateTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
 		GenerateTexture(pDevice, &Green, D3DCOLOR_RGBA(0, 255, 0, 255));
@@ -159,7 +172,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD) { //change all pieces of textures
+	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD) { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
@@ -171,7 +184,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		else 
 			pDevice->SetTexture(1, gradientTextureNormal);
 
-		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+		//Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 	}
 	else if ( SKYLINE1 || SKYLINE2 || SKYLINE3 || SKYLINE4) //disable skyline, SKYLINE4 is for when it's paused
 		return D3D_OK;
@@ -184,37 +197,33 @@ HRESULT APIENTRY Hook_BeginScene(LPDIRECT3DDEVICE9 pD3D9) {
 	return oBeginScene(pD3D9);
 }
 
-LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-	if(ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-		return true;
-
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
+HINSTANCE hWnd;
+LPDIRECT3D9 pD3D;
+LPDIRECT3DDEVICE9 pd3dDevice;
 
 DWORD* GetD3DDevice() {
-	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, L"RS_DX",NULL };
-	RegisterClassEx(&wc);
-	
-	hNewWnd = CreateWindow(L"RS_DX", NULL, WS_OVERLAPPEDWINDOW, 100, 100, 300, 300, GetDesktopWindow(), NULL, wc.hInstance, NULL);
-	LPDIRECT3D9 pD3D = Direct3DCreate9(D3D_SDK_VERSION);
-	if (!pD3D) {
-		UnregisterClass(L"RS_DX", wc.hInstance);
+	HWND tmpWnd = CreateWindowA("BUTTON", "DX", WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, NULL, NULL, hWnd, NULL);
+	if (tmpWnd == NULL)
 		return NULL;
+
+	pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	if (pD3D == NULL) {
+		DestroyWindow(tmpWnd);
+		return 0;
 	}
-		
 
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
 	d3dpp.Windowed = TRUE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	d3dpp.hDeviceWindow = tmpWnd;
 	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
 
-	LPDIRECT3DDEVICE9 pd3dDevice;
-	pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hNewWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pd3dDevice);
-	if (pd3dDevice == NULL) {
+	HRESULT result = pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, tmpWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &pd3dDevice);
+	if (result != D3D_OK)
+	{
 		pD3D->Release();
-		UnregisterClass(L"RS_DX", wc.hInstance);
+		DestroyWindow(tmpWnd);
 		return NULL;
 	}
 
@@ -226,7 +235,7 @@ DWORD* GetD3DDevice() {
 }
 
 void GUI() {
-	Sleep(5000);
+	Sleep(5000); 
 
 	DWORD* vTable = GetD3DDevice();
 
@@ -238,6 +247,9 @@ void GUI() {
 	}
 	else
 		std::cout << "Could not initialize D3D stuff" << std::endl;
+
+	pd3dDevice->Release();
+	pD3D->Release();
 }
 
 DWORD WINAPI MainThread(void*) {	
