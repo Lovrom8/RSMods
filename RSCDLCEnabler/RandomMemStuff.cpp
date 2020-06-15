@@ -238,35 +238,6 @@ void RandomMemStuff::ShowSongTimer() {
 void RandomMemStuff::ShowCurrentTuning() {
     //98.432
 
-	std::ofstream fout;
-
-	
-	uintptr_t firstAdr = 0x1a0a51A; //just some tests for restoring DDS files
-	uintptr_t secondAdr = 0x01a0a544;
-	uintptr_t thirdAdr = 0x1CF85D7;
-
-	byte out[98432];
-	fout.open("img1.dds", std::ios::binary | std::ios::out);
-	for (int i = 0; i < 98432; i++) {
-		out[i] = *(byte*)(firstAdr + i);
-	}
-	fout.write((char*)out, sizeof(out));
-	fout.close();
-
-	fout.open("img2.dds", std::ios::binary | std::ios::out);
-	for (int i = 0; i < 98432; i++) {
-		out[i] = *(byte*)(secondAdr + i);
-	}
-	fout.write((char*)out, sizeof(out));
-	fout.close();
-	fout.open("img3.dds", std::ios::binary | std::ios::out);
-	for (int i = 0; i < 98432; i++) {
-		out[i] = *(byte*)(thirdAdr + i);
-	}
-	fout.write((char*)out, sizeof(out));
-	fout.close();
-
-
 	byte lowestStringTuning = getLowestStringTuning();
 	if (lowestStringTuning == NULL)
 		return;
