@@ -241,7 +241,9 @@ void cSettings::ReadKeyBinds() {
 				{"ShowSongTimerEnabled", reader.Get("Toggle Switches", "ShowSongTimerEnabled", "true")},
 				{"ForceReEnumerationEnabled", reader.Get("Toggle Switches", "ForceReEnumerationEnabled", "true")},
 				{"RainbowStringsEnabled", reader.Get("Toggle Switches", "RainbowStringsEnabled", "false")},
-				{"ExtendedRangeEnabled", reader.Get("Toggle Switches", "ExtendedRangeEnabled", "true")}
+				{"ExtendedRangeEnabled", reader.Get("Toggle Switches", "ExtendedRangeEnabled", "true")},
+				{"DiscoModeEnabled", reader.Get("Toggle Switches", "DiscoModeEnabled", "false")},
+				{"RemoveHeadstockEnabled", reader.Get("Toggle Switches", "RemoveHeadstockEnabled", "false")}
 	};
 }
 
