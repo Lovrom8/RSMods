@@ -32,8 +32,8 @@ namespace RSModsConsole
             RainbowStringsEnabledIdentifier     = "RainbowStringsEnabled = ",
             ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
             ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
-            DiscoModeIdentifier                 = "DiscoMode = ",
-            RemoveHeadstockIdentifier           = "RemoveHeadstock = ";
+            DiscoModeIdentifier                 = "DiscoModeEnabled = ",
+            RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ";
 
         public static string
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
