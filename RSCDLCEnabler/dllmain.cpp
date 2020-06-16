@@ -213,14 +213,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 
 	while (DiscoEnabled()) {
-		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_RGBA(rand() % 256, rand() % 256, rand() % 256, rand() % 256));
-		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_LOCALVIEWER, TRUE);
-		pDevice->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-		pDevice->SetRenderState(D3DRS_FOGDENSITY, 15);
-		pDevice->SetRenderState(D3DRS_FOGCOLOR, D3DCOLOR_RGBA(rand() % 256, rand() % 256, rand() % 256, rand() % 256));
-		pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 2);
+		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
+		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
 		
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
