@@ -55,7 +55,7 @@ void RandomMemStuff::Toggle7StringMode() {
 	}
 
 	byte currTuning = getLowestStringTuning();
-	if (currTuning == 0 || currTuning > (255-Settings.GetModSetting("ExtendedRangeMode"))) { //tunings are in negative values*, so things go backwards ;) 
+	if (currTuning == 0 || currTuning > (255+Settings.GetModSetting("ExtendedRangeMode"))) { //tunings are in negative values*, so things go backwards ;) 
 		/*Color c = Color();
 		c.r = 1.f;
 		c.g = 0.f;
@@ -244,6 +244,7 @@ void RandomMemStuff::ShowCurrentTuning() {
 
 
 	std::string valStr = std::to_string(lowestStringTuning);
+
 	MessageBoxA(NULL, valStr.c_str(), "", 0);
 }
 
