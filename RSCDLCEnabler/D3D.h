@@ -105,14 +105,6 @@ std::vector<Mesh> headstock{ { 32, 2, 4 }, { 8, 10, 8 }, { 24, 2, 4 }, { 60, 588
 
 #define GREENSCREEN_WALL (Stride == 92 && primCount == 2 && NumVertices == 6)
 
-#define TRAIL1 (Stride == 12 && primCount == 4 && NumVertices == 28)
-#define TRAIL2 (Stride == 12 && primCount == 64 && NumVertices == 10)
-#define TRAIL3 (Stride == 12 && primCount == 16 && NumVertices == 100)
-#define TRAIL4 (Stride == 12 && primCount == 10 && NumVertices == 104)
-#define TRAIL5 (Stride == 12 && primCount == 16 && NumVertices == 104)
-#define TRAIL1 (Stride == 12 && primCount == 108 && NumVertices == 10)
-#define TRAIL6 (Stride == 12 && primCount == 4 && NumVertices == 88)
-
 UINT mStartregister;
 UINT mVectorCount;
 
