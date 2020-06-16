@@ -79,6 +79,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 INT currStride;
+bool cbEnabled;
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 	static bool init = false;
@@ -144,6 +145,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
 		ImGui::SliderInt("Curr Slide", &currStride, 0, 10000);
+		//ImGui::Checkbox("Colorblind Mode", &cbEnabled);
 		ImGui::End();
 	}
 
@@ -179,10 +181,8 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 		Stream_Data->Release();
 
 	if (Stride == 12) { //Stride 12 = tails PogU
-		if (mem.Is7StringSong)
-			pDevice->SetTexture(1, gradientTextureSeven);
-		else
-			pDevice->SetTexture(1, gradientTextureNormal);
+		mem.ToggleCB(mem.Is7StringSong);
+		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
@@ -217,10 +217,17 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-		if (mem.Is7StringSong) 
+/*		if (mem.Is7StringSong) 
 			pDevice->SetTexture(1, gradientTextureSeven);
 		else 
 			pDevice->SetTexture(1, gradientTextureNormal);
+			*/
+
+		mem.ToggleCB(mem.Is7StringSong);
+		pDevice->SetTexture(1, gradientTextureNormal);
+		
+	
+
 	}else if (IsToBeRemoved(skyline, current))
 		return D3D_OK;
 	
@@ -338,6 +345,8 @@ DWORD WINAPI MainThread(void*) {
 		/* Disabled commands
 			mem.ToggleLoftWhenSongStarts();
 		*/
+
+		//	mem.ToggleCB(cbEnabled); uncomment if you want the checkbox to work
 	}
 	
 

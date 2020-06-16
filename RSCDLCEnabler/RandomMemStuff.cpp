@@ -55,7 +55,7 @@ void RandomMemStuff::Toggle7StringMode() {
 	}
 
 	byte currTuning = getLowestStringTuning();
-	if (currTuning == 0 || currTuning > 252) { //tunings are in negative values*, so things go backwards ;) 
+	if (currTuning == 0 || currTuning > (255-Settings.GetModSetting("ExtendedRangeMode"))) { //tunings are in negative values*, so things go backwards ;) 
 		/*Color c = Color();
 		c.r = 1.f;
 		c.g = 0.f;
@@ -340,4 +340,14 @@ void RandomMemStuff::HookSongListsKoko() {
 
 void RandomMemStuff::LoadSettings() {
 	songTitles = Settings.GetCustomSongTitles();
+}
+
+void RandomMemStuff::ToggleCB(bool enabled) {
+	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
+	uintptr_t cbEnabled = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_colorBlindMode, Offsets.ptr_colorBlindModeOffsets);
+
+	if (!addrTimer)
+		return;
+
+	*(byte*)cbEnabled = enabled;
 }

@@ -21,6 +21,9 @@ public:
 	uintptr_t ptr_currentMenu = 0x00F5C5B4;
 	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x14, 0x34, 0x28, 0x8C, 0x0 };
 
+	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
+	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
+
 	uintptr_t func_getStringFromCSV = 0x017B7A3E;
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
