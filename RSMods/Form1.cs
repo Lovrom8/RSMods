@@ -181,7 +181,7 @@ namespace RSMods
             RefreshForm();
         }
 
-        private void Save_SaveChanges(object sender, EventArgs e)
+        private void Save_SaveChanges(object sender, EventArgs e) // Save button
         {
             // Songlists
                 if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(0)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
@@ -229,7 +229,7 @@ namespace RSMods
                 {
                     SaveChanges(11, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) {
+                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) { // Rainbow Strings Key
                     SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
             // Toggle Mods
@@ -270,11 +270,11 @@ namespace RSMods
                 {
                     SaveChanges(19, this.ExtendedRangeEnabled.Checked.ToString().ToLower());
                 }
-                if (this.DiscoModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(20))
+                if (this.DiscoModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(20)) // Disco Mode Enabled / Disabled
                 {
                     SaveChanges(21, this.DiscoModeCheckbox.Checked.ToString().ToLower());
                 }
-                if (this.HeadstockCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(21))
+                if (this.HeadstockCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(21)) // Remove Headstock Enabled / Disabled
                 {
                     SaveChanges(22, this.HeadstockCheckbox.Checked.ToString().ToLower());
                 }
@@ -282,47 +282,47 @@ namespace RSMods
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
-                    SaveChanges(20, "D");
+                    SaveChanges(20, "-2");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(1))
                 {
-                    SaveChanges(20, "C#");
+                    SaveChanges(20, "-3");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(2))
                 {
-                    SaveChanges(20, "C");
+                    SaveChanges(20, "-4");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(3))
                 {
-                    SaveChanges(20, "B");
+                    SaveChanges(20, "-5");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(4))
                 {
-                    SaveChanges(20, "A#");
+                    SaveChanges(20, "-6");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(5))
                 {
-                    SaveChanges(20, "A");
+                    SaveChanges(20, "-7");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(6))
                 {
-                    SaveChanges(20, "G#");
+                    SaveChanges(20, "-8");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(7))
                 {
-                    SaveChanges(20, "G");
+                    SaveChanges(20, "-9");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(8))
                 {
-                    SaveChanges(20, "F#");
+                    SaveChanges(20, "-10");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(9))
                 {
-                    SaveChanges(20, "F");
+                    SaveChanges(20, "-11");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(10))
                 {
-                    SaveChanges(20, "Octave");
+                    SaveChanges(20, "-12");
                 }
             RefreshForm();
         }
@@ -337,7 +337,7 @@ namespace RSMods
 
         private void SaveChanges(int ElementToChange, string ChangedSettingValue)
         {
-            string[] StringArray = WriteSettings.StringArray;
+            string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
 
             if (ElementToChange == 1) // Songlist 1
             {
