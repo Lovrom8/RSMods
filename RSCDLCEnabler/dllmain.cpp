@@ -31,6 +31,7 @@ void PatchCDLCCheck() {
 
 int EnumSliderVal = 10000;
 
+
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
@@ -213,22 +214,30 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	}
 
 
-	if( NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF){ //change all pieces of note head's textures
+	if (NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF) { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-/*		if (mem.Is7StringSong) 
-			pDevice->SetTexture(1, gradientTextureSeven);
-		else 
-			pDevice->SetTexture(1, gradientTextureNormal);
-			*/
+		/*		if (mem.Is7StringSong)
+					pDevice->SetTexture(1, gradientTextureSeven);
+				else
+					pDevice->SetTexture(1, gradientTextureNormal);
+					*/
 
 		mem.ToggleCB(mem.Is7StringSong);
 		pDevice->SetTexture(1, gradientTextureNormal);
-		
-	
 
-	}else if (IsToBeRemoved(skyline, current))
+
+
+	}
+
+	else if (IsToBeRemoved(skyline, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
+		return D3D_OK;
+	/* Buggy ATM
+	else if (IsToBeRemoved(skylineLesson, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
+		return D3D_OK;
+	*/
+	else if (IsToBeRemoved(headstock, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 		return D3D_OK;
 	
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -276,7 +285,7 @@ DWORD* GetD3DDevice() {
 }
 
 void GUI() {
-	Sleep(5000); 
+	Sleep(5000);
 
 	DWORD* vTable = GetD3DDevice();
 

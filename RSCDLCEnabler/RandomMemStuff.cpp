@@ -100,29 +100,34 @@ std::string GetCurrentMenu() {
 
 
 bool RandomMemStuff::LoadModsWhenSongsLoad(std::string ModToRun) {
-	MessageBoxA(NULL, GetCurrentMenu().c_str(), NULL, NULL);
-	std::string currentMenu = GetCurrentMenu();
+		MessageBoxA(NULL, GetCurrentMenu().c_str(), NULL, NULL);
+		std::string currentMenu = GetCurrentMenu();
 
-	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
-	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
-		return false;
-	}
+		uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
+		if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
+			return false;
+		}
 
-	
-	if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause") {
-		// Toggle Loft Will Break Lesson Mode
-		if (ModToRun == "RainbowStrings") {
-			return true;
+
+		if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause") {
+			// Toggle Loft Will Break Lesson Mode
+			if (ModToRun == "RainbowStrings") {
+				return true;
+			}
+			if (ModToRun == "RemoveSkylineGE") {
+				return true;
+			}
+		}
+		if (currentMenu == "ScoreAttack_Game" || currentMenu == "ScoreAttack_Pause" || currentMenu == "LAS_Game" || currentMenu == "LAS_Pause" || currentMenu == "LearnASong_Pause" || currentMenu == "LearnASong_Game") {
+			if (ModToRun == "RainbowStrings") {
+				return true;
+			}
+			if (ModToRun == "RemoveSkylineLAS_GC") {
+				return true;
+			}
 		}
 		return false;
 	}
-	if (currentMenu == "ScoreAttack_Game" || currentMenu == "ScoreAttack_Pause" || currentMenu == "LAS_Game" || currentMenu == "LAS_Pause" || currentMenu == "LearnASong_Pause" || currentMenu == "LearnASong_Game") {
-		if (ModToRun == "RainbowStrings") {
-			return true;
-		}
-	}
-	return false;
-}
 
 void RandomMemStuff::DoRainbow() {
 	std::vector<uintptr_t> stringsNormal;

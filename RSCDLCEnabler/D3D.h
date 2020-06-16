@@ -62,7 +62,8 @@ bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 	return false;
 }
 
-std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}, {20, 2, 4}, {16, 18, 16}, {8, 20, 16} };
+std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}};
+std::vector<Mesh> skylineLesson{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}, {20, 2, 4}, {16, 18, 16}, {8, 20, 16} };
 //, {8, 10, 8}, removes a bit too much
 
 #define SKYLINE1 (Stride == 16 && primCount == 66 && NumVertices == 132) 
@@ -85,6 +86,8 @@ std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 20
 #define CHORD_NAMES (Stride == 24 && primCount == 2 && NumVertices == 4)
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
+
+std::vector<Mesh> headstock{ { 32, 2, 4 }, { 8, 10, 8 }, { 24, 2, 4 }, { 60, 588, 316 }, { 76, 2311, 1268 }, { 76, 4062, 3165 }, { 60, 392, 198 }, { 60, 68, 52 }, { 44, 538, 311 }, { 68, 4123, 2983 }, { 76, 3284, 1787 } };
 
 #define HEADSTOCK_STUFF (Stride == 32 && primCount == 2 && NumVertices == 4)
 #define HEADSTOCKS (Stride == 8 && primCount == 10 && NumVertices == 8)
