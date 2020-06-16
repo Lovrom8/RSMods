@@ -177,6 +177,15 @@ UINT Offset = 0, Stride = 0;
 int stage = 0;
 bool rsDisco = false, setAllToNoteGradientTexture = false;
 
+bool DiscoEnabled() {
+	if (Settings.ReturnToggleValue("DiscoModeEnabled") == "true") {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
@@ -203,7 +212,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_DELETE) & 1)
 		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 
-	if (rsDisco) {
+	if (DiscoEnabled()) {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
@@ -237,6 +246,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	else if (IsToBeRemoved(skylineLesson, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
 		return D3D_OK;
 	*/
+	else if (IsToBeRemoved(greenscreenwall, current) & Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true")
+		return D3D_OK;
 	else if (IsToBeRemoved(headstock, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 		return D3D_OK;
 	

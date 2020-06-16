@@ -244,7 +244,8 @@ void cSettings::ReadKeyBinds() {
 				{"ExtendedRangeEnabled", reader.Get("Toggle Switches", "ExtendedRangeEnabled", "true")},
 				{"DiscoModeEnabled", reader.Get("Toggle Switches", "DiscoModeEnabled", "false")},
 				{"RemoveHeadstockEnabled", reader.Get("Toggle Switches", "RemoveHeadstockEnabled", "false")},
-				{"RemoveSkylineEnabled", reader.Get("Toggle Switches", "RemoveSkylineEnabled", "false")}
+				{"RemoveSkylineEnabled", reader.Get("Toggle Switches", "RemoveSkylineEnabled", "false")},
+				{"GreenScreenWallEnabled", reader.Get("Toggle Switches", "GreenScreenWallEnabled", "false")}
 	};
 }
 

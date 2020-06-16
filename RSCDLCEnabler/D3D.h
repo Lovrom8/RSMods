@@ -101,7 +101,7 @@ std::vector<Mesh> headstock{ { 32, 2, 4 }, { 8, 10, 8 }, { 24, 2, 4 }, { 60, 588
 #define HEADSTOCK_4 (Stride == 68 && primCount == 4123 && NumVertices == 2983)
 #define HEADSTOCK_5 (Stride == 76 && primCount == 3284 && NumVertices == 1787)
 
-
+std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
 
 #define GREENSCREEN_WALL (Stride == 92 && primCount == 2 && NumVertices == 6)
 
