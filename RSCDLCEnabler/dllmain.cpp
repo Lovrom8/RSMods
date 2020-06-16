@@ -175,7 +175,7 @@ LPDIRECT3DVERTEXBUFFER9 Stream_Data;
 UINT Offset = 0, Stride = 0;
 
 int stage = 0;
-bool rsDisco = false, setAllToNoteGradientTexture = false;
+bool setAllToNoteGradientTexture = false;
 
 bool DiscoEnabled() {
 	if (Settings.ReturnToggleValue("DiscoModeEnabled") == "true") {
@@ -357,9 +357,10 @@ DWORD WINAPI MainThread(void*) {
 					*/
 
 		// Dev Commands
-			if (GetAsyncKeyState('X') & 0x1) 
+			/*
+			if (GetAsyncKeyState('X') & 0x1)  // FUCK OFF
 				mem.ShowCurrentTuning();
-		
+		*/
 			mem.Toggle7StringMode();
 
 		/* Disabled commands
