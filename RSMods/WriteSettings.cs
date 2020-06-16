@@ -9,7 +9,7 @@ namespace RSModsConsole
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        public readonly static string[] StringArray = new String[26];
+        public readonly static string[] StringArray = new String[27];
 
         public static void ModifyINI(string[] StringArray)
         {
@@ -48,6 +48,7 @@ namespace RSModsConsole
                 StringArray[23] = ReadSettings.DiscoModeIdentifier + "false"; // Disco Mode Enabled / Disabled
                 StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + "false"; // Remove Headstock Enabled / Disabled
                 StringArray[25] = ReadSettings.RemoveSkylineIdentifier + "false"; // Remove Skyline Enabled / Disabled
+                StringArray[26] = ReadSettings.GreenScreenWallIdentifier + "false"; // Greenscreen Back Wall Enabled / Disabled
                 ModifyINI(StringArray);
             }
         }

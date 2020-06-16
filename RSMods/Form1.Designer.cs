@@ -64,6 +64,7 @@ namespace RSMods
             this.HeadstockCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateText = new System.Windows.Forms.Label();
             this.RemoveSkylineCheckbox = new System.Windows.Forms.CheckBox();
+            this.GreenScreenWallCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // Songlist
@@ -347,7 +348,7 @@ namespace RSMods
             // ForceEnumerationCheckbox
             // 
             this.ForceEnumerationCheckbox.AutoSize = true;
-            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(915, 161);
+            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(915, 184);
             this.ForceEnumerationCheckbox.Name = "ForceEnumerationCheckbox";
             this.ForceEnumerationCheckbox.Size = new System.Drawing.Size(115, 17);
             this.ForceEnumerationCheckbox.TabIndex = 31;
@@ -404,12 +405,23 @@ namespace RSMods
             this.RemoveSkylineCheckbox.Text = "Remove Skyline";
             this.RemoveSkylineCheckbox.UseVisualStyleBackColor = true;
             // 
+            // GreenScreenWallCheckbox
+            // 
+            this.GreenScreenWallCheckbox.AutoSize = true;
+            this.GreenScreenWallCheckbox.Location = new System.Drawing.Point(915, 161);
+            this.GreenScreenWallCheckbox.Name = "GreenScreenWallCheckbox";
+            this.GreenScreenWallCheckbox.Size = new System.Drawing.Size(111, 17);
+            this.GreenScreenWallCheckbox.TabIndex = 37;
+            this.GreenScreenWallCheckbox.Text = "Greenscreen Wall";
+            this.GreenScreenWallCheckbox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1478, 509);
+            this.Controls.Add(this.GreenScreenWallCheckbox);
             this.Controls.Add(this.RemoveSkylineCheckbox);
             this.Controls.Add(this.HowToEnumerateText);
             this.Controls.Add(this.HeadstockCheckbox);
@@ -488,6 +500,7 @@ namespace RSMods
         private System.Windows.Forms.CheckBox HeadstockCheckbox;
         private System.Windows.Forms.Label HowToEnumerateText;
         private System.Windows.Forms.CheckBox RemoveSkylineCheckbox;
+        private System.Windows.Forms.CheckBox GreenScreenWallCheckbox;
     }
 }
 

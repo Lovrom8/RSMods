@@ -7,7 +7,7 @@ namespace RSModsConsole
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -35,7 +35,8 @@ namespace RSModsConsole
             ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
             DiscoModeIdentifier                 = "DiscoModeEnabled = ",
             RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
-            RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ";
+            RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
+            GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ";
 
         public static string
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
@@ -339,6 +340,22 @@ namespace RSModsConsole
                     if (grab == 22)
                     {
                         return RemoveSkylineEnabled;
+                    }
+                }
+                if  (currentLine.Contains(GreenScreenWallIdentifier))
+                {
+                    if(currentLine.Substring(GreenScreenWallIdentifier.Length, (currentLine.Length - GreenScreenWallIdentifier.Length)) == "true")
+                    {
+                        GreenscreenWallEnabled = "true";
+                    }
+                    else
+                    {
+                        GreenscreenWallEnabled = "false";
+                    }
+
+                    if (grab == 23)
+                    {
+                        return GreenscreenWallEnabled;
                     }
                 }
             }
