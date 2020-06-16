@@ -63,6 +63,7 @@ namespace RSMods
             this.DiscoModeCheckbox = new System.Windows.Forms.CheckBox();
             this.HeadstockCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateText = new System.Windows.Forms.Label();
+            this.RemoveSkylineCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // Songlist
@@ -366,7 +367,7 @@ namespace RSMods
             // DiscoModeCheckbox
             // 
             this.DiscoModeCheckbox.AutoSize = true;
-            this.DiscoModeCheckbox.Location = new System.Drawing.Point(1070, 138);
+            this.DiscoModeCheckbox.Location = new System.Drawing.Point(1070, 161);
             this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
             this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.DiscoModeCheckbox.TabIndex = 33;
@@ -393,12 +394,23 @@ namespace RSMods
             this.HowToEnumerateText.Text = "How Do You Want To Enumerate?";
             this.HowToEnumerateText.Visible = false;
             // 
+            // RemoveSkylineCheckbox
+            // 
+            this.RemoveSkylineCheckbox.AutoSize = true;
+            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(1070, 138);
+            this.RemoveSkylineCheckbox.Name = "RemoveSkylineCheckbox";
+            this.RemoveSkylineCheckbox.Size = new System.Drawing.Size(103, 17);
+            this.RemoveSkylineCheckbox.TabIndex = 36;
+            this.RemoveSkylineCheckbox.Text = "Remove Skyline";
+            this.RemoveSkylineCheckbox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1478, 509);
+            this.Controls.Add(this.RemoveSkylineCheckbox);
             this.Controls.Add(this.HowToEnumerateText);
             this.Controls.Add(this.HeadstockCheckbox);
             this.Controls.Add(this.DiscoModeCheckbox);
@@ -475,6 +487,7 @@ namespace RSMods
         private System.Windows.Forms.CheckBox DiscoModeCheckbox;
         private System.Windows.Forms.CheckBox HeadstockCheckbox;
         private System.Windows.Forms.Label HowToEnumerateText;
+        private System.Windows.Forms.CheckBox RemoveSkylineCheckbox;
     }
 }
 

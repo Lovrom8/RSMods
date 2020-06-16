@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace RSModsConsole
 {
@@ -6,7 +7,7 @@ namespace RSModsConsole
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -33,7 +34,8 @@ namespace RSModsConsole
             ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
             ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
             DiscoModeIdentifier                 = "DiscoModeEnabled = ",
-            RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ";
+            RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
+            RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ";
 
         public static string
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
@@ -321,6 +323,22 @@ namespace RSModsConsole
                     if (grab == 21)
                     {
                         return RemoveHeadstockEnabled;
+                    }
+                }
+                if (currentLine.Contains(RemoveSkylineIdentifier))
+                {
+                    if (currentLine.Substring(RemoveSkylineIdentifier.Length, (currentLine.Length - RemoveSkylineIdentifier.Length)) == "true")
+                    {
+                        RemoveSkylineEnabled = "true";
+                    }
+                    else
+                    {
+                        RemoveSkylineEnabled = "false";
+                    }
+
+                    if (grab == 22)
+                    {
+                        return RemoveSkylineEnabled;
                     }
                 }
             }

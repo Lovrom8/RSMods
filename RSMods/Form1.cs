@@ -125,7 +125,16 @@ namespace RSMods
                 {
                     this.HeadstockCheckbox.Checked = false;
                 }
-        }
+
+                if (ImportPriorSettings()[22].ToString() == "true") // Remove Skyline Enabled / Disabled
+                {
+                    this.RemoveSkylineCheckbox.Checked = true;
+                }
+                else
+                {
+                    this.RemoveSkylineCheckbox.Checked = false;
+                }
+         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -278,7 +287,10 @@ namespace RSMods
                 {
                     SaveChanges(22, this.HeadstockCheckbox.Checked.ToString().ToLower());
                 }
-
+                if (this.RemoveSkylineCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(22)) // Remove Skyline Enabled / Disabled
+                {
+                    SaveChanges(23, this.RemoveSkylineCheckbox.Checked.ToString().ToLower());
+                }
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
@@ -427,11 +439,15 @@ namespace RSMods
             {
                 StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
             }
+            if (ElementToChange == 23) // Remove Skyline Enabled / Disabled
+            {
+                StringArray[25] = ReadSettings.RemoveSkylineIdentifier + ChangedSettingValue;
+            }
             WriteSettings.ModifyINI(StringArray);
         }
         public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[22];
+            object[] priorSettings = new object[23];
             priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
             priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
             priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
@@ -454,6 +470,7 @@ namespace RSMods
             priorSettings[19] = ReadSettings.ProcessSettings(19); // Extended Range At X Tuning
             priorSettings[20] = ReadSettings.ProcessSettings(20); // Disco Mode Enabled / Disabled
             priorSettings[21] = ReadSettings.ProcessSettings(21); // Remove Headstock Enabled / Disabled
+            priorSettings[22] = ReadSettings.ProcessSettings(22); // Remove Skyline Enabled / Disabled
             return priorSettings;
         }
 
