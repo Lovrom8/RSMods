@@ -15,12 +15,13 @@ namespace RSMods
 
             // Fill Songlist List
                 this.Songlist.Items.AddRange(new object[] {
-                    ImportPriorSettings()[0],
-                    ImportPriorSettings()[1],
-                    ImportPriorSettings()[2],
-                    ImportPriorSettings()[3],
-                    ImportPriorSettings()[4],
-                    ImportPriorSettings()[5] });
+                    ImportPriorSettings()[0], // Song List 1
+                    ImportPriorSettings()[1], // Song List 2
+                    ImportPriorSettings()[2], // Song List 3
+                    ImportPriorSettings()[3], // Song List 4
+                    ImportPriorSettings()[4], // Song List 5
+                    ImportPriorSettings()[5]  // Song List 6 
+                });
 
             // Fill Modlist List
             this.ModList.Items.AddRange(new object[] {
@@ -73,7 +74,7 @@ namespace RSMods
                 {
                     this.SongTimerCheckbox.Checked = false;
                 }
-                if (ReadSettings.ProcessSettings(17) == "true") // Rainbow String Enabled / Disabled
+                if (ImportPriorSettings()[17].ToString() == "true") // Rainbow String Enabled / Disabled
                 {
                     this.RainbowStringsEnabled.Checked = true;
                 }
@@ -81,17 +82,18 @@ namespace RSMods
                 {
                     this.RainbowStringsEnabled.Checked = false;
                 }
-                if (ReadSettings.ProcessSettings(15) == "automatic" ^ ReadSettings.ProcessSettings(15) == "manual") // Force ReEnumeration Manual / Automatic / False
+                if (ImportPriorSettings()[16].ToString() == "automatic" ^ ImportPriorSettings()[16].ToString() == "manual") // Force ReEnumeration Manual / Automatic / False
                 {
                     this.ForceEnumerationCheckbox.Checked = true;
                     this.ForceEnumerationAutomaticRadio.Visible = true;
                     this.ForceEnumerationManualRadio.Visible = true;
+                    this.HowToEnumerateText.Visible = true;
 
-                    if(ReadSettings.ProcessSettings(15) == "automatic")
+                    if(ImportPriorSettings()[16].ToString() == "automatic")
                     {
                         this.ForceEnumerationAutomaticRadio.Checked = true;
                     }
-                    if (ReadSettings.ProcessSettings(15) == "manual")
+                    if (ImportPriorSettings()[16].ToString() == "manual")
                     {
                         this.ForceEnumerationManualRadio.Checked = true;
                     }
@@ -105,6 +107,23 @@ namespace RSMods
                 else
                 {
                     this.ExtendedRangeEnabled.Checked = false;
+                }
+
+                if (ImportPriorSettings()[20].ToString() == "true") // Disco Mode Enabled / Disabled
+                {
+                    this.DiscoModeCheckbox.Checked = true;
+                } else
+                {
+                    this.DiscoModeCheckbox.Checked = false;
+                }
+
+                if (ImportPriorSettings()[21].ToString() == "true") // Remove Headstock Enabled / Disabled
+                {
+                    this.HeadstockCheckbox.Checked = true;
+                }
+                else
+                {
+                    this.HeadstockCheckbox.Checked = false;
                 }
         }
 
@@ -251,6 +270,15 @@ namespace RSMods
                 {
                     SaveChanges(19, this.ExtendedRangeEnabled.Checked.ToString().ToLower());
                 }
+                if (this.DiscoModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(20))
+                {
+                    SaveChanges(21, this.DiscoModeCheckbox.Checked.ToString().ToLower());
+                }
+                if (this.HeadstockCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(21))
+                {
+                    SaveChanges(22, this.HeadstockCheckbox.Checked.ToString().ToLower());
+                }
+
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
@@ -309,7 +337,7 @@ namespace RSMods
 
         private void SaveChanges(int ElementToChange, string ChangedSettingValue)
         {
-            string[] StringArray = File.ReadAllLines(@WriteSettings.dumpLocation);
+            string[] StringArray = WriteSettings.StringArray;
 
             if (ElementToChange == 1) // Songlist 1
             {
@@ -391,32 +419,43 @@ namespace RSMods
             {
                 StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
             }
+            if (ElementToChange == 21) // Disco Mode Enabled / Disabled
+            {
+                StringArray[23] = ReadSettings.DiscoModeIdentifier + ChangedSettingValue;
+            }
+            if (ElementToChange == 22) // Remove Headstock Enabled / Disabled
+            {
+                StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
+            }
             WriteSettings.ModifyINI(StringArray);
         }
-        public object[] ImportPriorSettings()
+        public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[20];
-            priorSettings[0] = ReadSettings.ProcessSettings(0);
-            priorSettings[1] = ReadSettings.ProcessSettings(1);
-            priorSettings[2] = ReadSettings.ProcessSettings(2);
-            priorSettings[3] = ReadSettings.ProcessSettings(3);
-            priorSettings[4] = ReadSettings.ProcessSettings(4);
-            priorSettings[5] = ReadSettings.ProcessSettings(5);
-            priorSettings[6] = ReadSettings.ProcessSettings(6);
-            priorSettings[7] = ReadSettings.ProcessSettings(7);
-            priorSettings[8] = ReadSettings.ProcessSettings(8);
-            priorSettings[9] = ReadSettings.ProcessSettings(9);
-            priorSettings[10] = ReadSettings.ProcessSettings(10);
-            priorSettings[11] = ReadSettings.ProcessSettings(16);
-            priorSettings[12] = ReadSettings.ProcessSettings(11);
-            priorSettings[13] = ReadSettings.ProcessSettings(12);
-            priorSettings[14] = ReadSettings.ProcessSettings(13);
-            priorSettings[15] = ReadSettings.ProcessSettings(14);
-            priorSettings[16] = ReadSettings.ProcessSettings(15);
-            priorSettings[17] = ReadSettings.ProcessSettings(17);
-            priorSettings[18] = ReadSettings.ProcessSettings(18);
-            priorSettings[19] = ReadSettings.ProcessSettings(19);
+            object[] priorSettings = new object[22];
+            priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
+            priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
+            priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
+            priorSettings[3] = ReadSettings.ProcessSettings(3); // Song List 4
+            priorSettings[4] = ReadSettings.ProcessSettings(4); // Song List 5
+            priorSettings[5] = ReadSettings.ProcessSettings(5); // Song List 6
+            priorSettings[6] = ReadSettings.ProcessSettings(6); // Toggle Loft Key
+            priorSettings[7] = ReadSettings.ProcessSettings(7); // Add Volume Key
+            priorSettings[8] = ReadSettings.ProcessSettings(8); // Decrease Volume Key
+            priorSettings[9] = ReadSettings.ProcessSettings(9); // Show Song Timer Key
+            priorSettings[10] = ReadSettings.ProcessSettings(10); // Force Enumeration Key
+            priorSettings[11] = ReadSettings.ProcessSettings(16); // Rainbow Strings Key
+            priorSettings[12] = ReadSettings.ProcessSettings(11); // Toggle Loft Enabled / Disabled
+            priorSettings[13] = ReadSettings.ProcessSettings(12); // Add Volume Enabled / Disabled
+            priorSettings[14] = ReadSettings.ProcessSettings(13); // Decrease Volume Enabled / Disabled
+            priorSettings[15] = ReadSettings.ProcessSettings(14); // Show Song Timer Enabled / Disabled
+            priorSettings[16] = ReadSettings.ProcessSettings(15); // Force Enumeration Manual / Automatic / Disabled
+            priorSettings[17] = ReadSettings.ProcessSettings(17); // Rainbow Strings Enabled / Disabled
+            priorSettings[18] = ReadSettings.ProcessSettings(18); // Extended Range Enabled / Disabled
+            priorSettings[19] = ReadSettings.ProcessSettings(19); // Extended Range At X Tuning
+            priorSettings[20] = ReadSettings.ProcessSettings(20); // Disco Mode Enabled / Disabled
+            priorSettings[21] = ReadSettings.ProcessSettings(21); // Remove Headstock Enabled / Disabled
             return priorSettings;
         }
+
     }
 }

@@ -9,7 +9,7 @@ namespace RSModsConsole
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        readonly static string[] StringArray = new String[23];
+        public readonly static string[] StringArray = new String[25];
 
         public static void ModifyINI(string[] StringArray)
         {
@@ -42,9 +42,11 @@ namespace RSModsConsole
                 StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + "true"; // Decrease Volume Enabled/ Disabled
                 StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + "true"; // Show Song Timer Enabled / Disabled
                 StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + "manual"; // Force ReEnumeration Manual / Automatic / Disabled
-                StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "true";
-                StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "true";
-                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "B";
+                StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "true"; // Rainbow String Enabled / Disabled
+                StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "true"; // Extended Range Enabled / Disabled
+                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "B"; // Extended Range Starts At X Tuning (lowest string)
+                StringArray[23] = ReadSettings.DiscoModeIdentifier + "false"; // Disco Mode Enabled / Disabled
+                StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + "false"; // Remove Headstock Enabled / Disabled
                 ModifyINI(StringArray);
             }
         }

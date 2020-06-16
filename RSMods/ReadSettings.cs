@@ -5,8 +5,8 @@ namespace RSModsConsole
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeTuning,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -17,21 +17,23 @@ namespace RSModsConsole
             Songlist5Identifier = "SongListTitle_5 = ",
             Songlist6Identifier = "SongListTitle_6 = ",
 
-            ToggleLoftIdentifier = "ToggleLoftKey = ",
-            AddVolumeIdentifier = "AddVolumeKey = ",
-            DecreaseVolumeIdentifier = "DecreaseVolumeKey = ",
-            ShowSongTimerIdentifier = "ShowSongTimerKey = ",
+            ToggleLoftIdentifier         = "ToggleLoftKey = ",
+            AddVolumeIdentifier          = "AddVolumeKey = ",
+            DecreaseVolumeIdentifier     = "DecreaseVolumeKey = ",
+            ShowSongTimerIdentifier      = "ShowSongTimerKey = ",
             ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
-            RainbowStringsIdentifier = "RainbowStringsKey = ",
+            RainbowStringsIdentifier     = "RainbowStringsKey = ",
 
-            ToggleLoftEnabledIdentifier = "ToggleLoftEnabled = ",
-            AddVolumeEnabledIdentifier = "AddVolumeEnabled = ",
-            DecreaseVolumeEnabledIdentifier = "DecreaseVolumeEnabled = ",
-            ShowSongTimerEnabledIdentifier = "ShowSongTimerEnabled = ",
+            ToggleLoftEnabledIdentifier         = "ToggleLoftEnabled = ",
+            AddVolumeEnabledIdentifier          = "AddVolumeEnabled = ",
+            DecreaseVolumeEnabledIdentifier     = "DecreaseVolumeEnabled = ",
+            ShowSongTimerEnabledIdentifier      = "ShowSongTimerEnabled = ",
             ForceReEnumerationEnabledIdentifier = "ForceReEnumerationEnabled = ",
-            RainbowStringsEnabledIdentifier = "RainbowStringsEnabled = ",
-            ExtendedRangeEnabledIdentifier = "ExtendedRangeEnabled = ",
-            ExtendedRangeTuningIdentifier = "ExtendedRangeTuning = ";
+            RainbowStringsEnabledIdentifier     = "RainbowStringsEnabled = ",
+            ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
+            ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
+            DiscoModeIdentifier                 = "DiscoMode = ",
+            RemoveHeadstockIdentifier           = "RemoveHeadstock = ";
 
         public static string
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
@@ -287,6 +289,38 @@ namespace RSModsConsole
                     if (grab == 19)
                     {
                         return ExtendedRangeTuning;
+                    }
+                }
+                if (currentLine.Contains(DiscoModeIdentifier))
+                {
+                    if (currentLine.Substring(DiscoModeIdentifier.Length, (currentLine.Length - DiscoModeIdentifier.Length)) == "true")
+                    {
+                        DiscoModeEnabled = "true";
+                    }
+                    else
+                    {
+                        DiscoModeEnabled = "false";
+                    }
+
+                    if (grab == 20)
+                    {
+                        return DiscoModeEnabled;
+                    }
+                }
+                if (currentLine.Contains(RemoveHeadstockIdentifier))
+                {
+                    if (currentLine.Substring(RemoveHeadstockIdentifier.Length, (currentLine.Length - RemoveHeadstockIdentifier.Length)) == "true")
+                    {
+                        RemoveHeadstockEnabled = "true";
+                    }
+                    else
+                    {
+                        RemoveHeadstockEnabled = "false";
+                    }
+
+                    if (grab == 21)
+                    {
+                        return RemoveHeadstockEnabled;
                     }
                 }
             }

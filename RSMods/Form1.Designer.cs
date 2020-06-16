@@ -60,6 +60,9 @@ namespace RSMods
             this.ExtendedRangeTuningText = new System.Windows.Forms.Label();
             this.ForceEnumerationCheckbox = new System.Windows.Forms.CheckBox();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
+            this.DiscoModeCheckbox = new System.Windows.Forms.CheckBox();
+            this.HeadstockCheckbox = new System.Windows.Forms.CheckBox();
+            this.HowToEnumerateText = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Songlist
@@ -163,7 +166,7 @@ namespace RSMods
             // SaveAndQuit
             // 
             this.SaveAndQuit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SaveAndQuit.Location = new System.Drawing.Point(1024, 452);
+            this.SaveAndQuit.Location = new System.Drawing.Point(1238, 452);
             this.SaveAndQuit.Name = "SaveAndQuit";
             this.SaveAndQuit.Size = new System.Drawing.Size(228, 45);
             this.SaveAndQuit.TabIndex = 13;
@@ -260,7 +263,7 @@ namespace RSMods
             // ForceEnumerationManualRadio
             // 
             this.ForceEnumerationManualRadio.AutoSize = true;
-            this.ForceEnumerationManualRadio.Location = new System.Drawing.Point(915, 159);
+            this.ForceEnumerationManualRadio.Location = new System.Drawing.Point(1028, 330);
             this.ForceEnumerationManualRadio.Name = "ForceEnumerationManualRadio";
             this.ForceEnumerationManualRadio.Size = new System.Drawing.Size(112, 17);
             this.ForceEnumerationManualRadio.TabIndex = 24;
@@ -272,7 +275,7 @@ namespace RSMods
             // ForceEnumerationAutomaticRadio
             // 
             this.ForceEnumerationAutomaticRadio.AutoSize = true;
-            this.ForceEnumerationAutomaticRadio.Location = new System.Drawing.Point(1070, 159);
+            this.ForceEnumerationAutomaticRadio.Location = new System.Drawing.Point(1028, 365);
             this.ForceEnumerationAutomaticRadio.Name = "ForceEnumerationAutomaticRadio";
             this.ForceEnumerationAutomaticRadio.Size = new System.Drawing.Size(180, 17);
             this.ForceEnumerationAutomaticRadio.TabIndex = 25;
@@ -324,7 +327,7 @@ namespace RSMods
             "F#",
             "F",
             "Octave Down"});
-            this.ExtendedRangeTunings.Location = new System.Drawing.Point(1101, 267);
+            this.ExtendedRangeTunings.Location = new System.Drawing.Point(1317, 267);
             this.ExtendedRangeTunings.Name = "ExtendedRangeTunings";
             this.ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.ExtendedRangeTunings.TabIndex = 29;
@@ -333,7 +336,7 @@ namespace RSMods
             // ExtendedRangeTuningText
             // 
             this.ExtendedRangeTuningText.AutoSize = true;
-            this.ExtendedRangeTuningText.Location = new System.Drawing.Point(1021, 242);
+            this.ExtendedRangeTuningText.Location = new System.Drawing.Point(1221, 242);
             this.ExtendedRangeTuningText.Name = "ExtendedRangeTuningText";
             this.ExtendedRangeTuningText.Size = new System.Drawing.Size(236, 13);
             this.ExtendedRangeTuningText.TabIndex = 30;
@@ -343,7 +346,7 @@ namespace RSMods
             // ForceEnumerationCheckbox
             // 
             this.ForceEnumerationCheckbox.AutoSize = true;
-            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(915, 138);
+            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(915, 161);
             this.ForceEnumerationCheckbox.Name = "ForceEnumerationCheckbox";
             this.ForceEnumerationCheckbox.Size = new System.Drawing.Size(115, 17);
             this.ForceEnumerationCheckbox.TabIndex = 31;
@@ -360,12 +363,45 @@ namespace RSMods
             this.ResetToDefaultButton.UseVisualStyleBackColor = true;
             this.ResetToDefaultButton.Click += new System.EventHandler(this.ResetToDefaultSettings);
             // 
+            // DiscoModeCheckbox
+            // 
+            this.DiscoModeCheckbox.AutoSize = true;
+            this.DiscoModeCheckbox.Location = new System.Drawing.Point(1070, 138);
+            this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
+            this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
+            this.DiscoModeCheckbox.TabIndex = 33;
+            this.DiscoModeCheckbox.Text = "Disco Mode";
+            this.DiscoModeCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // HeadstockCheckbox
+            // 
+            this.HeadstockCheckbox.AutoSize = true;
+            this.HeadstockCheckbox.Location = new System.Drawing.Point(915, 138);
+            this.HeadstockCheckbox.Name = "HeadstockCheckbox";
+            this.HeadstockCheckbox.Size = new System.Drawing.Size(121, 17);
+            this.HeadstockCheckbox.TabIndex = 34;
+            this.HeadstockCheckbox.Text = "Remove Headstock";
+            this.HeadstockCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // HowToEnumerateText
+            // 
+            this.HowToEnumerateText.AutoSize = true;
+            this.HowToEnumerateText.Location = new System.Drawing.Point(1007, 289);
+            this.HowToEnumerateText.Name = "HowToEnumerateText";
+            this.HowToEnumerateText.Size = new System.Drawing.Size(173, 13);
+            this.HowToEnumerateText.TabIndex = 35;
+            this.HowToEnumerateText.Text = "How Do You Want To Enumerate?";
+            this.HowToEnumerateText.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
-            this.ClientSize = new System.Drawing.Size(1264, 509);
+            this.ClientSize = new System.Drawing.Size(1478, 509);
+            this.Controls.Add(this.HowToEnumerateText);
+            this.Controls.Add(this.HeadstockCheckbox);
+            this.Controls.Add(this.DiscoModeCheckbox);
             this.Controls.Add(this.ResetToDefaultButton);
             this.Controls.Add(this.ForceEnumerationCheckbox);
             this.Controls.Add(this.ExtendedRangeTuningText);
@@ -436,6 +472,9 @@ namespace RSMods
         private System.Windows.Forms.Label ExtendedRangeTuningText;
         private System.Windows.Forms.CheckBox ForceEnumerationCheckbox;
         private System.Windows.Forms.Button ResetToDefaultButton;
+        private System.Windows.Forms.CheckBox DiscoModeCheckbox;
+        private System.Windows.Forms.CheckBox HeadstockCheckbox;
+        private System.Windows.Forms.Label HowToEnumerateText;
     }
 }
 
