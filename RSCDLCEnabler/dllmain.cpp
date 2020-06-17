@@ -30,8 +30,6 @@ void PatchCDLCCheck() {
 }
 
 int EnumSliderVal = 10000;
-
-
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
@@ -66,13 +64,7 @@ void ReadHotkeys() {
 
 }
 
-HWND hNewWnd = NULL;
-WNDPROC oWndProc = NULL;
-
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
 		return true;
 
@@ -82,7 +74,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 INT currStride;
 bool cbEnabled;
 
-HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
+HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	static bool init = false;
 
 	if (!init) {
@@ -111,6 +103,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9 *pDevice) {
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible"
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven);
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture);
+		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture);
 
 		std::cout << "ImGUI Init";
 	}
@@ -171,9 +164,6 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPre
 	return ResetReturn;
 }
 
-LPDIRECT3DVERTEXBUFFER9 Stream_Data;
-UINT Offset = 0, Stride = 0;
-
 int stage = 0;
 bool setAllToNoteGradientTexture = false;
 
@@ -198,7 +188,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
 
-HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount)  {
+HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
@@ -215,7 +205,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	while (DiscoEnabled()) {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
 		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
-		
+
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
@@ -224,7 +214,14 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-
+	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { //almost stems.. but still doesn't work completely
+		////Log("Offset: %d %d %d", primCount, decl->Usage, decl->UsageIndex);
+		//Log("vSize == %d && pSize == %d && mStartregister == %d", vSize, pSize, mStartregister);
+	
+		//pDevice->SetTexture(1, additiveNoteTexture	);
+	}
+		
+	
 	if (NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF) { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
@@ -237,9 +234,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		mem.ToggleCB(mem.Is7StringSong);
 		pDevice->SetTexture(1, gradientTextureNormal);
-
-
-
 	}
 
 	else if (IsToBeRemoved(skyline, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
@@ -252,7 +246,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return D3D_OK;
 	else if (IsToBeRemoved(headstock, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 		return D3D_OK;
-	
+
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
 
@@ -260,9 +254,40 @@ HRESULT APIENTRY Hook_BeginScene(LPDIRECT3DDEVICE9 pD3D9) {
 	return oBeginScene(pD3D9);
 }
 
-HINSTANCE hWnd;
-LPDIRECT3D9 pD3D;
-LPDIRECT3DDEVICE9 pd3dDevice;
+HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl) {
+	if (pdecl != NULL)
+		pdecl->GetDeclaration(decl, &numElements);
+
+	return oSetVertexDeclaration(pDevice, pdecl);
+}
+
+HRESULT APIENTRY Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT StartRegister, const float* pConstantData, UINT Vector4fCount) {
+	if (pConstantData != NULL) {
+		mStartregister = StartRegister;
+		mVectorCount = Vector4fCount;
+	}
+
+	return oSetVertexShaderConstantF(pDevice, StartRegister, pConstantData, Vector4fCount);
+}
+
+HRESULT APIENTRY Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexShader9* veShader) {
+	if (veShader != NULL) {
+		vShader = veShader;
+		vShader->GetFunction(NULL, &vSize);
+	}
+
+	return oSetVertexShader(pDevice, veShader);
+}
+
+HRESULT APIENTRY Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelShader9* piShader) {
+	if (piShader != NULL){
+		pShader = piShader;
+		pShader->GetFunction(NULL, &pSize);
+	}
+
+	return oSetPixelShader(pDevice, piShader);
+}
+
 
 DWORD* GetD3DDevice() {
 	HWND tmpWnd = CreateWindowA("BUTTON", "DX", WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, NULL, NULL, hWnd, NULL);
@@ -298,11 +323,17 @@ DWORD* GetD3DDevice() {
 }
 
 void GUI() {
-	Sleep(5000);
+	while(!GetModuleHandleA("d3d9.dll")) //aight ffio ;)
+		Sleep(500);
 
 	DWORD* vTable = GetD3DDevice();
 
 	if (vTable != NULL) {
+		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil.TrampHook((PBYTE)vTable[87], (PBYTE)Hook_SetVertexDeclaration,  7);
+		oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[92], (PBYTE)Hook_SetVertexShader, 5);
+		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[94], (PBYTE)Hook_SetVertexShaderConstantF,  7);
+		oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[107], (PBYTE)Hook_SetPixelShader, 7);
+
 		oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[41], (PBYTE)Hook_BeginScene, 7);
 		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[42], (PBYTE)Hook_EndScene, 7);
 		oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);

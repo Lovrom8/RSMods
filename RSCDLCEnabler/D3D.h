@@ -2,6 +2,42 @@
 #include "windows.h"
 #include "d3d9.h"
 #include <vector>
+#include <iostream>
+
+HINSTANCE hWnd;
+LPDIRECT3D9 pD3D;
+LPDIRECT3DDEVICE9 pd3dDevice;
+
+HWND hNewWnd = NULL;
+WNDPROC oWndProc = NULL;
+
+UINT mStartregister;
+UINT mVectorCount;
+
+UINT Stride;
+D3DVERTEXBUFFER_DESC vdesc;
+
+IDirect3DVertexDeclaration9* pDecl;
+D3DVERTEXELEMENT9 decl[MAXD3DDECLLENGTH];
+UINT numElements;
+
+IDirect3DVertexShader9* vShader;
+UINT vSize;
+
+IDirect3DPixelShader9* pShader;
+UINT pSize;
+
+IDirect3DTexture9* texture;
+D3DSURFACE_DESC sDesc;
+DWORD qCRC;
+D3DLOCKED_RECT pLockedRect;
+
+LPDIRECT3DVERTEXBUFFER9 Stream_Data;
+UINT Offset = 0;
+
+
+LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
+LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture;
 
 HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32)
 {
@@ -105,8 +141,3 @@ std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
 
 #define GREENSCREEN_WALL (Stride == 92 && primCount == 2 && NumVertices == 6)
 
-UINT mStartregister;
-UINT mVectorCount;
-
-LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture;

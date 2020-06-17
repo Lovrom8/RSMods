@@ -13,11 +13,7 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 	return forceEnumeration(rs_dlc_service_flags);
 }
 
-typedef HRESULT(APIENTRY* tReset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
-tReset oReset;
-
-typedef HRESULT(APIENTRY* tEndScene)(IDirect3DDevice9* pDevice);
-tEndScene oEndScene = nullptr;
+/* ------------------- D3D ---------------------------------*/
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
@@ -31,3 +27,31 @@ tBeginScene oBeginScene;
 typedef HRESULT(WINAPI* tDrawPrimitive)(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount);
 tDrawPrimitive oDrawPrimitive;
 
+typedef HRESULT(__stdcall* tEndScene)(IDirect3DDevice9* pDevice);
+tEndScene oEndScene; 
+
+typedef HRESULT(__stdcall* tReset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
+tReset oReset;
+
+typedef HRESULT(APIENTRY* tSetStreamSource)(IDirect3DDevice9*, UINT, IDirect3DVertexBuffer9*, UINT, UINT);
+tSetStreamSource oSetStreamSource;
+
+typedef HRESULT(APIENTRY* tSetVertexDeclaration)(IDirect3DDevice9*, IDirect3DVertexDeclaration9*);
+tSetVertexDeclaration oSetVertexDeclaration;
+
+typedef HRESULT(APIENTRY* tSetVertexShaderConstantF)(IDirect3DDevice9*, UINT, const float*, UINT);
+tSetVertexShaderConstantF oSetVertexShaderConstantF;
+
+typedef HRESULT(APIENTRY* tSetVertexShader)(IDirect3DDevice9*, IDirect3DVertexShader9*);
+tSetVertexShader oSetVertexShader;
+
+typedef HRESULT(APIENTRY* tSetPixelShader)(IDirect3DDevice9*, IDirect3DPixelShader9*);;
+tSetPixelShader oSetPixelShader;
+
+typedef HRESULT(APIENTRY* tSetTexture)(IDirect3DDevice9*, DWORD, IDirect3DBaseTexture9*);
+tSetTexture oSetTexture;
+
+typedef HRESULT(APIENTRY* tPresent) (IDirect3DDevice9*, const RECT*, const RECT*, HWND, const RGNDATA*);
+tPresent oPresent;
+
+/* ------------------- D3D ---------------------------------*/
