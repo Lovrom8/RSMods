@@ -65,6 +65,15 @@ void ReadHotkeys() {
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	if (msg == WM_KEYUP) {
+		//if (wParam == Settings.GetKeyBind(Settings.ReturnToggleValue("ShowSongTimerEnabled")))
+
+		if (wParam == Settings.GetKeyBind("ShowSongTimerKey"))
+			std::cout << "bro" << std::endl;
+		else if (wParam == Settings.GetKeyBind("RainbowStringsKey"))
+			std::cout << "very cool bro" << std::endl;
+	}
+	
 	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
 		return true;
 
@@ -216,8 +225,9 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { //almost stems.. but still doesn't work completely
 		////Log("Offset: %d %d %d", primCount, decl->Usage, decl->UsageIndex);
-		//Log("vSize == %d && pSize == %d && mStartregister == %d", vSize, pSize, mStartregister);
-	
+//	Log("%d %d %d %d", MinVertexIndex, startIndex, primCount, BaseVertexIndex );
+		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+		//Stride  NumVertices PrimCount BaseVertexIndex MinVertexIndex startIndex mStartregister PrimType mVectorCount  decl->Type numElements
 		//pDevice->SetTexture(1, additiveNoteTexture	);
 	}
 		
