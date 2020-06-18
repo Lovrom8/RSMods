@@ -15,9 +15,10 @@ const char* windowName = "Rocksmith 2014";
 
 RandomMemStuff mem;
 
-void* d3d9Device[119];
 bool menuEnabled = true; //whole menu is kinda bugged right now :(
 bool enableColorBlindCheckboxGUI = false;
+LPDIRECT3DDEVICE9 device;
+D3DPRESENT_PARAMETERS d3dpp;
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -34,7 +35,7 @@ int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
-	Settings.ReadKeyBinds(); //YIC
+	Settings.ReadKeyBinds();
 	Settings.ReadModSettings();
 
 	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
@@ -55,20 +56,18 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	return 0;
 }
 
-
-void ReadHotkeys() { //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
-	
-	/*if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) 
-		mem.ToggleLoft(); Moved to LRESULT WINAPI WndProc */
-
-	if (ImGui::IsKeyReleased(Settings.GetKeyBind("MenuToggleKey")))
-		menuEnabled = !menuEnabled;
-
-}
-
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (msg == WM_KEYUP) {
 		//if (wParam == Settings.GetKeyBind(Settings.ReturnToggleValue("ShowSongTimerEnabled")))
+
+		if (keyPressed == VK_DELETE) {
+			float volume;
+			RTPCValue_type type;
+
+			SetRTPCValue("Mixer_SFX", 75.0, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			GetRTPCValue("Mixer_SFX", AK_INVALID_GAME_OBJECT, &volume, &type);
+			std::cout << volume << " " << type << std::endl;
+		}
 
 		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") & Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
 			mem.ToggleLoft();
@@ -98,6 +97,19 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
 			mem.DoRainbow();
 			std::cout << "Rainbows Are Pretty Cool" << std::endl;
+		}
+
+		if (keyPressed == VK_INSERT)
+			menuEnabled = !menuEnabled;
+
+	}
+
+	if (msg == WM_ACTIVATEAPP) {
+		if (device) {
+			std::cout << "dingus" << std::endl;
+			//ImGui_ImplDX9_InvalidateDeviceObjects();
+			device->Reset(&d3dpp);
+			//ImGui_ImplDX9_CreateDeviceObjects();
 		}
 	}
 
@@ -149,28 +161,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	ImGui::NewFrame();
 
-	static auto is_down = false;
-	static auto is_clicked = false;
-	if (GetAsyncKeyState(VK_INSERT))
-	{
-		is_clicked = false;
-		is_down = true;
-	}
-	else if (!GetAsyncKeyState(VK_INSERT) && is_down)
-	{
-		is_clicked = true;
-		is_down = false;
-	}
-	else {
-		is_clicked = false;
-		is_down = false;
-	}
-
-	if (is_clicked)
-	{
-		menuEnabled = !menuEnabled;
-	}
-
 	if (menuEnabled) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
@@ -180,9 +170,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::End();
 	}
 
-	/* New place for keybinds */
-	ReadHotkeys();
-
 	ImGui::EndFrame();
 	ImGui::Render();
 
@@ -191,10 +178,10 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	return oEndScene(pDevice); // Call original ensdcene so the game can draw
 }
 
-HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPresentationParameters) { //gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { //gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
-	HRESULT ResetReturn = oReset(pD3D9, pPresentationParameters);
+	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
 
 	ImGui_ImplDX9_CreateDeviceObjects();
 
@@ -254,7 +241,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { //almost stems.. but still doesn't work completely
 		////Log("Offset: %d %d %d", primCount, decl->Usage, decl->UsageIndex);
 //	Log("%d %d %d %d", MinVertexIndex, startIndex, primCount, BaseVertexIndex );
-		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+		//Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
 		//Stride  NumVertices PrimCount BaseVertexIndex MinVertexIndex startIndex mStartregister PrimType mVectorCount  decl->Type numElements
 		//pDevice->SetTexture(1, additiveNoteTexture	);
 	}
@@ -289,6 +276,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 }
 
 HRESULT APIENTRY Hook_BeginScene(LPDIRECT3DDEVICE9 pD3D9) {
+	device = pD3D9;
 	return oBeginScene(pD3D9);
 }
 
@@ -338,7 +326,7 @@ DWORD* GetD3DDevice() {
 		return 0;
 	}
 
-	D3DPRESENT_PARAMETERS d3dpp;
+	//D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
 	d3dpp.Windowed = TRUE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
@@ -372,21 +360,22 @@ void GUI() {
 		oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[107], (PBYTE)Hook_SetPixelShader, 7);
 
 
+		//oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);
 		oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[41], (PBYTE)Hook_BeginScene, 7);
 		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[42], (PBYTE)Hook_EndScene, 7);
-
-		/*
-		oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);
-		*/
-		
 		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[82], (PBYTE)Hook_DIP, 5);
 		oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[81], (PBYTE)Hook_DP, 7);
-		
+
 	}
 	else
 		std::cout << "Could not initialize D3D stuff" << std::endl;
 	pd3dDevice->Release();
 	pD3D->Release();
+}
+
+void InitStuff() {
+	SetRTPCValue = (tSetRTPCValue)Offsets.func_SetRTPCValue;
+	GetRTPCValue = (tGetRTPCValue)Offsets.func_GetRTPCValue;
 }
 
 DWORD WINAPI MainThread(void*) {
@@ -398,6 +387,7 @@ DWORD WINAPI MainThread(void*) {
 	mem.HookSongListsKoko();
 
 	GUI();
+	InitStuff();
 
 	while (true) {
 

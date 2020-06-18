@@ -13,6 +13,15 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 	return forceEnumeration(rs_dlc_service_flags);
 }
 
+/*-------------------- AUDIO KINETIC STUFF ------------------------*/
+typedef AKRESULT(__cdecl* tSetRTPCValue) (const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
+tSetRTPCValue SetRTPCValue;
+
+typedef AKRESULT(__cdecl* tGetRTPCValue)(const char* in_pszRtpcName, AkGameObjectID in_gameObjectID, AkRtpcValue *out_rValue, RTPCValue_type *io_rValueType);
+tGetRTPCValue GetRTPCValue;
+
+/*-------------------- AUDIO KINETIC STUFF ------------------------*/
+
 /* ------------------- D3D ---------------------------------*/
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -30,7 +39,7 @@ tDrawPrimitive oDrawPrimitive;
 typedef HRESULT(__stdcall* tEndScene)(IDirect3DDevice9* pDevice);
 tEndScene oEndScene; 
 
-typedef HRESULT(__stdcall* tReset)(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS*);
+typedef HRESULT(APIENTRY* tReset)(IDirect3DDevice9 *, D3DPRESENT_PARAMETERS*);
 tReset oReset;
 
 typedef HRESULT(APIENTRY* tSetStreamSource)(IDirect3DDevice9*, UINT, IDirect3DVertexBuffer9*, UINT, UINT);

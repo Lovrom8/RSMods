@@ -28,6 +28,9 @@ public:
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
 	uintptr_t func_ForceEnumeration = 0x018D69E7;
+	uintptr_t func_SetRTPCValue = 0x1F58A91;
+	uintptr_t func_GetRTPCValue = 0x1F5634A;
+
 
 	uintptr_t patch_addedSpaces = 0x01529f98;
 	uintptr_t patch_addedNumbers = 0x0152a006;
