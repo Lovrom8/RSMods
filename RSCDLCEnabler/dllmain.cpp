@@ -16,7 +16,8 @@ const char* windowName = "Rocksmith 2014";
 RandomMemStuff mem;
 
 void* d3d9Device[119];
-bool menuEnabled=true; //whole menu is kinda bugged right now :(
+bool menuEnabled = true; //whole menu is kinda bugged right now :(
+bool enableColorBlindCheckboxGUI = false;
 
 void PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
@@ -55,29 +56,55 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 }
 
 
-void ReadHotkeys() {
-	if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
-		mem.ToggleLoft();
+void ReadHotkeys() { //because it runs at the end of each frame, if you use IsKeyPressed, you will likely end up with multiple keypressed registered at once before you release the key
+	
+	/*if (ImGui::IsKeyReleased(Settings.GetKeyBind("ToggleLoftKey"))) 
+		mem.ToggleLoft(); Moved to LRESULT WINAPI WndProc */
 
 	if (ImGui::IsKeyReleased(Settings.GetKeyBind("MenuToggleKey")))
 		menuEnabled = !menuEnabled;
 
 }
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (msg == WM_KEYUP) {
 		//if (wParam == Settings.GetKeyBind(Settings.ReturnToggleValue("ShowSongTimerEnabled")))
 
-		if (wParam == Settings.GetKeyBind("ShowSongTimerKey"))
-			std::cout << "bro" << std::endl;
-		else if (wParam == Settings.GetKeyBind("RainbowStringsKey"))
-			std::cout << "very cool bro" << std::endl;
+		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") & Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+			mem.ToggleLoft();
+			std::cout << "Toggle Loft" << std::endl;
+		}
+
+		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") & Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
+			mem.AddVolume(5);
+			std::cout << "Adding 5 Volume" << std::endl;
+		}
+
+		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") & Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") {
+			mem.DecreaseVolume(5);
+			std::cout << "Subtracting 5 Volume" << std::endl;
+		}
+
+		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") & Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") {
+			mem.ShowSongTimer();
+			std::cout << "Show Me Dat Timer Bruh" << std::endl;
+		}
+
+		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") {
+			Enumeration.ForceEnumeration();
+			std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
+		}
+
+		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
+			mem.DoRainbow();
+			std::cout << "Rainbows Are Pretty Cool" << std::endl;
+		}
 	}
-	
-	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
+
+	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
 		return true;
 
-	return CallWindowProc(oWndProc, hWnd, msg, wParam, lParam);
+	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
 
 INT currStride;
@@ -148,7 +175,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
 		ImGui::SliderInt("Curr Slide", &currStride, 0, 10000);
-		//ImGui::Checkbox("Colorblind Mode", &cbEnabled);
+		if (enableColorBlindCheckboxGUI)
+			ImGui::Checkbox("Colorblind Mode", &cbEnabled);
 		ImGui::End();
 	}
 
@@ -168,7 +196,7 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pD3D9, D3DPRESENT_PARAMETERS* pPre
 
 	HRESULT ResetReturn = oReset(pD3D9, pPresentationParameters);
 
-	ImGui_ImplDX9_CreateDeviceObjects(); 
+	ImGui_ImplDX9_CreateDeviceObjects();
 
 	return ResetReturn;
 }
@@ -230,8 +258,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		//Stride  NumVertices PrimCount BaseVertexIndex MinVertexIndex startIndex mStartregister PrimType mVectorCount  decl->Type numElements
 		//pDevice->SetTexture(1, additiveNoteTexture	);
 	}
-		
-	
+
+
 	if (NOTE_HEADS || OPEN_STRINGS || INDICATORS || NOTE_HEAD_SYMBOLS || HIGHLIGHTED_NOTE_HEAD || SOME_NOTE_HEAD_STUFF) { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
@@ -290,7 +318,7 @@ HRESULT APIENTRY Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertex
 }
 
 HRESULT APIENTRY Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelShader9* piShader) {
-	if (piShader != NULL){
+	if (piShader != NULL) {
 		pShader = piShader;
 		pShader->GetFunction(NULL, &pSize);
 	}
@@ -333,31 +361,35 @@ DWORD* GetD3DDevice() {
 }
 
 void GUI() {
-	while(!GetModuleHandleA("d3d9.dll")) //aight ffio ;)
+	while (!GetModuleHandleA("d3d9.dll")) //aight ffio ;)
 		Sleep(500);
 
 	DWORD* vTable = GetD3DDevice();
-
 	if (vTable != NULL) {
-		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil.TrampHook((PBYTE)vTable[87], (PBYTE)Hook_SetVertexDeclaration,  7);
+		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil.TrampHook((PBYTE)vTable[87], (PBYTE)Hook_SetVertexDeclaration, 7);
 		oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[92], (PBYTE)Hook_SetVertexShader, 5);
-		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[94], (PBYTE)Hook_SetVertexShaderConstantF,  7);
+		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[94], (PBYTE)Hook_SetVertexShaderConstantF, 7);
 		oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[107], (PBYTE)Hook_SetPixelShader, 7);
+
 
 		oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[41], (PBYTE)Hook_BeginScene, 7);
 		oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[42], (PBYTE)Hook_EndScene, 7);
+
+		/*
 		oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[16], (PBYTE)Hook_Reset, 7);
+		*/
+		
 		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[82], (PBYTE)Hook_DIP, 5);
 		oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[81], (PBYTE)Hook_DP, 7);
+		
 	}
 	else
 		std::cout << "Could not initialize D3D stuff" << std::endl;
-
 	pd3dDevice->Release();
 	pD3D->Release();
 }
 
-DWORD WINAPI MainThread(void*) {	
+DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
 	PatchCDLCCheck();
 
@@ -370,49 +402,50 @@ DWORD WINAPI MainThread(void*) {
 	while (true) {
 
 		Sleep(100);
-		
-		// Mods
-			/*if (Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") 
+		mem.Toggle7StringMode();
+
+
+
+		/* Mods (Moved to LRESULT WINAPI WndProc)
+			if (Settings.ReturnToggleValue("ToggleLoftEnabled") == "true")
 				if (GetAsyncKeyState(Settings.GetKeyBind("ToggleLoftKey")) & 0x1) // Toggle Loft
-					mem.ToggleLoft();*/
-		
-			/* Buggy?
+					mem.ToggleLoft();
+
 				if (Settings.ReturnToggleValue("AddVolumeEnabled") == "true") // Add Volume / Volume Up
-					if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & 0x1) 
+					if (GetAsyncKeyState(Settings.GetKeyBind("AddVolumeKey")) & 0x1)
 						mem.AddVolume(5);
-			
+
 				if (Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true")  // Decrease Volume / Volume Down
 					if (GetAsyncKeyState(Settings.GetKeyBind("DecreaseVolumeKey")) & 0x1)
 						mem.DecreaseVolume(5);
-			*/
+
 			if (Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true")  // Show Song Timer
 				if (GetAsyncKeyState(Settings.GetKeyBind("ShowSongTimerKey")) & 0x1)
 					mem.ShowSongTimer();
-				
+
 			if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") // Force ReEnumeration (Manual)
-				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1) 
+				if (GetAsyncKeyState(Settings.GetKeyBind("ForceReEnumerationKey")) & 0x1)
 					Enumeration.ForceEnumeration();
-		
-		/*	if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") // Rainbow Strings
+
+			if (Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") // Rainbow Strings
 				if (GetAsyncKeyState(Settings.GetKeyBind("RainbowStringsKey")) & 0x1)
 					mem.DoRainbow();
 					//mem.LoadModsWhenSongsLoad("RainbowStrings");
-					*/
 
-		// Dev Commands
-			/*
-			if (GetAsyncKeyState('X') & 0x1)  // FUCK OFF
+		 Dev Commands
+
+			if (GetAsyncKeyState('X') & 0x1)
 				mem.ShowCurrentTuning();
-		*/
-			mem.Toggle7StringMode();
 
-		/* Disabled commands
+
+		  Disabled commands
 			mem.ToggleLoftWhenSongStarts();
 		*/
 
-		//	mem.ToggleCB(cbEnabled); uncomment if you want the checkbox to work
+		if (enableColorBlindCheckboxGUI)
+			mem.ToggleCB(cbEnabled);
 	}
-	
+
 
 	return 0;
 }
