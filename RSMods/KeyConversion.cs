@@ -1,7 +1,7 @@
 ﻿using System;
 using static System.StringComparison;
 
-namespace RSModsConsole
+namespace RSMods
 {
     class KeyConversion
     {

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using System.Runtime.Remoting.Messaging;
 
-namespace RSModsConsole
+namespace RSMods
 {
     class ReadSettings
     {

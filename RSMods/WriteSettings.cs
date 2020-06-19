@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace RSModsConsole
+namespace RSMods
 {
     class WriteSettings
     {
