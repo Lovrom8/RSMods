@@ -44,7 +44,7 @@ namespace RSModsConsole
                 StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + "manual"; // Force ReEnumeration Manual / Automatic / Disabled
                 StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "true"; // Rainbow String Enabled / Disabled
                 StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "true"; // Extended Range Enabled / Disabled
-                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "B"; // Extended Range Starts At X Tuning (lowest string)
+                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Extended Range Starts At X Tuning (lowest string)
                 StringArray[23] = ReadSettings.DiscoModeIdentifier + "false"; // Disco Mode Enabled / Disabled
                 StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + "false"; // Remove Headstock Enabled / Disabled
                 StringArray[25] = ReadSettings.RemoveSkylineIdentifier + "false"; // Remove Skyline Enabled / Disabled
