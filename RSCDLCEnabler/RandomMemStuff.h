@@ -25,6 +25,7 @@ public:
 	void Toggle7StringMode();
 	bool LoadModsWhenSongsLoad(std::string ModToRun);
 	bool Is7StringSong=false;
+	std::string GetCurrentMenu();
 	void ToggleCB(bool enabled);
 };
 

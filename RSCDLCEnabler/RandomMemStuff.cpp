@@ -87,8 +87,11 @@ void RandomMemStuff::Toggle7StringMode() {
 	}
 }
 
-std::string GetCurrentMenu() {
+std::string RandomMemStuff::GetCurrentMenu() {
 	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets);
+
+	if (currentMenuAdr > 0x20000000) //pls don't kill me for doing a check like this, but I really don't know a more reliable way to check if it points to an actual value (it gets initialized when you click on first Enter prompt)
+		return "pre_enter_prompt";
 
 	if (!currentMenuAdr)
 		return "";

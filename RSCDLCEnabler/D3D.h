@@ -4,11 +4,7 @@
 #include <vector>
 #include <iostream>
 
-HINSTANCE hWnd;
-LPDIRECT3D9 pD3D;
-LPDIRECT3DDEVICE9 pd3dDevice;
-
-HWND hNewWnd = NULL;
+HWND hThisWnd = NULL;
 WNDPROC oWndProc = NULL;
 
 UINT mStartregister;
@@ -38,6 +34,10 @@ UINT Offset = 0;
 
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture;
+
+int currIdx;
+INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
+bool cbEnabled;
 
 HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32)
 {
@@ -89,6 +89,55 @@ struct Mesh {
 	}
 };
 
+struct ThiccMesh {
+	UINT Stride;
+	UINT PrimCount;
+	UINT NumVertices;
+	UINT startIndex;
+	UINT mStartRegister;
+	UINT PrimType;
+	UINT DeclType;
+	UINT mVectorCount;
+	UINT NumElements;
+
+	ThiccMesh(UINT s, UINT p, UINT n, UINT si, UINT mSR, UINT pt, UINT dt, UINT mvc, UINT nm) {
+		Stride = s;
+		PrimCount = p;
+		NumVertices = n;
+		startIndex = si;
+		mStartRegister = mSR;
+		PrimType = pt;
+		DeclType = dt;
+		mVectorCount = mvc;
+		NumElements = nm;
+	}
+};
+
+
+bool IsMatching(ThiccMesh meshA, ThiccMesh meshB) {
+	if (meshA.Stride == meshB.Stride
+		&& meshA.PrimCount == meshB.PrimCount
+		&& meshA.NumVertices == meshB.NumVertices
+		&& meshA.startIndex == meshB.startIndex
+		&& meshA.mStartRegister == meshB.mStartRegister
+		&& meshA.PrimType == meshB.PrimType
+		&& meshA.DeclType == meshB.DeclType
+		&& meshA.mVectorCount == meshB.mVectorCount
+		&& meshA.NumElements == meshB.NumElements)
+
+		return true;
+
+	return false;
+}
+
+bool IsExtraRemoved(std::vector<ThiccMesh> list, ThiccMesh mesh) {
+	for (auto currentMesh : list) {
+			return IsMatching(currentMesh, mesh);
+	}
+
+	return false;
+}
+
 bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 	for (auto currentMesh : list) {
 		if (currentMesh.Stride == mesh.Stride && currentMesh.PrimCount == mesh.PrimCount && currentMesh.NumVertices == mesh.NumVertices)
@@ -136,6 +185,21 @@ std::vector<Mesh> headstock{
 		{ 76, 3284, 1787 }, // Headstock texture
 		{ 68, 2760, 1890} // Tuner
 
+};
+
+std::vector<ThiccMesh> headstockThicc{
+{ 24, 2, 4, 0, 0, 4, 2, 8, 4 },
+{ 32, 2, 4, 0, 0, 4, 2, 12, 4 },
+{ 32, 2, 4, 0, 0, 4, 2, 4, 2 },
+{ 44, 538, 311, 0, 0, 4, 2, 8, 3 },
+{ 44, 538, 311, 0, 0, 4, 2, 9, 4 },
+{ 60, 588, 316, 0, 0, 4, 2, 9, 7 },
+{ 76, 2142, 1458, 0, 0, 4, 2, 8, 3 },
+{ 76, 2311, 1268, 0, 0, 4, 2, 9, 7 },
+{ 76, 4062, 3165, 0, 0, 4, 2, 8, 3 },
+{ 8, 10, 8, 1096, 0, 4, 8, 4, 3 },
+{ 8, 10, 8, 30408, 0, 4, 8, 4, 3 },
+{ 8, 10, 8, 35280, 0, 4, 8, 6, 3 }
 };
 
 

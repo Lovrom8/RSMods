@@ -69,8 +69,12 @@ PBYTE cMemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 uintptr_t cMemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets)
 {
 	uintptr_t addr = ptr;
+
 	for (unsigned int i = 0; i < offsets.size(); ++i)
 	{
+		if (!addr)
+			return NULL;
+
 		addr = *(uintptr_t*)addr;
 
 		if (addr == NULL)
@@ -88,10 +92,20 @@ bool bCompare(const BYTE* pData, const byte * bMask, const char* szMask) {
 	return (*szMask) == NULL;
 }
 
-uint8_t* cMemUtil::FindPattern(uint32_t dwAddress, size_t dwLen, uint8_t* bMask, char* szMask) {
+
+DWORD cMemUtil::FindPattern(DWORD address, DWORD size, PBYTE pattern, char* mask) {
+	for (DWORD i = 0; i < size; i++)
+		if (bCompare((PBYTE)(address + i), pattern, mask))
+			return (address + i);
+
+	return NULL;
+}
+
+uint8_t* cMemUtil::FindPattern(uint32_t dwAddress, size_t dwLen, uint8_t* pattern, char* mask) {
 	for (DWORD i = 0; i < dwLen; i++)
-		if (bCompare((BYTE*)(dwAddress + i), bMask, szMask))
+		if (bCompare((PBYTE)(dwAddress + i), pattern, mask))
 			return (byte*)(dwAddress + i);
+
 	return NULL;
 }
 
