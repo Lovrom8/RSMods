@@ -98,22 +98,54 @@ bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 	return false;
 }
 
-std::vector<Mesh> skyline{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}};
-std::vector<Mesh> skylineLesson{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 104, 208}, {20, 2, 4}, {16, 18, 16}, {8, 20, 16} };
-//, {8, 10, 8}, removes a bit too much
+//  {8, 10, 8}, //  Massive UI (Artwork, preview skylines, loading screens, etc)
 
-#define SKYLINE1 (Stride == 16 && primCount == 66 && NumVertices == 132) 
-#define SKYLINE2 (Stride == 16 && primCount == 38 && NumVertices == 76)
-#define SKYLINE3 (Stride == 16 && primCount == 2 && NumVertices == 4)
-#define SKYLINE4 (Stride == 16 && primCount == 104 && NumVertices == 208)
+std::vector<Mesh> skyline{ 
+	{16, 66, 132}, //
+	{16, 38, 76}, // 
+	{16, 2, 4}, //
+	{16, 104, 208}, //
+};
+std::vector<Mesh> skylineLesson{
+	{16, 66, 132}, //
+	{16, 38, 76}, //
+	{16, 2, 4}, // 
+	{16, 104, 208}, // 
+	{20, 2, 4}, // 
+	{16, 18, 16}, // 
+	{8, 20, 16} // 
+};
 
-#define HIGHLIGHTED_NOTE_HEAD (Stride == 32 && primCount == 104 && NumVertices == 187) 
-#define NOTE_HEADS (Stride == 36 && primCount == 40 && NumVertices == 76)
-#define OPEN_STRINGS (Stride == 36 && primCount == 40 && NumVertices == 50)
-#define INDICATORS (Stride == 32 && primCount == 8 && NumVertices == 10)
-#define NOTE_HEAD_SYMBOLS (Stride == 36 && primCount == 100 && NumVertices == 200)
+std::vector<Mesh> sevenstring{
+	{36, 40, 76}, // Note Heads
+	{36, 40, 50}, // Open Strings
+	{32, 8, 10}, // Indicators
+	{36, 100, 200}, // Note Head Symbols
+	{32, 104, 187}, // Highlighted Note Head
+	{34, 40, 76} // "Some Note Head Stuff" - Lovro
+};
+
+std::vector<Mesh> headstock{
+	// 3+3 Guitar
+		//{ 32, 2, 4 }, // Letters above Pegs in tuning, ingame Fret #'s, Pg Down key in pause menu, Note Highway, Fingering of chords | Needs to be specified more
+		{ 24, 2, 4 }, // Tuners, Tuning circle, Keys in pause menu
+		{ 60, 392, 198 }, // Tuning Pegs
+		{ 60, 68, 52 }, // Stick things coming off pegs to connect to the headstock
+		{ 44, 538, 311 }, // Strings past nut
+		{ 68, 4123, 2983 }, // Tuner Blocks
+		{ 76, 3284, 1787 }, // Headstock texture
+		{ 68, 2760, 1890} // Tuner
+
+};
+
+
+// All the single ladies
+std::vector<Mesh> fretless{ {56, 264, 273} };
+std::vector<Mesh> inlays{ {32, 8, 9} };
+std::vector<Mesh> greenscreenwall{{92, 2, 6}};
+
+// Misc
 #define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && primCount == 2 && NumVertices == 4)
-#define SOME_NOTE_HEAD_STUFF (Stride == 34 && primCount == 40 && NumVertices == 76)
 #define CHORD_OUTLINE_THINGY (Stride == 34 && primCount == 48 && NumVertices == 80)
 #define CHORD_OUTLINE_CORNERS (Stride == 24 && primCount == 108 && NumVertices == 208)
 #define PAUSE_MENU_BGD (Stride == 16 && primCount == 18 && NumVertices == 16)
@@ -122,22 +154,3 @@ std::vector<Mesh> skylineLesson{ {16, 66, 132}, {16, 38, 76}, {16, 2, 4}, {16, 1
 #define CHORD_NAMES (Stride == 24 && primCount == 2 && NumVertices == 4)
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
-
-std::vector<Mesh> headstock{ { 32, 2, 4 }, { 8, 10, 8 }, { 24, 2, 4 }, { 60, 588, 316 }, { 76, 2311, 1268 }, { 76, 4062, 3165 }, { 60, 392, 198 }, { 60, 68, 52 }, { 44, 538, 311 }, { 68, 4123, 2983 }, { 76, 3284, 1787 } };
-
-#define HEADSTOCK_STUFF (Stride == 32 && primCount == 2 && NumVertices == 4)
-#define HEADSTOCKS (Stride == 8 && primCount == 10 && NumVertices == 8)
-#define HEADSTUCK (Stride == 24 && primCount == 2 && NumVertices == 4)
-#define HEADSTOCK_TEXTU1 (Stride == 60 && primCount == 588 && NumVertices == 316)
-#define HEADSTOCK_TEXTU2 (Stride == 76 && primCount == 2311 && NumVertices == 1268)
-#define HEADSTOCK_TEXTU3 (Stride == 76 && primCount == 4062 && NumVertices == 3165)
-#define HEADSTOCK_1 (Stride == 60 && primCount == 392 && NumVertices == 198)
-#define HEADSTOCK_2 (Stride == 60 && primCount == 68 && NumVertices == 52)
-#define HEADSTOCK_3 (Stride == 44 && primCount == 538 && NumVertices == 311)
-#define HEADSTOCK_4 (Stride == 68 && primCount == 4123 && NumVertices == 2983)
-#define HEADSTOCK_5 (Stride == 76 && primCount == 3284 && NumVertices == 1787)
-
-std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
-
-#define GREENSCREEN_WALL (Stride == 92 && primCount == 2 && NumVertices == 6)
-
