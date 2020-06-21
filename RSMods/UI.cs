@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Runtime;
 using System.IO;
+using System.Linq;
 
 namespace RSMods
 {
@@ -9,7 +11,9 @@ namespace RSMods
         public MainForm()
         {
             WriteSettings.WhereIsRocksmith(); // Creates GUI Settings File
-            WriteSettings.NoSettingsDetected(); // Creates Settings File
+            if(!File.Exists(@WriteSettings.dumpLocation)) {
+                WriteSettings.NoSettingsDetected(); // Creates Settings File
+            }
             InitializeComponent();
 
             // Fill Songlist List
@@ -141,6 +145,27 @@ namespace RSMods
                 else
                 {
                     this.GreenScreenWallCheckbox.Checked = false;
+                }
+
+                if (ImportPriorSettings()[24].ToString() == "true") // Force Load Profile On Game Boot Enabled / Disabled
+                {
+                    this.AutoLoadProfileCheckbox.Checked = true;
+                    this.ProfileToLoadText.Visible = true;
+                    this.ProfileToLoadNumber.Visible = true;
+                    this.ProfileToLoadNumber.Value = Convert.ToDecimal(ImportPriorSettings()[25].ToString());
+                }
+                else
+                {
+                    this.AutoLoadProfileCheckbox.Checked = false;
+                }
+
+                if (ImportPriorSettings()[26].ToString() == "true") // Fretless Mode Enabled / Disabled
+                {
+                    this.FretlessModeCheckbox.Checked = true;
+                }
+                else
+                {
+                    this.FretlessModeCheckbox.Checked = false;
                 }
          }
 
@@ -299,10 +324,22 @@ namespace RSMods
                 {
                     SaveChanges(23, this.RemoveSkylineCheckbox.Checked.ToString().ToLower());
                 }
-                if (this.GreenScreenWallCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(23))
+                if (this.GreenScreenWallCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(23)) // Green Screen Wall Enabled / Disabled
                 {
                     SaveChanges(24, this.GreenScreenWallCheckbox.Checked.ToString().ToLower());
-                }    
+                }
+                if (this.AutoLoadProfileCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(24)) // Force Load Profile On Game Boot Enabled / Disabled
+                {
+                    SaveChanges(25, this.AutoLoadProfileCheckbox.Checked.ToString().ToLower());
+                }
+                if (this.ProfileToLoadNumber.ToString() != ReadSettings.ProcessSettings(25)) // Force Load Profile On Game Boot Slot #
+                {
+                    SaveChanges(26, this.ProfileToLoadNumber.Value.ToString());
+                }
+                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(26))
+                {
+                    SaveChanges(27, this.FretlessModeCheckbox.Checked.ToString().ToLower());
+                }
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
@@ -361,109 +398,137 @@ namespace RSMods
 
         private void SaveChanges(int ElementToChange, string ChangedSettingValue)
         {
-            string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
+            if (File.ReadLines(@WriteSettings.dumpLocation).Count() == WriteSettings.StringArray.Length)
+            {
+                string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
 
-            if (ElementToChange == 1) // Songlist 1
-            {
-                StringArray[1] = ReadSettings.Songlist1Identifier + ChangedSettingValue;
+                if (ElementToChange == 1) // Songlist 1
+                {
+                    StringArray[1] = ReadSettings.Songlist1Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 2) // Songlist 2
+                {
+                    StringArray[2] = ReadSettings.Songlist2Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 3) // Songlist 3
+                {
+                    StringArray[3] = ReadSettings.Songlist3Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 4) // Songlist 4
+                {
+                    StringArray[4] = ReadSettings.Songlist4Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 5) // Songlist 5
+                {
+                    StringArray[5] = ReadSettings.Songlist5Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 6) // Songlist 6
+                {
+                    StringArray[6] = ReadSettings.Songlist6Identifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 7) // Toggle Loft Key
+                {
+                    StringArray[8] = ReadSettings.ToggleLoftIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 8) // Add Volume Key
+                {
+                    StringArray[9] = ReadSettings.AddVolumeIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 9) // Decrease Volume Key
+                {
+                    StringArray[10] = ReadSettings.DecreaseVolumeIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 10) // Show Timer Key
+                {
+                    StringArray[11] = ReadSettings.ShowSongTimerIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 11) // Force ReEnumeration Key
+                {
+                    StringArray[12] = ReadSettings.ForceReEnumerationIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 12) // Rainbow Strings Key
+                {
+                    StringArray[13] = ReadSettings.RainbowStringsIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 13) // Toggle Loft Enabled / Disabled
+                {
+                    StringArray[15] = ReadSettings.ToggleLoftEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 14) // Add Volume Enabled / Disabled
+                {
+                    StringArray[16] = ReadSettings.AddVolumeEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 15) // Decrease Volume Enabled / Disabled
+                {
+                    StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 16) // Show Song Timer Enabled / Disabled
+                {
+                    StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 17) // Force ReEnumeration Manual / Automatic / Disabled
+                {
+                    StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 18) // Rainbow String Enabled / Disabled
+                {
+                    StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 19) // Extended Range Enabled / Disabled
+                {
+                    StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 20) // Extended Range Tuning Name
+                {
+                    StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 21) // Disco Mode Enabled / Disabled
+                {
+                    StringArray[23] = ReadSettings.DiscoModeIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 22) // Remove Headstock Enabled / Disabled
+                {
+                    StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 23) // Remove Skyline Enabled / Disabled
+                {
+                    StringArray[25] = ReadSettings.RemoveSkylineIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 24) // Greenscreen Wall Enabled / Disabled
+                {
+                    StringArray[26] = ReadSettings.GreenScreenWallIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 25) // Force Load Profile On Game Boot Enabled / Disabled
+                {
+                    StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 26) // Force Load Profile On Game Boot Slot #
+                {
+                    StringArray[28] = ReadSettings.ForceProfileSlotNumberIdentifier + ChangedSettingValue;
+                }
+                if (ElementToChange == 27) // Fretless Mode Enabled / Disabled
+                {
+                    StringArray[29] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
+                }
+                WriteSettings.ModifyINI(StringArray);
             }
-            if (ElementToChange == 2) // Songlist 2
+            else
             {
-                StringArray[2] = ReadSettings.Songlist2Identifier + ChangedSettingValue;
+                string tempDumpFile = "dump.ini";
+                File.WriteAllText(@tempDumpFile, File.ReadAllText(WriteSettings.dumpLocation));
+
+                WriteSettings.NoSettingsDetected();
+
+                MessageBox.Show("Your INI is out of date. We created a new INI file in the folder of this application.\n" +
+                                "Please copy your old settings, now in " + tempDumpFile + " into your " + WriteSettings.dumpLocation + " settings.\n" +
+                                "We are extremely sorry for this inconvience", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+                return;
             }
-            if (ElementToChange == 3) // Songlist 3
-            {
-                StringArray[3] = ReadSettings.Songlist3Identifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 4) // Songlist 4
-            {
-                StringArray[4] = ReadSettings.Songlist4Identifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 5) // Songlist 5
-            {
-                StringArray[5] = ReadSettings.Songlist5Identifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 6) // Songlist 6
-            {
-                StringArray[6] = ReadSettings.Songlist6Identifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 7) // Toggle Loft Key
-            {
-                StringArray[8] = ReadSettings.ToggleLoftIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 8) // Add Volume Key
-            {
-                StringArray[9] = ReadSettings.AddVolumeIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 9) // Decrease Volume Key
-            {
-                StringArray[10] = ReadSettings.DecreaseVolumeIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 10) // Show Timer Key
-            {
-                StringArray[11] = ReadSettings.ShowSongTimerIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 11) // Force ReEnumeration Key
-            {
-                StringArray[12] = ReadSettings.ForceReEnumerationIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 12) // Rainbow Strings Key
-            {
-                StringArray[13] = ReadSettings.RainbowStringsIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 13) // Toggle Loft Enabled / Disabled
-            {
-                StringArray[15] = ReadSettings.ToggleLoftEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 14) // Add Volume Enabled / Disabled
-            {
-                StringArray[16] = ReadSettings.AddVolumeEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 15) // Decrease Volume Enabled / Disabled
-            {
-                StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 16) // Show Song Timer Enabled / Disabled
-            {
-                StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 17) // Force ReEnumeration Manual / Automatic / Disabled
-            {
-                StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 18) // Rainbow String Enabled / Disabled
-            {
-                StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 19) // Extended Range Enabled / Disabled
-            {
-                StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 20) // Extended Range Tuning Name
-            {
-                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 21) // Disco Mode Enabled / Disabled
-            {
-                StringArray[23] = ReadSettings.DiscoModeIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 22) // Remove Headstock Enabled / Disabled
-            {
-                StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 23) // Remove Skyline Enabled / Disabled
-            {
-                StringArray[25] = ReadSettings.RemoveSkylineIdentifier + ChangedSettingValue;
-            }
-            if (ElementToChange == 24) // Greenscreen Wall Enabled / Disabled
-            {
-                StringArray[26] = ReadSettings.GreenScreenWallIdentifier + ChangedSettingValue;
-            }
-            WriteSettings.ModifyINI(StringArray);
         }
         public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[24];
+            object[] priorSettings = new object[27];
             priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
             priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
             priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
@@ -488,6 +553,9 @@ namespace RSMods
             priorSettings[21] = ReadSettings.ProcessSettings(21); // Remove Headstock Enabled / Disabled
             priorSettings[22] = ReadSettings.ProcessSettings(22); // Remove Skyline Enabled / Disabled
             priorSettings[23] = ReadSettings.ProcessSettings(23); // Greenscreen Wall Enabled / Disabled
+            priorSettings[24] = ReadSettings.ProcessSettings(24); // Force Load Profile On Game Boot Enabled / Disabled
+            priorSettings[25] = ReadSettings.ProcessSettings(25); // Force Load Profile On Game Boot Slot #
+            priorSettings[26] = ReadSettings.ProcessSettings(26); // Fretless Mode Enabled / Disabled
             return priorSettings;
         }
     }

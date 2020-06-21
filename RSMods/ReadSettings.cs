@@ -5,8 +5,8 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning, ForceProfileSlotNumber,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -35,9 +35,13 @@ namespace RSMods
             DiscoModeIdentifier                 = "DiscoModeEnabled = ",
             RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
             RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
-            GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ";
+            GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
+            ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
+            ForceProfileSlotNumberIdentifier    = "ForceProfileSlotOnLoad = ",
+            FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
 
-        public static string
+
+
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
 
         public static string ProcessSettings(int grab)
@@ -355,6 +359,48 @@ namespace RSMods
                     if (grab == 23)
                     {
                         return GreenscreenWallEnabled;
+                    }
+                }
+                
+                if (currentLine.Contains(ForceProfileEnabledIdentifier))
+                {
+                    if (currentLine.Substring(ForceProfileEnabledIdentifier.Length, (currentLine.Length - ForceProfileEnabledIdentifier.Length)) == "true")
+                    {
+                        ForceProfileEnabled = "true";
+                    }
+                    else
+                    {
+                        ForceProfileEnabled = "false";
+                    }
+
+                    if (grab == 24)
+                    {
+                        return ForceProfileEnabled;
+                    }
+                }
+                if (currentLine.Contains(ForceProfileSlotNumberIdentifier))
+                {
+                    ForceProfileSlotNumber = currentLine.Substring(ForceProfileSlotNumberIdentifier.Length, (currentLine.Length - ForceProfileSlotNumberIdentifier.Length));
+
+                    if (grab == 25)
+                    {
+                        return ForceProfileSlotNumber;
+                    }
+                }
+                if (currentLine.Contains(FretlessModeEnabledIdentifier))
+                {
+                    if (currentLine.Substring(FretlessModeEnabledIdentifier.Length, (currentLine.Length - FretlessModeEnabledIdentifier.Length)) == "true")
+                    {
+                        FretlessEnabled = "true";
+                    }
+                    else
+                    {
+                        FretlessEnabled = "false";
+                    }
+
+                    if (grab == 26)
+                    {
+                        return FretlessEnabled;
                     }
                 }
             }
