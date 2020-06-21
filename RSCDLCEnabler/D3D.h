@@ -176,23 +176,37 @@ std::vector<Mesh> sevenstring{
 
 std::vector<Mesh> headstock{
 	// General
-		//{32, 2, 4}, // Letters above Pegs in tuning, ingame Fret #'s, Pg Down key in pause menu, Note Highway, Fingering of chords | Needs to be specified more
-		{24, 2, 4}, // Tuners, Tuning circle, Keys in pause menu
+			//{32, 2, 4}, // Letters above Pegs in tuning, ingame Fret #'s, Pg Down key in pause menu, Note Highway, Fingering of chords | Needs to be specified more
+			{24, 2, 4}, // Tuners, Tuning circle, Keys in pause menu
 
-	// 3+3 Guitar
-		{60, 392, 198}, // Machine Heads
-		{60, 68, 52}, // Shaft of Machine Heads
-		{44, 538, 311}, // Strings Past Nut
-		{68, 4123, 2983}, // Tuner Blocks
-		{76, 3284, 1787}, // Headstock texture
-		{68, 2760, 1890}, // Tuner
+	// Guitar
+		// 3+3 Guitar
+			{60, 392, 198}, // Machine Heads
+			{60, 68, 52}, // Shaft of Machine Heads
+			{44, 538, 311}, // Strings Past Nut
+			{76, 3284, 1787}, // Headstock Texture
+			{68, 2760, 1890}, {68, 4123, 2983}, // Tuning Peg (2nd vector is the block on the back of the peg)
 
-	// 6-inline Guitar
-		{60, 588, 316}, // Machine Heads
-		{44, 538, 416}, {44, 1074, 618}, // Strings Past Nut (b string is a different texture for some reason)
-		{76, 4062, 3165}, // Screws on Truss Rod Cover
-		{76, 2311, 1268}, // Headstock Texture
-		{76, 2142, 1458}, // Tuning Peg
+		// 6-inline Guitar
+			{60, 588, 316}, // Machine Heads
+			{76, 4062, 3165}, // Screws on Truss Rod Cover
+			{44, 538, 416}, {44, 1074, 618}, // Strings Past Nut (b string is a different texture for some reason)
+			{76, 2311, 1268}, // Headstock Texture
+			{76, 2142, 1458}, // Tuning Peg
+
+	// Bass
+		// 2+2 Bass
+			{60, 992, 604}, // Machine Heads
+			{44, 522, 303}, // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
+			{84, 1232, 699}, // Headstock Texture
+			{76, 2560, 2140}, {76, 6304, 4880}, // Tuning Peg (2nd vector is the block on the back of the peg)
+
+		// 4-inline Bass
+			{60, 306, 218}, // Machine Heads
+			{44, 538, 522}, // Strings Past Nut
+			{84, 1067, 869}, // Headstock Texture
+			{68, 1340, 1120}, {68, 2216, 1852}, // Tuning Peg (2nd vector is the block on the back of the peg)
+
 };
 
 std::vector<ThiccMesh> headstockThicc{
