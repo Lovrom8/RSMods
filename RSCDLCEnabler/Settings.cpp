@@ -34,8 +34,7 @@ cSettings::cSettings()
 
 	customSettings = {
 		{"ExtendedRangeMode", -5 },
-		{"CheckForNewSongsInterval", 5000},
-		{"ForceProfileSlotOnLoad", 0}
+		{"CheckForNewSongsInterval", 5000}
 	};
 
 	cSettings::keyMap = { //talk about taking the easy way out ;)
@@ -273,8 +272,7 @@ void cSettings::ReadModSettings() {
 
 	cSettings::customSettings = {
 		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
-		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)},
-		{"ForceProfileSlotOnLoad", reader.GetInteger("Toggle Switches", "ForceProfileSlotOnLoad", 0)},
+		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)}
 	};
 }
 

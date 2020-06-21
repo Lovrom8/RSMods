@@ -67,32 +67,32 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::cout << volume << " " << type << std::endl;
 		}
 
-		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") & Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
 			mem.ToggleLoft();
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") & Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
 			mem.AddVolume(5);
 			std::cout << "Adding 5 Volume" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") & Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") {
 			mem.DecreaseVolume(5);
 			std::cout << "Subtracting 5 Volume" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") & Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") {
 			mem.ShowSongTimer();
 			std::cout << "Show Me Dat Timer Bruh" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") & Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") {
+		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") {
 			Enumeration.ForceEnumeration();
 			std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") & Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
 			mem.DoRainbow();
 			std::cout << "Rainbows Are Pretty Cool" << std::endl;
 		}
@@ -409,12 +409,11 @@ DWORD WINAPI MainThread(void*) {
 		if (enableColorBlindCheckboxGUI)
 			mem.ToggleCB(cbEnabled);
 
-		/*if (mem.GetCurrentMenu() == "MainMenu")
+		if (mem.GetCurrentMenu() == "MainMenu")
 			GameLoaded = true;
 
-		//TODO: ffio pls add to INI/GUI 
-		if (!GameLoaded) // && Settings stuff
-			AutoEnterGame();*/
+		if (!GameLoaded && Settings.ReturnToggleValue("ForceProfileEnabled") == "true")
+			AutoEnterGame();
 	}
 
 	return 0;
