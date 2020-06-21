@@ -175,16 +175,24 @@ std::vector<Mesh> sevenstring{
 };
 
 std::vector<Mesh> headstock{
-	// 3+3 Guitar
-		//{ 32, 2, 4 }, // Letters above Pegs in tuning, ingame Fret #'s, Pg Down key in pause menu, Note Highway, Fingering of chords | Needs to be specified more
-		{ 24, 2, 4 }, // Tuners, Tuning circle, Keys in pause menu
-		{ 60, 392, 198 }, // Tuning Pegs
-		{ 60, 68, 52 }, // Stick things coming off pegs to connect to the headstock
-		{ 44, 538, 311 }, // Strings past nut
-		{ 68, 4123, 2983 }, // Tuner Blocks
-		{ 76, 3284, 1787 }, // Headstock texture
-		{ 68, 2760, 1890} // Tuner
+	// General
+		//{32, 2, 4}, // Letters above Pegs in tuning, ingame Fret #'s, Pg Down key in pause menu, Note Highway, Fingering of chords | Needs to be specified more
+		{24, 2, 4}, // Tuners, Tuning circle, Keys in pause menu
 
+	// 3+3 Guitar
+		{60, 392, 198}, // Machine Heads
+		{60, 68, 52}, // Shaft of Machine Heads
+		{44, 538, 311}, // Strings Past Nut
+		{68, 4123, 2983}, // Tuner Blocks
+		{76, 3284, 1787}, // Headstock texture
+		{68, 2760, 1890}, // Tuner
+
+	// 6-inline Guitar
+		{60, 588, 316}, // Machine Heads
+		{44, 538, 416}, {44, 1074, 618}, // Strings Past Nut (b string is a different texture for some reason)
+		{76, 4062, 3165}, // Screws on Truss Rod Cover
+		{76, 2311, 1268}, // Headstock Texture
+		{76, 2142, 1458}, // Tuning Peg
 };
 
 std::vector<ThiccMesh> headstockThicc{
@@ -206,7 +214,8 @@ std::vector<ThiccMesh> headstockThicc{
 // All the single ladies
 std::vector<Mesh> fretless{ {56, 264, 273} };
 std::vector<Mesh> inlays{ {32, 8, 9} };
-std::vector<Mesh> greenscreenwall{{92, 2, 6}};
+std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
+std::vector<Mesh> nostrings{ {12, 1536, 1199} };
 
 // Misc
 #define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && primCount == 2 && NumVertices == 4)
