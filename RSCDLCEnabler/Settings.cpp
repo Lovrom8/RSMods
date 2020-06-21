@@ -23,12 +23,19 @@ cSettings::cSettings()
 	{"ShowSongTimerEnabled", "true"},
 	{"ForceReEnumerationEnabled", "true"},
 	{"RainbowStringsEnabled", "false"},
-	{"ExtendedRangeEnabled", "true"}
+	{"ExtendedRangeEnabled", "true"},
+	{"DiscoModeEnabled", "false"},
+	{"RemoveHeadstockEnabled", "false"},
+	{"RemoveSkylineEnabled", "false"},
+	{"GreenScreenWallEnabled", "false"},
+	{"ForceProfileEnabled", "false"},
+	{"FretlessModeEnabled", "false"}
 	};
 
 	customSettings = {
 		{"ExtendedRangeMode", -5 },
-		{"CheckForNewSongsInterval", 5000}
+		{"CheckForNewSongsInterval", 5000},
+		{"ForceProfileSlotOnLoad", 0}
 	};
 
 	cSettings::keyMap = { //talk about taking the easy way out ;)
@@ -245,7 +252,9 @@ void cSettings::ReadKeyBinds() {
 				{"DiscoModeEnabled", reader.Get("Toggle Switches", "DiscoModeEnabled", "false")},
 				{"RemoveHeadstockEnabled", reader.Get("Toggle Switches", "RemoveHeadstockEnabled", "false")},
 				{"RemoveSkylineEnabled", reader.Get("Toggle Switches", "RemoveSkylineEnabled", "false")},
-				{"GreenScreenWallEnabled", reader.Get("Toggle Switches", "GreenScreenWallEnabled", "false")}
+				{"GreenScreenWallEnabled", reader.Get("Toggle Switches", "GreenScreenWallEnabled", "false")},
+				{"ForceProfileEnabled", reader.Get("Toggle Switches", "ForceProfileEnabled", "false")},
+				{"FretlessModeEnabled", reader.Get("Toggle Switches", "FretlessModeEnabled", "false")}
 	};
 }
 
@@ -264,7 +273,8 @@ void cSettings::ReadModSettings() {
 
 	cSettings::customSettings = {
 		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
-		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)}
+		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)},
+		{"ForceProfileSlotOnLoad", reader.GetInteger("Toggle Switches", "ForceProfileSlotOnLoad", 0)},
 	};
 }
 
