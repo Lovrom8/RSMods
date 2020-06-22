@@ -259,7 +259,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			pDevice->SetTexture(1, Yellow);
 	}*/
 
-	//if (IsExtraRemoved(headstockThicc, currentThicc))
+	//if (IsExtraRemoved(headstockThicc, currentThicc) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 	//	return D3D_OK;
 
 	//return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -292,7 +292,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	//else if (IsToBeRemoved(headstock, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 	//	return D3D_OK;
 
-	else if (IsToBeRemoved(fretless, current)) // Add GUI check
+	else if (IsToBeRemoved(fretless, current) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
 		return D3D_OK;
 
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -375,8 +375,6 @@ void AutoEnterGame() { //very big brain
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 	Sleep(30);
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
-
-	//maybe add a value in Settings how many times to press Down arrow if a user plays a profile that's not in the first place
 }
 
 bool GameLoaded = false;
