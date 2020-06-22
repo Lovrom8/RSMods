@@ -220,22 +220,22 @@ std::vector<ThiccMesh> headstockThicc{
 			{ 60, 392, 198, 0, 0, 4, 2, 9, 7 }, { 60, 392, 198, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
 			{ 60, 68, 52, 0, 0, 4, 2, 9, 7 }, { 60, 68, 52, 0, 0, 4, 2, 4, 2 },  // Shaft of Machine Heads (2nd vector is Highlight)
 			{ 44, 538, 311, 0, 0, 4, 2, 8, 3 }, { 44, 538, 311, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
-			{ 76, 3284, 1787, 0, 0, 4, 2, 8, 3 }, // Headstock Texture
-			{ 68, 2760, 1890, 0, 0, 4, 2, 8, 3 }, { 68, 4123, 2983, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg)
+			{ 76, 3284, 1787, 0, 0, 4, 2, 8, 3 }, { 76, 3284, 1787, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
+			{ 68, 2760, 1890, 0, 0, 4, 2, 8, 3 }, { 68, 4123, 2983, 0, 0, 4, 2, 8, 3 }, { 68, 2760, 1890, 0, 0, 4, 2, 9, 7 },  { 68, 4123, 2983, 0, 0, 4, 2, 9, 7 },  // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
 
 		// 6-inline
 			{ 60, 588, 316, 0, 0, 4, 2, 9, 7 }, { 60, 588, 316, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
 			{ 76, 4062, 3165, 0, 0, 4, 2, 9, 7 },  // Screws on Truss Rod Cover
-			{ 44, 1074, 618, 0, 0, 4, 2, 8, 3 }, { 44, 1074, 618, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
+			{ 44, 1074, 618, 0, 0, 4, 2, 8, 3 }, { 44, 1074, 618, 0, 0, 4, 2, 9, 4 }, { 44, 538, 416, 0, 0, 4, 2, 8, 3 }, { 44, 538, 416, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut (3rd and 4th vectors are for Lefties)
 			{ 76, 2311, 1268, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
 			{ 76, 2142, 1458, 0, 0, 4, 2, 8, 3 }, { 76, 2142, 1458, 0, 0, 4, 2, 9, 7 },  // Tuning Peg
 
 	// Bass
 		// 2+2
 			{ 60, 992, 604, 0, 0, 4, 2, 9, 7 }, { 60, 992, 604, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
-			{ 44, 522, 303, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
-			{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
-			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, // Tuning Peg (2nd vector is the block on the back of the peg)
+			{ 44, 522, 303, 0, 0, 4, 2, 9, 4 }, { 44, 522, 303, 0, 0, 4, 2, 8, 3 },  // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
+			{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 },  { 84, 1232, 699, 0, 0, 4, 2, 8, 3 }, // Headstock Texture
+			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd is for Lefties)
 
 		// 4-inline
 			{ 60, 306, 218, 0, 0, 4, 2, 9, 7 }, { 60, 306, 218, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)

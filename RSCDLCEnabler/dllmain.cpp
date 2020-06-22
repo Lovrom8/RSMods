@@ -294,6 +294,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	else if (IsToBeRemoved(fretless, current) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
 		return D3D_OK;
+	else if (IsToBeRemoved(inlays, current))
+		return D3D_OK;
 
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
