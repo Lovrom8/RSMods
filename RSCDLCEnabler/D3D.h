@@ -132,9 +132,9 @@ bool IsMatching(ThiccMesh meshA, ThiccMesh meshB) {
 
 bool IsExtraRemoved(std::vector<ThiccMesh> list, ThiccMesh mesh) {
 	for (auto currentMesh : list) {
-			return IsMatching(currentMesh, mesh);
+		if (IsMatching(currentMesh, mesh))
+			return true;
 	}
-
 	return false;
 }
 

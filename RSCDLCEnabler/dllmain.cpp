@@ -208,7 +208,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
 
-bool startLogging = false;
+bool startLogging = true;
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
@@ -259,8 +259,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			pDevice->SetTexture(1, Yellow);
 	}*/
 
-	//if (IsExtraRemoved(headstockThicc, currentThicc) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
-	//	return D3D_OK;
+	if (IsExtraRemoved(headstockThicc, currentThicc)) //  & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true"
+		return D3D_OK;
 
 	//return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 
