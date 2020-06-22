@@ -202,7 +202,7 @@ std::vector<Mesh> sevenstring{
 
 std::vector<ThiccMesh> headstockThicc{
 	// General
-		{ 24, 2, 4, 0, 0, 4, 2, 8, 4 },
+		// { 24, 2, 4, 0, 0, 4, 2, 8, 4 }, Tuner (Disabled to make it easier on the end user on tuning)
 		{ 32, 2, 4, 0, 0, 4, 2, 12, 4 },
 		{ 32, 2, 4, 0, 0, 4, 2, 4, 2 },
 		
