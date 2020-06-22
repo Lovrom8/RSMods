@@ -35,7 +35,7 @@ UINT Offset = 0;
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture;
 
-int currIdx;
+int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
 bool cbEnabled;
 
@@ -87,6 +87,12 @@ struct Mesh {
 		PrimCount = p;
 		NumVertices = n;
 	}
+
+	bool operator ==(const Mesh& meshB) const {
+		return (Stride == meshB.Stride
+			&& PrimCount == meshB.PrimCount
+			&& NumVertices == meshB.NumVertices);
+	}
 };
 
 struct ThiccMesh {
@@ -111,38 +117,58 @@ struct ThiccMesh {
 		mVectorCount = mvc;
 		NumElements = nm;
 	}
+
+	std::string ToString() {
+		std::string ret = "{ ";
+
+		ret += std::to_string(Stride);
+		ret += ",";
+		ret += std::to_string(PrimCount);
+		ret += ",";
+		ret += std::to_string(NumVertices);
+		ret += ",";
+		ret += std::to_string(startIndex);
+		ret += ",";
+		ret += std::to_string(mStartRegister);
+		ret += ",";
+		ret += std::to_string(PrimType);
+		ret += ",";
+		ret += std::to_string(DeclType);
+		ret += ",";
+		ret += std::to_string(mVectorCount);
+		ret += ",";
+		ret += std::to_string(NumElements);
+
+		ret += " },";
+
+		return ret;
+	}
+
+	bool operator ==(const ThiccMesh& meshB) const {
+		return (Stride == meshB.Stride
+			&& PrimCount == meshB.PrimCount
+			&& NumVertices == meshB.NumVertices
+			&& startIndex == meshB.startIndex
+			&& mStartRegister == meshB.mStartRegister
+			&& PrimType == meshB.PrimType
+			&& DeclType == meshB.DeclType
+			&& mVectorCount == meshB.mVectorCount
+			&& NumElements == meshB.NumElements);
+	}
 };
 
-
-bool IsMatching(ThiccMesh meshA, ThiccMesh meshB) {
-	if (meshA.Stride == meshB.Stride
-		&& meshA.PrimCount == meshB.PrimCount
-		&& meshA.NumVertices == meshB.NumVertices
-		&& meshA.startIndex == meshB.startIndex
-		&& meshA.mStartRegister == meshB.mStartRegister
-		&& meshA.PrimType == meshB.PrimType
-		&& meshA.DeclType == meshB.DeclType
-		&& meshA.mVectorCount == meshB.mVectorCount
-		&& meshA.NumElements == meshB.NumElements)
-
-		return true;
-
-	return false;
-}
-
 bool IsExtraRemoved(std::vector<ThiccMesh> list, ThiccMesh mesh) {
-	for (auto currentMesh : list) {
-		if (IsMatching(currentMesh, mesh))
+	for (auto currentMesh : list) 
+		if(currentMesh == mesh)
 			return true;
-	}
+
 	return false;
 }
 
 bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
-	for (auto currentMesh : list) {
-		if (currentMesh.Stride == mesh.Stride && currentMesh.PrimCount == mesh.PrimCount && currentMesh.NumVertices == mesh.NumVertices)
+	for (auto currentMesh : list) 
+		if(currentMesh == mesh)
 			return true;
-	}
 
 	return false;
 }
@@ -222,6 +248,7 @@ std::vector<ThiccMesh> headstockThicc{
 			{ 44, 538, 311, 0, 0, 4, 2, 8, 3 }, { 44, 538, 311, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
 			{ 76, 3284, 1787, 0, 0, 4, 2, 8, 3 }, { 76, 3284, 1787, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
 			{ 68, 2760, 1890, 0, 0, 4, 2, 8, 3 }, { 68, 4123, 2983, 0, 0, 4, 2, 8, 3 }, { 68, 2760, 1890, 0, 0, 4, 2, 9, 7 },  { 68, 4123, 2983, 0, 0, 4, 2, 9, 7 },  // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
+			{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // 3+3 strings
 
 		// 6-inline
 			{ 60, 588, 316, 0, 0, 4, 2, 9, 7 }, { 60, 588, 316, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
@@ -236,17 +263,16 @@ std::vector<ThiccMesh> headstockThicc{
 			{ 44, 522, 303, 0, 0, 4, 2, 9, 4 }, { 44, 522, 303, 0, 0, 4, 2, 8, 3 },  // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
 			{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 },  { 84, 1232, 699, 0, 0, 4, 2, 8, 3 }, // Headstock Texture
 			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 2560, 2842, 0, 0, 4, 2, 9, 7 },{ 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd is for Lefties)
+			{ 76, 2560, 2842, 0, 0, 4, 2, 9, 7 }, // Lefty tuning machines
 
 		// 4-inline
 			{ 60, 306, 218, 0, 0, 4, 2, 9, 7 }, { 60, 306, 218, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
 			{ 44, 538, 522, 0, 0, 4, 2, 8, 3 }, { 44, 538, 522, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
 			{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
 			{ 68, 1340, 1120, 0, 0, 4, 2, 9, 7 }, { 68, 2216, 1852, 0, 0, 4, 2, 9, 7 }, // Tuning Peg (2nd vector is the block on the back of the peg)
-
-	// Misc / Unknown ask Lovro
-			{ 8, 10, 8, 1096, 0, 4, 8, 4, 3 }, 
-			{ 8, 10, 8, 30408, 0, 4, 8, 4, 3 },
-			{ 8, 10, 8, 35280, 0, 4, 8, 6, 3 },
+			{ 56, 1340, 1120, 0, 0, 4, 2, 10, 6},  // 4-inline back pegs
+			{ 56, 2216, 1854, 0, 0, 4, 2, 10, 6}, // 4-inline front pegs
+	        { 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // 4-inline Headstock
 };
 
 
@@ -255,6 +281,9 @@ std::vector<Mesh> fretless{ {56, 264, 273} };
 std::vector<Mesh> inlays{ {32, 8, 9} };
 std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
 std::vector<Mesh> nostrings{ {12, 1536, 1199} };
+
+std::vector<ThiccMesh> allMeshes;
+std::vector<ThiccMesh> removedMeshes;
 
 // Misc
 #define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && primCount == 2 && NumVertices == 4)

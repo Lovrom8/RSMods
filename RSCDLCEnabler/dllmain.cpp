@@ -151,8 +151,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
 		ImGui::InputInt("Curr Slide", &currStride);
-		ImGui::InputInt("Curr NumVertices", &currNumVertices);
 		ImGui::InputInt("Curr PrimCount", &currPrimCount);
+		ImGui::InputInt("Curr NumVertices", &currNumVertices);
 		ImGui::InputInt("Curr StartIndex", &currStartIndex);
 		ImGui::InputInt("Curr StarRegister", &currStartRegister);
 		ImGui::InputInt("Curr PrimType", &currPrimType);
@@ -163,6 +163,32 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (enableColorBlindCheckboxGUI)
 			ImGui::Checkbox("Colorblind Mode", &cbEnabled);
+
+		if (ImGui::Button("Add")) 
+			if (allMeshes.size() > 0)
+				removedMeshes.push_back(allMeshes[currIdx]);
+		
+		ImGui::End();
+
+		ImGui::Begin("LOOSE CANNONS");
+		/*ImGui::ListBoxHeader("Logged models");
+		for (auto mesh : allMeshes) {
+			ImGui::Selectable(mesh.ToString().c_str(), false);
+		}*/
+
+		ImGui::ListBoxHeader("Removed models");
+		counter = 0;
+		for (auto mesh : removedMeshes) {
+			if (ImGui::Selectable(mesh.ToString().c_str(), false))
+				selectedIdx = counter;
+
+			counter++;
+		}
+
+		ImGui::ListBoxFooter();
+		if (ImGui::Button("Remove"))
+			removedMeshes.erase(removedMeshes.begin() + selectedIdx);
+
 		ImGui::End();
 	}
 
@@ -213,7 +239,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(headstockThicc) - 1)//page up
+	if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)//page up
 		currIdx++;
 	if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
 		currIdx--;
@@ -221,8 +247,20 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_END) & 1) 
 		startLogging = !startLogging;
 
+	if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
+		for (auto mesh : allMeshes) {
+			Log(mesh.ToString().c_str());
+		}
+	}
+	
+	if (GetAsyncKeyState(VK_F7) & 1) { //save only removed 
+		for (auto mesh : removedMeshes) {
+			Log(mesh.ToString().c_str());
+		}
+	}
+
 	if (GetAsyncKeyState(VK_CONTROL) & 1)
-		Log("Stride == %d && NumVertices == %d && PrimCount == %d && BaseVertexIndex == %d MinVertexIndex == %d && startIndex == %d && mStartregister == %d && PrimType == %d", Stride, NumVertices, primCount, BaseVertexIndex, MinVertexIndex, startIndex, mStartregister, PrimType);
+		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
 	while (DiscoEnabled()) {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
@@ -243,23 +281,27 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	Mesh current(Stride, primCount, NumVertices);
 	ThiccMesh currentThicc(Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
-	if (IsToBeRemoved(headstock, current) && startLogging) {
-		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
-	}
 
-	/*if (IsMatching(headstockThicc.at(currIdx), currentThicc)) {
+	if (startLogging) {
+		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
+			allMeshes.push_back(currentThicc);
+	}
+	
+	if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
 		currStride = Stride;
 		currNumVertices = NumVertices;
+		currPrimCount = primCount;
 		currStartIndex = startIndex;
 		currStartRegister = mStartregister;
 		currPrimType = PrimType;
 		currDeclType = decl->Type;
 		currVectorCount = mVectorCount;
 		currNumElements = numElements;
-			pDevice->SetTexture(1, Yellow);
-	}*/
+		pDevice->SetTexture(1, Yellow);
+		//return D3D_OK;
+	}
 
-	if (IsExtraRemoved(headstockThicc, currentThicc)) //  & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true"
+	if (IsExtraRemoved(removedMeshes, currentThicc))
 		return D3D_OK;
 
 	//return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -289,7 +331,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	else if (IsToBeRemoved(greenscreenwall, current) & Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true")
 		return D3D_OK;
 
-	//else if (IsToBeRemoved(headstock, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
+	//else if (IsToBeRemoved(headstockThicc, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 	//	return D3D_OK;
 
 	else if (IsToBeRemoved(fretless, current) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
