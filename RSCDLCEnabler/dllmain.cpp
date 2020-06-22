@@ -285,6 +285,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (startLogging) {
 		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
 			allMeshes.push_back(currentThicc);
+		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 	}
 	
 	if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -328,15 +329,15 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return D3D_OK;
 	*/
 
-	else if (IsToBeRemoved(greenscreenwall, current) & Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true")
+	else if (IsExtraRemoved(greenscreenwall, currentThicc) & Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true")
 		return D3D_OK;
 
-	//else if (IsToBeRemoved(headstockThicc, current) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
-	//	return D3D_OK;
-
-	else if (IsToBeRemoved(fretless, current) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
+	else if (IsExtraRemoved(headstockThicc, currentThicc) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 		return D3D_OK;
-	else if (IsToBeRemoved(inlays, current))
+
+	else if (IsExtraRemoved(fretless, currentThicc) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
+		return D3D_OK;
+	else if (IsExtraRemoved(inlays, currentThicc)) // Add GUI check
 		return D3D_OK;
 
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);

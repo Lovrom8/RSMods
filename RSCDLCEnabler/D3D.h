@@ -244,43 +244,38 @@ std::vector<ThiccMesh> headstockThicc{
 	// Guitar
 		// 3+3
 			{ 60, 392, 198, 0, 0, 4, 2, 9, 7 }, { 60, 392, 198, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
-			{ 60, 68, 52, 0, 0, 4, 2, 9, 7 }, { 60, 68, 52, 0, 0, 4, 2, 4, 2 },  // Shaft of Machine Heads (2nd vector is Highlight)
-			{ 44, 538, 311, 0, 0, 4, 2, 8, 3 }, { 44, 538, 311, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
+			{ 60, 68, 52, 0, 0, 4, 2, 9, 7 }, { 60, 68, 52, 0, 0, 4, 2, 4, 2 }, // Shaft of Machine Heads (2nd vector is Highlight)
+			{ 44, 538, 311, 0, 0, 4, 2, 8, 3 }, { 44, 538, 311, 0, 0, 4, 2, 9, 4 }, { 44, 538, 406, 0, 0, 4, 2, 9, 4}, // Strings Past Nut (3rd vector is for Leftires)
 			{ 76, 3284, 1787, 0, 0, 4, 2, 8, 3 }, { 76, 3284, 1787, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
 			{ 68, 2760, 1890, 0, 0, 4, 2, 8, 3 }, { 68, 4123, 2983, 0, 0, 4, 2, 8, 3 }, { 68, 2760, 1890, 0, 0, 4, 2, 9, 7 },  { 68, 4123, 2983, 0, 0, 4, 2, 9, 7 },  // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
-			{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // 3+3 strings
 
 		// 6-inline
 			{ 60, 588, 316, 0, 0, 4, 2, 9, 7 }, { 60, 588, 316, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
-			{ 76, 4062, 3165, 0, 0, 4, 2, 9, 7 },  // Screws on Truss Rod Cover
+			{ 76, 67, 76, 0, 0, 4, 2, 9, 7 }, { 76, 4062, 3165, 0, 0, 4, 2, 9, 7 },  // Truss Rod Cover (2nd vector is the Screws)
 			{ 44, 1074, 618, 0, 0, 4, 2, 8, 3 }, { 44, 1074, 618, 0, 0, 4, 2, 9, 4 }, { 44, 538, 416, 0, 0, 4, 2, 8, 3 }, { 44, 538, 416, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut (3rd and 4th vectors are for Lefties)
 			{ 76, 2311, 1268, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
-			{ 76, 2142, 1458, 0, 0, 4, 2, 8, 3 }, { 76, 2142, 1458, 0, 0, 4, 2, 9, 7 },  // Tuning Peg
+			{ 76, 2142, 1458, 0, 0, 4, 2, 8, 3 }, { 76, 2142, 1458, 0, 0, 4, 2, 9, 7 }, // Tuning Peg
 
 	// Bass
 		// 2+2
 			{ 60, 992, 604, 0, 0, 4, 2, 9, 7 }, { 60, 992, 604, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
 			{ 44, 522, 303, 0, 0, 4, 2, 9, 4 }, { 44, 522, 303, 0, 0, 4, 2, 8, 3 },  // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
 			{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 },  { 84, 1232, 699, 0, 0, 4, 2, 8, 3 }, // Headstock Texture
-			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 2560, 2842, 0, 0, 4, 2, 9, 7 },{ 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd is for Lefties)
-			{ 76, 2560, 2842, 0, 0, 4, 2, 9, 7 }, // Lefty tuning machines
+			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 2560, 2842, 0, 0, 4, 2, 9, 7 },{ 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 2560, 2842, 0, 0, 4, 2, 9, 7 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
 
 		// 4-inline
 			{ 60, 306, 218, 0, 0, 4, 2, 9, 7 }, { 60, 306, 218, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
+			{ 84, 237, 150, 0, 0, 4, 2, 9, 7 }, { 68, 237, 150, 0, 0, 4, 2, 9, 7 },  // Truss Rod Cover (2nd vector is for Lefties)
 			{ 44, 538, 522, 0, 0, 4, 2, 8, 3 }, { 44, 538, 522, 0, 0, 4, 2, 9, 4 }, // Strings Past Nut
-			{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, // Headstock Texture
-			{ 68, 1340, 1120, 0, 0, 4, 2, 9, 7 }, { 68, 2216, 1852, 0, 0, 4, 2, 9, 7 }, // Tuning Peg (2nd vector is the block on the back of the peg)
-			{ 56, 1340, 1120, 0, 0, 4, 2, 10, 6},  // 4-inline back pegs
-			{ 56, 2216, 1854, 0, 0, 4, 2, 10, 6}, // 4-inline front pegs
-	        { 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // 4-inline Headstock
+			{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, { 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // Headstock Texture (2nd vector is for Lefties)
+			{ 68, 1340, 1120, 0, 0, 4, 2, 9, 7 }, { 68, 2216, 1852, 0, 0, 4, 2, 9, 7 }, { 56, 1340, 1120, 0, 0, 4, 2, 10, 6}, { 56, 2216, 1854, 0, 0, 4, 2, 10, 6}, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
 };
 
-
 // All the single ladies
-std::vector<Mesh> fretless{ {56, 264, 273} };
-std::vector<Mesh> inlays{ {32, 8, 9} };
-std::vector<Mesh> greenscreenwall{ {92, 2, 6} };
-std::vector<Mesh> nostrings{ {12, 1536, 1199} };
+std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
+std::vector<ThiccMesh> inlays{ { 32, 8, 9, 0, 0, 4, 2, 12, 4 } };
+std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
+std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
 
 std::vector<ThiccMesh> allMeshes;
 std::vector<ThiccMesh> removedMeshes;
