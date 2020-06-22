@@ -235,7 +235,7 @@ std::vector<ThiccMesh> headstockThicc{
 			{ 60, 992, 604, 0, 0, 4, 2, 9, 7 }, { 60, 992, 604, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
 			{ 44, 522, 303, 0, 0, 4, 2, 9, 4 }, { 44, 522, 303, 0, 0, 4, 2, 8, 3 },  // Strings Past Nut (D, & G are this texture. E & A are {44, 538, 311}, which is applied in 3+3 guitar)
 			{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 },  { 84, 1232, 699, 0, 0, 4, 2, 8, 3 }, // Headstock Texture
-			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd is for Lefties)
+			{ 76, 2560, 2140, 0, 0, 4, 2, 9, 7 }, { 76, 2560, 2842, 0, 0, 4, 2, 9, 7 },{ 76, 6304, 4880, 0, 0, 4, 2, 9, 7 }, { 76, 6304, 4880, 0, 0, 4, 2, 8, 3 }, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd is for Lefties)
 
 		// 4-inline
 			{ 60, 306, 218, 0, 0, 4, 2, 9, 7 }, { 60, 306, 218, 0, 0, 4, 2, 4, 2 }, // Machine Heads (2nd vector is Highlight)
