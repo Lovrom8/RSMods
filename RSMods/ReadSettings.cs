@@ -5,7 +5,7 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning, ForceProfileSlotNumber,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled,
                              RocksmithInstallLocation;
 
@@ -37,7 +37,6 @@ namespace RSMods
             RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
             GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
             ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
-            ForceProfileSlotNumberIdentifier    = "ForceProfileSlotOnLoad = ",
             FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
 
 
@@ -378,15 +377,6 @@ namespace RSMods
                         return ForceProfileEnabled;
                     }
                 }
-                if (currentLine.Contains(ForceProfileSlotNumberIdentifier))
-                {
-                    ForceProfileSlotNumber = currentLine.Substring(ForceProfileSlotNumberIdentifier.Length, (currentLine.Length - ForceProfileSlotNumberIdentifier.Length));
-
-                    if (grab == 25)
-                    {
-                        return ForceProfileSlotNumber;
-                    }
-                }
                 if (currentLine.Contains(FretlessModeEnabledIdentifier))
                 {
                     if (currentLine.Substring(FretlessModeEnabledIdentifier.Length, (currentLine.Length - FretlessModeEnabledIdentifier.Length)) == "true")
@@ -398,7 +388,7 @@ namespace RSMods
                         FretlessEnabled = "false";
                     }
 
-                    if (grab == 26)
+                    if (grab == 25)
                     {
                         return FretlessEnabled;
                     }

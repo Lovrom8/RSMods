@@ -9,13 +9,13 @@ namespace RSMods
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        public static string[] StringArray = new String[30];
+        public static string[] StringArray = new String[29];
 
-        public static void ModifyINI(string[] localStringArray)
+        public static void ModifyINI(string[] StringArray)
         {
             var dumpINI = File.Create(WhereIsRocksmith());
             dumpINI.Close();
-            File.WriteAllLines(WhereIsRocksmith(), localStringArray);
+            File.WriteAllLines(WhereIsRocksmith(), StringArray);
         }
 
         public static void NoSettingsDetected()
@@ -48,8 +48,7 @@ namespace RSMods
                 StringArray[25] = ReadSettings.RemoveSkylineIdentifier + "false"; // Remove Skyline Enabled / Disabled
                 StringArray[26] = ReadSettings.GreenScreenWallIdentifier + "false"; // Greenscreen Back Wall Enabled / Disabled
                 StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + "false"; // Force Load Profile On Game Boot Enabled / Disabled
-                StringArray[28] = ReadSettings.ForceProfileSlotNumberIdentifier + "0"; // Force Load Profile On Game Boot Slot #
-                StringArray[29] = ReadSettings.FretlessModeEnabledIdentifier + "false"; // Fretless Mode Enabled / Disabled
+                StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + "false"; // Fretless Mode Enabled / Disabled
                 ModifyINI(StringArray);
         }
         public static string WhereIsRocksmith()

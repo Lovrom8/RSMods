@@ -64,10 +64,7 @@
             this.RemoveSkylineCheckbox = new System.Windows.Forms.CheckBox();
             this.GreenScreenWallCheckbox = new System.Windows.Forms.CheckBox();
             this.AutoLoadProfileCheckbox = new System.Windows.Forms.CheckBox();
-            this.ProfileToLoadNumber = new System.Windows.Forms.NumericUpDown();
-            this.ProfileToLoadText = new System.Windows.Forms.Label();
             this.FretlessModeCheckbox = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.ProfileToLoadNumber)).BeginInit();
             this.SuspendLayout();
             // 
             // Songlist
@@ -428,25 +425,6 @@
             this.AutoLoadProfileCheckbox.Text = "Autoload Profile";
             this.AutoLoadProfileCheckbox.UseVisualStyleBackColor = true;
             // 
-            // ProfileToLoadNumber
-            // 
-            this.ProfileToLoadNumber.Location = new System.Drawing.Point(1390, 66);
-            this.ProfileToLoadNumber.Name = "ProfileToLoadNumber";
-            this.ProfileToLoadNumber.Size = new System.Drawing.Size(120, 20);
-            this.ProfileToLoadNumber.TabIndex = 39;
-            this.ProfileToLoadNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ProfileToLoadNumber.Visible = false;
-            // 
-            // ProfileToLoadText
-            // 
-            this.ProfileToLoadText.AutoSize = true;
-            this.ProfileToLoadText.Location = new System.Drawing.Point(1371, 29);
-            this.ProfileToLoadText.Name = "ProfileToLoadText";
-            this.ProfileToLoadText.Size = new System.Drawing.Size(155, 13);
-            this.ProfileToLoadText.TabIndex = 40;
-            this.ProfileToLoadText.Text = "Profile # To Load (Starting at 0)";
-            this.ProfileToLoadText.Visible = false;
-            // 
             // FretlessModeCheckbox
             // 
             this.FretlessModeCheckbox.AutoSize = true;
@@ -464,8 +442,6 @@
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
             this.Controls.Add(this.FretlessModeCheckbox);
-            this.Controls.Add(this.ProfileToLoadText);
-            this.Controls.Add(this.ProfileToLoadNumber);
             this.Controls.Add(this.AutoLoadProfileCheckbox);
             this.Controls.Add(this.GreenScreenWallCheckbox);
             this.Controls.Add(this.RemoveSkylineCheckbox);
@@ -504,7 +480,6 @@
             this.Controls.Add(this.Songlist);
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
-            ((System.ComponentModel.ISupportInitialize)(this.ProfileToLoadNumber)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -549,8 +524,6 @@
         private System.Windows.Forms.CheckBox RemoveSkylineCheckbox;
         private System.Windows.Forms.CheckBox GreenScreenWallCheckbox;
         private System.Windows.Forms.CheckBox AutoLoadProfileCheckbox;
-        private System.Windows.Forms.NumericUpDown ProfileToLoadNumber;
-        private System.Windows.Forms.Label ProfileToLoadText;
         private System.Windows.Forms.CheckBox FretlessModeCheckbox;
     }
 }

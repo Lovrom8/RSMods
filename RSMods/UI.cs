@@ -150,16 +150,13 @@ namespace RSMods
                 if (ImportPriorSettings()[24].ToString() == "true") // Force Load Profile On Game Boot Enabled / Disabled
                 {
                     this.AutoLoadProfileCheckbox.Checked = true;
-                    this.ProfileToLoadText.Visible = true;
-                    this.ProfileToLoadNumber.Visible = true;
-                    this.ProfileToLoadNumber.Value = Convert.ToDecimal(ImportPriorSettings()[25].ToString());
                 }
                 else
                 {
                     this.AutoLoadProfileCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[26].ToString() == "true") // Fretless Mode Enabled / Disabled
+                if (ImportPriorSettings()[25].ToString() == "true") // Fretless Mode Enabled / Disabled
                 {
                     this.FretlessModeCheckbox.Checked = true;
                 }
@@ -332,13 +329,9 @@ namespace RSMods
                 {
                     SaveChanges(25, this.AutoLoadProfileCheckbox.Checked.ToString().ToLower());
                 }
-                if (this.ProfileToLoadNumber.ToString() != ReadSettings.ProcessSettings(25)) // Force Load Profile On Game Boot Slot #
+                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(25))
                 {
-                    SaveChanges(26, this.ProfileToLoadNumber.Value.ToString());
-                }
-                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(26))
-                {
-                    SaveChanges(27, this.FretlessModeCheckbox.Checked.ToString().ToLower());
+                    SaveChanges(26, this.FretlessModeCheckbox.Checked.ToString().ToLower());
                 }
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
@@ -502,13 +495,9 @@ namespace RSMods
                 {
                     StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + ChangedSettingValue;
                 }
-                if (ElementToChange == 26) // Force Load Profile On Game Boot Slot #
+                if (ElementToChange == 26) // Fretless Mode Enabled / Disabled
                 {
-                    StringArray[28] = ReadSettings.ForceProfileSlotNumberIdentifier + ChangedSettingValue;
-                }
-                if (ElementToChange == 27) // Fretless Mode Enabled / Disabled
-                {
-                    StringArray[29] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
+                    StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
                 }
                 WriteSettings.ModifyINI(StringArray);
             }
@@ -554,8 +543,7 @@ namespace RSMods
             priorSettings[22] = ReadSettings.ProcessSettings(22); // Remove Skyline Enabled / Disabled
             priorSettings[23] = ReadSettings.ProcessSettings(23); // Greenscreen Wall Enabled / Disabled
             priorSettings[24] = ReadSettings.ProcessSettings(24); // Force Load Profile On Game Boot Enabled / Disabled
-            priorSettings[25] = ReadSettings.ProcessSettings(25); // Force Load Profile On Game Boot Slot #
-            priorSettings[26] = ReadSettings.ProcessSettings(26); // Fretless Mode Enabled / Disabled
+            priorSettings[25] = ReadSettings.ProcessSettings(25); // Fretless Mode Enabled / Disabled
             return priorSettings;
         }
     }
