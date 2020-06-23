@@ -38,7 +38,7 @@ namespace RSMods
             GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
             ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
             FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
-            RemoveInlaysIdentifier              = "RemoveInlays = ",
+            RemoveInlaysIdentifier              = "RemoveInlaysEnabled = ",
 
 
 
