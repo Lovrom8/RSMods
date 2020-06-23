@@ -389,7 +389,7 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 
 			//std::cout << StreamNumber << " " << OffsetInBytes << std::endl;
 			//std::cout << "---------" << std::endl;
-
+			//very funny
 		}
 
 		sthSize = desc.Size;
