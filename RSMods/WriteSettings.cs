@@ -9,7 +9,7 @@ namespace RSMods
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        public static string[] StringArray = new String[29];
+        public static string[] StringArray = new String[30];
 
         public static void ModifyINI(string[] StringArray)
         {
@@ -49,6 +49,7 @@ namespace RSMods
                 StringArray[26] = ReadSettings.GreenScreenWallIdentifier + "false"; // Greenscreen Back Wall Enabled / Disabled
                 StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + "false"; // Force Load Profile On Game Boot Enabled / Disabled
                 StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + "false"; // Fretless Mode Enabled / Disabled
+                StringArray[29] = ReadSettings.RemoveInlaysIdentifier + "false"; // Remove Inlay Markers Enabled / Disabled
                 ModifyINI(StringArray);
         }
         public static string WhereIsRocksmith()

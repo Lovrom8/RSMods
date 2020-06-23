@@ -65,6 +65,7 @@
             this.GreenScreenWallCheckbox = new System.Windows.Forms.CheckBox();
             this.AutoLoadProfileCheckbox = new System.Windows.Forms.CheckBox();
             this.FretlessModeCheckbox = new System.Windows.Forms.CheckBox();
+            this.RemoveInlaysCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // Songlist
@@ -436,12 +437,23 @@
             this.FretlessModeCheckbox.Text = "Fretless Mode";
             this.FretlessModeCheckbox.UseVisualStyleBackColor = true;
             // 
+            // RemoveInlaysCheckbox
+            // 
+            this.RemoveInlaysCheckbox.AutoSize = true;
+            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(1070, 208);
+            this.RemoveInlaysCheckbox.Name = "RemoveInlaysCheckbox";
+            this.RemoveInlaysCheckbox.Size = new System.Drawing.Size(96, 17);
+            this.RemoveInlaysCheckbox.TabIndex = 42;
+            this.RemoveInlaysCheckbox.Text = "Remove Inlays";
+            this.RemoveInlaysCheckbox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.Controls.Add(this.RemoveInlaysCheckbox);
             this.Controls.Add(this.FretlessModeCheckbox);
             this.Controls.Add(this.AutoLoadProfileCheckbox);
             this.Controls.Add(this.GreenScreenWallCheckbox);
@@ -526,6 +538,7 @@
         private System.Windows.Forms.CheckBox GreenScreenWallCheckbox;
         private System.Windows.Forms.CheckBox AutoLoadProfileCheckbox;
         private System.Windows.Forms.CheckBox FretlessModeCheckbox;
+        private System.Windows.Forms.CheckBox RemoveInlaysCheckbox;
     }
 }
 

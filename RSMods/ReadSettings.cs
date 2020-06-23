@@ -6,7 +6,7 @@ namespace RSMods
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -38,6 +38,7 @@ namespace RSMods
             GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
             ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
             FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
+            RemoveInlaysIdentifier              = "RemoveInlays = ",
 
 
 
@@ -391,6 +392,22 @@ namespace RSMods
                     if (grab == 25)
                     {
                         return FretlessEnabled;
+                    }
+                }
+                if (currentLine.Contains(RemoveInlaysIdentifier))
+                {
+                    if (currentLine.Substring(RemoveInlaysIdentifier.Length, (currentLine.Length - RemoveInlaysIdentifier.Length)) == "true")
+                    {
+                        RemoveInlaysEnabled = "true";
+                    }
+                    else
+                    {
+                        RemoveInlaysEnabled = "false";
+                    }
+
+                    if (grab == 26)
+                    {
+                        return RemoveInlaysEnabled;
                     }
                 }
             }

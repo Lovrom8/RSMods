@@ -164,6 +164,15 @@ namespace RSMods
                 {
                     this.FretlessModeCheckbox.Checked = false;
                 }
+
+                if (ImportPriorSettings()[26].ToString() == "true") // Remove Inlay Markers Enabled / Disabled
+                {
+                    this.RemoveInlaysCheckbox.Checked = true;
+                }
+                else
+                {
+                    this.RemoveInlaysCheckbox.Checked = false;
+                }
          }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,9 +338,13 @@ namespace RSMods
                 {
                     SaveChanges(25, this.AutoLoadProfileCheckbox.Checked.ToString().ToLower());
                 }
-                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(25))
+                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(25)) // Fretless Mode Enabled / Disabled
                 {
                     SaveChanges(26, this.FretlessModeCheckbox.Checked.ToString().ToLower());
+                }
+                if(this.RemoveInlaysCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(26)) // Remove Inlay Markers Enabled / Disabled
+            {
+                    SaveChanges(27, this.RemoveInlaysCheckbox.Checked.ToString().ToLower());
                 }
             // Extended Range
                 if (this.ExtendedRangeTunings.GetSelected(0))
@@ -499,6 +512,10 @@ namespace RSMods
                 {
                     StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
                 }
+                if (ElementToChange == 27) // Remove Inlay Markers Enabled / Disabled
+                {
+                    StringArray[29] = ReadSettings.RemoveInlaysIdentifier + ChangedSettingValue;
+                }
                 WriteSettings.ModifyINI(StringArray);
             }
             else
@@ -544,6 +561,7 @@ namespace RSMods
             priorSettings[23] = ReadSettings.ProcessSettings(23); // Greenscreen Wall Enabled / Disabled
             priorSettings[24] = ReadSettings.ProcessSettings(24); // Force Load Profile On Game Boot Enabled / Disabled
             priorSettings[25] = ReadSettings.ProcessSettings(25); // Fretless Mode Enabled / Disabled
+            priorSettings[26] = ReadSettings.ProcessSettings(26); // Remove Inlay Markers Enabled / Disabled
             return priorSettings;
         }
 
