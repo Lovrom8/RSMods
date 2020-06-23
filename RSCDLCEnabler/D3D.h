@@ -200,10 +200,11 @@ std::vector<Mesh> sevenstring{
 	{34, 40, 76} // "Some Note Head Stuff" - Lovro
 };
 
+
 std::vector<ThiccMesh> headstockThicc{
 	// General
 		// { 24, 2, 4, 0, 0, 4, 2, 8, 4 }, Tuner (Disabled to make it easier on the end user on tuning)
-		{ 32, 2, 4, 0, 0, 4, 2, 12, 4 },
+		//{ 32, 2, 4, 0, 0, 4, 2, 12, 4 }, // Check tuningLetters
 		{ 32, 2, 4, 0, 0, 4, 2, 4, 2 },
 		
 	// Guitar
@@ -239,6 +240,7 @@ std::vector<ThiccMesh> headstockThicc{
 // All the single ladies
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
 std::vector<ThiccMesh> inlays{ { 32, 8, 9, 0, 0, 4, 2, 12, 4 } };
+std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
 
@@ -255,3 +257,22 @@ std::vector<ThiccMesh> removedMeshes;
 #define CHORD_NAMES (Stride == 24 && primCount == 2 && NumVertices == 4)
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
+
+std::string getRidOfTuningLettersOnTheseMenus[16] = {
+	(std::string)"SelectionListDialog",
+	(std::string)"LearnASong_PreSongTuner",
+	(std::string)"LearnASong_PreSongTunerMP",
+	(std::string)"LearnASong_SongOptions",
+	(std::string)"NonStopPlay_PreSongTuner",
+	(std::string)"NonStopPlay_PreSongTunerMP",
+	(std::string)"ScoreAttack_PreSongTuner",
+	(std::string)"SessionMode_PreSMTunerMP",
+	(std::string)"SessionMode_PreSMTuner",
+	(std::string)"UIMenu_Tuner",
+	(std::string)"UIMenu_TunerMP",
+	(std::string)"Guitarcade_Tuner",
+	(std::string)"GETuner",
+	(std::string)"Tuner",
+	(std::string)"Duet_PreSongTuner",
+	(std::string)"H2H_PreSongTuner"
+};
