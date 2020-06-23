@@ -312,11 +312,11 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-		/*		if (mem.Is7StringSong)
+				if (mem.Is7StringSong)
 					pDevice->SetTexture(1, gradientTextureSeven);
 				else
 					pDevice->SetTexture(1, gradientTextureNormal);
-					*/
+					
 
 		mem.ToggleCB(mem.Is7StringSong);
 		pDevice->SetTexture(1, gradientTextureNormal);
@@ -427,6 +427,7 @@ void AutoEnterGame() { //very big brain
 }
 
 bool GameLoaded = false;
+bool LoftOff = false;
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
@@ -452,6 +453,11 @@ DWORD WINAPI MainThread(void*) {
 		  Disabled commands
 			mem.ToggleLoftWhenSongStarts();
 		*/
+
+		if (GameLoaded && !LoftOff && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+			mem.ToggleLoft();
+			LoftOff = true;
+		}
 
 		if (enableColorBlindCheckboxGUI)
 			mem.ToggleCB(cbEnabled);
