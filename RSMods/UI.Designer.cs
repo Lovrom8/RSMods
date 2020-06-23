@@ -49,27 +49,30 @@
             this.NewAssignment = new System.Windows.Forms.Label();
             this.NewSonglistName = new System.Windows.Forms.Label();
             this.NewSongListNameTxtbox = new System.Windows.Forms.TextBox();
-            this.ForceEnumerationManualRadio = new System.Windows.Forms.RadioButton();
-            this.ForceEnumerationAutomaticRadio = new System.Windows.Forms.RadioButton();
             this.RainbowStringsEnabled = new System.Windows.Forms.CheckBox();
             this.ExtendedRangeEnabled = new System.Windows.Forms.CheckBox();
             this.RainbowStringsAssignment = new System.Windows.Forms.Label();
             this.ExtendedRangeTunings = new System.Windows.Forms.ListBox();
-            this.ExtendedRangeTuningText = new System.Windows.Forms.Label();
             this.ForceEnumerationCheckbox = new System.Windows.Forms.CheckBox();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
             this.DiscoModeCheckbox = new System.Windows.Forms.CheckBox();
             this.HeadstockCheckbox = new System.Windows.Forms.CheckBox();
-            this.HowToEnumerateText = new System.Windows.Forms.Label();
             this.RemoveSkylineCheckbox = new System.Windows.Forms.CheckBox();
             this.GreenScreenWallCheckbox = new System.Windows.Forms.CheckBox();
             this.AutoLoadProfileCheckbox = new System.Windows.Forms.CheckBox();
             this.FretlessModeCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveInlaysCheckbox = new System.Windows.Forms.CheckBox();
-            this.ToggleLoftWhenText = new System.Windows.Forms.Label();
             this.ToggleLoftWhenStartupRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLoftWhenManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLoftWhenSongRadio = new System.Windows.Forms.RadioButton();
+            this.ForceEnumerationManualRadio = new System.Windows.Forms.RadioButton();
+            this.ForceEnumerationAutomaticRadio = new System.Windows.Forms.RadioButton();
+            this.HowToEnumerateBox = new System.Windows.Forms.GroupBox();
+            this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
+            this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
+            this.HowToEnumerateBox.SuspendLayout();
+            this.ToggleLoftOffWhenBox.SuspendLayout();
+            this.ExtendedRangeTuningBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -267,30 +270,6 @@
             this.NewSongListNameTxtbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckEnter);
             // 
-            // ForceEnumerationManualRadio
-            // 
-            this.ForceEnumerationManualRadio.AutoSize = true;
-            this.ForceEnumerationManualRadio.Location = new System.Drawing.Point(1028, 330);
-            this.ForceEnumerationManualRadio.Name = "ForceEnumerationManualRadio";
-            this.ForceEnumerationManualRadio.Size = new System.Drawing.Size(112, 17);
-            this.ForceEnumerationManualRadio.TabIndex = 24;
-            this.ForceEnumerationManualRadio.TabStop = true;
-            this.ForceEnumerationManualRadio.Text = "Manual (Keypress)";
-            this.ForceEnumerationManualRadio.UseVisualStyleBackColor = true;
-            this.ForceEnumerationManualRadio.Visible = false;
-            // 
-            // ForceEnumerationAutomaticRadio
-            // 
-            this.ForceEnumerationAutomaticRadio.AutoSize = true;
-            this.ForceEnumerationAutomaticRadio.Location = new System.Drawing.Point(1028, 365);
-            this.ForceEnumerationAutomaticRadio.Name = "ForceEnumerationAutomaticRadio";
-            this.ForceEnumerationAutomaticRadio.Size = new System.Drawing.Size(180, 17);
-            this.ForceEnumerationAutomaticRadio.TabIndex = 25;
-            this.ForceEnumerationAutomaticRadio.TabStop = true;
-            this.ForceEnumerationAutomaticRadio.Text = "Automatic (Scan For New CDLC)";
-            this.ForceEnumerationAutomaticRadio.UseVisualStyleBackColor = true;
-            this.ForceEnumerationAutomaticRadio.Visible = false;
-            // 
             // RainbowStringsEnabled
             // 
             this.RainbowStringsEnabled.AutoSize = true;
@@ -334,21 +313,11 @@
             "F#",
             "F",
             "Octave Down"});
-            this.ExtendedRangeTunings.Location = new System.Drawing.Point(1421, 267);
+            this.ExtendedRangeTunings.Location = new System.Drawing.Point(63, 21);
             this.ExtendedRangeTunings.Name = "ExtendedRangeTunings";
             this.ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.ExtendedRangeTunings.TabIndex = 29;
             this.ExtendedRangeTunings.Visible = false;
-            // 
-            // ExtendedRangeTuningText
-            // 
-            this.ExtendedRangeTuningText.AutoSize = true;
-            this.ExtendedRangeTuningText.Location = new System.Drawing.Point(1326, 242);
-            this.ExtendedRangeTuningText.Name = "ExtendedRangeTuningText";
-            this.ExtendedRangeTuningText.Size = new System.Drawing.Size(236, 13);
-            this.ExtendedRangeTuningText.TabIndex = 30;
-            this.ExtendedRangeTuningText.Text = "Enable Extended Range When Lowest String Is:";
-            this.ExtendedRangeTuningText.Visible = false;
             // 
             // ForceEnumerationCheckbox
             // 
@@ -389,16 +358,6 @@
             this.HeadstockCheckbox.TabIndex = 34;
             this.HeadstockCheckbox.Text = "Remove Headstock";
             this.HeadstockCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // HowToEnumerateText
-            // 
-            this.HowToEnumerateText.AutoSize = true;
-            this.HowToEnumerateText.Location = new System.Drawing.Point(1007, 289);
-            this.HowToEnumerateText.Name = "HowToEnumerateText";
-            this.HowToEnumerateText.Size = new System.Drawing.Size(173, 13);
-            this.HowToEnumerateText.TabIndex = 35;
-            this.HowToEnumerateText.Text = "How Do You Want To Enumerate?";
-            this.HowToEnumerateText.Visible = false;
             // 
             // RemoveSkylineCheckbox
             // 
@@ -450,49 +409,101 @@
             this.RemoveInlaysCheckbox.Text = "Remove Inlays";
             this.RemoveInlaysCheckbox.UseVisualStyleBackColor = true;
             // 
-            // ToggleLoftWhenText
-            // 
-            this.ToggleLoftWhenText.AutoSize = true;
-            this.ToggleLoftWhenText.Location = new System.Drawing.Point(1381, 41);
-            this.ToggleLoftWhenText.Name = "ToggleLoftWhenText";
-            this.ToggleLoftWhenText.Size = new System.Drawing.Size(113, 13);
-            this.ToggleLoftWhenText.TabIndex = 43;
-            this.ToggleLoftWhenText.Text = "Toggle Loft Off When:";
-            this.ToggleLoftWhenText.Click += new System.EventHandler(this.label1_Click);
-            // 
             // ToggleLoftWhenStartupRadio
             // 
             this.ToggleLoftWhenStartupRadio.AutoSize = true;
-            this.ToggleLoftWhenStartupRadio.Location = new System.Drawing.Point(1329, 66);
+            this.ToggleLoftWhenStartupRadio.Location = new System.Drawing.Point(16, 14);
             this.ToggleLoftWhenStartupRadio.Name = "ToggleLoftWhenStartupRadio";
             this.ToggleLoftWhenStartupRadio.Size = new System.Drawing.Size(180, 17);
             this.ToggleLoftWhenStartupRadio.TabIndex = 44;
             this.ToggleLoftWhenStartupRadio.TabStop = true;
             this.ToggleLoftWhenStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleLoftWhenStartupRadio.UseVisualStyleBackColor = true;
+            this.ToggleLoftWhenStartupRadio.Visible = false;
             // 
             // ToggleLoftWhenManualRadio
             // 
             this.ToggleLoftWhenManualRadio.AutoSize = true;
-            this.ToggleLoftWhenManualRadio.Location = new System.Drawing.Point(1329, 90);
+            this.ToggleLoftWhenManualRadio.Location = new System.Drawing.Point(17, 37);
             this.ToggleLoftWhenManualRadio.Name = "ToggleLoftWhenManualRadio";
             this.ToggleLoftWhenManualRadio.Size = new System.Drawing.Size(220, 17);
             this.ToggleLoftWhenManualRadio.TabIndex = 45;
             this.ToggleLoftWhenManualRadio.TabStop = true;
             this.ToggleLoftWhenManualRadio.Text = "Only When I Manually Trigger Via Hotkey";
             this.ToggleLoftWhenManualRadio.UseVisualStyleBackColor = true;
+            this.ToggleLoftWhenManualRadio.Visible = false;
             // 
             // ToggleLoftWhenSongRadio
             // 
             this.ToggleLoftWhenSongRadio.AutoSize = true;
-            this.ToggleLoftWhenSongRadio.Location = new System.Drawing.Point(1329, 114);
+            this.ToggleLoftWhenSongRadio.Location = new System.Drawing.Point(17, 60);
             this.ToggleLoftWhenSongRadio.Name = "ToggleLoftWhenSongRadio";
             this.ToggleLoftWhenSongRadio.Size = new System.Drawing.Size(128, 17);
             this.ToggleLoftWhenSongRadio.TabIndex = 46;
             this.ToggleLoftWhenSongRadio.TabStop = true;
             this.ToggleLoftWhenSongRadio.Text = "Only When In A Song";
             this.ToggleLoftWhenSongRadio.UseVisualStyleBackColor = true;
-            this.ToggleLoftWhenSongRadio.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.ToggleLoftWhenSongRadio.Visible = false;
+            // 
+            // ForceEnumerationManualRadio
+            // 
+            this.ForceEnumerationManualRadio.AutoSize = true;
+            this.ForceEnumerationManualRadio.Location = new System.Drawing.Point(14, 23);
+            this.ForceEnumerationManualRadio.Name = "ForceEnumerationManualRadio";
+            this.ForceEnumerationManualRadio.Size = new System.Drawing.Size(112, 17);
+            this.ForceEnumerationManualRadio.TabIndex = 24;
+            this.ForceEnumerationManualRadio.TabStop = true;
+            this.ForceEnumerationManualRadio.Text = "Manual (Keypress)";
+            this.ForceEnumerationManualRadio.UseVisualStyleBackColor = true;
+            this.ForceEnumerationManualRadio.Visible = false;
+            // 
+            // ForceEnumerationAutomaticRadio
+            // 
+            this.ForceEnumerationAutomaticRadio.AutoSize = true;
+            this.ForceEnumerationAutomaticRadio.Location = new System.Drawing.Point(14, 48);
+            this.ForceEnumerationAutomaticRadio.Name = "ForceEnumerationAutomaticRadio";
+            this.ForceEnumerationAutomaticRadio.Size = new System.Drawing.Size(180, 17);
+            this.ForceEnumerationAutomaticRadio.TabIndex = 25;
+            this.ForceEnumerationAutomaticRadio.TabStop = true;
+            this.ForceEnumerationAutomaticRadio.Text = "Automatic (Scan For New CDLC)";
+            this.ForceEnumerationAutomaticRadio.UseVisualStyleBackColor = true;
+            this.ForceEnumerationAutomaticRadio.Visible = false;
+            // 
+            // HowToEnumerateBox
+            // 
+            this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationAutomaticRadio);
+            this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
+            this.HowToEnumerateBox.Location = new System.Drawing.Point(1014, 304);
+            this.HowToEnumerateBox.Name = "HowToEnumerateBox";
+            this.HowToEnumerateBox.Size = new System.Drawing.Size(206, 96);
+            this.HowToEnumerateBox.TabIndex = 47;
+            this.HowToEnumerateBox.TabStop = false;
+            this.HowToEnumerateBox.Text = "How Do You Want To Enumerate?";
+            this.HowToEnumerateBox.Visible = false;
+            // 
+            // ToggleLoftOffWhenBox
+            // 
+            this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenSongRadio);
+            this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenManualRadio);
+            this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenStartupRadio);
+            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1319, 46);
+            this.ToggleLoftOffWhenBox.Name = "ToggleLoftOffWhenBox";
+            this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(243, 86);
+            this.ToggleLoftOffWhenBox.TabIndex = 48;
+            this.ToggleLoftOffWhenBox.TabStop = false;
+            this.ToggleLoftOffWhenBox.Text = "Toggle Loft Off When:";
+            this.ToggleLoftOffWhenBox.Visible = false;
+            // 
+            // ExtendedRangeTuningBox
+            // 
+            this.ExtendedRangeTuningBox.Controls.Add(this.ExtendedRangeTunings);
+            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1336, 250);
+            this.ExtendedRangeTuningBox.Name = "ExtendedRangeTuningBox";
+            this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(215, 188);
+            this.ExtendedRangeTuningBox.TabIndex = 49;
+            this.ExtendedRangeTuningBox.TabStop = false;
+            this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
+            this.ExtendedRangeTuningBox.Visible = false;
             // 
             // MainForm
             // 
@@ -500,27 +511,21 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
-            this.Controls.Add(this.ToggleLoftWhenSongRadio);
-            this.Controls.Add(this.ToggleLoftWhenManualRadio);
-            this.Controls.Add(this.ToggleLoftWhenStartupRadio);
-            this.Controls.Add(this.ToggleLoftWhenText);
+            this.Controls.Add(this.ExtendedRangeTuningBox);
+            this.Controls.Add(this.ToggleLoftOffWhenBox);
+            this.Controls.Add(this.HowToEnumerateBox);
             this.Controls.Add(this.RemoveInlaysCheckbox);
             this.Controls.Add(this.FretlessModeCheckbox);
             this.Controls.Add(this.AutoLoadProfileCheckbox);
             this.Controls.Add(this.GreenScreenWallCheckbox);
             this.Controls.Add(this.RemoveSkylineCheckbox);
-            this.Controls.Add(this.HowToEnumerateText);
             this.Controls.Add(this.HeadstockCheckbox);
             this.Controls.Add(this.DiscoModeCheckbox);
             this.Controls.Add(this.ResetToDefaultButton);
             this.Controls.Add(this.ForceEnumerationCheckbox);
-            this.Controls.Add(this.ExtendedRangeTuningText);
-            this.Controls.Add(this.ExtendedRangeTunings);
             this.Controls.Add(this.RainbowStringsAssignment);
             this.Controls.Add(this.ExtendedRangeEnabled);
             this.Controls.Add(this.RainbowStringsEnabled);
-            this.Controls.Add(this.ForceEnumerationAutomaticRadio);
-            this.Controls.Add(this.ForceEnumerationManualRadio);
             this.Controls.Add(this.NewSongListNameTxtbox);
             this.Controls.Add(this.NewSonglistName);
             this.Controls.Add(this.NewAssignment);
@@ -544,6 +549,11 @@
             this.Controls.Add(this.Songlist);
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
+            this.HowToEnumerateBox.ResumeLayout(false);
+            this.HowToEnumerateBox.PerformLayout();
+            this.ToggleLoftOffWhenBox.ResumeLayout(false);
+            this.ToggleLoftOffWhenBox.PerformLayout();
+            this.ExtendedRangeTuningBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -573,27 +583,27 @@
         private System.Windows.Forms.Label NewAssignment;
         private System.Windows.Forms.Label NewSonglistName;
         private System.Windows.Forms.TextBox NewSongListNameTxtbox;
-        private System.Windows.Forms.RadioButton ForceEnumerationManualRadio;
-        private System.Windows.Forms.RadioButton ForceEnumerationAutomaticRadio;
         private System.Windows.Forms.CheckBox RainbowStringsEnabled;
         private System.Windows.Forms.CheckBox ExtendedRangeEnabled;
         private System.Windows.Forms.Label RainbowStringsAssignment;
         private System.Windows.Forms.ListBox ExtendedRangeTunings;
-        private System.Windows.Forms.Label ExtendedRangeTuningText;
         private System.Windows.Forms.CheckBox ForceEnumerationCheckbox;
         private System.Windows.Forms.Button ResetToDefaultButton;
         private System.Windows.Forms.CheckBox DiscoModeCheckbox;
         private System.Windows.Forms.CheckBox HeadstockCheckbox;
-        private System.Windows.Forms.Label HowToEnumerateText;
         private System.Windows.Forms.CheckBox RemoveSkylineCheckbox;
         private System.Windows.Forms.CheckBox GreenScreenWallCheckbox;
         private System.Windows.Forms.CheckBox AutoLoadProfileCheckbox;
         private System.Windows.Forms.CheckBox FretlessModeCheckbox;
         private System.Windows.Forms.CheckBox RemoveInlaysCheckbox;
-        private System.Windows.Forms.Label ToggleLoftWhenText;
         private System.Windows.Forms.RadioButton ToggleLoftWhenStartupRadio;
         private System.Windows.Forms.RadioButton ToggleLoftWhenManualRadio;
         private System.Windows.Forms.RadioButton ToggleLoftWhenSongRadio;
+        private System.Windows.Forms.RadioButton ForceEnumerationManualRadio;
+        private System.Windows.Forms.RadioButton ForceEnumerationAutomaticRadio;
+        private System.Windows.Forms.GroupBox HowToEnumerateBox;
+        private System.Windows.Forms.GroupBox ToggleLoftOffWhenBox;
+        private System.Windows.Forms.GroupBox ExtendedRangeTuningBox;
     }
 }
 
