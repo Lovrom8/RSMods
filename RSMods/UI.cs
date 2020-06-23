@@ -546,5 +546,10 @@ namespace RSMods
             priorSettings[25] = ReadSettings.ProcessSettings(25); // Fretless Mode Enabled / Disabled
             return priorSettings;
         }
+
+        private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

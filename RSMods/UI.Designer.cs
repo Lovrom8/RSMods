@@ -420,10 +420,11 @@
             this.AutoLoadProfileCheckbox.AutoSize = true;
             this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(1070, 184);
             this.AutoLoadProfileCheckbox.Name = "AutoLoadProfileCheckbox";
-            this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(100, 17);
+            this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(151, 17);
             this.AutoLoadProfileCheckbox.TabIndex = 38;
-            this.AutoLoadProfileCheckbox.Text = "Autoload Profile";
+            this.AutoLoadProfileCheckbox.Text = "Autoload Last Used Profile";
             this.AutoLoadProfileCheckbox.UseVisualStyleBackColor = true;
+            this.AutoLoadProfileCheckbox.CheckedChanged += new System.EventHandler(this.AutoLoadProfileCheckbox_CheckedChanged);
             // 
             // FretlessModeCheckbox
             // 
