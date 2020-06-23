@@ -1,3 +1,4 @@
+#pragma once
 #include "windows.h"
 #include "DirectX/d3d9.h"
 #include "DirectX/d3dx9.h"

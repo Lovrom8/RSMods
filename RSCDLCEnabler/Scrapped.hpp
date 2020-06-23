@@ -127,3 +127,31 @@ void showptr() {
 //	dVtable = (DWORD*)dVtable[0];
 
 */
+
+/*--------------------------------------------------------------------*/
+
+/*--------------- CHANGES VALUE, BUT DOESN'T HAVE AN ACTUAL EFFECT -------------------------*/
+
+/*void cMemHelpers::AddVolume(float add) {
+	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
+
+	float val = *(float*)addr;
+
+	if (val + add >= 100.0f)
+		return;
+
+	*(float*)addr = val + add;
+}
+
+void cMemHelpers::DecreaseVolume(float remove) {
+	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
+
+	float val = *(float*)addr;
+
+	if (val + remove <= 0.0f)
+		return;
+
+	*(float*)addr = val + remove;
+}*/
+
+/*--------------------------------------------------------------------*/

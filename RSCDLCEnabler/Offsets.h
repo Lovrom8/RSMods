@@ -1,6 +1,7 @@
+#pragma once
 #include "windows.h"
 #include <vector>
-	
+
 class cOffsets {
 public:
 	uintptr_t ptr_volume = 0x00F4E91C;

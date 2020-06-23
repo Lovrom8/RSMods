@@ -1,31 +1,25 @@
+#pragma once
 #include "windows.h"
 #include <vector>
 #include <string>
-
 #include "MemUtil.h"
-#include "Settings.h"
-#include "Structs.h"
 #include "Offsets.h"
+#include "Structs.h"
+#include "Settings.h"
 
-#pragma once
-class RandomMemStuff
+class cMemHelpers
 {
 public:
-	void AddVolume(float add);
-	void DecreaseVolume(float remove);
 	void ToggleLoft();
 	void ToggleLoftWhenSongStarts();
 	void ShowSongTimer();
-	void PatchSongListAppendages();
-	void HookSongListsKoko();
-	void SetFakeListNames();
-	void LoadSettings();
 	void ShowCurrentTuning();
-	void DoRainbow();
-	void Toggle7StringMode();
+	void PatchCDLCCheck();
 	bool LoadModsWhenSongsLoad(std::string ModToRun);
-	bool Is7StringSong=false;
+	bool IsExtendedRangeSong();
+
 	std::string GetCurrentMenu();
 	void ToggleCB(bool enabled);
 };
 
+extern cMemHelpers MemHelpers;

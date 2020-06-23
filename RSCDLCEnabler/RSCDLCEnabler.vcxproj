@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CustomSongTitles.cpp" />
     <ClCompile Include="D3DX9_42.cpp" />
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="Enumeration.cpp" />
+    <ClCompile Include="ExtendedRangeMode.cpp" />
     <ClCompile Include="ImGUI\imgui.cpp" />
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
@@ -22,11 +24,12 @@
     <ClCompile Include="ImGUI\RobotoFont.cpp" />
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="Offsets.cpp" />
-    <ClCompile Include="RandomMemStuff.cpp" />
+    <ClCompile Include="MemHelpers.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomSongTitles.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="D3DX9_42.h" />
@@ -42,6 +45,7 @@
     <ClInclude Include="DirectX\d3dx9tex.h" />
     <ClInclude Include="DirectX\d3dx9xof.h" />
     <ClInclude Include="Enumeration.h" />
+    <ClInclude Include="ExtendedRangeMode.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
@@ -52,10 +56,9 @@
     <ClInclude Include="ImGUI\imstb_textedit.h" />
     <ClInclude Include="ImGUI\imstb_truetype.h" />
     <ClInclude Include="INIReader.h" />
-    <ClInclude Include="Main.h" />
     <ClInclude Include="MemUtil.h" />
     <ClInclude Include="Offsets.h" />
-    <ClInclude Include="RandomMemStuff.h" />
+    <ClInclude Include="MemHelpers.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Utils.h" />

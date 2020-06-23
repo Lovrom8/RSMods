@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdlib>
 #include <stdio.h>
 #include <fstream>
@@ -31,4 +32,3 @@ void Log(const char* fmt, ...)
 	if (logfile.is_open() && text)	logfile << text << endl;
 	logfile.close();
 }
-#pragma once

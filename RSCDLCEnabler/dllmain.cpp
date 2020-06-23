@@ -1,10 +1,15 @@
 #include "d3dx9_42.h"
-#include "RandomMemStuff.h"
+#include "MemHelpers.h"
 #include "Enumeration.h"
 #include "detours.h"
 #include "Functions.h"
 #include "Utils.h"
 #include "D3D.h"
+#include "CustomSongTitles.h"
+#include "Offsets.h"
+#include "MemUtil.h"
+#include "Settings.h"
+#include "ExtendedRangeMode.h"
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_dx9.h"
@@ -13,21 +18,8 @@
 
 const char* windowName = "Rocksmith 2014";
 
-RandomMemStuff mem;
-
-bool menuEnabled = false; //whole menu is kinda bugged right now :(
+bool menuEnabled = false;
 bool enableColorBlindCheckboxGUI = false;
-
-void PatchCDLCCheck() {
-	uint8_t* VerifySignatureOffset = Offsets.cdlcCheckAdr;
-
-	if (VerifySignatureOffset) {
-		if (!MemUtil.PatchAdr(VerifySignatureOffset + 8, (UINT*)Offsets.patch_CDLCCheck, 2))
-			printf("Failed to patch verify_signature!\n");
-		else
-			printf("Patch verify_signature success!\n");
-	}
-}
 
 int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
@@ -68,22 +60,22 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		}
 
 		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
-			mem.ToggleLoft();
+			MemHelpers.ToggleLoft(); 
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
 		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
-			mem.AddVolume(5);
+			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
 			std::cout << "Adding 5 Volume" << std::endl;
 		}
 
 		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") {
-			mem.DecreaseVolume(5);
+			//MemHelpers.DecreaseVolume(5);
 			std::cout << "Subtracting 5 Volume" << std::endl;
 		}
 
 		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") {
-			mem.ShowSongTimer();
+			MemHelpers.ShowSongTimer();
 			std::cout << "Show Me Dat Timer Bruh" << std::endl;
 		}
 
@@ -93,7 +85,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		}
 
 		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
-			mem.DoRainbow();
+			ERMode.ToggleRainbowMode();
 			std::cout << "Rainbows Are Pretty Cool" << std::endl;
 		}
 
@@ -227,13 +219,14 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 		Stream_Data->Release();
 
 	if (Stride == 12) { //Stride 12 = tails PogU
-		mem.ToggleCB(mem.Is7StringSong);
+		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
 
+UINT sthSize;
 bool startLogging = false;
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
@@ -274,9 +267,9 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { //almost stems.. but still doesn't work completely
+	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2 && sthSize == 128) { //almost stems.. but still doesn't work completely
 		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
-		//pDevice->SetTexture(1, green);
+		pDevice->SetTexture(1, additiveNoteTexture);
 	}
 
 	Mesh current(Stride, primCount, NumVertices);
@@ -286,7 +279,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
 			allMeshes.push_back(currentThicc);
 		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture
-		//Log("%s", mem.GetCurrentMenu().c_str()); // Log Current Menu
+		//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
 	}
 	
 	if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -312,13 +305,14 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-				if (mem.Is7StringSong)
+				/*if (MemHelpers.IsExtendedRangeSong())
 					pDevice->SetTexture(1, gradientTextureSeven);
 				else
-					pDevice->SetTexture(1, gradientTextureNormal);
+					 pDevice->SetTexture(1, gradientTextureNormal);*/
+				//either this or CB based Extended Range mode - otherwise you may get some silly effects
 					
 
-		mem.ToggleCB(mem.Is7StringSong);
+		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
@@ -336,7 +330,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	else if (IsExtraRemoved(headstockThicc, currentThicc) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
 		return D3D_OK;
 
-	if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), mem.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+	if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 		return D3D_OK;
 
 	else if (IsExtraRemoved(fretless, currentThicc) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
@@ -385,6 +379,27 @@ HRESULT APIENTRY Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelSh
 	return oSetPixelShader(pDevice, piShader);
 }
 
+HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT Stride) {
+	D3DVERTEXBUFFER_DESC desc;
+
+	if (Stride == 32 && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
+		pStreamData->GetDesc(&desc);
+
+		if (desc.Size == 128) { //desc has multiple properties, so you may find something different that would differentiate two meshes if you are lucky
+
+			//std::cout << StreamNumber << " " << OffsetInBytes << std::endl;
+			//std::cout << "---------" << std::endl;
+
+		}
+
+		sthSize = desc.Size;
+	}
+	
+
+	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, Stride);
+}
+
+
 void GUI() {
 	DWORD d3d9Base, adr, * vTable = NULL;
 	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
@@ -407,6 +422,7 @@ void GUI() {
 	oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)Hook_SetVertexShader,7 );
 	oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)Hook_SetVertexShaderConstantF, 7);
 	oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
+	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
 
 	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);
 	oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::BeginScene_Index], (PBYTE)Hook_BeginScene, 7);
@@ -415,7 +431,7 @@ void GUI() {
 	oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)Hook_DP, 7);
 }
 
-void InitStuff() {
+void InitEngineFunctions() {
 	SetRTPCValue = (tSetRTPCValue)Offsets.func_SetRTPCValue;
 	GetRTPCValue = (tGetRTPCValue)Offsets.func_GetRTPCValue;
 }
@@ -431,42 +447,44 @@ bool LoftOff = false;
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
-	PatchCDLCCheck();
+	MemHelpers.PatchCDLCCheck();
 
-	mem.LoadSettings();
+	CustomSongTitles.LoadSettings();
 	Settings.ReadKeyBinds();
-	mem.HookSongListsKoko();
+	CustomSongTitles.HookSongListsKoko();
 
 	GUI();
-	InitStuff();
+	InitEngineFunctions();
 
 	while (true) {
 		Sleep(300);
-		mem.Toggle7StringMode();
+		ERMode.Toggle7StringMode();
 
 		/*
 		 Dev Commands
 
 		if (GetAsyncKeyState('X') & 0x1)
-			mem.ShowCurrentTuning();
+			MemHelpers.ShowCurrentTuning();
 
 		  Disabled commands
-			mem.ToggleLoftWhenSongStarts();
+			MemHelpers.ToggleLoftWhenSongStarts();
 		*/
 
 		if (GameLoaded && !LoftOff && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
-			mem.ToggleLoft();
+			MemHelpers.ToggleLoft();
 			LoftOff = true;
 		}
 
 		if (enableColorBlindCheckboxGUI)
-			mem.ToggleCB(cbEnabled);
+			MemHelpers.ToggleCB(cbEnabled);
 
-		if (mem.GetCurrentMenu() == "MainMenu")
-			GameLoaded = true;
+		if (!GameLoaded) {
+			if(MemHelpers.GetCurrentMenu() == "MainMenu")
+				GameLoaded = true;
 
-		if (!GameLoaded && Settings.ReturnToggleValue("ForceProfileEnabled") == "true")
-			AutoEnterGame();
+			if (!GameLoaded && Settings.ReturnToggleValue("ForceProfileEnabled") == "true")
+				AutoEnterGame();
+		}
 	}
 
 	return 0;

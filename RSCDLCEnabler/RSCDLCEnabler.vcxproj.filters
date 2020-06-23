@@ -19,15 +19,15 @@
     <Filter Include="Header Files\DirectX">
       <UniqueIdentifier>{9587255a-88e0-485b-9910-d3fb12662ba1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mods">
+      <UniqueIdentifier>{c3164239-7db1-4636-8512-4903a737ec2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="d3dx9_42.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RandomMemStuff.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Settings.cpp">
@@ -41,9 +41,6 @@
     </ClCompile>
     <ClCompile Include="Scrapped.hpp">
       <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Enumeration.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImGUI\imgui_draw.cpp">
       <Filter>ImGUI</Filter>
@@ -63,12 +60,21 @@
     <ClCompile Include="ImGUI\RobotoFont.cpp">
       <Filter>ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="Enumeration.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="ExtendedRangeMode.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomSongTitles.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="MemHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RandomMemStuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INIReader.h">
@@ -87,12 +93,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Enumeration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="detours.h">
@@ -159,6 +159,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtendedRangeMode.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomSongTitles.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="MemHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

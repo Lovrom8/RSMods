@@ -1,4 +1,6 @@
 #pragma once
+#include <cmath>
+
 enum string_state {
 	normal = 0x368,
 	disabled = 0x380,
