@@ -343,7 +343,7 @@ namespace RSMods
                     SaveChanges(26, this.FretlessModeCheckbox.Checked.ToString().ToLower());
                 }
                 if(this.RemoveInlaysCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(26)) // Remove Inlay Markers Enabled / Disabled
-            {
+                {
                     SaveChanges(27, this.RemoveInlaysCheckbox.Checked.ToString().ToLower());
                 }
             // Extended Range

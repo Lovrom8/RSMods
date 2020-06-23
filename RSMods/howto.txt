@@ -1,0 +1,124 @@
+How To Add New Functions (Checkboxes ONLY):
+	1. ReadSettings.cs
+		I. Create a new blank value in the Enabled row in the top public static string section.
+		II. Create a new identifier in the Identifier section. Please space it out so all the equal signs match up in a given section. Make sure your value has a space AFTER the equal sign in the string field.
+			II.I Make sure to follow the structure I already laid out, Identifiers that are off/on end with "Enabled".
+		III. Scroll down to the bottom of ProcessSettings(int grab), and follow the template below.
+		
+		
+			Assuming your identifier is "SuperCoolModIdentifier" and your toggle value is "SuperCoolModEnabled". Replace # with the grab ID of the mod above it, plus 1. This will only work with checkboxes!
+		
+				if (curentLine.Contains(SuperCoolModIdentifier))
+				{
+					if(currentLine.Substring(SuperCoolModIdentifier.Length, (currentLine.Length - SuperCoolModIdentifier.Length)) == "true")
+					{
+						SuperCoolModEnabled = "true";
+					}
+					else
+					{
+						SuperCoolModEnabled = "false";
+					}
+					
+					if (grab == #)
+					{
+						return SuperCoolModEnabled;
+					}
+				}
+		
+		We are now done in ReadSettings.cs. Make sure to save
+		
+	2. WriteSettings.cs
+		I. Go to the bottom of the NoSettingsDetected() function and create a new string following the template. Replace # with the id of the mod before it, plus 1.
+		
+			StringArray[#] = ReadSettings.SuperCoolModIdentifier + "false"; // Brief summary of what this box is
+		
+		II. Go to the top of the document where string[] StringArray = new String[#] is. Make the # goes up one. THIS NEEDS TO BE 1 MORE THEN THE ID OF YOUR MOD IN THE STRING ARRAY!
+		
+		We are now done in WriteSettings.cs. Make sure to save
+		
+	3. UI.cs (make sure to not click the designer, just double click on the UI.cs file)
+		I. Just follow the fucking formatting that is there
+		II. Press Ctrl + Alt + X to open the toolbox on the left side. This is where you can grab elements to put in the UI. Most of the stuff we need is in the "Common Controls" section. Drag your new item onto the UI.
+		III. Please line up your new item with the UI, the last thing we need is people complaining about UI bugs.
+		IV. Right click on the control you just placed and change the Name (the backend name) and the Text (UI name) to your liking. Please don't keep them with checkbox1. MAKE THE NAMES USEFUL!
+		V. If you need something to be hidden, like a tool that only applies if a mod is enabled, set the Visible attribute to false.
+		
+		We are done with UI.cs
+	
+	4. UI.cs (backend)
+		I. Yes, this name isn't that useful but follow these steps.
+			- Click the arrow next to UI.cs
+			- Click the arrow next to UI.Designer.cs
+			- Click the arrow next to MainForm
+			- Click MainForm()
+		II. Go to the very bottom of the document and follow the template below. Replace # with the id of the mod above it, plus 1. Replace ? with the grab ID you used in step 1.III
+			
+			priorSettings[#] = ReadSettings.ProcessSettings(?); // Brief summary of what this value isn
+		
+		III. At the top of that same section, there is a box that says  object[] priorSettings = new object[#] is. Make sure the # goes up by one. THIS NEEDS TO BE 1 MORE THEN THE ID OF YOUR MOD IN THE PRIOR SETTINGS ARRAY
+		IV. Scroll to the bottom of the SaveChanges function and follow the template below, make sure it is still above the WriteSettings.ModifyINI(StringArray) call.
+			
+			Replace # with the ID of the mod before it, plus 1. Replace ? with the value from your WriteSettings.cs StringArray[#] value. These need to be the same
+			
+			if (ElementToChange == #) // Brief Description of this mod
+                {
+                    StringArray[?] = ReadSettings.SuperCoolModIdentifier + ChangedSettingValue;
+                }
+			
+		V. Scroll up to the Save_SaveChanges(object sender, EventArgs e) function and follow the template below
+		
+			We need multiple prior items here so please follow along. Replace # with grabID from ReadSettings.cs. Replace ? with the ElementToChange ID you put in the SaveChanges function.
+			Replace YourCheckboxName with your checkbox name from UI.cs
+			
+				if(this.YourCheckboxName.Checked.ToString() != ReadSettings.ProcessSettings(#)) // Brief Description of Mod
+					{
+						SaveChanges(?, this.YourCheckboxName.Checked.ToString().ToLower());
+					}
+					
+		VI. Scroll up, at the end of the MainForm() function, and follow the template below
+			
+			Replace # with the ID of your mod from ImportPriorSettings(). Replace YourCheckboxName with your checkbox's name from UI.cs
+			
+			if (ImportPriorSettings()[#].ToString() == "true") // Brief Description of Mod
+                {
+                    this.YourCheckboxName.Checked = true;
+                }
+                else
+                {
+                    this.YourCheckboxName.Checked = false;
+                }
+		We are done with GUI code for now
+		
+	5. Build your project.
+		I. Click the checkbox, and hit Save and Quit. It should shoot an error, that is fine. Go to your build folder and get the "dump.ini" and copy all the text out of it, don't copy the file itself.
+		II. Paste the "dump.ini" contents into your "RSMods.ini" file in your Rocksmith folder. (This will prevent the error from occuring again).
+		III. Make sure your "RSMods.ini" is changing everytime you click, save and quit. Make sure the checkbox is checked when it's true, and unchecked when false.
+	
+	6. Add it to the DLL
+		I. Open the RSCDLCEnabler project
+		II. Go To Settings.cpp
+		III. At the top, there is a section called cSettings::cSettings(){cSettings::keyBinds = {}} follow the template below as this section.
+		
+			This section is for users who do NOT have the RSMods.ini file or the GUI tool
+			Paste the following at the bottom of the keybinds list. Keep "false" as you don't want non-GUI users complaining about a feature
+			
+				{"SuperCoolModIdentifier", "false"}
+			
+		IV. Scroll down to the cSettings::ReadKeyBinds() function, follow the template below in the cSettings::keyBinds = {} section
+		
+			Replace SectionName with the section name it is under in the "RSMods.ini" file. Do not put the brackets[] as the DLL won't read it.
+			Keep the last value "false" as it says that the user has the "RSMods.ini" but doesn't have that settings (out of date INI file)
+		
+				{"SuperCoolModIdentifier", reader.Get("SectionName", "SuperCoolModIdentifier", "false")}
+				
+		That's it for the Settings.cpp file
+		
+	7. Call it's value in the DLL
+		I. To find the value of your INI value just follow the template below
+		
+			if( Settings.ReturnToggleValue("SuperCoolModIdentifier") == "true") {
+				// Whatever you want the code to do here
+			}
+			
+	8. Submit your changes to the Github
+	
