@@ -43,38 +43,6 @@ std::string cMemHelpers::GetCurrentMenu() {
 	return currentMenu;
 }
 
-
-bool cMemHelpers::LoadModsWhenSongsLoad(std::string ModToRun) {
-		MessageBoxA(NULL, GetCurrentMenu().c_str(), NULL, NULL);
-		std::string currentMenu = GetCurrentMenu();
-
-		uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
-		if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
-			return false;
-		}
-
-
-		if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause") {
-			// Toggle Loft Will Break Lesson Mode
-			if (ModToRun == "RainbowStrings") {
-				return true;
-			}
-			if (ModToRun == "RemoveSkylineGE") {
-				return true;
-			}
-		}
-		if (currentMenu == "ScoreAttack_Game" || currentMenu == "ScoreAttack_Pause" || currentMenu == "LAS_Game" || currentMenu == "LAS_Pause" || currentMenu == "LearnASong_Pause" || currentMenu == "LearnASong_Game") {
-			if (ModToRun == "RainbowStrings") {
-				return true;
-			}
-			if (ModToRun == "RemoveSkylineLAS_GC") {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
 void cMemHelpers::ToggleLoft() {
 	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
 
@@ -82,36 +50,6 @@ void cMemHelpers::ToggleLoft() {
 		*(float*)addr = 10000;
 	else
 		*(float*)addr = 10;
-}
-
-void cMemHelpers::ToggleLoftWhenSongStarts() {
-	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
-	uintptr_t addrLoft = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
-
-	if (addrLoft && *(float*)addrLoft != 10) { //it gets initialized at the login menu, so reading before crashes the game hence we use this as a sort-of check... not the best, but hey
-		std::string currentMenu = GetCurrentMenu();
-		if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause")
-				*(float*)addrLoft = 10;
-		
-		return;
-	}
-
-	if (!addrTimer) { //don't try to read before a song started, otherwise crashes are inbound 
-		if (addrLoft && *(float*)addrLoft != 10) { //if we are loaded far enough && loft is disabled
-			*(float*)addrLoft = 10; //enable it
-		}
-		return;
-	}
-
-	std::string currentMenu = GetCurrentMenu(); //also by no means something that should be done (twice in a row), buuuuut... for now it will do
-	if (currentMenu == "GuidedExperience_Game" || currentMenu == "GuidedExperience_Pause")
-		return;
-		
-	if (*(float*)addrLoft != 10)
-		return;
-
-	if (*(float*)addrTimer >= 0.1)
-		*(float*)addrLoft = 10000;
 }
 
 void cMemHelpers::ShowSongTimer() {
