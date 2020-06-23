@@ -335,7 +335,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	else if (IsExtraRemoved(fretless, currentThicc) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
 		return D3D_OK;
-	else if (IsExtraRemoved(inlays, currentThicc) & Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true") // Add GUI check
+	else if (IsExtraRemoved(inlays, currentThicc) & Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true")
 		return D3D_OK;
 
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -470,9 +470,24 @@ DWORD WINAPI MainThread(void*) {
 			MemHelpers.ToggleLoftWhenSongStarts();
 		*/
 
-		if (GameLoaded && !LoftOff && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+		if (GameLoaded && !LoftOff && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && Settings.ReturnToggleValue("ToggleLoftWhen") == "startup") {
 			MemHelpers.ToggleLoft();
 			LoftOff = true;
+		}
+
+		if (GameLoaded && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && Settings.ReturnToggleValue("ToggleLoftWhen") == "song")
+		{
+			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
+			{
+				if(!LoftOff) // Only toggle loft once
+					MemHelpers.ToggleLoft();
+				LoftOff = true;
+			}
+			if (LoftOff && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) // If Not In A Song
+			{
+				MemHelpers.ToggleLoft();
+				LoftOff = false;
+			}
 		}
 
 		if (enableColorBlindCheckboxGUI)

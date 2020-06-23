@@ -276,3 +276,12 @@ std::string getRidOfTuningLettersOnTheseMenus[16] = {
 	(std::string)"Duet_PreSongTuner",
 	(std::string)"H2H_PreSongTuner"
 };
+
+std::string songModes[6] = {
+	(std::string)"LearnASong_Game",
+	(std::string)"NonStopPlay_Game",
+	(std::string)"ScoreAttack_Game",
+	(std::string)"LearnASong_Pause",
+	(std::string)"NonStopPlay_Pause",
+	(std::string)"ScoreAttack_Pause"
+};

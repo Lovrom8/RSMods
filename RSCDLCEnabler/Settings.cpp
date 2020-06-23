@@ -30,7 +30,8 @@ cSettings::cSettings()
 	{"GreenScreenWallEnabled", "false"},
 	{"ForceProfileEnabled", "false"},
 	{"FretlessModeEnabled", "false"},
-	{"RemoveInlaysEnabled", "false"}
+	{"RemoveInlaysEnabled", "false"},
+	{"ToggleLoftWhen", "manual"}
 	};
 
 	customSettings = {
@@ -255,7 +256,8 @@ void cSettings::ReadKeyBinds() {
 				{"GreenScreenWallEnabled", reader.Get("Toggle Switches", "GreenScreenWallEnabled", "false")},
 				{"ForceProfileEnabled", reader.Get("Toggle Switches", "ForceProfileEnabled", "false")},
 				{"FretlessModeEnabled", reader.Get("Toggle Switches", "FretlessModeEnabled", "false")},
-				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "RemoveInlaysEnabled", "false")}
+				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "RemoveInlaysEnabled", "false")},
+				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")}
 	};
 }
 
