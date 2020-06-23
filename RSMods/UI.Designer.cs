@@ -66,6 +66,10 @@
             this.AutoLoadProfileCheckbox = new System.Windows.Forms.CheckBox();
             this.FretlessModeCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveInlaysCheckbox = new System.Windows.Forms.CheckBox();
+            this.ToggleLoftWhenText = new System.Windows.Forms.Label();
+            this.ToggleLoftWhenStartupRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleLoftWhenManualRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleLoftWhenSongRadio = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // Songlist
@@ -425,7 +429,6 @@
             this.AutoLoadProfileCheckbox.TabIndex = 38;
             this.AutoLoadProfileCheckbox.Text = "Autoload Last Used Profile";
             this.AutoLoadProfileCheckbox.UseVisualStyleBackColor = true;
-            this.AutoLoadProfileCheckbox.CheckedChanged += new System.EventHandler(this.AutoLoadProfileCheckbox_CheckedChanged);
             // 
             // FretlessModeCheckbox
             // 
@@ -447,12 +450,60 @@
             this.RemoveInlaysCheckbox.Text = "Remove Inlays";
             this.RemoveInlaysCheckbox.UseVisualStyleBackColor = true;
             // 
+            // ToggleLoftWhenText
+            // 
+            this.ToggleLoftWhenText.AutoSize = true;
+            this.ToggleLoftWhenText.Location = new System.Drawing.Point(1381, 41);
+            this.ToggleLoftWhenText.Name = "ToggleLoftWhenText";
+            this.ToggleLoftWhenText.Size = new System.Drawing.Size(113, 13);
+            this.ToggleLoftWhenText.TabIndex = 43;
+            this.ToggleLoftWhenText.Text = "Toggle Loft Off When:";
+            this.ToggleLoftWhenText.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // ToggleLoftWhenStartupRadio
+            // 
+            this.ToggleLoftWhenStartupRadio.AutoSize = true;
+            this.ToggleLoftWhenStartupRadio.Location = new System.Drawing.Point(1329, 66);
+            this.ToggleLoftWhenStartupRadio.Name = "ToggleLoftWhenStartupRadio";
+            this.ToggleLoftWhenStartupRadio.Size = new System.Drawing.Size(180, 17);
+            this.ToggleLoftWhenStartupRadio.TabIndex = 44;
+            this.ToggleLoftWhenStartupRadio.TabStop = true;
+            this.ToggleLoftWhenStartupRadio.Text = "As Soon As The Game Starts Up";
+            this.ToggleLoftWhenStartupRadio.UseVisualStyleBackColor = true;
+            // 
+            // ToggleLoftWhenManualRadio
+            // 
+            this.ToggleLoftWhenManualRadio.AutoSize = true;
+            this.ToggleLoftWhenManualRadio.Location = new System.Drawing.Point(1329, 90);
+            this.ToggleLoftWhenManualRadio.Name = "ToggleLoftWhenManualRadio";
+            this.ToggleLoftWhenManualRadio.Size = new System.Drawing.Size(220, 17);
+            this.ToggleLoftWhenManualRadio.TabIndex = 45;
+            this.ToggleLoftWhenManualRadio.TabStop = true;
+            this.ToggleLoftWhenManualRadio.Text = "Only When I Manually Trigger Via Hotkey";
+            this.ToggleLoftWhenManualRadio.UseVisualStyleBackColor = true;
+            // 
+            // ToggleLoftWhenSongRadio
+            // 
+            this.ToggleLoftWhenSongRadio.AutoSize = true;
+            this.ToggleLoftWhenSongRadio.Location = new System.Drawing.Point(1329, 114);
+            this.ToggleLoftWhenSongRadio.Name = "ToggleLoftWhenSongRadio";
+            this.ToggleLoftWhenSongRadio.Size = new System.Drawing.Size(128, 17);
+            this.ToggleLoftWhenSongRadio.TabIndex = 46;
+            this.ToggleLoftWhenSongRadio.TabStop = true;
+            this.ToggleLoftWhenSongRadio.Text = "Only When In A Song";
+            this.ToggleLoftWhenSongRadio.UseVisualStyleBackColor = true;
+            this.ToggleLoftWhenSongRadio.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.Controls.Add(this.ToggleLoftWhenSongRadio);
+            this.Controls.Add(this.ToggleLoftWhenManualRadio);
+            this.Controls.Add(this.ToggleLoftWhenStartupRadio);
+            this.Controls.Add(this.ToggleLoftWhenText);
             this.Controls.Add(this.RemoveInlaysCheckbox);
             this.Controls.Add(this.FretlessModeCheckbox);
             this.Controls.Add(this.AutoLoadProfileCheckbox);
@@ -539,6 +590,10 @@
         private System.Windows.Forms.CheckBox AutoLoadProfileCheckbox;
         private System.Windows.Forms.CheckBox FretlessModeCheckbox;
         private System.Windows.Forms.CheckBox RemoveInlaysCheckbox;
+        private System.Windows.Forms.Label ToggleLoftWhenText;
+        private System.Windows.Forms.RadioButton ToggleLoftWhenStartupRadio;
+        private System.Windows.Forms.RadioButton ToggleLoftWhenManualRadio;
+        private System.Windows.Forms.RadioButton ToggleLoftWhenSongRadio;
     }
 }
 
