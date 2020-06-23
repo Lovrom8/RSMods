@@ -60,7 +60,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		}
 
 		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
-			MemHelpers.ToggleLoft(); 
+			MemHelpers.ToggleLoft();
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
@@ -156,10 +156,10 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (enableColorBlindCheckboxGUI)
 			ImGui::Checkbox("Colorblind Mode", &cbEnabled);
 
-		if (ImGui::Button("Add")) 
+		if (ImGui::Button("Add"))
 			if (allMeshes.size() > 0)
 				removedMeshes.push_back(allMeshes[currIdx]);
-		
+
 		ImGui::End();
 
 		ImGui::Begin("LOOSE CANNONS");
@@ -237,7 +237,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
 		currIdx--;
 
-	if (GetAsyncKeyState(VK_END) & 1) 
+	if (GetAsyncKeyState(VK_END) & 1)
 		startLogging = !startLogging;
 
 	if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
@@ -245,7 +245,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			Log(mesh.ToString().c_str());
 		}
 	}
-	
+
 	if (GetAsyncKeyState(VK_F7) & 1) { //save only removed 
 		for (auto mesh : removedMeshes) {
 			Log(mesh.ToString().c_str());
@@ -281,7 +281,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture
 		//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
 	}
-	
+
 	if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
 		currStride = Stride;
 		currNumVertices = NumVertices;
@@ -305,12 +305,12 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
-				/*if (MemHelpers.IsExtendedRangeSong())
-					pDevice->SetTexture(1, gradientTextureSeven);
-				else
-					 pDevice->SetTexture(1, gradientTextureNormal);*/
-				//either this or CB based Extended Range mode - otherwise you may get some silly effects
-					
+		/*if (MemHelpers.IsExtendedRangeSong())
+			pDevice->SetTexture(1, gradientTextureSeven);
+		else
+			 pDevice->SetTexture(1, gradientTextureNormal);*/
+			 //either this or CB based Extended Range mode - otherwise you may get some silly effects
+
 
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		pDevice->SetTexture(1, gradientTextureNormal);
@@ -394,7 +394,7 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 
 		sthSize = desc.Size;
 	}
-	
+
 
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, Stride);
 }
@@ -411,7 +411,7 @@ void GUI() {
 		std::cout << "Could not find D3D9 device pointer" << std::endl;
 		return;
 	}
-		
+
 	vTable = *(DWORD**)adr;
 	if (!vTable) {
 		std::cout << "Could not find game device's vTable address" << std::endl;
@@ -419,7 +419,7 @@ void GUI() {
 	}
 
 	oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexDeclaration_Index], (PBYTE)Hook_SetVertexDeclaration, 7);
-	oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)Hook_SetVertexShader,7 );
+	oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)Hook_SetVertexShader, 7);
 	oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)Hook_SetVertexShaderConstantF, 7);
 	oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
 	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
@@ -479,12 +479,14 @@ DWORD WINAPI MainThread(void*) {
 			MemHelpers.ToggleCB(cbEnabled);
 
 		if (!GameLoaded) {
-			if(MemHelpers.GetCurrentMenu() == "MainMenu")
+			if (MemHelpers.GetCurrentMenu() == "MainMenu")
 				GameLoaded = true;
 
 			if (!GameLoaded && Settings.ReturnToggleValue("ForceProfileEnabled") == "true")
 				AutoEnterGame();
 		}
+
+		ERMode.DoRainbow();
 	}
 
 	return 0;
