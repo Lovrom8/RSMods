@@ -238,11 +238,13 @@ std::vector<ThiccMesh> headstockThicc{
 };
 
 // All the single ladies
+std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
 std::vector<ThiccMesh> inlays{ { 32, 8, 9, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
+std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
 
 std::vector<ThiccMesh> allMeshes;
 std::vector<ThiccMesh> removedMeshes;

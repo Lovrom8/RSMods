@@ -7,7 +7,7 @@ bool rainbowEnabled = false;
 
 cMemHelpers MemHelpers;
 
-byte getLowestStringTuning() {
+byte cMemHelpers::getLowestStringTuning() {
 	uintptr_t addrTuning = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_tuning, Offsets.ptr_tuningOffsets);
 
 	if (!addrTuning)
@@ -22,7 +22,7 @@ bool cMemHelpers::IsExtendedRangeSong() {
 	if (!addrTimer) 
 		return false;
 
-	byte currTuning = getLowestStringTuning();
+	byte currTuning = cMemHelpers::getLowestStringTuning();
 	if (currTuning == 0 || currTuning > (255 + Settings.GetModSetting("ExtendedRangeMode"))) //tunings are in negative values*, so things go backwards ;) 
 		return false;
 	else
@@ -67,7 +67,7 @@ void cMemHelpers::ShowSongTimer() {
 void cMemHelpers::ShowCurrentTuning() {
     //98.432
 
-	byte lowestStringTuning = getLowestStringTuning();
+	byte lowestStringTuning = cMemHelpers::getLowestStringTuning();
 	if (lowestStringTuning == NULL)
 		return;
 

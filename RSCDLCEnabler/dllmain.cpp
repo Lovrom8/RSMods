@@ -20,6 +20,7 @@ const char* windowName = "Rocksmith 2014";
 
 bool menuEnabled = false;
 bool enableColorBlindCheckboxGUI = false;
+bool GameLoaded = false;
 
 int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
@@ -59,7 +60,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::cout << volume << " " << type << std::endl;
 		}
 
-		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true") {
+		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
 			MemHelpers.ToggleLoft();
 			std::cout << "Toggle Loft" << std::endl;
 		}
@@ -278,7 +279,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (startLogging) {
 		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
 			allMeshes.push_back(currentThicc);
-		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture
+		//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture (Small)
+		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture (Thicc)
 		//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
 	}
 
@@ -337,7 +339,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return D3D_OK;
 	else if (IsExtraRemoved(inlays, currentThicc) & Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true")
 		return D3D_OK;
-
+	else if (IsExtraRemoved(laneMarkers, currentThicc) & Settings.ReturnToggleValue("RemoveLaneMarkersEnabled") == "true")
+		return D3D_OK;
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
 
@@ -442,7 +445,6 @@ void AutoEnterGame() { //very big brain
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
-bool GameLoaded = false;
 bool LoftOff = false;
 
 DWORD WINAPI MainThread(void*) {
@@ -489,6 +491,9 @@ DWORD WINAPI MainThread(void*) {
 				LoftOff = false;
 			}
 		}
+		
+		if(GameLoaded)
+			std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
 
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);

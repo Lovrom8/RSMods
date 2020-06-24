@@ -31,7 +31,8 @@ cSettings::cSettings()
 	{"ForceProfileEnabled", "false"},
 	{"FretlessModeEnabled", "false"},
 	{"RemoveInlaysEnabled", "false"},
-	{"ToggleLoftWhen", "manual"}
+	{"ToggleLoftWhen", "manual"},
+	{"RemoveLaneMarkersEnabled", "false"}
 	};
 
 	customSettings = {
@@ -257,7 +258,8 @@ void cSettings::ReadKeyBinds() {
 				{"ForceProfileEnabled", reader.Get("Toggle Switches", "ForceProfileEnabled", "false")},
 				{"FretlessModeEnabled", reader.Get("Toggle Switches", "FretlessModeEnabled", "false")},
 				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "RemoveInlaysEnabled", "false")},
-				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")}
+				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")},
+				{"RemoveLaneMarkersEnabled", reader.Get("Toggle Switches", "RemoveLaneMarkersEnabled", "false")}
 	};
 }
 

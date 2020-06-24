@@ -10,6 +10,7 @@
 class cMemHelpers
 {
 public:
+	byte getLowestStringTuning();
 	void ToggleLoft();
 	void ToggleLoftWhenSongStarts();
 	void ShowSongTimer();
