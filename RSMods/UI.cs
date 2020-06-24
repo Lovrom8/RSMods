@@ -192,6 +192,15 @@ namespace RSMods
             {
                 this.RemoveInlaysCheckbox.Checked = false;
             }
+            
+            if (ImportPriorSettings()[28].ToString() == "true") // Remove Line Markers Enabled / Disabled
+            {
+                this.RemoveLineMarkersCheckBox.Checked = true;
+            }
+            else
+            {
+                this.RemoveLineMarkersCheckBox.Checked = false;
+            }
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -369,20 +378,24 @@ namespace RSMods
             {
                 SaveChanges(27, this.RemoveInlaysCheckbox.Checked.ToString().ToLower());
             }
-            if (this.ToggleLoftCheckbox.Checked == true)
+            if (this.ToggleLoftCheckbox.Checked == true) 
             {
-                if (this.ToggleLoftWhenManualRadio.Checked == true)
+                if (this.ToggleLoftWhenManualRadio.Checked == true) // Toggle Loft On Keypress
                 {
                     SaveChanges(28, "manual");
                 }
-                if (this.ToggleLoftWhenSongRadio.Checked == true)
+                if (this.ToggleLoftWhenSongRadio.Checked == true) // Toggle Loft On Song Load
                 {
                     SaveChanges(28, "song");
                 }
-                if (this.ToggleLoftWhenStartupRadio.Checked == true)
+                if (this.ToggleLoftWhenStartupRadio.Checked == true) // Toggle Loft On Game Startup
                 {
                     SaveChanges(28, "startup");
                 }
+            }
+            if (this.RemoveLineMarkersCheckBox.Checked.ToString() != ReadSettings.ProcessSettings(28)) // Remove Line Markers Enabled / Disabled
+            {
+                SaveChanges(29, this.RemoveLineMarkersCheckBox.Checked.ToString().ToLower());
             }
             // Extended Range
             if (this.ExtendedRangeTunings.GetSelected(0))
@@ -558,6 +571,10 @@ namespace RSMods
                 {
                     StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + ChangedSettingValue;
                 }
+                if (ElementToChange == 29) // Remove Lane Markers Enabled / Disabled
+                {
+                    StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + ChangedSettingValue;
+                }
                 WriteSettings.ModifyINI(StringArray);
             }
             else
@@ -576,7 +593,7 @@ namespace RSMods
         }
         public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[28];
+            object[] priorSettings = new object[29];
             priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
             priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
             priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
@@ -605,6 +622,7 @@ namespace RSMods
             priorSettings[25] = ReadSettings.ProcessSettings(25); // Fretless Mode Enabled / Disabled
             priorSettings[26] = ReadSettings.ProcessSettings(26); // Remove Inlay Markers Enabled / Disabled
             priorSettings[27] = ReadSettings.ProcessSettings(27); // Toggle Loft When Startup / Manual / Song
+            priorSettings[28] = ReadSettings.ProcessSettings(28); // Remove Lane Markers Enabled / Disabled
             return priorSettings;
         }
     }

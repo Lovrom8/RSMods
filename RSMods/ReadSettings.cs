@@ -6,7 +6,7 @@ namespace RSMods
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, RemoveLaneMarkersEnabled,
                              RocksmithInstallLocation;
 
         public static string
@@ -17,29 +17,30 @@ namespace RSMods
             Songlist5Identifier = "SongListTitle_5 = ",
             Songlist6Identifier = "SongListTitle_6 = ",
 
-            ToggleLoftIdentifier = "ToggleLoftKey = ",
-            AddVolumeIdentifier = "AddVolumeKey = ",
-            DecreaseVolumeIdentifier = "DecreaseVolumeKey = ",
-            ShowSongTimerIdentifier = "ShowSongTimerKey = ",
+            ToggleLoftIdentifier         = "ToggleLoftKey = ",
+            AddVolumeIdentifier          = "AddVolumeKey = ",
+            DecreaseVolumeIdentifier     = "DecreaseVolumeKey = ",
+            ShowSongTimerIdentifier      = "ShowSongTimerKey = ",
             ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
-            RainbowStringsIdentifier = "RainbowStringsKey = ",
+            RainbowStringsIdentifier     = "RainbowStringsKey = ",
 
-            ToggleLoftEnabledIdentifier = "ToggleLoftEnabled = ",
-            AddVolumeEnabledIdentifier = "AddVolumeEnabled = ",
-            DecreaseVolumeEnabledIdentifier = "DecreaseVolumeEnabled = ",
-            ShowSongTimerEnabledIdentifier = "ShowSongTimerEnabled = ",
+            ToggleLoftEnabledIdentifier         = "ToggleLoftEnabled = ",
+            AddVolumeEnabledIdentifier          = "AddVolumeEnabled = ",
+            DecreaseVolumeEnabledIdentifier     = "DecreaseVolumeEnabled = ",
+            ShowSongTimerEnabledIdentifier      = "ShowSongTimerEnabled = ",
             ForceReEnumerationEnabledIdentifier = "ForceReEnumerationEnabled = ",
-            RainbowStringsEnabledIdentifier = "RainbowStringsEnabled = ",
-            ExtendedRangeEnabledIdentifier = "ExtendedRangeEnabled = ",
-            ExtendedRangeTuningIdentifier = "ExtendedRangeTuning = ",
-            DiscoModeIdentifier = "DiscoModeEnabled = ",
-            RemoveHeadstockIdentifier = "RemoveHeadstockEnabled = ",
-            RemoveSkylineIdentifier = "RemoveSkylineEnabled = ",
-            GreenScreenWallIdentifier = "GreenScreenWallEnabled = ",
-            ForceProfileEnabledIdentifier = "ForceProfileEnabled = ",
-            FretlessModeEnabledIdentifier = "FretlessModeEnabled = ",
-            RemoveInlaysIdentifier = "RemoveInlaysEnabled = ",
-            ToggleLoftWhenIdentifier = "ToggleLoftWhen = ",
+            RainbowStringsEnabledIdentifier     = "RainbowStringsEnabled = ",
+            ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
+            ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
+            DiscoModeIdentifier                 = "DiscoModeEnabled = ",
+            RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
+            RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
+            GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
+            ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
+            FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
+            RemoveInlaysIdentifier              = "RemoveInlaysEnabled = ",
+            ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
+            RemoveLaneMarkersIdentifier         = "RemoveLaneMarkersEnabled = ",
 
 
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
@@ -428,11 +429,26 @@ namespace RSMods
                     {
                         return ToggleLoftWhen;
                     }
+                }
+                if (currentLine.Contains(RemoveLaneMarkersIdentifier))
+                {
+                    if(currentLine.Substring(RemoveLaneMarkersIdentifier.Length, (currentLine.Length - RemoveLaneMarkersIdentifier.Length)) == "true")
+                    {
+                        RemoveLaneMarkersEnabled = "true";
+                    }
+                    else
+                    {
+                        RemoveLaneMarkersEnabled = "false";
+                    }
 
+                    if(grab == 28)
+                    {
+                        return RemoveLaneMarkersEnabled;
+                    }
                 }
             }
-                return "";
-            }
+            return "";
+        }
 
             public static string SavedRocksmithLocation()
             {

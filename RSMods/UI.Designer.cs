@@ -33,7 +33,6 @@
             this.ModifiersLabel = new System.Windows.Forms.Label();
             this.ModList = new System.Windows.Forms.ListBox();
             this.ToggleLoftCheckbox = new System.Windows.Forms.CheckBox();
-            this.EnabledMods = new System.Windows.Forms.Label();
             this.AddVolumeCheckbox = new System.Windows.Forms.CheckBox();
             this.DecreaseVolumeCheckbox = new System.Windows.Forms.CheckBox();
             this.SongTimerCheckbox = new System.Windows.Forms.CheckBox();
@@ -70,9 +69,12 @@
             this.HowToEnumerateBox = new System.Windows.Forms.GroupBox();
             this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
             this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
+            this.EnabledModsBox = new System.Windows.Forms.GroupBox();
+            this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             this.ToggleLoftOffWhenBox.SuspendLayout();
             this.ExtendedRangeTuningBox.SuspendLayout();
+            this.EnabledModsBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -116,27 +118,17 @@
             // ToggleLoftCheckbox
             // 
             this.ToggleLoftCheckbox.AutoSize = true;
-            this.ToggleLoftCheckbox.Location = new System.Drawing.Point(915, 69);
+            this.ToggleLoftCheckbox.Location = new System.Drawing.Point(11, 25);
             this.ToggleLoftCheckbox.Name = "ToggleLoftCheckbox";
             this.ToggleLoftCheckbox.Size = new System.Drawing.Size(80, 17);
             this.ToggleLoftCheckbox.TabIndex = 6;
             this.ToggleLoftCheckbox.Text = "Toggle Loft";
             this.ToggleLoftCheckbox.UseVisualStyleBackColor = true;
             // 
-            // EnabledMods
-            // 
-            this.EnabledMods.AutoSize = true;
-            this.EnabledMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EnabledMods.Location = new System.Drawing.Point(955, 29);
-            this.EnabledMods.Name = "EnabledMods";
-            this.EnabledMods.Size = new System.Drawing.Size(150, 25);
-            this.EnabledMods.TabIndex = 7;
-            this.EnabledMods.Text = "Enabled Mods";
-            // 
             // AddVolumeCheckbox
             // 
             this.AddVolumeCheckbox.AutoSize = true;
-            this.AddVolumeCheckbox.Location = new System.Drawing.Point(915, 92);
+            this.AddVolumeCheckbox.Location = new System.Drawing.Point(11, 48);
             this.AddVolumeCheckbox.Name = "AddVolumeCheckbox";
             this.AddVolumeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.AddVolumeCheckbox.TabIndex = 8;
@@ -146,7 +138,7 @@
             // DecreaseVolumeCheckbox
             // 
             this.DecreaseVolumeCheckbox.AutoSize = true;
-            this.DecreaseVolumeCheckbox.Location = new System.Drawing.Point(1070, 92);
+            this.DecreaseVolumeCheckbox.Location = new System.Drawing.Point(166, 48);
             this.DecreaseVolumeCheckbox.Name = "DecreaseVolumeCheckbox";
             this.DecreaseVolumeCheckbox.Size = new System.Drawing.Size(110, 17);
             this.DecreaseVolumeCheckbox.TabIndex = 9;
@@ -156,7 +148,7 @@
             // SongTimerCheckbox
             // 
             this.SongTimerCheckbox.AutoSize = true;
-            this.SongTimerCheckbox.Location = new System.Drawing.Point(1070, 69);
+            this.SongTimerCheckbox.Location = new System.Drawing.Point(166, 25);
             this.SongTimerCheckbox.Name = "SongTimerCheckbox";
             this.SongTimerCheckbox.Size = new System.Drawing.Size(110, 17);
             this.SongTimerCheckbox.TabIndex = 10;
@@ -273,7 +265,7 @@
             // RainbowStringsEnabled
             // 
             this.RainbowStringsEnabled.AutoSize = true;
-            this.RainbowStringsEnabled.Location = new System.Drawing.Point(915, 115);
+            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 71);
             this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
             this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
             this.RainbowStringsEnabled.TabIndex = 26;
@@ -283,7 +275,7 @@
             // ExtendedRangeEnabled
             // 
             this.ExtendedRangeEnabled.AutoSize = true;
-            this.ExtendedRangeEnabled.Location = new System.Drawing.Point(1070, 115);
+            this.ExtendedRangeEnabled.Location = new System.Drawing.Point(166, 71);
             this.ExtendedRangeEnabled.Name = "ExtendedRangeEnabled";
             this.ExtendedRangeEnabled.Size = new System.Drawing.Size(146, 17);
             this.ExtendedRangeEnabled.TabIndex = 27;
@@ -322,7 +314,7 @@
             // ForceEnumerationCheckbox
             // 
             this.ForceEnumerationCheckbox.AutoSize = true;
-            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(915, 184);
+            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(11, 140);
             this.ForceEnumerationCheckbox.Name = "ForceEnumerationCheckbox";
             this.ForceEnumerationCheckbox.Size = new System.Drawing.Size(115, 17);
             this.ForceEnumerationCheckbox.TabIndex = 31;
@@ -342,7 +334,7 @@
             // DiscoModeCheckbox
             // 
             this.DiscoModeCheckbox.AutoSize = true;
-            this.DiscoModeCheckbox.Location = new System.Drawing.Point(1070, 161);
+            this.DiscoModeCheckbox.Location = new System.Drawing.Point(166, 117);
             this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
             this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.DiscoModeCheckbox.TabIndex = 33;
@@ -352,7 +344,7 @@
             // HeadstockCheckbox
             // 
             this.HeadstockCheckbox.AutoSize = true;
-            this.HeadstockCheckbox.Location = new System.Drawing.Point(915, 138);
+            this.HeadstockCheckbox.Location = new System.Drawing.Point(11, 94);
             this.HeadstockCheckbox.Name = "HeadstockCheckbox";
             this.HeadstockCheckbox.Size = new System.Drawing.Size(121, 17);
             this.HeadstockCheckbox.TabIndex = 34;
@@ -362,7 +354,7 @@
             // RemoveSkylineCheckbox
             // 
             this.RemoveSkylineCheckbox.AutoSize = true;
-            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(1070, 138);
+            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(166, 94);
             this.RemoveSkylineCheckbox.Name = "RemoveSkylineCheckbox";
             this.RemoveSkylineCheckbox.Size = new System.Drawing.Size(103, 17);
             this.RemoveSkylineCheckbox.TabIndex = 36;
@@ -372,7 +364,7 @@
             // GreenScreenWallCheckbox
             // 
             this.GreenScreenWallCheckbox.AutoSize = true;
-            this.GreenScreenWallCheckbox.Location = new System.Drawing.Point(915, 161);
+            this.GreenScreenWallCheckbox.Location = new System.Drawing.Point(11, 117);
             this.GreenScreenWallCheckbox.Name = "GreenScreenWallCheckbox";
             this.GreenScreenWallCheckbox.Size = new System.Drawing.Size(111, 17);
             this.GreenScreenWallCheckbox.TabIndex = 37;
@@ -382,7 +374,7 @@
             // AutoLoadProfileCheckbox
             // 
             this.AutoLoadProfileCheckbox.AutoSize = true;
-            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(1070, 184);
+            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(166, 140);
             this.AutoLoadProfileCheckbox.Name = "AutoLoadProfileCheckbox";
             this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(151, 17);
             this.AutoLoadProfileCheckbox.TabIndex = 38;
@@ -392,7 +384,7 @@
             // FretlessModeCheckbox
             // 
             this.FretlessModeCheckbox.AutoSize = true;
-            this.FretlessModeCheckbox.Location = new System.Drawing.Point(915, 207);
+            this.FretlessModeCheckbox.Location = new System.Drawing.Point(11, 163);
             this.FretlessModeCheckbox.Name = "FretlessModeCheckbox";
             this.FretlessModeCheckbox.Size = new System.Drawing.Size(92, 17);
             this.FretlessModeCheckbox.TabIndex = 41;
@@ -402,7 +394,7 @@
             // RemoveInlaysCheckbox
             // 
             this.RemoveInlaysCheckbox.AutoSize = true;
-            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(1070, 208);
+            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(166, 164);
             this.RemoveInlaysCheckbox.Name = "RemoveInlaysCheckbox";
             this.RemoveInlaysCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveInlaysCheckbox.TabIndex = 42;
@@ -473,7 +465,7 @@
             // 
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationAutomaticRadio);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
-            this.HowToEnumerateBox.Location = new System.Drawing.Point(1014, 304);
+            this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 388);
             this.HowToEnumerateBox.Name = "HowToEnumerateBox";
             this.HowToEnumerateBox.Size = new System.Drawing.Size(206, 96);
             this.HowToEnumerateBox.TabIndex = 47;
@@ -486,7 +478,7 @@
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenSongRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenManualRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenStartupRadio);
-            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1319, 46);
+            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1015, 271);
             this.ToggleLoftOffWhenBox.Name = "ToggleLoftOffWhenBox";
             this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(243, 86);
             this.ToggleLoftOffWhenBox.TabIndex = 48;
@@ -505,27 +497,52 @@
             this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
             this.ExtendedRangeTuningBox.Visible = false;
             // 
+            // EnabledModsBox
+            // 
+            this.EnabledModsBox.Controls.Add(this.RemoveLineMarkersCheckBox);
+            this.EnabledModsBox.Controls.Add(this.RemoveInlaysCheckbox);
+            this.EnabledModsBox.Controls.Add(this.SongTimerCheckbox);
+            this.EnabledModsBox.Controls.Add(this.ToggleLoftCheckbox);
+            this.EnabledModsBox.Controls.Add(this.FretlessModeCheckbox);
+            this.EnabledModsBox.Controls.Add(this.AddVolumeCheckbox);
+            this.EnabledModsBox.Controls.Add(this.DecreaseVolumeCheckbox);
+            this.EnabledModsBox.Controls.Add(this.AutoLoadProfileCheckbox);
+            this.EnabledModsBox.Controls.Add(this.RainbowStringsEnabled);
+            this.EnabledModsBox.Controls.Add(this.ExtendedRangeEnabled);
+            this.EnabledModsBox.Controls.Add(this.GreenScreenWallCheckbox);
+            this.EnabledModsBox.Controls.Add(this.ForceEnumerationCheckbox);
+            this.EnabledModsBox.Controls.Add(this.DiscoModeCheckbox);
+            this.EnabledModsBox.Controls.Add(this.RemoveSkylineCheckbox);
+            this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
+            this.EnabledModsBox.Location = new System.Drawing.Point(821, 12);
+            this.EnabledModsBox.Name = "EnabledModsBox";
+            this.EnabledModsBox.Size = new System.Drawing.Size(486, 211);
+            this.EnabledModsBox.TabIndex = 50;
+            this.EnabledModsBox.TabStop = false;
+            this.EnabledModsBox.Text = "Enabled Mods";
+            // 
+            // RemoveLineMarkersCheckBox
+            // 
+            this.RemoveLineMarkersCheckBox.AutoSize = true;
+            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 25);
+            this.RemoveLineMarkersCheckBox.Name = "RemoveLineMarkersCheckBox";
+            this.RemoveLineMarkersCheckBox.Size = new System.Drawing.Size(130, 17);
+            this.RemoveLineMarkersCheckBox.TabIndex = 43;
+            this.RemoveLineMarkersCheckBox.Text = "Remove Line Markers";
+            this.RemoveLineMarkersCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.Controls.Add(this.EnabledModsBox);
             this.Controls.Add(this.ExtendedRangeTuningBox);
             this.Controls.Add(this.ToggleLoftOffWhenBox);
             this.Controls.Add(this.HowToEnumerateBox);
-            this.Controls.Add(this.RemoveInlaysCheckbox);
-            this.Controls.Add(this.FretlessModeCheckbox);
-            this.Controls.Add(this.AutoLoadProfileCheckbox);
-            this.Controls.Add(this.GreenScreenWallCheckbox);
-            this.Controls.Add(this.RemoveSkylineCheckbox);
-            this.Controls.Add(this.HeadstockCheckbox);
-            this.Controls.Add(this.DiscoModeCheckbox);
             this.Controls.Add(this.ResetToDefaultButton);
-            this.Controls.Add(this.ForceEnumerationCheckbox);
             this.Controls.Add(this.RainbowStringsAssignment);
-            this.Controls.Add(this.ExtendedRangeEnabled);
-            this.Controls.Add(this.RainbowStringsEnabled);
             this.Controls.Add(this.NewSongListNameTxtbox);
             this.Controls.Add(this.NewSonglistName);
             this.Controls.Add(this.NewAssignment);
@@ -538,11 +555,6 @@
             this.Controls.Add(this.ToggleLoftKey);
             this.Controls.Add(this.SaveAndQuit);
             this.Controls.Add(this.CurrentAssignment);
-            this.Controls.Add(this.SongTimerCheckbox);
-            this.Controls.Add(this.DecreaseVolumeCheckbox);
-            this.Controls.Add(this.AddVolumeCheckbox);
-            this.Controls.Add(this.EnabledMods);
-            this.Controls.Add(this.ToggleLoftCheckbox);
             this.Controls.Add(this.ModList);
             this.Controls.Add(this.ModifiersLabel);
             this.Controls.Add(this.SongListLabel);
@@ -554,6 +566,8 @@
             this.ToggleLoftOffWhenBox.ResumeLayout(false);
             this.ToggleLoftOffWhenBox.PerformLayout();
             this.ExtendedRangeTuningBox.ResumeLayout(false);
+            this.EnabledModsBox.ResumeLayout(false);
+            this.EnabledModsBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -567,7 +581,6 @@
         private System.Windows.Forms.Label ModifiersLabel;
         private System.Windows.Forms.ListBox ModList;
         private System.Windows.Forms.CheckBox ToggleLoftCheckbox;
-        private System.Windows.Forms.Label EnabledMods;
         private System.Windows.Forms.CheckBox AddVolumeCheckbox;
         private System.Windows.Forms.CheckBox DecreaseVolumeCheckbox;
         private System.Windows.Forms.CheckBox SongTimerCheckbox;
@@ -604,6 +617,8 @@
         private System.Windows.Forms.GroupBox HowToEnumerateBox;
         private System.Windows.Forms.GroupBox ToggleLoftOffWhenBox;
         private System.Windows.Forms.GroupBox ExtendedRangeTuningBox;
+        private System.Windows.Forms.GroupBox EnabledModsBox;
+        private System.Windows.Forms.CheckBox RemoveLineMarkersCheckBox;
     }
 }
 
