@@ -226,8 +226,8 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
+D3DLOCKED_RECT lockedRect;
 
-UINT sthSize;
 bool startLogging = false;
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
@@ -268,9 +268,26 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2 && sthSize == 128) { //almost stems.. but still doesn't work completely
-		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
-		pDevice->SetTexture(1, additiveNoteTexture);
+	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2){ // vertexBufferSize == 128) { TODO: ffio, we may need to fix your problem with noteway again, because of this :P 
+		pDevice->GetTexture(1, &pBaseTexture);
+
+		pCurrTexture = (LPDIRECT3DTEXTURE9)(DWORD)pBaseTexture;
+		if (pCurrTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK)
+		{
+			DWORD* pData = (DWORD*)lockedRect.pBits;
+			if (pData != NULL) {
+				crc = crc32((BYTE*)pData, 1024);
+
+				//values for this set of meshes: if(crc == 3042459267 || crc == 3766938712 || crc == 3831959910 || crc == 3855492848 || crc == 4095938969) 
+			
+				if (crc == 3766938712) { //only stems :0
+					pDevice->SetTexture(1, additiveNoteTexture);
+					return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+				}
+			}
+		}
+
+		pCurrTexture->UnlockRect(0);
 	}
 
 	Mesh current(Stride, primCount, NumVertices);
@@ -388,16 +405,8 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 	if (Stride == 32 && numElements == 8 && mVectorCount == 4 && decl->Type == 2) { // Remove Line Markers
 		pStreamData->GetDesc(&desc);
 
-		if (desc.Size == 128) { //desc has multiple properties, so you may find something different that would differentiate two meshes if you are lucky
-
-			//std::cout << StreamNumber << " " << OffsetInBytes << std::endl;
-			//std::cout << "---------" << std::endl;
-
-		}
-
-		sthSize = desc.Size;
+		vertexBufferSize = desc.Size;
 	}
-
 
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, Stride);
 }
@@ -492,8 +501,8 @@ DWORD WINAPI MainThread(void*) {
 			}
 		}
 		
-		if(GameLoaded)
-			std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
+		//if(GameLoaded)
+		//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
 
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);

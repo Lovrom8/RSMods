@@ -43,7 +43,7 @@ void __declspec(naked) songListCustomHook() {
 //At 0x01529F61, into EAX is saved pointer to: either the clean string (if index exists) or a string without the $[] part (eg. either it becomes SONG LIST or #46967#SONG LIST
 //so prolly a good place to hook - check if it contains # and check the last digit to determine which index to put out
 
-/* My version for custom song list names, by using the 0x01529F61 method 
+/* My version for custom song list names, by using the 0x01529F61 method
 
 void __declspec(naked) hook_basicCustomTitles() {
 	__asm {
@@ -127,31 +127,3 @@ void showptr() {
 //	dVtable = (DWORD*)dVtable[0];
 
 */
-
-/*--------------------------------------------------------------------*/
-
-/*--------------- CHANGES VALUE, BUT DOESN'T HAVE AN ACTUAL EFFECT -------------------------*/
-
-/*void cMemHelpers::AddVolume(float add) {
-	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
-
-	float val = *(float*)addr;
-
-	if (val + add >= 100.0f)
-		return;
-
-	*(float*)addr = val + add;
-}
-
-void cMemHelpers::DecreaseVolume(float remove) {
-	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_volume, Offsets.ptr_volumeOffsets);
-
-	float val = *(float*)addr;
-
-	if (val + remove <= 0.0f)
-		return;
-
-	*(float*)addr = val + remove;
-}*/
-
-/*--------------------------------------------------------------------*/

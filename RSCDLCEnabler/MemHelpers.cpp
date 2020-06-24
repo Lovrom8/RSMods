@@ -23,7 +23,7 @@ bool cMemHelpers::IsExtendedRangeSong() {
 		return false;
 
 	byte currTuning = cMemHelpers::getLowestStringTuning();
-	if (currTuning == 0 || currTuning > (255 + Settings.GetModSetting("ExtendedRangeMode"))) //tunings are in negative values*, so things go backwards ;) 
+	if (currTuning == 0 || currTuning > (256 + Settings.GetModSetting("ExtendedRangeMode"))) //tunings are in negative values*, so things go backwards ;) 
 		return false;
 	else
 		return true;
@@ -63,21 +63,14 @@ void cMemHelpers::ShowSongTimer() {
 }
 
 
-
 void cMemHelpers::ShowCurrentTuning() {
-    //98.432
-
 	byte lowestStringTuning = cMemHelpers::getLowestStringTuning();
 	if (lowestStringTuning == NULL)
 		return;
 
-
 	std::string valStr = std::to_string(lowestStringTuning);
-
-	MessageBoxA(NULL, valStr.c_str(), "", 0);
+	std::cout << valStr << std::endl;
 }
-
-
 
 void cMemHelpers::ToggleCB(bool enabled) {
 	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
