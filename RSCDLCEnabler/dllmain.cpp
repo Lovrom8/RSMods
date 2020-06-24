@@ -385,7 +385,7 @@ HRESULT APIENTRY Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelSh
 HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
-	if (Stride == 32 && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
+	if (Stride == 32 && numElements == 8 && mVectorCount == 4 && decl->Type == 2) { // Remove Line Markers
 		pStreamData->GetDesc(&desc);
 
 		if (desc.Size == 128) { //desc has multiple properties, so you may find something different that would differentiate two meshes if you are lucky
