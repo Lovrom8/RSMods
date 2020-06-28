@@ -230,6 +230,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 }
 D3DLOCKED_RECT lockedRect;
 
+long x = 0;
 bool startLogging = false;
 std::vector<LPDIRECT3DTEXTURE9> headstockTexutrePointers;
 static bool calculatedCRC = false, calculatedHeadstocks = false;
@@ -374,14 +375,16 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				if (!pBaseTexture) //if there's no texture for Stage 1
 					return D3D_OK;
 
+				std::cout << x << std::endl;
+				x++;
 				if (pCurrTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK) {
 					DWORD* pData = (DWORD*)lockedRect.pBits;
 
 					if (pData != NULL) {
 						crc = crc32((BYTE*)pData, 1024);
 
-						if (crc == 0x09e27e2a || crc == 0x92989f05 || crc == 0x52bc9a4c || crc == 0x625dacfe)
-							if(std::find(std::begin(headstockTexutrePointers), std::end(headstockTexutrePointers), pCurrTexture) != std::end(headstockTexutrePointers))
+						if (crc == 0x09e27e2a || crc == 0x92989f05 || crc == 0x52bc9a4c) 
+							if(std::find(std::begin(headstockTexutrePointers), std::end(headstockTexutrePointers), pCurrTexture) == std::end(headstockTexutrePointers))
 								headstockTexutrePointers.push_back(pCurrTexture);
 
 						//Log("0x%08x", crc);
