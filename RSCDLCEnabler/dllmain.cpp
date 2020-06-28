@@ -132,6 +132,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven);
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture);
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture);
+		D3DXCreateTextureFromFile(pDevice, L"normalGradient.bmp", &normalBMP);
 
 		std::cout << "ImGUI Init" << std::endl;
 	}
@@ -282,7 +283,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				//values for this set of meshes: if(crc == 3042459267 || crc == 3766938712 || crc == 3831959910 || crc == 3855492848 || crc == 4095938969) 
 			
 				if (crc == 3766938712) { //only stems :0
-					pDevice->SetTexture(1, additiveNoteTexture);
+					pDevice->SetTexture(1, gradientTextureNormal);
+					//pDevice->SetTexture(1, normalBMP);
 					return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 				}
 			}
@@ -333,6 +335,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+		//pDevice->SetTexture(1, normalBMP);
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
@@ -472,7 +475,9 @@ DWORD WINAPI MainThread(void*) {
 
 	while (true) {
 		Sleep(300);
-		ERMode.Toggle7StringMode();
+		
+		if(GameLoaded)
+			ERMode.Toggle7StringMode();
 
 		/*
 		 Dev Commands
