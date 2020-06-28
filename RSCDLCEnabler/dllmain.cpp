@@ -231,6 +231,8 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 D3DLOCKED_RECT lockedRect;
 
 bool startLogging = false;
+std::vector<LPDIRECT3DTEXTURE9> headstockTexutrePointers;
+static bool calculatedCRC = false, calculatedHeadstocks = false;
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
@@ -270,27 +272,34 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2){ // vertexBufferSize == 128) { TODO: ffio, we may need to fix your problem with noteway again, because of this :P 
+	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // vertexBufferSize == 128) { TODO: ffio, we may need to fix your problem with noteway again, because of this :P 
 		pDevice->GetTexture(1, &pBaseTexture);
 
 		pCurrTexture = (LPDIRECT3DTEXTURE9)(DWORD)pBaseTexture;
-		if (pCurrTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK)
-		{
-			DWORD* pData = (DWORD*)lockedRect.pBits;
-			if (pData != NULL) {
-				crc = crc32((BYTE*)pData, 1024);
 
-				//values for this set of meshes: if(crc == 3042459267 || crc == 3766938712 || crc == 3831959910 || crc == 3855492848 || crc == 4095938969) 
-			
-				if (crc == 3766938712) { //only stems :0
-					pDevice->SetTexture(1, gradientTextureNormal);
-					//pDevice->SetTexture(1, normalBMP);
-					return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+		if (calculatedCRC && pCurrTexture == stemTexture) {
+			pDevice->SetTexture(1, additiveNoteTexture);
+			//pDevice->SetTexture(1, additiveBMP);
+		}
+		else {
+			if (pCurrTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK) {
+				DWORD* pData = (DWORD*)lockedRect.pBits;
+				if (pData != NULL) {
+					crc = crc32((BYTE*)pData, 1024);
+
+					//values for this set of meshes: if(crc == 3042459267 || crc == 3766938712 || crc == 3831959910 || crc == 3855492848 || crc == 4095938969) 
+
+					if (crc == 3766938712) { //only stems :0
+						stemTexture = pCurrTexture;
+						calculatedCRC = true;
+					}
 				}
 			}
 		}
 
 		pCurrTexture->UnlockRect(0);
+
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
 	Mesh current(Stride, primCount, NumVertices);
@@ -340,29 +349,64 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	}
 
 	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS
-	if (IsToBeRemoved(skyline, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
-		return D3D_OK;
+		if (IsToBeRemoved(skyline, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
+			return D3D_OK;
 
-	/* Buggy ATM
-	else if (IsToBeRemoved(skylineLesson, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
-		return D3D_OK;
-	*/
+		/* Buggy ATM
+		else if (IsToBeRemoved(skylineLesson, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
+			return D3D_OK;
+		*/
 
-	else if (IsExtraRemoved(greenscreenwall, currentThicc) & Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true")
-		return D3D_OK;
+		else if (Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true" && IsExtraRemoved(greenscreenwall, currentThicc))
+			return D3D_OK;
 
-	else if (IsExtraRemoved(headstockThicc, currentThicc) & Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true")
-		return D3D_OK;
+		else if (Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true") {
+			pDevice->GetTexture(1, &pBaseTexture);
+			pCurrTexture = (LPDIRECT3DTEXTURE9)(DWORD)pBaseTexture;
 
-	if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
-		return D3D_OK;
+			if (calculatedHeadstocks) {
+				for (auto pTexture : headstockTexutrePointers) {
+					if (pTexture == pCurrTexture)
+						return D3D_OK;
+				}
+			}
+			else if (IsExtraRemoved(headstockThicc, currentThicc)) {
+				if (!pBaseTexture) //if there's no texture for Stage 1
+					return D3D_OK;
 
-	else if (IsExtraRemoved(fretless, currentThicc) & Settings.ReturnToggleValue("FretlessModeEnabled") == "true")
-		return D3D_OK;
-	else if (IsExtraRemoved(inlays, currentThicc) & Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true")
-		return D3D_OK;
-	else if (IsExtraRemoved(laneMarkers, currentThicc) & Settings.ReturnToggleValue("RemoveLaneMarkersEnabled") == "true")
-		return D3D_OK;
+				if (pCurrTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK) {
+					DWORD* pData = (DWORD*)lockedRect.pBits;
+
+					if (pData != NULL) {
+						crc = crc32((BYTE*)pData, 1024);
+
+						if (crc == 0x09e27e2a || crc == 0x92989f05 || crc == 0x52bc9a4c || crc == 0x625dacfe)
+							if(std::find(std::begin(headstockTexutrePointers), std::end(headstockTexutrePointers), pCurrTexture) != std::end(headstockTexutrePointers))
+								headstockTexutrePointers.push_back(pCurrTexture);
+
+						//Log("0x%08x", crc);
+					}
+
+					if (headstockTexutrePointers.size() == 4) //for your usual 3+3 there's only 4 textrues in total, will need to change this
+						calculatedHeadstocks = true;
+					
+					pCurrTexture->UnlockRect(0);
+				}
+
+				return D3D_OK;
+			}
+		}
+
+
+		if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+			return D3D_OK;
+
+		else if (Settings.ReturnToggleValue("FretlessModeEnabled") == "true" && IsExtraRemoved(fretless, currentThicc))
+			return D3D_OK;
+		else if (Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true" && IsExtraRemoved(inlays, currentThicc))
+			return D3D_OK;
+		else if (Settings.ReturnToggleValue("RemoveLaneMarkersEnabled") == "true" && IsExtraRemoved(laneMarkers, currentThicc))
+			return D3D_OK;
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
@@ -475,8 +519,8 @@ DWORD WINAPI MainThread(void*) {
 
 	while (true) {
 		Sleep(300);
-		
-		if(GameLoaded)
+
+		if (GameLoaded)
 			ERMode.Toggle7StringMode();
 
 		/*
@@ -498,7 +542,7 @@ DWORD WINAPI MainThread(void*) {
 		{
 			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
 			{
-				if(!LoftOff) // Only toggle loft once
+				if (!LoftOff) // Only toggle loft once
 					MemHelpers.ToggleLoft();
 				LoftOff = true;
 			}
@@ -508,7 +552,7 @@ DWORD WINAPI MainThread(void*) {
 				LoftOff = false;
 			}
 		}
-		
+
 		//if(GameLoaded)
 		//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
 

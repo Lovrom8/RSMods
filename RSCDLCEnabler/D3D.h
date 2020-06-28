@@ -38,6 +38,7 @@ LPDIRECT3DTEXTURE9 pCurrTexture;
 
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, normalBMP;
+LPDIRECT3DTEXTURE9 stemTexture;
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
