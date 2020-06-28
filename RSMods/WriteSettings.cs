@@ -51,7 +51,7 @@ namespace RSMods
                 StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + "false"; // Fretless Mode Enabled / Disabled
                 StringArray[29] = ReadSettings.RemoveInlaysIdentifier + "false"; // Remove Inlay Markers Enabled / Disabled
                 StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + "manual"; // Define how or when the loft is disabled - game startup, on key command or in song only
-                StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + "false";
+                StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + "false"; // Remove Inlays  Enabled / Disabled
                 ModifyINI(StringArray);
         }
         public static string WhereIsRocksmith()
