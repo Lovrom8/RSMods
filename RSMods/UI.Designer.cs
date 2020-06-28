@@ -245,7 +245,7 @@
             // RainbowStringsAssignment
             // 
             this.RainbowStringsAssignment.AutoSize = true;
-            this.RainbowStringsAssignment.Location = new System.Drawing.Point(544, 130);
+            this.RainbowStringsAssignment.Location = new System.Drawing.Point(488, 152);
             this.RainbowStringsAssignment.Name = "RainbowStringsAssignment";
             this.RainbowStringsAssignment.Size = new System.Drawing.Size(0, 13);
             this.RainbowStringsAssignment.TabIndex = 28;
