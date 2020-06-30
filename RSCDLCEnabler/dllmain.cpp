@@ -221,10 +221,11 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Stride == 12) { //Stride 12 = tails PogU
-		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
-		pDevice->SetTexture(1, gradientTextureNormal);
-	}
+		if (Stride == 12 && Settings.ReturnToggleValue("ExtendedRangeEnabled") == "true") { //Stride 12 = tails PogU
+			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+			pDevice->SetTexture(1, gradientTextureNormal);
+		}
+	
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
@@ -333,7 +334,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	//return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 
-	if (IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
+	if (IsToBeRemoved(sevenstring, current) && Settings.ReturnToggleValue("ExtendedRangeEnabled") == "true") { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
