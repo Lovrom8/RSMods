@@ -111,7 +111,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 
 		// Zags custom low B color values manually entered; highlighted
 		Color c0hNew; Color c1hNew; Color c2hNew; Color c3hNew; Color c4hNew; Color c5hNew; 
-		c0hNew.r = 0.0; c0hNew.g = 0.1; c0hNew.b = 0.6470588;
+		c0hNew.r = 0.0; c0hNew.g = 1; c0hNew.b = 0.6470588;
 		c1hNew.r = 1; c1hNew.g = 0; c1hNew.b = 0.0627451;
 		c2hNew.r = 1; c2hNew.g = 0.7803922; c2hNew.b = 0;
 		c3hNew.r = 0; c3hNew.g = 0.6627451; c3hNew.b = 1;
