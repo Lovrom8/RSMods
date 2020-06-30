@@ -1,9 +1,0 @@
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014_CDLC_Injector.Properties.Resources.resources
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.csproj.GenerateResource.cache
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.csproj.CoreCompileInputs.cache
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.exe.config
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.exe
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.pdb
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.exe
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.pdb
-C:\Users\corbi\source\repos\Rocksmith2014-CDLC-Injector\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014_CDLC_Injector.GUI.resources
