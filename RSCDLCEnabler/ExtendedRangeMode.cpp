@@ -100,7 +100,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	uintptr_t string0n = GetStringColor(0, normal); uintptr_t string1n = GetStringColor(1, normal); uintptr_t string2n = GetStringColor(2, normal); uintptr_t string3n = GetStringColor(3, normal); uintptr_t string4n = GetStringColor(4, normal); uintptr_t string5n = GetStringColor(5, normal);
 	uintptr_t string0h = GetStringColor(0, highlight); uintptr_t string1h = GetStringColor(1, highlight); uintptr_t string2h = GetStringColor(2, highlight); uintptr_t string3h = GetStringColor(3, highlight); uintptr_t string4h = GetStringColor(4, highlight); uintptr_t string5h = GetStringColor(5, highlight); // highlight = "glow" in gamecolormanager.flat file
 	uintptr_t string0d = GetStringColor(0, disabled); uintptr_t string1d = GetStringColor(1, disabled); uintptr_t string2d = GetStringColor(2, disabled); uintptr_t string3d = GetStringColor(3, disabled); uintptr_t string4d = GetStringColor(4, disabled); uintptr_t string5d = GetStringColor(5, disabled); // name="GuitarStringsDisabledColorBlind" id="4184626561"
-	 //commented out for now as memory addresses are not defined in structs.h
+	 /*//commented out for now as memory addresses are not defined in structs.h
 	uintptr_t string0Amb = GetStringColor(0, Ambient); uintptr_t string1Amb = GetStringColor(1, Ambient); uintptr_t string2Amb = GetStringColor(2, Ambient); uintptr_t string3Amb = GetStringColor(3, Ambient); uintptr_t string4Amb = GetStringColor(4, Ambient); uintptr_t string5Amb = GetStringColor(5, Ambient);
 	uintptr_t string0Enabled = GetStringColor(0, Enabled); uintptr_t string1Enabled = GetStringColor(1, Enabled); uintptr_t string2Enabled = GetStringColor(2, Enabled); uintptr_t string3Enabled = GetStringColor(3, Enabled); uintptr_t string4Enabled = GetStringColor(4, Enabled); uintptr_t string5Enabled = GetStringColor(5, Enabled);
 	uintptr_t string0PegTune = GetStringColor(0, PegTune); uintptr_t string1PegTune = GetStringColor(1, PegTune); uintptr_t string2PegTune = GetStringColor(2, PegTune); uintptr_t string3PegTune = GetStringColor(3, PegTune); uintptr_t string4PegTune = GetStringColor(4, PegTune); uintptr_t string5PegTune = GetStringColor(5, PegTune);
@@ -110,11 +110,12 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	uintptr_t string0BodyNorm = GetStringColor(0, BodyNorm); uintptr_t string1BodyNorm = GetStringColor(1, BodyNorm); uintptr_t string2BodyNorm = GetStringColor(2, BodyNorm); uintptr_t string3BodyNorm = GetStringColor(3, BodyNorm); uintptr_t string4BodyNorm = GetStringColor(4, BodyNorm); uintptr_t string5BodyNorm = GetStringColor(5, BodyNorm);
 	uintptr_t string0BodyAcc = GetStringColor(0, BodyAcc); uintptr_t string1BodyAcc = GetStringColor(1, BodyAcc); uintptr_t string2BodyAcc = GetStringColor(2, BodyAcc); uintptr_t string3BodyAcc = GetStringColor(3, BodyAcc); uintptr_t string4BodyAcc = GetStringColor(4, BodyAcc); uintptr_t string5BodyAcc = GetStringColor(5, BodyAcc);
 	uintptr_t string0BodyPrev = GetStringColor(0, BodyPrev); uintptr_t string1BodyPrev = GetStringColor(1, BodyPrev); uintptr_t string2BodyPrev = GetStringColor(2, BodyPrev); uintptr_t string3BodyPrev = GetStringColor(3, BodyPrev); uintptr_t string4BodyPrev = GetStringColor(4, BodyPrev); uintptr_t string5BodyPrev = GetStringColor(5, BodyPrev);
-	
+	*/
 	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") {
 		cN = *(Color*)string0n;
 		cD = *(Color*)string0d;
 		cH = *(Color*)string0h;
+		/* // this comment block can be removed once the memory spaces are identified in structs.h - I think
 		cAmb = *(Color*)string0Amb;
 		cEnabled = *(Color*)string0Enabled;
 		cPegTune = *(Color*)string0PegTune;
@@ -124,7 +125,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		cBodyNorm = *(Color*)string0BodyNorm;
 		cBodyAcc = *(Color*)string0BodyAcc;
 		cBodyPrev = *(Color*)string0BodyPrev;
-
+		*/
 
 	}
 
@@ -162,7 +163,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		//keyboard monkey; The values below need to be called some how - I'm too stupid to work out how to make them be where they should be.... help please? ZZ
 		//first line of each block should (I think) be moved up to around line #94 etc. 
 		//Proerties and ID from the GameColorManager.FLat files are included for refference.
-		
+		/*
 		//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
 		//uintptr_t string0Amb = GetStringColor(0, Ambient); uintptr_t string1Amb = GetStringColor(1, Ambient); uintptr_t string2Amb = GetStringColor(2, Ambient); uintptr_t string3Amb = GetStringColor(3, Ambient); uintptr_t string4Amb = GetStringColor(4, Ambient); uintptr_t string5Amb = GetStringColor(5, Ambient);
 
@@ -284,6 +285,8 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c5BodyPrevNew.r = 0.1647059; c5BodyPrevNew.g = 0.2509804; c5BodyPrevNew.b = 0.1607843;
 		*(Color*)string0BodyPrev = c0BodyPrevNew; *(Color*)string1BodyPrev = c1BodyPrevNew;	*(Color*)string2BodyPrev = c2BodyPrevNew;	*(Color*)string3BodyPrev = c3BodyPrevNew;	*(Color*)string4BodyPrev = c4BodyPrevNew;	*(Color*)string5BodyPrev = c5BodyPrevNew;
 		
+		// this comment block can be removed once the memory spaces are identified in structs.h - I think
+		*/ 
 
 		/* Color cNnew, cDnew, cHnew; // existing code. NFI what it did...
 		cNnew = cN;
