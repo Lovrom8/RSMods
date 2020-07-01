@@ -79,6 +79,15 @@ struct String { //maybe do sth with this
 Color cN;
 Color cD;
 Color cH;
+Color cAmb;
+Color cEnabled;
+Color cPegTune;
+Color cPegInTune;
+Color cTextNew;
+Color cPart;
+Color cBodyNorm;
+Color cBodyAcc;
+Color cBodyPrev;
 
 
 std::vector<String> strings;
@@ -91,11 +100,32 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	uintptr_t string0n = GetStringColor(0, normal); uintptr_t string1n = GetStringColor(1, normal); uintptr_t string2n = GetStringColor(2, normal); uintptr_t string3n = GetStringColor(3, normal); uintptr_t string4n = GetStringColor(4, normal); uintptr_t string5n = GetStringColor(5, normal);
 	uintptr_t string0h = GetStringColor(0, highlight); uintptr_t string1h = GetStringColor(1, highlight); uintptr_t string2h = GetStringColor(2, highlight); uintptr_t string3h = GetStringColor(3, highlight); uintptr_t string4h = GetStringColor(4, highlight); uintptr_t string5h = GetStringColor(5, highlight); // highlight = "glow" in gamecolormanager.flat file
 	uintptr_t string0d = GetStringColor(0, disabled); uintptr_t string1d = GetStringColor(1, disabled); uintptr_t string2d = GetStringColor(2, disabled); uintptr_t string3d = GetStringColor(3, disabled); uintptr_t string4d = GetStringColor(4, disabled); uintptr_t string5d = GetStringColor(5, disabled); // name="GuitarStringsDisabledColorBlind" id="4184626561"
-
+	 //commented out for now as memory addresses are not defined in structs.h
+	uintptr_t string0Amb = GetStringColor(0, Ambient); uintptr_t string1Amb = GetStringColor(1, Ambient); uintptr_t string2Amb = GetStringColor(2, Ambient); uintptr_t string3Amb = GetStringColor(3, Ambient); uintptr_t string4Amb = GetStringColor(4, Ambient); uintptr_t string5Amb = GetStringColor(5, Ambient);
+	uintptr_t string0Enabled = GetStringColor(0, Enabled); uintptr_t string1Enabled = GetStringColor(1, Enabled); uintptr_t string2Enabled = GetStringColor(2, Enabled); uintptr_t string3Enabled = GetStringColor(3, Enabled); uintptr_t string4Enabled = GetStringColor(4, Enabled); uintptr_t string5Enabled = GetStringColor(5, Enabled);
+	uintptr_t string0PegTune = GetStringColor(0, PegTune); uintptr_t string1PegTune = GetStringColor(1, PegTune); uintptr_t string2PegTune = GetStringColor(2, PegTune); uintptr_t string3PegTune = GetStringColor(3, PegTune); uintptr_t string4PegTune = GetStringColor(4, PegTune); uintptr_t string5PegTune = GetStringColor(5, PegTune);
+	uintptr_t string0PegInTune = GetStringColor(0, PegInTune); uintptr_t string1PegInTune = GetStringColor(1, PegInTune); uintptr_t string2PegInTune = GetStringColor(2, PegInTune); uintptr_t string3PegInTune = GetStringColor(3, PegInTune); uintptr_t string4PegInTune = GetStringColor(4, PegInTune); uintptr_t string5PegInTune = GetStringColor(5, PegInTune);
+	uintptr_t string0Text = GetStringColor(0, text); uintptr_t string1TextNew = GetStringColor(1, text); uintptr_t string2TextNew = GetStringColor(2, text); uintptr_t string3TextNew = GetStringColor(3, text); uintptr_t string4TextNew = GetStringColor(4, text); uintptr_t string5TextNew = GetStringColor(5, text);
+	uintptr_t string0Part = GetStringColor(0, Particles); uintptr_t string1Part = GetStringColor(1, Particles); uintptr_t string2Part = GetStringColor(2, Particles); uintptr_t string3Part = GetStringColor(3, Particles); uintptr_t string4Part = GetStringColor(4, Particles); uintptr_t string5Part = GetStringColor(5, Particles);
+	uintptr_t string0BodyNorm = GetStringColor(0, BodyNorm); uintptr_t string1BodyNorm = GetStringColor(1, BodyNorm); uintptr_t string2BodyNorm = GetStringColor(2, BodyNorm); uintptr_t string3BodyNorm = GetStringColor(3, BodyNorm); uintptr_t string4BodyNorm = GetStringColor(4, BodyNorm); uintptr_t string5BodyNorm = GetStringColor(5, BodyNorm);
+	uintptr_t string0BodyAcc = GetStringColor(0, BodyAcc); uintptr_t string1BodyAcc = GetStringColor(1, BodyAcc); uintptr_t string2BodyAcc = GetStringColor(2, BodyAcc); uintptr_t string3BodyAcc = GetStringColor(3, BodyAcc); uintptr_t string4BodyAcc = GetStringColor(4, BodyAcc); uintptr_t string5BodyAcc = GetStringColor(5, BodyAcc);
+	uintptr_t string0BodyPrev = GetStringColor(0, BodyPrev); uintptr_t string1BodyPrev = GetStringColor(1, BodyPrev); uintptr_t string2BodyPrev = GetStringColor(2, BodyPrev); uintptr_t string3BodyPrev = GetStringColor(3, BodyPrev); uintptr_t string4BodyPrev = GetStringColor(4, BodyPrev); uintptr_t string5BodyPrev = GetStringColor(5, BodyPrev);
+	
 	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") {
 		cN = *(Color*)string0n;
 		cD = *(Color*)string0d;
 		cH = *(Color*)string0h;
+		cAmb = *(Color*)string0Amb;
+		cEnabled = *(Color*)string0Enabled;
+		cPegTune = *(Color*)string0PegTune;
+		cPegInTune = *(Color*)string0PegInTune;
+		cTextNew = *(Color*)string0Text;
+		cPart = *(Color*)string0Part;
+		cBodyNorm = *(Color*)string0BodyNorm;
+		cBodyAcc = *(Color*)string0BodyAcc;
+		cBodyPrev = *(Color*)string0BodyPrev;
+
+
 	}
 
 	if(MemHelpers.IsExtendedRangeSong()){
@@ -132,9 +162,9 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		//keyboard monkey; The values below need to be called some how - I'm too stupid to work out how to make them be where they should be.... help please? ZZ
 		//first line of each block should (I think) be moved up to around line #94 etc. 
 		//Proerties and ID from the GameColorManager.FLat files are included for refference.
-		/*
+		
 		//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
-		uintptr_t string0amb = GetStringColor(0, ambient); uintptr_t string1amb = GetStringColor(1, ambient); uintptr_t string2amb = GetStringColor(2, ambient); uintptr_t string3amb = GetStringColor(3, ambient); uintptr_t string4amb = GetStringColor(4, ambient); uintptr_t string5amb = GetStringColor(5, ambient);
+		//uintptr_t string0Amb = GetStringColor(0, Ambient); uintptr_t string1Amb = GetStringColor(1, Ambient); uintptr_t string2Amb = GetStringColor(2, Ambient); uintptr_t string3Amb = GetStringColor(3, Ambient); uintptr_t string4Amb = GetStringColor(4, Ambient); uintptr_t string5Amb = GetStringColor(5, Ambient);
 
 		Color c0AmbNew; Color c1AmbNew; Color c2AmbNew; Color c3AmbNew; Color c4AmbNew; Color c5AmbNew;
 		c0AmbNew.r = 0.372549; c0AmbNew.g = 0.7490196; c0AmbNew.b = 0.6431373;
@@ -143,12 +173,11 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c3AmbNew.r = 0.3686275; c3AmbNew.g = 0.6156863; c3AmbNew.b = 0.7372549;
 		c4AmbNew.r = 0.7490196; c4AmbNew.g = 0.5529412; c4AmbNew.b = 0.372549;
 		c5AmbNew.r = 0.372549; c5AmbNew.g = 0.7490196; c5AmbNew.b = 0.5921569;
-		*(Color*)string0amb = c0AmbNew; *(Color*)string1amb = c1AmbNew;	*(Color*)string2amb = c2AmbNew;	*(Color*)string3amb = c3AmbNew;	*(Color*)string4amb = c4AmbNew;	*(Color*)string5amb = c5AmbNew;
-		*/
+		*(Color*)string0Amb = c0AmbNew; *(Color*)string1Amb = c1AmbNew;	*(Color*)string2Amb = c2AmbNew;	*(Color*)string3Amb = c3AmbNew;	*(Color*)string4Amb = c4AmbNew;	*(Color*)string5Amb = c5AmbNew;
+		
 
-		/*
 		//name="GuitarStringsEnabledColorBlind" id="237528906"
-		uintptr_t string0enabled = GetStringColor(0, enabled); uintptr_t string1enabled = GetStringColor(1, enabled); uintptr_t string2enabled = GetStringColor(2, enabled); uintptr_t string3enabled = GetStringColor(3, enabled); uintptr_t string4enabled = GetStringColor(4, enabled); uintptr_t string5enabled = GetStringColor(5, enabled);
+		//uintptr_t string0Enabled = GetStringColor(0, Enabled); uintptr_t string1Enabled = GetStringColor(1, Enabled); uintptr_t string2Enabled = GetStringColor(2, Enabled); uintptr_t string3Enabled = GetStringColor(3, Enabled); uintptr_t string4Enabled = GetStringColor(4, Enabled); uintptr_t string5Enabled = GetStringColor(5, Enabled);
 		
 		Color c0StrEnaNew; Color c1StrEnaNew; Color c2StrEnaNew; Color c3StrEnaNew; Color c4StrEnaNew; Color c5StrEnaNew;
 		c0StrEnaNew.r = 0; c0StrEnaNew.g = 0.7764706; c0StrEnaNew.b = 0.5568628;
@@ -157,11 +186,11 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c3StrEnaNew.r = 0.1137255; c3StrEnaNew.g = 0.6745098; c3StrEnaNew.b = 0.9764706;
 		c4StrEnaNew.r = 1; c4StrEnaNew.g = 0.572549; c4StrEnaNew.b = 0.08627451;
 		c5StrEnaNew.r = 0.2470588; c5StrEnaNew.g = 0.8; c5StrEnaNew.b = 0.04705882;
-		*(Color*)string0enabled = c0StrEnaNew; *(Color*)string1enabled = c1StrEnaNew;	*(Color*)string2enabled = c2StrEnaNew;	*(Color*)string3enabled = c3StrEnaNew;	*(Color*)string4enabled = c4StrEnaNew;	*(Color*)string5enabled = c5StrEnaNew;
-		*/
+		*(Color*)string0Enabled = c0StrEnaNew; *(Color*)string1Enabled = c1StrEnaNew;	*(Color*)string2Enabled = c2StrEnaNew;	*(Color*)string3Enabled = c3StrEnaNew;	*(Color*)string4Enabled = c4StrEnaNew;	*(Color*)string5Enabled = c5StrEnaNew;
+		
 
-		/* //name="GuitarPegsTuningBlind" id="1806691030"
-		uintptr_t string0pegtune = GetStringColor(0, pegtune); uintptr_t string1pegtune = GetStringColor(1, pegtune); uintptr_t string2pegtune = GetStringColor(2, pegtune); uintptr_t string3pegtune = GetStringColor(3, pegtune); uintptr_t string4pegtune = GetStringColor(4, pegtune); uintptr_t string5pegtune = GetStringColor(5, pegtune);
+		 //name="GuitarPegsTuningBlind" id="1806691030"
+		//uintptr_t string0PegTune = GetStringColor(0, PegTune); uintptr_t string1PegTune = GetStringColor(1, PegTune); uintptr_t string2PegTune = GetStringColor(2, PegTune); uintptr_t string3PegTune = GetStringColor(3, PegTune); uintptr_t string4PegTune = GetStringColor(4, PegTune); uintptr_t string5PegTune = GetStringColor(5, PegTune);
 
 		Color c0PegTuneNew; Color c1PegTuneNew; Color c2PegTuneNew; Color c3PegTuneNew; Color c4PegTuneNew; Color c5PegTuneNew;
 		c0PegTuneNew.r = 0.003921569; c0PegTuneNew.g = 0.6; c0PegTuneNew.b = 0.4117647;
@@ -170,24 +199,24 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c3PegTuneNew.r = 0; c3PegTuneNew.g = 0.3764706; c3PegTuneNew.b = 0.7294118;
 		c4PegTuneNew.r = 0.6980392; c4PegTuneNew.g = 0.2196078; c4PegTuneNew.b = 0;
 		c5PegTuneNew.r = 0.1254902; c5PegTuneNew.g = 0.5490196; c5PegTuneNew.b = 0;
-		*(Color*)string0pegtune = c0PegTuneNew; *(Color*)string1pegtune = c1PegTuneNew;	*(Color*)string2pegtune = c2PegTuneNew;	*(Color*)string3pegtune = c3PegTuneNew;	*(Color*)string4pegtune = c4PegTuneNew;	*(Color*)string5pegtune = c5PegTuneNew;
-		*/
+		*(Color*)string0PegTune = c0PegTuneNew; *(Color*)string1PegTune = c1PegTuneNew;	*(Color*)string2PegTune = c2PegTuneNew;	*(Color*)string3PegTune = c3PegTuneNew;	*(Color*)string4PegTune = c4PegTuneNew;	*(Color*)string5PegTune = c5PegTuneNew;
+		
 
-		/* //name="GuitarPegsInTuneBlind" id="2547441015"
-		uintptr_t string0pegintune = GetStringColor(0, pegintune); uintptr_t string1pegintune = GetStringColor(1, pegintune); uintptr_t string2pegintune = GetStringColor(2, pegintune); uintptr_t string3pegintune = GetStringColor(3, pegintune); uintptr_t string4pegintune = GetStringColor(4, pegintune); uintptr_t string5pegintune = GetStringColor(5, pegintune);
+		 //name="GuitarPegsInTuneBlind" id="2547441015"
+		//uintptr_t string0pegintune = GetStringColor(0, pegintune); uintptr_t string1pegintune = GetStringColor(1, pegintune); uintptr_t string2pegintune = GetStringColor(2, pegintune); uintptr_t string3pegintune = GetStringColor(3, pegintune); uintptr_t string4pegintune = GetStringColor(4, pegintune); uintptr_t string5pegintune = GetStringColor(5, pegintune);
 		
 		Color c0PegInTuneNew; Color c1PegInTuneNew; Color c2PegInTuneNew; Color c3PegInTuneNew; Color c4PegInTuneNew; Color c5PegInTuneNew; 
-		c0PegInTune.r = 0; c0PegInTune.g = 0.6980392; c0PegInTune.b = 0.4745098;
-		c1PegInTune.r = 0.6980392; c1PegInTune.g = 0; c1PegInTune.b = 0.05490196;
-		c2PegInTune.r = 0.6980392; c2PegInTune.g = 0.5568628; c2PegInTune.b = 0;
-		c3PegInTune.r = 0; c3PegInTune.g = 0.4627451; c3PegInTune.b = 0.6980392;
-		c4PegInTune.r = 0.6980392; c4PegInTune.g = 0.2196078; c4PegInTune.b = 0;
-		c5PegInTune.r = 0.1843137; c5PegInTune.g = 0.6980392; c5PegInTune.b = 0;
-		*(Color*)string0pegintune = c0PegInTune; *(Color*)string1pegintune = c1PegInTune;	*(Color*)string2pegintune = c2PegInTune;	*(Color*)string3pegintune = c3PegInTune;	*(Color*)string4pegintune = c4PegInTune;	*(Color*)string5pegintune = c5PegInTune;
-		*/
+		c0PegInTuneNew.r = 0; c0PegInTuneNew.g = 0.6980392; c0PegInTuneNew.b = 0.4745098;
+		c1PegInTuneNew.r = 0.6980392; c1PegInTuneNew.g = 0; c1PegInTuneNew.b = 0.05490196;
+		c2PegInTuneNew.r = 0.6980392; c2PegInTuneNew.g = 0.5568628; c2PegInTuneNew.b = 0;
+		c3PegInTuneNew.r = 0; c3PegInTuneNew.g = 0.4627451; c3PegInTuneNew.b = 0.6980392;
+		c4PegInTuneNew.r = 0.6980392; c4PegInTuneNew.g = 0.2196078; c4PegInTuneNew.b = 0;
+		c5PegInTuneNew.r = 0.1843137; c5PegInTuneNew.g = 0.6980392; c5PegInTuneNew.b = 0;
+		*(Color*)string0PegInTune = c0PegInTuneNew; *(Color*)string1PegInTune = c1PegInTuneNew;	*(Color*)string2PegInTune = c2PegInTuneNew;	*(Color*)string3PegInTune = c3PegInTuneNew;	*(Color*)string4PegInTune = c4PegInTuneNew;	*(Color*)string5PegInTune = c5PegInTuneNew;
+		
 
-		/* //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
-		uintptr_t string0TextNew = GetStringColor(0, text); uintptr_t string1TextNew = GetStringColor(1, text); uintptr_t string2TextNew = GetStringColor(2, text); uintptr_t string3TextNew = GetStringColor(3, text); uintptr_t string4TextNew = GetStringColor(4, text); uintptr_t string5TextNew = GetStringColor(5, text);
+		 //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+		//uintptr_t string0TextNew = GetStringColor(0, text); uintptr_t string1TextNew = GetStringColor(1, text); uintptr_t string2TextNew = GetStringColor(2, text); uintptr_t string3TextNew = GetStringColor(3, text); uintptr_t string4TextNew = GetStringColor(4, text); uintptr_t string5TextNew = GetStringColor(5, text);
 		
 		Color c0TextNew; Color c1TextNew; Color c2TextNew; Color c3TextNew; Color c4TextNew; Color c5TextNew;
 		c0TextNew.r = 0.2470588; c0TextNew.g = 1; c0TextNew.b = 0.7843137;
@@ -196,29 +225,29 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c3TextNew.r = 0.2509804; c3TextNew.g = 0.5019608; c3TextNew.b = 1;
 		c4TextNew.r = 1; c4TextNew.g = 0.627451; c4TextNew.b = 0.2509804;
 		c5TextNew.r = 0.2509804; c5TextNew.g = 1; c5TextNew.b = 0.2509804;
-		*(Color*)string0TextNew = c0TextNew; *(Color*)string1TextNew = c1TextNew;	*(Color*)string2TextNew = c2TextNew;	*(Color*)string3TextNew = c3TextNew;	*(Color*)string4TextNew = c4TextNew;	*(Color*)string5TextNew = c5TextNew;
-		*/
+		*(Color*)string0Text = c0TextNew; *(Color*)string1TextNew = c1TextNew;	*(Color*)string2TextNew = c2TextNew;	*(Color*)string3TextNew = c3TextNew;	*(Color*)string4TextNew = c4TextNew;	*(Color*)string5TextNew = c5TextNew;
+		
 
-		/*
+		
 		//name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-		uintptr_t string0part = GetStringColor(0, particles); uintptr_t string1part = GetStringColor(1, particles); uintptr_t string2part = GetStringColor(2, particles); uintptr_t string3part = GetStringColor(3, particles); uintptr_t string4part = GetStringColor(4, particles); uintptr_t string5part = GetStringColor(5, particles);
+		//uintptr_t string0Part = GetStringColor(0, Particles); uintptr_t string1Part = GetStringColor(1, Particles); uintptr_t string2Part = GetStringColor(2, Particles); uintptr_t string3Part = GetStringColor(3, Particles); uintptr_t string4Part = GetStringColor(4, Particles); uintptr_t string5Part = GetStringColor(5, Particles);
 
-		Color c0partNew; Color c1partNew; Color c2partNew; Color c3partNew; Color c4partNew; Color c5partNew;
-		c0partNew.r = 0.2470588; c0partNew.g = 1; c0partNew.b = 0.7843137;
-		c1partNew.r = 1; c1partNew.g = 0.2509804; c1partNew.b = 0.2509804;
-		c2partNew.r = 1; c2partNew.g = 1; c2partNew.b = 0.2509804;
-		c3partNew.r = 0.2509804; c3partNew.g = 0.5019608; c3partNew.b = 1;
-		c4partNew.r = 1; c4partNew.g = 0.627451; c4partNew.b = 0.2509804;
-		c5partNew.r = 0.2509804; c5partNew.g = 1; c5partNew.b = 0.2509804;
-		*(Color*)string0part = c0partNew; *(Color*)string1part = c1partNew;	*(Color*)string2part = c2partNew;	*(Color*)string3part = c3partNew;	*(Color*)string4part = c4partNew;	*(Color*)string5part = c5partNew;
-		*/
+		Color c0PartNew; Color c1PartNew; Color c2PartNew; Color c3PartNew; Color c4PartNew; Color c5PartNew;
+		c0PartNew.r = 0.2470588; c0PartNew.g = 1; c0PartNew.b = 0.7843137;
+		c1PartNew.r = 1; c1PartNew.g = 0.2509804; c1PartNew.b = 0.2509804;
+		c2PartNew.r = 1; c2PartNew.g = 1; c2PartNew.b = 0.2509804;
+		c3PartNew.r = 0.2509804; c3PartNew.g = 0.5019608; c3PartNew.b = 1;
+		c4PartNew.r = 1; c4PartNew.g = 0.627451; c4PartNew.b = 0.2509804;
+		c5PartNew.r = 0.2509804; c5PartNew.g = 1; c5PartNew.b = 0.2509804;
+		*(Color*)string0Part = c0PartNew; *(Color*)string1Part = c1PartNew;	*(Color*)string2Part = c2PartNew;	*(Color*)string3Part = c3PartNew;	*(Color*)string4Part = c4PartNew;	*(Color*)string5Part = c5PartNew;
+		
 
-		/*
-		//name="NotewayBodypartsBodyNormBlind" id="3629363565"
+		
+		//name="NotewayBodyPartsBodyNormBlind" id="3629363565"
 
-		uintptr_t string0BodyNorm = GetStringColor(0, BodyNorm); uintptr_t string1BodyNorm = GetStringColor(1, BodyNorm); uintptr_t string2BodyNorm = GetStringColor(2, BodyNorm); uintptr_t string3BodyNorm = GetStringColor(3, BodyNorm); uintptr_t string4BodyNorm = GetStringColor(4, BodyNorm); uintptr_t string5BodyNorm = GetStringColor(5, BodyNorm);
+		//uintptr_t string0BodyNorm = GetStringColor(0, BodyNorm); uintptr_t string1BodyNorm = GetStringColor(1, BodyNorm); uintptr_t string2BodyNorm = GetStringColor(2, BodyNorm); uintptr_t string3BodyNorm = GetStringColor(3, BodyNorm); uintptr_t string4BodyNorm = GetStringColor(4, BodyNorm); uintptr_t string5BodyNorm = GetStringColor(5, BodyNorm);
 
-		Color c0NormNew; Color c1NormNew; Color c2NormNew; Color c3NormNew; Color c4NormNew; Color c5NormNew;
+		Color c0BodyNormNew; Color c1BodyNormNew; Color c2BodyNormNew; Color c3BodyNormNew; Color c4BodyNormNew; Color c5BodyNormNew;
 		c0BodyNormNew.r = 0; c0BodyNormNew.g = 0.7764706; c0BodyNormNew.b = 0.5568628;
 		c1BodyNormNew.r = 1; c1BodyNormNew.g = 0; c1BodyNormNew.b = 0;
 		c2BodyNormNew.r = 1; c2BodyNormNew.g = 1; c2BodyNormNew.b = 0;
@@ -226,11 +255,11 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c4BodyNormNew.r = 1; c4BodyNormNew.g = 0.5450981; c4BodyNormNew.b = 0.1843137;
 		c5BodyNormNew.r = 0; c5BodyNormNew.g = 1; c5BodyNormNew.b = 0.1764706;
 		*(Color*)string0BodyNorm = c0BodyNormNew; *(Color*)string1BodyNorm = c1BodyNormNew;	*(Color*)string2BodyNorm = c2BodyNormNew;	*(Color*)string3BodyNorm = c3BodyNormNew;	*(Color*)string4BodyNorm = c4BodyNormNew;	*(Color*)string5BodyNorm = c5BodyNormNew;
-		*/
 		
-		/*
-		// = name = "NotewayBodypartsAccentBlind" id = "47948252"
-		uintptr_t string0BodyAcc = GetStringColor(0, BodyAcc); uintptr_t string1BodyAcc = GetStringColor(1, BodyAcc); uintptr_t string2BodyAcc = GetStringColor(2, BodyAcc); uintptr_t string3BodyAcc = GetStringColor(3, BodyAcc); uintptr_t string4BodyAcc = GetStringColor(4, BodyAcc); uintptr_t string5BodyAcc = GetStringColor(5, BodyAcc);
+		
+		
+		// = name = "NotewayBodyPartsAccentBlind" id = "47948252"
+		//uintptr_t string0BodyAcc = GetStringColor(0, BodyAcc); uintptr_t string1BodyAcc = GetStringColor(1, BodyAcc); uintptr_t string2BodyAcc = GetStringColor(2, BodyAcc); uintptr_t string3BodyAcc = GetStringColor(3, BodyAcc); uintptr_t string4BodyAcc = GetStringColor(4, BodyAcc); uintptr_t string5BodyAcc = GetStringColor(5, BodyAcc);
 
 		Color c0BodyAccNew; Color c1BodyAccNew; Color c2BodyAccNew; Color c3BodyAccNew; Color c4BodyAccNew; Color c5BodyAccNew;
 		c0BodyAccNew.r = 1; c0BodyAccNew.g = 1; c0BodyAccNew.b = 1;
@@ -240,11 +269,11 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c4BodyAccNew.r = 0.9882353; c4BodyAccNew.g = 0.8196079; c4BodyAccNew.b = 0.5254902;
 		c5BodyAccNew.r = 0.6901961; c5BodyAccNew.g = 0.9568627; c5BodyAccNew.b = 0.5137255;
 		*(Color*)string0BodyAcc = c0BodyAccNew; *(Color*)string1BodyAcc = c1BodyAccNew;	*(Color*)string2BodyAcc = c2BodyAccNew;	*(Color*)string3BodyAcc = c3BodyAccNew;	*(Color*)string4BodyAcc = c4BodyAccNew;	*(Color*)string5BodyAcc = c5BodyAccNew;
-		*/
+		
 
-		/*
-		//= name = "NotewayBodypartsPreviewBlind" id = "338656387"
-		uintptr_t string0BodyPrev = GetStringColor(0, BodyPrev); uintptr_t string1BodyPrev = GetStringColor(1, BodyPrev); uintptr_t string2BodyPrev = GetStringColor(2, BodyPrev); uintptr_t string3BodyPrev = GetStringColor(3, BodyPrev); uintptr_t string4BodyPrev = GetStringColor(4, BodyPrev); uintptr_t string5BodyPrev = GetStringColor(5, BodyPrev);
+		
+		//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
+		//uintptr_t string0BodyPrev = GetStringColor(0, BodyPrev); uintptr_t string1BodyPrev = GetStringColor(1, BodyPrev); uintptr_t string2BodyPrev = GetStringColor(2, BodyPrev); uintptr_t string3BodyPrev = GetStringColor(3, BodyPrev); uintptr_t string4BodyPrev = GetStringColor(4, BodyPrev); uintptr_t string5BodyPrev = GetStringColor(5, BodyPrev);
 
 		Color c0BodyPrevNew; Color c1BodyPrevNew; Color c2BodyPrevNew; Color c3BodyPrevNew; Color c4BodyPrevNew; Color c5BodyPrevNew;
 		c0BodyPrevNew.r = 0.1607843; c0BodyPrevNew.g = 0.2470588; c0BodyPrevNew.b = 0.2235294;
@@ -254,7 +283,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		c4BodyPrevNew.r = 0.2509804; c4BodyPrevNew.g = 0.2; c4BodyPrevNew.b = 0.1607843;
 		c5BodyPrevNew.r = 0.1647059; c5BodyPrevNew.g = 0.2509804; c5BodyPrevNew.b = 0.1607843;
 		*(Color*)string0BodyPrev = c0BodyPrevNew; *(Color*)string1BodyPrev = c1BodyPrevNew;	*(Color*)string2BodyPrev = c2BodyPrevNew;	*(Color*)string3BodyPrev = c3BodyPrevNew;	*(Color*)string4BodyPrev = c4BodyPrevNew;	*(Color*)string5BodyPrev = c5BodyPrevNew;
-		*/
+		
 
 		/* Color cNnew, cDnew, cHnew; // existing code. NFI what it did...
 		cNnew = cN;

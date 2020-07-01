@@ -8,6 +8,17 @@ enum string_state {
 	meme2 = 0x428,
 	meme = 0x440,
 	meme3 = 0x458
+	/* memory values need added. I think this is the right place!
+	Ambient = //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
+	Enabled = //name="GuitarStringsEnabledColorBlind" id="237528906"
+	PegTune = //name="GuitarPegsTuningBlind" id="1806691030"
+	PegInTune =  //name="GuitarPegsInTuneBlind" id="2547441015"
+	Ttext =  //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+	Particles = //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
+	BodyNorm = //name="NotewayBodypartsBodyNormBlind" id="3629363565"
+	BodyAcc = // = name = "NotewayBodypartsAccentBlind" id = "47948252"
+	BodyPrev = //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
+	*/ 
 };
 
 const float M_PI = 3.14159265359;
