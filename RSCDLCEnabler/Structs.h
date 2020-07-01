@@ -2,23 +2,50 @@
 #include <cmath>
 
 enum string_state {
-	normal = 0x368,
-	disabled = 0x380,
-	highlight = 0x398,
-	meme2 = 0x428,
-	meme = 0x440,
-	meme3 = 0x458
-	/* memory values need added. I think this is the right place!
-	Ambient = //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
-	Enabled = //name="GuitarStringsEnabledColorBlind" id="237528906"
-	PegTune = //name="GuitarPegsTuningBlind" id="1806691030"
-	PegInTune =  //name="GuitarPegsInTuneBlind" id="2547441015"
-	Ttext =  //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
-	Particles = //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-	BodyNorm = //name="NotewayBodypartsBodyNormBlind" id="3629363565"
-	BodyAcc = // = name = "NotewayBodypartsAccentBlind" id = "47948252"
-	BodyPrev = //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
-	*/ 
+	Normal = 0x368, // WTF is "normal" anyway?
+
+	Ambient = 0x350, //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
+	Enabled = 0x380, //name="GuitarStringsEnabledColorBlind" id="237528906"
+	Disabled = 0x398, //name="GuitarStringsDisabledColorBlind" id="4184626561"
+	Glow = 0x3b0, //name="GuitarStringsGlowBlind" id="3217126622
+	PegInTune = 0x410,  //name="GuitarPegsInTuneBlind" id="2547441015"
+	PegNotInTune = 0x428, //name="GuitarPegsTuningBlind" id="1806691030"
+	Text = 0x440, //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+	Particles = 0x458, //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
+	BodyNorm = 0x470, //name="NotewayBodypartsBodyNormBlind" id="3629363565"
+	BodyAcc = 0x488, // = name = "NotewayBodypartsAccentBlind" id = "47948252"
+	BodyPrev = 0x4a0, //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
+	
+	//0x350 = unknown
+	//0x3b0 = tuning peg glow color (not realtime)
+	//0x3c8 = unknown
+	//0x3e0 = inactive tuning peg glow (only string index 0, applies to all pegs, not realtime)
+	//0x3f8 = tuner note letter color (not realtime)
+	//0x410 = lit text at bottom of note way - maybe
+	//0x428 = unknown
+	//0x440 = unknown
+	//0x458 = unknown
+	/*
+	in theroy based on order within gamecolormanager.flat and adding 18 hex to each address;
+	350 - start point may be off however....
+	368 - name="GuitarStringsAmbientColorBlind"id="3175458924"
+	380 - name="GuitarStringsEnabledColorBlind"id="237528906"
+	398 - name="GuitarStringsDisabledColorBlind"id="4184626561"
+	3b0 - name="GuitarStringsGlowBlind"id="3217126622"
+	3c8 - name="GuitarPegsTuningBlind"id="1806691030"
+	3e0 - name="GuitarPegsResetBlind"id="2670600760"
+	3f8 - name="GuitarPegsSuccessBlind"id="2074129191"
+	410 - name="GuitarPegsInTuneBlind"id="2547441015"
+	428 - name="GuitarPegsOutTuneBlind"id="1163525281"
+	440 - name="GuitarRegistrarTextIndicatorBlind"id="3186002004"
+	458 - name="GuitarRegistrarForkParticlesBlind"id="3239612871"
+	470 - name="NotewayBodypartsNormalBlind"id="3629363565"
+	488 - name="NotewayBodypartsAccentBlind"id="47948252"
+	4a0 - name="NotewayBodypartsPreviewBlind"id="338656387"
+	4b8 - name="GuitarcadeMainBlind"id="2332417892"
+	4d0 - name="GuitarcadeAdditiveBlind"id="1537455274"
+	4e8 - name="GuitarcadeUIBlind"id="2107771575"
+	*/
 };
 
 const float M_PI = 3.14159265359;
