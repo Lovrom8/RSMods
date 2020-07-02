@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollectColors.cpp" />
     <ClCompile Include="CustomSongTitles.cpp" />
     <ClCompile Include="D3DX9_42.cpp" />
     <ClCompile Include="DLLMain.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="ExtendedRangeMode.h" />
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="CollectColors.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
     <ClInclude Include="ImGUI\imgui_impl_dx9.h" />
