@@ -79,7 +79,8 @@ void cMemHelpers::ToggleCB(bool enabled) {
 	if (!addrTimer)
 		return;
 
-	*(byte*)cbEnabled = enabled;
+	if (*(byte*)cbEnabled != enabled) //JIC, no need to write the same value constantly
+		*(byte*)cbEnabled = enabled;
 }
 
 void cMemHelpers::PatchCDLCCheck() {

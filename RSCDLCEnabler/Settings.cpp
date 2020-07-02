@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include "INIReader.h"
 #include "windows.h"
+#include <iostream>
 
 cSettings Settings;
 
@@ -297,3 +298,55 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 	return retList;
 }
 
+std::vector<float> defaultStringColors = {
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //RGB normal, RGB CB - RS's RGB style, so [0,1]
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //RGB normal, RGB CB
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
+	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0} //etc.
+};
+
+void cSettings::ReadStringColors() {
+	INIReader reader("RSMods.ini");
+	if (reader.ParseError() != 0)
+		return;
+
+	std::string letters = "RGB";
+
+	for (int string = 0; string < 6;string++) {
+		std::string strKey = "";
+
+		for (int j = 0; j < 3;j++) {
+			strKey = "string" + std::to_string(string) + letters[j] + "_N";
+			stringColors.insert(std::pair<std::string, float>(strKey, reader.GetFloat("String Colors", strKey, defaultStringColors[string * j])));
+		}
+
+		for (int j = 3; j < 6;j++) {
+			strKey = "string" + std::to_string(string) + letters[j%3] + "_CB";
+			stringColors.insert(std::pair<std::string, float>(strKey, reader.GetFloat("String Colors", strKey, defaultStringColors[string * j])));
+		}
+	}
+
+	//stringColors = { NO!
+	//{ "string0R", reader.GetFloat("String Colors", "string0R", 1.00) },
+	//{ "string0G", reader.GetFloat("String Colors", "string0G", 1.00) },
+	//{ "string0B", reader.GetFloat("String Colors", "string0B", 1.00) },
+	//{ "string1R", reader.GetFloat("String Colors", "string1R", 1.00) },
+	//{ "string1G", reader.GetFloat("String Colors", "string1G", 1.00) },
+	//{ "string1B", reader.GetFloat("String Colors", "string1B", 1.00) },
+	//{ "string2R", reader.GetFloat("String Colors", "string2R", 1.00) },
+	//{ "string2G", reader.GetFloat("String Colors", "string2G", 1.00) },
+	//{ "string2B", reader.GetFloat("String Colors", "string2B", 1.00) },
+	//{ "string3R", reader.GetFloat("String Colors", "string3R", 1.00) },
+	//{ "string3G", reader.GetFloat("String Colors", "string2G", 1.00) },
+	//{ "string3B", reader.GetFloat("String Colors", "string3B", 1.00) }
+	//};
+
+	std::cout << GetStringColor("string3B_CB") << std::endl;
+}
+
+float cSettings::GetStringColor(std::string string) {
+	return stringColors[string];
+
+}

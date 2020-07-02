@@ -49,7 +49,8 @@ public:
 	uintptr_t cdlcCheckSearchLen = 0x00DDE000;
 	
 	uintptr_t baseHandle;
-	
+	uintptr_t baseEnd = 0x04F80000;
+
 	uint8_t*  cdlcCheckAdr;
 	const char *sig_CDLCCheck = "\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3";
     char *sig_CDLCCheckMask = "x????xxxxx";
