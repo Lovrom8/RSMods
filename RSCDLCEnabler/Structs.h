@@ -2,9 +2,9 @@
 #include <cmath>
 
 enum string_state {
-	Normal = 0x368, // WTF is "normal" anyway?
+	Normal = 0x350, // WTF is "normal" anyway?
 
-	Ambient = 0x350, //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
+	Ambient = 0x368, //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
 	Enabled = 0x380, //name="GuitarStringsEnabledColorBlind" id="237528906"
 	Disabled = 0x398, //name="GuitarStringsDisabledColorBlind" id="4184626561"
 	Glow = 0x3b0, //name="GuitarStringsGlowBlind" id="3217126622
@@ -21,7 +21,7 @@ enum string_state {
 	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.
 	
-	//= 0x4b8 //name = "GuitarcadeMainBlind"id = "2332417892"
+//= 0x4b8 //name = "GuitarcadeMainBlind"id = "2332417892"
 	//= 0x4d0 //name = "GuitarcadeAdditiveBlind"id = "1537455274"
 	//= 0x4e8 //name = "GuitarcadeUIBlind"id = "2107771575"
 
@@ -42,9 +42,11 @@ enum string_state {
 	380 - name="GuitarStringsEnabledColorBlind"id="237528906"
 	398 - name="GuitarStringsDisabledColorBlind"id="4184626561"
 	3b0 - name="GuitarStringsGlowBlind"id="3217126622"
+
 	3c8 - name="GuitarPegsTuningBlind"id="1806691030"
 	3e0 - name="GuitarPegsResetBlind"id="2670600760"
 	3f8 - name="GuitarPegsSuccessBlind"id="2074129191"
+
 	410 - name="GuitarPegsInTuneBlind"id="2547441015"
 	428 - name="GuitarPegsOutTuneBlind"id="1163525281"
 	440 - name="GuitarRegistrarTextIndicatorBlind"id="3186002004"
@@ -52,6 +54,7 @@ enum string_state {
 	470 - name="NotewayBodypartsNormalBlind"id="3629363565"
 	488 - name="NotewayBodypartsAccentBlind"id="47948252"
 	4a0 - name="NotewayBodypartsPreviewBlind"id="338656387"
+
 	4b8 - name="GuitarcadeMainBlind"id="2332417892"
 	4d0 - name="GuitarcadeAdditiveBlind"id="1537455274"
 	4e8 - name="GuitarcadeUIBlind"id="2107771575"
