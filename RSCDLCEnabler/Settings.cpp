@@ -343,7 +343,7 @@ void cSettings::ReadStringColors() {
 	//{ "string3B", reader.GetFloat("String Colors", "string3B", 1.00) }
 	//};
 
-	std::cout << GetStringColor("string3B_CB") << std::endl;
+	//std::cout << GetStringColor("string3B_CB") << std::endl;
 }
 
 float cSettings::GetStringColor(std::string string) {
