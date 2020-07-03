@@ -66,7 +66,7 @@ Color cBodyPrev;
 
 std::vector<String> strings;
 
-void InitStrings(std::vector<uintptr_t> &strings, string_state state) {
+void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
@@ -86,9 +86,9 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	std::vector<uintptr_t> stringsNormal, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsNormal, Normal);
-	InitStrings(stringsGlow, Normal); 
+	InitStrings(stringsGlow, Normal);
 	InitStrings(stringsDisabled, Disabled);
-	InitStrings(stringsAmb, Ambient); 
+	InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);
 	InitStrings(stringsPegInTune, PegInTune);
 	InitStrings(stringsPegNotInTune, PegNotInTune);
@@ -98,8 +98,8 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	InitStrings(stringsBodyPrev, BodyPrev);
 
-	/*if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //uncomment if we need to read the values
-		cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
+	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //uncomment if we need to read the values
+		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
 		cDisabled = *(Color*)string0Disabled;
 		cGlow = *(Color*)string0Glow;
 		cAmb = *(Color*)string0Amb;
@@ -110,48 +110,70 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		cPart = *(Color*)string0Part;
 		cBodyNorm = *(Color*)string0BodyNorm;
 		cBodyAcc = *(Color*)string0BodyAcc;
-		cBodyPrev = *(Color*)string0BodyPrev;
-	}*/
+		cBodyPrev = *(Color*)string0BodyPrev;*/
+
+		for (int i = 0; i < 6;i++) {
+			std::cout << (*(Color*)stringsNormal[i]).r * 255 << " ";
+			std::cout << (*(Color*)stringsNormal[i]).g * 255 << " ";
+			std::cout << (*(Color*)stringsNormal[i]).b * 255 << " ";
+			std::cout << std::endl;
+		}
+
+		colorsSaved = true;
+	}
 
 	if (MemHelpers.IsExtendedRangeSong()) {
-		// Zags custom low B color values manually entered; Normal
-		SetColors(stringsNormal, colorsNormal);
+		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
+			// Zags custom low B color values manually entered; Normal
+			SetColors(stringsNormal, colorsNormal);
 
-		// Zags custom low B color values manually entered; Glowed
-		SetColors(stringsGlow, colorsGlow);
+			// Zags custom low B color values manually entered; Glowed
+			SetColors(stringsGlow, colorsGlow);
 
-		// Zags custom low B color values manually entered; Disabled
-		SetColors(stringsDisabled, colorsDisabled);
+			// Zags custom low B color values manually entered; Disabled
+			SetColors(stringsDisabled, colorsDisabled);
 
-		//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
-		SetColors(stringsAmb, colorsAmbient);
+			//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
+			SetColors(stringsAmb, colorsAmbient);
 
-		//name="GuitarStringsEnabledColorBlind" id="237528906"
-		SetColors(stringsEnabled, colorsStrEna);
+			//name="GuitarStringsEnabledColorBlind" id="237528906"
+			SetColors(stringsEnabled, colorsStrEna);
 
-		//name="GuitarPegsTuningBlind" id="1806691030"
-		SetColors(stringsPegNotInTune, colorsPegNotInTune);
+			//name="GuitarPegsTuningBlind" id="1806691030"
+			SetColors(stringsPegNotInTune, colorsPegNotInTune);
 
-		//name="GuitarPegsInTuneBlind" id="2547441015"
-		SetColors(stringsPegInTune, colorsPegInTune);
+			//name="GuitarPegsInTuneBlind" id="2547441015"
+			SetColors(stringsPegInTune, colorsPegInTune);
 
-		//name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
-		SetColors(stringsText, colorsText);
+			//name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+			SetColors(stringsText, colorsText);
 
-		//name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-		SetColors(stringsPart, colorsPart);
+			//name="GuitarRegistrarForkParticlesBlind" id="3239612871"
+			SetColors(stringsPart, colorsPart);
 
-		// name="NotewayBodyPartsBodyNormBlind" id="3629363565"
-		SetColors(stringsBodyNorm, colorsNormal);
+			// name="NotewayBodyPartsBodyNormBlind" id="3629363565"
+			SetColors(stringsBodyNorm, colorsNormal);
 
-		// = name = "NotewayBodyPartsAccentBlind" id = "47948252"
-		SetColors(stringsBodyAcc, colorsBodyAcc);
+			// = name = "NotewayBodyPartsAccentBlind" id = "47948252"
+			SetColors(stringsBodyAcc, colorsBodyAcc);
 
-		//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
-		SetColors(stringsBodyPrev, colorsBodyPrev);
+			//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
+			SetColors(stringsBodyPrev, colorsBodyPrev);
+		}
+		else if (Settings.GetModSetting("CustomStringColors") == 0) { //default colors 
+			//do we even need to do anything in this case?
+		}
+		else if (Settings.GetModSetting("CustomStringColors") == 2) { //custom colors
+			SetColors(stringsNormal, Settings.GetCustomColors(true)); //TODO: actually determine which colors need to be change to what values
+			SetColors(stringsGlow, Settings.GetCustomColors(true));
+			SetColors(stringsAmb, Settings.GetCustomColors(true));
+			SetColors(stringsDisabled, Settings.GetCustomColors(true));
+			SetColors(stringsEnabled, Settings.GetCustomColors(true));
+			//etc.
+		}
 	}
 	else {
-
+		//restore orignal colors, I guess
 	}
 }
 

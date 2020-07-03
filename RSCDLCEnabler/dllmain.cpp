@@ -346,8 +346,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
-		pDevice->SetTexture(1, normalBMP);
-		//pDevice->SetTexture(1, gradientTextureNormal);
+		//pDevice->SetTexture(1, normalBMP);
+		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
 	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS
@@ -521,6 +521,7 @@ DWORD WINAPI MainThread(void*) {
 	CustomSongTitles.HookSongListsKoko();
 
 	Settings.ReadKeyBinds();
+	Settings.ReadModSettings();
 	Settings.ReadStringColors();
 
 	GUI();

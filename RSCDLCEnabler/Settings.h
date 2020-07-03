@@ -1,7 +1,10 @@
 #pragma once
+#include "Settings.h"
+#include "INIReader.h"
+#include "windows.h"
+#include <iostream>
+#include "Structs.h"
 #include <vector>
-#include <map>
-#include <string>
 
 class cSettings
 {
@@ -16,6 +19,7 @@ public:
 	std::string ReturnToggleValue(std::string name);
 	void ReadStringColors();
 	float GetStringColor(std::string);
+	std::vector<Color> GetCustomColors(bool CB);
 
 private:
 	std::map<std::string, std::string> keyBinds;

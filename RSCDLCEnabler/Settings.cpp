@@ -1,7 +1,4 @@
 #include "Settings.h"
-#include "INIReader.h"
-#include "windows.h"
-#include <iostream>
 
 cSettings Settings;
 
@@ -279,7 +276,8 @@ void cSettings::ReadModSettings() {
 
 	cSettings::customSettings = {
 		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
-		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)}
+		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)},
+		{"CustomStringColors", reader.GetInteger("Mod Settings", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
 	};
 }
 
@@ -298,55 +296,78 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 	return retList;
 }
 
-std::vector<float> defaultStringColors = {
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //RGB normal, RGB CB - RS's RGB style, so [0,1]
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //RGB normal, RGB CB
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0}, //etc.
-	{1}, {1.0}, {1.0}, {2.0}, {2.0}, {2.0} //etc.
+/*  String normal 
+191 95 95
+191 183 95
+94 157 188
+191 141 95
+95 191 151
+172 94 188
+*/
+
+std::vector<std::string> defaultStrColors = { //TODO: fill with actual numbers
+	"bf5f5f", "bfb75f", "5e9dbc", "bf8d5f", "5fbf97", "ac5ebc"
 };
+
+/* String normal CB
+191 95 95
+157 188 94
+95 159 191
+191 135 95
+95 191 164
+140 95 191
+*/
+
+std::vector<std::string> defaultStrColorsCB = {
+	"bf5f5f", "9dbc5e", "5f9fbf", "bf875f", "5fbfa4", "8c5fbf"
+};
+
+std::vector<Color> customStringColorsNormal;
+std::vector<Color> customStringColorsCB;
+
+std::vector<Color> cSettings::GetCustomColors(bool CB) {
+	if (CB)
+		return customStringColorsCB;
+	else
+		return customStringColorsNormal;
+}
+
+Color ConvertHexToColor(std::string hexStr) {
+	int r, g, b;
+	sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
+
+	Color c((float)r / 255, (float)g / 255, (float)b / 255);
+
+	return c;
+}
 
 void cSettings::ReadStringColors() {
 	INIReader reader("RSMods.ini");
 	if (reader.ParseError() != 0)
 		return;
 
-	std::string letters = "RGB";
-
-	for (int string = 0; string < 6;string++) {
+	for (int stringIdx = 0; stringIdx < 6;stringIdx++) {
 		std::string strKey = "";
+		std::string val;
 
-		for (int j = 0; j < 3;j++) {
-			strKey = "string" + std::to_string(string) + letters[j] + "_N";
-			stringColors.insert(std::pair<std::string, float>(strKey, reader.GetFloat("String Colors", strKey, defaultStringColors[string * j])));
-		}
+		strKey = "string" + std::to_string(stringIdx) + "_N";
+		val = reader.Get("String Colors", strKey, defaultStrColors[stringIdx]);
+		//stringColors.insert(std::pair<std::string, float>(strKey, val));
 
-		for (int j = 3; j < 6;j++) {
-			strKey = "string" + std::to_string(string) + letters[j%3] + "_CB";
-			stringColors.insert(std::pair<std::string, float>(strKey, reader.GetFloat("String Colors", strKey, defaultStringColors[string * j])));
-		}
+		customStringColorsNormal.push_back(ConvertHexToColor(val));
+
+		strKey = "string" + std::to_string(stringIdx) + "_CB";
+		val = reader.Get("String Colors", strKey, defaultStrColorsCB[stringIdx]);
+		//stringColors.insert(std::pair<std::string, float>(strKey, val));
+
+		customStringColorsCB.push_back(ConvertHexToColor(val));
 	}
 
-	//stringColors = { NO!
-	//{ "string0R", reader.GetFloat("String Colors", "string0R", 1.00) },
-	//{ "string0G", reader.GetFloat("String Colors", "string0G", 1.00) },
-	//{ "string0B", reader.GetFloat("String Colors", "string0B", 1.00) },
-	//{ "string1R", reader.GetFloat("String Colors", "string1R", 1.00) },
-	//{ "string1G", reader.GetFloat("String Colors", "string1G", 1.00) },
-	//{ "string1B", reader.GetFloat("String Colors", "string1B", 1.00) },
-	//{ "string2R", reader.GetFloat("String Colors", "string2R", 1.00) },
-	//{ "string2G", reader.GetFloat("String Colors", "string2G", 1.00) },
-	//{ "string2B", reader.GetFloat("String Colors", "string2B", 1.00) },
-	//{ "string3R", reader.GetFloat("String Colors", "string3R", 1.00) },
-	//{ "string3G", reader.GetFloat("String Colors", "string2G", 1.00) },
-	//{ "string3B", reader.GetFloat("String Colors", "string3B", 1.00) }
-	//};
-
-	//std::cout << GetStringColor("string3B_CB") << std::endl;
+	std::cout << customStringColorsCB[0].r << std::endl;
 }
 
+/*
 float cSettings::GetStringColor(std::string string) {
 	return stringColors[string];
-
 }
+*/
