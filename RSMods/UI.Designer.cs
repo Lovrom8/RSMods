@@ -69,12 +69,28 @@
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
+            this.String0ColorButton = new System.Windows.Forms.Button();
+            this.String0Color = new System.Windows.Forms.TextBox();
+            this.String1Color = new System.Windows.Forms.TextBox();
+            this.String1ColorButton = new System.Windows.Forms.Button();
+            this.String2Color = new System.Windows.Forms.TextBox();
+            this.String2ColorButton = new System.Windows.Forms.Button();
+            this.String3Color = new System.Windows.Forms.TextBox();
+            this.String3ColorButton = new System.Windows.Forms.Button();
+            this.String4Color = new System.Windows.Forms.TextBox();
+            this.String4ColorButton = new System.Windows.Forms.Button();
+            this.String5Color = new System.Windows.Forms.TextBox();
+            this.String5ColorButton = new System.Windows.Forms.Button();
+            this.ChangeStringColorsBox = new System.Windows.Forms.GroupBox();
+            this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
+            this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             this.ToggleLoftOffWhenBox.SuspendLayout();
             this.ExtendedRangeTuningBox.SuspendLayout();
             this.EnabledModsBox.SuspendLayout();
             this.SongListBox.SuspendLayout();
             this.KeybindingsBox.SuspendLayout();
+            this.ChangeStringColorsBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -417,7 +433,7 @@
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
             this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 111);
             this.HowToEnumerateBox.Name = "HowToEnumerateBox";
-            this.HowToEnumerateBox.Size = new System.Drawing.Size(206, 96);
+            this.HowToEnumerateBox.Size = new System.Drawing.Size(206, 77);
             this.HowToEnumerateBox.TabIndex = 47;
             this.HowToEnumerateBox.TabStop = false;
             this.HowToEnumerateBox.Text = "How Do You Want To Enumerate?";
@@ -521,12 +537,169 @@
             this.ResetToDefaultButton.UseVisualStyleBackColor = true;
             this.ResetToDefaultButton.Click += new System.EventHandler(this.ResetToDefaultSettings);
             // 
+            // String0ColorButton
+            // 
+            this.String0ColorButton.Location = new System.Drawing.Point(26, 49);
+            this.String0ColorButton.Name = "String0ColorButton";
+            this.String0ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String0ColorButton.TabIndex = 53;
+            this.String0ColorButton.Text = "E String";
+            this.String0ColorButton.UseVisualStyleBackColor = true;
+            this.String0ColorButton.Click += new System.EventHandler(this.ChangeString0ColorButton_Click);
+            // 
+            // String0Color
+            // 
+            this.String0Color.Location = new System.Drawing.Point(152, 49);
+            this.String0Color.Name = "String0Color";
+            this.String0Color.ReadOnly = true;
+            this.String0Color.Size = new System.Drawing.Size(108, 20);
+            this.String0Color.TabIndex = 54;
+            // 
+            // String1Color
+            // 
+            this.String1Color.Location = new System.Drawing.Point(152, 79);
+            this.String1Color.Name = "String1Color";
+            this.String1Color.ReadOnly = true;
+            this.String1Color.Size = new System.Drawing.Size(108, 20);
+            this.String1Color.TabIndex = 56;
+            // 
+            // String1ColorButton
+            // 
+            this.String1ColorButton.Location = new System.Drawing.Point(26, 79);
+            this.String1ColorButton.Name = "String1ColorButton";
+            this.String1ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String1ColorButton.TabIndex = 55;
+            this.String1ColorButton.Text = "A String";
+            this.String1ColorButton.UseVisualStyleBackColor = true;
+            this.String1ColorButton.Click += new System.EventHandler(this.String1ColorButton_Click);
+            // 
+            // String2Color
+            // 
+            this.String2Color.Location = new System.Drawing.Point(152, 108);
+            this.String2Color.Name = "String2Color";
+            this.String2Color.ReadOnly = true;
+            this.String2Color.Size = new System.Drawing.Size(108, 20);
+            this.String2Color.TabIndex = 58;
+            // 
+            // String2ColorButton
+            // 
+            this.String2ColorButton.Location = new System.Drawing.Point(26, 108);
+            this.String2ColorButton.Name = "String2ColorButton";
+            this.String2ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String2ColorButton.TabIndex = 57;
+            this.String2ColorButton.Text = "D String";
+            this.String2ColorButton.UseVisualStyleBackColor = true;
+            this.String2ColorButton.Click += new System.EventHandler(this.String2ColorButton_Click);
+            // 
+            // String3Color
+            // 
+            this.String3Color.Location = new System.Drawing.Point(152, 139);
+            this.String3Color.Name = "String3Color";
+            this.String3Color.ReadOnly = true;
+            this.String3Color.Size = new System.Drawing.Size(108, 20);
+            this.String3Color.TabIndex = 60;
+            // 
+            // String3ColorButton
+            // 
+            this.String3ColorButton.Location = new System.Drawing.Point(26, 139);
+            this.String3ColorButton.Name = "String3ColorButton";
+            this.String3ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String3ColorButton.TabIndex = 59;
+            this.String3ColorButton.Text = "G String";
+            this.String3ColorButton.UseVisualStyleBackColor = true;
+            this.String3ColorButton.Click += new System.EventHandler(this.String3ColorButton_Click);
+            // 
+            // String4Color
+            // 
+            this.String4Color.Location = new System.Drawing.Point(152, 171);
+            this.String4Color.Name = "String4Color";
+            this.String4Color.ReadOnly = true;
+            this.String4Color.Size = new System.Drawing.Size(108, 20);
+            this.String4Color.TabIndex = 62;
+            // 
+            // String4ColorButton
+            // 
+            this.String4ColorButton.Location = new System.Drawing.Point(26, 171);
+            this.String4ColorButton.Name = "String4ColorButton";
+            this.String4ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String4ColorButton.TabIndex = 61;
+            this.String4ColorButton.Text = "B String";
+            this.String4ColorButton.UseVisualStyleBackColor = true;
+            this.String4ColorButton.Click += new System.EventHandler(this.String4ColorButton_Click);
+            // 
+            // String5Color
+            // 
+            this.String5Color.Location = new System.Drawing.Point(152, 201);
+            this.String5Color.Name = "String5Color";
+            this.String5Color.ReadOnly = true;
+            this.String5Color.Size = new System.Drawing.Size(108, 20);
+            this.String5Color.TabIndex = 64;
+            // 
+            // String5ColorButton
+            // 
+            this.String5ColorButton.Location = new System.Drawing.Point(26, 201);
+            this.String5ColorButton.Name = "String5ColorButton";
+            this.String5ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.String5ColorButton.TabIndex = 63;
+            this.String5ColorButton.Text = "e String";
+            this.String5ColorButton.UseVisualStyleBackColor = true;
+            this.String5ColorButton.Click += new System.EventHandler(this.String5ColorButton_Click);
+            // 
+            // ChangeStringColorsBox
+            // 
+            this.ChangeStringColorsBox.Controls.Add(this.ColorBlindStringColorsRadio);
+            this.ChangeStringColorsBox.Controls.Add(this.DefaultStringColorsRadio);
+            this.ChangeStringColorsBox.Controls.Add(this.String5Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String5ColorButton);
+            this.ChangeStringColorsBox.Controls.Add(this.String4Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String4ColorButton);
+            this.ChangeStringColorsBox.Controls.Add(this.String3Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String3ColorButton);
+            this.ChangeStringColorsBox.Controls.Add(this.String2Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String2ColorButton);
+            this.ChangeStringColorsBox.Controls.Add(this.String1Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String1ColorButton);
+            this.ChangeStringColorsBox.Controls.Add(this.String0Color);
+            this.ChangeStringColorsBox.Controls.Add(this.String0ColorButton);
+            this.ChangeStringColorsBox.Location = new System.Drawing.Point(713, 226);
+            this.ChangeStringColorsBox.Name = "ChangeStringColorsBox";
+            this.ChangeStringColorsBox.Size = new System.Drawing.Size(282, 232);
+            this.ChangeStringColorsBox.TabIndex = 65;
+            this.ChangeStringColorsBox.TabStop = false;
+            this.ChangeStringColorsBox.Text = "Change String Colors";
+            // 
+            // DefaultStringColorsRadio
+            // 
+            this.DefaultStringColorsRadio.AutoSize = true;
+            this.DefaultStringColorsRadio.Checked = true;
+            this.DefaultStringColorsRadio.Location = new System.Drawing.Point(26, 19);
+            this.DefaultStringColorsRadio.Name = "DefaultStringColorsRadio";
+            this.DefaultStringColorsRadio.Size = new System.Drawing.Size(91, 17);
+            this.DefaultStringColorsRadio.TabIndex = 65;
+            this.DefaultStringColorsRadio.TabStop = true;
+            this.DefaultStringColorsRadio.Text = "Default Colors";
+            this.DefaultStringColorsRadio.UseVisualStyleBackColor = true;
+            this.DefaultStringColorsRadio.CheckedChanged += new System.EventHandler(this.DefaultStringColorsRadio_CheckedChanged);
+            // 
+            // ColorBlindStringColorsRadio
+            // 
+            this.ColorBlindStringColorsRadio.AutoSize = true;
+            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 18);
+            this.ColorBlindStringColorsRadio.Name = "ColorBlindStringColorsRadio";
+            this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(103, 17);
+            this.ColorBlindStringColorsRadio.TabIndex = 66;
+            this.ColorBlindStringColorsRadio.TabStop = true;
+            this.ColorBlindStringColorsRadio.Text = "Colorblind Colors";
+            this.ColorBlindStringColorsRadio.UseVisualStyleBackColor = true;
+            this.ColorBlindStringColorsRadio.CheckedChanged += new System.EventHandler(this.ColorBlindStringColorsRadio_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.Controls.Add(this.ChangeStringColorsBox);
             this.Controls.Add(this.KeybindingsBox);
             this.Controls.Add(this.SongListBox);
             this.Controls.Add(this.EnabledModsBox);
@@ -548,6 +721,8 @@
             this.SongListBox.PerformLayout();
             this.KeybindingsBox.ResumeLayout(false);
             this.KeybindingsBox.PerformLayout();
+            this.ChangeStringColorsBox.ResumeLayout(false);
+            this.ChangeStringColorsBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -596,6 +771,21 @@
         private System.Windows.Forms.GroupBox SongListBox;
         private System.Windows.Forms.GroupBox KeybindingsBox;
         private System.Windows.Forms.Button ResetToDefaultButton;
+        private System.Windows.Forms.Button String0ColorButton;
+        private System.Windows.Forms.TextBox String0Color;
+        private System.Windows.Forms.TextBox String1Color;
+        private System.Windows.Forms.Button String1ColorButton;
+        private System.Windows.Forms.TextBox String2Color;
+        private System.Windows.Forms.Button String2ColorButton;
+        private System.Windows.Forms.TextBox String3Color;
+        private System.Windows.Forms.Button String3ColorButton;
+        private System.Windows.Forms.TextBox String4Color;
+        private System.Windows.Forms.Button String4ColorButton;
+        private System.Windows.Forms.TextBox String5Color;
+        private System.Windows.Forms.Button String5ColorButton;
+        private System.Windows.Forms.GroupBox ChangeStringColorsBox;
+        private System.Windows.Forms.RadioButton ColorBlindStringColorsRadio;
+        private System.Windows.Forms.RadioButton DefaultStringColorsRadio;
     }
 }
 
