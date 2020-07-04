@@ -9,7 +9,7 @@ namespace RSMods
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        public static string[] StringArray = new String[45];
+        public static string[] StringArray = new String[48];
 
         public static void ModifyINI(string[] StringArray)
         {
@@ -42,7 +42,7 @@ namespace RSMods
                 StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + "manual"; // Force ReEnumeration Manual / Automatic / Disabled
                 StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "true"; // Rainbow String Enabled / Disabled
                 StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "true"; // Extended Range Enabled / Disabled
-                StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Extended Range Starts At X Tuning (lowest string)
+                StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + "0"; // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
                 StringArray[23] = ReadSettings.DiscoModeIdentifier + "false"; // Disco Mode Enabled / Disabled
                 StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + "false"; // Remove Headstock Enabled / Disabled
                 StringArray[25] = ReadSettings.RemoveSkylineIdentifier + "false"; // Remove Skyline Enabled / Disabled
@@ -65,6 +65,10 @@ namespace RSMods
                 StringArray[42] = ReadSettings.String3Color_CB_Identifier + "bf875f"; // Colorblind G String Color (HEX) | Orange
                 StringArray[43] = ReadSettings.String4Color_CB_Identifier + "5fbfa4"; // Colorblind B String Color (HEX) | Green
                 StringArray[44] = ReadSettings.String5Color_CB_Identifier + "8c5fbf"; // Colorblind High E String Color (HEX) | Purple
+                StringArray[45] = "[Mod Settings]";
+                StringArray[46] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Enable Extended Range Mode When Low E Is X Below E
+                StringArray[47] = ReadSettings.CheckForNewSongIntervalIdentifier + "5000"; // Enumerate CDLC/ ODLC every X ms
+                
                 ModifyINI(StringArray);
         }
         public static string WhereIsRocksmith()

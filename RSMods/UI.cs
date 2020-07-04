@@ -118,6 +118,8 @@ namespace RSMods
                     if (ImportPriorSettings()[16].ToString() == "automatic")
                     {
                         this.ForceEnumerationAutomaticRadio.Checked = true;
+                        this.CheckEveryXmsText.Visible = true;
+                        this.EnumerateEveryXMS.Visible = true;
                     }
                     if (ImportPriorSettings()[16].ToString() == "manual")
                     {
@@ -133,6 +135,17 @@ namespace RSMods
                 else
                 {
                     this.ExtendedRangeEnabled.Checked = false;
+                }
+
+                if (ImportPriorSettings()[19].ToString() == "2") // Custom String Colors
+                {
+                    this.customColorsCheckbox.Checked = true;
+                    this.ChangeStringColorsBox.Visible = true;
+                }
+                else if (ImportPriorSettings()[19].ToString() == "1") // ZZ String Colors
+                {
+                    this.customColorsCheckbox.Checked = true;
+                    this.ChangeStringColorsBox.Visible = true;
                 }
 
                 if (ImportPriorSettings()[20].ToString() == "true") // Disco Mode Enabled / Disabled
@@ -217,6 +230,60 @@ namespace RSMods
                 String4Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[34].ToString());
                 String5Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[35].ToString());
             }
+
+            // Mod Settings
+            {
+                this.EnumerateEveryXMS.Value = Int32.Parse(ImportPriorSettings()[43].ToString()); // Loads old settings for enumeration every x ms
+                {
+                    if (ImportPriorSettings()[42].ToString() == "-2")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 0;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-3")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 1;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-4")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 2;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-5")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 3;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-6")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 4;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-7")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 5;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-8")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 6;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-9")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 7;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-10")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 8;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-11")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 9;
+                    }
+                    if (ImportPriorSettings()[42].ToString() == "-12")
+                    {
+                        this.ExtendedRangeTunings.SelectedIndex = 10;
+                    }
+
+                }
+                
+            }
+               
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -373,6 +440,14 @@ namespace RSMods
                 {
                     SaveChanges(19, this.ExtendedRangeEnabled.Checked.ToString().ToLower());
                 }
+                if (this.customColorsCheckbox.Checked.ToString().ToLower() == "true" && ReadSettings.ProcessSettings(19) != "1") // Custom String Colors Enabled / ZZ / Default
+                {
+                    SaveChanges(20, "2"); // Enabled
+                }
+                else if (customColorsCheckbox.Checked.ToString().ToLower() == "false") // Default
+                {
+                    SaveChanges(20, "0");
+                }
                 if (this.DiscoModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(20)) // Disco Mode Enabled / Disabled
                 {
                     SaveChanges(21, this.DiscoModeCheckbox.Checked.ToString().ToLower());
@@ -426,53 +501,54 @@ namespace RSMods
             {
                 if (this.ExtendedRangeTunings.GetSelected(0))
                 {
-                    SaveChanges(20, "-2");
+                    SaveChanges(43, "-2");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(1))
                 {
-                    SaveChanges(20, "-3");
+                    SaveChanges(43, "-3");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(2))
                 {
-                    SaveChanges(20, "-4");
+                    SaveChanges(43, "-4");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(3))
                 {
-                    SaveChanges(20, "-5");
+                    SaveChanges(43, "-5");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(4))
                 {
-                    SaveChanges(20, "-6");
+                    SaveChanges(43, "-6");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(5))
                 {
-                    SaveChanges(20, "-7");
+                    SaveChanges(43, "-7");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(6))
                 {
-                    SaveChanges(20, "-8");
+                    SaveChanges(43, "-8");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(7))
                 {
-                    SaveChanges(20, "-9");
+                    SaveChanges(43, "-9");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(8))
                 {
-                    SaveChanges(20, "-10");
+                    SaveChanges(43, "-10");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(9))
                 {
-                    SaveChanges(20, "-11");
+                    SaveChanges(43, "-11");
                 }
                 if (this.ExtendedRangeTunings.GetSelected(10))
                 {
-                    SaveChanges(20, "-12");
+                    SaveChanges(43, "-12");
                 }
             }
 
-            // String Colors
+            // Mod Settings
+            if (this.EnumerateEveryXMS.Value != Int32.Parse(ImportPriorSettings()[43].ToString()))
             {
-
+                SaveChanges(44, this.EnumerateEveryXMS.Value.ToString());
             }
             
             RefreshForm();
@@ -575,9 +651,9 @@ namespace RSMods
                     {
                         StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
                     }
-                    if (ElementToChange == 20) // Extended Range Tuning Name
+                    if (ElementToChange == 20)
                     {
-                        StringArray[22] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
+                        StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + ChangedSettingValue;
                     }
                     if (ElementToChange == 21) // Disco Mode Enabled / Disabled
                     {
@@ -674,7 +750,19 @@ namespace RSMods
                     }
                     
                 }
-               
+                // Mod Settings
+                {
+                    if (ElementToChange == 43) // Extended Range Tuning Name
+                    {
+                        StringArray[46] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
+                    }
+                    if (ElementToChange == 44)
+                    {
+                        StringArray[47] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
+                    }
+                    
+                }
+
                 WriteSettings.ModifyINI(StringArray);
             }
             else
@@ -693,7 +781,7 @@ namespace RSMods
         }
         public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[42];
+            object[] priorSettings = new object[44];
             priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
             priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
             priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
@@ -715,7 +803,7 @@ namespace RSMods
             priorSettings[16] = ReadSettings.ProcessSettings(15); // Force Enumeration Manual / Automatic / Disabled
             priorSettings[17] = ReadSettings.ProcessSettings(17); // Rainbow Strings Enabled / Disabled
             priorSettings[18] = ReadSettings.ProcessSettings(18); // Extended Range Enabled / Disabled
-            priorSettings[19] = ReadSettings.ProcessSettings(19); // Extended Range At X Tuning
+            priorSettings[19] = ReadSettings.ProcessSettings(43); // Custom String Settings (0 - Default, 1 - ZZ, 2 - Custom)
             priorSettings[20] = ReadSettings.ProcessSettings(20); // Disco Mode Enabled / Disabled
             priorSettings[21] = ReadSettings.ProcessSettings(21); // Remove Headstock Enabled / Disabled
             priorSettings[22] = ReadSettings.ProcessSettings(22); // Remove Skyline Enabled / Disabled
@@ -739,6 +827,9 @@ namespace RSMods
             priorSettings[39] = ReadSettings.ProcessSettings(39); // Colorblind G String Color
             priorSettings[40] = ReadSettings.ProcessSettings(40); // Colorblind B String Color
             priorSettings[41] = ReadSettings.ProcessSettings(41); // Colorblind High E String Color
+
+            priorSettings[42] = ReadSettings.ProcessSettings(19); // Extended Range At X Tuning
+            priorSettings[43] = ReadSettings.ProcessSettings(42); // Check For Songs Every X ms
             return priorSettings;
         }
 

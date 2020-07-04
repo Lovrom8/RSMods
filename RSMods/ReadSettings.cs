@@ -5,9 +5,10 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, ExtendedRangeTuning,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, RemoveLaneMarkersEnabled,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, RemoveLaneMarkersEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
+                             ExtendedRangeTuning, CheckForNewSongInterval, 
                              RocksmithInstallLocation;
 
         public static string
@@ -33,7 +34,7 @@ namespace RSMods
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumerationEnabled = ",
                 RainbowStringsEnabledIdentifier     = "RainbowStringsEnabled = ",
                 ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
-                ExtendedRangeTuningIdentifier       = "ExtendedRangeTuning = ",
+                CustomStringColorNumberIndetifier = "CustomStringColors = ",
                 DiscoModeIdentifier                 = "DiscoModeEnabled = ",
                 RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
                 RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
@@ -58,7 +59,10 @@ namespace RSMods
                     String3Color_CB_Identifier  = "string3_CB = ",
                     String4Color_CB_Identifier  = "string4_CB = ",
                     String5Color_CB_Identifier  = "string5_CB = ",
-           
+            // Mod Settings
+                ExtendedRangeTuningIdentifier     = "ExtendedRangeModeAt = ",
+                CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
+                
 
 
             RocksmithInstallLocationIdentifier = "RocksmithIsInstalledAt = ";
@@ -314,13 +318,13 @@ namespace RSMods
                             return ExtendedRangeEnabled;
                         }
                     }
-                    if (currentLine.Contains(ExtendedRangeTuningIdentifier))
+                    if (currentLine.Contains(CustomStringColorNumberIndetifier))
                     {
-                        ExtendedRangeTuning = currentLine.Substring(ExtendedRangeTuningIdentifier.Length, (currentLine.Length - ExtendedRangeTuningIdentifier.Length));
+                        CustomStringColorsNumber = currentLine.Substring(CustomStringColorNumberIndetifier.Length, (currentLine.Length - CustomStringColorNumberIndetifier.Length));
 
-                        if (grab == 19)
+                        if (grab == 43)
                         {
-                            return ExtendedRangeTuning;
+                            return CustomStringColorsNumber;
                         }
                     }
                     if (currentLine.Contains(DiscoModeIdentifier))
@@ -588,6 +592,29 @@ namespace RSMods
                             {
                                 return String5Color_CB;
                             }
+                        }
+                    }
+                    
+                }
+
+                // Mod Settings
+                {
+                    if (currentLine.Contains(ExtendedRangeTuningIdentifier))
+                    {
+                        ExtendedRangeTuning = currentLine.Substring(ExtendedRangeTuningIdentifier.Length, (currentLine.Length - ExtendedRangeTuningIdentifier.Length));
+
+                        if (grab == 19)
+                        {
+                            return ExtendedRangeTuning;
+                        }
+                    }
+                    if (currentLine.Contains(CheckForNewSongIntervalIdentifier))
+                    {
+                        CheckForNewSongInterval = currentLine.Substring(CheckForNewSongIntervalIdentifier.Length, (currentLine.Length - CheckForNewSongIntervalIdentifier.Length));
+
+                        if (grab == 42)
+                        {
+                            return CheckForNewSongInterval;
                         }
                     }
                     

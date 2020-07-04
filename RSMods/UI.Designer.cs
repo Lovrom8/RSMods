@@ -62,9 +62,12 @@
             this.ForceEnumerationManualRadio = new System.Windows.Forms.RadioButton();
             this.ForceEnumerationAutomaticRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox = new System.Windows.Forms.GroupBox();
+            this.CheckEveryXmsText = new System.Windows.Forms.Label();
+            this.EnumerateEveryXMS = new System.Windows.Forms.NumericUpDown();
             this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
             this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
             this.EnabledModsBox = new System.Windows.Forms.GroupBox();
+            this.customColorsCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
@@ -82,9 +85,10 @@
             this.String5Color = new System.Windows.Forms.TextBox();
             this.String5ColorButton = new System.Windows.Forms.Button();
             this.ChangeStringColorsBox = new System.Windows.Forms.GroupBox();
-            this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
+            this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
             this.ExtendedRangeTuningBox.SuspendLayout();
             this.EnabledModsBox.SuspendLayout();
@@ -300,7 +304,7 @@
             // DiscoModeCheckbox
             // 
             this.DiscoModeCheckbox.AutoSize = true;
-            this.DiscoModeCheckbox.Location = new System.Drawing.Point(166, 114);
+            this.DiscoModeCheckbox.Location = new System.Drawing.Point(166, 137);
             this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
             this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.DiscoModeCheckbox.TabIndex = 33;
@@ -320,7 +324,7 @@
             // RemoveSkylineCheckbox
             // 
             this.RemoveSkylineCheckbox.AutoSize = true;
-            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(166, 91);
+            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(166, 114);
             this.RemoveSkylineCheckbox.Name = "RemoveSkylineCheckbox";
             this.RemoveSkylineCheckbox.Size = new System.Drawing.Size(103, 17);
             this.RemoveSkylineCheckbox.TabIndex = 36;
@@ -340,7 +344,7 @@
             // AutoLoadProfileCheckbox
             // 
             this.AutoLoadProfileCheckbox.AutoSize = true;
-            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(166, 137);
+            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(166, 159);
             this.AutoLoadProfileCheckbox.Name = "AutoLoadProfileCheckbox";
             this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(151, 17);
             this.AutoLoadProfileCheckbox.TabIndex = 38;
@@ -360,7 +364,7 @@
             // RemoveInlaysCheckbox
             // 
             this.RemoveInlaysCheckbox.AutoSize = true;
-            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(166, 161);
+            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(320, 21);
             this.RemoveInlaysCheckbox.Name = "RemoveInlaysCheckbox";
             this.RemoveInlaysCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveInlaysCheckbox.TabIndex = 42;
@@ -429,15 +433,55 @@
             // 
             // HowToEnumerateBox
             // 
+            this.HowToEnumerateBox.Controls.Add(this.CheckEveryXmsText);
+            this.HowToEnumerateBox.Controls.Add(this.EnumerateEveryXMS);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationAutomaticRadio);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
             this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 111);
             this.HowToEnumerateBox.Name = "HowToEnumerateBox";
-            this.HowToEnumerateBox.Size = new System.Drawing.Size(206, 77);
+            this.HowToEnumerateBox.Size = new System.Drawing.Size(293, 77);
             this.HowToEnumerateBox.TabIndex = 47;
             this.HowToEnumerateBox.TabStop = false;
             this.HowToEnumerateBox.Text = "How Do You Want To Enumerate?";
             this.HowToEnumerateBox.Visible = false;
+            // 
+            // CheckEveryXmsText
+            // 
+            this.CheckEveryXmsText.AutoSize = true;
+            this.CheckEveryXmsText.Location = new System.Drawing.Point(193, 27);
+            this.CheckEveryXmsText.Name = "CheckEveryXmsText";
+            this.CheckEveryXmsText.Size = new System.Drawing.Size(94, 13);
+            this.CheckEveryXmsText.TabIndex = 27;
+            this.CheckEveryXmsText.Text = "Check Every X ms";
+            this.CheckEveryXmsText.Visible = false;
+            // 
+            // EnumerateEveryXMS
+            // 
+            this.EnumerateEveryXMS.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.EnumerateEveryXMS.Location = new System.Drawing.Point(220, 48);
+            this.EnumerateEveryXMS.Maximum = new decimal(new int[] {
+            -1981284352,
+            -1966660860,
+            0,
+            0});
+            this.EnumerateEveryXMS.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.EnumerateEveryXMS.Name = "EnumerateEveryXMS";
+            this.EnumerateEveryXMS.Size = new System.Drawing.Size(58, 20);
+            this.EnumerateEveryXMS.TabIndex = 26;
+            this.EnumerateEveryXMS.Value = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+            this.EnumerateEveryXMS.Visible = false;
             // 
             // ToggleLoftOffWhenBox
             // 
@@ -446,7 +490,7 @@
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenStartupRadio);
             this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1015, 20);
             this.ToggleLoftOffWhenBox.Name = "ToggleLoftOffWhenBox";
-            this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(243, 86);
+            this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(293, 86);
             this.ToggleLoftOffWhenBox.TabIndex = 48;
             this.ToggleLoftOffWhenBox.TabStop = false;
             this.ToggleLoftOffWhenBox.Text = "Toggle Loft Off When:";
@@ -465,6 +509,7 @@
             // 
             // EnabledModsBox
             // 
+            this.EnabledModsBox.Controls.Add(this.customColorsCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveLineMarkersCheckBox);
             this.EnabledModsBox.Controls.Add(this.RemoveInlaysCheckbox);
             this.EnabledModsBox.Controls.Add(this.SongTimerCheckbox);
@@ -487,10 +532,20 @@
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
             // 
+            // customColorsCheckbox
+            // 
+            this.customColorsCheckbox.AutoSize = true;
+            this.customColorsCheckbox.Location = new System.Drawing.Point(166, 91);
+            this.customColorsCheckbox.Name = "customColorsCheckbox";
+            this.customColorsCheckbox.Size = new System.Drawing.Size(123, 17);
+            this.customColorsCheckbox.TabIndex = 44;
+            this.customColorsCheckbox.Text = "Custom String Colors";
+            this.customColorsCheckbox.UseVisualStyleBackColor = true;
+            // 
             // RemoveLineMarkersCheckBox
             // 
             this.RemoveLineMarkersCheckBox.AutoSize = true;
-            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 22);
+            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 43);
             this.RemoveLineMarkersCheckBox.Name = "RemoveLineMarkersCheckBox";
             this.RemoveLineMarkersCheckBox.Size = new System.Drawing.Size(130, 17);
             this.RemoveLineMarkersCheckBox.TabIndex = 43;
@@ -667,6 +722,19 @@
             this.ChangeStringColorsBox.TabIndex = 65;
             this.ChangeStringColorsBox.TabStop = false;
             this.ChangeStringColorsBox.Text = "Change String Colors";
+            this.ChangeStringColorsBox.Visible = false;
+            // 
+            // ColorBlindStringColorsRadio
+            // 
+            this.ColorBlindStringColorsRadio.AutoSize = true;
+            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 18);
+            this.ColorBlindStringColorsRadio.Name = "ColorBlindStringColorsRadio";
+            this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(103, 17);
+            this.ColorBlindStringColorsRadio.TabIndex = 66;
+            this.ColorBlindStringColorsRadio.TabStop = true;
+            this.ColorBlindStringColorsRadio.Text = "Colorblind Colors";
+            this.ColorBlindStringColorsRadio.UseVisualStyleBackColor = true;
+            this.ColorBlindStringColorsRadio.CheckedChanged += new System.EventHandler(this.ColorBlindStringColorsRadio_CheckedChanged);
             // 
             // DefaultStringColorsRadio
             // 
@@ -680,18 +748,6 @@
             this.DefaultStringColorsRadio.Text = "Default Colors";
             this.DefaultStringColorsRadio.UseVisualStyleBackColor = true;
             this.DefaultStringColorsRadio.CheckedChanged += new System.EventHandler(this.DefaultStringColorsRadio_CheckedChanged);
-            // 
-            // ColorBlindStringColorsRadio
-            // 
-            this.ColorBlindStringColorsRadio.AutoSize = true;
-            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 18);
-            this.ColorBlindStringColorsRadio.Name = "ColorBlindStringColorsRadio";
-            this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(103, 17);
-            this.ColorBlindStringColorsRadio.TabIndex = 66;
-            this.ColorBlindStringColorsRadio.TabStop = true;
-            this.ColorBlindStringColorsRadio.Text = "Colorblind Colors";
-            this.ColorBlindStringColorsRadio.UseVisualStyleBackColor = true;
-            this.ColorBlindStringColorsRadio.CheckedChanged += new System.EventHandler(this.ColorBlindStringColorsRadio_CheckedChanged);
             // 
             // MainForm
             // 
@@ -712,6 +768,7 @@
             this.Text = "Rocksmith 2014 DLL Modifier";
             this.HowToEnumerateBox.ResumeLayout(false);
             this.HowToEnumerateBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).EndInit();
             this.ToggleLoftOffWhenBox.ResumeLayout(false);
             this.ToggleLoftOffWhenBox.PerformLayout();
             this.ExtendedRangeTuningBox.ResumeLayout(false);
@@ -786,6 +843,9 @@
         private System.Windows.Forms.GroupBox ChangeStringColorsBox;
         private System.Windows.Forms.RadioButton ColorBlindStringColorsRadio;
         private System.Windows.Forms.RadioButton DefaultStringColorsRadio;
+        private System.Windows.Forms.NumericUpDown EnumerateEveryXMS;
+        private System.Windows.Forms.Label CheckEveryXmsText;
+        private System.Windows.Forms.CheckBox customColorsCheckbox;
     }
 }
 
