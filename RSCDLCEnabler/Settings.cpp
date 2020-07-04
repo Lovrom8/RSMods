@@ -277,7 +277,7 @@ void cSettings::ReadModSettings() {
 	cSettings::customSettings = {
 		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)},
-		{"CustomStringColors", reader.GetInteger("Mod Settings", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
+		{"CustomStringColors", reader.GetInteger("Toggle Switches", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
 	};
 }
 
