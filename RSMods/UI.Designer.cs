@@ -575,7 +575,7 @@
             this.KeybindingsBox.Controls.Add(this.ToggleLoftKey);
             this.KeybindingsBox.Controls.Add(this.RainbowStringsAssignment);
             this.KeybindingsBox.Controls.Add(this.ModList);
-            this.KeybindingsBox.Location = new System.Drawing.Point(33, 242);
+            this.KeybindingsBox.Location = new System.Drawing.Point(12, 242);
             this.KeybindingsBox.Name = "KeybindingsBox";
             this.KeybindingsBox.Size = new System.Drawing.Size(654, 176);
             this.KeybindingsBox.TabIndex = 52;
