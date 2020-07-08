@@ -63,9 +63,6 @@ Color cBodyNorm;
 Color cBodyAcc;
 Color cBodyPrev;
 
-
-std::vector<String> strings;
-
 void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
@@ -78,15 +75,11 @@ void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 }
 
 void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
-	// return;
-	strings.clear();
-	std::vector<Color> oldColors;
-
 	static bool colorsSaved = false;
 	std::vector<uintptr_t> stringsNormal, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsNormal, Normal);
-	InitStrings(stringsGlow, Normal);
+	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
 	InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);

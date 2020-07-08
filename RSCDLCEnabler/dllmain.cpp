@@ -59,9 +59,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			float volume;
 			RTPCValue_type type;
 
-			SetRTPCValue("Mixer_SFX", 75.0, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			GetRTPCValue("Mixer_SFX", AK_INVALID_GAME_OBJECT, &volume, &type);
-			std::cout << volume << " " << type << std::endl;
+			SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+			GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
+			std::cout << volume << std::endl;
 		}
 
 		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
@@ -376,35 +376,38 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		*/
 
 		else if (Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
-			pDevice->GetTexture(1, &pBaseTextures[1]);
-			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+				pDevice->GetTexture(1, &pBaseTextures[1]); 
+				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-			if (calculatedHeadstocks) {
-				for (auto pTexture : headstockTexutrePointers)
-					if (pTexture == pCurrTextures[1])
+				if (calculatedHeadstocks) {
+					for (auto pTexture : headstockTexutrePointers)
+						if (pTexture == pCurrTextures[1])
+							return D3D_OK;
+				}
+				else if (IsExtraRemoved(headstockThicc, currentThicc)) {
+					if (!pBaseTextures[1]) //if there's no texture for Stage 1
 						return D3D_OK;
-			}
-			else if (IsExtraRemoved(headstockThicc, currentThicc)) {
-				if (!pBaseTextures[1]) //if there's no texture for Stage 1
+
+					if (CRCForTexture(pCurrTextures[1], crc)) {
+						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6) //00000s for some reason
+							AddToTextureList(headstockTexutrePointers, pCurrTextures[1]);
+					}
+
+					//Log("0x%08x", crc);
+
+					if (headstockTexutrePointers.size() == 4) { //for your usual 3+3 there's only 4 textures in total, ALSO we need to add the rest :P
+						calculatedHeadstocks = true;
+						std::cout << "Calculated headstock CRCs" << std::endl;
+					}
+
 					return D3D_OK;
-
-				if (CRCForTexture(pCurrTextures[1], crc)) {
-					if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6) //00000s for some reason
-						AddToTextureList(headstockTexutrePointers, pCurrTextures[1]);
 				}
-
-				//Log("0x%08x", crc);
-
-				if (headstockTexutrePointers.size() == 4) { //for your usual 3+3 there's only 4 textures in total, ALSO we need to add the rest :P
-					calculatedHeadstocks = true;
-					std::cout << "Calculated headstock CRCs" << std::endl;
-				}
-
-				return D3D_OK;
 			}
 
 			if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 				return D3D_OK;
+
 		}
 		else if (Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true" && IsExtraRemoved(greenscreenwall, currentThicc))
 			return D3D_OK;
