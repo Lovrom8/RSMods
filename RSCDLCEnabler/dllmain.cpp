@@ -510,6 +510,7 @@ void AutoEnterGame() { //very big brain
 }
 
 bool LoftOff = false;
+bool SkylineOff = false;
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
@@ -558,6 +559,21 @@ DWORD WINAPI MainThread(void*) {
 			{
 				MemHelpers.ToggleLoft();
 				LoftOff = false;
+			}
+		}
+
+		if (GameLoaded && Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
+		{
+			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
+			{
+				if (!SkylineOff) // Only toggle loft once
+					//MemHelpers.ToggleSkyline();
+				SkylineOff = true;
+			}
+			if (SkylineOff && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) // If Not In A Song
+			{
+				//MemHelpers.ToggleSkyline();
+				SkylineOff = false;
 			}
 		}
 
