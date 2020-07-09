@@ -59,9 +59,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			float volume;
 			RTPCValue_type type;
 
-			SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-			GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
-			std::cout << volume << std::endl;
+			//SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+			//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
+			//std::cout << volume << std::endl;
 		}
 
 		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
@@ -327,8 +327,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		currDeclType = decl->Type;
 		currVectorCount = mVectorCount;
 		currNumElements = numElements;
-		pDevice->SetTexture(1, Yellow);
-		//return D3D_OK;
+		//pDevice->SetTexture(1, Yellow);
+		return D3D_OK;
 	}
 
 	if (IsExtraRemoved(removedMeshes, currentThicc))
@@ -350,34 +350,29 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
-	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS
-		if (Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true" && IsToBeRemoved(skyline, current)) //TODO: confirm it works as intended, because it doesn't seem totally reliably right now
-			return D3D_OK;
+	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS;
+		if (Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true" && Stride == 16) {
+			pDevice->GetTexture(1, &pBaseTextures[1]);
+			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-		/* Buggy ATM
-		else if (IsToBeRemoved(skylineLesson, current) & Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true")
-			return D3D_OK;
-		*/
-
-		/* REMAINS OF SKYLINE STUFF THAT GOT LOST BETWEEN COMMITS :P
-		if (pBaseTextures[1]) { //if there is a texture for Stage 1
-			if (CRCForTexture(pCurrTextures[1], crc)) {
-				//if (crc == 0x398a5f7f || crc == 0xcef36de1)
-					//	AddToTextureList(skylineTexturePointers, pCurrTextures[1]);
+			if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
+				if (CRCForTexture(pCurrTextures[1], crc))
+					if (crc == 0x65b846aa || crc == 0xbad9e064) // Purple rectangles + 
+						return D3D_OK;
 			}
 
-			if (skylineTexturePointers.size() == 3) {
-				calculatedSkyline = true;
-				std::cout << "Calculated skyline CRCs" << std::endl;
-			}
+			pDevice->GetTexture(0, &pBaseTextures[0]);
+			pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
 
-			return D3D_OK;
+			if (pBaseTextures[0]){
+				if (CRCForTexture(pCurrTextures[0], crc))
+					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+						return D3D_OK;
+			}
 		}
-		*/
-
 		else if (Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
 			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
-				pDevice->GetTexture(1, &pBaseTextures[1]); 
+				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
 				if (calculatedHeadstocks) {
