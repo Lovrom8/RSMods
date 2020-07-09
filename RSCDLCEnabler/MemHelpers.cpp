@@ -2,9 +2,6 @@
 #include <fstream>
 #include <iostream>
 
-int len = 0;
-bool rainbowEnabled = false;
-
 cMemHelpers MemHelpers;
 
 byte cMemHelpers::getLowestStringTuning() {
