@@ -52,6 +52,11 @@ void cMemHelpers::ToggleLoft() {
 		*(float*)addr = 10;
 }
 
+void cMemHelpers::ToggleSkyline() { 
+
+
+
+}
 void cMemHelpers::ShowSongTimer() {
 	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
 

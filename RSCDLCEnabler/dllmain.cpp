@@ -69,6 +69,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
+		if (keyPressed == Settings.GetKeyBind("ToggleSkylineKey") && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
+			MemHelpers.ToggleSkyline();
+			std::cout << "Toggle Skyline" << std::endl;
+		}
 		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
 			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
 			std::cout << "Adding 5 Volume" << std::endl;
@@ -369,6 +373,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
 						return D3D_OK;
 			}
+			MemHelpers.ToggleSkyline();
 		}
 		else if (Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
 			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
@@ -510,6 +515,7 @@ void AutoEnterGame() { //very big brain
 }
 
 bool LoftOff = false;
+bool SkylineOff = false;
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
@@ -558,6 +564,27 @@ DWORD WINAPI MainThread(void*) {
 			{
 				MemHelpers.ToggleLoft();
 				LoftOff = false;
+			}
+		}
+
+		// Skyline off on startup / in song only options - ini options for this need added
+		if (GameLoaded && !SkylineOff && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && Settings.ReturnToggleValue("ToggleSkylineWhen") == "startup") {
+			MemHelpers.ToggleSkyline();
+			SkylineOff = true;
+		}
+
+		if (GameLoaded && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && Settings.ReturnToggleValue("ToggleSkylineWhen") == "song")
+		{
+			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
+			{
+				if (!SkylineOff) // Only toggle Skyline once
+					MemHelpers.ToggleSkyline();
+				SkylineOff = true;
+			}
+			if (SkylineOff && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) // If Not In A Song
+			{
+				MemHelpers.ToggleSkyline();
+				SkylineOff = false;
 			}
 		}
 

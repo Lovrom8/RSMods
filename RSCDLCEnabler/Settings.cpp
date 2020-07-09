@@ -16,6 +16,7 @@ cSettings::cSettings()
 	//
 	{"ForceReEnumerationEnabled", "automatic"},
 	{"ToggleLoftEnabled", "true"},
+	{"ToggleSkylineEnabled", "true"},
 	{"AddVolumeEnabled", "false"},
 	{"DecreaseVolumeEnabled", "false"},
 	{"ShowSongTimerEnabled", "true"},
@@ -30,6 +31,7 @@ cSettings::cSettings()
 	{"FretlessModeEnabled", "false"},
 	{"RemoveInlaysEnabled", "false"},
 	{"ToggleLoftWhen", "manual"},
+	{"ToggleSkylineWhen", "manual"},
 	{"RemoveLaneMarkersEnabled", "false"}
 	};
 
@@ -234,6 +236,7 @@ void cSettings::ReadKeyBinds() {
 	cSettings::keyBinds = {
 		// Mods
 			{ "ToggleLoftKey", reader.Get("Keybinds", "ToggleLoftKey", "T") },
+			{ "ToggleSkylineKey", reader.Get("Keybinds", "ToggleSkylineKey", "S") },
 			{ "AddVolumeKey", reader.Get("Keybinds", "AddVolumeKey", "O") },
 			{ "DecreaseVolumeKey",  reader.Get("Keybinds", "DecreaseVolumeKey", "I") },
 			{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
@@ -243,6 +246,7 @@ void cSettings::ReadKeyBinds() {
 			{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "V")},
 			// Mods Enabled / Disabled
 				{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoftEnabled", "true")},
+				{"ToggleSkylineEnabled", reader.Get("Toggle Switches", "ToggleSkylineEnabled", "true")},
 				{"AddVolumeEnabled", reader.Get("Toggle Switches", "AddVolumeEnabled", "false")},
 				{"DecreaseVolumeEnabled", reader.Get("Toggle Switches", "DecreaseVolumeEnabled", "false")},
 				{"ShowSongTimerEnabled", reader.Get("Toggle Switches", "ShowSongTimerEnabled", "true")},
@@ -257,6 +261,7 @@ void cSettings::ReadKeyBinds() {
 				{"FretlessModeEnabled", reader.Get("Toggle Switches", "FretlessModeEnabled", "false")},
 				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "RemoveInlaysEnabled", "false")},
 				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")},
+				{"ToggleSkylineWhen", reader.Get("Toggle Switches", "ToggleSkylineWhen", "manual")},
 				{"RemoveLaneMarkersEnabled", reader.Get("Toggle Switches", "RemoveLaneMarkersEnabled", "false")}
 	};
 }

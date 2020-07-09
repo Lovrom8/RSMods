@@ -13,6 +13,7 @@ public:
 	byte getLowestStringTuning();
 	void ToggleLoft();
 	void ToggleLoftWhenSongStarts();
+	void ToggleSkyline();
 	void ShowSongTimer();
 	void ShowCurrentTuning();
 	void PatchCDLCCheck();
