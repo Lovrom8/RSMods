@@ -24,7 +24,7 @@ const char* windowName = "Rocksmith 2014";
 bool menuEnabled = false;
 bool enableColorBlindCheckboxGUI = false;
 bool GameLoaded = false;
-bool ifYourNameIsFfio = false; // AKA if your game lags like shit when you run the texture checks || AKA we have too many mods :P
+bool lowPerformancePC = false; // AKA if your game lags like shit when you run the texture checks || AKA we have too many mods :P
 
 int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
@@ -354,7 +354,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
-	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS;
+	if (!lowPerformancePC) {
 		if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "true" && Stride == 16) {
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
