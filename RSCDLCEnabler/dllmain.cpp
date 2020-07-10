@@ -360,7 +360,12 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
-			if ((Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") || (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)))
+			// If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
+			if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) {
+				SkylineOff = false;
+				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+			}
+			// Skyline Removal
 			{
 				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
@@ -387,9 +392,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 						}
 					}
 				}
-			}
-			else if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) {
-				return S_OK;
 			}
 		}
 		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
