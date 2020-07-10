@@ -31,7 +31,7 @@ cSettings::cSettings()
 	{"FretlessModeEnabled", "false"},
 	{"RemoveInlaysEnabled", "false"},
 	{"ToggleLoftWhen", "manual"},
-	{"ToggleSkylineWhen", "manual"},
+	{"ToggleSkylineWhen", "song"},
 	{"RemoveLaneMarkersEnabled", "false"}
 	};
 
@@ -261,7 +261,7 @@ void cSettings::ReadKeyBinds() {
 				{"FretlessModeEnabled", reader.Get("Toggle Switches", "FretlessModeEnabled", "false")},
 				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "RemoveInlaysEnabled", "false")},
 				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")},
-				{"ToggleSkylineWhen", reader.Get("Toggle Switches", "ToggleSkylineWhen", "manual")},
+				{"ToggleSkylineWhen", reader.Get("Toggle Switches", "ToggleSkylineWhen", "song")},
 				{"RemoveLaneMarkersEnabled", reader.Get("Toggle Switches", "RemoveLaneMarkersEnabled", "false")}
 	};
 }
