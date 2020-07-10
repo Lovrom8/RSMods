@@ -26,6 +26,10 @@ bool enableColorBlindCheckboxGUI = false;
 bool GameLoaded = false;
 bool lowPerformancePC = false; // AKA if your game lags like shit when you run the texture checks || AKA we have too many mods :P
 
+
+bool toggleSkyline = false;
+bool SkylineOff = false;
+
 int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
@@ -355,25 +359,38 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	}
 
 	if (!lowPerformancePC) {
-		if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "true" && Stride == 16) {
-			pDevice->GetTexture(1, &pBaseTextures[1]);
-			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+		if (toggleSkyline && Stride == 16) {
+			if ((Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") || (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)))
+			{
+				pDevice->GetTexture(1, &pBaseTextures[1]);
+				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-			if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
-				if (CRCForTexture(pCurrTextures[1], crc))
-					if (crc == 0x65b846aa || crc == 0xbad9e064) // Purple rectangles + 
-						return D3D_OK;
+				if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
+					if (CRCForTexture(pCurrTextures[1], crc)) {
+						if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles +
+							SkylineOff = true;
+							return D3D_OK;
+						}
+					}
+				}
+
+				pDevice->GetTexture(0, &pBaseTextures[0]);
+				pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
+
+				if (pBaseTextures[0])
+				{
+					if (CRCForTexture(pCurrTextures[0], crc))
+					{
+						if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+							SkylineOff = true;
+							return D3D_OK;
+						}
+					}
+				}
 			}
-
-			pDevice->GetTexture(0, &pBaseTextures[0]);
-			pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
-
-			if (pBaseTextures[0]){
-				if (CRCForTexture(pCurrTextures[0], crc))
-					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
-						return D3D_OK;
+			else if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) {
+				return S_OK;
 			}
-			MemHelpers.ToggleSkyline();
 		}
 		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
 			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
@@ -515,7 +532,6 @@ void AutoEnterGame() { //very big brain || "Fork in the toaster"
 }
 
 bool LoftOff = false;
-bool SkylineOff = false;
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
@@ -552,8 +568,8 @@ DWORD WINAPI MainThread(void*) {
 				LoftOff = true;
 			}
 			if (!SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
-				MemHelpers.ToggleSkyline();
-				SkylineOff = true;
+				toggleSkyline = true;
+				
 			}
 
 			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If User Is Entering Song
@@ -568,8 +584,7 @@ DWORD WINAPI MainThread(void*) {
 				if (Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song")
 				{
 					if (!SkylineOff)
-						MemHelpers.ToggleSkyline();
-					SkylineOff = true;
+						toggleSkyline = true;
 				}
 			}
 			else // If User Is Exiting Song
@@ -580,8 +595,7 @@ DWORD WINAPI MainThread(void*) {
 				}
 
 				if (SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
-					MemHelpers.ToggleSkyline();
-					SkylineOff = false;
+					toggleSkyline = true;
 				}
 			}
 		}
