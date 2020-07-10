@@ -547,7 +547,7 @@ DWORD WINAPI MainThread(void*) {
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			ERMode.Toggle7StringMode();
-			if (!LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
+			if (!LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Runs on startup, only once
 				MemHelpers.ToggleLoft();
 				LoftOff = true;
 			}
