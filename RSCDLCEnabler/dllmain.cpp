@@ -395,7 +395,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			}
 		}
 		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
-			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+			if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84 ) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
@@ -409,13 +409,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 						return D3D_OK;
 
 					if (CRCForTexture(pCurrTextures[1], crc)) {
-						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6) //00000s for some reason
+						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039) //00000s for some reason
 							AddToTextureList(headstockTexutrePointers, pCurrTextures[1]);
 					}
 
 					//Log("0x%08x", crc);
 
-					if (headstockTexutrePointers.size() == 4) { //for your usual 3+3 there's only 4 textures in total, ALSO we need to add the rest :P
+					if (headstockTexutrePointers.size() == 5) { 
 						calculatedHeadstocks = true;
 						std::cout << "Calculated headstock CRCs" << std::endl;
 					}
