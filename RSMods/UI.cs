@@ -169,6 +169,7 @@ namespace RSMods
                 if (ImportPriorSettings()[22].ToString() == "true") // Remove Skyline Enabled / Disabled
                 {
                     this.RemoveSkylineCheckbox.Checked = true;
+                    this.ToggleSkylineBox.Visible = true;
                 }
                 else
                 {
@@ -219,6 +220,14 @@ namespace RSMods
                 {
                     this.RemoveLineMarkersCheckBox.Checked = false;
                 }
+                if (ImportPriorSettings()[29].ToString() == "song") // Remove Skyline on Song Load
+                {
+                    this.ToggleSkylineSongRadio.Checked = true;
+                }
+                else if (ImportPriorSettings()[29].ToString() == "startup") // Remove Skyline on Game Startup 
+                {
+                    this.ToggleSkylineStartupRadio.Checked = true;
+                }
             }
 
             // Initialize Default String Colors
@@ -233,7 +242,8 @@ namespace RSMods
 
             // Mod Settings
             {
-                this.EnumerateEveryXMS.Value = Int32.Parse(ImportPriorSettings()[43].ToString()); // Loads old settings for enumeration every x ms
+                
+                this.EnumerateEveryXMS.Value = Decimal.Parse(ImportPriorSettings()[43].ToString()) / 1000; // Loads old settings for enumeration every x ms
                 {
                     if (ImportPriorSettings()[42].ToString() == "-2")
                     {
@@ -491,6 +501,17 @@ namespace RSMods
                         SaveChanges(28, "startup");
                     }
                 }
+                if (this.RemoveSkylineCheckbox.Checked == true)
+                {
+                    if (this.ToggleSkylineSongRadio.Checked == true) // Toggle Skyline on Song Load
+                    {
+                        SaveChanges(30, "song");
+                    }
+                    if (this.ToggleSkylineStartupRadio.Checked == true) // Toggle Skyline on Startup
+                    {
+                        SaveChanges(30, "startup");
+                    }
+                }
                 if (this.RemoveLineMarkersCheckBox.Checked.ToString() != ReadSettings.ProcessSettings(28)) // Remove Line Markers Enabled / Disabled
                 {
                     SaveChanges(29, this.RemoveLineMarkersCheckBox.Checked.ToString().ToLower());
@@ -546,9 +567,9 @@ namespace RSMods
             }
 
             // Mod Settings
-            if (this.EnumerateEveryXMS.Value != Int32.Parse(ImportPriorSettings()[43].ToString()))
+            if (this.EnumerateEveryXMS.Value != Decimal.Parse(ImportPriorSettings()[43].ToString()))
             {
-                SaveChanges(44, this.EnumerateEveryXMS.Value.ToString());
+                SaveChanges(44, (this.EnumerateEveryXMS.Value * 1000).ToString());
             }
             
             RefreshForm();
@@ -651,7 +672,7 @@ namespace RSMods
                     {
                         StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
                     }
-                    if (ElementToChange == 20)
+                    if (ElementToChange == 20) // Custom String Enabled / Disabled
                     {
                         StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + ChangedSettingValue;
                     }
@@ -691,6 +712,10 @@ namespace RSMods
                     {
                         StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + ChangedSettingValue;
                     }
+                    if (ElementToChange == 30) // Toggle Skyline When Startup / OnSong
+                    {
+                        StringArray[32] = ReadSettings.ToggleSkylineWhenIdentifier + ChangedSettingValue;
+                    }
                 }
                 // String Colors (Normal {N} & Colorblind {CB})
                 {
@@ -698,54 +723,54 @@ namespace RSMods
                     {
                         if (ElementToChange == 31)
                         {
-                            StringArray[33] = ReadSettings.String0Color_N_Identifier + ChangedSettingValue;
+                            StringArray[34] = ReadSettings.String0Color_N_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 32)
                         {
-                            StringArray[34] = ReadSettings.String1Color_N_Identifier + ChangedSettingValue;
+                            StringArray[35] = ReadSettings.String1Color_N_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 33)
                         {
-                            StringArray[35] = ReadSettings.String2Color_N_Identifier + ChangedSettingValue;
+                            StringArray[36] = ReadSettings.String2Color_N_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 34)
                         {
-                            StringArray[36] = ReadSettings.String3Color_N_Identifier + ChangedSettingValue;
+                            StringArray[37] = ReadSettings.String3Color_N_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 35)
                         {
-                            StringArray[37] = ReadSettings.String4Color_N_Identifier + ChangedSettingValue;
+                            StringArray[38] = ReadSettings.String4Color_N_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 36)
                         {
-                            StringArray[38] = ReadSettings.String5Color_N_Identifier + ChangedSettingValue;
+                            StringArray[39] = ReadSettings.String5Color_N_Identifier + ChangedSettingValue;
                         }
                     }
                     // Colorblind String Colors
                     {
                         if (ElementToChange == 37)
                         {
-                            StringArray[39] = ReadSettings.String0Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[40] = ReadSettings.String0Color_CB_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 38)
                         {
-                            StringArray[40] = ReadSettings.String1Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[41] = ReadSettings.String1Color_CB_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 39)
                         {
-                            StringArray[41] = ReadSettings.String2Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[42] = ReadSettings.String2Color_CB_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 40)
                         {
-                            StringArray[42] = ReadSettings.String3Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[43] = ReadSettings.String3Color_CB_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 41)
                         {
-                            StringArray[43] = ReadSettings.String4Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[44] = ReadSettings.String4Color_CB_Identifier + ChangedSettingValue;
                         }
                         if (ElementToChange == 42)
                         {
-                            StringArray[44] = ReadSettings.String5Color_CB_Identifier + ChangedSettingValue;
+                            StringArray[45] = ReadSettings.String5Color_CB_Identifier + ChangedSettingValue;
                         }
                     }
                     
@@ -754,11 +779,11 @@ namespace RSMods
                 {
                     if (ElementToChange == 43) // Extended Range Tuning Name
                     {
-                        StringArray[46] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
+                        StringArray[47] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
                     }
                     if (ElementToChange == 44)
                     {
-                        StringArray[47] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
+                        StringArray[48] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
                     }
                     
                 }
@@ -781,7 +806,7 @@ namespace RSMods
         }
         public object[] ImportPriorSettings() // To check new settings against old settings
         {
-            object[] priorSettings = new object[44];
+            object[] priorSettings = new object[45];
             priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
             priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
             priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
@@ -813,7 +838,7 @@ namespace RSMods
             priorSettings[26] = ReadSettings.ProcessSettings(26); // Remove Inlay Markers Enabled / Disabled
             priorSettings[27] = ReadSettings.ProcessSettings(27); // Toggle Loft When Startup / Manual / Song
             priorSettings[28] = ReadSettings.ProcessSettings(28); // Remove Lane Markers Enabled / Disabled
-            //priorSettings[29] = ReadSettings.ProcessSettings(29); // Unused for right now
+            priorSettings[29] = ReadSettings.ProcessSettings(29); // Toggle Skyline When Startup / Song
 
             priorSettings[30] = ReadSettings.ProcessSettings(30); // Default Low E String Color
             priorSettings[31] = ReadSettings.ProcessSettings(31); // Default A String Color

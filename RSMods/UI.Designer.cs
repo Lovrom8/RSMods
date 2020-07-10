@@ -87,6 +87,9 @@
             this.ChangeStringColorsBox = new System.Windows.Forms.GroupBox();
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleSkylineBox = new System.Windows.Forms.GroupBox();
+            this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -95,6 +98,7 @@
             this.SongListBox.SuspendLayout();
             this.KeybindingsBox.SuspendLayout();
             this.ChangeStringColorsBox.SuspendLayout();
+            this.ToggleSkylineBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -448,28 +452,24 @@
             // CheckEveryXmsText
             // 
             this.CheckEveryXmsText.AutoSize = true;
-            this.CheckEveryXmsText.Location = new System.Drawing.Point(193, 27);
+            this.CheckEveryXmsText.Location = new System.Drawing.Point(164, 24);
             this.CheckEveryXmsText.Name = "CheckEveryXmsText";
-            this.CheckEveryXmsText.Size = new System.Drawing.Size(94, 13);
+            this.CheckEveryXmsText.Size = new System.Drawing.Size(123, 13);
             this.CheckEveryXmsText.TabIndex = 27;
-            this.CheckEveryXmsText.Text = "Check Every X ms";
+            this.CheckEveryXmsText.Text = "Check Every X Seconds";
             this.CheckEveryXmsText.Visible = false;
             // 
             // EnumerateEveryXMS
             // 
+            this.EnumerateEveryXMS.DecimalPlaces = 1;
             this.EnumerateEveryXMS.Increment = new decimal(new int[] {
-            100,
+            5,
             0,
             0,
-            0});
+            65536});
             this.EnumerateEveryXMS.Location = new System.Drawing.Point(220, 48);
             this.EnumerateEveryXMS.Maximum = new decimal(new int[] {
-            -1981284352,
-            -1966660860,
-            0,
-            0});
-            this.EnumerateEveryXMS.Minimum = new decimal(new int[] {
-            100,
+            100000,
             0,
             0,
             0});
@@ -477,7 +477,7 @@
             this.EnumerateEveryXMS.Size = new System.Drawing.Size(58, 20);
             this.EnumerateEveryXMS.TabIndex = 26;
             this.EnumerateEveryXMS.Value = new decimal(new int[] {
-            250,
+            5,
             0,
             0,
             0});
@@ -749,12 +749,47 @@
             this.DefaultStringColorsRadio.UseVisualStyleBackColor = true;
             this.DefaultStringColorsRadio.CheckedChanged += new System.EventHandler(this.DefaultStringColorsRadio_CheckedChanged);
             // 
+            // ToggleSkylineBox
+            // 
+            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineSongRadio);
+            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineStartupRadio);
+            this.ToggleSkylineBox.Location = new System.Drawing.Point(1015, 194);
+            this.ToggleSkylineBox.Name = "ToggleSkylineBox";
+            this.ToggleSkylineBox.Size = new System.Drawing.Size(293, 68);
+            this.ToggleSkylineBox.TabIndex = 66;
+            this.ToggleSkylineBox.TabStop = false;
+            this.ToggleSkylineBox.Text = "Toggle Skyline Off When:";
+            this.ToggleSkylineBox.Visible = false;
+            // 
+            // ToggleSkylineSongRadio
+            // 
+            this.ToggleSkylineSongRadio.AutoSize = true;
+            this.ToggleSkylineSongRadio.Location = new System.Drawing.Point(16, 42);
+            this.ToggleSkylineSongRadio.Name = "ToggleSkylineSongRadio";
+            this.ToggleSkylineSongRadio.Size = new System.Drawing.Size(128, 17);
+            this.ToggleSkylineSongRadio.TabIndex = 46;
+            this.ToggleSkylineSongRadio.TabStop = true;
+            this.ToggleSkylineSongRadio.Text = "Only When In A Song";
+            this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
+            // 
+            // ToggleSkylineStartupRadio
+            // 
+            this.ToggleSkylineStartupRadio.AutoSize = true;
+            this.ToggleSkylineStartupRadio.Location = new System.Drawing.Point(16, 19);
+            this.ToggleSkylineStartupRadio.Name = "ToggleSkylineStartupRadio";
+            this.ToggleSkylineStartupRadio.Size = new System.Drawing.Size(180, 17);
+            this.ToggleSkylineStartupRadio.TabIndex = 44;
+            this.ToggleSkylineStartupRadio.TabStop = true;
+            this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
+            this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.ChangeStringColorsBox);
             this.Controls.Add(this.KeybindingsBox);
             this.Controls.Add(this.SongListBox);
@@ -780,6 +815,8 @@
             this.KeybindingsBox.PerformLayout();
             this.ChangeStringColorsBox.ResumeLayout(false);
             this.ChangeStringColorsBox.PerformLayout();
+            this.ToggleSkylineBox.ResumeLayout(false);
+            this.ToggleSkylineBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -846,6 +883,9 @@
         private System.Windows.Forms.NumericUpDown EnumerateEveryXMS;
         private System.Windows.Forms.Label CheckEveryXmsText;
         private System.Windows.Forms.CheckBox customColorsCheckbox;
+        private System.Windows.Forms.GroupBox ToggleSkylineBox;
+        private System.Windows.Forms.RadioButton ToggleSkylineSongRadio;
+        private System.Windows.Forms.RadioButton ToggleSkylineStartupRadio;
     }
 }
 

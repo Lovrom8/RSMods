@@ -6,7 +6,7 @@ namespace RSMods
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, RemoveLaneMarkersEnabled,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, 
                              RocksmithInstallLocation;
@@ -43,6 +43,7 @@ namespace RSMods
                 FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
                 RemoveInlaysIdentifier              = "RemoveInlaysEnabled = ",
                 ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
+                ToggleSkylineWhenIdentifier         = "ToggleSkylineWhen = ",
                 RemoveLaneMarkersIdentifier         = "RemoveLaneMarkersEnabled = ",
             // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -473,6 +474,22 @@ namespace RSMods
                         if (grab == 28)
                         {
                             return RemoveLaneMarkersEnabled;
+                        }
+                    }
+                    if (currentLine.Contains(ToggleSkylineWhenIdentifier))
+                    {
+                        if(currentLine.Substring(ToggleSkylineWhenIdentifier.Length, (currentLine.Length - ToggleSkylineWhenIdentifier.Length)) == "song")
+                        {
+                            ToggleSkylineWhen = "song";
+                        }
+                        if (currentLine.Substring(ToggleSkylineWhenIdentifier.Length, (currentLine.Length - ToggleSkylineWhenIdentifier.Length)) == "startup")
+                        {
+                            ToggleSkylineWhen = "startup";
+                        }
+
+                        if (grab == 29)
+                        {
+                            return ToggleSkylineWhen;
                         }
                     }
                 }
