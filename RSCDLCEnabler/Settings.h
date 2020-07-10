@@ -16,7 +16,7 @@ public:
 	void ReadModSettings();
 	int GetModSetting(std::string name);
 	int GetVKCodeForString(std::string vkString);
-	std::string ReturnToggleValue(std::string name);
+	std::string ReturnSettingValue(std::string name);
 	void ReadStringColors();
 	float GetStringColor(std::string);
 	std::vector<Color> GetCustomColors(bool CB);

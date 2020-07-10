@@ -36,7 +36,7 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
 	while (true) {
-		if (Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "automatic") {
+		if (Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
 			newDLCCount = Enumeration.GetCurrentDLCCount();
 
@@ -53,7 +53,7 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (msg == WM_KEYUP) {
-		//if (wParam == Settings.GetKeyBind(Settings.ReturnToggleValue("ShowSongTimerEnabled")))
+		//if (wParam == Settings.GetKeyBind(Settings.ReturnSettingValue("ShowSongTimerEnabled")))
 
 		if (keyPressed == VK_DELETE) {
 			float volume;
@@ -64,36 +64,36 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//std::cout << volume << std::endl;
 		}
 
-		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
+		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
 			MemHelpers.ToggleLoft();
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
-		if (keyPressed == Settings.GetKeyBind("ToggleSkylineKey") && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
+		if (keyPressed == Settings.GetKeyBind("ToggleSkylineKey") && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && GameLoaded) { // Game must not be on the startup videos or it will crash
 			MemHelpers.ToggleSkyline();
 			std::cout << "Toggle Skyline" << std::endl;
 		}
-		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnToggleValue("AddVolumeEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "true") {
 			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
 			std::cout << "Adding 5 Volume" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnToggleValue("DecreaseVolumeEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "true") {
 			//MemHelpers.DecreaseVolume(5);
 			std::cout << "Subtracting 5 Volume" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnToggleValue("ShowSongTimerEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnSettingValue("ShowSongTimerEnabled") == "true") {
 			MemHelpers.ShowSongTimer();
 			std::cout << "Show Me Dat Timer Bruh" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnToggleValue("ForceReEnumerationEnabled") == "manual") {
+		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
 			Enumeration.ForceEnumeration();
 			std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
 		}
 
-		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnToggleValue("RainbowStringsEnabled") == "true") {
+		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnSettingValue("RainbowStringsEnabled") == "true") {
 			ERMode.ToggleRainbowMode();
 			std::cout << "Rainbows Are Pretty Cool" << std::endl;
 		}
@@ -222,7 +222,7 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 bool setAllToNoteGradientTexture = false;
 
 bool DiscoEnabled() {
-	if (Settings.ReturnToggleValue("DiscoModeEnabled") == "true") {
+	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "true") {
 		return true;
 	}
 	else {
@@ -234,7 +234,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Settings.ReturnToggleValue("ExtendedRangeEnabled") == "true" && Stride == 12) { //Stride 12 = tails PogU
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "true" && Stride == 12) { //Stride 12 = tails PogU
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
@@ -338,7 +338,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (IsExtraRemoved(removedMeshes, currentThicc))
 		return D3D_OK;
 
-	if (Settings.ReturnToggleValue("ExtendedRangeEnabled") == "true" && MemHelpers.IsExtendedRangeSong() && IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "true" && MemHelpers.IsExtendedRangeSong() && IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
 		DWORD origZFunc;
 		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
 
@@ -355,7 +355,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	}
 
 	if (!ifYourNameIsFfio) { // If you run Skyline, Greenscreen, Headstock, fretless, and inlays all at the same time you get shitty FPS;
-		if (Settings.ReturnToggleValue("RemoveSkylineEnabled") == "true" && Stride == 16) {
+		if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "true" && Stride == 16) {
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
@@ -375,7 +375,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			}
 			MemHelpers.ToggleSkyline();
 		}
-		else if (Settings.ReturnToggleValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
+		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "true") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
 			if (Stride == 60 || Stride == 44 || Stride == 76 || Stride == 68) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
@@ -409,13 +409,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				return D3D_OK;
 
 		}
-		else if (Settings.ReturnToggleValue("GreenScreenWallEnabled") == "true" && IsExtraRemoved(greenscreenwall, currentThicc))
+		else if (Settings.ReturnSettingValue("GreenScreenWallEnabled") == "true" && IsExtraRemoved(greenscreenwall, currentThicc))
 			return D3D_OK;
-		else if (Settings.ReturnToggleValue("FretlessModeEnabled") == "true" && IsExtraRemoved(fretless, currentThicc))
+		else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "true" && IsExtraRemoved(fretless, currentThicc))
 			return D3D_OK;
-		else if (Settings.ReturnToggleValue("RemoveInlaysEnabled") == "true" && IsExtraRemoved(inlays, currentThicc))
+		else if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "true" && IsExtraRemoved(inlays, currentThicc))
 			return D3D_OK;
-		else if (Settings.ReturnToggleValue("RemoveLaneMarkersEnabled") == "true" && IsExtraRemoved(laneMarkers, currentThicc))
+		else if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "true" && IsExtraRemoved(laneMarkers, currentThicc))
 			return D3D_OK;
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -508,7 +508,7 @@ void InitEngineFunctions() {
 	GetRTPCValue = (tGetRTPCValue)Offsets.func_GetRTPCValue;
 }
 
-void AutoEnterGame() { //very big brain
+void AutoEnterGame() { //very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 	Sleep(30);
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
@@ -534,9 +534,6 @@ DWORD WINAPI MainThread(void*) {
 	while (true) {
 		Sleep(300);
 
-		if (GameLoaded)
-			ERMode.Toggle7StringMode();
-
 		/*
 		 Dev Commands
 
@@ -547,60 +544,59 @@ DWORD WINAPI MainThread(void*) {
 			MemHelpers.ToggleLoftWhenSongStarts();
 		*/
 
-		if (GameLoaded && !LoftOff && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && Settings.ReturnToggleValue("ToggleLoftWhen") == "startup") {
-			MemHelpers.ToggleLoft();
-			LoftOff = true;
-		}
-
-		if (GameLoaded && Settings.ReturnToggleValue("ToggleLoftEnabled") == "true" && Settings.ReturnToggleValue("ToggleLoftWhen") == "song")
+		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
-			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
-			{
-				if (!LoftOff) // Only toggle loft once
-					MemHelpers.ToggleLoft();
+			ERMode.Toggle7StringMode();
+			if (!LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
+				MemHelpers.ToggleLoft();
 				LoftOff = true;
 			}
-			if (LoftOff && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) // If Not In A Song
-			{
-				MemHelpers.ToggleLoft();
-				LoftOff = false;
-			}
-		}
-
-		// Skyline off on startup / in song only options - ini options for this need added
-		if (GameLoaded && !SkylineOff && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && Settings.ReturnToggleValue("ToggleSkylineWhen") == "startup") {
-			MemHelpers.ToggleSkyline();
-			SkylineOff = true;
-		}
-
-		if (GameLoaded && Settings.ReturnToggleValue("ToggleSkylineEnabled") == "true" && Settings.ReturnToggleValue("ToggleSkylineWhen") == "song")
-		{
-			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If in a song
-			{
-				if (!SkylineOff) // Only toggle Skyline once
-					MemHelpers.ToggleSkyline();
+			if (!SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
+				MemHelpers.ToggleSkyline();
 				SkylineOff = true;
 			}
-			if (SkylineOff && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) // If Not In A Song
+
+			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If User Is Entering Song
 			{
-				MemHelpers.ToggleSkyline();
-				SkylineOff = false;
+				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song")
+				{
+					if (!LoftOff)
+						MemHelpers.ToggleLoft();
+					LoftOff = true;
+				}
+
+				if (Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song")
+				{
+					if (!SkylineOff)
+						MemHelpers.ToggleSkyline();
+					SkylineOff = true;
+				}
+			}
+			else // If User Is Exiting Song
+			{
+				if (LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "true" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") {
+					MemHelpers.ToggleLoft();
+					LoftOff = false;
+				}
+
+				if (SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "true" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
+					MemHelpers.ToggleSkyline();
+					SkylineOff = false;
+				}
 			}
 		}
+		else // Game Hasn't Loaded Yet
+		{
+			if (MemHelpers.GetCurrentMenu() == "MainMenu") // Yay We Loaded :P
+				GameLoaded = true;
 
-		//if(GameLoaded)
-		//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
+			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "true") // "Fork in the toaster" / Spam Enter Method
+				AutoEnterGame();
+			//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
+		}
 
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);
-
-		if (!GameLoaded) {
-			if (MemHelpers.GetCurrentMenu() == "MainMenu")
-				GameLoaded = true;
-
-			if (!GameLoaded && Settings.ReturnToggleValue("ForceProfileEnabled") == "true")
-				AutoEnterGame();
-		}
 
 		ERMode.DoRainbow();
 	}

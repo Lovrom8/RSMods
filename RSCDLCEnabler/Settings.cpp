@@ -270,7 +270,7 @@ int cSettings::GetModSetting(std::string name) {
 	return customSettings[name];
 }
 
-std::string cSettings::ReturnToggleValue(std::string name) {
+std::string cSettings::ReturnSettingValue(std::string name) {
 	return keyBinds[name];
 }
 
