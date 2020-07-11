@@ -74,13 +74,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::cout << "Toggle Loft" << std::endl;
 		}
 
-		/*
-		if (keyPressed == Settings.GetKeyBind("ToggleSkylineKey") && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "on" && GameLoaded) { // Game must not be on the startup videos or it will crash
-			MemHelpers.ToggleSkyline();
-			std::cout << "Toggle Skyline" << std::endl;
-		}
-		*/
-
 		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
 			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
 			std::cout << "Adding 5 Volume" << std::endl;

@@ -13,7 +13,6 @@ cSettings::cSettings()
 	{"ForceReEnumerationKey", "F"},
 	{"RainbowStringsKey", "R"},
 	{"MenuToggleKey", "M"},
-	//
 	{"ForceReEnumerationEnabled", "automatic"},
 	{"ToggleLoftEnabled", "on"},
 	{"AddVolumeEnabled", "off"},
@@ -235,7 +234,6 @@ void cSettings::ReadKeyBinds() {
 	cSettings::keyBinds = {
 		// Mods
 			{ "ToggleLoftKey", reader.Get("Keybinds", "ToggleLoftKey", "T") },
-			{ "ToggleSkylineKey", reader.Get("Keybinds", "ToggleSkylineKey", "S") },
 			{ "AddVolumeKey", reader.Get("Keybinds", "AddVolumeKey", "O") },
 			{ "DecreaseVolumeKey",  reader.Get("Keybinds", "DecreaseVolumeKey", "I") },
 			{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
