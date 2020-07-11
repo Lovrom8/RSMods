@@ -491,7 +491,6 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, Stride);
 }
 
-
 void GUI() {
 	DWORD d3d9Base, adr, * vTable = NULL;
 	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
@@ -562,9 +561,8 @@ DWORD WINAPI MainThread(void*) {
 				MemHelpers.ToggleLoft();
 				LoftOff = true;
 			}
-			if (!SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
+			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
 				toggleSkyline = true;
-
 			}
 
 			if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) // If User Is Entering Song
@@ -576,7 +574,7 @@ DWORD WINAPI MainThread(void*) {
 					LoftOff = true;
 				}
 
-				if (Settings.ReturnSettingValue("ToggleSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song")
+				if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song")
 				{
 					if (!SkylineOff)
 						toggleSkyline = true;
@@ -589,7 +587,7 @@ DWORD WINAPI MainThread(void*) {
 					LoftOff = false;
 				}
 
-				if (SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
+				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
 				}
 			}
@@ -598,7 +596,6 @@ DWORD WINAPI MainThread(void*) {
 				resetHeadstockCache = true;
 				headstockTexutrePointers.clear();
 			}
-
 			previousMenu = currentMenu;
 		}
 		else // Game Hasn't Loaded Yet

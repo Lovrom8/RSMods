@@ -16,7 +16,6 @@ cSettings::cSettings()
 	//
 	{"ForceReEnumerationEnabled", "automatic"},
 	{"ToggleLoftEnabled", "on"},
-	//{"ToggleSkylineEnabled", "on"},
 	{"AddVolumeEnabled", "off"},
 	{"DecreaseVolumeEnabled", "off"},
 	{"ShowSongTimerEnabled", "on"},
@@ -246,7 +245,6 @@ void cSettings::ReadKeyBinds() {
 			{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "V")},
 			// Mods Enabled / Disabled
 				{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoft", "on")},
-				//{"ToggleSkylineEnabled", reader.Get("Toggle Switches", "ToggleSkylineEnabled", "on")},
 				{"AddVolumeEnabled", reader.Get("Toggle Switches", "AddVolume", "off")},
 				{"DecreaseVolumeEnabled", reader.Get("Toggle Switches", "DecreaseVolume", "off")},
 				{"ShowSongTimerEnabled", reader.Get("Toggle Switches", "ShowSongTimer", "on")},
