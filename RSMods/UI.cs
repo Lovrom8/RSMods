@@ -50,7 +50,7 @@ namespace RSMods
 
             // Load Checkbox Values
             {
-                if (ImportPriorSettings()[12].ToString() == "true") // Toggle Loft Enabled / Disabled
+                if (ImportPriorSettings()[12].ToString() == "on") // Toggle Loft Enabled / Disabled
                 {
                     this.ToggleLoftCheckbox.Checked = true;
                     this.ToggleLoftWhenStartupRadio.Visible = true;
@@ -76,7 +76,7 @@ namespace RSMods
                     this.ToggleLoftCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[13].ToString() == "true") // Add Volume Enabled / Disabled
+                if (ImportPriorSettings()[13].ToString() == "on") // Add Volume Enabled / Disabled
                 {
                     this.AddVolumeCheckbox.Checked = true;
                 }
@@ -84,7 +84,7 @@ namespace RSMods
                 {
                     this.AddVolumeCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[14].ToString() == "true") // Decrease Volume Enabled / Disabled
+                if (ImportPriorSettings()[14].ToString() == "on") // Decrease Volume Enabled / Disabled
                 {
                     this.DecreaseVolumeCheckbox.Checked = true;
                 }
@@ -92,7 +92,7 @@ namespace RSMods
                 {
                     this.DecreaseVolumeCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[15].ToString() == "true") // Show Song Timer Enabled / Disabled
+                if (ImportPriorSettings()[15].ToString() == "on") // Show Song Timer Enabled / Disabled
                 {
                     this.SongTimerCheckbox.Checked = true;
                 }
@@ -100,7 +100,7 @@ namespace RSMods
                 {
                     this.SongTimerCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[17].ToString() == "true") // Rainbow String Enabled / Disabled
+                if (ImportPriorSettings()[17].ToString() == "on") // Rainbow String Enabled / Disabled
                 {
                     this.RainbowStringsEnabled.Checked = true;
                 }
@@ -126,7 +126,7 @@ namespace RSMods
                         this.ForceEnumerationManualRadio.Checked = true;
                     }
                 }
-                if (ImportPriorSettings()[18].ToString() == "true") // Extended Range Enabled / Disabled
+                if (ImportPriorSettings()[18].ToString() == "on") // Extended Range Enabled / Disabled
                 {
                     this.ExtendedRangeEnabled.Checked = true;
                     this.ExtendedRangeTuningBox.Visible = true;
@@ -148,7 +148,7 @@ namespace RSMods
                     this.ChangeStringColorsBox.Visible = true;
                 }
 
-                if (ImportPriorSettings()[20].ToString() == "true") // Disco Mode Enabled / Disabled
+                if (ImportPriorSettings()[20].ToString() == "on") // Disco Mode Enabled / Disabled
                 {
                     this.DiscoModeCheckbox.Checked = true;
                 }
@@ -157,7 +157,7 @@ namespace RSMods
                     this.DiscoModeCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[21].ToString() == "true") // Remove Headstock Enabled / Disabled
+                if (ImportPriorSettings()[21].ToString() == "on") // Remove Headstock Enabled / Disabled
                 {
                     this.HeadstockCheckbox.Checked = true;
                 }
@@ -166,7 +166,7 @@ namespace RSMods
                     this.HeadstockCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[22].ToString() == "true") // Remove Skyline Enabled / Disabled
+                if (ImportPriorSettings()[22].ToString() == "on") // Remove Skyline Enabled / Disabled
                 {
                     this.RemoveSkylineCheckbox.Checked = true;
                     this.ToggleSkylineBox.Visible = true;
@@ -176,7 +176,7 @@ namespace RSMods
                     this.RemoveSkylineCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[23].ToString() == "true") // Greenscreen Wall Enabled / Disabled
+                if (ImportPriorSettings()[23].ToString() == "on") // Greenscreen Wall Enabled / Disabled
                 {
                     this.GreenScreenWallCheckbox.Checked = true;
                 }
@@ -185,7 +185,7 @@ namespace RSMods
                     this.GreenScreenWallCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[24].ToString() == "true") // Force Load Profile On Game Boot Enabled / Disabled
+                if (ImportPriorSettings()[24].ToString() == "on") // Force Load Profile On Game Boot Enabled / Disabled
                 {
                     this.AutoLoadProfileCheckbox.Checked = true;
                 }
@@ -194,7 +194,7 @@ namespace RSMods
                     this.AutoLoadProfileCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[25].ToString() == "true") // Fretless Mode Enabled / Disabled
+                if (ImportPriorSettings()[25].ToString() == "on") // Fretless Mode Enabled / Disabled
                 {
                     this.FretlessModeCheckbox.Checked = true;
                 }
@@ -203,7 +203,7 @@ namespace RSMods
                     this.FretlessModeCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[26].ToString() == "true") // Remove Inlay Markers Enabled / Disabled
+                if (ImportPriorSettings()[26].ToString() == "on") // Remove Inlay Markers Enabled / Disabled
                 {
                     this.RemoveInlaysCheckbox.Checked = true;
                 }
@@ -212,7 +212,7 @@ namespace RSMods
                     this.RemoveInlaysCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[28].ToString() == "true") // Remove Line Markers Enabled / Disabled
+                if (ImportPriorSettings()[28].ToString() == "on") // Remove Line Markers Enabled / Disabled
                 {
                     this.RemoveLineMarkersCheckBox.Checked = true;
                 }
@@ -440,7 +440,7 @@ namespace RSMods
                 }
                 else
                 {
-                    SaveChanges(17, "false");
+                    SaveChanges(17, "off");
                 }
                 if (this.RainbowStringsEnabled.Checked.ToString() != ReadSettings.ProcessSettings(17)) // Rainbow Strings Enabled / Disabled
                 {
@@ -588,6 +588,15 @@ namespace RSMods
             if (File.ReadLines(@WriteSettings.dumpLocation).Count() == WriteSettings.StringArray.Length)
             {
                 string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
+
+                if (ChangedSettingValue == "true")
+                {
+                    ChangedSettingValue = "on";
+                }
+                else if (ChangedSettingValue == "false")
+                {
+                    ChangedSettingValue = "off";
+                }    
                 // Song Lists
                 {
                     if (ElementToChange == 1) // Songlist 1
@@ -863,7 +872,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[30].ToString());
             }
@@ -875,7 +884,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String0Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                    SaveChanges(31, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
@@ -891,7 +900,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[31].ToString());
             }
@@ -903,7 +912,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String1Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                     SaveChanges(32, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
@@ -919,7 +928,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[32].ToString());
             }
@@ -931,7 +940,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String2Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                     SaveChanges(33, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
@@ -947,7 +956,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[33].ToString());
             }
@@ -959,7 +968,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String3Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                     SaveChanges(34, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
@@ -975,7 +984,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[34].ToString());
             }
@@ -987,7 +996,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String4Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                     SaveChanges(35, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
@@ -1003,7 +1012,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
             {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[35].ToString());
             }
@@ -1015,7 +1024,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String5Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
                     SaveChanges(36, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }

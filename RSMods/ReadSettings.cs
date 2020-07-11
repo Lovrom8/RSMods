@@ -27,24 +27,24 @@ namespace RSMods
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
                 RainbowStringsIdentifier     = "RainbowStringsKey = ",
             // Toggle Effects (Change Names to easier naming scheme before public launch)
-                ToggleLoftEnabledIdentifier         = "ToggleLoftEnabled = ",
-                AddVolumeEnabledIdentifier          = "AddVolumeEnabled = ",
-                DecreaseVolumeEnabledIdentifier     = "DecreaseVolumeEnabled = ",
-                ShowSongTimerEnabledIdentifier      = "ShowSongTimerEnabled = ",
-                ForceReEnumerationEnabledIdentifier = "ForceReEnumerationEnabled = ",
-                RainbowStringsEnabledIdentifier     = "RainbowStringsEnabled = ",
-                ExtendedRangeEnabledIdentifier      = "ExtendedRangeEnabled = ",
+                ToggleLoftEnabledIdentifier         = "ToggleLoft = ",
+                AddVolumeEnabledIdentifier          = "AddVolume = ",
+                DecreaseVolumeEnabledIdentifier     = "DecreaseVolume = ",
+                ShowSongTimerEnabledIdentifier      = "ShowSongTimer = ",
+                ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
+                RainbowStringsEnabledIdentifier     = "RainbowStrings = ",
+                ExtendedRangeEnabledIdentifier      = "ExtendedRange = ",
                 CustomStringColorNumberIndetifier = "CustomStringColors = ",
-                DiscoModeIdentifier                 = "DiscoModeEnabled = ",
-                RemoveHeadstockIdentifier           = "RemoveHeadstockEnabled = ",
-                RemoveSkylineIdentifier             = "RemoveSkylineEnabled = ",
-                GreenScreenWallIdentifier           = "GreenScreenWallEnabled = ",
-                ForceProfileEnabledIdentifier       = "ForceProfileEnabled = ",
-                FretlessModeEnabledIdentifier       = "FretlessModeEnabled = ",
-                RemoveInlaysIdentifier              = "RemoveInlaysEnabled = ",
+                DiscoModeIdentifier                 = "DiscoMode = ",
+                RemoveHeadstockIdentifier           = "Headstock = ",
+                RemoveSkylineIdentifier             = "Skyline = ",
+                GreenScreenWallIdentifier           = "GreenScreenWall = ",
+                ForceProfileEnabledIdentifier       = "ForceProfileLoad = ",
+                FretlessModeEnabledIdentifier       = "Fretless = ",
+                RemoveInlaysIdentifier              = "Inlays = ",
                 ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
                 ToggleSkylineWhenIdentifier         = "ToggleSkylineWhen = ",
-                RemoveLaneMarkersIdentifier         = "RemoveLaneMarkersEnabled = ",
+                RemoveLaneMarkersIdentifier         = "LaneMarkers = ",
             // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
                     String0Color_N_Identifier   = "string0_N = ",
@@ -205,13 +205,13 @@ namespace RSMods
                 {
                     if (currentLine.Contains(ToggleLoftEnabledIdentifier))
                     {
-                        if (currentLine.Substring(ToggleLoftEnabledIdentifier.Length, (currentLine.Length - ToggleLoftEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(ToggleLoftEnabledIdentifier.Length, (currentLine.Length - ToggleLoftEnabledIdentifier.Length)) == "on")
                         {
-                            ToggleLoftEnabled = "true";
+                            ToggleLoftEnabled = "on";
                         }
                         else
                         {
-                            ToggleLoftEnabled = "false";
+                            ToggleLoftEnabled = "off";
                         }
 
                         if (grab == 11)
@@ -221,13 +221,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(AddVolumeEnabledIdentifier))
                     {
-                        if (currentLine.Substring(AddVolumeEnabledIdentifier.Length, (currentLine.Length - AddVolumeEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(AddVolumeEnabledIdentifier.Length, (currentLine.Length - AddVolumeEnabledIdentifier.Length)) == "on")
                         {
-                            AddVolumeEnabled = "true";
+                            AddVolumeEnabled = "on";
                         }
                         else
                         {
-                            AddVolumeEnabled = "false";
+                            AddVolumeEnabled = "off";
                         }
 
                         if (grab == 12)
@@ -237,13 +237,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(DecreaseVolumeEnabledIdentifier))
                     {
-                        if (currentLine.Substring(DecreaseVolumeEnabledIdentifier.Length, (currentLine.Length - DecreaseVolumeEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(DecreaseVolumeEnabledIdentifier.Length, (currentLine.Length - DecreaseVolumeEnabledIdentifier.Length)) == "on")
                         {
-                            DecreaseVolumeEnabled = "true";
+                            DecreaseVolumeEnabled = "on";
                         }
                         else
                         {
-                            DecreaseVolumeEnabled = "false";
+                            DecreaseVolumeEnabled = "off";
                         }
 
                         if (grab == 13)
@@ -253,13 +253,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(ShowSongTimerEnabledIdentifier))
                     {
-                        if (currentLine.Substring(ShowSongTimerEnabledIdentifier.Length, (currentLine.Length - ShowSongTimerEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(ShowSongTimerEnabledIdentifier.Length, (currentLine.Length - ShowSongTimerEnabledIdentifier.Length)) == "on")
                         {
-                            ShowSongTimerEnabled = "true";
+                            ShowSongTimerEnabled = "on";
                         }
                         else
                         {
-                            ShowSongTimerEnabled = "false";
+                            ShowSongTimerEnabled = "off";
                         }
 
                         if (grab == 14)
@@ -277,9 +277,9 @@ namespace RSMods
                         {
                             ForceReEnumerationEnabled = "automatic";
                         }
-                        if (currentLine.Substring(ForceReEnumerationEnabledIdentifier.Length, (currentLine.Length - ForceReEnumerationEnabledIdentifier.Length)) == "false")
+                        if (currentLine.Substring(ForceReEnumerationEnabledIdentifier.Length, (currentLine.Length - ForceReEnumerationEnabledIdentifier.Length)) == "off")
                         {
-                            ForceReEnumerationEnabled = "false";
+                            ForceReEnumerationEnabled = "off";
                         }
 
                         if (grab == 15)
@@ -289,13 +289,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(RainbowStringsEnabledIdentifier))
                     {
-                        if (currentLine.Substring(RainbowStringsEnabledIdentifier.Length, (currentLine.Length - RainbowStringsEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(RainbowStringsEnabledIdentifier.Length, (currentLine.Length - RainbowStringsEnabledIdentifier.Length)) == "on")
                         {
-                            RainbowStringsEnabled = "true";
+                            RainbowStringsEnabled = "on";
                         }
                         else
                         {
-                            RainbowStringsEnabled = "false";
+                            RainbowStringsEnabled = "off";
                         }
 
                         if (grab == 17)
@@ -305,13 +305,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(ExtendedRangeEnabledIdentifier))
                     {
-                        if (currentLine.Substring(ExtendedRangeEnabledIdentifier.Length, (currentLine.Length - ExtendedRangeEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(ExtendedRangeEnabledIdentifier.Length, (currentLine.Length - ExtendedRangeEnabledIdentifier.Length)) == "on")
                         {
-                            ExtendedRangeEnabled = "true";
+                            ExtendedRangeEnabled = "on";
                         }
                         else
                         {
-                            ExtendedRangeEnabled = "false";
+                            ExtendedRangeEnabled = "off";
                         }
 
                         if (grab == 18)
@@ -330,13 +330,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(DiscoModeIdentifier))
                     {
-                        if (currentLine.Substring(DiscoModeIdentifier.Length, (currentLine.Length - DiscoModeIdentifier.Length)) == "true")
+                        if (currentLine.Substring(DiscoModeIdentifier.Length, (currentLine.Length - DiscoModeIdentifier.Length)) == "on")
                         {
-                            DiscoModeEnabled = "true";
+                            DiscoModeEnabled = "on";
                         }
                         else
                         {
-                            DiscoModeEnabled = "false";
+                            DiscoModeEnabled = "off";
                         }
 
                         if (grab == 20)
@@ -346,13 +346,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(RemoveHeadstockIdentifier))
                     {
-                        if (currentLine.Substring(RemoveHeadstockIdentifier.Length, (currentLine.Length - RemoveHeadstockIdentifier.Length)) == "true")
+                        if (currentLine.Substring(RemoveHeadstockIdentifier.Length, (currentLine.Length - RemoveHeadstockIdentifier.Length)) == "on")
                         {
-                            RemoveHeadstockEnabled = "true";
+                            RemoveHeadstockEnabled = "on";
                         }
                         else
                         {
-                            RemoveHeadstockEnabled = "false";
+                            RemoveHeadstockEnabled = "off";
                         }
 
                         if (grab == 21)
@@ -362,13 +362,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(RemoveSkylineIdentifier))
                     {
-                        if (currentLine.Substring(RemoveSkylineIdentifier.Length, (currentLine.Length - RemoveSkylineIdentifier.Length)) == "true")
+                        if (currentLine.Substring(RemoveSkylineIdentifier.Length, (currentLine.Length - RemoveSkylineIdentifier.Length)) == "on")
                         {
-                            RemoveSkylineEnabled = "true";
+                            RemoveSkylineEnabled = "on";
                         }
                         else
                         {
-                            RemoveSkylineEnabled = "false";
+                            RemoveSkylineEnabled = "off";
                         }
 
                         if (grab == 22)
@@ -378,13 +378,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(GreenScreenWallIdentifier))
                     {
-                        if (currentLine.Substring(GreenScreenWallIdentifier.Length, (currentLine.Length - GreenScreenWallIdentifier.Length)) == "true")
+                        if (currentLine.Substring(GreenScreenWallIdentifier.Length, (currentLine.Length - GreenScreenWallIdentifier.Length)) == "on")
                         {
-                            GreenscreenWallEnabled = "true";
+                            GreenscreenWallEnabled = "on";
                         }
                         else
                         {
-                            GreenscreenWallEnabled = "false";
+                            GreenscreenWallEnabled = "off";
                         }
 
                         if (grab == 23)
@@ -395,13 +395,13 @@ namespace RSMods
 
                     if (currentLine.Contains(ForceProfileEnabledIdentifier))
                     {
-                        if (currentLine.Substring(ForceProfileEnabledIdentifier.Length, (currentLine.Length - ForceProfileEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(ForceProfileEnabledIdentifier.Length, (currentLine.Length - ForceProfileEnabledIdentifier.Length)) == "on")
                         {
-                            ForceProfileEnabled = "true";
+                            ForceProfileEnabled = "on";
                         }
                         else
                         {
-                            ForceProfileEnabled = "false";
+                            ForceProfileEnabled = "off";
                         }
                         if (grab == 24)
                         {
@@ -410,13 +410,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(FretlessModeEnabledIdentifier))
                     {
-                        if (currentLine.Substring(FretlessModeEnabledIdentifier.Length, (currentLine.Length - FretlessModeEnabledIdentifier.Length)) == "true")
+                        if (currentLine.Substring(FretlessModeEnabledIdentifier.Length, (currentLine.Length - FretlessModeEnabledIdentifier.Length)) == "on")
                         {
-                            FretlessEnabled = "true";
+                            FretlessEnabled = "on";
                         }
                         else
                         {
-                            FretlessEnabled = "false";
+                            FretlessEnabled = "off";
                         }
 
                         if (grab == 25)
@@ -426,13 +426,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(RemoveInlaysIdentifier))
                     {
-                        if (currentLine.Substring(RemoveInlaysIdentifier.Length, (currentLine.Length - RemoveInlaysIdentifier.Length)) == "true")
+                        if (currentLine.Substring(RemoveInlaysIdentifier.Length, (currentLine.Length - RemoveInlaysIdentifier.Length)) == "on")
                         {
-                            RemoveInlaysEnabled = "true";
+                            RemoveInlaysEnabled = "on";
                         }
                         else
                         {
-                            RemoveInlaysEnabled = "false";
+                            RemoveInlaysEnabled = "off";
                         }
 
                         if (grab == 26)
@@ -462,13 +462,13 @@ namespace RSMods
                     }
                     if (currentLine.Contains(RemoveLaneMarkersIdentifier))
                     {
-                        if (currentLine.Substring(RemoveLaneMarkersIdentifier.Length, (currentLine.Length - RemoveLaneMarkersIdentifier.Length)) == "true")
+                        if (currentLine.Substring(RemoveLaneMarkersIdentifier.Length, (currentLine.Length - RemoveLaneMarkersIdentifier.Length)) == "on")
                         {
-                            RemoveLaneMarkersEnabled = "true";
+                            RemoveLaneMarkersEnabled = "on";
                         }
                         else
                         {
-                            RemoveLaneMarkersEnabled = "false";
+                            RemoveLaneMarkersEnabled = "off";
                         }
 
                         if (grab == 28)
