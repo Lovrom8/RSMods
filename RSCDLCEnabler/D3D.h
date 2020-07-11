@@ -265,7 +265,7 @@ std::vector<ThiccMesh> removedMeshes;
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
 
-std::string getRidOfTuningLettersOnTheseMenus[16] = {
+std::string tuningMenus[16] = { // previously known as getRidOfTuningLettersOnTheseMenus
 	(std::string)"SelectionListDialog",
 	(std::string)"LearnASong_PreSongTuner",
 	(std::string)"LearnASong_PreSongTunerMP",

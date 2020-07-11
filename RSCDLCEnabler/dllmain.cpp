@@ -26,7 +26,8 @@ bool enableColorBlindCheckboxGUI = false;
 bool GameLoaded = false;
 bool lowPerformancePC = false; // AKA if your game lags like shit when you run the texture checks || AKA we have too many mods :P
 
-
+std::string previousMenu, currentMenu;
+bool resetHeadstockCache = true;
 bool toggleSkyline = false;
 bool SkylineOff = false;
 
@@ -79,7 +80,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::cout << "Toggle Skyline" << std::endl;
 		}
 		*/
-		
+
 		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
 			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
 			std::cout << "Adding 5 Volume" << std::endl;
@@ -246,10 +247,8 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 		pDevice->SetTexture(1, gradientTextureNormal);
 	}
 
-
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
-
 
 bool startLogging = false;
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
@@ -364,72 +363,71 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
 			// If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
-			if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) {
+			if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) { //TODO: since you already determine whether we are in a song in the main loop, likely you can use that value instead of calculating it again
 				SkylineOff = false;
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 			}
 			// Skyline Removal
-			{
-				pDevice->GetTexture(1, &pBaseTextures[1]);
-				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-				if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
-					if (CRCForTexture(pCurrTextures[1], crc)) {
-						if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles +
-							SkylineOff = true;
-							return D3D_OK;
-						}
+			pDevice->GetTexture(1, &pBaseTextures[1]);
+			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+
+			if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
+				if (CRCForTexture(pCurrTextures[1], crc)) {
+					if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles + orange line beneath them
+						SkylineOff = true;
+						return D3D_OK;
 					}
 				}
+			}
 
-				pDevice->GetTexture(0, &pBaseTextures[0]);
-				pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
+			pDevice->GetTexture(0, &pBaseTextures[0]);
+			pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
 
-				if (pBaseTextures[0])
+			if (pBaseTextures[0])
+			{
+				if (CRCForTexture(pCurrTextures[0], crc))
 				{
-					if (CRCForTexture(pCurrTextures[0], crc))
-					{
-						if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
-							SkylineOff = true;
-							return D3D_OK;
-						}
+					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+						SkylineOff = true;
+						return D3D_OK;
 					}
 				}
 			}
 		}
-		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") { //TODO: when we confirm whether it's better for performance, add CRCs for other headstock types
-			if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84 ) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") { //TODO: confirm this caching thingy works for different headstocks
+			if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-				if (calculatedHeadstocks) {
-					for (auto pTexture : headstockTexutrePointers)
-						if (pTexture == pCurrTextures[1])
-							return D3D_OK;
-				}
-				else if (IsExtraRemoved(headstockThicc, currentThicc)) {
+				if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
+					
 					if (!pBaseTextures[1]) //if there's no texture for Stage 1
 						return D3D_OK;
 
 					if (CRCForTexture(pCurrTextures[1], crc)) {
-						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039) //00000s for some reason
+						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039)
 							AddToTextureList(headstockTexutrePointers, pCurrTextures[1]);
 					}
 
 					//Log("0x%08x", crc);
 
-					if (headstockTexutrePointers.size() == 5) { 
+					if (headstockTexutrePointers.size() == 3) {
 						calculatedHeadstocks = true;
-						std::cout << "Calculated headstock CRCs" << std::endl;
+						resetHeadstockCache = false;
+						std::cout << "Calculated headstock CRCs (Menu: "  << currentMenu << " )" << std::endl;
 					}
 
 					return D3D_OK;
 				}
+
+				if (calculatedHeadstocks)
+					if (std::find(std::begin(headstockTexutrePointers), std::end(headstockTexutrePointers), pCurrTextures[1]) != std::end(headstockTexutrePointers))
+						return D3D_OK;
 			}
 
-			if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(getRidOfTuningLettersOnTheseMenus), std::end(getRidOfTuningLettersOnTheseMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(getRidOfTuningLettersOnTheseMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+			if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 				return D3D_OK;
-
 		}
 		else if (Settings.ReturnSettingValue("GreenScreenWallEnabled") == "on" && IsExtraRemoved(greenscreenwall, currentThicc))
 			return D3D_OK;
@@ -553,17 +551,9 @@ DWORD WINAPI MainThread(void*) {
 	InitEngineFunctions();
 
 	while (true) {
-		Sleep(300);
+		Sleep(300); //TODO: determine a more appropriate delay - since we don't use this for keybinds anymore, we may as well check less often
 
-		/*
-		 Dev Commands
-
-		if (GetAsyncKeyState('X') & 0x1)
-			MemHelpers.ShowCurrentTuning();
-
-		  Disabled commands
-			MemHelpers.ToggleLoftWhenSongStarts();
-		*/
+		currentMenu = MemHelpers.GetCurrentMenu();
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
@@ -574,10 +564,10 @@ DWORD WINAPI MainThread(void*) {
 			}
 			if (!SkylineOff && Settings.ReturnSettingValue("ToggleSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
 				toggleSkyline = true;
-				
+
 			}
 
-			if (std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes)) // If User Is Entering Song
+			if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) // If User Is Entering Song
 			{
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song")
 				{
@@ -603,6 +593,13 @@ DWORD WINAPI MainThread(void*) {
 					toggleSkyline = true;
 				}
 			}
+
+			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
+				resetHeadstockCache = true;
+				headstockTexutrePointers.clear();
+			}
+
+			previousMenu = currentMenu;
 		}
 		else // Game Hasn't Loaded Yet
 		{
@@ -616,7 +613,7 @@ DWORD WINAPI MainThread(void*) {
 
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);
-
+	
 		ERMode.DoRainbow();
 	}
 
