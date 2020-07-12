@@ -1,5 +1,6 @@
 #include "d3dx9_42.h"
 #include "MemHelpers.h"
+#include <gdiplus.h>
 #include "Enumeration.h"
 #include "detours.h"
 #include "Functions.h"
@@ -18,6 +19,7 @@
 
 #include <intrin.h>
 #pragma intrinsic(_ReturnAddress)
+#pragma comment (lib, "gdiplus.lib")
 
 const char* windowName = "Rocksmith 2014";
 
@@ -109,6 +111,71 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
 
+void GenerateTexture(IDirect3DDevice9* pDevice) {
+		Sleep(2000); //it has an unusually weird tendency of crashing if you call it too early :(
+
+		using namespace Gdiplus;
+		GdiplusStartupInput inp;
+		GdiplusStartupOutput outp;
+		ULONG_PTR token_;
+
+		UINT width = 256, height = 128;
+
+		if (Ok != GdiplusStartup(&token_, &inp, NULL)) {
+			MessageBox(NULL, TEXT("GDI+ failed to start up!"),
+				TEXT("Error!"), MB_ICONERROR);
+		}
+
+		Bitmap bmp(256, 128, PixelFormat32bppARGB);
+		Graphics graphics(&bmp);
+
+		REAL blendPositions[] = { 0.0f, 0.4f, 1.0f }; //TODO: if this stuff is okay, add CB part of texture and use colors from the settings
+		Gdiplus::Color middleColors[] = { Gdiplus::Color::Red, Gdiplus::Color::Yellow, Gdiplus::Color::Cyan, Gdiplus::Color::Orange, Gdiplus::Color::Green,  Gdiplus::Color::Purple, Gdiplus::Color::Cyan, Gdiplus::Color::Gray };
+
+		for (int i = 0; i < 8;i++) {
+			Gdiplus::Color colors[] = { Gdiplus::Color::Black, middleColors[i], Gdiplus::Color::White };
+			LinearGradientBrush linGrBrush(
+				Point(0, 0),
+				Point(256, 8),
+				Gdiplus::Color::Black,
+				Gdiplus::Color::White);
+
+			linGrBrush.SetInterpolationColors(colors, blendPositions, 3);
+			graphics.FillRectangle(&linGrBrush, 0, i * 8, 256, 8);
+		}
+
+		CLSID pngClsid;
+		CLSIDFromString(L"{557CF406-1A04-11D3-9A73-0000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
+		bmp.Save(L"kekw.png", &pngClsid);
+
+		//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
+
+		BitmapData bitmapData;
+
+		D3DLOCKED_RECT lockedRect;
+
+		D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &ourTexture);
+		ourTexture->LockRect(0, &lockedRect, 0, 0);
+
+		bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+		unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
+		unsigned char* pDestPixels = (unsigned char*)lockedRect.pBits;
+
+		for (int y = 0; y < height; ++y)
+		{
+			// copy a row
+			memcpy(pDestPixels, pSourcePixels, width * 4);   // 4 bytes per pixel
+
+			// advance row pointers
+			pSourcePixels += bitmapData.Stride;
+			pDestPixels += lockedRect.Pitch;
+		}
+
+		ourTexture->UnlockRect(0);
+
+		D3DXSaveTextureToFileA("kekw_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+}
+
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	HRESULT hRet = oEndScene(pDevice);
 	DWORD dwReturnAddress = (DWORD)_ReturnAddress(); //EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
@@ -150,6 +217,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3DXCreateTextureFromFile(pDevice, L"additiveGradient.bmp", &additiveBMP);
 
 		std::cout << "ImGUI Init" << std::endl;
+
+		GenerateTexture(pDevice);
 	}
 
 	ImGui_ImplDX9_NewFrame();
@@ -394,7 +463,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
 				if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
-					
 					if (!pBaseTextures[1]) //if there's no texture for Stage 1
 						return D3D_OK;
 
@@ -408,7 +476,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 					if (headstockTexutrePointers.size() == 3) {
 						calculatedHeadstocks = true;
 						resetHeadstockCache = false;
-						std::cout << "Calculated headstock CRCs (Menu: "  << currentMenu << " )" << std::endl;
+						std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
 					}
 
 					return D3D_OK;
@@ -603,7 +671,7 @@ DWORD WINAPI MainThread(void*) {
 
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);
-	
+
 		ERMode.DoRainbow();
 	}
 

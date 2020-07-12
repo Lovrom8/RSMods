@@ -37,7 +37,7 @@ unsigned long crc;
 LPDIRECT3DTEXTURE9 pCurrTexture;
 
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, normalBMP, additiveBMP;
+LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, normalBMP, additiveBMP, ourTexture;
 LPDIRECT3DTEXTURE9 stemTexture;
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
