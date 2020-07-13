@@ -307,7 +307,7 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 */
 
 std::vector<std::string> defaultStrColors = { //TODO: fill with actual numbers
-	"bf5f5f", "bfb75f", "5e9dbc", "bf8d5f", "5fbf97", "ac5ebc"
+	"bf000f", "af7400", "0060ba", "b13700", "208b00", "6e00a4", "0abcb9", "909090"
 };
 
 /* String normal CB
@@ -320,7 +320,7 @@ std::vector<std::string> defaultStrColors = { //TODO: fill with actual numbers
 */
 
 std::vector<std::string> defaultStrColorsCB = {
-	"bf5f5f", "9dbc5e", "5f9fbf", "bf875f", "5fbfa4", "8c5fbf"
+	"bf5f5f", "9dbc5e", "5f9fbf", "bf875f", "5fbfa4", "8c5fbf", "493647", "4c4c4c"
 };
 
 std::vector<Color> customStringColorsNormal;
@@ -362,6 +362,13 @@ void cSettings::ReadStringColors() {
 		//stringColors.insert(std::pair<std::string, float>(strKey, val));
 
 		customStringColorsCB.push_back(ConvertHexToColor(val));
+
+	//	std::cout << customStringColorsCB[stringIdx].r << customStringColorsCB[stringIdx].g << customStringColorsCB[stringIdx].b << std::endl;
+	}
+
+	for (int stringIdx = 6; stringIdx < 8;stringIdx++) {
+		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
+		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
 	}
 
 	std::cout << customStringColorsCB[0].r << std::endl;

@@ -99,6 +99,8 @@ struct Color {
 	}
 };
 
+typedef Color RSColor;
+
 /*------------------AUDIO KINETIC STUFF---------------------------------*/
 
 typedef unsigned char		AkUInt8;			///< Unsigned 8-bit integer

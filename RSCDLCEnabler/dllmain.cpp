@@ -122,68 +122,84 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 }
 
 void GenerateTexture(IDirect3DDevice9* pDevice) {
-		Sleep(2000); //it has an unusually weird tendency of crashing if you call it too early :(
+	Sleep(2000); //it has an unusually weird tendency of crashing if you call it too early :(
 
-		using namespace Gdiplus;
-		GdiplusStartupInput inp;
-		GdiplusStartupOutput outp;
-		ULONG_PTR token_;
+	using namespace Gdiplus;
+	GdiplusStartupInput inp;
+	GdiplusStartupOutput outp;
+	ULONG_PTR token_;
 
-		UINT width = 256, height = 128;
+	UINT width = 256, height = 128;
 
-		if (Ok != GdiplusStartup(&token_, &inp, NULL)) {
-			MessageBox(NULL, TEXT("GDI+ failed to start up!"),
-				TEXT("Error!"), MB_ICONERROR);
-		}
+	if (Ok != GdiplusStartup(&token_, &inp, NULL)) 
+		std::cout << "GDI+ failed to start up!" << std::endl;
 
-		Bitmap bmp(256, 128, PixelFormat32bppARGB);
-		Graphics graphics(&bmp);
+	Bitmap bmp(256, 128, PixelFormat32bppARGB);
+	Graphics graphics(&bmp);
 
-		REAL blendPositions[] = { 0.0f, 0.4f, 1.0f }; //TODO: if this stuff is okay, add CB part of texture and use colors from the settings
-		Gdiplus::Color middleColors[] = { Gdiplus::Color::Red, Gdiplus::Color::Yellow, Gdiplus::Color::Cyan, Gdiplus::Color::Orange, Gdiplus::Color::Green,  Gdiplus::Color::Purple, Gdiplus::Color::Cyan, Gdiplus::Color::Gray };
+	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f }; 
+	//Gdiplus::Color middleColors[] = { Gdiplus::Color::Red, Gdiplus::Color::Yellow, Gdiplus::Color::Cyan, Gdiplus::Color::Orange, Gdiplus::Color::Green,  Gdiplus::Color::Purple, Gdiplus::Color::Cyan, Gdiplus::Color::Gray };
 
-		for (int i = 0; i < 8;i++) {
-			Gdiplus::Color colors[] = { Gdiplus::Color::Black, middleColors[i], Gdiplus::Color::White };
-			LinearGradientBrush linGrBrush(
-				Point(0, 0),
-				Point(256, 8),
-				Gdiplus::Color::Black,
-				Gdiplus::Color::White);
+	for (int i = 0; i < 8;i++) {
+		RSColor iniColor = Settings.GetCustomColors(false)[i];
+		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
-			linGrBrush.SetInterpolationColors(colors, blendPositions, 3);
-			graphics.FillRectangle(&linGrBrush, 0, i * 8, 256, 8);
-		}
+		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
+		LinearGradientBrush linGrBrush(
+			Point(0, 0),
+			Point(256, 8),
+			Gdiplus::Color::Black,
+			Gdiplus::Color::White);
 
-		CLSID pngClsid;
-		CLSIDFromString(L"{557CF406-1A04-11D3-9A73-0000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
-		bmp.Save(L"kekw.png", &pngClsid);
+		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
+		graphics.FillRectangle(&linGrBrush, 0, i * 8, 256, 8);
+	}
 
-		//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
+	for (int i = 0; i < 8;i++) {
+		RSColor iniColor = Settings.GetCustomColors(true)[i];
+		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
-		BitmapData bitmapData;
+		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
+		LinearGradientBrush linGrBrush(
+			Point(0, 0),
+			Point(256, 8),
+			Gdiplus::Color::Black,
+			Gdiplus::Color::White);
 
-		D3DLOCKED_RECT lockedRect;
+		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
+		graphics.FillRectangle(&linGrBrush, 0, (i+8) * 8, 256, 8);
+	}
 
-		D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &ourTexture);
-		ourTexture->LockRect(0, &lockedRect, 0, 0);
+	CLSID pngClsid;
+	CLSIDFromString(L"{557CF406-1A04-11D3-9A73-0000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
+	bmp.Save(L"kekw.png", &pngClsid);
 
-		bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
-		unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
-		unsigned char* pDestPixels = (unsigned char*)lockedRect.pBits;
+	//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
 
-		for (int y = 0; y < height; ++y)
-		{
-			// copy a row
-			memcpy(pDestPixels, pSourcePixels, width * 4);   // 4 bytes per pixel
+	BitmapData bitmapData;
 
-			// advance row pointers
-			pSourcePixels += bitmapData.Stride;
-			pDestPixels += lockedRect.Pitch;
-		}
+	D3DLOCKED_RECT lockedRect;
 
-		ourTexture->UnlockRect(0);
+	D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &ourTexture);
+	ourTexture->LockRect(0, &lockedRect, 0, 0);
 
-		D3DXSaveTextureToFileA("kekw_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+	bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+	unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
+	unsigned char* pDestPixels = (unsigned char*)lockedRect.pBits;
+
+	for (int y = 0; y < height; ++y)
+	{
+		// copy a row
+		memcpy(pDestPixels, pSourcePixels, width * 4);   // 4 bytes per pixel
+
+		// advance row pointers
+		pSourcePixels += bitmapData.Stride;
+		pDestPixels += lockedRect.Pitch;
+	}
+
+	ourTexture->UnlockRect(0);
+
+	D3DXSaveTextureToFileA("kekw_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
 }
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
@@ -644,7 +660,7 @@ DWORD WINAPI MainThread(void*) {
 				{
 					if (!SkylineOff)
 						toggleSkyline = true;
-						DrawSkylineInMenu = false;
+					DrawSkylineInMenu = false;
 				}
 			}
 			else // If User Is Exiting Song

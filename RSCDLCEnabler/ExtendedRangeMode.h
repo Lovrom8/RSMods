@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "Structs.h"
 #include "Offsets.h"
 #include "MemUtil.h"

@@ -106,9 +106,9 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		cBodyPrev = *(Color*)string0BodyPrev;*/
 
 		for (int i = 0; i < 6;i++) {
-			std::cout << (*(Color*)stringsNormal[i]).r * 255 << " ";
-			std::cout << (*(Color*)stringsNormal[i]).g * 255 << " ";
-			std::cout << (*(Color*)stringsNormal[i]).b * 255 << " ";
+			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsEnabled[i]).r * 255);
+			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsEnabled[i]).g * 255);
+			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsEnabled[i]).b * 255);
 			std::cout << std::endl;
 		}
 
