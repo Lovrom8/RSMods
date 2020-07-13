@@ -21,19 +21,29 @@
 #pragma intrinsic(_ReturnAddress)
 #pragma comment (lib, "gdiplus.lib")
 
-const char* windowName = "Rocksmith 2014";
+/// Set Global Variables
+	// Console
+		const char* windowName = "Rocksmith 2014"; // Console Window Title
+	// GUI Settings
+		bool menuEnabled = false; // Do we show the user the imGUI settings menu?
+		bool enableColorBlindCheckboxGUI = false; // Do we allow the user to change Colorblind mode in the imGUI menu?
+	// Mod Settings
+		bool resetHeadstockCache = true; // Do we want to reset the headstock cache? Triggers when opening tuning menu
+		bool toggleSkyline = false; // Do we want to toggle the skyline right now? Triggers to false when turned on/ off
+		int EnumSliderVal = 10000; // Sleep every X ms for enumeration
+		bool LoftOff = false; // Is the loft disabled right now? Toggles when loft turns off (True - No Loft, False - Loft)
+		bool SkylineOff = false; // Is the skyline disabled right now? Toggles when skyline turns off (True - No Skyline, False - Skyline)
+		bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
+	// Misc
+		std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
+		bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?
+		bool lowPerformancePC = false; // Does your game lag with all of our mods? Toggle on to disable us running mods for an original DLL experience.
+		bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
+		bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
 
-bool menuEnabled = false;
-bool enableColorBlindCheckboxGUI = false;
-bool GameLoaded = false;
-bool lowPerformancePC = false; // AKA if your game lags like shit when you run the texture checks || AKA we have too many mods :P
+/// End Global Variable Section
 
-std::string previousMenu, currentMenu;
-bool resetHeadstockCache = true;
-bool toggleSkyline = false;
-bool SkylineOff = false;
 
-int EnumSliderVal = 10000;
 DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
@@ -209,10 +219,10 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		GenerateTexture(pDevice, &Blue, D3DCOLOR_ARGB(255, 0, 0, 255));
 		GenerateTexture(pDevice, &Yellow, D3DCOLOR_ARGB(255, 255, 255, 0));
 
-		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible"
-		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven);
-		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture);
-		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture);
+		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible" | 6-String Model
+		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors 
+		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
+		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
 		D3DXCreateTextureFromFile(pDevice, L"normalGradient.bmp", &normalBMP);
 		D3DXCreateTextureFromFile(pDevice, L"additiveGradient.bmp", &additiveBMP);
 
@@ -289,8 +299,6 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 	return ResetReturn;
 }
 
-bool setAllToNoteGradientTexture = false;
-
 bool DiscoEnabled() {
 	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
 		return true;
@@ -312,7 +320,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
 
-bool startLogging = false;
+
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
 
@@ -324,7 +332,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
 		currIdx--;
 
-	if (GetAsyncKeyState(VK_END) & 1)
+	if (GetAsyncKeyState(VK_END) & 1) // Toggle logging
 		startLogging = !startLogging;
 
 	if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
@@ -384,8 +392,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (startLogging) {
 		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
 			allMeshes.push_back(currentThicc);
-		//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture (Small)
-		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture (Thicc)
+		//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture -> Mesh
+		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture -> ThiccMesh
 		//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
 	}
 
@@ -424,13 +432,12 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
-			// If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
-			if (Settings.ReturnSettingValue("ToggleSkylineWhen") == "song" && !(std::find(std::begin(songModes), std::end(songModes), MemHelpers.GetCurrentMenu().c_str()) != std::end(songModes))) { //TODO: since you already determine whether we are in a song in the main loop, likely you can use that value instead of calculating it again
+			if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
 				SkylineOff = false;
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 			}
-			// Skyline Removal
 
+			// Skyline Removal
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
@@ -446,10 +453,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			pDevice->GetTexture(0, &pBaseTextures[0]);
 			pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
 
-			if (pBaseTextures[0])
-			{
-				if (CRCForTexture(pCurrTextures[0], crc))
-				{
+			if (pBaseTextures[0]) {
+				if (CRCForTexture(pCurrTextures[0], crc)) {
 					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
 						SkylineOff = true;
 						return D3D_OK;
@@ -594,7 +599,7 @@ void AutoEnterGame() { //very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
-bool LoftOff = false;
+
 
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
@@ -611,7 +616,7 @@ DWORD WINAPI MainThread(void*) {
 	InitEngineFunctions();
 
 	while (true) {
-		Sleep(300); //TODO: determine a more appropriate delay - since we don't use this for keybinds anymore, we may as well check less often
+		Sleep(2000); //TODO: determine a more appropriate delay - since we don't use this for keybinds anymore, we may as well check less often
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 
@@ -639,6 +644,7 @@ DWORD WINAPI MainThread(void*) {
 				{
 					if (!SkylineOff)
 						toggleSkyline = true;
+						DrawSkylineInMenu = false;
 				}
 			}
 			else // If User Is Exiting Song
@@ -650,6 +656,7 @@ DWORD WINAPI MainThread(void*) {
 
 				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
+					DrawSkylineInMenu = true;
 				}
 			}
 

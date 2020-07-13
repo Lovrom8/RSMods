@@ -6,7 +6,6 @@ D3DX9_42.dll
 
 # User-specific files
 *.suo
-*.user
 *.userosscache
 *.sln.docstates
 
