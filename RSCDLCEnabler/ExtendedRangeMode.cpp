@@ -98,7 +98,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	InitStrings(stringsBodyPrev, BodyPrev);
 
-	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
+	if (!colorsSaved) { //read only once, so it won't change defaults if you change to CB
 		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
 		cDisabled = *(Color*)string0Disabled;
 		cGlow = *(Color*)string0Glow;
@@ -182,6 +182,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 	else {
 		//restore orignal colors, I guess
+		std::cout << Settings.GetCustomColors(false)[0].r << std::endl;
 		SetColors(stringsNormal, Settings.GetCustomColors(false)); //TODO: actually determine which colors need to be change to what values
 		SetColors(stringsGlow, Settings.GetCustomColors(false));
 		SetColors(stringsAmb, Settings.GetCustomColors(false));

@@ -353,17 +353,13 @@ void cSettings::ReadStringColors() {
 
 		strKey = "string" + std::to_string(stringIdx) + "_N";
 		val = reader.Get("String Colors", strKey, defaultStrColors[stringIdx]);
-		//stringColors.insert(std::pair<std::string, float>(strKey, val));
 
 		customStringColorsNormal.push_back(ConvertHexToColor(val));
 
 		strKey = "string" + std::to_string(stringIdx) + "_CB";
 		val = reader.Get("String Colors", strKey, defaultStrColorsCB[stringIdx]);
-		//stringColors.insert(std::pair<std::string, float>(strKey, val));
 
 		customStringColorsCB.push_back(ConvertHexToColor(val));
-
-	//	std::cout << customStringColorsCB[stringIdx].r << customStringColorsCB[stringIdx].g << customStringColorsCB[stringIdx].b << std::endl;
 	}
 
 	for (int stringIdx = 6; stringIdx < 8;stringIdx++) {
