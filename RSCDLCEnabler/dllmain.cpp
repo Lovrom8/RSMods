@@ -1,50 +1,6 @@
-#include "d3dx9_42.h"
-#include "MemHelpers.h"
-#include <gdiplus.h>
-#include "Enumeration.h"
-#include "detours.h"
-#include "Functions.h"
-#include "Utils.h"
-#include "D3D.h"
-#include "CustomSongTitles.h"
-#include "Offsets.h"
-#include "MemUtil.h"
-#include "Settings.h"
-#include "ExtendedRangeMode.h"
+#include "Main.h"
 
-#include "ImGUI/imgui.h"
-#include "ImGUI/imgui_impl_dx9.h"
-#include "ImGUI/imgui_impl_win32.h"
-#include "ImGUI/RobotoFont.cpp""
-
-#include <intrin.h>
-#pragma intrinsic(_ReturnAddress)
-#pragma comment (lib, "gdiplus.lib")
-
-/// Set Global Variables
-	// Console
-		const char* windowName = "Rocksmith 2014"; // Console Window Title
-	// GUI Settings
-		bool menuEnabled = false; // Do we show the user the imGUI settings menu?
-		bool enableColorBlindCheckboxGUI = false; // Do we allow the user to change Colorblind mode in the imGUI menu?
-	// Mod Settings
-		bool resetHeadstockCache = true; // Do we want to reset the headstock cache? Triggers when opening tuning menu
-		bool toggleSkyline = false; // Do we want to toggle the skyline right now? Triggers to false when turned on/ off
-		int EnumSliderVal = 10000; // Sleep every X ms for enumeration
-		bool LoftOff = false; // Is the loft disabled right now? Toggles when loft turns off (True - No Loft, False - Loft)
-		bool SkylineOff = false; // Is the skyline disabled right now? Toggles when skyline turns off (True - No Skyline, False - Skyline)
-		bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
-	// Misc
-		std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
-		bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?
-		bool lowPerformancePC = false; // Does your game lag with all of our mods? Toggle on to disable us running mods for an original DLL experience.
-		bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
-		bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
-
-/// End Global Variable Section
-
-
-DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
+DWORD WINAPI EnumerationThread(void*) { 
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
 	Settings.ReadKeyBinds();
@@ -70,8 +26,6 @@ DWORD WINAPI EnumerationThread(void*) { //pls don't let me regret doing this
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (msg == WM_KEYUP) {
-		//if (wParam == Settings.GetKeyBind(Settings.ReturnSettingValue("ShowSongTimerEnabled")))
-
 		if (keyPressed == VK_DELETE) {
 			float volume;
 			RTPCValue_type type;
@@ -126,10 +80,6 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		Sleep(500);
 
 	using namespace Gdiplus;
-	GdiplusStartupInput inp;
-	GdiplusStartupOutput outp;
-	ULONG_PTR token_;
-
 	UINT width = 256, height = 128;
 
 	if (Ok != GdiplusStartup(&token_, &inp, NULL))
@@ -139,7 +89,6 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	Graphics graphics(&bmp);
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
-	//Gdiplus::Color middleColors[] = { Gdiplus::Color::Red, Gdiplus::Color::Yellow, Gdiplus::Color::Cyan, Gdiplus::Color::Orange, Gdiplus::Color::Green,  Gdiplus::Color::Purple, Gdiplus::Color::Cyan, Gdiplus::Color::Gray };
 
 	for (int i = 0; i < 8;i++) {
 		RSColor iniColor = Settings.GetCustomColors(false)[i];
@@ -178,7 +127,6 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
 
 	BitmapData bitmapData;
-
 	D3DLOCKED_RECT lockedRect;
 
 	D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &ourTexture);
@@ -225,11 +173,9 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		oWndProc = (WNDPROC)SetWindowLongPtr(hThisWnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
 
-
 		ImGui_ImplWin32_Init(hThisWnd);
 		ImGui_ImplDX9_Init(pDevice);
 		ImGui::GetIO().ImeWindowHandle = hThisWnd;
-
 
 		GenerateTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
 		GenerateTexture(pDevice, &Green, D3DCOLOR_RGBA(0, 255, 0, 255));
@@ -240,8 +186,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors 
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
-		D3DXCreateTextureFromFile(pDevice, L"normalGradient.bmp", &normalBMP);
-		D3DXCreateTextureFromFile(pDevice, L"additiveGradient.bmp", &additiveBMP);
 
 		std::cout << "ImGUI Init" << std::endl;
 
@@ -301,7 +245,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 					selectedString = n;
 
 				if (is_selected) {
-					std::cout << selectedString << std::endl;
+					//std::cout << selectedString << std::endl;
 					previewValue = std::to_string(selectedString);
 
 					RSColor currColors = Settings.GetCustomColors(false)[selectedString];
@@ -312,7 +256,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			}
 			ImGui::EndCombo();
 		}
-		
+
 		ImGui::SliderInt("R", &strR, 0, 255);
 		ImGui::SliderInt("G", &strG, 0, 255);
 		ImGui::SliderInt("B", &strB, 0, 255);
@@ -322,6 +266,9 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			Settings.SetStringColors(selectedString, Color(strR, strG, strB), CB);
 			generateTexture = true;
 		}
+
+		if (ImGui::Button("Restore default colors"))
+			ERMode.ResetString(selectedString);
 
 		ImGui::End();
 	}
@@ -335,7 +282,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		GenerateTexture(pDevice);
 		generateTexture = false;
 	}
-		
+
 	return hRet;
 }
 
@@ -369,7 +316,6 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
 }
-
 
 HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
@@ -412,10 +358,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	//std::vector<DWORD> crcs = { 0x00004a4a, 0x00035193, 0x00090000, 0x005a00b9, 0x02a50002, 0xb8059160 };
 	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
 		pDevice->GetTexture(1, &pBaseTexture);
-		//pDevice->SetTexture(1, additiveBMP);
 		pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
 		if (calculatedCRC) {
@@ -423,7 +367,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				pDevice->SetTexture(1, additiveNoteTexture);
 		}
 		else if (CRCForTexture(pCurrTexture, crc)) {
-			//	if(crc == crcs[currIdx])
 			if (crc == 0x02a50002) {
 				stemTexture = pCurrTexture;
 				std::cout << "Calculated stem CRC" << std::endl;
@@ -465,18 +408,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return D3D_OK;
 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong() && IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
-		DWORD origZFunc;
-		pDevice->GetRenderState(D3DRS_ZFUNC, &origZFunc);
-
 		/*if (MemHelpers.IsExtendedRangeSong())
 			pDevice->SetTexture(1, gradientTextureSeven);
 		else
 			 pDevice->SetTexture(1, gradientTextureNormal);*/
 			 //either this or CB based Extended Range mode - otherwise you may get some silly effects
 
-
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
-		//pDevice->SetTexture(1, normalBMP);
 		pDevice->SetTexture(1, ourTexture);
 	}
 
@@ -600,7 +538,6 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 
 	if (Stride == 32 && numElements == 8 && mVectorCount == 4 && decl->Type == 2) { // Remove Line Markers
 		pStreamData->GetDesc(&desc);
-
 		vertexBufferSize = desc.Size;
 	}
 
@@ -612,7 +549,7 @@ void GUI() {
 	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
 		Sleep(500);
 
-	adr = MemUtil.FindPattern(d3d9Base, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx") + 2; //and that's it... (:
+	adr = MemUtil.FindPattern(d3d9Base, Offsets.d3dDevice_SearchLen, (PBYTE)Offsets.d3dDevice_Pattern, Offsets.d3dDevice_Mask) + 2; //and that's it... (:
 
 	if (!adr) {
 		std::cout << "Could not find D3D9 device pointer" << std::endl;
@@ -649,8 +586,6 @@ void AutoEnterGame() { //very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
-
-
 DWORD WINAPI MainThread(void*) {
 	Offsets.Initialize();
 	MemHelpers.PatchCDLCCheck();
@@ -666,7 +601,7 @@ DWORD WINAPI MainThread(void*) {
 	InitEngineFunctions();
 
 	while (true) {
-		Sleep(2000); //TODO: determine a more appropriate delay - since we don't use this for keybinds anymore, we may as well check less often
+		Sleep(2000);
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 

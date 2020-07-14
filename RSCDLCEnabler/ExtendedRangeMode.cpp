@@ -50,19 +50,6 @@ struct String { //maybe do sth with this
 
 };
 
-Color cNormal;
-Color cDisabled;
-Color cGlow;
-Color cAmb;
-Color cEnabled;
-Color cPegNotInTune;
-Color cPegInTune;
-Color cTextNew;
-Color cPart;
-Color cBodyNorm;
-Color cBodyAcc;
-Color cBodyPrev;
-
 void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
@@ -72,6 +59,26 @@ void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		*(Color*)strings[strIndex] = colors[strIndex];
 	}
+}
+
+std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
+
+void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
+	std::vector<uintptr_t> stringsNormal, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
+
+	InitStrings(stringsNormal, Normal);
+	InitStrings(stringsGlow, Glow);
+	InitStrings(stringsDisabled, Disabled);
+	InitStrings(stringsAmb, Ambient);
+	InitStrings(stringsEnabled, Enabled);
+
+	*(Color*)stringsNormal[strIndex] = oldNormal[strIndex];
+	*(Color*)stringsGlow[strIndex] = oldGlow[strIndex];
+	*(Color*)stringsDisabled[strIndex] = oldDisabled[strIndex];
+	*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
+	*(Color*)stringsEnabled[strIndex] = oldEnabled[strIndex];
+
+	Settings.SetStringColors(strIndex, oldGlow[strIndex], false);
 }
 
 void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
@@ -91,7 +98,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	InitStrings(stringsBodyPrev, BodyPrev);
 
-	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //uncomment if we need to read the values
+	if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
 		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
 		cDisabled = *(Color*)string0Disabled;
 		cGlow = *(Color*)string0Glow;
@@ -104,6 +111,14 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		cBodyNorm = *(Color*)string0BodyNorm;
 		cBodyAcc = *(Color*)string0BodyAcc;
 		cBodyPrev = *(Color*)string0BodyPrev;*/
+
+		for (int i = 0; i < 6; i++) {
+			oldNormal.push_back(*(Color*)stringsNormal[i]);
+			oldDisabled.push_back(*(Color*)stringsDisabled[i]);
+			oldEnabled.push_back(*(Color*)stringsEnabled[i]);
+			oldGlow.push_back(*(Color*)stringsGlow[i]);
+			oldAmb.push_back(*(Color*)stringsAmb[i]);
+		}
 
 		for (int i = 0; i < 6;i++) {
 			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
@@ -167,6 +182,11 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 	else {
 		//restore orignal colors, I guess
+		SetColors(stringsNormal, Settings.GetCustomColors(false)); //TODO: actually determine which colors need to be change to what values
+		SetColors(stringsGlow, Settings.GetCustomColors(false));
+		SetColors(stringsAmb, Settings.GetCustomColors(false));
+		SetColors(stringsDisabled, Settings.GetCustomColors(false));
+		SetColors(stringsEnabled, Settings.GetCustomColors(false));
 	}
 }
 

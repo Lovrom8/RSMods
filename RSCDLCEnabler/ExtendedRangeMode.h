@@ -15,6 +15,7 @@ public:
 	void Toggle7StringMode();
 	void DoRainbow();
 	void ToggleRainbowMode();
+	void ResetString(int strIndex);
 
 	bool Is7StringSong = false;
 	bool RainbowEnabled = false;

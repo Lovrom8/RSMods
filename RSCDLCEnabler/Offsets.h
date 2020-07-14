@@ -44,16 +44,20 @@ public:
 
 	uintptr_t ptr_stringColor = 0x135C50C;
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
-	
+
 	uintptr_t cdlcCheckdwAdr = 0x01377000;
 	uintptr_t cdlcCheckSearchLen = 0x00DDE000;
-	
+
+	const char* d3dDevice_Pattern = "\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86";
+	DWORD d3dDevice_SearchLen = 0x128000;
+	char* d3dDevice_Mask = "xx????xx????xx";
+
 	uintptr_t baseHandle;
 	uintptr_t baseEnd = 0x04F80000;
 
-	uint8_t*  cdlcCheckAdr;
-	const char *sig_CDLCCheck = "\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3";
-    char *sig_CDLCCheckMask = "x????xxxxx";
+	uint8_t* cdlcCheckAdr;
+	const char* sig_CDLCCheck = "\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3";
+	char* sig_CDLCCheckMask = "x????xxxxx";
 	const char* patch_CDLCCheck = "\xB3\x01";
 
 	const char* patch_ListSpaces = "\x58\x58\x90\x90\x90";
