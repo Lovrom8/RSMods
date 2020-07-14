@@ -122,7 +122,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 }
 
 void GenerateTexture(IDirect3DDevice9* pDevice) {
-	Sleep(2000); //it has an unusually weird tendency of crashing if you call it too early :(
+	while (GetModuleHandleA("gdiplus.dll") == NULL) //JIC, to prevent crashing
+		Sleep(500);
 
 	using namespace Gdiplus;
 	GdiplusStartupInput inp;
