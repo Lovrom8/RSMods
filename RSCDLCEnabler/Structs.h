@@ -71,6 +71,12 @@ struct Color {
 
 	}
 
+	Color(int R, int G, int B) {
+		r = (float)R/255;
+		g = (float)G/255;
+		b = (float)B/255;
+	}
+
 	Color(float R, float G, float B) {
 		r = R;
 		g = G;

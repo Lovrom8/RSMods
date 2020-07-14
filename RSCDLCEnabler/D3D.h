@@ -42,7 +42,10 @@ LPDIRECT3DTEXTURE9 stemTexture;
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
-bool cbEnabled;
+bool cbEnabled, generateTexture = false;
+const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
+static int selectedString = 0;
+static int strR, strG, strB;
 
 HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32)
 {

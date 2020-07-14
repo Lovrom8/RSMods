@@ -307,7 +307,7 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 */
 
 std::vector<std::string> defaultStrColors = { //TODO: fill with actual numbers
-	"bf000f", "af7400", "0060ba", "b13700", "208b00", "6e00a4", "0abcb9", "909090"
+	"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
 };
 
 /* String normal CB
@@ -320,7 +320,7 @@ std::vector<std::string> defaultStrColors = { //TODO: fill with actual numbers
 */
 
 std::vector<std::string> defaultStrColorsCB = {
-	"bf5f5f", "9dbc5e", "5f9fbf", "bf875f", "5fbfa4", "8c5fbf", "493647", "4c4c4c"
+	"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
 };
 
 std::vector<Color> customStringColorsNormal;
@@ -379,3 +379,10 @@ float cSettings::GetStringColor(std::string string) {
 	return stringColors[string];
 }
 */
+
+void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
+	if(CB)
+		customStringColorsCB[strIndex] = c;
+	else
+		customStringColorsNormal[strIndex] = c;
+}

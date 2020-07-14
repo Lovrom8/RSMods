@@ -131,13 +131,13 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	UINT width = 256, height = 128;
 
-	if (Ok != GdiplusStartup(&token_, &inp, NULL)) 
+	if (Ok != GdiplusStartup(&token_, &inp, NULL))
 		std::cout << "GDI+ failed to start up!" << std::endl;
 
 	Bitmap bmp(256, 128, PixelFormat32bppARGB);
 	Graphics graphics(&bmp);
 
-	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f }; 
+	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 	//Gdiplus::Color middleColors[] = { Gdiplus::Color::Red, Gdiplus::Color::Yellow, Gdiplus::Color::Cyan, Gdiplus::Color::Orange, Gdiplus::Color::Green,  Gdiplus::Color::Purple, Gdiplus::Color::Cyan, Gdiplus::Color::Gray };
 
 	for (int i = 0; i < 8;i++) {
@@ -167,7 +167,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 			Gdiplus::Color::White);
 
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
-		graphics.FillRectangle(&linGrBrush, 0, (i+8) * 8, 256, 8);
+		graphics.FillRectangle(&linGrBrush, 0, (i + 8) * 8, 256, 8);
 	}
 
 	CLSID pngClsid;
@@ -255,7 +255,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (menuEnabled) {
 		ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
-		ImGui::InputInt("Curr Slide", &currStride);
+		/*ImGui::InputInt("Curr Slide", &currStride);
 		ImGui::InputInt("Curr PrimCount", &currPrimCount);
 		ImGui::InputInt("Curr NumVertices", &currNumVertices);
 		ImGui::InputInt("Curr StartIndex", &currStartIndex);
@@ -276,11 +276,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::End();
 
 		ImGui::Begin("LOOSE CANNONS");
-		/*ImGui::ListBoxHeader("Logged models");
-		for (auto mesh : allMeshes) {
-			ImGui::Selectable(mesh.ToString().c_str(), false);
-		}*/
-
 		ImGui::ListBoxHeader("Removed models");
 		counter = 0;
 		for (auto mesh : removedMeshes) {
@@ -293,6 +288,39 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::ListBoxFooter();
 		if (ImGui::Button("Remove"))
 			removedMeshes.erase(removedMeshes.begin() + selectedIdx);
+		*/
+
+		static bool CB = false;
+		static std::string previewValue = "Select a string";
+		if (ImGui::BeginCombo("String Colors", previewValue.c_str())) {
+			for (int n = 0; n < 6; n++)
+			{
+				const bool is_selected = (selectedString == n);
+				if (ImGui::Selectable(comboStringsItems[n], is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+					selectedString = n;
+
+				if (is_selected) {
+					std::cout << selectedString << std::endl;
+					previewValue = std::to_string(selectedString);
+
+					RSColor currColors = Settings.GetCustomColors(false)[selectedString];
+					strR = currColors.r * 255;
+					strG = currColors.g * 255;
+					strB = currColors.b * 255;
+				}
+			}
+			ImGui::EndCombo();
+		}
+		
+		ImGui::SliderInt("R", &strR, 0, 255);
+		ImGui::SliderInt("G", &strG, 0, 255);
+		ImGui::SliderInt("B", &strB, 0, 255);
+		ImGui::Checkbox("CB", &CB);
+
+		if (ImGui::Button("Generate Texture")) {
+			Settings.SetStringColors(selectedString, Color(strR, strG, strB), CB);
+			generateTexture = true;
+		}
 
 		ImGui::End();
 	}
@@ -302,6 +330,11 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
+	if (generateTexture) {
+		GenerateTexture(pDevice);
+		generateTexture = false;
+	}
+		
 	return hRet;
 }
 
@@ -443,7 +476,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		//pDevice->SetTexture(1, normalBMP);
-		pDevice->SetTexture(1, gradientTextureNormal);
+		pDevice->SetTexture(1, ourTexture);
 	}
 
 	if (!lowPerformancePC) {
