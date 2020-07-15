@@ -418,6 +418,15 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->SetTexture(1, ourTexture);
 	}
 
+	else if (Settings.ReturnSettingValue("GreenScreenWallEnabled") == "on" && IsExtraRemoved(greenscreenwall, currentThicc))
+		return D3D_OK;
+	else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
+		return D3D_OK;
+	else if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
+		return D3D_OK;
+	else if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
+		return D3D_OK;
+
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
 			if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
@@ -483,14 +492,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 				return D3D_OK;
 		}
-		else if (Settings.ReturnSettingValue("GreenScreenWallEnabled") == "on" && IsExtraRemoved(greenscreenwall, currentThicc))
-			return D3D_OK;
-		else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
-			return D3D_OK;
-		else if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
-			return D3D_OK;
-		else if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
-			return D3D_OK;
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 }
