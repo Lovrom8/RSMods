@@ -244,11 +244,13 @@ std::vector<ThiccMesh> headstockThicc{
 				{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, { 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // Headstock Texture (2nd vector is for Lefties)
 				{ 68, 1340, 1120, 0, 0, 4, 2, 9, 7 }, { 68, 2216, 1852, 0, 0, 4, 2, 9, 7 }, { 56, 1340, 1120, 0, 0, 4, 2, 10, 6}, { 56, 2216, 1854, 0, 0, 4, 2, 10, 6}, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
 };
+std::vector<ThiccMesh> inlays{
+	{ 32, 8, 9, 0, 0, 4, 2, 12, 4 }, { 32, 16, 18, 0, 0, 4, 2, 12, 4 }, // Standard Dot (2nd for 12th/24th fret)
+};
 
 // All the single ladies
 std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
-std::vector<ThiccMesh> inlays{ { 32, 8, 9, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
