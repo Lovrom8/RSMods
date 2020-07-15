@@ -2,22 +2,21 @@
 #include <cmath>
 
 enum string_state {
-	Normal = 0x350, // WTF is "normal" anyway?
+	Ambient = 0x350, //name = "GuitarStringsAmbientColorBlind" id = "3175458924
+	Enabled = 0x368, //name="GuitarStringsEnabledColorBlind" id="237528906"
+	Disabled = 0x380,  //name="GuitarStringsDisabledColorBlind" id="4184626561"
+	Glow = 0x398, //name="GuitarStringsGlowBlind" id="3217126622
+	PegsTuning = 0x3b0, //name = "GuitarPegsTuningBlind"id = "1806691030"
+	PegsSuccess = 0x3c8, //name = "GuitarPegsSuccessBlind" id = "2074129191
+	PegsReset = 0x3e0, //name = "GuitarPegsResetBlind"id = "2670600760"
+	PegInTune = 0x3f8,  //name="GuitarPegsInTuneBlind" id="2547441015"
+	PegNotInTune = 0x410, //name = "GuitarPegsOutTuneBlind" id = "1163525281"
+	Text = 0x470, //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+	Particles = 0x488, //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
+	BodyAcc = 0x4a0, // = name = "NotewayBodypartsAccentBlind" id = "47948252"
+	BodyNorm = 0x4b8 //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
+	//BodyPrev == ?? - doesn't seem to be used while in a song
 
-	Ambient = 0x368, //name = "GuitarStringsAmbientColorBlind" id = "3175458924"
-	Enabled = 0x380, //name="GuitarStringsEnabledColorBlind" id="237528906"
-	Disabled = 0x398, //name="GuitarStringsDisabledColorBlind" id="4184626561"
-	Glow = 0x3b0, //name="GuitarStringsGlowBlind" id="3217126622
-	//PegsTuning = 0X3c8 //name = "GuitarPegsTuningBlind"id = "1806691030"
-	//PegsReset = 0X3e0 //name = "GuitarPegsResetBlind"id = "2670600760"
-	//PegsSuccess = 0X3f8 //name = "GuitarPegsSuccessBlind"id = "2074129191"
-	PegInTune = 0x410,  //name="GuitarPegsInTuneBlind" id="2547441015"
-	PegNotInTune = 0x428, //name="GuitarPegsTuningBlind" id="1806691030"
-	Text = 0x440, //name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
-	Particles = 0x458, //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-	BodyNorm = 0x470, //name="NotewayBodypartsBodyNormBlind" id="3629363565"
-	BodyAcc = 0x488, // = name = "NotewayBodypartsAccentBlind" id = "47948252"
-	BodyPrev = 0x4a0, //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
 	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.
 	

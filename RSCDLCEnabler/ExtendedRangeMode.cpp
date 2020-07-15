@@ -2,6 +2,30 @@
 
 cERMode ERMode;
 
+uintptr_t GetStringColor(uintptr_t stringnum, int state) {
+	uintptr_t edx = stringnum;
+	uintptr_t eax = 0;
+	uintptr_t magic1 = Offsets.ptr_stringColor;
+
+	uintptr_t ecx = MemUtil.ReadPtr(magic1);
+
+	if (!ecx)
+		return NULL;
+
+	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + 0x348);
+
+	if (eax >= 2) {
+		return NULL;
+	}
+
+	eax = eax * 0xA8;
+	eax += edx;
+
+	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + state);
+
+	return eax;
+}
+
 uintptr_t GetStringColor(uintptr_t stringnum, string_state state) {
 	uintptr_t edx = stringnum;
 	uintptr_t eax = 0;
@@ -50,6 +74,12 @@ struct String { //maybe do sth with this
 
 };
 
+void InitStrings(std::vector<uintptr_t>& strings, int state) {
+	for (int strIndex = 0; strIndex
+		< 6;strIndex++)
+		strings.push_back(GetStringColor(strIndex, state));
+}
+
 void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
@@ -64,15 +94,13 @@ void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 
 void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
-	std::vector<uintptr_t> stringsNormal, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
+	std::vector<uintptr_t> stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
-	InitStrings(stringsNormal, Normal);
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
 	InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);
 
-	*(Color*)stringsNormal[strIndex] = oldNormal[strIndex];
 	*(Color*)stringsGlow[strIndex] = oldGlow[strIndex];
 	*(Color*)stringsDisabled[strIndex] = oldDisabled[strIndex];
 	*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
@@ -81,11 +109,25 @@ void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 	Settings.SetStringColors(strIndex, oldGlow[strIndex], false);
 }
 
+bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
+	if (strings[0] == NULL)
+		return false;
+
+	int r = std::round((*(Color*)strings[0]).r * 255); // Remember, just casting to int doesn't round up :(
+	int g = std::round((*(Color*)strings[0]).g * 255);
+	int b = std::round((*(Color*)strings[0]).b * 255);
+	if (R == 63)
+		std::cout << std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << std::endl;
+
+	if (R == r && G == g && B == b)
+		return true;
+	return false;
+}
+
 void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
 	static bool colorsSaved = false;
-	std::vector<uintptr_t> stringsNormal, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
+	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
-	InitStrings(stringsNormal, Normal);
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
 	InitStrings(stringsAmb, Ambient);
@@ -96,44 +138,13 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsPart, Particles);
 	InitStrings(stringsBodyNorm, BodyNorm);
 	InitStrings(stringsBodyAcc, BodyAcc);
-	InitStrings(stringsBodyPrev, BodyPrev);
+	//InitStrings(stringsBodyPrev, BodyPrev);
 
-	if (!colorsSaved) { //read only once, so it won't change defaults if you change to CB
-		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
-		cDisabled = *(Color*)string0Disabled;
-		cGlow = *(Color*)string0Glow;
-		cAmb = *(Color*)string0Amb;
-		cEnabled = *(Color*)string0Enabled;
-		cPegNotInTune = *(Color*)string0PegNotInTune;
-		cPegInTune = *(Color*)string0PegInTune;
-		cTextNew = *(Color*)string0TextNew;
-		cPart = *(Color*)string0Part;
-		cBodyNorm = *(Color*)string0BodyNorm;
-		cBodyAcc = *(Color*)string0BodyAcc;
-		cBodyPrev = *(Color*)string0BodyPrev;*/
-
-		for (int i = 0; i < 6; i++) {
-			oldNormal.push_back(*(Color*)stringsNormal[i]);
-			oldDisabled.push_back(*(Color*)stringsDisabled[i]);
-			oldEnabled.push_back(*(Color*)stringsEnabled[i]);
-			oldGlow.push_back(*(Color*)stringsGlow[i]);
-			oldAmb.push_back(*(Color*)stringsAmb[i]);
-		}
-
-		for (int i = 0; i < 6;i++) {
-			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
-			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).g * 255);
-			std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).b * 255);
-			std::cout << std::endl;
-		}
-
-		colorsSaved = true;
-	}
 
 	if (MemHelpers.IsExtendedRangeSong()) {
 		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
-			SetColors(stringsNormal, colorsNormal);
+			//SetColors(stringsNormal, colorsNormal);
 
 			// Zags custom low B color values manually entered; Glowed
 			SetColors(stringsGlow, colorsGlow);
@@ -166,13 +177,13 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			SetColors(stringsBodyAcc, colorsBodyAcc);
 
 			//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
-			SetColors(stringsBodyPrev, colorsBodyPrev);
+			//SetColors(stringsBodyPrev, colorsBodyPrev);
 		}
 		else if (Settings.GetModSetting("CustomStringColors") == 0) { //default colors 
 			//do we even need to do anything in this case?
 		}
 		else if (Settings.GetModSetting("CustomStringColors") == 2) { //custom colors
-			SetColors(stringsNormal, Settings.GetCustomColors(true)); //TODO: actually determine which colors need to be change to what values
+			 //TODO: actually determine which colors need to be change to what values
 			SetColors(stringsGlow, Settings.GetCustomColors(true));
 			SetColors(stringsAmb, Settings.GetCustomColors(true));
 			SetColors(stringsDisabled, Settings.GetCustomColors(true));
@@ -182,12 +193,108 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 	else {
 		//restore orignal colors, I guess
-		std::cout << Settings.GetCustomColors(false)[0].r << std::endl;
-		SetColors(stringsNormal, Settings.GetCustomColors(false)); //TODO: actually determine which colors need to be change to what values
-		SetColors(stringsGlow, Settings.GetCustomColors(false));
+		//TODO: actually determine which colors need to be change to what values
+		/*SetColors(stringsGlow, Settings.GetCustomColors(false));
 		SetColors(stringsAmb, Settings.GetCustomColors(false));
 		SetColors(stringsDisabled, Settings.GetCustomColors(false));
-		SetColors(stringsEnabled, Settings.GetCustomColors(false));
+		SetColors(stringsEnabled, Settings.GetCustomColors(false));*/
+
+		if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
+		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
+		cDisabled = *(Color*)string0Disabled;
+		cGlow = *(Color*)string0Glow;
+		cAmb = *(Color*)string0Amb;
+		cEnabled = *(Color*)string0Enabled;
+		cPegNotInTune = *(Color*)string0PegNotInTune;
+		cPegInTune = *(Color*)string0PegInTune;
+		cTextNew = *(Color*)string0TextNew;
+		cPart = *(Color*)string0Part;
+		cBodyNorm = *(Color*)string0BodyNorm;
+		cBodyAcc = *(Color*)string0BodyAcc;
+		cBodyPrev = *(Color*)string0BodyPrev;*/
+
+			for (int i = 0; i < 6; i++) {
+				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
+				oldEnabled.push_back(*(Color*)stringsEnabled[i]);
+				oldGlow.push_back(*(Color*)stringsGlow[i]);
+				oldAmb.push_back(*(Color*)stringsAmb[i]);
+
+				/*std::cout << "Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << std::endl;
+				std::cout << "Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << std::endl;
+				std::cout << "Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << std::endl;
+				std::cout << "Glow" << i << " " << (*(Color*)stringsGlow[i]).r * 255 << " " << (*(Color*)stringsGlow[i]).g * 255 << " " << (*(Color*)stringsGlow[i]).b * 255 << std::endl;
+				std::cout << "Amb" << i << " " << (*(Color*)stringsAmb[i]).r * 255 << " " << (*(Color*)stringsAmb[i]).g * 255 << " " << (*(Color*)stringsAmb[i]).b * 255 << std::endl;
+				std::cout << "PegInTune" << i << " " << (*(Color*)stringsPegInTune[i]).r * 255 << " " << (*(Color*)stringsPegInTune[i]).g * 255 << " " << (*(Color*)stringsPegInTune[i]).b * 255 << std::endl;
+				std::cout << "PegNotInTune" << i << " " << (*(Color*)stringsPegNotInTune[i]).r * 255 << " " << (*(Color*)stringsPegNotInTune[i]).g * 255 << " " << (*(Color*)stringsPegNotInTune[i]).b * 255 << std::endl;
+				std::cout << "Text" << i << " " << (*(Color*)stringsText[i]).r * 255 << " " << (*(Color*)stringsText[i]).g * 255 << " " << (*(Color*)stringsText[i]).b * 255 << std::endl;
+				std::cout << "Part" << i << " " << (*(Color*)stringsPart[i]).r * 255 << " " << (*(Color*)stringsPart[i]).g * 255 << " " << (*(Color*)stringsPart[i]).b * 255 << std::endl;
+				std::cout << "BodyNorm" << i << " " << (*(Color*)stringsBodyNorm[i]).r * 255 << " " << (*(Color*)stringsBodyNorm[i]).g * 255 << " " << (*(Color*)stringsBodyNorm[i]).b * 255 << std::endl;
+				std::cout << "BodyAcc" << i << " " << (*(Color*)stringsBodyAcc[i]).r * 255 << " " << (*(Color*)stringsBodyAcc[i]).g * 255 << " " << (*(Color*)stringsBodyAcc[i]).b * 255 << std::endl;
+				std::cout << "BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << std::endl;
+				std::cout << std::endl;*/
+			}
+			int a0 = 0, a1 = 0, a2 = 0, a3 = 0;
+
+			for (int i = 0; i < 17;i++) {
+				stringsTest.clear();
+				int current = 0x350 + i * 0x18;
+				InitStrings(stringsTest, current);
+
+				if (IsMatch(stringsTest, 191, 95, 95))
+					std::cout << "Ambient " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 255, 79, 90))
+					std::cout << "Enabled " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 76, 23, 27))
+					std::cout << "Disabled " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 255, 0, 16))
+					std::cout << "StringsGlow " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 191, 0, 15))
+					std::cout << "PegsTuning " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 0, 0, 0)) {
+					a0++;
+					if (a0 == 1)
+						std::cout << "PegsReset " << std::hex << current << std::endl;
+					else if (a0 == 2)
+						std::cout << "PegsSuccess " << std::hex << current << std::endl;
+				}
+				else if (IsMatch(stringsTest, 255, 255, 255))
+					std::cout << "PegsOutOfTune " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 249, 146, 137))
+					std::cout << "BodypartsAccent " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 178, 0, 14))
+					std::cout << "PegsInTune " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 255, 64, 64)) {
+					a2++;
+					if (a2 == 1)
+						std::cout << "RegistarTextIndicator " << std::hex << current << std::endl;
+					else if (a2 == 2)
+						std::cout << "ForkParticles " << std::hex << current << std::endl;
+				}
+				else if (IsMatch(stringsTest, 64, 41, 41))
+					std::cout << "BodypartsPreview " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 255, 0, 0))
+					std::cout << "BodypartsNormal " << std::hex << current << std::endl;
+				else if (IsMatch(stringsTest, 255, 5, 0)) {
+					a3++;
+					if (a3 == 1)
+						std::cout << "GA_Main " << std::hex << current << std::endl;
+					else if (a3 == 2)
+						std::cout << "GA_Additive " << std::hex << current << std::endl;
+					else if (a3 == 3)
+						std::cout << "GA_UI " << std::hex << current << std::endl;
+				}
+			}
+
+			/*for (int i = 0; i < 6;i++) {
+				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
+				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).g * 255);
+				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).b * 255);
+				std::cout << std::endl;
+			}*/
+
+			colorsSaved = true;
+		}
+
 	}
 }
 
@@ -199,13 +306,13 @@ void cERMode::DoRainbow() {
 	if (!RainbowEnabled)
 		return;
 
-	std::vector<uintptr_t> stringsNormal;
+	std::vector<uintptr_t> stringsAmb;
 	std::vector<uintptr_t> stringsHigh;
 	std::vector<uintptr_t> stringsDisabled;
-	std::vector<Color> oldNormal, oldHigh, oldDisabled;
+	std::vector<Color> oldAmb, oldHigh, oldDisabled;
 
 	for (int i = 0; i < 6; i++) {
-		stringsNormal.push_back(GetStringColor(i, Normal));
+		stringsAmb.push_back(GetStringColor(i, Ambient));
 		stringsHigh.push_back(GetStringColor(i, Glow));
 		stringsDisabled.push_back(GetStringColor(i, Disabled));
 	}
@@ -225,13 +332,13 @@ void cERMode::DoRainbow() {
 		if (h >= 360.f) { h = 0.f; }
 
 		for (int i = 0; i < 6; i++) {
-			oldNormal.push_back(*(Color*)stringsNormal[i]);
+			oldAmb.push_back(*(Color*)stringsAmb[i]);
 			oldHigh.push_back(*(Color*)stringsHigh[i]);
 			oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 
 			c.setH(h + (stringOffset * i));
 
-			*(Color*)stringsNormal[i] = c;
+			*(Color*)stringsAmb[i] = c;
 			*(Color*)stringsHigh[i] = c;
 			*(Color*)stringsDisabled[i] = c;
 		}
@@ -239,11 +346,11 @@ void cERMode::DoRainbow() {
 		Sleep(16);
 	}
 
-	if (oldNormal.size() == 0)
+	if (oldAmb.size() == 0)
 		return;
 
 	for (int i = 0; i < 6; i++) {
-		*(Color*)stringsNormal[i] = oldNormal[i];
+		*(Color*)stringsAmb[i] = oldAmb[i];
 		*(Color*)stringsHigh[i] = oldHigh[i];
 		*(Color*)stringsDisabled[i] = oldDisabled[i];
 	}
