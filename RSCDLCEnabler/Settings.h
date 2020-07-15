@@ -1,6 +1,6 @@
 #pragma once
 #include "Settings.h"
-#include "INIReader.h"
+#include "SimpleIni.h"
 #include "windows.h"
 #include <iostream>
 #include "Structs.h"

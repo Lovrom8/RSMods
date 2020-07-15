@@ -226,39 +226,40 @@ int cSettings::GetKeyBind(std::string name) {
 }
 
 void cSettings::ReadKeyBinds() {
-	INIReader reader("RSMods.ini");
-	if (reader.ParseError() != 0)
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) {
+		std::cout << "Error reading saved settings" << std::endl;
 		return;
-
-	//cSettings::keyBinds["VolumeUp"] = reader.Get("Keybinds", "VolumeUp", "O")[0];
+	}
+		
 	cSettings::keyBinds = {
 		// Mods
-			{ "ToggleLoftKey", reader.Get("Keybinds", "ToggleLoftKey", "T") },
-			{ "AddVolumeKey", reader.Get("Keybinds", "AddVolumeKey", "O") },
-			{ "DecreaseVolumeKey",  reader.Get("Keybinds", "DecreaseVolumeKey", "I") },
-			{ "CustomSongListTitles", reader.Get("Keybinds", "CustomSongListTitles", "K")},
-			{ "ShowSongTimerKey", reader.Get("Keybinds", "ShowSongTimerKey", "N")},
-			{ "ForceReEnumerationKey", reader.Get("Keybinds", "ForceReEnumerationKey", "F")},
-			{ "MenuToggleKey", reader.Get("Keybinds", "MenuToggleKey", "M")},
-			{ "RainbowStringsKey", reader.Get("Keybinds", "RainbowStringsKey", "V")},
+			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
+			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
+			{ "DecreaseVolumeKey",  reader.GetValue("Keybinds", "DecreaseVolumeKey", "I") },
+			{ "CustomSongListTitles", reader.GetValue("Keybinds", "CustomSongListTitles", "K")},
+			{ "ShowSongTimerKey", reader.GetValue("Keybinds", "ShowSongTimerKey", "N")},
+			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
+			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
+			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
 			// Mods Enabled / Disabled
-				{"ToggleLoftEnabled", reader.Get("Toggle Switches", "ToggleLoft", "on")},
-				{"AddVolumeEnabled", reader.Get("Toggle Switches", "AddVolume", "off")},
-				{"DecreaseVolumeEnabled", reader.Get("Toggle Switches", "DecreaseVolume", "off")},
-				{"ShowSongTimerEnabled", reader.Get("Toggle Switches", "ShowSongTimer", "on")},
-				{"ForceReEnumerationEnabled", reader.Get("Toggle Switches", "ForceReEnumeration", "automatic")},
-				{"RainbowStringsEnabled", reader.Get("Toggle Switches", "RainbowStrings", "off")},
-				{"ExtendedRangeEnabled", reader.Get("Toggle Switches", "ExtendedRange", "on")},
-				{"DiscoModeEnabled", reader.Get("Toggle Switches", "DiscoMode", "off")},
-				{"RemoveHeadstockEnabled", reader.Get("Toggle Switches", "Headstock", "off")},
-				{"RemoveSkylineEnabled", reader.Get("Toggle Switches", "Skyline", "off")},
-				{"GreenScreenWallEnabled", reader.Get("Toggle Switches", "GreenScreenWall", "off")},
-				{"ForceProfileEnabled", reader.Get("Toggle Switches", "ForceProfileLoad", "off")},
-				{"FretlessModeEnabled", reader.Get("Toggle Switches", "Fretless", "off")},
-				{"RemoveInlaysEnabled", reader.Get("Toggle Switches", "Inlays", "off")},
-				{"ToggleLoftWhen", reader.Get("Toggle Switches", "ToggleLoftWhen", "manual")},
-				{"ToggleSkylineWhen", reader.Get("Toggle Switches", "ToggleSkylineWhen", "song")},
-				{"RemoveLaneMarkersEnabled", reader.Get("Toggle Switches", "LaneMarkers", "off")}
+				{"ToggleLoftEnabled", reader.GetValue("Toggle Switches", "ToggleLoft", "on")},
+				{"AddVolumeEnabled", reader.GetValue("Toggle Switches", "AddVolume", "off")},
+				{"DecreaseVolumeEnabled", reader.GetValue("Toggle Switches", "DecreaseVolume", "off")},
+				{"ShowSongTimerEnabled", reader.GetValue("Toggle Switches", "ShowSongTimer", "on")},
+				{"ForceReEnumerationEnabled", reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic")},
+				{"RainbowStringsEnabled", reader.GetValue("Toggle Switches", "RainbowStrings", "off")},
+				{"ExtendedRangeEnabled", reader.GetValue("Toggle Switches", "ExtendedRange", "on")},
+				{"DiscoModeEnabled", reader.GetValue("Toggle Switches", "DiscoMode", "off")},
+				{"RemoveHeadstockEnabled", reader.GetValue("Toggle Switches", "Headstock", "off")},
+				{"RemoveSkylineEnabled", reader.GetValue("Toggle Switches", "Skyline", "off")},
+				{"GreenScreenWallEnabled", reader.GetValue("Toggle Switches", "GreenScreenWall", "off")},
+				{"ForceProfileEnabled", reader.GetValue("Toggle Switches", "ForceProfileLoad", "off")},
+				{"FretlessModeEnabled", reader.GetValue("Toggle Switches", "Fretless", "off")},
+				{"RemoveInlaysEnabled", reader.GetValue("Toggle Switches", "Inlays", "off")},
+				{"ToggleLoftWhen", reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual")},
+				{"ToggleSkylineWhen", reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song")},
+				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")}
 	};
 }
 
@@ -271,33 +272,32 @@ std::string cSettings::ReturnSettingValue(std::string name) {
 }
 
 void cSettings::ReadModSettings() {
-	INIReader reader("RSMods.ini");
-	if (reader.ParseError() != 0)
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) {
+		std::cout << "Error reading saved settings" << std::endl;
 		return;
+	}
 
 	cSettings::customSettings = {
-		{"ExtendedRangeMode", reader.GetInteger("Mod Settings", "ExtendedRangeModeAt", -5)},
-		{"CheckForNewSongsInterval", reader.GetInteger("Mod Settings", "CheckForNewSongsInterval", 5000)},
-		{"CustomStringColors", reader.GetInteger("Toggle Switches", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
+		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
+		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
+		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
 	};
 }
 
 std::vector<std::string> cSettings::GetCustomSongTitles() {
-	INIReader reader("RSMods.ini");
 	std::vector<std::string> retList(6);
-
-	if (reader.ParseError() != 0) {
-		//do sth
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) 
 		return retList;
-	}
 
 	for (int i = 0; i < 6; i++)
-		retList[i] = reader.Get("SongListTitles", "SongListTitle_" + std::to_string(i + 1), "SONG LIST");
+		retList[i] = reader.GetValue("SongListTitles", "SongListTitle_" + (i + 1), "SONG LIST");
 
 	return retList;
 }
 
-/*  String normal 
+/*  String normal
 191 95 95
 191 183 95
 94 157 188
@@ -343,8 +343,8 @@ Color ConvertHexToColor(std::string hexStr) {
 }
 
 void cSettings::ReadStringColors() {
-	INIReader reader("RSMods.ini");
-	if (reader.ParseError() != 0)
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) 
 		return;
 
 	for (int stringIdx = 0; stringIdx < 6;stringIdx++) {
@@ -352,12 +352,12 @@ void cSettings::ReadStringColors() {
 		std::string val;
 
 		strKey = "string" + std::to_string(stringIdx) + "_N";
-		val = reader.Get("String Colors", strKey, defaultStrColors[stringIdx]);
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 
 		customStringColorsNormal.push_back(ConvertHexToColor(val));
-
+		
 		strKey = "string" + std::to_string(stringIdx) + "_CB";
-		val = reader.Get("String Colors", strKey, defaultStrColorsCB[stringIdx]);
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
 
 		customStringColorsCB.push_back(ConvertHexToColor(val));
 	}
@@ -366,8 +366,6 @@ void cSettings::ReadStringColors() {
 		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
 		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
 	}
-
-	std::cout << customStringColorsCB[0].r << std::endl;
 }
 
 /*
@@ -377,7 +375,7 @@ float cSettings::GetStringColor(std::string string) {
 */
 
 void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
-	if(CB)
+	if (CB)
 		customStringColorsCB[strIndex] = c;
 	else
 		customStringColorsNormal[strIndex] = c;

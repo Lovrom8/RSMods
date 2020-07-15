@@ -248,7 +248,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 					//std::cout << selectedString << std::endl;
 					previewValue = std::to_string(selectedString);
 
-					RSColor currColors = Settings.GetCustomColors(false)[selectedString];
+					RSColor currColors = Settings.GetCustomColors(CB)[selectedString];
 					strR = currColors.r * 255;
 					strG = currColors.g * 255;
 					strB = currColors.b * 255;
@@ -602,7 +602,8 @@ DWORD WINAPI MainThread(void*) {
 	InitEngineFunctions();
 
 	while (true) {
-		Sleep(2000);
+		Sleep(300); //TODO: bring back Sleep(2000) when we are done testing string colors
+		//Sleep(2000);
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 

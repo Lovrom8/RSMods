@@ -57,12 +57,12 @@
     <ClInclude Include="ImGUI\imstb_rectpack.h" />
     <ClInclude Include="ImGUI\imstb_textedit.h" />
     <ClInclude Include="ImGUI\imstb_truetype.h" />
-    <ClInclude Include="INIReader.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="MemUtil.h" />
     <ClInclude Include="Offsets.h" />
     <ClInclude Include="MemHelpers.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="SimpleIni.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
