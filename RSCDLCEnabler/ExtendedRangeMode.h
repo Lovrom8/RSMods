@@ -20,7 +20,29 @@ public:
 	bool Is7StringSong = false;
 	bool RainbowEnabled = false;
 
+	int currentOffsetIdx = 0;
+	int currColor = 0;
+	bool saveDefaults = true;
+	bool restoreDefaults = false;
 private:
+	std::vector<Color> colorsWhite = {
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f}
+	};
+
+	std::vector<Color> colorsBlack = {
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f}
+	};
+
 	std::vector<Color> colorsNormal = {
 		{ 0.0f, 0.7764706f, 0.5568628f },
 		{ 0.7490196f, 0.372549f, 0.372549f },

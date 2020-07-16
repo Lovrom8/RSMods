@@ -75,18 +75,21 @@ struct String { //maybe do sth with this
 };
 
 void InitStrings(std::vector<uintptr_t>& strings, int state) {
-	for (int strIndex = 0; strIndex
-		< 6;strIndex++)
+	strings.clear();
+	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
 
 void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
+	strings.clear();
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
 
 void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
+		if (strings[strIndex] == NULL)
+			return;
 		*(Color*)strings[strIndex] = colors[strIndex];
 	}
 }
@@ -123,6 +126,8 @@ bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
 		return true;
 	return false;
 }
+
+std::vector<std::vector<Color>> defaultColors;
 
 void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
 	static bool colorsSaved = false;
@@ -294,8 +299,43 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 
 			colorsSaved = true;
 		}
-
 	}
+
+	if (saveDefaults) {
+		defaultColors.clear();
+		for (int idx = 0; idx < 17;idx++) {
+			InitStrings(stringsTest, (idx * 0x18 + 0x350));
+
+			std::vector<Color> defaults;
+			for (int i = 0; i < 6; i++)
+				defaults.push_back(*(Color*)stringsTest[i]);
+		
+			defaultColors.push_back(defaults);
+		}
+
+		saveDefaults = false;
+	}
+
+	if (restoreDefaults) {
+		for (int idx = 0; idx < 17;idx++) {
+			InitStrings(stringsTest, (idx * 0x18 + 0x350));
+
+			for (int i = 0; i < 6; i++)
+				*(Color*)stringsTest[i] = defaultColors[idx][i];
+		}
+
+		restoreDefaults = false;
+	}
+	else {
+		stringsTest.clear();
+		InitStrings(stringsTest, (currentOffsetIdx * 0x18 + 0x350));
+
+		if (currColor == 0)
+			SetColors(stringsTest, colorsBlack);
+		else
+			SetColors(stringsTest, colorsWhite);
+	}
+	
 }
 
 void cERMode::ToggleRainbowMode() {

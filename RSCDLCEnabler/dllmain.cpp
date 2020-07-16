@@ -1,6 +1,6 @@
 #include "Main.h"
 
-DWORD WINAPI EnumerationThread(void*) { 
+DWORD WINAPI EnumerationThread(void*) {
 	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
 
 	Settings.ReadKeyBinds();
@@ -269,6 +269,26 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (ImGui::Button("Restore default colors"))
 			ERMode.ResetString(selectedString);
+
+		ImGui::End();
+
+		ImGui::Begin("Game colors testing");
+		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
+
+		char label[10];
+		sprintf(label, "0x%03x", (ERMode.currentOffsetIdx * 0x18 + 0x350));
+
+		ImGui::LabelText("Offset:", label);
+
+		ImGui::SliderInt("Black (0) / white (1) ", &ERMode.currColor, 0, 1);
+
+		if (ImGui::Button("Save Defaults")) {
+			ERMode.saveDefaults = true;
+		}
+
+		if (ImGui::Button("Restore Defaults")) {
+			ERMode.restoreDefaults = true;
+		}
 
 		ImGui::End();
 	}
