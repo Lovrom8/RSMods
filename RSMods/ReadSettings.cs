@@ -54,8 +54,8 @@ namespace RSMods
                     String4Color_N_Identifier   = "string4_N = ",
                     String5Color_N_Identifier   = "string5_N = ",
                 // Colorblind String Colors
-                    String0Color_CB_Identifier  = "string1_CB = ",
-                    String1Color_CB_Identifier  = "string2_CB = ",
+                    String0Color_CB_Identifier  = "string0_CB = ",
+                    String1Color_CB_Identifier  = "string1_CB = ",
                     String2Color_CB_Identifier  = "string2_CB = ",
                     String3Color_CB_Identifier  = "string3_CB = ",
                     String4Color_CB_Identifier  = "string4_CB = ",
