@@ -100,9 +100,15 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 			Point(256, 8),
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
+		LinearGradientBrush whiteCoverupBrush(
+			Point(253, 40),
+			Point(256, 128),
+			Gdiplus::Color::White,
+			Gdiplus::Color::White);
 
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
 		graphics.FillRectangle(&linGrBrush, 0, i * 8, 256, 8);
+		graphics.FillRectangle(&whiteCoverupBrush, 253, i * 8, 256, 8); // Don't hate me for this hacky fix to the black bars.
 	}
 
 	for (int i = 0; i < 8;i++) {
@@ -116,8 +122,14 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
 
+		LinearGradientBrush whiteCoverupBrush(
+			Point(253, 40),
+			Point(256, 128),
+			Gdiplus::Color::White,
+			Gdiplus::Color::White);
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
 		graphics.FillRectangle(&linGrBrush, 0, (i + 8) * 8, 256, 8);
+		graphics.FillRectangle(&whiteCoverupBrush, 253, (i + 8) * 8, 256, 8); // Don't hate me for this hacky fix to the black bars.
 	}
 
 	CLSID pngClsid;
