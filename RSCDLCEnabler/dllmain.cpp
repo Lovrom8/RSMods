@@ -330,15 +330,6 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 	return ResetReturn;
 }
 
-bool DiscoEnabled() {
-	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
@@ -380,7 +371,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_CONTROL) & 1)
 		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
-	if (DiscoEnabled()) {
+	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
 		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
 
