@@ -1,7 +1,8 @@
 #include "Main.h"
 
-DWORD WINAPI EnumerationThread(void*) {
-	Sleep(30000); //wait for half a minute, should give enough time for the initial stuff to get done
+unsigned WINAPI EnumerationThread(void*) {
+	while (!GameLoaded) // We are in no hurry :)
+		Sleep(5000);
 
 	Settings.ReadKeyBinds();
 	Settings.ReadModSettings();
@@ -69,7 +70,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			menuEnabled = !menuEnabled;
 	}
 
-	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam)) //if we keep menuEnabled here, then we should not read hotkeys inside ImGUI's stuff - because they won't even be read when menu is disabled!
+	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
 		return true;
 
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
@@ -135,7 +136,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	CLSID pngClsid;
 	CLSIDFromString(L"{557CF406-1A04-11D3-9A73-0000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
-	bmp.Save(L"kekw.png", &pngClsid);
+	bmp.Save(L"generatedTexture.png", &pngClsid);
 
 	//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
 
@@ -161,7 +162,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	ourTexture->UnlockRect(0);
 
-	D3DXSaveTextureToFileA("kekw_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+	D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
 }
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
@@ -379,7 +380,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GetAsyncKeyState(VK_CONTROL) & 1)
 		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
-	while (DiscoEnabled()) {
+	if (DiscoEnabled()) {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
 		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
 
@@ -620,7 +621,7 @@ void AutoEnterGame() { //very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
-DWORD WINAPI MainThread(void*) {
+unsigned WINAPI MainThread(void*) {
 	Offsets.Initialize();
 	MemHelpers.PatchCDLCCheck();
 
@@ -707,8 +708,8 @@ DWORD WINAPI MainThread(void*) {
 
 
 void Initialize(void) {
-	CreateThread(NULL, 0, MainThread, NULL, NULL, 0);
-	//CreateThread(NULL, 0, EnumerationThread, NULL, NULL, 0);
+	_beginthreadex(NULL, 0, &MainThread, NULL, 0, 0);
+	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
