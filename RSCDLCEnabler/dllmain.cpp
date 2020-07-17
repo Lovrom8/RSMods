@@ -684,6 +684,9 @@ unsigned WINAPI MainThread(void*) {
 					LoftOff = false;
 				}
 
+				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && currentMenu.c_str() == "MissionMenu")
+					resetHeadstockCache = true;
+
 				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
 					DrawSkylineInMenu = true;
