@@ -81,11 +81,12 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	using namespace Gdiplus;
 	UINT width = 256, height = 128;
+	int lineHeight = 8;
 
 	if (Ok != GdiplusStartup(&token_, &inp, NULL))
 		std::cout << "GDI+ failed to start up!" << std::endl;
 
-	Bitmap bmp(256, 128, PixelFormat32bppARGB);
+	Bitmap bmp(width, height, PixelFormat32bppARGB);
 	Graphics graphics(&bmp);
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
@@ -97,18 +98,18 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
 		LinearGradientBrush linGrBrush(
 			Point(0, 0),
-			Point(256, 8),
+			Point(width, lineHeight),
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
 		LinearGradientBrush whiteCoverupBrush(
-			Point(253, 40),
-			Point(256, 128),
+			Point(width - 3, lineHeight * 5),
+			Point(width, height),
 			Gdiplus::Color::White,
 			Gdiplus::Color::White);
 
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
-		graphics.FillRectangle(&linGrBrush, 0, i * 8, 256, 8);
-		graphics.FillRectangle(&whiteCoverupBrush, 253, i * 8, 256, 8); // Don't hate me for this hacky fix to the black bars.
+		graphics.FillRectangle(&linGrBrush, 0, i * lineHeight, width, lineHeight);
+		graphics.FillRectangle(&whiteCoverupBrush, width - 3, i * lineHeight, width, lineHeight); // Don't hate me for this hacky fix to the black bars.
 	}
 
 	for (int i = 0; i < 8;i++) {
@@ -118,18 +119,18 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
 		LinearGradientBrush linGrBrush(
 			Point(0, 0),
-			Point(256, 8),
+			Point(width, lineHeight),
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
 
 		LinearGradientBrush whiteCoverupBrush(
-			Point(253, 40),
-			Point(256, 128),
+			Point(width - 3, lineHeight * 5),
+			Point(width, height),
 			Gdiplus::Color::White,
 			Gdiplus::Color::White);
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
-		graphics.FillRectangle(&linGrBrush, 0, (i + 8) * 8, 256, 8);
-		graphics.FillRectangle(&whiteCoverupBrush, 253, (i + 8) * 8, 256, 8); // Don't hate me for this hacky fix to the black bars.
+		graphics.FillRectangle(&linGrBrush, 0, (i + lineHeight) * lineHeight, width, lineHeight);
+		graphics.FillRectangle(&whiteCoverupBrush, width - 3, (i + lineHeight) * lineHeight, width, lineHeight); // Don't hate me for this hacky fix to the black bars.
 	}
 
 	CLSID pngClsid;
