@@ -493,7 +493,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				}
 			}
 		}
-		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") { //TODO: confirm this caching thingy works for different headstocks
+		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 			if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 				pDevice->GetTexture(1, &pBaseTextures[1]);
 				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
@@ -523,8 +523,17 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 						return D3D_OK;
 			}
 
-			if (IsExtraRemoved(tuningLetters, currentThicc) && (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
-				return D3D_OK;
+			if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))
+			{
+				if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+					return D3D_OK;
+				if (IsExtraRemoved(tunerHighlight, currentThicc)) // This is called to remove the tuner's highlights
+					return D3D_OK;
+				if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
+					return D3D_OK;
+			}
+
+			
 		}
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
