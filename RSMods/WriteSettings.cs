@@ -20,16 +20,16 @@ namespace RSMods
 
         public static void NoSettingsDetected()
         {
-                StringArray[0] = "[SongListTitles]";
-                StringArray[1] = ReadSettings.Songlist1Identifier + "Define Song List 1 Here"; // Songlist 1
-                StringArray[2] = ReadSettings.Songlist2Identifier + "Define Song List 2 Here"; // Songlist 2
-                StringArray[3] = ReadSettings.Songlist3Identifier + "Define Song List 3 Here"; // Songlist 3
-                StringArray[4] = ReadSettings.Songlist4Identifier + "Define Song List 4 Here"; // Songlist 4
-                StringArray[5] = ReadSettings.Songlist5Identifier + "Define Song List 5 Here"; // Songlist 5
-                StringArray[6] = ReadSettings.Songlist6Identifier + "Define Song List 6 Here"; // Songlist 6
-                StringArray[7] = "[Keybinds]";
-                StringArray[8] = ReadSettings.ToggleLoftIdentifier; // Toggle Loft
-                StringArray[9] = ReadSettings.AddVolumeIdentifier; // Add Volume
+                StringArray[0]  = "[SongListTitles]";
+                StringArray[1]  = ReadSettings.Songlist1Identifier + "Define Song List 1 Here"; // Songlist 1
+                StringArray[2]  = ReadSettings.Songlist2Identifier + "Define Song List 2 Here"; // Songlist 2
+                StringArray[3]  = ReadSettings.Songlist3Identifier + "Define Song List 3 Here"; // Songlist 3
+                StringArray[4]  = ReadSettings.Songlist4Identifier + "Define Song List 4 Here"; // Songlist 4
+                StringArray[5]  = ReadSettings.Songlist5Identifier + "Define Song List 5 Here"; // Songlist 5
+                StringArray[6]  = ReadSettings.Songlist6Identifier + "Define Song List 6 Here"; // Songlist 6
+                StringArray[7]  = "[Keybinds]";
+                StringArray[8]  = ReadSettings.ToggleLoftIdentifier; // Toggle Loft
+                StringArray[9]  = ReadSettings.AddVolumeIdentifier; // Add Volume
                 StringArray[10] = ReadSettings.DecreaseVolumeIdentifier; // Decrease Volume
                 StringArray[11] = ReadSettings.ShowSongTimerIdentifier; // Show Song Timer
                 StringArray[12] = ReadSettings.ForceReEnumerationIdentifier; // Force ReEnumeration

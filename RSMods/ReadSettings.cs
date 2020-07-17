@@ -34,7 +34,7 @@ namespace RSMods
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
                 RainbowStringsEnabledIdentifier     = "RainbowStrings = ",
                 ExtendedRangeEnabledIdentifier      = "ExtendedRange = ",
-                CustomStringColorNumberIndetifier = "CustomStringColors = ",
+                CustomStringColorNumberIndetifier   = "CustomStringColors = ",
                 DiscoModeIdentifier                 = "DiscoMode = ",
                 RemoveHeadstockIdentifier           = "Headstock = ",
                 RemoveSkylineIdentifier             = "Skyline = ",
