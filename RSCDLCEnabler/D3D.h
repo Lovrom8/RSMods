@@ -248,14 +248,6 @@ std::vector<ThiccMesh> inlays{
 	{ 32, 8, 9, 0, 0, 4, 2, 12, 4 }, { 32, 16, 18, 0, 0, 4, 2, 12, 4 }, // Standard Dot (2nd for 12th/24th fret)
 };
 
-// All the single ladies
-std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
-std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
-std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
-std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
-std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
-std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
-
 std::vector<ThiccMesh> tunerHighlight{
 	{ 60, 392, 198, 0, 0, 4, 2, 4, 2 }, { 60, 68, 52, 0, 0, 4, 2, 4, 2 }, // 3+3
 	{ 60, 588, 316, 0, 0, 4, 2, 4, 2 }, // 6-inline
@@ -264,9 +256,17 @@ std::vector<ThiccMesh> tunerHighlight{
 };
 
 std::vector<ThiccMesh> leftyFix{
-	{ 60, 392, 198, 0, 0, 4, 2, 9, 7 },
-	{ 44, 538, 406, 0, 0, 4, 2, 9, 4},
+	{ 60, 392, 198, 0, 0, 4, 2, 9, 7 }, // Machine Heads 3+3
+	{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // Strings past tuner 3+3
 };
+
+// All the single ladies
+std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
+std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
+std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
+std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
+std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
+std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
 
 std::vector<ThiccMesh> allMeshes;
 std::vector<ThiccMesh> removedMeshes;
