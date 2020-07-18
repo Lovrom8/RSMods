@@ -443,7 +443,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->SetTexture(1, ourTexture);
 	}
 
-	else if (Settings.ReturnSettingValue("GreenScreenWallEnabled") == "on" && IsExtraRemoved(greenscreenwall, currentThicc))
+	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
 	else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 		return D3D_OK;
@@ -644,9 +644,26 @@ unsigned WINAPI MainThread(void*) {
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			ERMode.Toggle7StringMode();
-			if (!LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Runs on startup, only once
+
+			// std::cout << MemHelpers.GetCurrentMenu().c_str() << std::endl; // Print Current Menu To Debug Console
+			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes))
+				LessonMode = true;
+			else
+				LessonMode = false;
+
+
+			std::cout << LessonMode << std::endl;
+			if (LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") != "manual") { // If user is in lesson mode
+				if (LoftOff)
+					MemHelpers.ToggleLoft();
+				LoftOff = false;
+				GreenScreenWall = true;
+			}
+
+			if (!LoftOff && !LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Runs on startup
 				MemHelpers.ToggleLoft();
 				LoftOff = true;
+				GreenScreenWall = false;
 			}
 			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
 				toggleSkyline = true;
@@ -668,11 +685,17 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = false;
 				}
 			}
-			else // If User Is Exiting Song
+			else // If User Is Exiting Song / In A Menu
 			{
-				if (LoftOff && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") {
-					MemHelpers.ToggleLoft();
-					LoftOff = false;
+				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") {
+					if (LoftOff) {
+						MemHelpers.ToggleLoft();
+						LoftOff = false;
+					}
+					if (!LessonMode)
+					{
+						GreenScreenWall = false;
+					}
 				}
 
 				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && currentMenu.c_str() == "MissionMenu")

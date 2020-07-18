@@ -37,9 +37,11 @@
 		bool LoftOff = false; // Is the loft disabled right now? Toggles when loft turns off (True - No Loft, False - Loft)
 		bool SkylineOff = false; // Is the skyline disabled right now? Toggles when skyline turns off (True - No Skyline, False - Skyline)
 		bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
+		bool GreenScreenWall = false; // If true, set the Greenscreen wall up. This helps call it in Lesson mode for No-Loft users (True - Black wall, False - Loft)
 	// Misc
 		std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
 		bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?
+		bool LessonMode = false; // Is the user in LessonMode (True - Yes, False - No)
 		bool lowPerformancePC = false; // Does your game lag with all of our mods? Toggle on to disable us running mods for an original DLL experience.
 		bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
 		bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory

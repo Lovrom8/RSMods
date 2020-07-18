@@ -183,20 +183,21 @@ bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 
 //  {8, 10, 8}, //  Massive UI (Artwork, preview skylines, loading screens, etc)
 
-std::vector<Mesh> skyline{
-	{16, 66, 132}, //
-	{16, 38, 76}, // 
-	{16, 2, 4}, //
-	{16, 104, 208}, //
-};
+//std::vector<Mesh> skyline{
+//	{16, 66, 132}, //
+//	{16, 38, 76}, // 
+//	{16, 2, 4}, //
+//	{16, 104, 208}, //
+//};
+
 std::vector<Mesh> skylineLesson{
-	{16, 66, 132}, //
-	{16, 38, 76}, //
-	{16, 2, 4}, // 
-	{16, 104, 208}, // 
-	{20, 2, 4}, // 
-	{16, 18, 16}, // 
-	{8, 20, 16} // 
+	{16, 66, 132},
+	{16, 38, 76},
+	{16, 2, 4},
+	{16, 104, 208},
+	{20, 2, 4},
+	{16, 18, 16},
+	{8, 20, 16} 
 };
 
 std::vector<Mesh> sevenstring{
@@ -264,7 +265,7 @@ std::vector<ThiccMesh> leftyFix{
 std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
 std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
-std::vector<ThiccMesh> greenscreenwall{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
+std::vector<ThiccMesh> greenScreenWallMesh{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
 std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
 
@@ -282,7 +283,7 @@ std::vector<ThiccMesh> removedMeshes;
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
 
-std::string tuningMenus[16] = { // previously known as getRidOfTuningLettersOnTheseMenus
+std::string tuningMenus[17] = { // previously known as getRidOfTuningLettersOnTheseMenus
 	(std::string)"SelectionListDialog",
 	(std::string)"LearnASong_PreSongTuner",
 	(std::string)"LearnASong_PreSongTunerMP",
@@ -295,20 +296,27 @@ std::string tuningMenus[16] = { // previously known as getRidOfTuningLettersOnTh
 	(std::string)"UIMenu_Tuner",
 	(std::string)"UIMenu_TunerMP",
 	(std::string)"Guitarcade_Tuner",
-	(std::string)"GETuner",
 	(std::string)"Tuner",
 	(std::string)"Duet_PreSongTuner",
-	(std::string)"H2H_PreSongTuner"
+	(std::string)"H2H_PreSongTuner",
+	(std::string)"GETuner",
+	(std::string)"PreGame_GETuner"
 };
 
-std::string songModes[6] = {
+std::string songModes[8] = {
 	(std::string)"LearnASong_Game",
 	(std::string)"NonStopPlay_Game",
 	(std::string)"ScoreAttack_Game",
 	(std::string)"LearnASong_Pause",
 	(std::string)"NonStopPlay_Pause",
-	(std::string)"ScoreAttack_Pause"
+	(std::string)"ScoreAttack_Pause",
 };
+
+std::string lessonModes[2] = {
+	(std::string)"GuidedExperience_Game",
+	(std::string)"GuidedExperience_Pause"
+};
+
 
 /*------------------------ CRC Calculation --------------------------------------- */
 std::vector<LPDIRECT3DTEXTURE9> headstockTexutrePointers;
