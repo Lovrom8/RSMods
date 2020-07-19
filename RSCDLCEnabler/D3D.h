@@ -317,6 +317,31 @@ std::string lessonModes[2] = {
 	(std::string)"GuidedExperience_Pause"
 };
 
+std::string dontAutoEnter[16] = {
+	// First time Player
+	(std::string)"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
+	(std::string)"PlayedRS1Select", // Did you play the original Rocksmith?
+	(std::string)"ExperienceSelect", // How good at guitar do you think you are?
+	(std::string)"PathSelect", // What path do you want to play? (Lead, Rhythm, Bass)
+	(std::string)"HandSelect", // Are you left handed or right handed? (Left, Right)
+	(std::string)"HeadstockSelect", // Select between (3+3 or 6-inline) (2+2 or 4-inline).
+	(std::string)"FE_InputSelect", // What cable method do you have? (RTC, Mic, Disconnected)
+	(std::string)"FECalibrationMeter", // First time calibrating.
+	(std::string)"VideoPlayer", // Intro videos on how to calibrate, tune, play the game.
+	(std::string)"FETuner", // First time tuning.
+	(std::string)"FirstEncounter_Game", // Intro to game, teaches basic UI elements.
+	(std::string)"SelectionListDialog", // Occasional Yes/ No Prompts.
+
+	// Played RS1 before
+	(std::string)"RefresherSelect", // User has played Rocksmith before, but do they need some touchup on their knowledge.
+
+	// Disconnected Mode
+	(std::string)"ImageDialog", // Disconnected Mode Pictures.
+
+	// Uplay section
+	(std::string)"UplayLoginDialog", // User needs to login to uPlay.
+	(std::string)"UplayAccountCreationDialog" // User needs to create a uPlay account.
+};
 
 /*------------------------ CRC Calculation --------------------------------------- */
 std::vector<LPDIRECT3DTEXTURE9> headstockTexutrePointers;

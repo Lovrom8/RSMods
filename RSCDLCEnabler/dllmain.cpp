@@ -670,11 +670,12 @@ unsigned WINAPI MainThread(void*) {
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 
+		//std::cout << currentMenu.c_str() << std::endl // Print Current Menu To Debug Console
+
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			ERMode.Toggle7StringMode();
 
-			// std::cout << MemHelpers.GetCurrentMenu().c_str() << std::endl; // Print Current Menu To Debug Console
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes))
 				LessonMode = true;
 			else
@@ -745,7 +746,7 @@ unsigned WINAPI MainThread(void*) {
 			if (MemHelpers.GetCurrentMenu() == "MainMenu") // Yay We Loaded :P
 				GameLoaded = true;
 
-			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on") // "Fork in the toaster" / Spam Enter Method
+			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
 			//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
 		}
