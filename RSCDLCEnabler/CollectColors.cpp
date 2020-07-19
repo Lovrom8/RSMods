@@ -9,13 +9,6 @@ https://docs.google.com/spreadsheets/d/1X3UjY68Z5oOuZpV_UpckOy-G-XZe7lWaskc31C7F
 Feel free to modify this pile of shit, I don't know how we wanted it formatted.
 */
 
-std::string cCollectColors::getAmbientStringColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 4) + ", " + std::to_string(.423) + ", " + std::to_string(.558);
-	else
-		return std::to_string(stringHue - 1) + ", " + std::to_string(.423) + ", " + std::to_string(.558);
-}
-
 Color cCollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 4;
@@ -26,13 +19,6 @@ Color cCollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode
 	L = 0.558f;
 
 	return GetColor();
-}
-
-std::string cCollectColors::getDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue), +", " + std::to_string(stringSaturation - .144) + ", " + std::to_string(stringLightness / 3.136);
-	else
-		return std::to_string(stringHue), +", " + std::to_string(stringSaturation - .428) + ", " + std::to_string(stringLightness / 2.812);
 }
 
 Color cCollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
@@ -50,23 +36,12 @@ Color cCollectColors::GetDisabledStringColor(int stringHue, float stringSaturati
 	return GetColor();
 }
 
-std::string cCollectColors::getGlowStringColor(int stringHue) {
-	return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-}
-
 Color cCollectColors::GetGlowStringColor(int stringHue) {
 	H = stringHue - 4;
 	S = 1.0f;
 	L = 0.5f;
 
 	return GetColor();
-}
-
-std::string cCollectColors::getTuningPegColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.3385);
-	else
-		return std::to_string(stringHue) + ", " + std::to_string(1) + ", " + std::to_string(.3453);
 }
 
 Color cCollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
@@ -84,22 +59,23 @@ Color cCollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
-std::string cCollectColors::getPegResetColor() {
-	return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(0);
+Color cCollectColors::GetPegResetColor() {
+	H = 0.0f;
+	S = 0.0f;
+	L = 0.0f;
+
+	return GetColor();
 }
 
-std::string cCollectColors::getPegSuccessColor(bool isColorBlindMode) {
+Color cCollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 	if (!isColorBlindMode)
-		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(0);
+		L = 0.0f;
 	else
-		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(1);
-}
+		L = 1.0f;
+	H = 0.0f;
+	S = 0.0f;
 
-std::string cCollectColors::getPegInTuneColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 4) + ", " + std::to_string(1) + ", " + std::to_string(.349);
-	else
-		return std::to_string(stringHue + 1) + ", " + std::to_string(1) + ", " + std::to_string(.349);
+	return GetColor();
 }
 
 Color cCollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
@@ -114,15 +90,12 @@ Color cCollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
-std::string cCollectColors::getPegOutTuneColor() {
-	return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(1);
-}
+Color cCollectColors::GetPegOutTuneColor() {
+	H = 0.0f;
+	S = 0.0f;
+	L = 1.0f;
 
-std::string cCollectColors::getRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 3) + ", " + std::to_string(1) + ", " + std::to_string(.625);
-	else
-		return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.624);
+	return GetColor();
 }
 
 Color cCollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
@@ -140,13 +113,6 @@ Color cCollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindM
 	return GetColor();
 }
 
-std::string cCollectColors::getRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 5) + ", " + std::to_string(1) + ", " + std::to_string(.625);
-	else
-		return std::to_string(stringHue + 5) + ", " + std::to_string(1) + ", " + std::to_string(.624);
-}
-
 Color cCollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		L = 0.625f;
@@ -157,13 +123,6 @@ Color cCollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindM
 	S = 1.0f;
 
 	return GetColor();
-}
-
-std::string cCollectColors::getNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 5) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	else
-		return std::to_string(stringHue) + ", " + std::to_string(stringSaturation) + ", " + std::to_string(stringLightness);
 }
 
 Color cCollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
@@ -181,14 +140,6 @@ Color cCollectColors::GetNotewayNormalColor(int stringHue, float stringSaturatio
 	return GetColor();
 }
 
-
-std::string cCollectColors::getNotewayAccentColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue + 3) + ", " + std::to_string(.909) + ", " + std::to_string(.761);
-	else
-		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(1);
-}
-
 Color cCollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 3;
@@ -202,13 +153,6 @@ Color cCollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode
 	}
 
 	return GetColor();
-}
-
-std::string cCollectColors::getNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		return std::to_string(stringHue - 1) + ", " + std::to_string(.219) + ", " + std::to_string(.206);
-	else
-		return std::to_string(stringHue) + ", " + std::to_string(.212) + ", " + std::to_string(.204);
 }
 
 Color cCollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
@@ -226,77 +170,61 @@ Color cCollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMod
 	return GetColor();
 }
 
-
-std::string cCollectColors::getGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		if (stringNumber == 4)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
-	else {
-		if (stringNumber == 4)
-			return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
-}
-
 Color cCollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) { //TODO: finish the rest
-	if (!isColorBlindMode) {
+	if (!isColorBlindMode)
+		H = stringHue + 12;
+	else
+		H = stringHue - 4;
 
-	}
-	else {
+	S = 1.0f;
 
-	}
-
+	if (stringNumber == 4) // B string (Normally lime green)
+		L = 0.429f;
+	else if (stringNumber == 5) // e string (normally purple-ish)
+		L = 0.375f;
+	else // E, A, D, & G strings
+		L = 0.50f;
 
 	return GetColor();
 }
 
-std::string cCollectColors::getGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		if (stringNumber == 4)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
-	else {
-		if (stringNumber == 4)
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
+Color cCollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
+	if (!isColorBlindMode)
+		H = stringHue + 12;
+	else
+		H = stringHue + 2;
+
+	S = 1.0f;
+
+	if (stringNumber == 4) // B string (Normally lime green)
+		L = 0.429f;
+	else if (stringNumber == 5) // e string (normally purple-ish)
+		L = 0.375f;
+	else // E, A, D, & G strings
+		L = 0.50f;
+
+	return GetColor();
 }
 
-std::string cCollectColors::getGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		if (stringNumber == 4)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue + 12) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
-	else {
-		if (stringNumber == 4)
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.429);
-		if (stringNumber == 5)
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.375);
-		else
-			return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.50);
-	}
+Color cCollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
+	if (!isColorBlindMode)
+		H = stringHue + 12;
+	else
+		H = stringHue + 2;
+
+	S = 1.0f;
+
+	if (stringNumber == 4) // B string (Normally lime green)
+		L = 0.429f;
+	else if (stringNumber == 5) // e string (normally purple-ish)
+		L = 0.375f;
+	else // E, A, D, & G strings
+		L = 0.50f;
+
+	return GetColor();
 }
 
-// This section about Min, Max, RGBToHSL was totally not stolen off StackOverflow :)
+// This section about Min, & Max, was totally not stolen off StackOverflow :)
 
 float cCollectColors::Min(float fR, float fG, float fB)
 {
