@@ -1,5 +1,4 @@
 #include "Offsets.h"
-#include "MemUtil.h"
 
 cOffsets Offsets;
 

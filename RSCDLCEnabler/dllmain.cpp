@@ -674,6 +674,7 @@ unsigned WINAPI MainThread(void*) {
 		{
 			ERMode.Toggle7StringMode();
 
+			std::cout << (Settings.GetModSetting("ExtendedRangeMode") + 12) << std::endl;
 			// std::cout << MemHelpers.GetCurrentMenu().c_str() << std::endl; // Print Current Menu To Debug Console
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes))
 				LessonMode = true;

@@ -1,3 +1,6 @@
+#include "Offsets.h"
+#include "MemUtil.h"
+#include <vector>
 #include <filesystem>
 
 class cEnum {

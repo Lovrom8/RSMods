@@ -1,7 +1,4 @@
 #include "Enumeration.h"
-#include "Offsets.h"
-#include "MemUtil.h"
-#include <vector>
 
 cEnum Enumeration;
 
