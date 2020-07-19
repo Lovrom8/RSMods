@@ -18,7 +18,7 @@ bool cMemHelpers::IsExtendedRangeSong() {
 		return false;
 
 	byte currTuning = cMemHelpers::getLowestStringTuning();
-	if (currTuning == 0 || currTuning > (256 + Settings.GetModSetting("ExtendedRangeMode"))) //tunings are in negative values*, so things go backwards ;) 
+	if (currTuning == 0 || currTuning > (256 + Settings.GetModSetting("ExtendedRangeMode")) || currTuning > (Settings.GetModSetting("ExtendedRangeMode") + 12)) //tunings are in negative values*, so things go backwards ;) 
 		return false;
 	else
 		return true;
