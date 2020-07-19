@@ -1,7 +1,4 @@
 #include "CollectColors.h"
-#include <iostream>
-#include <cstdlib>
-#include <cmath>
 
 cCollectColors CollectColors;
 
@@ -19,6 +16,18 @@ std::string cCollectColors::getAmbientStringColor(int stringHue, bool isColorBli
 		return std::to_string(stringHue - 1) + ", " + std::to_string(.423) + ", " + std::to_string(.558);
 }
 
+Color cCollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode)
+		H = stringHue + 4;
+	else
+		H = stringHue - 1;
+
+	S = 0.423f;
+	L = 0.558f;
+
+	return GetColor();
+}
+
 std::string cCollectColors::getDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		return std::to_string(stringHue), +", " + std::to_string(stringSaturation - .144) + ", " + std::to_string(stringLightness / 3.136);
@@ -26,8 +35,31 @@ std::string cCollectColors::getDisabledStringColor(int stringHue, float stringSa
 		return std::to_string(stringHue), +", " + std::to_string(stringSaturation - .428) + ", " + std::to_string(stringLightness / 2.812);
 }
 
+Color cCollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		S = stringSaturation - .144;
+		L = stringLightness / 3.136;
+	}
+	else {
+		S = stringSaturation - .428;
+		L = stringLightness / 2.812;
+	}
+
+	H = stringHue;
+
+	return GetColor();
+}
+
 std::string cCollectColors::getGlowStringColor(int stringHue) {
 	return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.50);
+}
+
+Color cCollectColors::GetGlowStringColor(int stringHue) {
+	H = stringHue - 4;
+	S = 1.0f;
+	L = 0.5f;
+
+	return GetColor();
 }
 
 std::string cCollectColors::getTuningPegColor(int stringHue, bool isColorBlindMode) {
@@ -37,12 +69,27 @@ std::string cCollectColors::getTuningPegColor(int stringHue, bool isColorBlindMo
 		return std::to_string(stringHue) + ", " + std::to_string(1) + ", " + std::to_string(.3453);
 }
 
+Color cCollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		H = stringHue - 4;
+		L = 0.3385f;
+	}
+	else {
+		H = stringHue;
+		L = 0.3453f;
+	}
+
+	S = 1.0f;
+
+	return GetColor();
+}
+
 std::string cCollectColors::getPegResetColor() {
 	return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(0);
 }
 
 std::string cCollectColors::getPegSuccessColor(bool isColorBlindMode) {
-	if(!isColorBlindMode)
+	if (!isColorBlindMode)
 		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(0);
 	else
 		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(1);
@@ -53,6 +100,18 @@ std::string cCollectColors::getPegInTuneColor(int stringHue, bool isColorBlindMo
 		return std::to_string(stringHue + 4) + ", " + std::to_string(1) + ", " + std::to_string(.349);
 	else
 		return std::to_string(stringHue + 1) + ", " + std::to_string(1) + ", " + std::to_string(.349);
+}
+
+Color cCollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode)
+		H = stringHue + 4;
+	else
+		H = stringHue - 1;
+
+	S = 1.0f;
+	L = 0.349f;
+
+	return GetColor();
 }
 
 std::string cCollectColors::getPegOutTuneColor() {
@@ -66,11 +125,38 @@ std::string cCollectColors::getRegTextIndicatorColor(int stringHue, bool isColor
 		return std::to_string(stringHue + 2) + ", " + std::to_string(1) + ", " + std::to_string(.624);
 }
 
+Color cCollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		H = stringHue + 3;
+		L = 0.625f;
+	}
+	else {
+		H = stringHue + 2;
+		L = 0.624f;
+	}
+
+	S = 1.0f;
+
+	return GetColor();
+}
+
 std::string cCollectColors::getRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		return std::to_string(stringHue + 5) + ", " + std::to_string(1) + ", " + std::to_string(.625);
 	else
 		return std::to_string(stringHue + 5) + ", " + std::to_string(1) + ", " + std::to_string(.624);
+}
+
+Color cCollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode)
+		L = 0.625f;
+	else
+		L = 0.624f;
+
+	H = stringHue + 5;
+	S = 1.0f;
+
+	return GetColor();
 }
 
 std::string cCollectColors::getNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
@@ -80,11 +166,42 @@ std::string cCollectColors::getNotewayNormalColor(int stringHue, float stringSat
 		return std::to_string(stringHue) + ", " + std::to_string(stringSaturation) + ", " + std::to_string(stringLightness);
 }
 
+Color cCollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		H = stringHue + 5;
+		S = 1.0f;
+		L = .5f;
+	}
+	else {
+		H = stringHue;
+		S = stringSaturation;
+		L = stringLightness;
+	}
+
+	return GetColor();
+}
+
+
 std::string cCollectColors::getNotewayAccentColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		return std::to_string(stringHue + 3) + ", " + std::to_string(.909) + ", " + std::to_string(.761);
 	else
 		return std::to_string(0) + ", " + std::to_string(0) + ", " + std::to_string(1);
+}
+
+Color cCollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		H = stringHue + 3;
+		S = 0.909f;
+		L = 0.761f;
+	}
+	else {
+		H = 0.0f;
+		S = 0.0f;
+		L = 1.0f;
+	}
+
+	return GetColor();
 }
 
 std::string cCollectColors::getNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
@@ -93,6 +210,22 @@ std::string cCollectColors::getNotewayPreviewColor(int stringHue, bool isColorBl
 	else
 		return std::to_string(stringHue) + ", " + std::to_string(.212) + ", " + std::to_string(.204);
 }
+
+Color cCollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
+	if (!isColorBlindMode) {
+		H = stringHue - 1;
+		S = 0.219f;
+		L = 0.206f;
+	}
+	else {
+		H = stringHue;
+		S = 0.212f;
+		L = 0.204f;
+	}
+
+	return GetColor();
+}
+
 
 std::string cCollectColors::getGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
@@ -111,6 +244,18 @@ std::string cCollectColors::getGuitarcadeMainColor(int stringHue, int stringNumb
 		else
 			return std::to_string(stringHue - 4) + ", " + std::to_string(1) + ", " + std::to_string(.50);
 	}
+}
+
+Color cCollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) { //TODO: finish the rest
+	if (!isColorBlindMode) {
+
+	}
+	else {
+
+	}
+
+
+	return GetColor();
 }
 
 std::string cCollectColors::getGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
@@ -182,53 +327,78 @@ float cCollectColors::Max(float fR, float fG, float fB)
 	return fMax;
 }
 
-void cCollectColors::RGBToHSL(int R, int G, int B, int& H, int& S, int& L)
-{
-	int r = 100.0;
-	int g = 100.0;
-	int b = 200.0;
+// From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms - so not totally stolen :P 
+void cCollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
+	float min = Min(R, G, B);
+	float max = Max(R, G, B);
+	float d, h;
 
-	float fR = r / 255.0;
-	float fG = g / 255.0;
-	float fB = b / 255.0;
+	L = (min + max) / 2;
 
+	if (max != min) {
+		d = max - min;
 
-	float fCMin = Min(fR, fG, fB);
-	float fCMax = Max(fR, fG, fB);
+		S = (L <= 0.5) ? (d / (min + max)) : (d / (2 - max - min));
 
+		if (R == max)
+			h = (G - B) / d;
+		else if (G == max)
+			h = 2 + (B - R) / d;
+		else if (B == max)
+			h = 4 + (R - G) / d;
+		else
+			h = 0.0f;
 
-	L = 50 * (fCMin + fCMax);
+		H = 60 * h;
 
-	if (fCMin == fCMax)
-	{
-		S = 0;
-		H = 0;
-		return;
-
+		if (H < 0)
+			H += 360;
 	}
-	else if (L < 50)
-	{
-		S = 100 * (fCMax - fCMin) / (fCMax + fCMin);
-	}
-	else
-	{
-		S = 100 * (fCMax - fCMin) / (2.0 - fCMax - fCMin);
-	}
+}
 
-	if (fCMax == fR)
-	{
-		H = 60 * (fG - fB) / (fCMax - fCMin);
+void cCollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
+	float v, min, sv, fract, vsf, mid1, mid2;
+	int sextant;
+
+	v = (L <= 0.5) ? (L * (1.0 + S)) : (L + S - L * S);
+
+	if (v > 0) {
+		min = 2 * L - v;
+		sv = (v - min) / v;
+		H = (H == 360) ? 0 : H / 60;
+
+		sextant = floor(H);
+		fract = H - sextant;
+		vsf = v * sv * fract;
+		mid1 = min + vsf;
+		mid2 = v - vsf;
+
+		switch (sextant)
+		{
+			case 0: R = v; G = mid1; B = min; break;
+			case 1: R = mid2; G = v; B = min; break;
+			case 2: R = min; G = v; B = mid1; break;
+			case 3: R = min; G = mid2; B = v; break;
+			case 4: R = mid1; G = min; B = v; break;
+			case 5: R = v; G = min; B = mid2; break;
+		}
 	}
-	if (fCMax == fG)
-	{
-		H = 60 * (fB - fR) / (fCMax - fCMin) + 120;
+	else {
+		R = 0.0f;
+		G = 0.0f;
+		B = 0.0f;
 	}
-	if (fCMax == fB)
-	{
-		H = 60 * (fR - fG) / (fCMax - fCMin) + 240;
-	}
-	if (H < 0)
-	{
-		H = H + 360;
-	}
+}
+
+Color cCollectColors::GetColor() {
+	HSL2RGB(H, S, L, R, G, B);
+	return Color(R, G, B);
+}
+
+void cCollectColors::SetColors(RSColor color) {
+	R = color.r;
+	G = color.g;
+	B = color.b;
+
+	RGB2HSL(R, G, B, H, S, L);
 }

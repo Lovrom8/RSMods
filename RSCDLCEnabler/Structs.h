@@ -2,7 +2,22 @@
 #include <cmath>
 
 enum string_state {
-	Ambient = 0x350, //name = "GuitarStringsAmbientColorBlind" id = "3175458924
+	Ambient = 0x350,
+	Enabled = 0x368,					
+	Disabled = 0x380,						
+	Glow = 0x398,			
+	PegsTuning = 0x3b0,
+	PegsReset = 0x3c8,
+	PegsInactive = 0x3e0,
+	PegsInTune = 0x3f8,
+	PegsNotInTune = 0x410,
+	OddHighlightedFretNumber = 0x428,
+	EvenHighlightedFretNumber = 0x440, //Particles?
+	FretWire = 0x458,
+	Text = 0x488,
+	BodyNorm = 0x4b8,
+	BodyAcc = 0x4d0
+	/*Ambient = 0x350, //name = "GuitarStringsAmbientColorBlind" id = "3175458924
 	Enabled = 0x368, //name="GuitarStringsEnabledColorBlind" id="237528906"
 	Disabled = 0x380,  //name="GuitarStringsDisabledColorBlind" id="4184626561"
 	Glow = 0x398, //name="GuitarStringsGlowBlind" id="3217126622
@@ -15,7 +30,7 @@ enum string_state {
 	Particles = 0x488, //name="GuitarRegistrarForkParticlesBlind" id="3239612871"
 	BodyAcc = 0x4a0, // = name = "NotewayBodypartsAccentBlind" id = "47948252"
 	BodyNorm = 0x4b8 //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
-	//BodyPrev == ?? - doesn't seem to be used while in a song
+	//BodyPrev == ?? - doesn't seem to be used while in a song*/
 
 	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.

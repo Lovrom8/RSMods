@@ -16,6 +16,8 @@ public:
 	void DoRainbow();
 	void ToggleRainbowMode();
 	void ResetString(int strIndex);
+	void SetCustomColors(int strIdx, std::map<std::string, RSColor> customColorMap);
+	void Initialize();
 
 	bool Is7StringSong = false;
 	bool RainbowEnabled = false;
@@ -25,6 +27,17 @@ public:
 	bool saveDefaults = true;
 	bool restoreDefaults = false;
 private:
+	std::vector<std::map<std::string, RSColor>> customColors;
+
+	std::vector<Color> colorsTest = {
+		{0.382f, 0.213f, 0.435f},
+		{0.382f, 0.213f, 0.435f},
+		{0.382f, 0.213f, 0.435f},
+		{0.382f, 0.213f, 0.435f},
+		{0.382f, 0.213f, 0.435f},
+		{0.382f, 0.213f, 0.435f}
+	};
+
 	std::vector<Color> colorsWhite = {
 		{0.0f, 0.0f, 0.0f},
 		{0.0f, 0.0f, 0.0f},
@@ -150,6 +163,10 @@ private:
 		{ 0.2509804f, 0.2f, 0.1607843f },
 		{ 0.1647059f, 0.2509804f, 0.1607843f },
 	};
+
+	void InitStrings(std::vector<uintptr_t>& strings, int state);
+	void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors);
+	void SetColors(std::vector<uintptr_t> strings, std::string colorType);
 };
 
 extern cERMode ERMode;

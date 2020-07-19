@@ -26,30 +26,6 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	return eax;
 }
 
-uintptr_t GetStringColor(uintptr_t stringnum, string_state state) {
-	uintptr_t edx = stringnum;
-	uintptr_t eax = 0;
-	uintptr_t magic1 = Offsets.ptr_stringColor;
-
-	uintptr_t ecx = MemUtil.ReadPtr(magic1);
-
-	if (!ecx)
-		return NULL;
-
-	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + 0x348);
-
-	if (eax >= 2) {
-		return NULL;
-	}
-
-	eax = eax * 0xA8;
-	eax += edx;
-
-	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + state);
-
-	return eax;
-}
-
 struct String { //maybe do sth with this
 	uintptr_t strPtr;
 	Color oldColor;
@@ -74,23 +50,37 @@ struct String { //maybe do sth with this
 
 };
 
-void InitStrings(std::vector<uintptr_t>& strings, int state) {
+void cERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
 	strings.clear();
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
 
-void InitStrings(std::vector<uintptr_t>& strings, string_state state) {
-	strings.clear();
-	for (int strIndex = 0; strIndex < 6;strIndex++)
-		strings.push_back(GetStringColor(strIndex, state));
-}
-
-void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
+void cERMode::SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		if (strings[strIndex] == NULL)
 			return;
 		*(Color*)strings[strIndex] = colors[strIndex];
+	}
+}
+
+void cERMode::Initialize() {
+	std::map<std::string, RSColor> emptyMap;
+
+	for (int str = 0; str < 6; str++)
+		customColors.push_back(emptyMap);
+}
+
+void cERMode::SetCustomColors(int strIdx, std::map<std::string, Color> customColorMap) {
+	customColors[strIdx] = customColorMap;
+}
+
+void cERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
+	for (int strIndex = 0; strIndex < 6;strIndex++) {
+		if (strings[strIndex] == NULL)
+			return;
+
+		*(Color*)strings[strIndex] = customColors[strIndex][colorType];
 	}
 }
 
@@ -101,12 +91,12 @@ void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
-	InitStrings(stringsAmb, Ambient);
+	//InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);
 
 	*(Color*)stringsGlow[strIndex] = oldGlow[strIndex];
 	*(Color*)stringsDisabled[strIndex] = oldDisabled[strIndex];
-	*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
+	//*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
 	*(Color*)stringsEnabled[strIndex] = oldEnabled[strIndex];
 
 	Settings.SetStringColors(strIndex, oldGlow[strIndex], false);
@@ -137,10 +127,10 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsDisabled, Disabled);
 	InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);
-	InitStrings(stringsPegInTune, PegInTune);
-	InitStrings(stringsPegNotInTune, PegNotInTune);
+	InitStrings(stringsPegInTune, PegsInTune);
+	InitStrings(stringsPegNotInTune, PegsNotInTune);
 	InitStrings(stringsText, Text);
-	InitStrings(stringsPart, Particles);
+	//InitStrings(stringsPart, Particles);
 	InitStrings(stringsBodyNorm, BodyNorm);
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
@@ -158,7 +148,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			SetColors(stringsDisabled, colorsDisabled);
 
 			//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
-			SetColors(stringsAmb, colorsAmbient);
+		//	SetColors(stringsAmb, colorsAmbient);
 
 			//name="GuitarStringsEnabledColorBlind" id="237528906"
 			SetColors(stringsEnabled, colorsStrEna);
@@ -188,36 +178,17 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			//do we even need to do anything in this case?
 		}
 		else if (Settings.GetModSetting("CustomStringColors") == 2) { //custom colors
-			 //TODO: actually determine which colors need to be change to what values
-			SetColors(stringsGlow, Settings.GetCustomColors(true));
-			SetColors(stringsAmb, Settings.GetCustomColors(true));
-			SetColors(stringsDisabled, Settings.GetCustomColors(true));
-			SetColors(stringsEnabled, Settings.GetCustomColors(true));
+			SetColors(stringsEnabled, "Enabled");
+			SetColors(stringsGlow, "Glow");
+			SetColors(stringsDisabled, "Disabled");
+			SetColors(stringsText, "TextIndicator");
 			//etc.
 		}
 	}
 	else {
 		//restore orignal colors, I guess
-		//TODO: actually determine which colors need to be change to what values
-		/*SetColors(stringsGlow, Settings.GetCustomColors(false));
-		SetColors(stringsAmb, Settings.GetCustomColors(false));
-		SetColors(stringsDisabled, Settings.GetCustomColors(false));
-		SetColors(stringsEnabled, Settings.GetCustomColors(false));*/
 
 		if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
-		/*cNormal = *(Color*)string0Normal; //still not sure what "Normal" corresponds to in the games flat files
-		cDisabled = *(Color*)string0Disabled;
-		cGlow = *(Color*)string0Glow;
-		cAmb = *(Color*)string0Amb;
-		cEnabled = *(Color*)string0Enabled;
-		cPegNotInTune = *(Color*)string0PegNotInTune;
-		cPegInTune = *(Color*)string0PegInTune;
-		cTextNew = *(Color*)string0TextNew;
-		cPart = *(Color*)string0Part;
-		cBodyNorm = *(Color*)string0BodyNorm;
-		cBodyAcc = *(Color*)string0BodyAcc;
-		cBodyPrev = *(Color*)string0BodyPrev;*/
-
 			for (int i = 0; i < 6; i++) {
 				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 				oldEnabled.push_back(*(Color*)stringsEnabled[i]);
@@ -301,41 +272,46 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		}
 	}
 
-	if (saveDefaults) {
-		defaultColors.clear();
-		for (int idx = 0; idx < 17;idx++) {
-			InitStrings(stringsTest, (idx * 0x18 + 0x350));
+	if (Settings.GetModSetting("CustomStringColors") == 3) { // If you want the color testing menu to work
+		if (saveDefaults) {
+			defaultColors.clear();
+			for (int idx = 0; idx < 17;idx++) {
+				InitStrings(stringsTest, (idx * 0x18 + 0x350));
 
-			std::vector<Color> defaults;
-			for (int i = 0; i < 6; i++)
-				defaults.push_back(*(Color*)stringsTest[i]);
-		
-			defaultColors.push_back(defaults);
+				std::vector<Color> defaults;
+				for (int i = 0; i < 6; i++)
+					defaults.push_back(*(Color*)stringsTest[i]);
+
+				defaultColors.push_back(defaults);
+			}
+
+			saveDefaults = false;
 		}
 
-		saveDefaults = false;
-	}
+		if (restoreDefaults) {
+			for (int idx = 0; idx < 17;idx++) {
+				InitStrings(stringsTest, (idx * 0x18 + 0x350));
 
-	if (restoreDefaults) {
-		for (int idx = 0; idx < 17;idx++) {
-			InitStrings(stringsTest, (idx * 0x18 + 0x350));
+				for (int i = 0; i < 6; i++)
+					*(Color*)stringsTest[i] = defaultColors[idx][i];
+			}
 
-			for (int i = 0; i < 6; i++)
-				*(Color*)stringsTest[i] = defaultColors[idx][i];
+			restoreDefaults = false;
+		}
+		else {
+			stringsTest.clear();
+			InitStrings(stringsTest, (currentOffsetIdx * 0x18 + 0x350));
+
+			if (currColor == 0)
+				SetColors(stringsTest, colorsBlack);
+			else
+				SetColors(stringsTest, colorsWhite);
 		}
 
-		restoreDefaults = false;
+		InitStrings(stringsTest, Text);
+		SetColors(stringsTest, colorsTest);
+		std::cout << "Set colors doe" << std::endl;
 	}
-	else {
-		stringsTest.clear();
-		InitStrings(stringsTest, (currentOffsetIdx * 0x18 + 0x350));
-
-		if (currColor == 0)
-			SetColors(stringsTest, colorsBlack);
-		else
-			SetColors(stringsTest, colorsWhite);
-	}
-	
 }
 
 void cERMode::ToggleRainbowMode() {

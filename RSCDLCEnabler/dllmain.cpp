@@ -76,6 +76,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
 
+void SetCustomColors() {
+	RSColor iniColor;
+
+	for (int strIdx = 0; strIdx < 6;strIdx++) {
+		iniColor = Settings.GetCustomColors(true)[strIdx];
+		int H;
+		float S, L;
+		CollectColors.RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
+
+		std::map<std::string, RSColor> customColors = {
+			{"Ambient", CollectColors.GetAmbientStringColor(H, true) },
+			{"Disabled", CollectColors.GetDisabledStringColor(H, S, L, true) },
+			{"Enabled", iniColor}, 
+			{"Glow", CollectColors.GetGlowStringColor(H)},
+			{"PegsTuning", CollectColors.GetGlowStringColor(H)},
+			//{"PegsReset", CollectColors.GetPegs}
+			{"PegsInTune", CollectColors.GetPegInTuneColor(H, true)},
+			{"TextIndicator", CollectColors.GetRegTextIndicatorColor(H, true)}
+			//etc.
+		};
+
+		ERMode.SetCustomColors(strIdx, customColors);
+	}
+}
+
 void GenerateTexture(IDirect3DDevice9* pDevice) {
 	while (GetModuleHandleA("gdiplus.dll") == NULL) //JIC, to prevent crashing
 		Sleep(500);
@@ -163,6 +188,8 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	ourTexture->UnlockRect(0);
 
 	D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+
+	SetCustomColors();
 }
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
@@ -336,7 +363,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails PogU
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
-		pDevice->SetTexture(1, gradientTextureNormal);
+		pDevice->SetTexture(1, ourTexture);
 	}
 
 	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
@@ -389,7 +416,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		if (calculatedCRC) {
 			if (pCurrTexture == stemTexture)
-				pDevice->SetTexture(1, additiveNoteTexture);
+				pDevice->SetTexture(1, ourTexture);
 		}
 		else if (CRCForTexture(pCurrTexture, crc)) {
 			if (crc == 0x02a50002) {
@@ -524,7 +551,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 					return D3D_OK;
 			}
 
-			
+
 		}
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -631,6 +658,8 @@ unsigned WINAPI MainThread(void*) {
 	Settings.ReadKeyBinds();
 	Settings.ReadModSettings();
 	Settings.ReadStringColors();
+
+	ERMode.Initialize();
 
 	GUI();
 	InitEngineFunctions();

@@ -12,6 +12,7 @@
 #include "Settings.h"
 #include "ExtendedRangeMode.h"
 #include <process.h>
+#include "CollectColors.h"
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_dx9.h"
