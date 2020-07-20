@@ -209,6 +209,7 @@ std::vector<Mesh> sevenstring{
 	{34, 40, 76} // "Some Note Head Stuff" - Lovro
 };
 
+std::vector<Mesh> noteHighway{ { 32, 2, 4} };
 
 std::vector<ThiccMesh> headstockThicc{
 	// General

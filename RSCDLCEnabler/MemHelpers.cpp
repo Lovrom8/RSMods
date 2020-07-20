@@ -17,11 +17,11 @@ bool cMemHelpers::IsExtendedRangeSong() {
 	if (!addrTimer) 
 		return false;
 
-	byte currTuning = cMemHelpers::getLowestStringTuning();
-	if (currTuning == 0 || currTuning > (256 + Settings.GetModSetting("ExtendedRangeMode")) || currTuning > (Settings.GetModSetting("ExtendedRangeMode") + 12)) //tunings are in negative values*, so things go backwards ;) 
-		return false;
-	else
+	byte currentTuning = cMemHelpers::getLowestStringTuning();
+
+	if (currentTuning != 0 && currentTuning <= (256 + Settings.GetModSetting("ExtendedRangeMode")))
 		return true;
+	return false;
 }
 
 std::string cMemHelpers::GetCurrentMenu() {
