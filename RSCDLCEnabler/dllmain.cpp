@@ -35,37 +35,37 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
 			//std::cout << volume << std::endl;
 		}
+		if (GameLoaded) {
+			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") { // Game must not be on the startup videos or it will crash
+				MemHelpers.ToggleLoft();
+				std::cout << "Toggle Loft" << std::endl;
+			}
 
-		if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && GameLoaded) { // Game must not be on the startup videos or it will crash
-			MemHelpers.ToggleLoft();
-			std::cout << "Toggle Loft" << std::endl;
+			else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
+				//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
+				std::cout << "Adding 5 Volume" << std::endl;
+			}
+
+			else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
+				//MemHelpers.DecreaseVolume(5);
+				std::cout << "Subtracting 5 Volume" << std::endl;
+			}
+
+			else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnSettingValue("ShowSongTimerEnabled") == "on") {
+				MemHelpers.ShowSongTimer();
+				std::cout << "Show Me Dat Timer Bruh" << std::endl;
+			}
+
+			else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
+				Enumeration.ForceEnumeration();
+				std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
+			}
+
+			else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnSettingValue("RainbowStringsEnabled") == "on") {
+				ERMode.ToggleRainbowMode();
+				std::cout << "Rainbows Are Pretty Cool" << std::endl;
+			}
 		}
-
-		else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
-			//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
-			std::cout << "Adding 5 Volume" << std::endl;
-		}
-
-		else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-			//MemHelpers.DecreaseVolume(5);
-			std::cout << "Subtracting 5 Volume" << std::endl;
-		}
-
-		else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnSettingValue("ShowSongTimerEnabled") == "on") {
-			MemHelpers.ShowSongTimer();
-			std::cout << "Show Me Dat Timer Bruh" << std::endl;
-		}
-
-		else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
-			Enumeration.ForceEnumeration();
-			std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
-		}
-
-		else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnSettingValue("RainbowStringsEnabled") == "on") {
-			ERMode.ToggleRainbowMode();
-			std::cout << "Rainbows Are Pretty Cool" << std::endl;
-		}
-
 		if (keyPressed == VK_INSERT)
 			menuEnabled = !menuEnabled;
 	}
