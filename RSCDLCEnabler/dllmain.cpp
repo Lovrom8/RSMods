@@ -86,15 +86,23 @@ void SetCustomColors() {
 		CollectColors.RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
 
 		std::map<std::string, RSColor> customColors = {
-			{"Ambient", CollectColors.GetAmbientStringColor(H, true) },
-			{"Disabled", CollectColors.GetDisabledStringColor(H, S, L, true) },
-			{"Enabled", iniColor}, 
+			{"Ambient", CollectColors.GetAmbientStringColor(H, true)},
+			{"Disabled", CollectColors.GetDisabledStringColor(H, S, L, true)},
+			{"Enabled", iniColor},
 			{"Glow", CollectColors.GetGlowStringColor(H)},
 			{"PegsTuning", CollectColors.GetGlowStringColor(H)},
-			//{"PegsReset", CollectColors.GetPegs}
+			{"PegsReset", CollectColors.GetPegResetColor()},
+			{"PegsSuccess", CollectColors.GetPegSuccessColor(true)},
 			{"PegsInTune", CollectColors.GetPegInTuneColor(H, true)},
-			{"TextIndicator", CollectColors.GetRegTextIndicatorColor(H, true)}
-			//etc.
+			{"PegsOutTune", CollectColors.GetPegOutTuneColor()},
+			{"TextIndicator", CollectColors.GetRegTextIndicatorColor(H, true)},
+			{"ForkParticles", CollectColors.GetRegForkParticlesColor(H, true)},
+			{"NotewayNormal", CollectColors.GetNotewayNormalColor(H, S, L, true)},
+			{"NotewayAccent", CollectColors.GetNotewayAccentColor(H, true)},
+			{"NotewayPreview", CollectColors.GetNotewayPreviewColor(H, true)},
+			{"GC_Main", CollectColors.GetGuitarcadeMainColor(H, strIdx, true)},
+			{"GC_Add", CollectColors.GetGuitarcadeAdditiveColor(H, strIdx, true)},
+			{"GC_UI", CollectColors.GetGuitarcadeUIColor(H, strIdx, true)}
 		};
 
 		ERMode.SetCustomColors(strIdx, customColors);
