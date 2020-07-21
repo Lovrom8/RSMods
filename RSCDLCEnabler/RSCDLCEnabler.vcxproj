@@ -28,6 +28,7 @@
     <ClCompile Include="MemHelpers.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="GuitarSkeletons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomSongTitles.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="ExtendedRangeMode.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="CollectColors.h" />
+    <ClInclude Include="GuitarSkeletons.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
     <ClInclude Include="ImGUI\imgui_impl_dx9.h" />

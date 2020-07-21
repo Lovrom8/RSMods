@@ -21,6 +21,7 @@
 #include "CustomSongTitles.h"
 #include "ExtendedRangeMode.h"
 #include "CollectColors.h"
+#include "GuitarSkeletons.h"
 
 // ImGUI
 #include "ImGUI/imgui.h"

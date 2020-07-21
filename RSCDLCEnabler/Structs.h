@@ -119,6 +119,22 @@ struct Color {
 	}
 };
 
+struct xyzPosition {
+	double x;
+	double y;
+	double z;
+
+	xyzPosition() {
+
+	}
+
+	xyzPosition(double X, double Y, double Z) {
+		x = X;
+		y = Y;
+		z = Z;
+	}
+};
+
 typedef Color RSColor;
 
 /*------------------AUDIO KINETIC STUFF---------------------------------*/
