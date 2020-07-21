@@ -4,8 +4,14 @@ cGuitarSkeletons GuitarSkeletons;
 
 /*
 From Rocksmith 2014's Cache.psarc\cache7.7z\manifests\ folder.
-
 Initial values are here: https://cdn.discordapp.com/attachments/711633334983196756/734706213517787226/guitar_skeletons.database.json
+*/
+
+
+/*
+X is the distance from the fretboard, to the object. This will either be 0, or extremely close to it. This dimension is from the camera to the loft (depth)
+Y is the distance from around the 11th fret. Normally - means right handed (moved to the left) and + means left handed (moved to the right). This dimension is from the left side of your screen to the right (length).
+Z is the distance from the middle of the headstock. Normally - means down, and + means up. This dimension is from the bottom of your screen, to the top (width)
 */
 
 xyzPosition cGuitarSkeletons::GetSkeletonPosition() {
