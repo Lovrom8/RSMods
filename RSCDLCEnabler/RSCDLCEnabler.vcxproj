@@ -17,6 +17,7 @@
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="Enumeration.cpp" />
     <ClCompile Include="ExtendedRangeMode.cpp" />
+    <ClCompile Include="GuitarSpeak.cpp" />
     <ClCompile Include="ImGUI\imgui.cpp" />
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="CollectColors.h" />
     <ClInclude Include="GuitarSkeletons.h" />
+    <ClInclude Include="GuitarSpeak.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
     <ClInclude Include="ImGUI\imgui_impl_dx9.h" />

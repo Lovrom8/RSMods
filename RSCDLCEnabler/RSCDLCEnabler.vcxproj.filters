@@ -78,6 +78,9 @@
     <ClCompile Include="GuitarSkeletons.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="GuitarSpeak.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h">
@@ -186,6 +189,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GuitarSkeletons.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="GuitarSpeak.h">
       <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>

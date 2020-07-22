@@ -26,6 +26,9 @@ public:
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
 
+	uintptr_t ptr_guitarSpeak = 0x135C4FC;
+	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
+
 	uintptr_t func_getStringFromCSV = 0x017B7A3E;
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
