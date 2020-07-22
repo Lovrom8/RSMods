@@ -418,31 +418,31 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
-		pDevice->GetTexture(1, &pBaseTexture);
-		pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
+	//if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
+	//	pDevice->GetTexture(1, &pBaseTexture);
+	//	pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
-		if (!pBaseTexture)
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	//	if (!pBaseTexture)
+	//		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 
-		if (calculatedCRC) {
-			if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
-				pDevice->SetTexture(1, ourTexture);
-		}
-		else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
-			if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
-				AddToTextureList(notewayTexturePointers, pCurrTexture);
+	//	if (calculatedCRC) {
+	//		if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
+	//			pDevice->SetTexture(1, ourTexture);
+	//	}
+	//	else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
+	//		if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
+	//			AddToTextureList(notewayTexturePointers, pCurrTexture);
 
-			if (notewayTexturePointers.size() == 2) {
-				std::cout << "Calculated stem CRC" << std::endl;
-				calculatedCRC = true;
-			}
+	//		if (notewayTexturePointers.size() == 2) {
+	//			std::cout << "Calculated stem CRC" << std::endl;
+	//			calculatedCRC = true;
+	//		}
 
-			//Log("0x%08x", crc);
-		}
+	//		//Log("0x%08x", crc);
+	//	}
 
-		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-	}
+	//	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	//}
 
 	Mesh current(Stride, primCount, NumVertices);
 	ThiccMesh currentThicc(Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
@@ -472,16 +472,41 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (IsExtraRemoved(removedMeshes, currentThicc))
 		return D3D_OK;
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong() && IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
-		/*if (MemHelpers.IsExtendedRangeSong())
-			pDevice->SetTexture(1, gradientTextureSeven);
-		else
-			 pDevice->SetTexture(1, gradientTextureNormal);*/
-			 //either this or CB based Extended Range mode - otherwise you may get some silly effects
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) { 
+		if (IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
+			/*if (MemHelpers.IsExtendedRangeSong())
+				pDevice->SetTexture(1, gradientTextureSeven);
+			else
+				 pDevice->SetTexture(1, gradientTextureNormal);*/
+				 //either this or CB based Extended Range mode - otherwise you may get some silly effects
 
-		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
-		pDevice->SetTexture(1, ourTexture);
+			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+			pDevice->SetTexture(1, ourTexture);
+		}
+		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // Potentially the stem / accent colors?
+			pDevice->GetTexture(1, &pBaseTexture);
+			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
+
+			if (!pBaseTexture)
+				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+
+			if (calculatedCRC) {
+				if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
+					pDevice->SetTexture(1, ourTexture);
+			}
+			else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
+				if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
+					AddToTextureList(notewayTexturePointers, pCurrTexture);
+
+				if (notewayTexturePointers.size() == 2) {
+					std::cout << "Calculated stem CRC" << std::endl;
+					calculatedCRC = true;
+				}
+			}
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+		}
 	}
+
 
 	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
