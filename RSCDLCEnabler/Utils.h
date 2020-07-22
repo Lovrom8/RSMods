@@ -6,6 +6,7 @@
 #include <stdarg.h> 
 #include "windows.h"
 #include <iostream>
+#include <random>
 
 char dlldir[320];
 char* GetDirFile(char* name)

@@ -38,7 +38,6 @@ LPDIRECT3DTEXTURE9 pCurrTexture;
 
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture;
-LPDIRECT3DTEXTURE9 stemTexture;
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
@@ -345,8 +344,9 @@ std::string dontAutoEnter[16] = {
 };
 
 /*------------------------ CRC Calculation --------------------------------------- */
-std::vector<LPDIRECT3DTEXTURE9> headstockTexutrePointers;
+std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers;
 std::vector<LPDIRECT3DTEXTURE9> skylineTexturePointers;
+std::vector<LPDIRECT3DTEXTURE9> notewayTexturePointers; //stems & accents
 
 LPDIRECT3DBASETEXTURE9 pBaseTextures[3];
 LPDIRECT3DTEXTURE9 pCurrTextures[3];

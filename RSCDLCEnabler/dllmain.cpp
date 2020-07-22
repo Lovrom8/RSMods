@@ -247,9 +247,9 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui::NewFrame();
 
 	if (menuEnabled) {
-		ImGui::Begin("RS Modz");
+		/*ImGui::Begin("RS Modz");
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
-		/*ImGui::InputInt("Curr Slide", &currStride);
+		ImGui::InputInt("Curr Slide", &currStride);
 		ImGui::InputInt("Curr PrimCount", &currPrimCount);
 		ImGui::InputInt("Curr NumVertices", &currNumVertices);
 		ImGui::InputInt("Curr StartIndex", &currStartIndex);
@@ -282,7 +282,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::ListBoxFooter();
 		if (ImGui::Button("Remove"))
 			removedMeshes.erase(removedMeshes.begin() + selectedIdx);
-		*/
+		ImGui::End();*/
 
 		static bool CB = false;
 		static std::string previewValue = "Select a string";
@@ -422,13 +422,18 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->GetTexture(1, &pBaseTexture);
 		pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
+		if (!pBaseTexture)
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+
 		if (calculatedCRC) {
-			if (pCurrTexture == stemTexture)
+			if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
 				pDevice->SetTexture(1, ourTexture);
 		}
-		else if (CRCForTexture(pCurrTexture, crc)) {
-			if (crc == 0x02a50002) {
-				stemTexture = pCurrTexture;
+		else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
+			if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
+				AddToTextureList(notewayTexturePointers, pCurrTexture);
+
+			if (notewayTexturePointers.size() == 2) {
 				std::cout << "Calculated stem CRC" << std::endl;
 				calculatedCRC = true;
 			}
@@ -532,12 +537,12 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 					if (CRCForTexture(pCurrTextures[1], crc)) {
 						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039)
-							AddToTextureList(headstockTexutrePointers, pCurrTextures[1]);
+							AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
 					}
 
 					//Log("0x%08x", crc);
 
-					if (headstockTexutrePointers.size() == 3) {
+					if (headstockTexturePointers.size() == 3) {
 						calculatedHeadstocks = true;
 						resetHeadstockCache = false;
 						std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
@@ -547,7 +552,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				}
 
 				if (calculatedHeadstocks)
-					if (std::find(std::begin(headstockTexutrePointers), std::end(headstockTexutrePointers), pCurrTextures[1]) != std::end(headstockTexutrePointers))
+					if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
 						return D3D_OK;
 			}
 
@@ -747,7 +752,7 @@ unsigned WINAPI MainThread(void*) {
 
 			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
-				headstockTexutrePointers.clear();
+				headstockTexturePointers.clear();
 			}
 			previousMenu = currentMenu;
 		}
