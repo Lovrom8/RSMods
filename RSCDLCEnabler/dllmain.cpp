@@ -130,12 +130,12 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
-		LinearGradientBrush linGrBrush(
+		LinearGradientBrush linGrBrush( // Base texture for note gradients (top / normal)
 			Point(0, 0),
 			Point(width, lineHeight),
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
-		LinearGradientBrush whiteCoverupBrush(
+		LinearGradientBrush whiteCoverupBrush( // Coverup for some spotty gradients (top / normal)
 			Point(width - 3, lineHeight * 5),
 			Point(width, height),
 			Gdiplus::Color::White,
@@ -151,13 +151,13 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
-		LinearGradientBrush linGrBrush(
+		LinearGradientBrush linGrBrush( // Base texture for note gradients (bottom / colorblind)
 			Point(0, 0),
 			Point(width, lineHeight),
 			Gdiplus::Color::Black,
 			Gdiplus::Color::White);
 
-		LinearGradientBrush whiteCoverupBrush(
+		LinearGradientBrush whiteCoverupBrush( // Coverup for some spotty gradients (bottom / colorblind)
 			Point(width - 3, lineHeight * 5),
 			Point(width, height),
 			Gdiplus::Color::White,
@@ -207,7 +207,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (dwReturnAddress > Offsets.baseEnd)
 		return hRet;
 
-	static bool init = false;
+	static bool init = false; // Has this been ran before (AKA run only once, at startup)
 
 	if (!init) {
 		init = true;
@@ -247,7 +247,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui::NewFrame();
 
 	if (menuEnabled) {
-		/*ImGui::Begin("RS Modz");
+		ImGui::Begin("RS Modz");
+		/*
 		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
 		ImGui::InputInt("Curr Slide", &currStride);
 		ImGui::InputInt("Curr PrimCount", &currPrimCount);
@@ -418,32 +419,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 	}
 
-	//if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) {
-	//	pDevice->GetTexture(1, &pBaseTexture);
-	//	pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
-
-	//	if (!pBaseTexture)
-	//		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-
-	//	if (calculatedCRC) {
-	//		if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
-	//			pDevice->SetTexture(1, ourTexture);
-	//	}
-	//	else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
-	//		if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
-	//			AddToTextureList(notewayTexturePointers, pCurrTexture);
-
-	//		if (notewayTexturePointers.size() == 2) {
-	//			std::cout << "Calculated stem CRC" << std::endl;
-	//			calculatedCRC = true;
-	//		}
-
-	//		//Log("0x%08x", crc);
-	//	}
-
-	//	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-	//}
-
 	Mesh current(Stride, primCount, NumVertices);
 	ThiccMesh currentThicc(Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
@@ -483,7 +458,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 			pDevice->SetTexture(1, ourTexture);
 		}
-		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // Potentially the stem / accent colors?
+		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
@@ -510,8 +485,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
-	//else if (IsToBeRemoved(noteHighway, current))
-		//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 	else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 		return D3D_OK;
 	else if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
@@ -786,7 +759,6 @@ unsigned WINAPI MainThread(void*) {
 
 			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
-			//	std::cout << MemHelpers.IsExtendedRangeSong() << std::endl;
 		}
 
 		if (enableColorBlindCheckboxGUI)

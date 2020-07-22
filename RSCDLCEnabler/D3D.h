@@ -208,8 +208,6 @@ std::vector<Mesh> sevenstring{
 	{34, 40, 76} // "Some Note Head Stuff" - Lovro
 };
 
-std::vector<Mesh> noteHighway{ { 32, 2, 4} };
-
 std::vector<ThiccMesh> headstockThicc{
 	// General
 		// { 24, 2, 4, 0, 0, 4, 2, 8, 4 }, Tuner (Disabled to make it easier on the end user on tuning)
@@ -245,6 +243,7 @@ std::vector<ThiccMesh> headstockThicc{
 				{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, { 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // Headstock Texture (2nd vector is for Lefties)
 				{ 68, 1340, 1120, 0, 0, 4, 2, 9, 7 }, { 68, 2216, 1852, 0, 0, 4, 2, 9, 7 }, { 56, 1340, 1120, 0, 0, 4, 2, 10, 6}, { 56, 2216, 1854, 0, 0, 4, 2, 10, 6}, // Tuning Peg (2nd vector is the block on the back of the peg, 3rd and 4th for Lefties)
 };
+
 std::vector<ThiccMesh> inlays{
 	{ 32, 8, 9, 0, 0, 4, 2, 12, 4 }, { 32, 16, 18, 0, 0, 4, 2, 12, 4 }, // Standard Dot (2nd for 12th/24th fret)
 };
@@ -261,13 +260,16 @@ std::vector<ThiccMesh> leftyFix{
 	{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // Strings past tuner 3+3
 };
 
-// All the single ladies
+// All the single (thicc) ladies
 std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
 std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> greenScreenWallMesh{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
 std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
+
+// All the single (thin) ladies
+std::vector<Mesh> noteHighway{ { 32, 2, 4} };
 
 std::vector<ThiccMesh> allMeshes;
 std::vector<ThiccMesh> removedMeshes;
@@ -283,7 +285,7 @@ std::vector<ThiccMesh> removedMeshes;
 #define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
 
-std::string tuningMenus[17] = { // previously known as getRidOfTuningLettersOnTheseMenus
+std::string tuningMenus[17] = { // These are all the menus where you need to tune
 	(std::string)"SelectionListDialog",
 	(std::string)"LearnASong_PreSongTuner",
 	(std::string)"LearnASong_PreSongTunerMP",
@@ -303,7 +305,7 @@ std::string tuningMenus[17] = { // previously known as getRidOfTuningLettersOnTh
 	(std::string)"PreGame_GETuner"
 };
 
-std::string songModes[8] = {
+std::string songModes[8] = { // These are all the menus where you would play guitar games.
 	(std::string)"LearnASong_Game",
 	(std::string)"NonStopPlay_Game",
 	(std::string)"ScoreAttack_Game",
@@ -312,7 +314,7 @@ std::string songModes[8] = {
 	(std::string)"ScoreAttack_Pause",
 };
 
-std::string lessonModes[2] = {
+std::string lessonModes[2] = { // These are the Guided Experience / Lessons modes.
 	(std::string)"GuidedExperience_Game",
 	(std::string)"GuidedExperience_Pause"
 };
@@ -344,8 +346,8 @@ std::string dontAutoEnter[16] = {
 };
 
 /*------------------------ CRC Calculation --------------------------------------- */
-std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers;
-std::vector<LPDIRECT3DTEXTURE9> skylineTexturePointers;
+std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers; // the guitar / bass headstock
+std::vector<LPDIRECT3DTEXTURE9> skylineTexturePointers; // the dynamic difficulty bars
 std::vector<LPDIRECT3DTEXTURE9> notewayTexturePointers; //stems & accents
 
 LPDIRECT3DBASETEXTURE9 pBaseTextures[3];
