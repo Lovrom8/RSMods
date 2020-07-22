@@ -556,7 +556,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 						return D3D_OK;
 			}
 
-			if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))
+			if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) || MemHelpers.GetCurrentMenu().c_str() == "SelectionListDialog")
 			{
 				if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 					return D3D_OK;
@@ -565,8 +565,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
 					return D3D_OK;
 			}
-
-
 		}
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -741,9 +739,9 @@ unsigned WINAPI MainThread(void*) {
 					}
 				}
 
-				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && currentMenu.c_str() == "MissionMenu")
+				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && !(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)))
 					resetHeadstockCache = true;
-
+					
 				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
 					DrawSkylineInMenu = true;
