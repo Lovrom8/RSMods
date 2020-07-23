@@ -26,6 +26,13 @@ unsigned WINAPI EnumerationThread(void*) {
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
+	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam)) {
+		//if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK || msg == WM_LBUTTONUP)
+		//	return true;
+
+		return true;
+	}
+
 	if (msg == WM_KEYUP) {
 		if (keyPressed == VK_DELETE) {
 			float volume;
@@ -69,9 +76,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (keyPressed == VK_INSERT)
 			menuEnabled = !menuEnabled;
 	}
-
-	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
-		return true;
 
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
@@ -225,6 +229,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui_ImplWin32_Init(hThisWnd);
 		ImGui_ImplDX9_Init(pDevice);
 		ImGui::GetIO().ImeWindowHandle = hThisWnd;
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 		GenerateTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
 		GenerateTexture(pDevice, &Green, D3DCOLOR_RGBA(0, 255, 0, 255));
@@ -236,6 +241,9 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
 
+		for (int i = 0; i < 12;i++)
+			GuitarSpeakStartingTexts.push_back("No value set!");
+		
 		std::cout << "ImGUI Init" << std::endl;
 
 		GenerateTexture(pDevice);
@@ -321,6 +329,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ERMode.ResetString(selectedString);
 
 		ImGui::End();
+		
+		static int selectedValues[12]; // NOTE: this is called every frame, so if you declare your non-static variables here, they will be reset to default values every call - either make them static or declare them globally in the header
 
 		ImGui::Begin("Guitar Speak Settings");
 		int optionsImGUI = -1;
@@ -331,29 +341,28 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 				GuitarSpeak.ForceNewSettings(noteName, GuitarSpeak.keyPressArray[optionsImGUI]);
 			}
 
-			std::string GuitarSpeakStartingText = "No value set!";
-			if (ImGui::BeginCombo(noteName.c_str(), GuitarSpeakStartingText.c_str())) {
-				int selectedValue = 0;
+			if (ImGui::BeginCombo(noteName.c_str(), GuitarSpeakStartingTexts[note].c_str())) {
+				
 				for (int options = 0; options < 12; options++)
 				{
-					
-					bool is_selected = (selectedValue == options);
+					bool is_selected = (selectedValues[options] == options);
 					if (ImGui::Selectable(GuitarSpeak.keyPressArray[options].c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups)) {
-						selectedValue = options;
+						selectedValues[options] = options;
 						optionsImGUI = options;
 					}
 
 					if (is_selected) {
-						GuitarSpeakStartingText = GuitarSpeak.keyPressArray[options];
+						GuitarSpeakStartingTexts[note] = GuitarSpeak.keyPressArray[options];
 					}
-
 				}
+
 				ImGui::EndCombo();
 			}
 		}
+
 		ImGui::End();
 
-		std::cout << sizeof(GuitarSpeak.noteNames) << std::endl;
+		//std::cout << sizeof(GuitarSpeak.noteNames) << std::endl;
 
 		ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
@@ -480,7 +489,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (IsExtraRemoved(removedMeshes, currentThicc))
 		return D3D_OK;
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) { 
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) {
 		if (IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
 			/*if (MemHelpers.IsExtendedRangeSong())
 				pDevice->SetTexture(1, gradientTextureSeven);
@@ -686,7 +695,7 @@ void InitEngineFunctions() {
 	GetRTPCValue = (tGetRTPCValue)Offsets.func_GetRTPCValue;
 }
 
-void AutoEnterGame() { //very big brain || "Fork in the toaster"
+void AutoEnterGame() {	//very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 	Sleep(30);
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
@@ -772,7 +781,7 @@ unsigned WINAPI MainThread(void*) {
 
 				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && !(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)))
 					resetHeadstockCache = true;
-					
+
 				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
 					DrawSkylineInMenu = true;

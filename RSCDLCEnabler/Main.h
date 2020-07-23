@@ -37,6 +37,7 @@
 	// ImGUI Settings
 		bool menuEnabled = false; // Do we show the user the ImGUI settings menu?
 		bool enableColorBlindCheckboxGUI = false; // Do we allow the user to change Colorblind mode in the imGUI menu?
+		std::vector<std::string> GuitarSpeakStartingTexts;
 	// Gdiplus (String Colors)
 		Gdiplus::GdiplusStartupInput inp;
 		Gdiplus::GdiplusStartupOutput outp;
