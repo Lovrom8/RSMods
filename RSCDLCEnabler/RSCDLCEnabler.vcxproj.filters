@@ -194,6 +194,9 @@
     <ClInclude Include="GuitarSpeak.h">
       <Filter>Mods</Filter>
     </ClInclude>
+    <ClInclude Include="imgui_includeMe.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">

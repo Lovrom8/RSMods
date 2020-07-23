@@ -22,12 +22,10 @@
 #include "ExtendedRangeMode.h"
 #include "CollectColors.h"
 #include "GuitarSkeletons.h"
+#include "GuitarSpeak.h"
 
 // ImGUI
-#include "ImGUI/imgui.h"
-#include "ImGUI/imgui_impl_dx9.h"
-#include "ImGUI/imgui_impl_win32.h"
-#include "ImGUI/RobotoFont.cpp"
+#include "imgui_includeMe.h"
 
 #pragma intrinsic(_ReturnAddress)
 #pragma comment (lib, "gdiplus.lib")

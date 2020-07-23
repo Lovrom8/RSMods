@@ -322,6 +322,39 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
+		ImGui::Begin("Guitar Speak Settings");
+		int optionsImGUI = -1;
+		for (int note = 0; note < 12; note++) {
+			std::string noteName = GuitarSpeak.noteNames[note];
+
+			if (optionsImGUI > -1 && ImGui::Button("Save Settings")) {
+				GuitarSpeak.ForceNewSettings(noteName, GuitarSpeak.keyPressArray[optionsImGUI]);
+			}
+
+			std::string GuitarSpeakStartingText = "No value set!";
+			if (ImGui::BeginCombo(noteName.c_str(), GuitarSpeakStartingText.c_str())) {
+				int selectedValue = 0;
+				for (int options = 0; options < 12; options++)
+				{
+					
+					bool is_selected = (selectedValue == options);
+					if (ImGui::Selectable(GuitarSpeak.keyPressArray[options].c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups)) {
+						selectedValue = options;
+						optionsImGUI = options;
+					}
+
+					if (is_selected) {
+						GuitarSpeakStartingText = GuitarSpeak.keyPressArray[options];
+					}
+
+				}
+				ImGui::EndCombo();
+			}
+		}
+		ImGui::End();
+
+		std::cout << sizeof(GuitarSpeak.noteNames) << std::endl;
+
 		ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
 

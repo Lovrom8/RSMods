@@ -96,7 +96,7 @@ void cGuitarSpeak::TimerTick() {
 
 		int mem = memBuffer[0];
 
-		if (mem != 0xFF && mem >= midiNotesArray->size()) { // Is the note too high pitched?
+		if (mem != 0xFF && mem >= 96) { // Is the note too high pitched?
 			return;
 		}
 
@@ -240,6 +240,20 @@ void cGuitarSpeak::TimerTick() {
 				sendKeystrokesToRS2014 = false;
 		}
 	}
+}
+std::string* noteNames = new std::string[12]{ "A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#" };
+
+void cGuitarSpeak::ForceNewSettings(std::string noteName, std::string keyPress) {
+	for (int n = 0; n < 12; n++) {
+		if (noteName == noteNames[n]) { // If the noteName variable sent is equal to an actual note name.
+			strKeyList[n] = keyPress;
+		}
+	}
+	ResetStrKeyCache(); // Refresh the strKey variables
+}
+
+void cGuitarSpeak::ResetStrKeyCache() { // Refresh the variables to their values in the strKeyList
+	std::string strKey_A = strKeyList[0], strKey_Bb = strKeyList[1], strKey_B = strKeyList[2], strKey_C = strKeyList[3], strKey_Cs = strKeyList[4], strKey_D = strKeyList[5], strKey_Eb = strKeyList[6], strKey_E = strKeyList[7], strKey_F = strKeyList[8], strKey_Fs = strKeyList[9], strKey_G = strKeyList[10], strKey_Gs = strKeyList[11];
 }
 
 // ToDo: Convert Line 405-543 (checkbox-> strKey) to enable the mod. Needs some work done with ImGUI.
