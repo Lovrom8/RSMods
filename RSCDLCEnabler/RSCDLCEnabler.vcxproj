@@ -72,6 +72,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\maingame - additions.csv" />
+    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\tuning.database.json" />
     <None Include="d3dx9_42.def" />
     <None Include="DirectX\d3dx9math.inl" />
   </ItemGroup>
