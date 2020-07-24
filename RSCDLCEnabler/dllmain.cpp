@@ -779,6 +779,12 @@ unsigned WINAPI MainThread(void*) {
 					}
 				}
 
+				if(!GuitarSpeakPresent) {
+					GuitarSpeakPresent = true;
+					GuitarSpeak.TimerTick();
+				}
+				
+
 				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && !(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)))
 					resetHeadstockCache = true;
 

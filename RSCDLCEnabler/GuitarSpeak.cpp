@@ -49,56 +49,61 @@ byte cGuitarSpeak::GetCurrentNote() {
 
 
 void cGuitarSpeak::TimerTick() {
+	// Debug Commands
+	strKeyList[7] = "{ENTER}";
+
+	bool debugMode = false;
+
+
+	ResetStrKeyCache();
+
+	// Main Function
 	while (true) {
 		Sleep(timer);
-		currentForegroundWindow = GetForegroundWindow();
-
-		if (lastForegroundWindow != currentForegroundWindow) { // Check if the foreground window has changed since the last timer.
-			lastForegroundWindow = currentForegroundWindow;
-
-			GetWindowTextA(currentForegroundWindow, windowTitle, 16);
-
-			if (!isRocksmithFocused) { // Is Rocksmith in the background?
-				if (windowTitle == (LPSTR)"Rocksmith 2014") {
-					isRocksmithFocused = true;
-					sendKeystrokesToRS2014 = false;
-					if (!isRocksmithOpen) { // Is Rocksmith closed?
-						isRocksmithOpen = true; // Well obviously if we see the window is called "Rocksmith 2014" and this code is running... Rocksmith is open :P
-						RocksmithProcessHandle = OpenProcess(0x10, false, GetProcessId(FindWindowA(NULL, "Rocksmith 2014")));
-					}
-				}
-			}
-			else { // If Rocksmith still focused?
-				isRocksmithFocused = false;
-				sendKeystrokesToRS2014 = false;
-				seqListenCount = 0;
-			}
-		}
-
-		if (!isRocksmithFocused) // If rocksmith isn't focused, don't try to read the notes.
-			return;
+		if (debugMode)
+			std::cout << "Tick" << std::endl;
 
 		// Pointer 1
-		ReadProcessMemory(RocksmithProcessHandle, (LPCVOID)Offsets.ptr_guitarSpeak, (LPVOID)memBuffer, (SIZE_T)memBufferLength, (SIZE_T*)bytesRead);
+		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)Offsets.ptr_guitarSpeak, memBuffer, memBufferLength, bytesRead);
 		pointer1 = memBuffer[0] || (memBuffer[1] << 0x8) || (memBuffer[2] << 0x10) || (memBuffer[3] << 0x18) + Offsets.ptr_guitarSpeakOffets[0];
 
+		std::cout << "MemBuffer[0]: " << memBuffer[0] << std::endl;
+		std::cout << "MemBuffer[1]: " << (memBuffer[1] << 0x8) << std::endl;
+		std::cout << "MemBuffer[2]: " << (memBuffer[2] << 0x10) << std::endl;
+		std::cout << "MemBuffer[3]: " << (memBuffer[3] << 0x18) << std::endl;
+
 		// Pointer 2
-		ReadProcessMemory(RocksmithProcessHandle, (LPCVOID)pointer1, (LPVOID)memBuffer, (SIZE_T)memBufferLength, (SIZE_T*)bytesRead);
+		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)pointer1, memBuffer, memBufferLength, bytesRead);
 		pointer2 = memBuffer[0] || (memBuffer[1] << 0x8) || (memBuffer[2] << 0x10) || (memBuffer[3] << 0x18) + Offsets.ptr_guitarSpeakOffets[1];
 
 		// Pointer 3
-		ReadProcessMemory(RocksmithProcessHandle, (LPCVOID)pointer2, (LPVOID)memBuffer, (SIZE_T)memBufferLength, (SIZE_T*)bytesRead);
+		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)pointer2, memBuffer, memBufferLength, bytesRead);
 		pointer3 = memBuffer[0] || (memBuffer[1] << 0x8) || (memBuffer[2] << 0x10) || (memBuffer[3] << 0x18) + Offsets.ptr_guitarSpeakOffets[2];
 
 		// MemoryLocNote
-		ReadProcessMemory(RocksmithProcessHandle, (LPCVOID)pointer3, (LPVOID)memBuffer, (SIZE_T)memBufferLength, (SIZE_T*)bytesRead);
+		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)pointer3, memBuffer, memBufferLength, bytesRead);
 		memoryLocNote = memBuffer[0] || (memBuffer[1] << 0x8) || (memBuffer[2] << 0x10) || (memBuffer[3] << 0x18);
 
+
+		/*std::cout << "Pointer 1: " << pointer1 << std::endl;
+		std::cout << "Pointer 2: " << pointer2 << std::endl;
+		std::cout << "Pointer 3: " << pointer3 << std::endl;
+		std::cout << "Pointer 4: " << memoryLocNote << std::endl;*/
+
+
+
 		int mem = memBuffer[0];
+
+		if (debugMode)
+			std::cout << "Memory Pointers" << std::endl;
 
 		if (mem != 0xFF && mem >= 96) { // Is the note too high pitched?
 			return;
 		}
+
+		/*std::cout << "Current Note: " << mem << std::endl;
+		std::cout << "Current Note Buffer: " << currentNoteBuffer << std::endl;
+		std::cout << "Previous Note Buffer: " << lastNoteBuffer << std::endl;*/
 
 		if (mem == lastNoteBuffer && mem != currentNoteBuffer)
 			currentNoteBuffer = mem;
@@ -106,11 +111,15 @@ void cGuitarSpeak::TimerTick() {
 			lastNoteBuffer = mem;
 
 		if (currentNoteBuffer != 0xFF && currentNoteBuffer != lastNote) { // Check if there is a new note
+			if (debugMode)
+				std::cout << "New Note Detected" << std::endl;
 			newNote = true;
 			note = currentNoteBuffer;
 			lastNote = note;
 		}
 		if (currentNoteBuffer == 0xFF && lastNote != 0x0) { // If the note ends
+			if (debugMode)
+				std::cout << "Note Ended" << std::endl;
 			currentNote = "-";
 			currentNoteOctave = -1;
 			newNote = false;
@@ -178,7 +187,8 @@ void cGuitarSpeak::TimerTick() {
 
 		if (sendKeystrokesToRS2014) { // Are we sending a keystroke RIGHT now
 			if (strSend.find("{", 0)) {
-
+				if (debugMode)
+					std::cout << "Command Found!" << std::endl;
 				// White Space Characters
 				if (strSend == "{SPACE}") {
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_SPACE, 0);
@@ -190,6 +200,8 @@ void cGuitarSpeak::TimerTick() {
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 					Sleep(30);
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
+					if (debugMode)
+						std::cout << "Enter was pressed!" << std::endl;
 				}
 				else if (strSend == "{TAB}") {
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_TAB, 0);

@@ -19,10 +19,10 @@ public:
 	std::string* keyPressArray = new std::string[12]{ "{DELETE}", "{DOWN}", "{ENTER}", "{ESC}", "{PGDN}", "{PGUP}", "{SPACE}", "{TAB}", "{UP}", "<CANCEL>", "<none>", "<TBD>" };
 	std::string* noteNames = new std::string[12]{ "A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#" };
 private:
-	int pointer1, pointer2, pointer3, memoryLocNote, bytesRead;
+	int pointer1, pointer2, pointer3, memoryLocNote;
 	int lastNoteBuffer = 0xFF, currentNoteBuffer = 0xFF;
 	int timer = 50; // Milliseconds | Original value of 50ms
-	int* memBuffer = new int[memBufferLength]{ 0, 0, 0, 0 };
+	byte* memBuffer = new byte[memBufferLength]{ 0, 0, 0, 0 };
 	int memBufferLength = 4;
 	bool isRocksmithFocused = false;
 	bool isRocksmithOpen = false;
@@ -30,6 +30,7 @@ private:
 	bool isThisNewNote = false;
 	bool newNote = false;
 	HANDLE RocksmithProcessHandle;
+	SIZE_T* bytesRead;
 	HWND lastForegroundWindow, currentForegroundWindow;
 	byte note, lastNote;
 	LPSTR windowTitle;
