@@ -217,7 +217,7 @@
     <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\maingame - additions.csv">
       <Filter>Mods\CustomTuningFix files</Filter>
     </None>
-    <None Include="..\..\..\..\OneDrive\Documents\Modded RS FIles\My mods\low wait intro files\no loft\cache.psarc_RS2014_Pc\cache4\gfxassets\views\introsequence.gfx">
+    <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx">
       <Filter>Mods\CustomTuningFix files</Filter>
     </None>
   </ItemGroup>

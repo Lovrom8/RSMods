@@ -1,0 +1,1319 @@
+{
+  "Static": {
+    "Tuner": {
+      "Entries": [
+        {
+          "Name": "EStandard",
+          "CommandOnSelected": {
+            "Command": "StartGame",
+            "Game": "PlaySong_Tuner",
+            "Tuning": "ETune"
+          },
+          "UIName": "$[-1]E Standard",
+          "UIHeader": "$[-1]STANDARD TUNING",
+          "UIBody": "$[-1]This tuning applies to most songs in the Rocksmith Library"
+        },
+        {
+          "Name": "DropD",
+          "CommandOnSelected": {
+            "Command": "StartGame",
+            "Game": "PlaySong_Tuner",
+            "Tuning": "DropDTune"
+          },
+          "UIName": "$[-1]Drop D",
+          "UIHeader": "$[-1]DROP D TUNING",
+          "UIBody": "$[-1]Proceed with Drop-D tuning"
+        },
+        {
+          "Name": "EFlat",
+          "CommandOnSelected": {
+            "Command": "StartGame",
+            "Game": "PlaySong_Tuner",
+            "Tuning": "EFlatTune"
+          },
+          "UIName": "$[-1]E Flat",
+          "UIHeader": "$[-1]E FLAT TUNING",
+          "UIBody": "$[-1]Proceed with E-Flat tuning"
+        },
+        {
+          "Name": "OpenG",
+          "CommandOnSelected": {
+            "Command": "StartGame",
+            "Game": "PlaySong_Tuner",
+            "Tuning": "OpenGTune"
+          },
+          "UIName": "$[-1]Open G",
+          "UIHeader": "$[-1]OPEN G TUNING",
+          "UIBody": "$[-1]Proceed with Open-G tuning"
+        }
+      ]
+    },
+
+    "TuningDefinitions": {
+      "EStandard": {
+        "UIName": "$[17874]E Standard",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "DropD": {
+        "UIName": "$[17875]Drop D",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "FStandard": {
+        "UIName": "$[37483]F Standard",
+        "Strings": {
+          "string0": 1,
+          "string1": 1,
+          "string2": 1,
+          "string3": 1,
+          "string4": 1,
+          "string5": 1
+        }
+      },
+      "OpenD": {
+        "UIName": "$[36575]Open D",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": -1,
+          "string4": -2,
+          "string5": -2
+        }
+      },
+      "OpenA": {
+        "UIName": "$[36574]Open A",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 2,
+          "string3": 2,
+          "string4": 2,
+          "string5": 0
+        }
+      },
+      "OpenG": {
+        "UIName": "$[36573]Open G",
+        "Strings": {
+          "string0": -2,
+          "string1": -2,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": -2
+        }
+      },
+      "OpenE": {
+        "UIName": "$[36583]Open E",
+        "Strings": {
+          "string0": 0,
+          "string1": 2,
+          "string2": 2,
+          "string3": 1,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "EbStandard": {
+        "UIName": "$[36578]Eb Standard",
+        "Strings": {
+          "string0": -1,
+          "string1": -1,
+          "string2": -1,
+          "string3": -1,
+          "string4": -1,
+          "string5": -1
+        }
+      },
+      "EbDropDb": {
+        "UIName": "$[36579]Eb Drop Db",
+        "Strings": {
+          "string0": -3,
+          "string1": -1,
+          "string2": -1,
+          "string3": -1,
+          "string4": -1,
+          "string5": -1
+        }
+      },
+      "DStandard": {
+        "UIName": "$[36572]D Standard",
+        "Strings": {
+          "string0": -2,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": -2,
+          "string5": -2
+        }
+      },
+      "DADGAD": {
+        "UIName": "$[23458]DADGAD",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": -2,
+          "string5": -2
+        }
+      },
+      "DDropC": {
+        "UIName": "$[36581]D Drop C ",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": -2,
+          "string5": -2
+        }
+      },
+      "C#Standard": {
+        "UIName": "$[36580]C# Standard",
+        "Strings": {
+          "string0": -3,
+          "string1": -3,
+          "string2": -3,
+          "string3": -3,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "C#DropB": {
+        "UIName": "$[37484]C# Drop B",
+        "Strings": {
+          "string0": -5,
+          "string1": -3,
+          "string2": -3,
+          "string3": -3,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "CStandard": {
+        "UIName": "$[36582]C Standard",
+        "Strings": {
+          "string0": -4,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": -4,
+          "string5": -4
+        }
+      },
+      "CDropAb": {
+        "UIName": "$[37485]C Drop Bb",
+        "Strings": {
+          "string0": -6,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": -4,
+          "string5": -4
+        }
+      },
+      "BStandard": {
+        "UIName": "$[37486]B Standard",
+        "Strings": {
+          "string0": -5,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -5,
+          "string5": -5
+        }
+      },
+      "BDropA": {
+        "UIName": "$[37487]B Drop A",
+        "Strings": {
+          "string0": -7,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -5,
+          "string5": -5
+        }
+      },
+      "BbStandard": {
+        "UIName": "$[37488]Bb Standard",
+        "Strings": {
+          "string0": -6,
+          "string1": -6,
+          "string2": -6,
+          "string3": -6,
+          "string4": -6,
+          "string5": -6
+        }
+      },
+      "Bb drop Ab": {
+        "UIName": "$[37489]Bb Drop Ab",
+        "Strings": {
+          "string0": -8,
+          "string1": -6,
+          "string2": -6,
+          "string3": -6,
+          "string4": -6,
+          "string5": -6
+        }
+      },
+      "AStandard": {
+        "UIName": "$[37490]A Standard",
+        "Strings": {
+          "string0": -7,
+          "string1": -7,
+          "string2": -7,
+          "string3": -7,
+          "string4": -7,
+          "string5": -7
+        }
+      },
+      "ADropG": {
+        "UIName": "$[37491]A Drop G",
+        "Strings": {
+          "string0": -9,
+          "string1": -7,
+          "string2": -7,
+          "string3": -7,
+          "string4": -7,
+          "string5": -7
+        }
+      },
+      "AllFourth": {
+        "UIName": "$[37492]All Fourth",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 1,
+          "string5": 1
+        }
+      },
+      "DoubleDropD": {
+        "UIName": "$[37493]Double Drop D",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": -2
+        }
+      },
+      "OpenC6": {
+        "UIName": "$[37494]Open C6",
+        "Strings": {
+          "string0": -4,
+          "string1": 0,
+          "string2": -2,
+          "string3": 0,
+          "string4": 1,
+          "string5": 0
+        }
+      },
+      "OpenC5": {
+        "UIName": "$[37495]Open C5",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": -2,
+          "string3": 0,
+          "string4": -4,
+          "string5": 0
+        }
+      },
+      "DADADd": {
+        "UIName": "$[37496]DADADd",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": 2,
+          "string4": 3,
+          "string5": -2
+        }
+      },
+      "OpenDm7": {
+        "UIName": "$[37497]Open Dm7",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": -2,
+          "string4": 1,
+          "string5": -2
+        }
+      },
+      "OpenBm": {
+        "UIName": "$[37498]Open Bm",
+        "Strings": {
+          "string0": -2,
+          "string1": 2,
+          "string2": 0,
+          "string3": -1,
+          "string4": 0,
+          "string5": -2
+        }
+      },
+      "EADGBD": {
+        "UIName": "$[37499]EADGBD",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": -2
+        }
+      },
+      "OpenDm": {
+        "UIName": "$[37500]Open Dm",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": -2,
+          "string4": -2,
+          "string5": -2
+        }
+      },
+      "DBDGBe": {
+        "UIName": "$[37501]DBDGBe",
+        "Strings": {
+          "string0": -2,
+          "string1": 2,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "EADGAe": {
+        "UIName": "$[37502]EADGAe",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": -2,
+          "string5": 0
+        }
+      },
+      "EGDGBD": {
+        "UIName": "$[37503]Open Em7",
+        "Strings": {
+          "string0": 0,
+          "string1": -2,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": -2
+        }
+      },
+      "EABGBd#": {
+        "UIName": "$[37504]EABGBd#",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": -3,
+          "string3": 0,
+          "string4": 0,
+          "string5": -1
+        }
+      },
+      "EADGBd#": {
+        "UIName": "$[37505]EADGBd#",
+        "Strings": {
+          "string0": 0,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": -1
+        }
+      },
+      "Open Db/C#": {
+        "UIName": "$[37506]Open Db/C#",
+        "Strings": {
+          "string0": -3,
+          "string1": -1,
+          "string2": -1,
+          "string3": -2,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "BEADG": {
+        "UIName": "$[37507]BEADG",
+        "Strings": {
+          "string0": -5,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -4,
+          "string5": -5
+        }
+      },
+      "AEADG": {
+        "UIName": "$[37508]AEADG",
+        "Strings": {
+          "string0": -7,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -4,
+          "string5": -5
+        }
+      },
+      "Violin": {
+        "UIName": "$[37509]Violin",
+        "Strings": {
+          "string0": 3,
+          "string1": 5,
+          "string2": 7,
+          "string3": 9,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "DADA": {
+        "UIName": "$[37510]DADA",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": 2,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "E Drop D#": {
+        "UIName": "$[37511]E Drop D#",
+        "Strings": {
+          "string0": -1,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "E Drop C#": {
+        "UIName": "$[37512]E Drop C#",
+        "Strings": {
+          "string0": -3,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "E Drop B": {
+        "UIName": "$[37513]E Drop B",
+        "Strings": {
+          "string0": 7,
+          "string1": 0,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "F# Drop E": {
+        "UIName": "$[37514]F# Drop E",
+        "Strings": {
+          "string0": 0,
+          "string1": 2,
+          "string2": 2,
+          "string3": 2,
+          "string4": 1,
+          "string5": 0
+        }
+      },
+      "FBEA#": {
+        "UIName": "$[37515]FBEA#",
+        "Strings": {
+          "string0": 1,
+          "string1": 2,
+          "string2": 2,
+          "string3": 3,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "Open F": {
+        "UIName": "$[37516]Open F",
+        "Strings": {
+          "string0": 1,
+          "string1": 1,
+          "string2": 3,
+          "string3": 3,
+          "string4": 3,
+          "string5": 0
+        }
+      },
+      "FDbAbDb": {
+        "UIName": "$[37517]FDbAbDb",
+        "Strings": {
+          "string0": 1,
+          "string1": 4,
+          "string2": 6,
+          "string3": 6,
+          "string4": 6,
+          "string5": 0
+        }
+      },
+      "EEBBBB": {
+        "UIName": "$[37518]EEBBBB",
+        "Strings": {
+          "string0": 0,
+          "string1": -5,
+          "string2": -3,
+          "string3": 4,
+          "string4": 0,
+          "string5": -5
+        }
+      },
+      "Eb Standard 2": {
+        "UIName": "$[36578]Eb Standard",
+        "Strings": {
+          "string0": -1,
+          "string1": -1,
+          "string2": -1,
+          "string3": -1,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "Eb Drop Db 2": {
+        "UIName": "$[36579]Eb Drop Db",
+        "Strings": {
+          "string0": -3,
+          "string1": -1,
+          "string2": -1,
+          "string3": -1,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "D Standard 2": {
+        "UIName": "$[36572]D Standard",
+        "Strings": {
+          "string0": -2,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "DDropC 2": {
+        "UIName": "$[36581]D Drop C ",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "DoubleDropC": {
+        "UIName": "$[37519]Double Drop C ",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": -2,
+          "string5": -4
+        }
+      },
+      "5ths (Cello)": {
+        "UIName": "$[37520]5ths (Cello)",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": 0,
+          "string3": 2,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "DbAbDbAb": {
+        "UIName": "$[37521]DbAbDbAb",
+        "Strings": {
+          "string0": -3,
+          "string1": -1,
+          "string2": -1,
+          "string3": 1,
+          "string4": -3,
+          "string5": 1
+        }
+      },
+      "C#F#BF#": {
+        "UIName": "$[37522]C#F#BF#",
+        "Strings": {
+          "string0": -3,
+          "string1": -3,
+          "string2": -3,
+          "string3": -1,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "DbDbDbGb": {
+        "UIName": "$[37523]DbDbDbGb",
+        "Strings": {
+          "string0": -3,
+          "string1": -8,
+          "string2": -1,
+          "string3": -1,
+          "string4": -1,
+          "string5": 0
+        }
+      },
+      "C#DropB3": {
+        "UIName": "$[37484]C# Drop B",
+        "Strings": {
+          "string0": -5,
+          "string1": -3,
+          "string2": -3,
+          "string3": -3,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "C#DropB 4": {
+        "UIName": "$[37484]C# Drop B",
+        "Strings": {
+          "string0": -5,
+          "string1": -3,
+          "string2": -3,
+          "string3": -3,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "CStandard 2": {
+        "UIName": "$[36582]C Standard",
+        "Strings": {
+          "string0": -4,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CGDG": {
+        "UIName": "$[37524]CGDG",
+        "Strings": {
+          "string0": -4,
+          "string1": -2,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CFDG": {
+        "UIName": "$[37525]CFDG",
+        "Strings": {
+          "string0": -4,
+          "string1": -4,
+          "string2": 0,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CFCG": {
+        "UIName": "$[37526]CFCG",
+        "Strings": {
+          "string0": -4,
+          "string1": -4,
+          "string2": -2,
+          "string3": 0,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CcCG": {
+        "UIName": "$[37527]CcCG",
+        "Strings": {
+          "string0": -4,
+          "string1": -9,
+          "string2": -7,
+          "string3": -7,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CDropBb": {
+        "UIName": "$[37485]C Drop Bb",
+        "Strings": {
+          "string0": -6,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": -4,
+          "string5": -4
+        }
+      },
+      "CDropBb2": {
+        "UIName": "$[37485]C Drop Bb",
+        "Strings": {
+          "string0": -6,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CDropBb4": {
+        "UIName": "$[37485]C Drop Bb",
+        "Strings": {
+          "string0": 6,
+          "string1": 8,
+          "string2": 8,
+          "string3": 8,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CDropBb3": {
+        "UIName": "$[37485]C drop Bb",
+        "Strings": {
+          "string0": -6,
+          "string1": -4,
+          "string2": -4,
+          "string3": -4,
+          "string4": -3,
+          "string5": -4
+        }
+      },
+      "C drop G": {
+        "UIName": "$[37528]C drop G",
+        "Strings": {
+          "string0": 3,
+          "string1": 8,
+          "string2": 8,
+          "string3": 8,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CEAD": {
+        "UIName": "$[37529]CEAD",
+        "Strings": {
+          "string0": -4,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "CEAD 2": {
+        "UIName": "$[37529]CEAD",
+        "Strings": {
+          "string0": 8,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "BEDG": {
+        "UIName": "$[37530]BEDG",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 12,
+          "string3": 12,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "Open B": {
+        "UIName": "$[37531]Open B",
+        "Strings": {
+          "string0": 7,
+          "string1": 9,
+          "string2": 9,
+          "string3": 11,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "BStandard 2": {
+        "UIName": "$[37532]B standard (6 string)",
+        "Strings": {
+          "string0": -5,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -4,
+          "string5": -4
+        }
+      },
+      "BDropA2": {
+        "UIName": "$[37487]B Drop A",
+        "Strings": {
+          "string0": 5,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 7,
+          "string5": 7
+        }
+      },
+      "BDropF": {
+        "UIName": "$[37533]B Drop F",
+        "Strings": {
+          "string0": 1,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 7,
+          "string5": 0
+        }
+      },
+      "Bb Standard 2": {
+        "UIName": "$[37488]Bb Standard",
+        "Strings": {
+          "string0": 6,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 7,
+          "string5": 6
+        }
+      },
+      "Bb Standard 4": {
+        "UIName": "$[37488]Bb Standard",
+        "Strings": {
+          "string0": 6,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 7,
+          "string5": 7
+        }
+      },
+      "Bb Standard 3": {
+        "UIName": "$[37534]Bb Standard (6 string)",
+        "Strings": {
+          "string0": -6,
+          "string1": -6,
+          "string2": -6,
+          "string3": -6,
+          "string4": -5,
+          "string5": -5
+        }
+      },
+      "Bb drop Ab 2": {
+        "UIName": "$[37489]Bb Drop Ab",
+        "Strings": {
+          "string0": 4,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "Bb drop Ab 3": {
+        "UIName": "$[37489]Bb Drop Ab",
+        "Strings": {
+          "string0": 4,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 6,
+          "string5": 0
+        }
+      },
+      "Bb drop Ab 4": {
+        "UIName": "$[37535]Bb Drop Ab (6 string)",
+        "Strings": {
+          "string0": 4,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 7,
+          "string5": 7
+        }
+      },
+      "Bb drop F": {
+        "UIName": "$[37536]Bb drop F",
+        "Strings": {
+          "string0": 1,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 6,
+          "string5": 0
+        }
+      },
+      "Bb drop F 2": {
+        "UIName": "$[37536]Bb drop F",
+        "Strings": {
+          "string0": 1,
+          "string1": 6,
+          "string2": 6,
+          "string3": 6,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "BDGC": {
+        "UIName": "$[37490]A Standard",
+        "Strings": {
+          "string0": -5,
+          "string1": -7,
+          "string2": -7,
+          "string3": -7,
+          "string4": -7,
+          "string5": -7
+        }
+      },
+      "AStandard 2": {
+        "UIName": "$[37490]A Standard",
+        "Strings": {
+          "string0": 5,
+          "string1": 5,
+          "string2": 5,
+          "string3": 5,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "AStandard 3": {
+        "UIName": "$[37490]A Standard",
+        "Strings": {
+          "string0": 5,
+          "string1": 5,
+          "string2": 5,
+          "string3": 5,
+          "string4": 5,
+          "string5": 5
+        }
+      },
+      "AStandard 4": {
+        "UIName": "$[37475]A Standard (6 string)",
+        "Strings": {
+          "string0": -7,
+          "string1": -7,
+          "string2": -7,
+          "string3": -7,
+          "string4": -6,
+          "string5": -6
+        }
+      },
+      "AbStandard": {
+        "UIName": "$[37538]Ab Standard",
+        "Strings": {
+          "string0": 4,
+          "string1": 4,
+          "string2": 4,
+          "string3": 4,
+          "string4": 4,
+          "string5": 4
+        }
+      },
+      "AbStandard 2": {
+        "UIName": "$[37538]Ab Standard",
+        "Strings": {
+          "string0": 4,
+          "string1": 4,
+          "string2": 4,
+          "string3": 4,
+          "string4": 3,
+          "string5": 3
+        }
+      },
+      "AbStandard 3": {
+        "UIName": "$[37539]Ab Standard (6 string)",
+        "Strings": {
+          "string0": -8,
+          "string1": -8,
+          "string2": -8,
+          "string3": -8,
+          "string4": -7,
+          "string5": -7
+        }
+      },
+      "AbDbAbDb": {
+        "UIName": "$[37540]Ab Standard",
+        "Strings": {
+          "string0": 4,
+          "string1": 4,
+          "string2": 6,
+          "string3": 6,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "ADropG 2": {
+        "UIName": "$[37491]A Drop G",
+        "Strings": {
+          "string0": 3,
+          "string1": 5,
+          "string2": 5,
+          "string3": 5,
+          "string4": 5,
+          "string5": 5
+        }
+      },
+      "Gb Standard": {
+        "UIName": "$[37541]Gb Standard",
+        "Strings": {
+          "string0": 2,
+          "string1": 2,
+          "string2": 2,
+          "string3": 2,
+          "string4": 2,
+          "string5": 2
+        }
+      },
+      "BEADGC": {
+        "UIName": "$[37542]BEADGC",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 8,
+          "string5": 8
+        }
+      },
+      "BEADGB": {
+        "UIName": "$[37543]BEADGE",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 8,
+          "string5": 7
+        }
+      },
+      "BEADGE": {
+        "UIName": "$[37544]BEADGE",
+        "Strings": {
+          "string0": -5,
+          "string1": -5,
+          "string2": -5,
+          "string3": -5,
+          "string4": -4,
+          "string5": 0
+        }
+      },
+      "BEADF": {
+        "UIName": "$[37545]BEADF",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 6,
+          "string5": 7
+        }
+      },
+      "BEADB": {
+        "UIName": "$[37546]BEADB",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "BEADB 2": {
+        "UIName": "$[37546]BEADB",
+        "Strings": {
+          "string0": 7,
+          "string1": 7,
+          "string2": 7,
+          "string3": 7,
+          "string4": 12,
+          "string5": 12
+        }
+      },
+      "G Standard": {
+        "UIName": "$[37547]G Standard",
+        "Strings": {
+          "string0": 3,
+          "string1": 3,
+          "string2": 3,
+          "string3": 3,
+          "string4": 3,
+          "string5": 3
+        }
+      },
+      "OpenDmadd9": {
+        "UIName": "$[37548]Open Dmadd9",
+        "Strings": {
+          "string0": -2,
+          "string1": 0,
+          "string2": 0,
+          "string3": -2,
+          "string4": -2,
+          "string5": 0
+        }
+      },
+      "StainDSoFarAwayLead": {
+        "UIName": "$[37549]Eb Ab Db Eb Ab Eb",
+        "Strings": {
+          "string0": -1,
+          "string1": -1,
+          "string2": -1,
+          "string3": -4,
+          "string4": -3,
+          "string5": -1
+        }
+      },
+      "StainDOutside": {
+        "UIName": "$[37550]Ab Db Ab Db Gb Bb",
+        "Strings": {
+          "string0": -8,
+          "string1": -6,
+          "string2": -6,
+          "string3": -6,
+          "string4": -5,
+          "string5": -6
+        }
+      },
+      "StainDSoFarAway": {
+        "UIName": "$[37551]Ab Db Ab Db Eb Ab",
+        "Strings": {
+          "string0": -8,
+          "string1": -6,
+          "string2": -6,
+          "string3": -6,
+          "string4": -8,
+          "string5": -8
+        }
+      },
+      "StainDItsBeenAwhile": {
+        "UIName": "$[37552]Ab Db Ab Db Gb Bb",
+        "Strings": {
+          "string0": -8,
+          "string1": -8,
+          "string2": -6,
+          "string3": -6,
+          "string4": -5,
+          "string5": -6
+        }
+      },
+      "OpenC#6Sus4": {
+        "UIName": "$[37553]Open C#6sus4",
+        "Strings": {
+          "string0": -3,
+          "string1": -1,
+          "string2": -1,
+          "string3": -1,
+          "string4": 0,
+          "string5": -3
+        }
+      },
+      "Ukulele Tuning": {
+        "UIName": "$[3754]Ukulele Tuning",
+        "Strings": {
+          "string0": 3,
+          "string1": -9,
+          "string2": -10,
+          "string3": -10,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "C# Drop F#": {
+        "UIName": "$[37555]C# Drop F#",
+        "Strings": {
+          "string0": -10,
+          "string1": -3,
+          "string2": -3,
+          "string3": -3,
+          "string4": -3,
+          "string5": -3
+        }
+      },
+      "C# Drop F# 2": {
+        "UIName": "$[37555]C# Drop F#",
+        "Strings": {
+          "string0": 2,
+          "string1": 9,
+          "string2": 9,
+          "string3": 9,
+          "string4": 9,
+          "string5": 9
+        }
+      },
+      "C# Drop F# 3": {
+        "UIName": "$[37555]C# Drop F#",
+        "Strings": {
+          "string0": 2,
+          "string1": 9,
+          "string2": 9,
+          "string3": 9,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "D Drop A": {
+        "UIName": "$[37556]D Drop A",
+        "Strings": {
+          "string0": 5,
+          "string1": 10,
+          "string2": 10,
+          "string3": 10,
+          "string4": 10,
+          "string5": 10
+        }
+      },
+      "D Drop A 2": {
+        "UIName": "$[37556]D Drop A",
+        "Strings": {
+          "string0": 5,
+          "string1": 10,
+          "string2": 10,
+          "string3": 10,
+          "string4": 0,
+          "string5": 0
+        }
+      },
+      "D Drop A 3": {
+        "UIName": "$[37556]D Drop A",
+        "Strings": {
+          "string0": -7,
+          "string1": -2,
+          "string2": -2,
+          "string3": -2,
+          "string4": -2,
+          "string5": -2
+        }
+      }
+    }
+}}

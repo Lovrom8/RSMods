@@ -73,11 +73,11 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\OneDrive\Documents\Modded RS FIles\My mods\low wait intro files\no loft\cache.psarc_RS2014_Pc\cache4\gfxassets\views\introsequence.gfx" />
     <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\maingame - additions.csv" />
     <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\tuning.database.json" />
     <None Include="d3dx9_42.def" />
     <None Include="DirectX\d3dx9math.inl" />
+    <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />
