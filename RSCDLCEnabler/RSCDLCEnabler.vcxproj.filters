@@ -84,6 +84,9 @@
     <ClCompile Include="GuitarSpeak.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Files.cpp">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx9_42.h">
