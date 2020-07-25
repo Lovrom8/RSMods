@@ -52,25 +52,34 @@ void cGuitarSpeak::TimerTick() {
 	// Debug Commands
 	strKeyList[7] = "{ENTER}";
 
-	bool debugMode = false;
+	bool debugMode = true;
 
 
 	ResetStrKeyCache();
 
+	DWORD dwError;
+
+	RocksmithProcessHandle = GetCurrentProcess();
+	std::cout << "Base Address: " << (LPVOID)Offsets.ptr_guitarSpeak << std::endl;
+
+	//(LPVOID)Offsets.ptr_guitarSpeak
+	//void* baseAddress = VirtualAllocEx(RocksmithProcessHandle, NULL, sizeof(byte) + 500, MEM_RESERVE, PAGE_READWRITE);
 	// Main Function
 	while (true) {
 		Sleep(timer);
 		if (debugMode)
 			std::cout << "Tick" << std::endl;
-
+		
 		// Pointer 1
-		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)Offsets.ptr_guitarSpeak, memBuffer, memBufferLength, bytesRead);
+		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)Offsets.ptr_guitarSpeak, &memBuffer, 0xFF, NULL);
+		std::cout << GetLastError() << std::endl;
+		std::cout << "MemBuffer: " << (char*)memBuffer << std::endl;
 		pointer1 = memBuffer[0] || (memBuffer[1] << 0x8) || (memBuffer[2] << 0x10) || (memBuffer[3] << 0x18) + Offsets.ptr_guitarSpeakOffets[0];
 
-		std::cout << "MemBuffer[0]: " << memBuffer[0] << std::endl;
+		/*std::cout << "MemBuffer[0]: " << memBuffer[0] << std::endl;
 		std::cout << "MemBuffer[1]: " << (memBuffer[1] << 0x8) << std::endl;
 		std::cout << "MemBuffer[2]: " << (memBuffer[2] << 0x10) << std::endl;
-		std::cout << "MemBuffer[3]: " << (memBuffer[3] << 0x18) << std::endl;
+		std::cout << "MemBuffer[3]: " << (memBuffer[3] << 0x18) << std::endl;*/
 
 		// Pointer 2
 		ReadProcessMemory(RocksmithProcessHandle, (LPVOID)pointer1, memBuffer, memBufferLength, bytesRead);

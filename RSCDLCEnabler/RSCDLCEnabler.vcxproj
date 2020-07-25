@@ -17,7 +17,7 @@
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="Enumeration.cpp" />
     <ClCompile Include="ExtendedRangeMode.cpp" />
-    <ClCompile Include="Files.cpp" />
+    <ClCompile Include="CustomTuningFix.cpp" />
     <ClCompile Include="GuitarSpeak.cpp" />
     <ClCompile Include="ImGUI\imgui.cpp" />
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomSongTitles.h" />
+    <ClInclude Include="CustomTuningFix.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="D3DX9_42.h" />
@@ -73,11 +74,11 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\maingame - additions.csv" />
-    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\tuning.database.json" />
     <None Include="d3dx9_42.def" />
     <None Include="DirectX\d3dx9math.inl" />
     <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx" />
+    <None Include="maingame - additions.csv" />
+    <None Include="tuning.database.json" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />

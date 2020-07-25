@@ -84,8 +84,8 @@
     <ClCompile Include="GuitarSpeak.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="Files.cpp">
-      <Filter>Mods\CustomTuningFix files</Filter>
+    <ClCompile Include="CustomTuningFix.cpp">
+      <Filter>Mods</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +203,9 @@
     <ClInclude Include="imgui_includeMe.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
+    <ClInclude Include="CustomTuningFix.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">
@@ -211,13 +214,13 @@
     <None Include="DirectX\d3dx9math.inl">
       <Filter>Header Files\DirectX</Filter>
     </None>
-    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\tuning.database.json">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="..\..\..\..\OneDrive\Rocksmith No Loft or amps\Custom tuning fix only no Extended Range Mode\maingame - additions.csv">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
     <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </None>
+    <None Include="maingame - additions.csv">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </None>
+    <None Include="tuning.database.json">
       <Filter>Mods\CustomTuningFix files</Filter>
     </None>
   </ItemGroup>
