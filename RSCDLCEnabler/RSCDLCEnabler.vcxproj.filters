@@ -223,6 +223,12 @@
     <None Include="tuning.database.json">
       <Filter>Mods\CustomTuningFix files</Filter>
     </None>
+    <None Include="tuning.database basic.json">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </None>
+    <None Include="maingame - additions basic.csv">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib">

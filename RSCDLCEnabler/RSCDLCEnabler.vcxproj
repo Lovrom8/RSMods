@@ -76,8 +76,10 @@
   <ItemGroup>
     <None Include="d3dx9_42.def" />
     <None Include="DirectX\d3dx9math.inl" />
+    <None Include="maingame - additions basic.csv" />
     <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx" />
     <None Include="maingame - additions.csv" />
+    <None Include="tuning.database basic.json" />
     <None Include="tuning.database.json" />
   </ItemGroup>
   <ItemGroup>
