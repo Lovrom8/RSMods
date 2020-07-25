@@ -13,7 +13,7 @@ cache_psarc\cache4.7z\localization \ maingame.csv - lines to be appended to exis
 */
 
 
-void __declspec(naked) cCustomTuningFix::customTuningHook() {
+void __declspec(naked) customTuningHook() {
 	__asm {
 		push ecx
 		push edx
@@ -21,7 +21,7 @@ void __declspec(naked) cCustomTuningFix::customTuningHook() {
 
 		push[esp + 0x10]
 		push eax
-		call customTuningFix
+		call cCustomTuningFix::customTuningFix
 
 		pop esp
 		pop edx

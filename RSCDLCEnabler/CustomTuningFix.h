@@ -11,7 +11,7 @@ class cCustomTuningFix {
 public:
 	char __stdcall customTuningFix(int numberInMainGameCSV, char* newValue);
 private:
-	void __declspec(naked) customTuningHook();
+
 };
 
 extern cCustomTuningFix CustomTuningFix;

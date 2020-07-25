@@ -752,6 +752,8 @@ unsigned WINAPI MainThread(void*) {
 
 			if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) // If User Is Entering Song
 			{
+				GuitarSpeakPresent = false;
+
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song")
 				{
 					if (!LoftOff)
