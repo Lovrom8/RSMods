@@ -81,6 +81,7 @@
     <None Include="maingame - additions.csv" />
     <None Include="tuning.database basic.json" />
     <None Include="tuning.database.json" />
+    <None Include="ui_menu_pillar_main.database.json" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib" />

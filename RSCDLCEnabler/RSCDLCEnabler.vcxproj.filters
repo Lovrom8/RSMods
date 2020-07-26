@@ -229,6 +229,9 @@
     <None Include="maingame - additions basic.csv">
       <Filter>Mods\CustomTuningFix files</Filter>
     </None>
+    <None Include="ui_menu_pillar_main.database.json">
+      <Filter>Mods\CustomTuningFix files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib">
