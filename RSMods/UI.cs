@@ -1272,7 +1272,10 @@ namespace RSMods
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
 
             if (!File.Exists(Path.Combine(Constants.ExtendedMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui.menu.pillar.mission.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_mission.database.json" });
+
+            if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_main.database.json" });
         }
 
         private void LoadSetAndForgetMods()
@@ -1356,7 +1359,7 @@ namespace RSMods
                 UnpackCachePsarc();
 
             ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-            //TODO: add the JSON file for the main menu
+            ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
             RepackCachePsarc();
         }

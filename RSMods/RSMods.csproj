@@ -119,7 +119,10 @@
     <EmbeddedResource Include="Resources\maingame.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ui.menu.pillar.mission.database.json">
+    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

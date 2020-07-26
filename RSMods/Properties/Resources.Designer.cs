@@ -119,5 +119,15 @@ namespace RSMods.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ui_menu_pillar_main_database_json {
+            get {
+                object obj = ResourceManager.GetObject("ui_menu_pillar_main.database.json", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

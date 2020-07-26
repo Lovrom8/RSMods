@@ -133,4 +133,7 @@
   <data name="tuning_database.json" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tuning.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ui_menu_pillar_main.database.json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ui_menu_pillar_main.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
