@@ -1270,6 +1270,9 @@ namespace RSMods
 
             if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
+
+            if (!File.Exists(Path.Combine(Constants.ExtendedMenuJson_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui.menu.pillar.mission.database.json" });
         }
 
         private void LoadSetAndForgetMods()
@@ -1345,6 +1348,17 @@ namespace RSMods
                 tuningsCollection.Add(internalName, currTuning);
                 listTunings.Items.Add(internalName);
             }
+        }
+
+        private void btnAddCustomMenu_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Constants.CachePcPath))
+                UnpackCachePsarc();
+
+            ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+            //TODO: add the JSON file for the main menu
+
+            RepackCachePsarc();
         }
     }
 }

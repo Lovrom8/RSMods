@@ -112,6 +112,7 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
+            this.btnAddCustomMenu = new System.Windows.Forms.Button();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -815,6 +816,7 @@
             // 
             // groupSetAndForget
             // 
+            this.groupSetAndForget.Controls.Add(this.btnAddCustomMenu);
             this.groupSetAndForget.Controls.Add(this.btnAddFastLoadMod);
             this.groupSetAndForget.Controls.Add(this.btnUnpackCacheAgain);
             this.groupSetAndForget.Controls.Add(this.btnRestoreDefaults);
@@ -1066,6 +1068,16 @@
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
             // 
+            // btnAddCustomMenu
+            // 
+            this.btnAddCustomMenu.Location = new System.Drawing.Point(723, 119);
+            this.btnAddCustomMenu.Name = "btnAddCustomMenu";
+            this.btnAddCustomMenu.Size = new System.Drawing.Size(187, 35);
+            this.btnAddCustomMenu.TabIndex = 93;
+            this.btnAddCustomMenu.Text = "Add custom menu + unplugged";
+            this.btnAddCustomMenu.UseVisualStyleBackColor = true;
+            this.btnAddCustomMenu.Click += new System.EventHandler(this.btnAddCustomMenu_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1201,6 +1213,7 @@
         private System.Windows.Forms.Button btnAddTuning;
         private System.Windows.Forms.Button btnRemoveTuning;
         private System.Windows.Forms.ListBox listTunings;
+        private System.Windows.Forms.Button btnAddCustomMenu;
     }
 }
 

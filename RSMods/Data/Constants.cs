@@ -14,7 +14,7 @@ namespace RSMods.Data
 
         public static string RSFolder 
         {
-            get { return _rsFolder; }  // return @"C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014";
+            get { return _rsFolder; }
             set { _rsFolder = value; }
         } 
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
@@ -30,5 +30,7 @@ namespace RSMods.Data
         public static string IntroGFX_InternalPath { get { return Path.Combine("gfxassets", "views", "introsequence.gfx"); } }
         public static string IntroGFX_CustomPath { get { return Path.Combine(CustomModsFolder, "introsequence.gfx"); } }
         public static string CacheBackupPath { get { return Path.Combine(RSFolder, "cache.bak"); } }
+        public static string ExtendedMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui.menu.pillar.mission.database.json"); } }
+        public static string ExtendedMenuJson_InternalPath { get { return Path.Combine("manifests", "ui.menu.pillar.mission.database.json"); } }
     }
 }
