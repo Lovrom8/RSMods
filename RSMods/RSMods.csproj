@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\Rocksmith2014\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\Rocksmith2014\RSMods\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,7 +33,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="System" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RocksmithToolkitLib, Version=2.9.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\RocksmithToolkitLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZipSharp, Version=0.64.3890.29348, Culture=neutral, PublicKeyToken=20de82c62b055c88, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\SevenZipSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,7 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UI.cs" />
+    <Compile Include="Data\Constants.cs" />
+    <Compile Include="Data\TuningDefinition.cs" />
+    <Compile Include="UI.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI.Designer.cs">
       <DependentUpon>UI.cs</DependentUpon>
     </Compile>
@@ -53,9 +69,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadSettings.cs" />
+    <Compile Include="Util\GenUtil.cs" />
+    <Compile Include="Util\ZipUtils.cs" />
     <Compile Include="WriteSettings.cs" />
     <EmbeddedResource Include="UI.resx">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -65,7 +84,14 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Lib\ddc\ddc_default.cfg" />
+    <None Include="Lib\ddc\ddc_keep_all_levels.cfg" />
+    <None Include="Lib\ddc\ddc_merge_all_levels.cfg" />
+    <None Include="Lib\tools\OpenCmd.bat" />
+    <None Include="Lib\tools\packed_codebooks.bin" />
+    <None Include="Lib\tools\packed_codebooks_aoTuV_603.bin" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -75,9 +101,66 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Resources\introsequence_original.gfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\tuning.database.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\introsequence.gfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\maingame_original.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\maingame.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lib\7z.dll" />
+    <Content Include="Lib\ddc\ddc.exe" />
+    <Content Include="Lib\ddc\ddc_chords_protector.xml" />
+    <Content Include="Lib\ddc\ddc_chords_remover.xml" />
+    <Content Include="Lib\ddc\ddc_dd_remover.xml" />
+    <Content Include="Lib\ddc\ddc_default.xml" />
+    <Content Include="Lib\ddc\license.txt" />
+    <Content Include="Lib\ddc\readme.txt" />
+    <Content Include="Lib\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="Lib\MiscUtil.dll" />
+    <Content Include="Lib\NDesk.Options.dll" />
+    <Content Include="Lib\Newtonsoft.Json.dll" />
+    <Content Include="Lib\NLog.dll" />
+    <Content Include="Lib\Ookii.Dialogs.dll" />
+    <Content Include="Lib\PSTaskDialog.dll" />
+    <Content Include="Lib\RocksmithToolkitLib.dll" />
+    <Content Include="Lib\RocksmithToTabLib.dll" />
+    <Content Include="Lib\SevenZipSharp.dll" />
+    <Content Include="Lib\SharpConfig.dll" />
+    <Content Include="Lib\tools\7za.exe" />
+    <Content Include="Lib\tools\core.jar" />
+    <Content Include="Lib\tools\CreateToolkitShortcut.exe" />
+    <Content Include="Lib\tools\nvdxt.exe" />
+    <Content Include="Lib\tools\oggCut.exe" />
+    <Content Include="Lib\tools\oggdec.exe" />
+    <Content Include="Lib\tools\oggenc.exe" />
+    <Content Include="Lib\tools\readme.txt" />
+    <Content Include="Lib\tools\revorb.exe" />
+    <Content Include="Lib\tools\topng.exe" />
+    <Content Include="Lib\tools\ww2ogg.exe" />
+    <Content Include="Lib\X360.dll" />
+    <Content Include="Lib\zlib.net.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)lib\*.*" "$(TargetDir)" /Y /I /E
+if not exist "$(TargetDir)\CustomMods" mkdir "$(TargetDir)\CustomMods"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

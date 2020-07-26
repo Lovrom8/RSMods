@@ -90,6 +90,28 @@
             this.ToggleSkylineBox = new System.Windows.Forms.GroupBox();
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
+            this.groupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.btnAddFastLoadMod = new System.Windows.Forms.Button();
+            this.btnUnpackCacheAgain = new System.Windows.Forms.Button();
+            this.btnRestoreDefaults = new System.Windows.Forms.Button();
+            this.btnAddCustomTunings = new System.Windows.Forms.Button();
+            this.btnSaveTuningChanges = new System.Windows.Forms.Button();
+            this.lblStrings = new System.Windows.Forms.Label();
+            this.nupString0 = new System.Windows.Forms.NumericUpDown();
+            this.lblUIIndex = new System.Windows.Forms.Label();
+            this.nupTuningIndex = new System.Windows.Forms.NumericUpDown();
+            this.lblUIName = new System.Windows.Forms.Label();
+            this.lblInternalName = new System.Windows.Forms.Label();
+            this.nupString1 = new System.Windows.Forms.NumericUpDown();
+            this.nupString5 = new System.Windows.Forms.NumericUpDown();
+            this.nupString4 = new System.Windows.Forms.NumericUpDown();
+            this.nupString3 = new System.Windows.Forms.NumericUpDown();
+            this.nupString2 = new System.Windows.Forms.NumericUpDown();
+            this.txtUIName = new System.Windows.Forms.TextBox();
+            this.txtInternalName = new System.Windows.Forms.TextBox();
+            this.btnAddTuning = new System.Windows.Forms.Button();
+            this.btnRemoveTuning = new System.Windows.Forms.Button();
+            this.listTunings = new System.Windows.Forms.ListBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -99,6 +121,14 @@
             this.KeybindingsBox.SuspendLayout();
             this.ChangeStringColorsBox.SuspendLayout();
             this.ToggleSkylineBox.SuspendLayout();
+            this.groupSetAndForget.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupTuningIndex)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString2)).BeginInit();
             this.SuspendLayout();
             // 
             // Songlist
@@ -162,7 +192,7 @@
             // SaveAndQuit
             // 
             this.SaveAndQuit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SaveAndQuit.Location = new System.Drawing.Point(1329, 452);
+            this.SaveAndQuit.Location = new System.Drawing.Point(1348, 586);
             this.SaveAndQuit.Name = "SaveAndQuit";
             this.SaveAndQuit.Size = new System.Drawing.Size(228, 45);
             this.SaveAndQuit.TabIndex = 13;
@@ -584,7 +614,7 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 475);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(33, 622);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(109, 22);
             this.ResetToDefaultButton.TabIndex = 32;
@@ -783,12 +813,266 @@
             this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
             // 
+            // groupSetAndForget
+            // 
+            this.groupSetAndForget.Controls.Add(this.btnAddFastLoadMod);
+            this.groupSetAndForget.Controls.Add(this.btnUnpackCacheAgain);
+            this.groupSetAndForget.Controls.Add(this.btnRestoreDefaults);
+            this.groupSetAndForget.Controls.Add(this.btnAddCustomTunings);
+            this.groupSetAndForget.Controls.Add(this.btnSaveTuningChanges);
+            this.groupSetAndForget.Controls.Add(this.lblStrings);
+            this.groupSetAndForget.Controls.Add(this.nupString0);
+            this.groupSetAndForget.Controls.Add(this.lblUIIndex);
+            this.groupSetAndForget.Controls.Add(this.nupTuningIndex);
+            this.groupSetAndForget.Controls.Add(this.lblUIName);
+            this.groupSetAndForget.Controls.Add(this.lblInternalName);
+            this.groupSetAndForget.Controls.Add(this.nupString1);
+            this.groupSetAndForget.Controls.Add(this.nupString5);
+            this.groupSetAndForget.Controls.Add(this.nupString4);
+            this.groupSetAndForget.Controls.Add(this.nupString3);
+            this.groupSetAndForget.Controls.Add(this.nupString2);
+            this.groupSetAndForget.Controls.Add(this.txtUIName);
+            this.groupSetAndForget.Controls.Add(this.txtInternalName);
+            this.groupSetAndForget.Controls.Add(this.btnAddTuning);
+            this.groupSetAndForget.Controls.Add(this.btnRemoveTuning);
+            this.groupSetAndForget.Controls.Add(this.listTunings);
+            this.groupSetAndForget.Location = new System.Drawing.Point(162, 467);
+            this.groupSetAndForget.Name = "groupSetAndForget";
+            this.groupSetAndForget.Size = new System.Drawing.Size(1131, 177);
+            this.groupSetAndForget.TabIndex = 68;
+            this.groupSetAndForget.TabStop = false;
+            this.groupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // btnAddFastLoadMod
+            // 
+            this.btnAddFastLoadMod.Location = new System.Drawing.Point(723, 70);
+            this.btnAddFastLoadMod.Name = "btnAddFastLoadMod";
+            this.btnAddFastLoadMod.Size = new System.Drawing.Size(187, 35);
+            this.btnAddFastLoadMod.TabIndex = 92;
+            this.btnAddFastLoadMod.Text = "Add fast load mod";
+            this.btnAddFastLoadMod.UseVisualStyleBackColor = true;
+            this.btnAddFastLoadMod.Click += new System.EventHandler(this.btnAddFastLoadMod_Click);
+            // 
+            // btnUnpackCacheAgain
+            // 
+            this.btnUnpackCacheAgain.Location = new System.Drawing.Point(916, 20);
+            this.btnUnpackCacheAgain.Name = "btnUnpackCacheAgain";
+            this.btnUnpackCacheAgain.Size = new System.Drawing.Size(187, 35);
+            this.btnUnpackCacheAgain.TabIndex = 91;
+            this.btnUnpackCacheAgain.Text = "Clean up unpacked cache";
+            this.btnUnpackCacheAgain.UseVisualStyleBackColor = true;
+            this.btnUnpackCacheAgain.Click += new System.EventHandler(this.btnUnpackCacheAgain_Click);
+            // 
+            // btnRestoreDefaults
+            // 
+            this.btnRestoreDefaults.Location = new System.Drawing.Point(916, 69);
+            this.btnRestoreDefaults.Name = "btnRestoreDefaults";
+            this.btnRestoreDefaults.Size = new System.Drawing.Size(190, 37);
+            this.btnRestoreDefaults.TabIndex = 90;
+            this.btnRestoreDefaults.Text = "Restore cache backup";
+            this.btnRestoreDefaults.UseVisualStyleBackColor = true;
+            this.btnRestoreDefaults.Click += new System.EventHandler(this.btnRestoreDefaults_Click);
+            // 
+            // btnAddCustomTunings
+            // 
+            this.btnAddCustomTunings.Location = new System.Drawing.Point(723, 20);
+            this.btnAddCustomTunings.Name = "btnAddCustomTunings";
+            this.btnAddCustomTunings.Size = new System.Drawing.Size(187, 34);
+            this.btnAddCustomTunings.TabIndex = 89;
+            this.btnAddCustomTunings.Text = "Add custom tunings";
+            this.btnAddCustomTunings.UseVisualStyleBackColor = true;
+            this.btnAddCustomTunings.Click += new System.EventHandler(this.btnAddCustomTunings_Click);
+            // 
+            // btnSaveTuningChanges
+            // 
+            this.btnSaveTuningChanges.Location = new System.Drawing.Point(518, 102);
+            this.btnSaveTuningChanges.Name = "btnSaveTuningChanges";
+            this.btnSaveTuningChanges.Size = new System.Drawing.Size(85, 22);
+            this.btnSaveTuningChanges.TabIndex = 88;
+            this.btnSaveTuningChanges.Text = "Save changes";
+            this.btnSaveTuningChanges.UseVisualStyleBackColor = true;
+            this.btnSaveTuningChanges.Click += new System.EventHandler(this.btnSaveTuningChanges_Click);
+            // 
+            // lblStrings
+            // 
+            this.lblStrings.AutoSize = true;
+            this.lblStrings.Location = new System.Drawing.Point(390, 22);
+            this.lblStrings.Name = "lblStrings";
+            this.lblStrings.Size = new System.Drawing.Size(42, 13);
+            this.lblStrings.TabIndex = 87;
+            this.lblStrings.Text = "Strings:";
+            // 
+            // nupString0
+            // 
+            this.nupString0.Location = new System.Drawing.Point(448, 20);
+            this.nupString0.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString0.Name = "nupString0";
+            this.nupString0.Size = new System.Drawing.Size(39, 20);
+            this.nupString0.TabIndex = 86;
+            // 
+            // lblUIIndex
+            // 
+            this.lblUIIndex.AutoSize = true;
+            this.lblUIIndex.Location = new System.Drawing.Point(197, 74);
+            this.lblUIIndex.Name = "lblUIIndex";
+            this.lblUIIndex.Size = new System.Drawing.Size(50, 13);
+            this.lblUIIndex.TabIndex = 85;
+            this.lblUIIndex.Text = "UI Index:";
+            // 
+            // nupTuningIndex
+            // 
+            this.nupTuningIndex.Location = new System.Drawing.Point(279, 72);
+            this.nupTuningIndex.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nupTuningIndex.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.nupTuningIndex.Name = "nupTuningIndex";
+            this.nupTuningIndex.Size = new System.Drawing.Size(100, 20);
+            this.nupTuningIndex.TabIndex = 84;
+            this.nupTuningIndex.Value = new decimal(new int[] {
+            36500,
+            0,
+            0,
+            0});
+            // 
+            // lblUIName
+            // 
+            this.lblUIName.AutoSize = true;
+            this.lblUIName.Location = new System.Drawing.Point(197, 48);
+            this.lblUIName.Name = "lblUIName";
+            this.lblUIName.Size = new System.Drawing.Size(52, 13);
+            this.lblUIName.TabIndex = 83;
+            this.lblUIName.Text = "UI Name:";
+            // 
+            // lblInternalName
+            // 
+            this.lblInternalName.AutoSize = true;
+            this.lblInternalName.Location = new System.Drawing.Point(197, 22);
+            this.lblInternalName.Name = "lblInternalName";
+            this.lblInternalName.Size = new System.Drawing.Size(76, 13);
+            this.lblInternalName.TabIndex = 82;
+            this.lblInternalName.Text = "Internal Name:";
+            // 
+            // nupString1
+            // 
+            this.nupString1.Location = new System.Drawing.Point(493, 20);
+            this.nupString1.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString1.Name = "nupString1";
+            this.nupString1.Size = new System.Drawing.Size(39, 20);
+            this.nupString1.TabIndex = 81;
+            // 
+            // nupString5
+            // 
+            this.nupString5.Location = new System.Drawing.Point(673, 20);
+            this.nupString5.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString5.Name = "nupString5";
+            this.nupString5.Size = new System.Drawing.Size(39, 20);
+            this.nupString5.TabIndex = 80;
+            // 
+            // nupString4
+            // 
+            this.nupString4.Location = new System.Drawing.Point(628, 20);
+            this.nupString4.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString4.Name = "nupString4";
+            this.nupString4.Size = new System.Drawing.Size(39, 20);
+            this.nupString4.TabIndex = 79;
+            // 
+            // nupString3
+            // 
+            this.nupString3.Location = new System.Drawing.Point(583, 20);
+            this.nupString3.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString3.Name = "nupString3";
+            this.nupString3.Size = new System.Drawing.Size(39, 20);
+            this.nupString3.TabIndex = 78;
+            // 
+            // nupString2
+            // 
+            this.nupString2.Location = new System.Drawing.Point(538, 20);
+            this.nupString2.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.nupString2.Name = "nupString2";
+            this.nupString2.Size = new System.Drawing.Size(39, 20);
+            this.nupString2.TabIndex = 77;
+            // 
+            // txtUIName
+            // 
+            this.txtUIName.Location = new System.Drawing.Point(279, 45);
+            this.txtUIName.Name = "txtUIName";
+            this.txtUIName.Size = new System.Drawing.Size(100, 20);
+            this.txtUIName.TabIndex = 76;
+            // 
+            // txtInternalName
+            // 
+            this.txtInternalName.Location = new System.Drawing.Point(279, 19);
+            this.txtInternalName.Name = "txtInternalName";
+            this.txtInternalName.Size = new System.Drawing.Size(100, 20);
+            this.txtInternalName.TabIndex = 75;
+            // 
+            // btnAddTuning
+            // 
+            this.btnAddTuning.Location = new System.Drawing.Point(455, 64);
+            this.btnAddTuning.Name = "btnAddTuning";
+            this.btnAddTuning.Size = new System.Drawing.Size(93, 23);
+            this.btnAddTuning.TabIndex = 74;
+            this.btnAddTuning.Text = "Add tuning";
+            this.btnAddTuning.UseVisualStyleBackColor = true;
+            this.btnAddTuning.Click += new System.EventHandler(this.btnAddTuning_Click);
+            // 
+            // btnRemoveTuning
+            // 
+            this.btnRemoveTuning.Location = new System.Drawing.Point(574, 64);
+            this.btnRemoveTuning.Name = "btnRemoveTuning";
+            this.btnRemoveTuning.Size = new System.Drawing.Size(93, 23);
+            this.btnRemoveTuning.TabIndex = 73;
+            this.btnRemoveTuning.Text = "Remove tuning";
+            this.btnRemoveTuning.UseVisualStyleBackColor = true;
+            this.btnRemoveTuning.Click += new System.EventHandler(this.btnRemoveTuning_Click);
+            // 
+            // listTunings
+            // 
+            this.listTunings.FormattingEnabled = true;
+            this.listTunings.Location = new System.Drawing.Point(6, 19);
+            this.listTunings.Name = "listTunings";
+            this.listTunings.Size = new System.Drawing.Size(185, 134);
+            this.listTunings.TabIndex = 72;
+            this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
-            this.ClientSize = new System.Drawing.Size(1616, 509);
+            this.ClientSize = new System.Drawing.Size(1616, 678);
+            this.Controls.Add(this.groupSetAndForget);
             this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.ChangeStringColorsBox);
             this.Controls.Add(this.KeybindingsBox);
@@ -817,6 +1101,15 @@
             this.ChangeStringColorsBox.PerformLayout();
             this.ToggleSkylineBox.ResumeLayout(false);
             this.ToggleSkylineBox.PerformLayout();
+            this.groupSetAndForget.ResumeLayout(false);
+            this.groupSetAndForget.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupTuningIndex)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nupString2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -886,6 +1179,28 @@
         private System.Windows.Forms.GroupBox ToggleSkylineBox;
         private System.Windows.Forms.RadioButton ToggleSkylineSongRadio;
         private System.Windows.Forms.RadioButton ToggleSkylineStartupRadio;
+        private System.Windows.Forms.GroupBox groupSetAndForget;
+        private System.Windows.Forms.Button btnAddFastLoadMod;
+        private System.Windows.Forms.Button btnUnpackCacheAgain;
+        private System.Windows.Forms.Button btnRestoreDefaults;
+        private System.Windows.Forms.Button btnAddCustomTunings;
+        private System.Windows.Forms.Button btnSaveTuningChanges;
+        private System.Windows.Forms.Label lblStrings;
+        private System.Windows.Forms.NumericUpDown nupString0;
+        private System.Windows.Forms.Label lblUIIndex;
+        private System.Windows.Forms.NumericUpDown nupTuningIndex;
+        private System.Windows.Forms.Label lblUIName;
+        private System.Windows.Forms.Label lblInternalName;
+        private System.Windows.Forms.NumericUpDown nupString1;
+        private System.Windows.Forms.NumericUpDown nupString5;
+        private System.Windows.Forms.NumericUpDown nupString4;
+        private System.Windows.Forms.NumericUpDown nupString3;
+        private System.Windows.Forms.NumericUpDown nupString2;
+        private System.Windows.Forms.TextBox txtUIName;
+        private System.Windows.Forms.TextBox txtInternalName;
+        private System.Windows.Forms.Button btnAddTuning;
+        private System.Windows.Forms.Button btnRemoveTuning;
+        private System.Windows.Forms.ListBox listTunings;
     }
 }
 

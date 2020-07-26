@@ -4,6 +4,15 @@ using System.Runtime;
 using System.IO;
 using System.Linq;
 using System.Drawing;
+using RSMods.Data;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using RSMods.Util;
+using System.Reflection;
+using SevenZip;
+using RocksmithToolkitLib.DLCPackage;
+using System.Collections.Generic;
 
 namespace RSMods
 {
@@ -46,7 +55,7 @@ namespace RSMods
                 this.ReEnumerationKey.Text = "Force ReEnumeration: " + ImportPriorSettings()[10];
                 this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ImportPriorSettings()[11];
             }
-            
+
 
             // Load Checkbox Values
             {
@@ -242,7 +251,7 @@ namespace RSMods
 
             // Mod Settings
             {
-                
+
                 this.EnumerateEveryXMS.Value = Decimal.Parse(ImportPriorSettings()[43].ToString()) / 1000; // Loads old settings for enumeration every x ms
                 {
                     if (ImportPriorSettings()[42].ToString() == "-2")
@@ -291,9 +300,10 @@ namespace RSMods
                     }
 
                 }
-                
+
             }
-               
+
+            LoadSetAndForgetMods();
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -379,7 +389,7 @@ namespace RSMods
                     SaveChanges(6, this.NewSongListNameTxtbox.Text);
                 }
             }
-            
+
             // Mods on KeyPress
             {
                 if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(6)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
@@ -403,11 +413,11 @@ namespace RSMods
                     SaveChanges(11, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
                 if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
-                { 
+                {
                     SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
             }
-           
+
             // Toggle Mods
             {
                 if (this.ToggleLoftCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(11)) // Toggle Loft Enabled/ Disabled
@@ -517,7 +527,7 @@ namespace RSMods
                     SaveChanges(29, this.RemoveLineMarkersCheckBox.Checked.ToString().ToLower());
                 }
             }
-            
+
             // Extended Range
             {
                 if (this.ExtendedRangeTunings.GetSelected(0))
@@ -571,7 +581,7 @@ namespace RSMods
             {
                 SaveChanges(44, (this.EnumerateEveryXMS.Value * 1000).ToString());
             }
-            
+
             RefreshForm();
         }
 
@@ -596,7 +606,7 @@ namespace RSMods
                 else if (ChangedSettingValue == "false")
                 {
                     ChangedSettingValue = "off";
-                }    
+                }
                 // Song Lists
                 {
                     if (ElementToChange == 1) // Songlist 1
@@ -782,7 +792,7 @@ namespace RSMods
                             StringArray[45] = ReadSettings.String5Color_CB_Identifier + ChangedSettingValue;
                         }
                     }
-                    
+
                 }
                 // Mod Settings
                 {
@@ -794,7 +804,7 @@ namespace RSMods
                     {
                         StringArray[48] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
                     }
-                    
+
                 }
 
                 WriteSettings.ModifyINI(StringArray);
@@ -886,11 +896,11 @@ namespace RSMods
                 String0Color.BackColor = colorDialog.Color;
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
                 {
-                   SaveChanges(31, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(31, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                   SaveChanges(37, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(37, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -1053,6 +1063,288 @@ namespace RSMods
             String3Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[39].ToString());
             String4Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[40].ToString());
             String5Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[41].ToString());
+        }
+
+        private static TuningDefinitionList tuningsCollection;
+
+        private TuningDefinitionList LoadTuningsCollection()
+        {
+            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
+            var tuningsJson = JObject.Parse(tuningsFileContent);
+            var tuningsList = tuningsJson["Static"]["TuningDefinitions"];
+
+            return JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
+        }
+
+        private void SaveTuningsJSON()
+        {
+            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
+            var tuningsJson = JObject.Parse(tuningsFileContent);
+            tuningsJson["Static"]["TuningDefinitions"] = JObject.FromObject(tuningsCollection);
+
+            try
+            {
+                File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show("Error: " + ioex.ToString());
+            }
+        }
+
+        private Tuple<string, string> SplitTuningUIName(string uiName)
+        {
+            string index, name = uiName;
+
+            Regex rxIndexExists = new Regex(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
+            Regex rxGetIndex = new Regex(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
+            Regex rxGrabAfterBracket = new Regex(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
+            if (rxIndexExists.IsMatch(uiName))
+            {
+                index = rxGetIndex.Matches(uiName)[0].Groups[1].Value;
+                name = rxGrabAfterBracket.Matches(uiName)[0].Groups[1].Value;
+            }
+            else
+                index = "0";
+
+            return new Tuple<string, string>(index, name);
+        }
+
+        private void AddLocalizationForTuningEntries()
+        {
+            int currentTuningIndex = 69000; // Cos we can ;)
+            try
+            {
+                string currentUIName, newUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
+
+                using (StreamWriter sw = new StreamWriter(Constants.LocalizationCSV_CustomPath, true))
+                {
+                    foreach (var tuningDefinition in tuningsCollection)
+                    {
+                        currentUIName = tuningDefinition.Value.UIName;
+                        var tuning = SplitTuningUIName(currentUIName);
+                        string index = tuning.Item1;
+
+                        if (index == "0") // I.e. if it does not contain an index, give it one
+                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", currentTuningIndex++, currentUIName); // Append its index in front
+
+                        if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
+                        {
+                            MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
+                            /* sw.Write(currentTuningIndex);
+                             for (int i = 0; i < 7; i++) //TODO: maybe add some actual translations for standard/drop tunings
+                             {
+                                 sw.Write(',');
+                                 sw.Write(currentUIName);
+                             }
+
+                             sw.Write(sw.NewLine);*/
+                        }
+                    }
+                }
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show("Error: " + ioex.Message.ToString());
+            }
+
+            SaveTuningsJSON();
+        }
+
+        private void FillUI()
+        {
+            listTunings.Items.Clear();
+            tuningsCollection = LoadTuningsCollection();
+
+            listTunings.Items.Add("<New>");
+            foreach (var key in tuningsCollection.Keys)
+                listTunings.Items.Add(key);
+        }
+
+        private TuningDefinitionInfo GetCurrentTuningInfo()
+        {
+            var tuningDefinition = new TuningDefinitionInfo();
+            var strings = new Dictionary<string, int>();
+
+            for (int strIdx = 0; strIdx < 6; strIdx++)
+                strings[$"string{strIdx}"] = (int)((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value;
+
+            tuningDefinition.Strings = strings;
+            tuningDefinition.UIName = String.Format("$[{0}]{1}", nupTuningIndex.Value.ToString(), txtUIName.Text);
+
+            return tuningDefinition;
+        }
+        private void UnpackCachePsarc()
+        {
+            if (!Directory.Exists(Constants.WorkFolder))
+                Directory.CreateDirectory(Constants.WorkFolder);
+
+            if (!File.Exists(Constants.CacheBackupPath))
+                File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
+
+            Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
+        }
+
+        private void RepackCachePsarc()
+        {
+            try
+            {
+                if (!Directory.Exists(Constants.CachePcPath))
+                {
+                    MessageBox.Show("Unpacked cache gone...");
+                    return;
+                }
+
+                if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
+                    GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "sltsv1_aggregategraph.nt" }); //NOTE: when adding resources, change Build Action to Embeded Resource  
+
+                Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
+                MessageBox.Show("cache.psarc repackaged successfully", "Success");
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show("Unable to repack cache.psarc" + Environment.NewLine + "Error: " + ex.Message.ToString(), "Repacking error", MessageBoxButtons.OK);
+            }
+        }
+
+        private void btnRestoreDefaults_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (File.Exists(Constants.CacheBackupPath))
+                    File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
+                else
+                    MessageBox.Show("No cache backup found!", "Error");
+
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
+                //TODO: extract the rest
+
+                FillUI();
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show("Problems restoring backup: " + ioex.Message, "Error");
+            }
+        }
+
+        private void btnUnpackCacheAgain_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Constants.CachePcPath))
+                return;
+
+            ZipUtilities.DeleteDirectory(Constants.CachePcPath, true);
+
+            UnpackCachePsarc();
+        }
+
+        private void btnAddCustomTunings_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
+                UnpackCachePsarc();
+
+            AddLocalizationForTuningEntries();
+
+            ZipUtilities.InjectFile(Constants.TuningJSON_CustomPath, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+            ZipUtilities.InjectFile(Constants.LocalizationCSV_CustomPath, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+
+            RepackCachePsarc();
+        }
+
+        private void btnAddFastLoadMod_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(Constants.CachePcPath))
+                UnpackCachePsarc();
+
+            ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+
+            RepackCachePsarc();
+        }
+
+        private void LoadDefaultFiles()
+        {
+            if (!File.Exists(Path.Combine(Constants.TuningJSON_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
+
+            if (!File.Exists(Path.Combine(Constants.IntroGFX_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence.gfx" });
+
+            if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
+        }
+
+        private void LoadSetAndForgetMods()
+        {
+            Constants.RSFolder = ReadSettings.SavedRocksmithLocation(); //TODO: utilize stuff from GenUtil to make it even more fullproof
+            LoadDefaultFiles();
+            FillUI();
+        }
+
+        private void listTunings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listTunings.SelectedItem == null)
+                return;
+
+            string selectedItem = listTunings.SelectedItem.ToString();
+
+            if (selectedItem == "<New>")
+            {
+                txtInternalName.Text = "";
+                nupTuningIndex.Value = 0;
+                txtUIName.Text = "";
+                return;
+            }
+
+            var selectedTuning = tuningsCollection[selectedItem];
+            var uiName = SplitTuningUIName(selectedTuning.UIName);
+
+            txtInternalName.Text = selectedItem;
+            nupTuningIndex.Value = Convert.ToInt32(uiName.Item1);
+            txtUIName.Text = uiName.Item2;
+
+            for (int strIdx = 0; strIdx < 6; strIdx++) // If you are lazy and don't want to list each string separately, just do this sexy two-liner
+                ((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
+        }
+
+        private void btnSaveTuningChanges_Click(object sender, EventArgs e)
+        {
+            if (listTunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
+            {
+                string selectedItem = listTunings.SelectedItem.ToString();
+
+                if (selectedItem != "<New>")
+                    tuningsCollection[selectedItem] = GetCurrentTuningInfo();
+            }
+
+            SaveTuningsJSON();
+        }
+
+        private void btnRemoveTuning_Click(object sender, EventArgs e)
+        {
+            if (listTunings.SelectedItem == null)
+                return;
+
+            string selectedItem = listTunings.SelectedItem.ToString();
+
+            if (selectedItem == "<New>")
+                return;
+
+            tuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
+            listTunings.Items.Remove(selectedItem);
+        }
+
+        private void btnAddTuning_Click(object sender, EventArgs e)
+        {
+            if (listTunings.SelectedItem.ToString() != "<New>")
+                return;
+
+            var currTuning = GetCurrentTuningInfo();
+            string internalName = txtInternalName.Text;
+
+            if (!tuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
+            {
+                tuningsCollection.Add(internalName, currTuning);
+                listTunings.Items.Add(internalName);
+            }
         }
     }
 }
