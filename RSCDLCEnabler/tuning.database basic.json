@@ -73,7 +73,7 @@
         }
       },
       "FStandard": {
-        "UIName": "$[37483]F Standard",
+        "UIName": "$[37383]F Standard",
         "Strings": {
           "string0": 1,
           "string1": 1,
@@ -194,7 +194,7 @@
         }
       },
       "C#DropB": {
-        "UIName": "$[37484]C# Drop B",
+        "UIName": "$[37384]C# Drop B",
         "Strings": {
           "string0": -5,
           "string1": -3,
@@ -216,7 +216,7 @@
         }
       },
       "CDropAb": {
-        "UIName": "$[37485]C Drop Bb",
+        "UIName": "$[37385]C Drop Bb",
         "Strings": {
           "string0": -6,
           "string1": -4,
@@ -227,7 +227,7 @@
         }
       },
       "BStandard": {
-        "UIName": "$[37486]B Standard",
+        "UIName": "$[37386]B Standard",
         "Strings": {
           "string0": -5,
           "string1": -5,
@@ -238,7 +238,7 @@
         }
       },
       "BDropA": {
-        "UIName": "$[37487]B Drop A",
+        "UIName": "$[37387]B Drop A",
         "Strings": {
           "string0": -7,
           "string1": -5,
@@ -249,7 +249,7 @@
         }
       },
       "BbStandard": {
-        "UIName": "$[37488]Bb Standard",
+        "UIName": "$[37388]Bb Standard",
         "Strings": {
           "string0": -6,
           "string1": -6,
@@ -260,7 +260,7 @@
         }
       },
       "Bb drop Ab": {
-        "UIName": "$[37489]Bb Drop Ab",
+        "UIName": "$[37389]Bb Drop Ab",
         "Strings": {
           "string0": -8,
           "string1": -6,
@@ -271,7 +271,7 @@
         }
       },
       "AStandard": {
-        "UIName": "$[37490]A Standard",
+        "UIName": "$[37390]A Standard",
         "Strings": {
           "string0": -7,
           "string1": -7,
@@ -282,7 +282,7 @@
         }
       },
       "ADropG": {
-        "UIName": "$[37491]A Drop G",
+        "UIName": "$[37391]A Drop G",
         "Strings": {
           "string0": -9,
           "string1": -7,
@@ -293,7 +293,7 @@
         }
       },
       "AllFourth": {
-        "UIName": "$[37492]All Fourth",
+        "UIName": "$[37392]All Fourth",
         "Strings": {
           "string0": 0,
           "string1": 0,
@@ -304,7 +304,7 @@
         }
       },
       "DoubleDropD": {
-        "UIName": "$[37493]Double Drop D",
+        "UIName": "$[37393]Double Drop D",
         "Strings": {
           "string0": -2,
           "string1": 0,
@@ -315,7 +315,7 @@
         }
       },
       "OpenC6": {
-        "UIName": "$[37494]Open C6",
+        "UIName": "$[37394]Open C6",
         "Strings": {
           "string0": -4,
           "string1": 0,
@@ -326,7 +326,7 @@
         }
       },
       "OpenC5": {
-        "UIName": "$[37495]Open C5",
+        "UIName": "$[37395]Open C5",
         "Strings": {
           "string0": -4,
           "string1": -2,
@@ -337,7 +337,7 @@
         }
       },
       "DADADd": {
-        "UIName": "$[37496]DADADd",
+        "UIName": "$[37396]DADADd",
         "Strings": {
           "string0": -2,
           "string1": 0,
@@ -348,7 +348,7 @@
         }
       },
       "OpenDm7": {
-        "UIName": "$[37497]Open Dm7",
+        "UIName": "$[37397]Open Dm7",
         "Strings": {
           "string0": -2,
           "string1": 0,
@@ -359,7 +359,7 @@
         }
       },
       "OpenBm": {
-        "UIName": "$[37498]Open Bm",
+        "UIName": "$[37398]Open Bm",
         "Strings": {
           "string0": -2,
           "string1": 2,
@@ -370,7 +370,7 @@
         }
       },
       "EADGBD": {
-        "UIName": "$[37499]EADGBD",
+        "UIName": "$[37399]EADGBD",
         "Strings": {
           "string0": 0,
           "string1": 0,
@@ -381,7 +381,7 @@
         }
       },
       "OpenDm": {
-        "UIName": "$[37500]Open Dm",
+        "UIName": "$[37400]Open Dm",
         "Strings": {
           "string0": -2,
           "string1": 0,
@@ -392,7 +392,7 @@
         }
       },
       "DBDGBe": {
-        "UIName": "$[37501]DBDGBe",
+        "UIName": "$[37401]DBDGBe",
         "Strings": {
           "string0": -2,
           "string1": 2,
@@ -403,7 +403,7 @@
         }
       },
       "EADGAe": {
-        "UIName": "$[37502]EADGAe",
+        "UIName": "$[37402]EADGAe",
         "Strings": {
           "string0": 0,
           "string1": 0,
@@ -414,7 +414,7 @@
         }
       },
       "EGDGBD": {
-        "UIName": "$[37503]Open Em7",
+        "UIName": "$[37403]Open Em7",
         "Strings": {
           "string0": 0,
           "string1": -2,
@@ -425,7 +425,7 @@
         }
       },
       "EABGBd#": {
-        "UIName": "$[37504]EABGBd#",
+        "UIName": "$[37404]EABGBd#",
         "Strings": {
           "string0": 0,
           "string1": 0,
@@ -436,7 +436,7 @@
         }
       },
       "EADGBd#": {
-        "UIName": "$[37505]EADGBd#",
+        "UIName": "$[37405]EADGBd#",
         "Strings": {
           "string0": 0,
           "string1": 0,
@@ -447,7 +447,7 @@
         }
       },
       "Open Db/C#": {
-        "UIName": "$[37506]Open Db/C#",
+        "UIName": "$[37406]Open Db/C#",
         "Strings": {
           "string0": -3,
           "string1": -1,
@@ -457,587 +457,26 @@
           "string5": -3
         }
       },
-      "E Drop D#": {
-        "UIName": "$[37511]E Drop D#",
-        "Strings": {
-          "string0": -1,
-          "string1": 0,
-          "string2": 0,
-          "string3": 0,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "E Drop C#": {
-        "UIName": "$[37512]E Drop C#",
-        "Strings": {
-          "string0": -3,
-          "string1": 0,
-          "string2": 0,
-          "string3": 0,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "E Drop B": {
-        "UIName": "$[37513]E Drop B",
-        "Strings": {
-          "string0": 7,
-          "string1": 0,
-          "string2": 0,
-          "string3": 0,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "F# Drop E": {
-        "UIName": "$[37514]F# Drop E",
-        "Strings": {
-          "string0": 0,
-          "string1": 2,
-          "string2": 2,
-          "string3": 2,
-          "string4": 1,
-          "string5": 0
-        }
-      },
-      "Open F": {
-        "UIName": "$[37516]Open F",
-        "Strings": {
-          "string0": 1,
-          "string1": 1,
-          "string2": 3,
-          "string3": 3,
-          "string4": 3,
-          "string5": 0
-        }
-      },
-      "Eb Standard 2": {
-        "UIName": "$[36578]Eb Standard",
-        "Strings": {
-          "string0": -1,
-          "string1": -1,
-          "string2": -1,
-          "string3": -1,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "Eb Drop Db 2": {
-        "UIName": "$[36579]Eb Drop Db",
-        "Strings": {
-          "string0": -3,
-          "string1": -1,
-          "string2": -1,
-          "string3": -1,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "D Standard 2": {
-        "UIName": "$[36572]D Standard",
-        "Strings": {
-          "string0": -2,
-          "string1": -2,
-          "string2": -2,
-          "string3": -2,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "DDropC 2": {
-        "UIName": "$[36581]D Drop C ",
-        "Strings": {
-          "string0": -4,
-          "string1": -2,
-          "string2": -2,
-          "string3": -2,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "DoubleDropC": {
-        "UIName": "$[37519]Double Drop C ",
-        "Strings": {
-          "string0": -4,
-          "string1": -2,
-          "string2": -2,
-          "string3": -2,
-          "string4": -2,
-          "string5": -4
-        }
-      },
-      "5ths (Cello)": {
-        "UIName": "$[37520]5ths (Cello)",
-        "Strings": {
-          "string0": -4,
-          "string1": -2,
-          "string2": 0,
-          "string3": 2,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "C#DropB3": {
-        "UIName": "$[37484]C# Drop B",
-        "Strings": {
-          "string0": -5,
-          "string1": -3,
-          "string2": -3,
-          "string3": -3,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "C#DropB 4": {
-        "UIName": "$[37484]C# Drop B",
-        "Strings": {
-          "string0": -5,
-          "string1": -3,
-          "string2": -3,
-          "string3": -3,
-          "string4": -3,
-          "string5": -3
-        }
-      },
-      "CStandard 2": {
-        "UIName": "$[36582]C Standard",
-        "Strings": {
-          "string0": -4,
-          "string1": -4,
-          "string2": -4,
-          "string3": -4,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "CDropBb": {
-        "UIName": "$[37485]C Drop Bb",
-        "Strings": {
-          "string0": -6,
-          "string1": -4,
-          "string2": -4,
-          "string3": -4,
-          "string4": -4,
-          "string5": -4
-        }
-      },
-      "CDropBb2": {
-        "UIName": "$[37485]C Drop Bb",
-        "Strings": {
-          "string0": -6,
-          "string1": -4,
-          "string2": -4,
-          "string3": -4,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "CDropBb4": {
-        "UIName": "$[37485]C Drop Bb",
-        "Strings": {
-          "string0": 6,
-          "string1": 8,
-          "string2": 8,
-          "string3": 8,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "CDropBb3": {
-        "UIName": "$[37485]C drop Bb",
-        "Strings": {
-          "string0": -6,
-          "string1": -4,
-          "string2": -4,
-          "string3": -4,
-          "string4": -3,
-          "string5": -4
-        }
-      },
-      "C drop G": {
-        "UIName": "$[37528]C drop G",
-        "Strings": {
-          "string0": 3,
-          "string1": 8,
-          "string2": 8,
-          "string3": 8,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "BStandard 2": {
-        "UIName": "$[37532]B standard (6 string)",
+      "BEADG": {
+        "UIName": "$[37407]BEADG",
         "Strings": {
           "string0": -5,
           "string1": -5,
           "string2": -5,
           "string3": -5,
           "string4": -4,
-          "string5": -4
-        }
-      },
-      "BDropA2": {
-        "UIName": "$[37487]B Drop A",
-        "Strings": {
-          "string0": 5,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 7,
-          "string5": 7
-        }
-      },
-      "BDropF": {
-        "UIName": "$[37533]B Drop F",
-        "Strings": {
-          "string0": 1,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 7,
-          "string5": 0
-        }
-      },
-      "Bb Standard 2": {
-        "UIName": "$[37488]Bb Standard",
-        "Strings": {
-          "string0": 6,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 7,
-          "string5": 6
-        }
-      },
-      "Bb Standard 4": {
-        "UIName": "$[37488]Bb Standard",
-        "Strings": {
-          "string0": 6,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 7,
-          "string5": 7
-        }
-      },
-      "Bb Standard 3": {
-        "UIName": "$[37534]Bb Standard (6 string)",
-        "Strings": {
-          "string0": -6,
-          "string1": -6,
-          "string2": -6,
-          "string3": -6,
-          "string4": -5,
           "string5": -5
         }
       },
-      "Bb drop Ab 2": {
-        "UIName": "$[37489]Bb Drop Ab",
-        "Strings": {
-          "string0": 4,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "Bb drop Ab 3": {
-        "UIName": "$[37489]Bb Drop Ab",
-        "Strings": {
-          "string0": 4,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 6,
-          "string5": 0
-        }
-      },
-      "Bb drop Ab 4": {
-        "UIName": "$[37535]Bb Drop Ab (6 string)",
-        "Strings": {
-          "string0": 4,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 7,
-          "string5": 7
-        }
-      },
-      "Bb drop F": {
-        "UIName": "$[37536]Bb drop F",
-        "Strings": {
-          "string0": 1,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 6,
-          "string5": 0
-        }
-      },
-      "Bb drop F 2": {
-        "UIName": "$[37536]Bb drop F",
-        "Strings": {
-          "string0": 1,
-          "string1": 6,
-          "string2": 6,
-          "string3": 6,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "BDGC": {
-        "UIName": "$[37490]A Standard",
-        "Strings": {
-          "string0": -5,
-          "string1": -7,
-          "string2": -7,
-          "string3": -7,
-          "string4": -7,
-          "string5": -7
-        }
-      },
-      "AStandard 2": {
-        "UIName": "$[37490]A Standard",
-        "Strings": {
-          "string0": 5,
-          "string1": 5,
-          "string2": 5,
-          "string3": 5,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "AStandard 3": {
-        "UIName": "$[37490]A Standard",
-        "Strings": {
-          "string0": 5,
-          "string1": 5,
-          "string2": 5,
-          "string3": 5,
-          "string4": 5,
-          "string5": 5
-        }
-      },
-      "AStandard 4": {
-        "UIName": "$[37475]A Standard (6 string)",
+      "AEADG": {
+        "UIName": "$[37408]AEADG",
         "Strings": {
           "string0": -7,
-          "string1": -7,
-          "string2": -7,
-          "string3": -7,
-          "string4": -6,
-          "string5": -6
-        }
-      },
-      "AbStandard": {
-        "UIName": "$[37538]Ab Standard",
-        "Strings": {
-          "string0": 4,
-          "string1": 4,
-          "string2": 4,
-          "string3": 4,
-          "string4": 4,
-          "string5": 4
-        }
-      },
-      "AbStandard 2": {
-        "UIName": "$[37538]Ab Standard",
-        "Strings": {
-          "string0": 4,
-          "string1": 4,
-          "string2": 4,
-          "string3": 4,
-          "string4": 3,
-          "string5": 3
-        }
-      },
-      "AbStandard 3": {
-        "UIName": "$[37539]Ab Standard (6 string)",
-        "Strings": {
-          "string0": -8,
-          "string1": -8,
-          "string2": -8,
-          "string3": -8,
-          "string4": -7,
-          "string5": -7
-        }
-      },
-      "AbDbAbDb": {
-        "UIName": "$[37540]Ab Standard",
-        "Strings": {
-          "string0": 4,
-          "string1": 4,
-          "string2": 6,
-          "string3": 6,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "ADropG 2": {
-        "UIName": "$[37491]A Drop G",
-        "Strings": {
-          "string0": 3,
-          "string1": 5,
-          "string2": 5,
-          "string3": 5,
-          "string4": 5,
-          "string5": 5
-        }
-      },
-      "Gb Standard": {
-        "UIName": "$[37541]Gb Standard",
-        "Strings": {
-          "string0": 2,
-          "string1": 2,
-          "string2": 2,
-          "string3": 2,
-          "string4": 2,
-          "string5": 2
-        }
-      },
-      "BEADGC": {
-        "UIName": "$[37542]BEADGC",
-        "Strings": {
-          "string0": 7,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 8,
-          "string5": 8
-        }
-      },
-      "BEADGB": {
-        "UIName": "$[37543]BEADGE",
-        "Strings": {
-          "string0": 7,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 8,
-          "string5": 7
-        }
-      },
-      "BEADGE": {
-        "UIName": "$[37544]BEADGE",
-        "Strings": {
-          "string0": -5,
           "string1": -5,
           "string2": -5,
           "string3": -5,
           "string4": -4,
-          "string5": 0
-        }
-      },
-      "BEADF": {
-        "UIName": "$[37545]BEADF",
-        "Strings": {
-          "string0": 7,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 6,
-          "string5": 7
-        }
-      },
-      "BEADB": {
-        "UIName": "$[37546]BEADB",
-        "Strings": {
-          "string0": 7,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 0,
-          "string5": 0
-        }
-      },
-      "BEADB 2": {
-        "UIName": "$[37546]BEADB",
-        "Strings": {
-          "string0": 7,
-          "string1": 7,
-          "string2": 7,
-          "string3": 7,
-          "string4": 12,
-          "string5": 12
-        }
-      },
-      "G Standard": {
-        "UIName": "$[37547]G Standard",
-        "Strings": {
-          "string0": 3,
-          "string1": 3,
-          "string2": 3,
-          "string3": 3,
-          "string4": 3,
-          "string5": 3
-        }
-      },
-      "OpenDmadd9": {
-        "UIName": "$[37548]Open Dmadd9",
-        "Strings": {
-          "string0": -2,
-          "string1": 0,
-          "string2": 0,
-          "string3": -2,
-          "string4": -2,
-          "string5": 0
-        }
-      },
-      "StainDSoFarAwayLead": {
-        "UIName": "$[37549]Eb Ab Db Eb Ab Eb",
-        "Strings": {
-          "string0": -1,
-          "string1": -1,
-          "string2": -1,
-          "string3": -4,
-          "string4": -3,
-          "string5": -1
-        }
-      },
-      "StainDOutside": {
-        "UIName": "$[37550]Ab Db Ab Db Gb Bb",
-        "Strings": {
-          "string0": -8,
-          "string1": -6,
-          "string2": -6,
-          "string3": -6,
-          "string4": -5,
-          "string5": -6
-        }
-      },
-      "StainDSoFarAway": {
-        "UIName": "$[37551]Ab Db Ab Db Eb Ab",
-        "Strings": {
-          "string0": -8,
-          "string1": -6,
-          "string2": -6,
-          "string3": -6,
-          "string4": -8,
-          "string5": -8
-        }
-      },
-      "StainDItsBeenAwhile": {
-        "UIName": "$[37552]Ab Db Ab Db Gb Bb",
-        "Strings": {
-          "string0": -8,
-          "string1": -8,
-          "string2": -6,
-          "string3": -6,
-          "string4": -5,
-          "string5": -6
-        }
-      },
-      "OpenC#6Sus4": {
-        "UIName": "$[37553]Open C#6sus4",
-        "Strings": {
-          "string0": -3,
-          "string1": -1,
-          "string2": -1,
-          "string3": -1,
-          "string4": 0,
-          "string5": -3
+          "string5": -5
         }
       }
     }
