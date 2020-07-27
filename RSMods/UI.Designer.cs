@@ -542,7 +542,7 @@
             // ExtendedRangeTuningBox
             // 
             this.ExtendedRangeTuningBox.Controls.Add(this.ExtendedRangeTunings);
-            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1380, 20);
+            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1037, 268);
             this.ExtendedRangeTuningBox.Name = "ExtendedRangeTuningBox";
             this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(215, 188);
             this.ExtendedRangeTuningBox.TabIndex = 49;
@@ -640,7 +640,7 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 622);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 672);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(109, 22);
             this.ResetToDefaultButton.TabIndex = 32;
@@ -866,7 +866,7 @@
             this.groupSetAndForget.Controls.Add(this.btnAddTuning);
             this.groupSetAndForget.Controls.Add(this.btnRemoveTuning);
             this.groupSetAndForget.Controls.Add(this.listTunings);
-            this.groupSetAndForget.Location = new System.Drawing.Point(162, 467);
+            this.groupSetAndForget.Location = new System.Drawing.Point(162, 517);
             this.groupSetAndForget.Name = "groupSetAndForget";
             this.groupSetAndForget.Size = new System.Drawing.Size(1131, 177);
             this.groupSetAndForget.TabIndex = 68;
@@ -1127,8 +1127,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.GhostWhite;
-            this.ClientSize = new System.Drawing.Size(1616, 678);
+            this.BackColor = System.Drawing.Color.Azure;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ClientSize = new System.Drawing.Size(1334, 711);
             this.Controls.Add(this.groupSetAndForget);
             this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.ChangeStringColorsBox);
@@ -1139,6 +1140,7 @@
             this.Controls.Add(this.ToggleLoftOffWhenBox);
             this.Controls.Add(this.HowToEnumerateBox);
             this.Controls.Add(this.ResetToDefaultButton);
+            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
