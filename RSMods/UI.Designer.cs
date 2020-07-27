@@ -34,7 +34,6 @@
             this.AddVolumeCheckbox = new System.Windows.Forms.CheckBox();
             this.DecreaseVolumeCheckbox = new System.Windows.Forms.CheckBox();
             this.SongTimerCheckbox = new System.Windows.Forms.CheckBox();
-            this.SaveAndQuit = new System.Windows.Forms.Button();
             this.ToggleLoftKey = new System.Windows.Forms.Label();
             this.AddVolumeKey = new System.Windows.Forms.Label();
             this.DecreaseVolumeKey = new System.Windows.Forms.Label();
@@ -91,6 +90,7 @@
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.groupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.TuningNoteNameLabel = new System.Windows.Forms.Label();
             this.btnAddCustomMenu = new System.Windows.Forms.Button();
             this.btnAddFastLoadMod = new System.Windows.Forms.Button();
             this.btnUnpackCacheAgain = new System.Windows.Forms.Button();
@@ -113,7 +113,6 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
-            this.TuningNoteNameLabel = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -160,6 +159,7 @@
             this.ToggleLoftCheckbox.TabIndex = 6;
             this.ToggleLoftCheckbox.Text = "Toggle Loft";
             this.ToggleLoftCheckbox.UseVisualStyleBackColor = true;
+            this.ToggleLoftCheckbox.CheckedChanged += new System.EventHandler(this.ToggleLoftCheckbox_CheckedChanged);
             // 
             // AddVolumeCheckbox
             // 
@@ -170,6 +170,7 @@
             this.AddVolumeCheckbox.TabIndex = 8;
             this.AddVolumeCheckbox.Text = "Add Volume";
             this.AddVolumeCheckbox.UseVisualStyleBackColor = true;
+            this.AddVolumeCheckbox.CheckedChanged += new System.EventHandler(this.AddVolumeCheckbox_CheckedChanged);
             // 
             // DecreaseVolumeCheckbox
             // 
@@ -180,6 +181,7 @@
             this.DecreaseVolumeCheckbox.TabIndex = 9;
             this.DecreaseVolumeCheckbox.Text = "Decrease Volume";
             this.DecreaseVolumeCheckbox.UseVisualStyleBackColor = true;
+            this.DecreaseVolumeCheckbox.CheckedChanged += new System.EventHandler(this.DecreaseVolumeCheckbox_CheckedChanged);
             // 
             // SongTimerCheckbox
             // 
@@ -190,17 +192,7 @@
             this.SongTimerCheckbox.TabIndex = 10;
             this.SongTimerCheckbox.Text = "Show Song Timer";
             this.SongTimerCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // SaveAndQuit
-            // 
-            this.SaveAndQuit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SaveAndQuit.Location = new System.Drawing.Point(1348, 586);
-            this.SaveAndQuit.Name = "SaveAndQuit";
-            this.SaveAndQuit.Size = new System.Drawing.Size(228, 45);
-            this.SaveAndQuit.TabIndex = 13;
-            this.SaveAndQuit.Text = "Save And Quit";
-            this.SaveAndQuit.UseVisualStyleBackColor = true;
-            this.SaveAndQuit.Click += new System.EventHandler(this.SaveAndQuitFunction);
+            this.SongTimerCheckbox.CheckedChanged += new System.EventHandler(this.SongTimerCheckbox_CheckedChanged);
             // 
             // ToggleLoftKey
             // 
@@ -287,6 +279,7 @@
             this.RainbowStringsEnabled.TabIndex = 26;
             this.RainbowStringsEnabled.Text = "Rainbow Strings";
             this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
+            this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
             // 
             // ExtendedRangeEnabled
             // 
@@ -297,6 +290,7 @@
             this.ExtendedRangeEnabled.TabIndex = 27;
             this.ExtendedRangeEnabled.Text = "Extended Range Support";
             this.ExtendedRangeEnabled.UseVisualStyleBackColor = true;
+            this.ExtendedRangeEnabled.CheckedChanged += new System.EventHandler(this.ExtendedRangeEnabled_CheckedChanged);
             // 
             // RainbowStringsAssignment
             // 
@@ -326,6 +320,7 @@
             this.ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.ExtendedRangeTunings.TabIndex = 29;
             this.ExtendedRangeTunings.Visible = false;
+            this.ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(this.ExtendedRangeTunings_SelectedIndexChanged);
             // 
             // ForceEnumerationCheckbox
             // 
@@ -336,6 +331,7 @@
             this.ForceEnumerationCheckbox.TabIndex = 31;
             this.ForceEnumerationCheckbox.Text = "Force Enumeration";
             this.ForceEnumerationCheckbox.UseVisualStyleBackColor = true;
+            this.ForceEnumerationCheckbox.CheckedChanged += new System.EventHandler(this.ForceEnumerationCheckbox_CheckedChanged);
             // 
             // DiscoModeCheckbox
             // 
@@ -346,6 +342,7 @@
             this.DiscoModeCheckbox.TabIndex = 33;
             this.DiscoModeCheckbox.Text = "Disco Mode";
             this.DiscoModeCheckbox.UseVisualStyleBackColor = true;
+            this.DiscoModeCheckbox.CheckedChanged += new System.EventHandler(this.DiscoModeCheckbox_CheckedChanged);
             // 
             // HeadstockCheckbox
             // 
@@ -356,6 +353,7 @@
             this.HeadstockCheckbox.TabIndex = 34;
             this.HeadstockCheckbox.Text = "Remove Headstock";
             this.HeadstockCheckbox.UseVisualStyleBackColor = true;
+            this.HeadstockCheckbox.CheckedChanged += new System.EventHandler(this.HeadstockCheckbox_CheckedChanged);
             // 
             // RemoveSkylineCheckbox
             // 
@@ -366,6 +364,7 @@
             this.RemoveSkylineCheckbox.TabIndex = 36;
             this.RemoveSkylineCheckbox.Text = "Remove Skyline";
             this.RemoveSkylineCheckbox.UseVisualStyleBackColor = true;
+            this.RemoveSkylineCheckbox.CheckedChanged += new System.EventHandler(this.RemoveSkylineCheckbox_CheckedChanged);
             // 
             // GreenScreenWallCheckbox
             // 
@@ -376,6 +375,7 @@
             this.GreenScreenWallCheckbox.TabIndex = 37;
             this.GreenScreenWallCheckbox.Text = "Greenscreen Wall";
             this.GreenScreenWallCheckbox.UseVisualStyleBackColor = true;
+            this.GreenScreenWallCheckbox.CheckedChanged += new System.EventHandler(this.GreenScreenWallCheckbox_CheckedChanged);
             // 
             // AutoLoadProfileCheckbox
             // 
@@ -386,6 +386,7 @@
             this.AutoLoadProfileCheckbox.TabIndex = 38;
             this.AutoLoadProfileCheckbox.Text = "Autoload Last Used Profile";
             this.AutoLoadProfileCheckbox.UseVisualStyleBackColor = true;
+            this.AutoLoadProfileCheckbox.CheckedChanged += new System.EventHandler(this.AutoLoadProfileCheckbox_CheckedChanged);
             // 
             // FretlessModeCheckbox
             // 
@@ -396,6 +397,7 @@
             this.FretlessModeCheckbox.TabIndex = 41;
             this.FretlessModeCheckbox.Text = "Fretless Mode";
             this.FretlessModeCheckbox.UseVisualStyleBackColor = true;
+            this.FretlessModeCheckbox.CheckedChanged += new System.EventHandler(this.FretlessModeCheckbox_CheckedChanged);
             // 
             // RemoveInlaysCheckbox
             // 
@@ -406,6 +408,7 @@
             this.RemoveInlaysCheckbox.TabIndex = 42;
             this.RemoveInlaysCheckbox.Text = "Remove Inlays";
             this.RemoveInlaysCheckbox.UseVisualStyleBackColor = true;
+            this.RemoveInlaysCheckbox.CheckedChanged += new System.EventHandler(this.RemoveInlaysCheckbox_CheckedChanged);
             // 
             // ToggleLoftWhenStartupRadio
             // 
@@ -418,6 +421,7 @@
             this.ToggleLoftWhenStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleLoftWhenStartupRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenStartupRadio.Visible = false;
+            this.ToggleLoftWhenStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenStartupRadio_CheckedChanged);
             // 
             // ToggleLoftWhenManualRadio
             // 
@@ -430,6 +434,7 @@
             this.ToggleLoftWhenManualRadio.Text = "Only When I Manually Trigger Via Hotkey";
             this.ToggleLoftWhenManualRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenManualRadio.Visible = false;
+            this.ToggleLoftWhenManualRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenManualRadio_CheckedChanged);
             // 
             // ToggleLoftWhenSongRadio
             // 
@@ -442,6 +447,7 @@
             this.ToggleLoftWhenSongRadio.Text = "Only When In A Song";
             this.ToggleLoftWhenSongRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenSongRadio.Visible = false;
+            this.ToggleLoftWhenSongRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenSongRadio_CheckedChanged);
             // 
             // ForceEnumerationManualRadio
             // 
@@ -454,6 +460,7 @@
             this.ForceEnumerationManualRadio.Text = "Manual (Keypress)";
             this.ForceEnumerationManualRadio.UseVisualStyleBackColor = true;
             this.ForceEnumerationManualRadio.Visible = false;
+            this.ForceEnumerationManualRadio.CheckedChanged += new System.EventHandler(this.ForceEnumerationManualRadio_CheckedChanged);
             // 
             // ForceEnumerationAutomaticRadio
             // 
@@ -466,6 +473,7 @@
             this.ForceEnumerationAutomaticRadio.Text = "Automatic (Scan For New CDLC)";
             this.ForceEnumerationAutomaticRadio.UseVisualStyleBackColor = true;
             this.ForceEnumerationAutomaticRadio.Visible = false;
+            this.ForceEnumerationAutomaticRadio.CheckedChanged += new System.EventHandler(this.ForceEnumerationAutomaticRadio_CheckedChanged);
             // 
             // HowToEnumerateBox
             // 
@@ -514,6 +522,7 @@
             0,
             0});
             this.EnumerateEveryXMS.Visible = false;
+            this.EnumerateEveryXMS.ValueChanged += new System.EventHandler(this.EnumerateEveryXMS_ValueChanged);
             // 
             // ToggleLoftOffWhenBox
             // 
@@ -573,6 +582,7 @@
             this.customColorsCheckbox.TabIndex = 44;
             this.customColorsCheckbox.Text = "Custom String Colors";
             this.customColorsCheckbox.UseVisualStyleBackColor = true;
+            this.customColorsCheckbox.CheckedChanged += new System.EventHandler(this.customColorsCheckbox_CheckedChanged);
             // 
             // RemoveLineMarkersCheckBox
             // 
@@ -583,6 +593,7 @@
             this.RemoveLineMarkersCheckBox.TabIndex = 43;
             this.RemoveLineMarkersCheckBox.Text = "Remove Line Markers";
             this.RemoveLineMarkersCheckBox.UseVisualStyleBackColor = true;
+            this.RemoveLineMarkersCheckBox.CheckedChanged += new System.EventHandler(this.RemoveLineMarkersCheckBox_CheckedChanged);
             // 
             // SongListBox
             // 
@@ -803,6 +814,7 @@
             this.ToggleSkylineSongRadio.TabStop = true;
             this.ToggleSkylineSongRadio.Text = "Only When In A Song";
             this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
+            this.ToggleSkylineSongRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineSongRadio_CheckedChanged);
             // 
             // ToggleSkylineStartupRadio
             // 
@@ -814,6 +826,7 @@
             this.ToggleSkylineStartupRadio.TabStop = true;
             this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
+            this.ToggleSkylineStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineStartupRadio_CheckedChanged);
             // 
             // groupSetAndForget
             // 
@@ -846,6 +859,16 @@
             this.groupSetAndForget.TabIndex = 68;
             this.groupSetAndForget.TabStop = false;
             this.groupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // TuningNoteNameLabel
+            // 
+            this.TuningNoteNameLabel.AutoSize = true;
+            this.TuningNoteNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TuningNoteNameLabel.Location = new System.Drawing.Point(452, 41);
+            this.TuningNoteNameLabel.Name = "TuningNoteNameLabel";
+            this.TuningNoteNameLabel.Size = new System.Drawing.Size(240, 13);
+            this.TuningNoteNameLabel.TabIndex = 94;
+            this.TuningNoteNameLabel.Text = "E         A         D         G          B         e";
             // 
             // btnAddCustomMenu
             // 
@@ -1087,16 +1110,6 @@
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
             // 
-            // TuningNoteNameLabel
-            // 
-            this.TuningNoteNameLabel.AutoSize = true;
-            this.TuningNoteNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TuningNoteNameLabel.Location = new System.Drawing.Point(452, 41);
-            this.TuningNoteNameLabel.Name = "TuningNoteNameLabel";
-            this.TuningNoteNameLabel.Size = new System.Drawing.Size(240, 13);
-            this.TuningNoteNameLabel.TabIndex = 94;
-            this.TuningNoteNameLabel.Text = "E         A         D         G          B         e";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1113,7 +1126,6 @@
             this.Controls.Add(this.ToggleLoftOffWhenBox);
             this.Controls.Add(this.HowToEnumerateBox);
             this.Controls.Add(this.ResetToDefaultButton);
-            this.Controls.Add(this.SaveAndQuit);
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
             this.HowToEnumerateBox.ResumeLayout(false);
@@ -1154,7 +1166,6 @@
         private System.Windows.Forms.CheckBox AddVolumeCheckbox;
         private System.Windows.Forms.CheckBox DecreaseVolumeCheckbox;
         private System.Windows.Forms.CheckBox SongTimerCheckbox;
-        private System.Windows.Forms.Button SaveAndQuit;
         private System.Windows.Forms.Label ToggleLoftKey;
         private System.Windows.Forms.Label AddVolumeKey;
         private System.Windows.Forms.Label DecreaseVolumeKey;

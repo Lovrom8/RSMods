@@ -109,6 +109,29 @@ namespace RSMods
                 {
                     this.SongTimerCheckbox.Checked = false;
                 }
+                if (ImportPriorSettings()[16].ToString() != "false") // Force Enumeration Settings
+                {
+                    this.ForceEnumerationCheckbox.Checked = true;
+                    this.ForceEnumerationAutomaticRadio.Visible = true;
+                    this.ForceEnumerationManualRadio.Visible = true;
+                    this.HowToEnumerateBox.Visible = true;
+                    if (ImportPriorSettings()[16].ToString() == "automatic")
+                    {
+                        this.ForceEnumerationAutomaticRadio.Checked = true;
+                    }
+                    else
+                    {
+                        this.ForceEnumerationManualRadio.Checked = true;
+                    }
+
+                }
+                else
+                {
+                    this.ForceEnumerationCheckbox.Checked = false;
+                    this.ForceEnumerationAutomaticRadio.Visible = false;
+                    this.ForceEnumerationManualRadio.Visible = false;
+                    this.HowToEnumerateBox.Visible = false;
+                }
                 if (ImportPriorSettings()[17].ToString() == "on") // Rainbow String Enabled / Disabled
                 {
                     this.RainbowStringsEnabled.Checked = true;
@@ -116,24 +139,6 @@ namespace RSMods
                 else
                 {
                     this.RainbowStringsEnabled.Checked = false;
-                }
-                if (ImportPriorSettings()[16].ToString() == "automatic" ^ ImportPriorSettings()[16].ToString() == "manual") // Force ReEnumeration Manual / Automatic / False
-                {
-                    this.ForceEnumerationCheckbox.Checked = true;
-                    this.ForceEnumerationAutomaticRadio.Visible = true;
-                    this.ForceEnumerationManualRadio.Visible = true;
-                    this.HowToEnumerateBox.Visible = true;
-
-                    if (ImportPriorSettings()[16].ToString() == "automatic")
-                    {
-                        this.ForceEnumerationAutomaticRadio.Checked = true;
-                        this.CheckEveryXmsText.Visible = true;
-                        this.EnumerateEveryXMS.Visible = true;
-                    }
-                    if (ImportPriorSettings()[16].ToString() == "manual")
-                    {
-                        this.ForceEnumerationManualRadio.Checked = true;
-                    }
                 }
                 if (ImportPriorSettings()[18].ToString() == "on") // Extended Range Enabled / Disabled
                 {
@@ -145,13 +150,7 @@ namespace RSMods
                 {
                     this.ExtendedRangeEnabled.Checked = false;
                 }
-
-                if (ImportPriorSettings()[19].ToString() == "2") // Custom String Colors
-                {
-                    this.customColorsCheckbox.Checked = true;
-                    this.ChangeStringColorsBox.Visible = true;
-                }
-                else if (ImportPriorSettings()[19].ToString() == "1") // ZZ String Colors
+                if (ImportPriorSettings()[19].ToString() != "0") // Custom String Colors
                 {
                     this.customColorsCheckbox.Checked = true;
                     this.ChangeStringColorsBox.Visible = true;
@@ -343,15 +342,9 @@ namespace RSMods
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
             {
-                Save_SaveChanges(sender, e);
+                Save_Songlists_Keybindings(sender, e);
                 e.SuppressKeyPress = true;
             }
-        }
-
-        private void SaveAndQuitFunction(object sender, EventArgs e)
-        {
-            Save_SaveChanges(sender, e);
-            Application.Exit();
         }
 
         private void ResetToDefaultSettings(object sender, EventArgs e)
@@ -360,230 +353,7 @@ namespace RSMods
             RefreshForm();
         }
 
-        private void Save_SaveChanges(object sender, EventArgs e) // Save button
-        {
-            // Songlists
-            {
-                if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(0)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
-                {
-                    SaveChanges(1, this.NewSongListNameTxtbox.Text);
-                }
-                if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(1)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 2
-                {
-                    SaveChanges(2, this.NewSongListNameTxtbox.Text);
-                }
-                if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(2)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 3
-                {
-                    SaveChanges(3, this.NewSongListNameTxtbox.Text);
-                }
-                if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(3)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 4
-                {
-                    SaveChanges(4, this.NewSongListNameTxtbox.Text);
-                }
-                if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(4)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 5
-                {
-                    SaveChanges(5, this.NewSongListNameTxtbox.Text);
-                }
-                if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(5)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 6
-                {
-                    SaveChanges(6, this.NewSongListNameTxtbox.Text);
-                }
-            }
-
-            // Mods on KeyPress
-            {
-                if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(6)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
-                {
-                    SaveChanges(7, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(1) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(7)) & (this.NewAssignmentTxtBox.Text != "")) // Add Volume Key
-                {
-                    SaveChanges(8, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(2) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(8)) & (this.NewAssignmentTxtBox.Text != "")) // Decrease Volume Key
-                {
-                    SaveChanges(9, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(3) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(9)) & (this.NewAssignmentTxtBox.Text != "")) // Show Song Timer Key
-                {
-                    SaveChanges(10, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(4) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(10)) & (this.NewAssignmentTxtBox.Text != "")) // Force ReEnumeration Key
-                {
-                    SaveChanges(11, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
-                {
-                    SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-            }
-
-            // Toggle Mods
-            {
-                if (this.ToggleLoftCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(11)) // Toggle Loft Enabled/ Disabled
-                {
-                    SaveChanges(13, this.ToggleLoftCheckbox.Checked.ToString().ToLower());
-                }
-
-                if (this.AddVolumeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(13)) // Add Volume Enabled/ Disabled
-                {
-                    SaveChanges(14, this.AddVolumeCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.DecreaseVolumeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(14)) // Decrease Volume Enabled / Disabled
-                {
-                    SaveChanges(15, this.DecreaseVolumeCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.SongTimerCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(15)) // Show Song Timer Enabled / Disabled
-                {
-                    SaveChanges(16, this.SongTimerCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.ForceEnumerationCheckbox.Checked == true) // Force Enumeration Manual / Automatic / Disabled
-                {
-                    if (this.ForceEnumerationAutomaticRadio.Checked == true)
-                    {
-                        SaveChanges(17, "automatic");
-                    }
-                    else
-                    {
-                        SaveChanges(17, "manual");
-                    }
-                }
-                else
-                {
-                    SaveChanges(17, "off");
-                }
-                if (this.RainbowStringsEnabled.Checked.ToString() != ReadSettings.ProcessSettings(17)) // Rainbow Strings Enabled / Disabled
-                {
-                    SaveChanges(18, this.RainbowStringsEnabled.Checked.ToString().ToLower());
-                }
-                if (this.ExtendedRangeEnabled.Checked.ToString() != ReadSettings.ProcessSettings(18)) // Extended Range Mode Enabled / Disabled
-                {
-                    SaveChanges(19, this.ExtendedRangeEnabled.Checked.ToString().ToLower());
-                }
-                if (this.customColorsCheckbox.Checked.ToString().ToLower() == "true" && ReadSettings.ProcessSettings(19) != "1") // Custom String Colors Enabled / ZZ / Default
-                {
-                    SaveChanges(20, "2"); // Enabled
-                }
-                else if (customColorsCheckbox.Checked.ToString().ToLower() == "false") // Default
-                {
-                    SaveChanges(20, "0");
-                }
-                if (this.DiscoModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(20)) // Disco Mode Enabled / Disabled
-                {
-                    SaveChanges(21, this.DiscoModeCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.HeadstockCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(21)) // Remove Headstock Enabled / Disabled
-                {
-                    SaveChanges(22, this.HeadstockCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.RemoveSkylineCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(22)) // Remove Skyline Enabled / Disabled
-                {
-                    SaveChanges(23, this.RemoveSkylineCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.GreenScreenWallCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(23)) // Green Screen Wall Enabled / Disabled
-                {
-                    SaveChanges(24, this.GreenScreenWallCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.AutoLoadProfileCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(24)) // Force Load Profile On Game Boot Enabled / Disabled
-                {
-                    SaveChanges(25, this.AutoLoadProfileCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.FretlessModeCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(25)) // Fretless Mode Enabled / Disabled
-                {
-                    SaveChanges(26, this.FretlessModeCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.RemoveInlaysCheckbox.Checked.ToString() != ReadSettings.ProcessSettings(26)) // Remove Inlay Markers Enabled / Disabled
-                {
-                    SaveChanges(27, this.RemoveInlaysCheckbox.Checked.ToString().ToLower());
-                }
-                if (this.ToggleLoftCheckbox.Checked == true)
-                {
-                    if (this.ToggleLoftWhenManualRadio.Checked == true) // Toggle Loft On Keypress
-                    {
-                        SaveChanges(28, "manual");
-                    }
-                    if (this.ToggleLoftWhenSongRadio.Checked == true) // Toggle Loft On Song Load
-                    {
-                        SaveChanges(28, "song");
-                    }
-                    if (this.ToggleLoftWhenStartupRadio.Checked == true) // Toggle Loft On Game Startup
-                    {
-                        SaveChanges(28, "startup");
-                    }
-                }
-                if (this.RemoveSkylineCheckbox.Checked == true)
-                {
-                    if (this.ToggleSkylineSongRadio.Checked == true) // Toggle Skyline on Song Load
-                    {
-                        SaveChanges(30, "song");
-                    }
-                    if (this.ToggleSkylineStartupRadio.Checked == true) // Toggle Skyline on Startup
-                    {
-                        SaveChanges(30, "startup");
-                    }
-                }
-                if (this.RemoveLineMarkersCheckBox.Checked.ToString() != ReadSettings.ProcessSettings(28)) // Remove Line Markers Enabled / Disabled
-                {
-                    SaveChanges(29, this.RemoveLineMarkersCheckBox.Checked.ToString().ToLower());
-                }
-            }
-
-            // Extended Range
-            {
-                if (this.ExtendedRangeTunings.GetSelected(0))
-                {
-                    SaveChanges(43, "-2");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(1))
-                {
-                    SaveChanges(43, "-3");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(2))
-                {
-                    SaveChanges(43, "-4");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(3))
-                {
-                    SaveChanges(43, "-5");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(4))
-                {
-                    SaveChanges(43, "-6");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(5))
-                {
-                    SaveChanges(43, "-7");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(6))
-                {
-                    SaveChanges(43, "-8");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(7))
-                {
-                    SaveChanges(43, "-9");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(8))
-                {
-                    SaveChanges(43, "-10");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(9))
-                {
-                    SaveChanges(43, "-11");
-                }
-                if (this.ExtendedRangeTunings.GetSelected(10))
-                {
-                    SaveChanges(43, "-12");
-                }
-            }
-
-            // Mod Settings
-            if (this.EnumerateEveryXMS.Value != Decimal.Parse(ImportPriorSettings()[43].ToString()))
-            {
-                SaveChanges(44, (this.EnumerateEveryXMS.Value * 1000).ToString());
-            }
-
-            RefreshForm();
-        }
+       
 
         private void RefreshForm()
         {
@@ -1363,5 +1133,334 @@ namespace RSMods
 
             RepackCachePsarc();
         }
+
+
+
+        private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save button
+        {
+            // Songlists
+            {
+                if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(0)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
+                {
+                    SaveChanges(1, this.NewSongListNameTxtbox.Text);
+                }
+                if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(1)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 2
+                {
+                    SaveChanges(2, this.NewSongListNameTxtbox.Text);
+                }
+                if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(2)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 3
+                {
+                    SaveChanges(3, this.NewSongListNameTxtbox.Text);
+                }
+                if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(3)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 4
+                {
+                    SaveChanges(4, this.NewSongListNameTxtbox.Text);
+                }
+                if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(4)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 5
+                {
+                    SaveChanges(5, this.NewSongListNameTxtbox.Text);
+                }
+                if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(5)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 6
+                {
+                    SaveChanges(6, this.NewSongListNameTxtbox.Text);
+                }
+            }
+
+            // Mods on KeyPress
+            {
+                if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(6)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
+                {
+                    SaveChanges(7, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+                if (this.ModList.GetSelected(1) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(7)) & (this.NewAssignmentTxtBox.Text != "")) // Add Volume Key
+                {
+                    SaveChanges(8, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+                if (this.ModList.GetSelected(2) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(8)) & (this.NewAssignmentTxtBox.Text != "")) // Decrease Volume Key
+                {
+                    SaveChanges(9, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+                if (this.ModList.GetSelected(3) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(9)) & (this.NewAssignmentTxtBox.Text != "")) // Show Song Timer Key
+                {
+                    SaveChanges(10, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+                if (this.ModList.GetSelected(4) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(10)) & (this.NewAssignmentTxtBox.Text != "")) // Force ReEnumeration Key
+                {
+                    SaveChanges(11, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
+                {
+                    SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
+            }
+            RefreshForm();
+        }
+
+        private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
+        {
+            if (this.ToggleLoftCheckbox.Checked)
+            {
+                    SaveChanges(13, "true");
+                    this.ToggleLoftCheckbox.Checked = true;
+                    this.ToggleLoftWhenStartupRadio.Visible = true;
+                    this.ToggleLoftWhenManualRadio.Visible = true;
+                    this.ToggleLoftWhenSongRadio.Visible = true;
+                    this.ToggleLoftOffWhenBox.Visible = true;
+            }
+            else
+            {
+                SaveChanges(13, "false");
+                this.ToggleLoftCheckbox.Checked = false;
+                this.ToggleLoftWhenStartupRadio.Visible = false;
+                this.ToggleLoftWhenManualRadio.Visible = false;
+                this.ToggleLoftWhenSongRadio.Visible = false;
+                this.ToggleLoftOffWhenBox.Visible = false;
+            }
+        }
+
+        private void AddVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(this.AddVolumeCheckbox.Checked)
+                SaveChanges(14, "true");
+            else
+                SaveChanges(14, "false");
+        }
+
+        private void DecreaseVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.DecreaseVolumeCheckbox.Checked)
+                SaveChanges(15, "true");
+            else
+                SaveChanges(15, "false");
+        }
+
+        private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.SongTimerCheckbox.Checked)
+                SaveChanges(16, "true");
+            else
+                SaveChanges(16, "false");
+        }
+
+        private void ForceEnumerationCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ForceEnumerationCheckbox.Checked)
+            {
+                this.ForceEnumerationCheckbox.Checked = true;
+                this.ForceEnumerationAutomaticRadio.Visible = true;
+                this.ForceEnumerationManualRadio.Visible = true;
+                this.HowToEnumerateBox.Visible = true;
+                }
+            else
+            {
+                SaveChanges(17, "false");
+                this.ForceEnumerationCheckbox.Checked = false;
+                this.ForceEnumerationAutomaticRadio.Visible = false;
+                this.ForceEnumerationManualRadio.Visible = false;
+                this.HowToEnumerateBox.Visible = false;
+            }
+        }
+
+        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e)
+        {
+            SaveChanges(44, (this.EnumerateEveryXMS.Value * 1000).ToString());
+        }
+
+        private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            this.CheckEveryXmsText.Visible = true;
+            this.EnumerateEveryXMS.Visible = true;
+            SaveChanges(17, "automatic");
+        }
+
+        private void ForceEnumerationManualRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            this.CheckEveryXmsText.Visible = false;
+            this.EnumerateEveryXMS.Visible = false;
+            SaveChanges(17, "manual");
+        }
+
+        private void RainbowStringsEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RainbowStringsEnabled.Checked)
+                SaveChanges(18, "true");
+            else
+                SaveChanges(18, "false");
+        }
+
+        private void ExtendedRangeEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if(ExtendedRangeEnabled.Checked)
+            {
+                this.ExtendedRangeTuningBox.Visible = true;
+                this.ExtendedRangeTunings.Visible = true;
+                SaveChanges(19, "true");
+            }
+            else
+            {
+                this.ExtendedRangeTuningBox.Visible = false;
+                this.ExtendedRangeTunings.Visible = false;
+                SaveChanges(19, "false");
+            }
+        }
+
+        private void customColorsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (customColorsCheckbox.Checked)
+            {
+                SaveChanges(20, "2");
+                this.customColorsCheckbox.Checked = true;
+                this.ChangeStringColorsBox.Visible = true;
+            }
+            else
+            {
+                SaveChanges(20, "0");
+                this.customColorsCheckbox.Checked = false;
+                this.ChangeStringColorsBox.Visible = false;
+            }
+        }
+
+        private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (DiscoModeCheckbox.Checked)
+                SaveChanges(21, "true");
+            else
+                SaveChanges(21, "false");
+        }
+
+        private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (HeadstockCheckbox.Checked)
+                SaveChanges(22, "true");
+            else
+                SaveChanges(22, "false");
+        }
+
+        private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RemoveSkylineCheckbox.Checked)
+                SaveChanges(23, "true");
+            else
+                SaveChanges(23, "false");
+        }
+
+        private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (GreenScreenWallCheckbox.Checked)
+                SaveChanges(24, "true");
+            else
+                SaveChanges(24, "false");
+        }
+
+        private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (AutoLoadProfileCheckbox.Checked)
+                SaveChanges(25, "true");
+            else
+                SaveChanges(25, "false");
+        }
+
+        private void FretlessModeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FretlessModeCheckbox.Checked)
+                SaveChanges(26, "true");
+            else
+                SaveChanges(26, "false");
+        }
+
+        private void RemoveInlaysCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RemoveInlaysCheckbox.Checked)
+                SaveChanges(27, "true");
+            else
+                SaveChanges(27, "false");
+        }
+
+        private void ToggleLoftWhenManualRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleLoftWhenManualRadio.Checked)
+                SaveChanges(28, "manual");
+        }
+
+        private void ToggleLoftWhenSongRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleLoftWhenSongRadio.Checked)
+                SaveChanges(28, "song");
+        }
+
+        private void ToggleLoftWhenStartupRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleLoftWhenStartupRadio.Checked)
+                SaveChanges(28, "startup");
+        }
+
+        private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RemoveLineMarkersCheckBox.Checked)
+                SaveChanges(29, "true");
+            else
+                SaveChanges(29, "false");
+        }
+
+        private void ToggleSkylineSongRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleSkylineSongRadio.Checked)
+                SaveChanges(30, "song");
+        }
+
+        private void ToggleSkylineStartupRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleSkylineStartupRadio.Checked)
+                SaveChanges(30, "startup");
+        }
+
+        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.ExtendedRangeTunings.GetSelected(0))
+            {
+                SaveChanges(43, "-2");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(1))
+            {
+                SaveChanges(43, "-3");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(2))
+            {
+                SaveChanges(43, "-4");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(3))
+            {
+                SaveChanges(43, "-5");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(4))
+            {
+                SaveChanges(43, "-6");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(5))
+            {
+                SaveChanges(43, "-7");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(6))
+            {
+                SaveChanges(43, "-8");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(7))
+            {
+                SaveChanges(43, "-9");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(8))
+            {
+                SaveChanges(43, "-10");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(9))
+            {
+                SaveChanges(43, "-11");
+            }
+            if (this.ExtendedRangeTunings.GetSelected(10))
+            {
+                SaveChanges(43, "-12");
+            }
+        }
+
     }
 }
