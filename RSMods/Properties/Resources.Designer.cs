@@ -71,6 +71,16 @@ namespace RSMods.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Logo {
+            get {
+                object obj = ResourceManager.GetObject("Logo", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 5857,Invite a Friend,,,,,フレンドを誘う,,
         ///5858,Double-check before making a purchase. It is possible to download the same content multiple times.,,,,,購入する前にもう一度ご確認ください。同じコンテンツを何度も購入することができます,,
         ///5859,You need to be signed in to Xbox LIVE for this operation. Would you like to sign in now?,,,,,この操作を実行するにはXbox LIVEにサインインする必要があります。今すぐサインインしますか？,,

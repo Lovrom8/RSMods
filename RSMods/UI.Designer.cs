@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.Songlist = new System.Windows.Forms.ListBox();
             this.ModList = new System.Windows.Forms.ListBox();
             this.ToggleLoftCheckbox = new System.Windows.Forms.CheckBox();
@@ -1126,6 +1127,7 @@
             this.Controls.Add(this.ToggleLoftOffWhenBox);
             this.Controls.Add(this.HowToEnumerateBox);
             this.Controls.Add(this.ResetToDefaultButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
             this.HowToEnumerateBox.ResumeLayout(false);
