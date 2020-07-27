@@ -71,6 +71,7 @@
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
+            this.DeleteKeyBind = new System.Windows.Forms.Button();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
             this.String0ColorButton = new System.Windows.Forms.Button();
             this.String0Color = new System.Windows.Forms.TextBox();
@@ -610,6 +611,7 @@
             // 
             // KeybindingsBox
             // 
+            this.KeybindingsBox.Controls.Add(this.DeleteKeyBind);
             this.KeybindingsBox.Controls.Add(this.NewAssignment);
             this.KeybindingsBox.Controls.Add(this.NewAssignmentTxtBox);
             this.KeybindingsBox.Controls.Add(this.ReEnumerationKey);
@@ -626,9 +628,19 @@
             this.KeybindingsBox.TabStop = false;
             this.KeybindingsBox.Text = "Key Bindings";
             // 
+            // DeleteKeyBind
+            // 
+            this.DeleteKeyBind.Location = new System.Drawing.Point(222, 130);
+            this.DeleteKeyBind.Name = "DeleteKeyBind";
+            this.DeleteKeyBind.Size = new System.Drawing.Size(188, 23);
+            this.DeleteKeyBind.TabIndex = 29;
+            this.DeleteKeyBind.Text = "Delete Selected Keybind";
+            this.DeleteKeyBind.UseVisualStyleBackColor = true;
+            this.DeleteKeyBind.Click += new System.EventHandler(this.DeleteKeyBind_Click);
+            // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(33, 622);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 622);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(109, 22);
             this.ResetToDefaultButton.TabIndex = 32;
@@ -1247,6 +1259,7 @@
         private System.Windows.Forms.ListBox listTunings;
         private System.Windows.Forms.Button btnAddCustomMenu;
         private System.Windows.Forms.Label TuningNoteNameLabel;
+        private System.Windows.Forms.Button DeleteKeyBind;
     }
 }
 

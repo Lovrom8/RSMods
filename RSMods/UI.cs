@@ -47,14 +47,7 @@ namespace RSMods
                 "Rainbow Strings"});
 
             // Mod Key Values
-            {
-                this.ToggleLoftKey.Text = "Toggle Loft: " + ImportPriorSettings()[6];
-                this.AddVolumeKey.Text = "Add Volume: " + ImportPriorSettings()[7];
-                this.DecreaseVolumeKey.Text = "Decrease Volume: " + ImportPriorSettings()[8];
-                this.SongTimerKey.Text = "Show Song Timer: " + ImportPriorSettings()[9];
-                this.ReEnumerationKey.Text = "Force ReEnumeration: " + ImportPriorSettings()[10];
-                this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ImportPriorSettings()[11];
-            }
+            ResetModKeyValues();
 
 
             // Load Checkbox Values
@@ -350,13 +343,6 @@ namespace RSMods
         private void ResetToDefaultSettings(object sender, EventArgs e)
         {
             File.Delete(@WriteSettings.dumpLocation);
-            RefreshForm();
-        }
-
-       
-
-        private void RefreshForm()
-        {
             this.Hide();
             var newForm = new MainForm();
             newForm.Closed += (s, args) => this.Close();
@@ -1192,8 +1178,9 @@ namespace RSMods
                 {
                     SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
+                this.NewAssignmentTxtBox.Text = "";
             }
-            RefreshForm();
+            ResetModKeyValues();
         }
 
         private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
@@ -1420,47 +1407,75 @@ namespace RSMods
             {
                 SaveChanges(43, "-2");
             }
-            if (this.ExtendedRangeTunings.GetSelected(1))
+            else if (this.ExtendedRangeTunings.GetSelected(1))
             {
                 SaveChanges(43, "-3");
             }
-            if (this.ExtendedRangeTunings.GetSelected(2))
+            else if (this.ExtendedRangeTunings.GetSelected(2))
             {
                 SaveChanges(43, "-4");
             }
-            if (this.ExtendedRangeTunings.GetSelected(3))
+            else if (this.ExtendedRangeTunings.GetSelected(3))
             {
                 SaveChanges(43, "-5");
             }
-            if (this.ExtendedRangeTunings.GetSelected(4))
+            else if (this.ExtendedRangeTunings.GetSelected(4))
             {
                 SaveChanges(43, "-6");
             }
-            if (this.ExtendedRangeTunings.GetSelected(5))
+            else if (this.ExtendedRangeTunings.GetSelected(5))
             {
                 SaveChanges(43, "-7");
             }
-            if (this.ExtendedRangeTunings.GetSelected(6))
+            else if (this.ExtendedRangeTunings.GetSelected(6))
             {
                 SaveChanges(43, "-8");
             }
-            if (this.ExtendedRangeTunings.GetSelected(7))
+            else if (this.ExtendedRangeTunings.GetSelected(7))
             {
                 SaveChanges(43, "-9");
             }
-            if (this.ExtendedRangeTunings.GetSelected(8))
+            else if (this.ExtendedRangeTunings.GetSelected(8))
             {
                 SaveChanges(43, "-10");
             }
-            if (this.ExtendedRangeTunings.GetSelected(9))
+            else if (this.ExtendedRangeTunings.GetSelected(9))
             {
                 SaveChanges(43, "-11");
             }
-            if (this.ExtendedRangeTunings.GetSelected(10))
+            else if (this.ExtendedRangeTunings.GetSelected(10))
             {
                 SaveChanges(43, "-12");
             }
         }
 
+        private void DeleteKeyBind_Click(object sender, EventArgs e)
+        {
+            this.NewAssignmentTxtBox.Text = "";
+            if (this.ModList.GetSelected(0)) // Toggle Loft Key
+                SaveChanges(7, "");
+            else if (this.ModList.GetSelected(1)) // Add Volume Key
+                SaveChanges(8, "");
+            else if (this.ModList.GetSelected(2)) // Decrease Volume Key
+                SaveChanges(9, "");
+            else if (this.ModList.GetSelected(3)) // Show Song Timer Key
+                SaveChanges(10, "");
+            else if (this.ModList.GetSelected(4)) // Force ReEnumerate Key
+                SaveChanges(11, "");
+            else if (this.ModList.GetSelected(5)) // Rainbow Strings Key
+                SaveChanges(12, "");
+
+            ResetModKeyValues();
+        }
+
+        private void ResetModKeyValues()
+        {
+            this.ToggleLoftKey.Text = "Toggle Loft: " + ImportPriorSettings()[6];
+            this.AddVolumeKey.Text = "Add Volume: " + ImportPriorSettings()[7];
+            this.DecreaseVolumeKey.Text = "Decrease Volume: " + ImportPriorSettings()[8];
+            this.SongTimerKey.Text = "Show Song Timer: " + ImportPriorSettings()[9];
+            this.ReEnumerationKey.Text = "Force ReEnumeration: " + ImportPriorSettings()[10];
+            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ImportPriorSettings()[11];
+        }
     }
 }
