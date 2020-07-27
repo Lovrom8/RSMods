@@ -1326,9 +1326,15 @@ namespace RSMods
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveSkylineCheckbox.Checked)
+            {
                 SaveChanges(23, "true");
+                this.ToggleSkylineBox.Visible = true;
+            } 
             else
+            {
                 SaveChanges(23, "false");
+                this.ToggleSkylineBox.Visible = false;
+            }
         }
 
         private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e)
