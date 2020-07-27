@@ -91,6 +91,7 @@
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.groupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.btnAddCustomMenu = new System.Windows.Forms.Button();
             this.btnAddFastLoadMod = new System.Windows.Forms.Button();
             this.btnUnpackCacheAgain = new System.Windows.Forms.Button();
             this.btnRestoreDefaults = new System.Windows.Forms.Button();
@@ -112,7 +113,7 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
-            this.btnAddCustomMenu = new System.Windows.Forms.Button();
+            this.TuningNoteNameLabel = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -816,6 +817,7 @@
             // 
             // groupSetAndForget
             // 
+            this.groupSetAndForget.Controls.Add(this.TuningNoteNameLabel);
             this.groupSetAndForget.Controls.Add(this.btnAddCustomMenu);
             this.groupSetAndForget.Controls.Add(this.btnAddFastLoadMod);
             this.groupSetAndForget.Controls.Add(this.btnUnpackCacheAgain);
@@ -844,6 +846,16 @@
             this.groupSetAndForget.TabIndex = 68;
             this.groupSetAndForget.TabStop = false;
             this.groupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // btnAddCustomMenu
+            // 
+            this.btnAddCustomMenu.Location = new System.Drawing.Point(723, 119);
+            this.btnAddCustomMenu.Name = "btnAddCustomMenu";
+            this.btnAddCustomMenu.Size = new System.Drawing.Size(187, 35);
+            this.btnAddCustomMenu.TabIndex = 93;
+            this.btnAddCustomMenu.Text = "Add custom menu + unplugged";
+            this.btnAddCustomMenu.UseVisualStyleBackColor = true;
+            this.btnAddCustomMenu.Click += new System.EventHandler(this.btnAddCustomMenu_Click);
             // 
             // btnAddFastLoadMod
             // 
@@ -906,6 +918,8 @@
             // 
             // nupString0
             // 
+            this.nupString0.BackColor = System.Drawing.Color.Tomato;
+            this.nupString0.ForeColor = System.Drawing.SystemColors.ControlText;
             this.nupString0.Location = new System.Drawing.Point(448, 20);
             this.nupString0.Minimum = new decimal(new int[] {
             100,
@@ -967,6 +981,7 @@
             // 
             // nupString1
             // 
+            this.nupString1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.nupString1.Location = new System.Drawing.Point(493, 20);
             this.nupString1.Minimum = new decimal(new int[] {
             100,
@@ -979,6 +994,7 @@
             // 
             // nupString5
             // 
+            this.nupString5.BackColor = System.Drawing.Color.MediumPurple;
             this.nupString5.Location = new System.Drawing.Point(673, 20);
             this.nupString5.Minimum = new decimal(new int[] {
             100,
@@ -991,6 +1007,7 @@
             // 
             // nupString4
             // 
+            this.nupString4.BackColor = System.Drawing.Color.GreenYellow;
             this.nupString4.Location = new System.Drawing.Point(628, 20);
             this.nupString4.Minimum = new decimal(new int[] {
             100,
@@ -1003,6 +1020,7 @@
             // 
             // nupString3
             // 
+            this.nupString3.BackColor = System.Drawing.Color.DarkOrange;
             this.nupString3.Location = new System.Drawing.Point(583, 20);
             this.nupString3.Minimum = new decimal(new int[] {
             100,
@@ -1015,6 +1033,7 @@
             // 
             // nupString2
             // 
+            this.nupString2.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.nupString2.Location = new System.Drawing.Point(538, 20);
             this.nupString2.Minimum = new decimal(new int[] {
             100,
@@ -1068,15 +1087,15 @@
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
             // 
-            // btnAddCustomMenu
+            // TuningNoteNameLabel
             // 
-            this.btnAddCustomMenu.Location = new System.Drawing.Point(723, 119);
-            this.btnAddCustomMenu.Name = "btnAddCustomMenu";
-            this.btnAddCustomMenu.Size = new System.Drawing.Size(187, 35);
-            this.btnAddCustomMenu.TabIndex = 93;
-            this.btnAddCustomMenu.Text = "Add custom menu + unplugged";
-            this.btnAddCustomMenu.UseVisualStyleBackColor = true;
-            this.btnAddCustomMenu.Click += new System.EventHandler(this.btnAddCustomMenu_Click);
+            this.TuningNoteNameLabel.AutoSize = true;
+            this.TuningNoteNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TuningNoteNameLabel.Location = new System.Drawing.Point(452, 41);
+            this.TuningNoteNameLabel.Name = "TuningNoteNameLabel";
+            this.TuningNoteNameLabel.Size = new System.Drawing.Size(240, 13);
+            this.TuningNoteNameLabel.TabIndex = 94;
+            this.TuningNoteNameLabel.Text = "E         A         D         G          B         e";
             // 
             // MainForm
             // 
@@ -1214,6 +1233,7 @@
         private System.Windows.Forms.Button btnRemoveTuning;
         private System.Windows.Forms.ListBox listTunings;
         private System.Windows.Forms.Button btnAddCustomMenu;
+        private System.Windows.Forms.Label TuningNoteNameLabel;
     }
 }
 
