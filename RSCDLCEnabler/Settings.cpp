@@ -291,8 +291,13 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 	if (reader.LoadFile("RSMods.ini") < 0) 
 		return retList;
 
-	for (int i = 0; i < 6; i++)
-		retList[i] = reader.GetValue("SongListTitles", "SongListTitle_" + (i + 1), "SONG LIST");
+	for (int i = 0; i < 6; i++) {
+		char songListName[80];
+		strcpy(songListName, "SongListTitle_");
+		strcat(songListName, (std::to_string(i + 1)).c_str());
+		retList[i] = reader.GetValue("SongListTitles", songListName, "SONG LIST");
+		std::cout << "Song List #" << (i+1) << ": " << retList[i] << std::endl;
+	}
 
 	return retList;
 }
