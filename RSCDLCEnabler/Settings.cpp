@@ -30,7 +30,8 @@ cSettings::cSettings()
 	{"RemoveInlaysEnabled", "off"},
 	{"ToggleLoftWhen", "manual"},
 	{"ToggleSkylineWhen", "song"},
-	{"RemoveLaneMarkersEnabled", "off"}
+	{"RemoveLaneMarkersEnabled", "off"},
+	{"RemoveLyrics", "off"}
 	};
 
 	customSettings = {
@@ -259,7 +260,8 @@ void cSettings::ReadKeyBinds() {
 				{"RemoveInlaysEnabled", reader.GetValue("Toggle Switches", "Inlays", "off")},
 				{"ToggleLoftWhen", reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual")},
 				{"ToggleSkylineWhen", reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song")},
-				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")}
+				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")},
+				{"RemoveLyrics", reader.GetValue("Toggle Switches", "Lyrics", "off")}
 	};
 }
 

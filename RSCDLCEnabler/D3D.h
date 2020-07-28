@@ -262,6 +262,7 @@ std::vector<ThiccMesh> leftyFix{
 
 // All the single (thicc) ladies
 std::vector<ThiccMesh> laneMarkers{ { 32, 6, 8, 0, 0, 4, 2, 4, 7 } };
+std::vector<ThiccMesh> lyrics{ { 12, 2, 4, 0, 0, 4, 2, 1, 2 } };
 std::vector<ThiccMesh> fretless{ { 56, 264, 273, 0, 0, 4, 2, 13, 6 } };
 std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 std::vector<ThiccMesh> greenScreenWallMesh{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
