@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Runtime;
 using System.IO;
 using System.Linq;
 using System.Drawing;
@@ -24,9 +25,6 @@ namespace RSMods
             {
                 WriteSettings.NoSettingsDetected(); // Creates Settings File
             }
-
-            WriteSettings.PrintByteArray(WriteSettings.Sha256Hash());
-
             InitializeComponent();
 
             // Fill Songlist List
