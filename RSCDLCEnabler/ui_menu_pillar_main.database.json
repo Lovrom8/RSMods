@@ -65,7 +65,7 @@
 						"ID": "sessionmode",
 						"State" : "up",
 						"Component" : "RSButton",
-						"SortOrder" : 7,
+						"SortOrder" : 1,
 						"Label" : "$[22957]SESSION MODE",
 						"OnSelect" :
 						{
@@ -154,7 +154,7 @@
 						"ID": "shop",
 						"Component" : "RSButton",
 						"State" : "up",
-						"SortOrder" : 1,
+						"SortOrder" : 7,
 						"Label" : "ENUMERATE",
 						"OnSelect" :
 						{
