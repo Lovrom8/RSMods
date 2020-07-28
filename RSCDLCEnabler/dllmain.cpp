@@ -711,6 +711,15 @@ void UpdateSettings() {
 	Sleep(500);
 }
 
+
+char* ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6935279/delete-all-txt-in-a-directory-with-c :P
+	std::string command = "del /Q ";
+	std::string path = "*.mdmp";
+	system(command.append(path).c_str());
+
+	return "Deleting Useless Log Files";
+}
+
 unsigned WINAPI MainThread(void*) {
 	Offsets.Initialize();
 	MemHelpers.PatchCDLCCheck();
@@ -721,6 +730,8 @@ unsigned WINAPI MainThread(void*) {
 
 	GUI();
 	InitEngineFunctions();
+
+	std::cout << ClearLogs() << std::endl;
 
 	while (true) {
 		//Sleep(300); //TODO: bring back Sleep(2000) when we are done testing string colors
