@@ -345,13 +345,18 @@ namespace RSMods
             {
                 Save_Songlists_Keybindings(sender, e);
                 e.SuppressKeyPress = true;
+                RefreshForm();
             }
         }
 
         private void ResetToDefaultSettings(object sender, EventArgs e)
         {
             File.Delete(@WriteSettings.dumpLocation);
-            this.Hide();
+            RefreshForm();
+        }
+
+        private void RefreshForm()
+        {
             var newForm = new MainForm();
             newForm.Closed += (s, args) => this.Close();
             newForm.Show();
