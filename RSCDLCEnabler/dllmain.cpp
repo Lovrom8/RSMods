@@ -362,8 +362,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
-		//std::cout << sizeof(GuitarSpeak.noteNames) << std::endl;
-
 		ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
 
@@ -524,15 +522,19 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 
-
 	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
-	else if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
-		return D3D_OK;
-	else if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
-		return D3D_OK;
-	else if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
-		return D3D_OK;
+
+	if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
+		if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
+			return D3D_OK;
+		if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
+			return D3D_OK;
+		if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
+			return D3D_OK;
+	}
+	
+	
 
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
@@ -595,8 +597,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 					if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
 						return D3D_OK;
 			}
-
-			if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) || MemHelpers.GetCurrentMenu().c_str() == "SelectionListDialog")
+			else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))
 			{
 				if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 					return D3D_OK;
@@ -701,16 +702,20 @@ void AutoEnterGame() {	//very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
+void UpdateSettings() {
+	Settings.UpdateSettings(); // Keybinds, stuff from the INI
+	Sleep(500);
+	CustomSongTitles.LoadSettings();
+	Sleep(500);
+	CustomSongTitles.HookSongListsKoko();
+	Sleep(500);
+}
+
 unsigned WINAPI MainThread(void*) {
 	Offsets.Initialize();
 	MemHelpers.PatchCDLCCheck();
 
-	CustomSongTitles.LoadSettings();
-	CustomSongTitles.HookSongListsKoko();
-
-	Settings.ReadKeyBinds();
-	Settings.ReadModSettings();
-	Settings.ReadStringColors();
+	UpdateSettings();
 
 	ERMode.Initialize();
 
@@ -718,15 +723,15 @@ unsigned WINAPI MainThread(void*) {
 	InitEngineFunctions();
 
 	while (true) {
-		Sleep(300); //TODO: bring back Sleep(2000) when we are done testing string colors
-		//Sleep(2000);
+		//Sleep(300); //TODO: bring back Sleep(2000) when we are done testing string colors
+		Sleep(2000);
 
-		currentMenu = MemHelpers.GetCurrentMenu();
-
-		//std::cout << currentMenu.c_str() << std::endl // Print Current Menu To Debug Console
+		currentMenu = MemHelpers.GetCurrentMenu(); 
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
+			// Refresh settings every loop :)
+
 			ERMode.Toggle7StringMode();
 
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes))
@@ -785,6 +790,8 @@ unsigned WINAPI MainThread(void*) {
 					GuitarSpeakPresent = true;
 					GuitarSpeak.TimerTick();
 				}*/
+
+				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 				
 
 				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && !(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)))

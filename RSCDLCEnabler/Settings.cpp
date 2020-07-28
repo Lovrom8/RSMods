@@ -385,3 +385,9 @@ void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
 	else
 		customStringColorsNormal[strIndex] = c;
 }
+
+void cSettings::UpdateSettings() {
+	ReadKeyBinds();
+	ReadModSettings();
+	ReadStringColors();
+}

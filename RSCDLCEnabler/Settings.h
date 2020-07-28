@@ -21,6 +21,7 @@ public:
 	float GetStringColor(std::string);
 	std::vector<Color> GetCustomColors(bool CB);
 	void SetStringColors(int strIndex, Color c, bool CB);
+	void UpdateSettings();
 private:
 	std::map<std::string, std::string> keyBinds;
 	std::map<std::string, int> customSettings;
