@@ -115,6 +115,7 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
+            this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -552,6 +553,7 @@
             // 
             // EnabledModsBox
             // 
+            this.EnabledModsBox.Controls.Add(this.RemoveLyricsCheckbox);
             this.EnabledModsBox.Controls.Add(this.customColorsCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveLineMarkersCheckBox);
             this.EnabledModsBox.Controls.Add(this.RemoveInlaysCheckbox);
@@ -1123,6 +1125,17 @@
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
             // 
+            // RemoveLyricsCheckbox
+            // 
+            this.RemoveLyricsCheckbox.AutoSize = true;
+            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(319, 68);
+            this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
+            this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
+            this.RemoveLyricsCheckbox.TabIndex = 45;
+            this.RemoveLyricsCheckbox.Text = "Remove Lyrics";
+            this.RemoveLyricsCheckbox.UseVisualStyleBackColor = true;
+            this.RemoveLyricsCheckbox.CheckedChanged += new System.EventHandler(this.RemoveLyricsCheckbox_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1262,6 +1275,7 @@
         private System.Windows.Forms.Button btnAddCustomMenu;
         private System.Windows.Forms.Label TuningNoteNameLabel;
         private System.Windows.Forms.Button DeleteKeyBind;
+        private System.Windows.Forms.CheckBox RemoveLyricsCheckbox;
     }
 }
 

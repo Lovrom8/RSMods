@@ -9,7 +9,7 @@ namespace RSMods
     {
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
-        public static string[] StringArray = new String[49];
+        public static string[] StringArray = new String[50];
 
         public static void ModifyINI(string[] StringArray)
         {
@@ -53,22 +53,23 @@ namespace RSMods
                 StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + "manual"; // Define how or when the loft is disabled - game startup, on key command or in song only
                 StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + "off"; // Remove Inlays  Enabled / Disabled
                 StringArray[32] = ReadSettings.ToggleSkylineWhenIdentifier + "song"; // Define how or when the skyline is disabled - game startup, or in song only
-                StringArray[33] = "[String Colors]";
-                StringArray[34] = ReadSettings.String0Color_N_Identifier + "bf5f5f"; // Default Low E String Color (HEX) | Red
-                StringArray[35] = ReadSettings.String1Color_N_Identifier + "bfb75f"; // Default A String Color (HEX) | Yellow
-                StringArray[36] = ReadSettings.String2Color_N_Identifier + "5e9dbc"; // Default D String Color (HEX) | Blue
-                StringArray[37] = ReadSettings.String3Color_N_Identifier + "bf8d5f"; // Default G String Color (HEX) | Orange
-                StringArray[38] = ReadSettings.String4Color_N_Identifier + "5fbf97"; // Default B String Color (HEX) | Green
-                StringArray[39] = ReadSettings.String5Color_N_Identifier + "ac5ebc"; // Default High E String Color (HEX) | Purple
-                StringArray[40] = ReadSettings.String0Color_CB_Identifier + "bf5f5f"; // Colorblind Low E String Color (HEX) | Red
-                StringArray[41] = ReadSettings.String1Color_CB_Identifier + "9dbc5e"; // Colorblind A String Color (HEX) | Yellow
-                StringArray[42] = ReadSettings.String2Color_CB_Identifier + "5f9fbf"; // Colorblind D String Color (HEX) | Blue
-                StringArray[43] = ReadSettings.String3Color_CB_Identifier + "bf875f"; // Colorblind G String Color (HEX) | Orange
-                StringArray[44] = ReadSettings.String4Color_CB_Identifier + "5fbfa4"; // Colorblind B String Color (HEX) | Green
-                StringArray[45] = ReadSettings.String5Color_CB_Identifier + "8c5fbf"; // Colorblind High E String Color (HEX) | Purple
-                StringArray[46] = "[Mod Settings]";
-                StringArray[47] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Enable Extended Range Mode When Low E Is X Below E
-                StringArray[48] = ReadSettings.CheckForNewSongIntervalIdentifier + "5000"; // Enumerate new CDLC / ODLC every X ms
+                StringArray[33] = ReadSettings.RemoveLyricsIdentifier + "off"; // Remove Song Lyrics Enabled / Disabled
+                StringArray[34] = "[String Colors]";
+                StringArray[35] = ReadSettings.String0Color_N_Identifier + "bf5f5f"; // Default Low E String Color (HEX) | Red
+                StringArray[36] = ReadSettings.String1Color_N_Identifier + "bfb75f"; // Default A String Color (HEX) | Yellow
+                StringArray[37] = ReadSettings.String2Color_N_Identifier + "5e9dbc"; // Default D String Color (HEX) | Blue
+                StringArray[38] = ReadSettings.String3Color_N_Identifier + "bf8d5f"; // Default G String Color (HEX) | Orange
+                StringArray[39] = ReadSettings.String4Color_N_Identifier + "5fbf97"; // Default B String Color (HEX) | Green
+                StringArray[40] = ReadSettings.String5Color_N_Identifier + "ac5ebc"; // Default High E String Color (HEX) | Purple
+                StringArray[41] = ReadSettings.String0Color_CB_Identifier + "bf5f5f"; // Colorblind Low E String Color (HEX) | Red
+                StringArray[42] = ReadSettings.String1Color_CB_Identifier + "9dbc5e"; // Colorblind A String Color (HEX) | Yellow
+                StringArray[43] = ReadSettings.String2Color_CB_Identifier + "5f9fbf"; // Colorblind D String Color (HEX) | Blue
+                StringArray[44] = ReadSettings.String3Color_CB_Identifier + "bf875f"; // Colorblind G String Color (HEX) | Orange
+                StringArray[45] = ReadSettings.String4Color_CB_Identifier + "5fbfa4"; // Colorblind B String Color (HEX) | Green
+                StringArray[46] = ReadSettings.String5Color_CB_Identifier + "8c5fbf"; // Colorblind High E String Color (HEX) | Purple
+                StringArray[47] = "[Mod Settings]";
+                StringArray[48] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Enable Extended Range Mode When Low E Is X Below E
+                StringArray[49] = ReadSettings.CheckForNewSongIntervalIdentifier + "5000"; // Enumerate new CDLC / ODLC every X ms
                 
                 ModifyINI(StringArray);
         }

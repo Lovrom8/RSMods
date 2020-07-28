@@ -6,7 +6,7 @@ namespace RSMods
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, 
                              RocksmithInstallLocation;
@@ -45,6 +45,7 @@ namespace RSMods
                 ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
                 ToggleSkylineWhenIdentifier         = "ToggleSkylineWhen = ",
                 RemoveLaneMarkersIdentifier         = "LaneMarkers = ",
+                RemoveLyricsIdentifier              = "Lyrics = ",
             // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
                     String0Color_N_Identifier   = "string0_N = ",
@@ -138,6 +139,7 @@ namespace RSMods
                             return ToggleLoftKey;
                         }
                     }
+
                     if (currentLine.Contains(AddVolumeIdentifier))
                     {
                         AddVolumeKey = currentLine.Substring(AddVolumeIdentifier.Length, (currentLine.Length - AddVolumeIdentifier.Length));
@@ -492,6 +494,21 @@ namespace RSMods
                             return ToggleSkylineWhen;
                         }
                     }
+
+                    if(currentLine.Contains(RemoveLyricsIdentifier))
+                        if(currentLine.Substring(RemoveLyricsIdentifier.Length, currentLine.Length - RemoveLyricsIdentifier.Length) == "on")
+                        {
+                            RemoveLyricsEnabled = "on";
+                        }
+                        else
+                        {
+                            RemoveLyricsEnabled = "off";
+                        }
+                        
+                        if (grab == 43)
+                        {
+                            return RemoveLyricsEnabled;
+                        }
                 }
 
                 // String Colors (Normal {N} & Colorblind {CB})
