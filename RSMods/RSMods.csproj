@@ -120,30 +120,30 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Resources\introsequence_original.gfx">
+    <None Include="Resources\introsequence_original.gfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt">
+    </None>
+    <None Include="Resources\sltsv1_aggregategraph.nt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\tuning.database.json">
+    </None>
+    <None Include="Resources\tuning.database.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\introsequence.gfx">
+    </None>
+    <None Include="Resources\introsequence.gfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\maingame_original.csv">
+    </None>
+    <None Include="Resources\maingame_original.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\maingame.csv">
+    </None>
+    <None Include="Resources\maingame.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json">
+    </None>
+    <None Include="Resources\ui_menu_pillar_mission.database.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json">
+    </None>
+    <None Include="Resources\ui_menu_pillar_main.database.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
