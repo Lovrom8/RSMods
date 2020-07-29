@@ -687,6 +687,15 @@ namespace RSMods
             return priorSettings;
         }
 
+        //public Dictionary<string, string> ImportPriorSettingsNew = new Dictionary<string, string>() 
+        //{
+        //    {"SongList1", ReadSettings.ProcessSettings(0)},
+        //    {"SongList2", ReadSettings.ProcessSettings(1)},
+        //    {"SongList3", ReadSettings.ProcessSettings(2)},
+        //    {"SongList4", ReadSettings.ProcessSettings(3)},
+        // //To Do: Finish merging
+        //};
+
         private void ChangeString0ColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();

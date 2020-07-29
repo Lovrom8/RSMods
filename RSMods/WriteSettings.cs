@@ -2,14 +2,42 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace RSMods
 {
+    class IniEntry
+    {
+        public string Section { get; set; }
+        public string Value { get; set; }
+    }
+
     class WriteSettings
     {
+        
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
         public static string[] StringArray = new String[50];
+
+        public Dictionary<string, IniEntry> WriteToINI = new Dictionary<string, IniEntry>()
+        {
+            {"SongListTitle", new IniEntry{Section="[SongListTitle]", Value="[SongListTitle]"}},
+                {ReadSettings.Songlist1Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist1Identifier + "" }},
+                {ReadSettings.Songlist2Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist2Identifier + ""}},
+                {ReadSettings.Songlist3Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist3Identifier + ""}},
+                {ReadSettings.Songlist4Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist4Identifier + ""}},
+                {ReadSettings.Songlist5Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist5Identifier + ""}},
+                {ReadSettings.Songlist6Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist6Identifier + ""}},
+            {"KeybindsTitle", new IniEntry{Section="[Keybinds]", Value="[Keybinds]"}},
+                {ReadSettings.ToggleLoftIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ToggleLoftIdentifier}},
+                {ReadSettings.AddVolumeIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.AddVolumeIdentifier}},
+                {ReadSettings.DecreaseVolumeIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.DecreaseVolumeIdentifier}},
+                {ReadSettings.ShowSongTimerIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ShowSongTimerIdentifier}},
+                {ReadSettings.ForceReEnumerationIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ForceReEnumerationIdentifier}},
+                {ReadSettings.RainbowStringsIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.RainbowStringsIdentifier}},
+            {"ToggleSwitchTitle", new IniEntry{Section="[Toggle Switches]", Value="[Toggle Switches]"}},
+                // To Do: Finish converting
+        };
 
         public static void ModifyINI(string[] StringArray)
         {
