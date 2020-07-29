@@ -145,7 +145,6 @@
             this.Songlist.Size = new System.Drawing.Size(185, 147);
             this.Songlist.TabIndex = 2;
             this.Songlist.SelectedIndexChanged += new System.EventHandler(this.Songlist_SelectedIndexChanged);
-            
             // 
             // ModList
             // 
@@ -243,6 +242,7 @@
             // NewAssignmentTxtBox
             // 
             this.NewAssignmentTxtBox.Location = new System.Drawing.Point(222, 93);
+            this.NewAssignmentTxtBox.MaxLength = 1;
             this.NewAssignmentTxtBox.Name = "NewAssignmentTxtBox";
             this.NewAssignmentTxtBox.Size = new System.Drawing.Size(188, 20);
             this.NewAssignmentTxtBox.TabIndex = 20;
