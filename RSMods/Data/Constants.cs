@@ -34,5 +34,7 @@ namespace RSMods.Data
         public static string ExtendedMenuJson_InternalPath { get { return Path.Combine("manifests", "ui.menu.pillar.mission.database.json"); } }
         public static string MainMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui_menu_pillar_main.database.json"); } }
         public static string MainMenuJson_InternalPath { get { return Path.Combine("manifests", "ui_menu_pillar_main.database.json"); } }
+        public static string ToneManager_InternalPath { get { return Path.Combine("manifests", "tonemanager.database.json"); } }
+        public static string ToneManager_CustomPath { get { return Path.Combine(CustomModsFolder, "tonemanager.database.json"); } }
     }
 }

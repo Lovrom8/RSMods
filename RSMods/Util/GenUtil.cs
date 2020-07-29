@@ -128,10 +128,16 @@ namespace RSMods.Util
 
         public static string GetSteamDirectory()
         {
+            const string steamRegPath = @"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam"; //IIRC it isn't the same on X86 machines, but do we really need to support those?
+
+            return GetStringValueFromRegistry(steamRegPath, "SteamPath").Replace('/', '\\');
+        }
+
+        public static string GetRSDirectory()
+        {
             try
             {
                 const string installValueName = "InstallLocation";
-                const string steamRegPath = @"HKEY_CURRENT_USER\SOFTWARE\Valve\Steam";
 
                 const string rsX64Path = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Ubisoft\Rocksmith2014";
                 const string rsX64Steam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680";
@@ -140,7 +146,7 @@ namespace RSMods.Util
                 const string rsX86Steam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680";
 
                 var rs2RootDir = String.Empty;
-                var steamRootPath = GetStringValueFromRegistry(steamRegPath, "SteamPath").Replace('/', '\\');
+                var steamRootPath = GetSteamDirectory();
 
                 if (!String.IsNullOrEmpty(steamRootPath))
                 {

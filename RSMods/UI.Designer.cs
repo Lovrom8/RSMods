@@ -94,6 +94,11 @@
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.groupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.btnLoadTonesFromProfiles = new System.Windows.Forms.Button();
+            this.listProfileTones = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnSetDefaultTones = new System.Windows.Forms.Button();
+            this.btnRemoveTempFolders = new System.Windows.Forms.Button();
             this.TuningNoteNameLabel = new System.Windows.Forms.Label();
             this.btnAddCustomMenu = new System.Windows.Forms.Button();
             this.btnAddFastLoadMod = new System.Windows.Forms.Button();
@@ -118,6 +123,9 @@
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
             this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.rbTone0 = new System.Windows.Forms.RadioButton();
+            this.rbTone1 = new System.Windows.Forms.RadioButton();
+            this.rbTone2 = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -662,7 +670,7 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 672);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 798);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(109, 22);
             this.ResetToDefaultButton.TabIndex = 32;
@@ -865,6 +873,14 @@
             // 
             // groupSetAndForget
             // 
+            this.groupSetAndForget.Controls.Add(this.rbTone2);
+            this.groupSetAndForget.Controls.Add(this.rbTone1);
+            this.groupSetAndForget.Controls.Add(this.rbTone0);
+            this.groupSetAndForget.Controls.Add(this.btnLoadTonesFromProfiles);
+            this.groupSetAndForget.Controls.Add(this.listProfileTones);
+            this.groupSetAndForget.Controls.Add(this.label1);
+            this.groupSetAndForget.Controls.Add(this.btnSetDefaultTones);
+            this.groupSetAndForget.Controls.Add(this.btnRemoveTempFolders);
             this.groupSetAndForget.Controls.Add(this.TuningNoteNameLabel);
             this.groupSetAndForget.Controls.Add(this.btnAddCustomMenu);
             this.groupSetAndForget.Controls.Add(this.btnAddFastLoadMod);
@@ -890,10 +906,56 @@
             this.groupSetAndForget.Controls.Add(this.listTunings);
             this.groupSetAndForget.Location = new System.Drawing.Point(162, 517);
             this.groupSetAndForget.Name = "groupSetAndForget";
-            this.groupSetAndForget.Size = new System.Drawing.Size(1131, 177);
+            this.groupSetAndForget.Size = new System.Drawing.Size(1131, 303);
             this.groupSetAndForget.TabIndex = 68;
             this.groupSetAndForget.TabStop = false;
             this.groupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // btnLoadTonesFromProfiles
+            // 
+            this.btnLoadTonesFromProfiles.Location = new System.Drawing.Point(336, 185);
+            this.btnLoadTonesFromProfiles.Name = "btnLoadTonesFromProfiles";
+            this.btnLoadTonesFromProfiles.Size = new System.Drawing.Size(187, 35);
+            this.btnLoadTonesFromProfiles.TabIndex = 99;
+            this.btnLoadTonesFromProfiles.Text = "Load tones from profile";
+            this.btnLoadTonesFromProfiles.UseVisualStyleBackColor = true;
+            this.btnLoadTonesFromProfiles.Click += new System.EventHandler(this.btnLoadTonesFromProfiles_Click);
+            // 
+            // listProfileTones
+            // 
+            this.listProfileTones.FormattingEnabled = true;
+            this.listProfileTones.Location = new System.Drawing.Point(7, 166);
+            this.listProfileTones.Name = "listProfileTones";
+            this.listProfileTones.Size = new System.Drawing.Size(184, 134);
+            this.listProfileTones.TabIndex = 98;
+            // 
+            // label1
+            // 
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Location = new System.Drawing.Point(2, 157);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(1123, 5);
+            this.label1.TabIndex = 97;
+            // 
+            // btnSetDefaultTones
+            // 
+            this.btnSetDefaultTones.Location = new System.Drawing.Point(336, 226);
+            this.btnSetDefaultTones.Name = "btnSetDefaultTones";
+            this.btnSetDefaultTones.Size = new System.Drawing.Size(187, 35);
+            this.btnSetDefaultTones.TabIndex = 96;
+            this.btnSetDefaultTones.Text = "Set default tones to current";
+            this.btnSetDefaultTones.UseVisualStyleBackColor = true;
+            this.btnSetDefaultTones.Click += new System.EventHandler(this.btnSetDefaultTones_Click);
+            // 
+            // btnRemoveTempFolders
+            // 
+            this.btnRemoveTempFolders.Location = new System.Drawing.Point(916, 119);
+            this.btnRemoveTempFolders.Name = "btnRemoveTempFolders";
+            this.btnRemoveTempFolders.Size = new System.Drawing.Size(190, 35);
+            this.btnRemoveTempFolders.TabIndex = 95;
+            this.btnRemoveTempFolders.Text = "Remove temporary folders";
+            this.btnRemoveTempFolders.UseVisualStyleBackColor = true;
+            this.btnRemoveTempFolders.Click += new System.EventHandler(this.btnRemoveTempFolders_Click);
             // 
             // TuningNoteNameLabel
             // 
@@ -1152,13 +1214,45 @@
             this.ToolTip.ReshowDelay = 500;
             this.ToolTip.ShowAlways = true;
             // 
+            // rbTone0
+            // 
+            this.rbTone0.AutoSize = true;
+            this.rbTone0.Checked = true;
+            this.rbTone0.Location = new System.Drawing.Point(200, 185);
+            this.rbTone0.Name = "rbTone0";
+            this.rbTone0.Size = new System.Drawing.Size(90, 17);
+            this.rbTone0.TabIndex = 100;
+            this.rbTone0.TabStop = true;
+            this.rbTone0.Text = "Default Guitar";
+            this.rbTone0.UseVisualStyleBackColor = true;
+            // 
+            // rbTone1
+            // 
+            this.rbTone1.AutoSize = true;
+            this.rbTone1.Location = new System.Drawing.Point(200, 208);
+            this.rbTone1.Name = "rbTone1";
+            this.rbTone1.Size = new System.Drawing.Size(86, 17);
+            this.rbTone1.TabIndex = 101;
+            this.rbTone1.Text = "Default Lead";
+            this.rbTone1.UseVisualStyleBackColor = true;
+            // 
+            // rbTone2
+            // 
+            this.rbTone2.AutoSize = true;
+            this.rbTone2.Location = new System.Drawing.Point(200, 231);
+            this.rbTone2.Name = "rbTone2";
+            this.rbTone2.Size = new System.Drawing.Size(85, 17);
+            this.rbTone2.TabIndex = 102;
+            this.rbTone2.Text = "Default Bass";
+            this.rbTone2.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1334, 711);
+            this.ClientSize = new System.Drawing.Size(1334, 832);
             this.Controls.Add(this.groupSetAndForget);
             this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.ChangeStringColorsBox);
@@ -1294,6 +1388,14 @@
         private System.Windows.Forms.Button ClearKeyBind;
         private System.Windows.Forms.CheckBox RemoveLyricsCheckbox;
         private System.Windows.Forms.ToolTip ToolTip;
+        private System.Windows.Forms.Button btnRemoveTempFolders;
+        private System.Windows.Forms.Button btnSetDefaultTones;
+        private System.Windows.Forms.Button btnLoadTonesFromProfiles;
+        private System.Windows.Forms.ListBox listProfileTones;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RadioButton rbTone2;
+        private System.Windows.Forms.RadioButton rbTone1;
+        private System.Windows.Forms.RadioButton rbTone0;
     }
 }
 
