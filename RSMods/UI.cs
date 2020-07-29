@@ -1510,5 +1510,47 @@ namespace RSMods
             else
                 SaveChanges(45, "off");
         }
+
+        // This example assumes that the Form_Load event handling method
+        // is connected to the Load event of the form.
+        // shamelessly lifted from https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
+        private void Form1_Load(object sender, System.EventArgs e)
+        {
+            // Create the ToolTip and associate with the Form container.
+            ToolTip toolTip1 = new ToolTip();
+
+            // Set up the delays for the ToolTip.
+            toolTip1.AutoPopDelay = 5000;
+            toolTip1.InitialDelay = 1000;
+            toolTip1.ReshowDelay = 500;
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            toolTip1.ShowAlways = true;
+
+            // Set up the ToolTip text for the Button and Checkbox.
+            toolTip1.SetToolTip(this.ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings. Best used with Venue Mode off (setting in game). Used by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background. Player just sees an all black background when this is enabled. Options for turning the loft off only when in a song, when the game first starts up, or on a key press.");
+            toolTip1.SetToolTip(this.AddVolumeCheckbox, "Experimental");
+            toolTip1.SetToolTip(this.RainbowStringsEnabled, "How Pro are you? This makes the players guitar strings constantly cycling through colors.");
+            toolTip1.SetToolTip(this.HeadstockCheckbox, "Stops the Headstock of the guitar being drawn. “Headless” guitar mode. Just cleans up some more of the UI.");
+            toolTip1.SetToolTip(this.GreenScreenWallCheckbox, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience. Invalidated by “No Loft”.");
+            toolTip1.SetToolTip(this.ForceEnumerationCheckbox, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder. Not necesary to enable if you're already using Rocksniffer to do the same thing.");
+            toolTip1.SetToolTip(this.FretlessModeCheckbox, "Removes the Fret Wire from the neck, making your instrument appear to be Fretless.");
+            toolTip1.SetToolTip(this.SongTimerCheckbox, "Experimental - Intent is to show a box with your timestamp position through the song.");
+            toolTip1.SetToolTip(this.DecreaseVolumeCheckbox, "Experimental");
+            toolTip1.SetToolTip(this.ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
+            toolTip1.SetToolTip(this.customColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
+            toolTip1.SetToolTip(this.RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS. Use in conjunction with No Loft for a cleaner UI. Options for always off,only off when in a song, or only when toggled by key press.");
+            toolTip1.SetToolTip(this.DiscoModeCheckbox, "Experimental.");
+            toolTip1.SetToolTip(this.AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu. Lets you auto load the last used profile without needing to interact with the game at all.");
+            toolTip1.SetToolTip(this.RemoveInlaysCheckbox, "Disables the guitar neck inlay display entirely.");
+            toolTip1.SetToolTip(this.RemoveLineMarkersCheckBox, "Removes the additional lane marker lines seen in the display. When used with No Loft, provides a cleaner Luma Key.");
+            toolTip1.SetToolTip(this.RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
+            toolTip1.SetToolTip(this.SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
+            toolTip1.SetToolTip(this.KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications.");
+            toolTip1.SetToolTip(this.btnAddCustomTunings, "Adds named definitions for some common Custom Tunings.");
+            toolTip1.SetToolTip(this.btnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
+            toolTip1.SetToolTip(this.btnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
+            //toolTip1.SetToolTip(this.button1, "My button1");
+            //toolTip1.SetToolTip(this.button1, "My button1");
+        }
     }
 }

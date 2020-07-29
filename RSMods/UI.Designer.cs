@@ -67,6 +67,7 @@
             this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
             this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
             this.EnabledModsBox = new System.Windows.Forms.GroupBox();
+            this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.customColorsCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
@@ -115,7 +116,6 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
-            this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -576,6 +576,17 @@
             this.EnabledModsBox.TabIndex = 50;
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
+            // 
+            // RemoveLyricsCheckbox
+            // 
+            this.RemoveLyricsCheckbox.AutoSize = true;
+            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(319, 68);
+            this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
+            this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
+            this.RemoveLyricsCheckbox.TabIndex = 45;
+            this.RemoveLyricsCheckbox.Text = "Remove Lyrics";
+            this.RemoveLyricsCheckbox.UseVisualStyleBackColor = true;
+            this.RemoveLyricsCheckbox.CheckedChanged += new System.EventHandler(this.RemoveLyricsCheckbox_CheckedChanged);
             // 
             // customColorsCheckbox
             // 
@@ -1124,17 +1135,6 @@
             this.listTunings.Size = new System.Drawing.Size(185, 134);
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
-            // 
-            // RemoveLyricsCheckbox
-            // 
-            this.RemoveLyricsCheckbox.AutoSize = true;
-            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(319, 68);
-            this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
-            this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
-            this.RemoveLyricsCheckbox.TabIndex = 45;
-            this.RemoveLyricsCheckbox.Text = "Remove Lyrics";
-            this.RemoveLyricsCheckbox.UseVisualStyleBackColor = true;
-            this.RemoveLyricsCheckbox.CheckedChanged += new System.EventHandler(this.RemoveLyricsCheckbox_CheckedChanged);
             // 
             // MainForm
             // 
