@@ -145,6 +145,7 @@
             this.Songlist.Size = new System.Drawing.Size(185, 147);
             this.Songlist.TabIndex = 2;
             this.Songlist.SelectedIndexChanged += new System.EventHandler(this.Songlist_SelectedIndexChanged);
+            
             // 
             // ModList
             // 
@@ -246,7 +247,7 @@
             this.NewAssignmentTxtBox.Size = new System.Drawing.Size(188, 20);
             this.NewAssignmentTxtBox.TabIndex = 20;
             this.NewAssignmentTxtBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckEnter);
+            this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPresses);
             // 
             // NewAssignment
             // 
@@ -273,7 +274,7 @@
             this.NewSongListNameTxtbox.Size = new System.Drawing.Size(222, 20);
             this.NewSongListNameTxtbox.TabIndex = 23;
             this.NewSongListNameTxtbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckEnter);
+            this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPresses);
             // 
             // RainbowStringsEnabled
             // 
