@@ -1,5 +1,6 @@
 ﻿using System;
 using static System.StringComparison;
+using System.Windows.Forms;
 
 namespace RSMods
 {
@@ -36,7 +37,7 @@ namespace RSMods
             { 
                 return "VK_RBUTTON";
             }
-            if (String.Equals(Key, "MBUTTON", CurrentCultureIgnoreCase) ^ String.Equals(Key, "MiddleMouseButton", CurrentCultureIgnoreCase)) // Middle Mouse Button
+            if (String.Equals(Key, "MBUTTON", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Middle", CurrentCultureIgnoreCase)) // Middle Mouse Button
             { 
                 return "VK_MBUTTON";
             }
@@ -467,6 +468,10 @@ namespace RSMods
             {
                 return "VK_NUMPAD9";
             }
+            if (String.Equals(Key, "Decimal", CurrentCultureIgnoreCase)) // Numpad Decimal
+            {
+                return "VK_DECIMAL";
+            }
             if (String.Equals(Key, "NumpadAdd", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Numpad+", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Add", CurrentCultureIgnoreCase)) // Numpad Plus / Add Key
             {
                 return "VK_ADD";
@@ -629,7 +634,7 @@ namespace RSMods
             {
                 return "VK_MEDIA_NEXT_TRACK";
             }
-            if (String.Equals(Key, "MediaPrevTrack", CurrentCultureIgnoreCase) ^ String.Equals(Key, "PrevTrack", CurrentCultureIgnoreCase)) // Media Previous Track Key
+            if (String.Equals(Key, "MediaPrevTrack", CurrentCultureIgnoreCase) ^ String.Equals(Key, "MediaPreviousTrack", CurrentCultureIgnoreCase)) // Media Previous Track Key
             {
                 return "VK_MEDIA_PREV_TRACK";
             }
@@ -660,7 +665,7 @@ namespace RSMods
             }
 
         //OEM (Symbol) Keys
-            if (String.Equals(Key, "ColonSemiColon", CurrentCultureIgnoreCase) ^ String.Equals(Key, "SemiColonColon", CurrentCultureIgnoreCase) ^ String.Equals(Key, ";:", CurrentCultureIgnoreCase) ^ String.Equals(Key, ":;", CurrentCultureIgnoreCase)) // SemiColon & Colon Key
+            if (String.Equals(Key, "ColonSemiColon", CurrentCultureIgnoreCase) ^ String.Equals(Key, "SemiColonColon", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem1", CurrentCultureIgnoreCase)) // SemiColon & Colon Key
             {
                 return "VK_OEM_1";
             }
@@ -668,7 +673,7 @@ namespace RSMods
             {
                 return "VK_OEM_PLUS";
             }
-            if (String.Equals(Key, "Comma", CurrentCultureIgnoreCase) ^ String.Equals(Key, ",", CurrentCultureIgnoreCase)) // Comma / < Key
+            if (String.Equals(Key, "Comma", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oemcomma", CurrentCultureIgnoreCase)) // Comma / < Key
             {
                 return "VK_OEM_COMMA";
             }
@@ -676,15 +681,15 @@ namespace RSMods
             {
                 return "VK_OEM_MINUS";
             }
-            if (String.Equals(Key, "Period", CurrentCultureIgnoreCase) ^ String.Equals(Key, ".", CurrentCultureIgnoreCase)) // Period/ > Key
+            if (String.Equals(Key, "Period", CurrentCultureIgnoreCase) ^ String.Equals(Key, "OemPeriod", CurrentCultureIgnoreCase)) // Period/ > Key
             {
                 return "VK_OEM_PERIOD";
             }
-            if (String.Equals(Key, "SlashQuestionMark", CurrentCultureIgnoreCase) ^ String.Equals(Key, "QuestionMarkSlash", CurrentCultureIgnoreCase) ^ String.Equals(Key, "?/", CurrentCultureIgnoreCase) ^ String.Equals(Key, "/?", CurrentCultureIgnoreCase)) // 
+            if (String.Equals(Key, "SlashQuestionMark", CurrentCultureIgnoreCase) ^ String.Equals(Key, "QuestionMarkSlash", CurrentCultureIgnoreCase) ^ String.Equals(Key, "OemQuestion", CurrentCultureIgnoreCase) ^ String.Equals(Key, "/?", CurrentCultureIgnoreCase)) // Question Mark & Forward Slash
             {
                 return "VK_OEM_2";
             }
-            if (String.Equals(Key, "Tilda", CurrentCultureIgnoreCase) ^ String.Equals(Key, "BackTick", CurrentCultureIgnoreCase)) // Back Tick / Tilda Key
+            if (String.Equals(Key, "Tilda", CurrentCultureIgnoreCase) ^ String.Equals(Key, "BackTick", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oemtilde", CurrentCultureIgnoreCase)) // Back Tick / Tilda Key
             {
                 return "VK_OEM_3";
             }
@@ -692,7 +697,7 @@ namespace RSMods
             {
                 return "VK_OEM_4";
             }
-            if (String.Equals(Key, "BackSlashPipe", CurrentCultureIgnoreCase) ^ String.Equals(Key, "PipeBackSlash", CurrentCultureIgnoreCase) ^ String.Equals(Key, "\\|", CurrentCultureIgnoreCase) ^ String.Equals(Key, "|\\", CurrentCultureIgnoreCase)) // Backslash & Pipe key
+            if (String.Equals(Key, "BackSlashPipe", CurrentCultureIgnoreCase) ^ String.Equals(Key, "PipeBackSlash", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem5", CurrentCultureIgnoreCase) ^ String.Equals(Key, "|\\", CurrentCultureIgnoreCase)) // Backslash & Pipe key
             {
                 return "VK_OEM_5";
             }
@@ -700,7 +705,7 @@ namespace RSMods
             {
                 return "VK_OEM_6";
             }
-            if (String.Equals(Key, "Quotes", CurrentCultureIgnoreCase) ^ String.Equals(Key, "'\"", CurrentCultureIgnoreCase) ^ String.Equals(Key, "\"'", CurrentCultureIgnoreCase)) // Single & Double Quotes Key
+            if (String.Equals(Key, "Quotes", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem7", CurrentCultureIgnoreCase) ^ String.Equals(Key, "\"'", CurrentCultureIgnoreCase)) // Single & Double Quotes Key
             {
                 return "VK_OEM_7";
             }
@@ -844,5 +849,37 @@ namespace RSMods
             }
             return "";
         }
+        public static System.Windows.Forms.Keys[] KeyDownDictionary = new System.Windows.Forms.Keys[41] // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://i.imgur.com/0g7hurj.png
+        {
+            // Standard Function Keys
+             Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7,  Keys.F8, Keys.F9, Keys.F10, Keys.F11,
+
+            // Elgato Keys / Extended Function Keys
+            Keys.F13, Keys.F14, Keys.F15, Keys.F16, Keys.F17, Keys.F18, Keys.F19, Keys.F20, Keys.F21, Keys.F22,  Keys.F23, Keys.F24,
+
+            // Special Keys
+            Keys.Pause, Keys.Scroll, Keys.Insert,
+
+            // Symbol Keys
+            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion, Keys.OemPipe,
+
+            // Modifier Keys
+            Keys.CapsLock, Keys.Apps,
+
+            // Numlock Keys
+            Keys.Subtract, Keys.NumLock, Keys.Multiply, Keys.Divide, Keys.Decimal
+        };
+        public static System.Windows.Forms.Keys[] KeyUpDictionary = new System.Windows.Forms.Keys[6] // Same with KeyDownDictionary, but these are all the keys that can only be read on KeyUp
+        {
+            // Print Screen
+            Keys.PrintScreen,
+
+            // Media Keys
+            Keys.Play, Keys.MediaNextTrack, Keys.MediaPlayPause, Keys.MediaPreviousTrack, Keys.MediaStop
+        };
+        public static System.Windows.Forms.MouseButtons[] MouseButtonDictionary = new System.Windows.Forms.MouseButtons[3] // Same with KeyUpDictonary, and KeyDownDictionary but with the mouse's extra buttons.
+        {
+             MouseButtons.XButton1, MouseButtons.XButton2, MouseButtons.Middle
+        };
     }
 }

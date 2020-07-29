@@ -334,7 +334,7 @@ namespace RSMods
             }
         }
 
-        private void CheckKeyPresses(object sender, KeyEventArgs e)
+        private void CheckKeyPressesDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
             {
@@ -345,58 +345,40 @@ namespace RSMods
 
             else if (sender == this.NewAssignmentTxtBox)
             {
-                // F Keys (not F12 for steam pictures)
-                if (e.KeyCode == Keys.F1 || e.KeyCode == Keys.F2 || e.KeyCode == Keys.F3 || e.KeyCode == Keys.F4 || e.KeyCode == Keys.F5 || e.KeyCode == Keys.F6 || e.KeyCode == Keys.F7 || e.KeyCode == Keys.F8 || e.KeyCode == Keys.F9 || e.KeyCode == Keys.F10 || e.KeyCode == Keys.F11)
-                {
-                    NewAssignmentTxtBox.Text = e.KeyCode.ToString();
-                }
-                // Elgato / Extended F-Keys not on every keyboard
-                else if (e.KeyCode == Keys.F13 || e.KeyCode == Keys.F14 || e.KeyCode == Keys.F15 || e.KeyCode == Keys.F16 || e.KeyCode == Keys.F17 || e.KeyCode == Keys.F18 || e.KeyCode == Keys.F19 || e.KeyCode == Keys.F20 || e.KeyCode == Keys.F21 || e.KeyCode == Keys.F22 || e.KeyCode == Keys.F23 || e.KeyCode == Keys.F24)
-                {
-                    NewAssignmentTxtBox.Text = e.KeyCode.ToString();
-                }
-                // Special Keys
-                else if (e.KeyCode == Keys.Print || e.KeyCode == Keys.Pause || e.KeyCode == Keys.Scroll || e.KeyCode == Keys.Insert)
-                {
-                    NewAssignmentTxtBox.Text = e.KeyCode.ToString();
-                }
+                e.SuppressKeyPress = true;
 
-                // Symbol Keys
-                else if (e.KeyCode == Keys.OemSemicolon)
+                if(KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
                 {
                     NewAssignmentTxtBox.Text = e.KeyCode.ToString();
                 }
-                // Numlock Keys
-                else if (e.KeyValue != null)
-                {
-                    NewAssignmentTxtBox.Text = e.KeyValue.ToString();
-                }
-
                 // Number or Letter was pressed (Will be overrided by text input)
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
                     return;
                 }
+
+
+                //else if (e.KeyValue != null) // If key is unknown, give me the int to look at this document for reference: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=netcore-3.1
+                //{
+                //    NewAssignmentTxtBox.Text = e.KeyValue.ToString();
+                //}
             }
         }
 
-        private void CheckPrintScreen(object sender, KeyEventArgs e)
+        private void CheckKeyPressesUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyValue == 44)
+            if (KeyConversion.KeyUpDictionary.Contains(e.KeyCode))
             {
                 NewAssignmentTxtBox.Text = e.KeyCode.ToString();
             }
+
         }
 
         private void CheckMouseInput (object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.XButton1 || e.Button == MouseButtons.XButton2)
+            if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
             {
                 NewAssignmentTxtBox.Text = e.Button.ToString();
-            }
-            if (e.Button == MouseButtons.Middle)
-            {
-                NewAssignmentTxtBox.Text = "MBUTTON";
             }
         }
 

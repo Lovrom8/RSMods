@@ -169,23 +169,27 @@
             // AddVolumeCheckbox
             // 
             this.AddVolumeCheckbox.AutoSize = true;
-            this.AddVolumeCheckbox.Location = new System.Drawing.Point(11, 45);
+            this.AddVolumeCheckbox.Enabled = false;
+            this.AddVolumeCheckbox.Location = new System.Drawing.Point(370, 156);
             this.AddVolumeCheckbox.Name = "AddVolumeCheckbox";
             this.AddVolumeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.AddVolumeCheckbox.TabIndex = 8;
             this.AddVolumeCheckbox.Text = "Add Volume";
             this.AddVolumeCheckbox.UseVisualStyleBackColor = true;
+            this.AddVolumeCheckbox.Visible = false;
             this.AddVolumeCheckbox.CheckedChanged += new System.EventHandler(this.AddVolumeCheckbox_CheckedChanged);
             // 
             // DecreaseVolumeCheckbox
             // 
             this.DecreaseVolumeCheckbox.AutoSize = true;
-            this.DecreaseVolumeCheckbox.Location = new System.Drawing.Point(166, 45);
+            this.DecreaseVolumeCheckbox.Enabled = false;
+            this.DecreaseVolumeCheckbox.Location = new System.Drawing.Point(370, 133);
             this.DecreaseVolumeCheckbox.Name = "DecreaseVolumeCheckbox";
             this.DecreaseVolumeCheckbox.Size = new System.Drawing.Size(110, 17);
             this.DecreaseVolumeCheckbox.TabIndex = 9;
             this.DecreaseVolumeCheckbox.Text = "Decrease Volume";
             this.DecreaseVolumeCheckbox.UseVisualStyleBackColor = true;
+            this.DecreaseVolumeCheckbox.Visible = false;
             this.DecreaseVolumeCheckbox.CheckedChanged += new System.EventHandler(this.DecreaseVolumeCheckbox_CheckedChanged);
             // 
             // SongTimerCheckbox
@@ -202,7 +206,7 @@
             // ToggleLoftKey
             // 
             this.ToggleLoftKey.AutoSize = true;
-            this.ToggleLoftKey.Location = new System.Drawing.Point(488, 38);
+            this.ToggleLoftKey.Location = new System.Drawing.Point(464, 38);
             this.ToggleLoftKey.Name = "ToggleLoftKey";
             this.ToggleLoftKey.Size = new System.Drawing.Size(0, 13);
             this.ToggleLoftKey.TabIndex = 14;
@@ -210,7 +214,7 @@
             // AddVolumeKey
             // 
             this.AddVolumeKey.AutoSize = true;
-            this.AddVolumeKey.Location = new System.Drawing.Point(488, 61);
+            this.AddVolumeKey.Location = new System.Drawing.Point(464, 61);
             this.AddVolumeKey.Name = "AddVolumeKey";
             this.AddVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.AddVolumeKey.TabIndex = 15;
@@ -218,7 +222,7 @@
             // DecreaseVolumeKey
             // 
             this.DecreaseVolumeKey.AutoSize = true;
-            this.DecreaseVolumeKey.Location = new System.Drawing.Point(488, 84);
+            this.DecreaseVolumeKey.Location = new System.Drawing.Point(464, 84);
             this.DecreaseVolumeKey.Name = "DecreaseVolumeKey";
             this.DecreaseVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.DecreaseVolumeKey.TabIndex = 16;
@@ -226,7 +230,7 @@
             // SongTimerKey
             // 
             this.SongTimerKey.AutoSize = true;
-            this.SongTimerKey.Location = new System.Drawing.Point(488, 107);
+            this.SongTimerKey.Location = new System.Drawing.Point(464, 107);
             this.SongTimerKey.Name = "SongTimerKey";
             this.SongTimerKey.Size = new System.Drawing.Size(0, 13);
             this.SongTimerKey.TabIndex = 17;
@@ -234,7 +238,7 @@
             // ReEnumerationKey
             // 
             this.ReEnumerationKey.AutoSize = true;
-            this.ReEnumerationKey.Location = new System.Drawing.Point(488, 130);
+            this.ReEnumerationKey.Location = new System.Drawing.Point(464, 130);
             this.ReEnumerationKey.Name = "ReEnumerationKey";
             this.ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
             this.ReEnumerationKey.TabIndex = 18;
@@ -247,8 +251,8 @@
             this.NewAssignmentTxtBox.Size = new System.Drawing.Size(188, 20);
             this.NewAssignmentTxtBox.TabIndex = 20;
             this.NewAssignmentTxtBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPresses);
-            this.NewAssignmentTxtBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckPrintScreen);
+            this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
+            this.NewAssignmentTxtBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
             this.NewAssignmentTxtBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
             // 
             // NewAssignment
@@ -276,7 +280,7 @@
             this.NewSongListNameTxtbox.Size = new System.Drawing.Size(222, 20);
             this.NewSongListNameTxtbox.TabIndex = 23;
             this.NewSongListNameTxtbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPresses);
+            this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
             // 
             // RainbowStringsEnabled
             // 
@@ -303,7 +307,7 @@
             // RainbowStringsAssignment
             // 
             this.RainbowStringsAssignment.AutoSize = true;
-            this.RainbowStringsAssignment.Location = new System.Drawing.Point(488, 152);
+            this.RainbowStringsAssignment.Location = new System.Drawing.Point(464, 152);
             this.RainbowStringsAssignment.Name = "RainbowStringsAssignment";
             this.RainbowStringsAssignment.Size = new System.Drawing.Size(0, 13);
             this.RainbowStringsAssignment.TabIndex = 28;
@@ -410,7 +414,7 @@
             // RemoveInlaysCheckbox
             // 
             this.RemoveInlaysCheckbox.AutoSize = true;
-            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(320, 21);
+            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(11, 45);
             this.RemoveInlaysCheckbox.Name = "RemoveInlaysCheckbox";
             this.RemoveInlaysCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveInlaysCheckbox.TabIndex = 42;
@@ -585,7 +589,7 @@
             // RemoveLyricsCheckbox
             // 
             this.RemoveLyricsCheckbox.AutoSize = true;
-            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(320, 68);
+            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(321, 22);
             this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
             this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveLyricsCheckbox.TabIndex = 45;
@@ -607,7 +611,7 @@
             // RemoveLineMarkersCheckBox
             // 
             this.RemoveLineMarkersCheckBox.AutoSize = true;
-            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 45);
+            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(166, 45);
             this.RemoveLineMarkersCheckBox.Name = "RemoveLineMarkersCheckBox";
             this.RemoveLineMarkersCheckBox.Size = new System.Drawing.Size(130, 17);
             this.RemoveLineMarkersCheckBox.TabIndex = 43;
@@ -620,7 +624,7 @@
             this.SongListBox.Controls.Add(this.NewSongListNameTxtbox);
             this.SongListBox.Controls.Add(this.NewSonglistName);
             this.SongListBox.Controls.Add(this.Songlist);
-            this.SongListBox.Location = new System.Drawing.Point(12, 20);
+            this.SongListBox.Location = new System.Drawing.Point(6, 20);
             this.SongListBox.Name = "SongListBox";
             this.SongListBox.Size = new System.Drawing.Size(459, 182);
             this.SongListBox.TabIndex = 51;
@@ -639,9 +643,9 @@
             this.KeybindingsBox.Controls.Add(this.ToggleLoftKey);
             this.KeybindingsBox.Controls.Add(this.RainbowStringsAssignment);
             this.KeybindingsBox.Controls.Add(this.ModList);
-            this.KeybindingsBox.Location = new System.Drawing.Point(12, 242);
+            this.KeybindingsBox.Location = new System.Drawing.Point(6, 242);
             this.KeybindingsBox.Name = "KeybindingsBox";
-            this.KeybindingsBox.Size = new System.Drawing.Size(654, 176);
+            this.KeybindingsBox.Size = new System.Drawing.Size(701, 176);
             this.KeybindingsBox.TabIndex = 52;
             this.KeybindingsBox.TabStop = false;
             this.KeybindingsBox.Text = "Key Bindings";
