@@ -11,7 +11,7 @@ public:
 	uintptr_t FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets);
 	uint8_t* FindPattern(uint32_t dwAddress, size_t dwLen, uint8_t* bMask, char* szMask);
 	uintptr_t ReadPtr(uintptr_t adr);
-	DWORD FindPattern(DWORD address, DWORD size, PBYTE pattern, PCHAR mask);
+	DWORD FindPattern(DWORD address, DWORD size, PBYTE pattern, char* mask);
 };
 
 extern cMemUtil MemUtil;

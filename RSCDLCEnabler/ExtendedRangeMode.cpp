@@ -25,6 +25,7 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 
 	return eax;
 }
+//Replace with new code: https://discordapp.com/channels/711633334983196752/711633334983196756/737864052390363146
 
 struct String { //maybe do sth with this
 	uintptr_t strPtr;

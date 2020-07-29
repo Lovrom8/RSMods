@@ -1,5 +1,12 @@
 #include "Main.h"
 
+#if defined _DEBUG
+bool debug = true;
+#else
+bool debug = false;
+#endif
+
+
 unsigned WINAPI EnumerationThread(void*) {
 	while (!GameLoaded) // We are in no hurry :)
 		Sleep(5000);
@@ -34,14 +41,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	}
 
 	if (msg == WM_KEYUP) {
+		/*
 		if (keyPressed == VK_DELETE) {
 			float volume;
 			RTPCValue_type type;
 
-			//SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-			//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
-			//std::cout << volume << std::endl;
+			SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+			GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
+			std::cout << volume << std::endl;
 		}
+		*/
+
 		if (GameLoaded) {
 			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") { // Game must not be on the startup videos or it will crash
 				MemHelpers.ToggleLoft();
@@ -73,8 +83,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Rainbows Are Pretty Cool" << std::endl;
 			}
 		}
-		if (keyPressed == VK_INSERT)
-			menuEnabled = !menuEnabled;
+
+		if (debug) {
+			if (keyPressed == VK_INSERT)
+				menuEnabled = !menuEnabled;
+		}
 	}
 
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
@@ -424,28 +437,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)//page up
-		currIdx++;
-	if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
-		currIdx--;
-
-	if (GetAsyncKeyState(VK_END) & 1) // Toggle logging
-		startLogging = !startLogging;
-
-	if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
-		for (auto mesh : allMeshes) {
-			Log(mesh.ToString().c_str());
-		}
-	}
-
-	if (GetAsyncKeyState(VK_F7) & 1) { //save only removed 
-		for (auto mesh : removedMeshes) {
-			Log(mesh.ToString().c_str());
-		}
-	}
-
-	if (GetAsyncKeyState(VK_CONTROL) & 1)
-		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
 	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
@@ -462,39 +453,60 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	Mesh current(Stride, primCount, NumVertices);
 	ThiccMesh currentThicc(Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
-	if (startLogging) {
-		if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
-			allMeshes.push_back(currentThicc);
-		//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture -> Mesh
-		Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture -> ThiccMesh
-		//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
-	}
+	if (debug) {
+		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)//page up
+			currIdx++;
+		if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
+			currIdx--;
 
-	if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
-		currStride = Stride;
-		currNumVertices = NumVertices;
-		currPrimCount = primCount;
-		currStartIndex = startIndex;
-		currStartRegister = mStartregister;
-		currPrimType = PrimType;
-		currDeclType = decl->Type;
-		currVectorCount = mVectorCount;
-		currNumElements = numElements;
-		//pDevice->SetTexture(1, Yellow);
-		return D3D_OK;
-	}
+		if (GetAsyncKeyState(VK_END) & 1) // Toggle logging
+			startLogging = !startLogging;
 
-	if (IsExtraRemoved(removedMeshes, currentThicc))
-		return D3D_OK;
+		if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
+			for (auto mesh : allMeshes) {
+				Log(mesh.ToString().c_str());
+			}
+		}
+
+		if (GetAsyncKeyState(VK_F7) & 1) { //save only removed 
+			for (auto mesh : removedMeshes) {
+				Log(mesh.ToString().c_str());
+			}
+		}
+
+		if (GetAsyncKeyState(VK_CONTROL) & 1)
+			Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
+
+		if (startLogging) {
+			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
+				allMeshes.push_back(currentThicc);
+			//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture -> Mesh
+			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture -> ThiccMesh
+			//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
+		}
+
+		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
+			currStride = Stride;
+			currNumVertices = NumVertices;
+			currPrimCount = primCount;
+			currStartIndex = startIndex;
+			currStartRegister = mStartregister;
+			currPrimType = PrimType;
+			currDeclType = decl->Type;
+			currVectorCount = mVectorCount;
+			currNumElements = numElements;
+			//pDevice->SetTexture(1, Yellow);
+			return D3D_OK;
+		}
+
+		if (IsExtraRemoved(removedMeshes, currentThicc))
+			return D3D_OK;
+	}
+	
+	// Mods
 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) {
 		if (IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
-			/*if (MemHelpers.IsExtendedRangeSong())
-				pDevice->SetTexture(1, gradientTextureSeven);
-			else
-				 pDevice->SetTexture(1, gradientTextureNormal);*/
-				 //either this or CB based Extended Range mode - otherwise you may get some silly effects
-
 			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 			pDevice->SetTexture(1, ourTexture);
 		}
@@ -522,9 +534,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 
-	
-
-
 	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
 
@@ -536,6 +545,15 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
 			return D3D_OK;
 		if (Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
+			return D3D_OK;
+	}
+	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))
+	{
+		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+			return D3D_OK;
+		if (IsExtraRemoved(tunerHighlight, currentThicc)) // This is called to remove the tuner's highlights
+			return D3D_OK;
+		if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
 			return D3D_OK;
 	}
 	
@@ -601,15 +619,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				if (calculatedHeadstocks)
 					if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
 						return D3D_OK;
-			}
-			else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus))
-			{
-				if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
-					return D3D_OK;
-				if (IsExtraRemoved(tunerHighlight, currentThicc)) // This is called to remove the tuner's highlights
-					return D3D_OK;
-				if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
-					return D3D_OK;
 			}
 		}
 	}
@@ -716,13 +725,14 @@ void UpdateSettings() { // Live updates from the INI
 	Sleep(500);
 }
 
-
 void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6935279/delete-all-txt-in-a-directory-with-c :P
-	std::string command = "del /Q ";
-	std::string path = "*.mdmp";
-	system(command.append(path).c_str());
+	if (debug) {
+		std::string command = "del /Q ";
+		std::string path = "*.mdmp";
+		system(command.append(path).c_str());
 
-	std::cout << "Deleting Useless Log Files" << std::endl;
+		std::cout << "Deleting Useless Log Files" << std::endl;
+	}
 }
 
 unsigned WINAPI MainThread(void*) {
@@ -739,35 +749,33 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	while (true) {
-		//Sleep(300); //TODO: bring back Sleep(2000) when we are done testing string colors
 		Sleep(2000);
 
 		currentMenu = MemHelpers.GetCurrentMenu(); 
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
-			// Refresh settings every loop :)
 
 			ERMode.Toggle7StringMode();
 
-			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes))
+			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
 				LessonMode = false;
 
-			if (LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") != "manual") { // If user is in lesson mode
+			if (LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
 				if (LoftOff)
 					MemHelpers.ToggleLoft();
 				LoftOff = false;
 				GreenScreenWall = true;
 			}
 
-			if (!LoftOff && !LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Runs on startup
+			if (!LoftOff && !LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Turn the loft off on startup
 				MemHelpers.ToggleLoft();
 				LoftOff = true;
 				GreenScreenWall = false;
 			}
-			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Runs on startup, only once
+			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Turn the skyline off on startup
 				toggleSkyline = true;
 			}
 
@@ -775,14 +783,14 @@ unsigned WINAPI MainThread(void*) {
 			{
 				GuitarSpeakPresent = false;
 
-				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song")
+				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
 				{
 					if (!LoftOff)
 						MemHelpers.ToggleLoft();
 					LoftOff = true;
 				}
 
-				if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song")
+				if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") // Turn the skyline off when entering a song
 				{
 					if (!SkylineOff)
 						toggleSkyline = true;
@@ -791,7 +799,7 @@ unsigned WINAPI MainThread(void*) {
 			}
 			else // If User Is Exiting Song / In A Menu
 			{
-				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") {
+				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
 					if (LoftOff) {
 						MemHelpers.ToggleLoft();
 						LoftOff = false;
@@ -800,6 +808,10 @@ unsigned WINAPI MainThread(void*) {
 					{
 						GreenScreenWall = false;
 					}
+				}
+				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline back on after exiting a song
+					toggleSkyline = true;
+					DrawSkylineInMenu = true;
 				}
 
 				/*if(!GuitarSpeakPresent) {
@@ -810,13 +822,9 @@ unsigned WINAPI MainThread(void*) {
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 				
 
-				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && !(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)))
+				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)) || currentMenu.c_str() == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 
-				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") {
-					toggleSkyline = true;
-					DrawSkylineInMenu = true;
-				}
 			}
 
 			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style

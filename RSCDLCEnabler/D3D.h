@@ -182,23 +182,6 @@ bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
 
 //  {8, 10, 8}, //  Massive UI (Artwork, preview skylines, loading screens, etc)
 
-//std::vector<Mesh> skyline{
-//	{16, 66, 132}, //
-//	{16, 38, 76}, // 
-//	{16, 2, 4}, //
-//	{16, 104, 208}, //
-//};
-
-std::vector<Mesh> skylineLesson{
-	{16, 66, 132},
-	{16, 38, 76},
-	{16, 2, 4},
-	{16, 104, 208},
-	{20, 2, 4},
-	{16, 18, 16},
-	{8, 20, 16} 
-};
-
 std::vector<Mesh> sevenstring{
 	{36, 40, 76}, // Note Heads
 	{36, 40, 50}, // Open Strings
