@@ -1514,7 +1514,12 @@ namespace RSMods
         // This example assumes that the Form_Load event handling method
         // is connected to the Load event of the form.
         // shamelessly lifted from https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
-        private void Form1_Load(object sender, System.EventArgs e)
+
+        private void MainForm_Load(object sender, System.EventArgs e)
+        {
+            StartToolTips();
+        }
+        private void StartToolTips()
         {
             // Create the ToolTip and associate with the Form container.
             ToolTip toolTip1 = new ToolTip();

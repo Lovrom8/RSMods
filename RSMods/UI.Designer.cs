@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.Songlist = new System.Windows.Forms.ListBox();
             this.ModList = new System.Windows.Forms.ListBox();
@@ -116,6 +117,7 @@
             this.btnAddTuning = new System.Windows.Forms.Button();
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
+            this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -570,7 +572,7 @@
             this.EnabledModsBox.Controls.Add(this.DiscoModeCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveSkylineCheckbox);
             this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
-            this.EnabledModsBox.Location = new System.Drawing.Point(502, 20);
+            this.EnabledModsBox.Location = new System.Drawing.Point(487, 20);
             this.EnabledModsBox.Name = "EnabledModsBox";
             this.EnabledModsBox.Size = new System.Drawing.Size(486, 182);
             this.EnabledModsBox.TabIndex = 50;
@@ -1136,6 +1138,13 @@
             this.listTunings.TabIndex = 72;
             this.listTunings.SelectedIndexChanged += new System.EventHandler(this.listTunings_SelectedIndexChanged);
             // 
+            // ToolTip
+            // 
+            this.ToolTip.AutoPopDelay = 5000;
+            this.ToolTip.InitialDelay = 1000;
+            this.ToolTip.ReshowDelay = 500;
+            this.ToolTip.ShowAlways = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1157,6 +1166,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.HowToEnumerateBox.ResumeLayout(false);
             this.HowToEnumerateBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).EndInit();
@@ -1276,6 +1286,7 @@
         private System.Windows.Forms.Label TuningNoteNameLabel;
         private System.Windows.Forms.Button DeleteKeyBind;
         private System.Windows.Forms.CheckBox RemoveLyricsCheckbox;
+        private System.Windows.Forms.ToolTip ToolTip;
     }
 }
 
