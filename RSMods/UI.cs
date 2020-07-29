@@ -334,18 +334,13 @@ namespace RSMods
             }
         }
 
-        private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.NewSongListNameTxtbox.Text = Songlist.SelectedItem.ToString();
-        }
-
         private void CheckEnter(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
             {
                 Save_Songlists_Keybindings(sender, e);
                 e.SuppressKeyPress = true;
-                RefreshForm();
+                //RefreshForm();
             }
         }
 
@@ -1141,33 +1136,39 @@ namespace RSMods
 
 
 
-        private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save button
+        private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
             // Songlists
             {
                 if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(0)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
                 {
                     SaveChanges(1, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[0] = this.NewSongListNameTxtbox.Text;
                 }
                 if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(1)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 2
                 {
                     SaveChanges(2, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[1] = this.NewSongListNameTxtbox.Text;
                 }
                 if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(2)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 3
                 {
                     SaveChanges(3, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[2] = this.NewSongListNameTxtbox.Text;
                 }
                 if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(3)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 4
                 {
                     SaveChanges(4, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[3] = this.NewSongListNameTxtbox.Text;
                 }
                 if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(4)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 5
                 {
                     SaveChanges(5, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[4] = this.NewSongListNameTxtbox.Text;
                 }
                 if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(5)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 6
                 {
                     SaveChanges(6, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[5] = this.NewSongListNameTxtbox.Text;
                 }
             }
 
@@ -1556,6 +1557,14 @@ namespace RSMods
             toolTip1.SetToolTip(this.btnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
             //toolTip1.SetToolTip(this.button1, "My button1");
             //toolTip1.SetToolTip(this.button1, "My button1");
+        }
+
+        private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(this.Songlist.SelectedIndex > -1)
+            {
+                this.NewSongListNameTxtbox.Text = this.Songlist.SelectedItem.ToString();
+            }
         }
     }
 }
