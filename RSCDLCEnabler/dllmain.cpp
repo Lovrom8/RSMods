@@ -25,8 +25,8 @@ unsigned WINAPI EnumerationThread(void*) {
 				Enumeration.ForceEnumeration();
 		}
 
-		//Sleep(Settings.GetModSetting("CheckForNewSongsInterval"));
-		Sleep(EnumSliderVal);
+		Sleep(Settings.GetModSetting("CheckForNewSongsInterval"));
+		//Sleep(EnumSliderVal);
 	}
 
 	return 0;
@@ -142,8 +142,8 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
-	for (int i = 0; i < 8;i++) {
-		RSColor iniColor = Settings.GetCustomColors(false)[i];
+	for (int i = 0; i < 16;i++) {
+		RSColor iniColor = Settings.GetCustomColors(i % 8)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
@@ -163,32 +163,10 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		graphics.FillRectangle(&whiteCoverupBrush, width - 3, i * lineHeight, width, lineHeight); // Don't hate me for this hacky fix to the black bars.
 	}
 
-	for (int i = 0; i < 8;i++) {
-		RSColor iniColor = Settings.GetCustomColors(true)[i];
-		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
-
-		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
-		LinearGradientBrush linGrBrush( // Base texture for note gradients (bottom / colorblind)
-			Point(0, 0),
-			Point(width, lineHeight),
-			Gdiplus::Color::Black,
-			Gdiplus::Color::White);
-
-		LinearGradientBrush whiteCoverupBrush( // Coverup for some spotty gradients (bottom / colorblind)
-			Point(width - 3, lineHeight * 5),
-			Point(width, height),
-			Gdiplus::Color::White,
-			Gdiplus::Color::White);
-		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
-		graphics.FillRectangle(&linGrBrush, 0, (i + lineHeight) * lineHeight, width, lineHeight);
-		graphics.FillRectangle(&whiteCoverupBrush, width - 3, (i + lineHeight) * lineHeight, width, lineHeight); // Don't hate me for this hacky fix to the black bars.
-	}
-
-	CLSID pngClsid;
-	CLSIDFromString(L"{557CF406-1A04-11D3-9A73-0000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
-	bmp.Save(L"generatedTexture.png", &pngClsid);
-
-	//Gdiplus::GdiplusShutdown(token_); freaking thing crashes if you do the right thing D:, i.e. if you try cleaning after yourself
+	// Uncomment if you want to save the generated texture
+	/*CLSID pngClsid;
+	CLSIDFromString(L"{557CF406-1A04-11D3-9A73-000F81EF32E}", &pngClsid); //for BMP: {557cf400-1a04-11d3-9a73-0000f81ef32e}
+	bmp.Save(L"generatedTexture.png", &pngClsid); */
 
 	BitmapData bitmapData;
 	D3DLOCKED_RECT lockedRect;
@@ -212,7 +190,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	ourTexture->UnlockRect(0);
 
-	D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+	//D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
 
 	SetCustomColors();
 }
@@ -245,7 +223,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 		GenerateTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
-		GenerateTexture(pDevice, &Green, D3DCOLOR_RGBA(0, 255, 0, 255));
+		GenerateTexture(pDevice, &Green, D3DCOLOR_ARGB(255, 0, 255, 0));
 		GenerateTexture(pDevice, &Blue, D3DCOLOR_ARGB(255, 0, 0, 255));
 		GenerateTexture(pDevice, &Yellow, D3DCOLOR_ARGB(255, 255, 255, 0));
 
@@ -256,7 +234,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		for (int i = 0; i < 12;i++)
 			GuitarSpeakStartingTexts.push_back("No value set!");
-		
+
 		std::cout << "ImGUI Init" << std::endl;
 
 		GenerateTexture(pDevice);
@@ -342,7 +320,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ERMode.ResetString(selectedString);
 
 		ImGui::End();
-		
+
 		static int selectedValues[12]; // NOTE: this is called every frame, so if you declare your non-static variables here, they will be reset to default values every call - either make them static or declare them globally in the header
 
 		ImGui::Begin("Guitar Speak Settings");
@@ -355,7 +333,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			}
 
 			if (ImGui::BeginCombo(noteName.c_str(), GuitarSpeakStartingTexts[note].c_str())) {
-				
+
 				for (int options = 0; options < 12; options++)
 				{
 					bool is_selected = (selectedValues[options] == options);
@@ -375,7 +353,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
-		ImGui::Begin("Game colors testing");
+		/*ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
 
 		char label[10];
@@ -393,7 +371,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ERMode.restoreDefaults = true;
 		}
 
-		ImGui::End();
+		ImGui::End();*/
 	}
 
 	ImGui::EndFrame();
@@ -478,7 +456,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
 
 		if (startLogging) {
-			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) //make sure we don't log what we'd already logged
+			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 				allMeshes.push_back(currentThicc);
 			//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture -> Mesh
 			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture -> ThiccMesh
@@ -502,15 +480,15 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (IsExtraRemoved(removedMeshes, currentThicc))
 			return D3D_OK;
 	}
-	
+
 	// Mods
 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) {
-		if (IsToBeRemoved(sevenstring, current)) { //change all pieces of note head's textures
+		if (IsToBeRemoved(sevenstring, current)) { // Change all pieces of note head's textures
 			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 			pDevice->SetTexture(1, ourTexture);
 		}
-		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // colors for note stems (part below the note), and note accents
+		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
@@ -556,8 +534,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
 			return D3D_OK;
 	}
-	
-	
+
+
 
 	if (!lowPerformancePC) {
 		if (toggleSkyline && Stride == 16) {
@@ -623,10 +601,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-}
-
-HRESULT APIENTRY Hook_BeginScene(LPDIRECT3DDEVICE9 pD3D9) {
-	return oBeginScene(pD3D9);
 }
 
 HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl) {
@@ -699,7 +673,6 @@ void GUI() {
 	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
 
 	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);
-	oBeginScene = (tBeginScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::BeginScene_Index], (PBYTE)Hook_BeginScene, 7);
 	oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)Hook_EndScene, 7);
 	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)Hook_DIP, 5);
 	oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)Hook_DP, 7);
@@ -751,7 +724,7 @@ unsigned WINAPI MainThread(void*) {
 	while (true) {
 		Sleep(2000);
 
-		currentMenu = MemHelpers.GetCurrentMenu(); 
+		currentMenu = MemHelpers.GetCurrentMenu();
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
@@ -820,7 +793,7 @@ unsigned WINAPI MainThread(void*) {
 				}*/
 
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
-				
+
 
 				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)) || currentMenu.c_str() == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;

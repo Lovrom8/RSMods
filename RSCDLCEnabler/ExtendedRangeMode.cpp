@@ -2,6 +2,15 @@
 
 cERMode ERMode;
 
+// I couldn't get it to work - it returns a valid pointer, but not one that would change the colors
+/*uintptr_t GetStringColor(uintptr_t stringnum, int state) {  
+	uintptr_t pThisAddr = Offsets.ptr_stringColor;
+	uintptr_t pThisPtr = MemUtil.ReadPtr(pThisAddr);
+	uintptr_t pColor = MemUtil.ReadPtr(pThisPtr + state + (stringnum * 0x4));
+
+	return pColor;
+}*/
+
 uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	uintptr_t edx = stringnum;
 	uintptr_t eax = 0;
@@ -25,31 +34,6 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 
 	return eax;
 }
-//Replace with new code: https://discordapp.com/channels/711633334983196752/711633334983196756/737864052390363146
-
-struct String { //maybe do sth with this
-	uintptr_t strPtr;
-	Color oldColor;
-
-	void Init(int strNum, string_state state) {
-		strPtr = GetStringColor(strNum, state);
-	}
-
-	void SetColor(int stringIdx, float R, float G, float B) {
-		if (stringIdx < 0 || stringIdx > 6) {
-			std::cout << "wat doink" << std::endl;
-			return;
-		}
-
-		Color c;
-		c.r = R;
-		c.g = G;
-		c.b = B;
-
-		*(Color*)strPtr = c;
-	}
-
-};
 
 void cERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
 	strings.clear();
@@ -136,12 +120,14 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
-
+	std::cout << Settings.GetModSetting("CustomStringColors") << std::endl;
 	if (MemHelpers.IsExtendedRangeSong()) {
 		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
 			//SetColors(stringsNormal, colorsNormal);
 
+			//std::cout << std::hex << stringsEnabled[0] << std::endl;
+			
 			// Zags custom low B color values manually entered; Glowed
 			SetColors(stringsGlow, colorsGlow);
 
@@ -164,7 +150,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			SetColors(stringsText, colorsText);
 
 			//name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-			SetColors(stringsPart, colorsPart);
+			//SetColors(stringsPart, colorsPart);
 
 			// name="NotewayBodyPartsBodyNormBlind" id="3629363565"
 			SetColors(stringsBodyNorm, colorsNormal);
@@ -196,6 +182,8 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 				oldGlow.push_back(*(Color*)stringsGlow[i]);
 				oldAmb.push_back(*(Color*)stringsAmb[i]);
 
+				//std::cout << std::hex << stringsEnabled[0] << std::endl;
+
 				/*std::cout << "Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << std::endl;
 				std::cout << "Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << std::endl;
 				std::cout << "Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << std::endl;
@@ -210,7 +198,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 				std::cout << "BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << std::endl;
 				std::cout << std::endl;*/
 			}
-			int a0 = 0, a1 = 0, a2 = 0, a3 = 0;
+			/*int a0 = 0, a1 = 0, a2 = 0, a3 = 0;
 
 			for (int i = 0; i < 17;i++) {
 				stringsTest.clear();
@@ -260,7 +248,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 					else if (a3 == 3)
 						std::cout << "GA_UI " << std::hex << current << std::endl;
 				}
-			}
+			} */
 
 			/*for (int i = 0; i < 6;i++) {
 				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
