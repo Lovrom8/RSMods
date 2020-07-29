@@ -229,7 +229,7 @@ namespace RSMods
                     this.ToggleSkylineStartupRadio.Checked = true;
                 }
 
-                if(ImportPriorSettings()[44].ToString() == "on") // Remove Lyrics
+                if (ImportPriorSettings()[44].ToString() == "on") // Remove Lyrics
                 {
                     this.RemoveLyricsCheckbox.Checked = true;
                 }
@@ -347,7 +347,7 @@ namespace RSMods
             {
                 e.SuppressKeyPress = true;
 
-                if(KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
+                if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
                 {
                     NewAssignmentTxtBox.Text = e.KeyCode.ToString();
                 }
@@ -374,7 +374,7 @@ namespace RSMods
 
         }
 
-        private void CheckMouseInput (object sender, MouseEventArgs e)
+        private void CheckMouseInput(object sender, MouseEventArgs e)
         {
             if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
             {
@@ -684,6 +684,15 @@ namespace RSMods
 
             return priorSettings;
         }
+
+        //public Dictionary<string, string> ImportPriorSettingsNew = new Dictionary<string, string>() 
+        //{
+        //    {"SongList1", ReadSettings.ProcessSettings(0)},
+        //    {"SongList2", ReadSettings.ProcessSettings(1)},
+        //    {"SongList3", ReadSettings.ProcessSettings(2)},
+        //    {"SongList4", ReadSettings.ProcessSettings(3)},
+        // //To Do: Finish merging
+        //};
 
         private void ChangeString0ColorButton_Click(object sender, EventArgs e)
         {
