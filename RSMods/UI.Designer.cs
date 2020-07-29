@@ -94,6 +94,9 @@
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.groupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.rbTone2 = new System.Windows.Forms.RadioButton();
+            this.rbTone1 = new System.Windows.Forms.RadioButton();
+            this.rbTone0 = new System.Windows.Forms.RadioButton();
             this.btnLoadTonesFromProfiles = new System.Windows.Forms.Button();
             this.listProfileTones = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -123,9 +126,6 @@
             this.btnRemoveTuning = new System.Windows.Forms.Button();
             this.listTunings = new System.Windows.Forms.ListBox();
             this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.rbTone0 = new System.Windows.Forms.RadioButton();
-            this.rbTone1 = new System.Windows.Forms.RadioButton();
-            this.rbTone2 = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -910,21 +910,55 @@
             this.groupSetAndForget.TabIndex = 68;
             this.groupSetAndForget.TabStop = false;
             this.groupSetAndForget.Text = "Set-and-forget mods";
+            this.groupSetAndForget.Enter += new System.EventHandler(this.groupSetAndForget_Enter);
+            // 
+            // rbTone2
+            // 
+            this.rbTone2.AutoSize = true;
+            this.rbTone2.Location = new System.Drawing.Point(397, 211);
+            this.rbTone2.Name = "rbTone2";
+            this.rbTone2.Size = new System.Drawing.Size(256, 17);
+            this.rbTone2.TabIndex = 102;
+            this.rbTone2.Text = "Set Highlighted Tone As New Default Bass Tone";
+            this.rbTone2.UseVisualStyleBackColor = true;
+            // 
+            // rbTone1
+            // 
+            this.rbTone1.AutoSize = true;
+            this.rbTone1.Location = new System.Drawing.Point(397, 165);
+            this.rbTone1.Name = "rbTone1";
+            this.rbTone1.Size = new System.Drawing.Size(257, 17);
+            this.rbTone1.TabIndex = 101;
+            this.rbTone1.Text = "Set Highlighted Tone As New Default Lead Tone";
+            this.rbTone1.UseVisualStyleBackColor = true;
+            this.rbTone1.CheckedChanged += new System.EventHandler(this.rbTone1_CheckedChanged);
+            // 
+            // rbTone0
+            // 
+            this.rbTone0.AutoSize = true;
+            this.rbTone0.Checked = true;
+            this.rbTone0.Location = new System.Drawing.Point(397, 188);
+            this.rbTone0.Name = "rbTone0";
+            this.rbTone0.Size = new System.Drawing.Size(269, 17);
+            this.rbTone0.TabIndex = 100;
+            this.rbTone0.TabStop = true;
+            this.rbTone0.Text = "Set Highlighted Tone As New Default Rhythm Tone";
+            this.rbTone0.UseVisualStyleBackColor = true;
             // 
             // btnLoadTonesFromProfiles
             // 
-            this.btnLoadTonesFromProfiles.Location = new System.Drawing.Point(336, 185);
+            this.btnLoadTonesFromProfiles.Location = new System.Drawing.Point(4, 165);
             this.btnLoadTonesFromProfiles.Name = "btnLoadTonesFromProfiles";
             this.btnLoadTonesFromProfiles.Size = new System.Drawing.Size(187, 35);
             this.btnLoadTonesFromProfiles.TabIndex = 99;
-            this.btnLoadTonesFromProfiles.Text = "Load tones from profile";
+            this.btnLoadTonesFromProfiles.Text = "Load Tones From Profile";
             this.btnLoadTonesFromProfiles.UseVisualStyleBackColor = true;
             this.btnLoadTonesFromProfiles.Click += new System.EventHandler(this.btnLoadTonesFromProfiles_Click);
             // 
             // listProfileTones
             // 
             this.listProfileTones.FormattingEnabled = true;
-            this.listProfileTones.Location = new System.Drawing.Point(7, 166);
+            this.listProfileTones.Location = new System.Drawing.Point(200, 165);
             this.listProfileTones.Name = "listProfileTones";
             this.listProfileTones.Size = new System.Drawing.Size(184, 134);
             this.listProfileTones.TabIndex = 98;
@@ -939,11 +973,11 @@
             // 
             // btnSetDefaultTones
             // 
-            this.btnSetDefaultTones.Location = new System.Drawing.Point(336, 226);
+            this.btnSetDefaultTones.Location = new System.Drawing.Point(393, 262);
             this.btnSetDefaultTones.Name = "btnSetDefaultTones";
             this.btnSetDefaultTones.Size = new System.Drawing.Size(187, 35);
             this.btnSetDefaultTones.TabIndex = 96;
-            this.btnSetDefaultTones.Text = "Set default tones to current";
+            this.btnSetDefaultTones.Text = "Assign Tone As New Default";
             this.btnSetDefaultTones.UseVisualStyleBackColor = true;
             this.btnSetDefaultTones.Click += new System.EventHandler(this.btnSetDefaultTones_Click);
             // 
@@ -953,7 +987,7 @@
             this.btnRemoveTempFolders.Name = "btnRemoveTempFolders";
             this.btnRemoveTempFolders.Size = new System.Drawing.Size(190, 35);
             this.btnRemoveTempFolders.TabIndex = 95;
-            this.btnRemoveTempFolders.Text = "Remove temporary folders";
+            this.btnRemoveTempFolders.Text = "Remove Temporary Folders";
             this.btnRemoveTempFolders.UseVisualStyleBackColor = true;
             this.btnRemoveTempFolders.Click += new System.EventHandler(this.btnRemoveTempFolders_Click);
             // 
@@ -973,7 +1007,7 @@
             this.btnAddCustomMenu.Name = "btnAddCustomMenu";
             this.btnAddCustomMenu.Size = new System.Drawing.Size(187, 35);
             this.btnAddCustomMenu.TabIndex = 93;
-            this.btnAddCustomMenu.Text = "Add custom menu + unplugged";
+            this.btnAddCustomMenu.Text = "Add EXIT GAME to Main Menu + Enable Direct Connect Mode";
             this.btnAddCustomMenu.UseVisualStyleBackColor = true;
             this.btnAddCustomMenu.Click += new System.EventHandler(this.btnAddCustomMenu_Click);
             // 
@@ -983,7 +1017,7 @@
             this.btnAddFastLoadMod.Name = "btnAddFastLoadMod";
             this.btnAddFastLoadMod.Size = new System.Drawing.Size(187, 35);
             this.btnAddFastLoadMod.TabIndex = 92;
-            this.btnAddFastLoadMod.Text = "Add fast load mod";
+            this.btnAddFastLoadMod.Text = "Enable Fast Load";
             this.btnAddFastLoadMod.UseVisualStyleBackColor = true;
             this.btnAddFastLoadMod.Click += new System.EventHandler(this.btnAddFastLoadMod_Click);
             // 
@@ -993,7 +1027,7 @@
             this.btnUnpackCacheAgain.Name = "btnUnpackCacheAgain";
             this.btnUnpackCacheAgain.Size = new System.Drawing.Size(187, 35);
             this.btnUnpackCacheAgain.TabIndex = 91;
-            this.btnUnpackCacheAgain.Text = "Clean up unpacked cache";
+            this.btnUnpackCacheAgain.Text = "Clean Up Unpacked Cache";
             this.btnUnpackCacheAgain.UseVisualStyleBackColor = true;
             this.btnUnpackCacheAgain.Click += new System.EventHandler(this.btnUnpackCacheAgain_Click);
             // 
@@ -1003,7 +1037,7 @@
             this.btnRestoreDefaults.Name = "btnRestoreDefaults";
             this.btnRestoreDefaults.Size = new System.Drawing.Size(190, 37);
             this.btnRestoreDefaults.TabIndex = 90;
-            this.btnRestoreDefaults.Text = "Restore cache backup";
+            this.btnRestoreDefaults.Text = "Restore Cache Backup";
             this.btnRestoreDefaults.UseVisualStyleBackColor = true;
             this.btnRestoreDefaults.Click += new System.EventHandler(this.btnRestoreDefaults_Click);
             // 
@@ -1013,7 +1047,7 @@
             this.btnAddCustomTunings.Name = "btnAddCustomTunings";
             this.btnAddCustomTunings.Size = new System.Drawing.Size(187, 34);
             this.btnAddCustomTunings.TabIndex = 89;
-            this.btnAddCustomTunings.Text = "Add custom tunings";
+            this.btnAddCustomTunings.Text = "Add Custom Tunings";
             this.btnAddCustomTunings.UseVisualStyleBackColor = true;
             this.btnAddCustomTunings.Click += new System.EventHandler(this.btnAddCustomTunings_Click);
             // 
@@ -1023,7 +1057,7 @@
             this.btnSaveTuningChanges.Name = "btnSaveTuningChanges";
             this.btnSaveTuningChanges.Size = new System.Drawing.Size(85, 22);
             this.btnSaveTuningChanges.TabIndex = 88;
-            this.btnSaveTuningChanges.Text = "Save changes";
+            this.btnSaveTuningChanges.Text = "Save Changes";
             this.btnSaveTuningChanges.UseVisualStyleBackColor = true;
             this.btnSaveTuningChanges.Click += new System.EventHandler(this.btnSaveTuningChanges_Click);
             // 
@@ -1184,7 +1218,7 @@
             this.btnAddTuning.Name = "btnAddTuning";
             this.btnAddTuning.Size = new System.Drawing.Size(93, 23);
             this.btnAddTuning.TabIndex = 74;
-            this.btnAddTuning.Text = "Add tuning";
+            this.btnAddTuning.Text = "Add Tuning";
             this.btnAddTuning.UseVisualStyleBackColor = true;
             this.btnAddTuning.Click += new System.EventHandler(this.btnAddTuning_Click);
             // 
@@ -1194,7 +1228,7 @@
             this.btnRemoveTuning.Name = "btnRemoveTuning";
             this.btnRemoveTuning.Size = new System.Drawing.Size(93, 23);
             this.btnRemoveTuning.TabIndex = 73;
-            this.btnRemoveTuning.Text = "Remove tuning";
+            this.btnRemoveTuning.Text = "Remove Tuning";
             this.btnRemoveTuning.UseVisualStyleBackColor = true;
             this.btnRemoveTuning.Click += new System.EventHandler(this.btnRemoveTuning_Click);
             // 
@@ -1213,38 +1247,6 @@
             this.ToolTip.InitialDelay = 1000;
             this.ToolTip.ReshowDelay = 500;
             this.ToolTip.ShowAlways = true;
-            // 
-            // rbTone0
-            // 
-            this.rbTone0.AutoSize = true;
-            this.rbTone0.Checked = true;
-            this.rbTone0.Location = new System.Drawing.Point(200, 185);
-            this.rbTone0.Name = "rbTone0";
-            this.rbTone0.Size = new System.Drawing.Size(90, 17);
-            this.rbTone0.TabIndex = 100;
-            this.rbTone0.TabStop = true;
-            this.rbTone0.Text = "Default Guitar";
-            this.rbTone0.UseVisualStyleBackColor = true;
-            // 
-            // rbTone1
-            // 
-            this.rbTone1.AutoSize = true;
-            this.rbTone1.Location = new System.Drawing.Point(200, 208);
-            this.rbTone1.Name = "rbTone1";
-            this.rbTone1.Size = new System.Drawing.Size(86, 17);
-            this.rbTone1.TabIndex = 101;
-            this.rbTone1.Text = "Default Lead";
-            this.rbTone1.UseVisualStyleBackColor = true;
-            // 
-            // rbTone2
-            // 
-            this.rbTone2.AutoSize = true;
-            this.rbTone2.Location = new System.Drawing.Point(200, 231);
-            this.rbTone2.Name = "rbTone2";
-            this.rbTone2.Size = new System.Drawing.Size(85, 17);
-            this.rbTone2.TabIndex = 102;
-            this.rbTone2.Text = "Default Bass";
-            this.rbTone2.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 

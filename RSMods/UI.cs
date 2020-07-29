@@ -1604,8 +1604,15 @@ namespace RSMods
             toolTip1.SetToolTip(this.btnAddCustomTunings, "Adds named definitions for some common Custom Tunings.");
             toolTip1.SetToolTip(this.btnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
             toolTip1.SetToolTip(this.btnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
-            //toolTip1.SetToolTip(this.button1, "My button1");
-            //toolTip1.SetToolTip(this.button1, "My button1");
+            toolTip1.SetToolTip(this.listProfileTones, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
+            toolTip1.SetToolTip(this.ResetToDefaultButton, "Resets all RSMods values to defaults."); // button beside tone selection
+            toolTip1.SetToolTip(this.btnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
+            toolTip1.SetToolTip(this.btnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
+            toolTip1.SetToolTip(this.listProfileTones, "Step2, highlight a tone name.");
+            toolTip1.SetToolTip(this.rbTone0, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.rbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.rbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.btnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
@@ -1719,6 +1726,16 @@ namespace RSMods
             {
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
+        }
+
+        private void groupSetAndForget_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rbTone1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
