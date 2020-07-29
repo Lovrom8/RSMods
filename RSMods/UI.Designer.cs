@@ -73,7 +73,7 @@
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
-            this.DeleteKeyBind = new System.Windows.Forms.Button();
+            this.ClearKeyBind = new System.Windows.Forms.Button();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
             this.String0ColorButton = new System.Windows.Forms.Button();
             this.String0Color = new System.Windows.Forms.TextBox();
@@ -248,6 +248,8 @@
             this.NewAssignmentTxtBox.TabIndex = 20;
             this.NewAssignmentTxtBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPresses);
+            this.NewAssignmentTxtBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckPrintScreen);
+            this.NewAssignmentTxtBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
             // 
             // NewAssignment
             // 
@@ -583,7 +585,7 @@
             // RemoveLyricsCheckbox
             // 
             this.RemoveLyricsCheckbox.AutoSize = true;
-            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(319, 68);
+            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(320, 68);
             this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
             this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveLyricsCheckbox.TabIndex = 45;
@@ -605,7 +607,7 @@
             // RemoveLineMarkersCheckBox
             // 
             this.RemoveLineMarkersCheckBox.AutoSize = true;
-            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 43);
+            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(320, 45);
             this.RemoveLineMarkersCheckBox.Name = "RemoveLineMarkersCheckBox";
             this.RemoveLineMarkersCheckBox.Size = new System.Drawing.Size(130, 17);
             this.RemoveLineMarkersCheckBox.TabIndex = 43;
@@ -627,7 +629,7 @@
             // 
             // KeybindingsBox
             // 
-            this.KeybindingsBox.Controls.Add(this.DeleteKeyBind);
+            this.KeybindingsBox.Controls.Add(this.ClearKeyBind);
             this.KeybindingsBox.Controls.Add(this.NewAssignment);
             this.KeybindingsBox.Controls.Add(this.NewAssignmentTxtBox);
             this.KeybindingsBox.Controls.Add(this.ReEnumerationKey);
@@ -644,15 +646,15 @@
             this.KeybindingsBox.TabStop = false;
             this.KeybindingsBox.Text = "Key Bindings";
             // 
-            // DeleteKeyBind
+            // ClearKeyBind
             // 
-            this.DeleteKeyBind.Location = new System.Drawing.Point(222, 130);
-            this.DeleteKeyBind.Name = "DeleteKeyBind";
-            this.DeleteKeyBind.Size = new System.Drawing.Size(188, 23);
-            this.DeleteKeyBind.TabIndex = 29;
-            this.DeleteKeyBind.Text = "Delete Selected Keybind";
-            this.DeleteKeyBind.UseVisualStyleBackColor = true;
-            this.DeleteKeyBind.Click += new System.EventHandler(this.DeleteKeyBind_Click);
+            this.ClearKeyBind.Location = new System.Drawing.Point(222, 130);
+            this.ClearKeyBind.Name = "ClearKeyBind";
+            this.ClearKeyBind.Size = new System.Drawing.Size(188, 23);
+            this.ClearKeyBind.TabIndex = 29;
+            this.ClearKeyBind.Text = "Clear Selected Keybind";
+            this.ClearKeyBind.UseVisualStyleBackColor = true;
+            this.ClearKeyBind.Click += new System.EventHandler(this.DeleteKeyBind_Click);
             // 
             // ResetToDefaultButton
             // 
@@ -1285,7 +1287,7 @@
         private System.Windows.Forms.ListBox listTunings;
         private System.Windows.Forms.Button btnAddCustomMenu;
         private System.Windows.Forms.Label TuningNoteNameLabel;
-        private System.Windows.Forms.Button DeleteKeyBind;
+        private System.Windows.Forms.Button ClearKeyBind;
         private System.Windows.Forms.CheckBox RemoveLyricsCheckbox;
         private System.Windows.Forms.ToolTip ToolTip;
     }

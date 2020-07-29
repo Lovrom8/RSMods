@@ -356,15 +356,47 @@ namespace RSMods
                     NewAssignmentTxtBox.Text = e.KeyCode.ToString();
                 }
                 // Special Keys
-                else if (e.KeyCode == Keys.NumLock)
+                else if (e.KeyCode == Keys.Print || e.KeyCode == Keys.Pause || e.KeyCode == Keys.Scroll || e.KeyCode == Keys.Insert)
                 {
                     NewAssignmentTxtBox.Text = e.KeyCode.ToString();
                 }
+
+                // Symbol Keys
+                else if (e.KeyCode == Keys.OemSemicolon)
+                {
+                    NewAssignmentTxtBox.Text = e.KeyCode.ToString();
+                }
+                // Numlock Keys
+                else if (e.KeyValue != null)
+                {
+                    NewAssignmentTxtBox.Text = e.KeyValue.ToString();
+                }
+
                 // Number or Letter was pressed (Will be overrided by text input)
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
                     return;
-                } 
+                }
+            }
+        }
+
+        private void CheckPrintScreen(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 44)
+            {
+                NewAssignmentTxtBox.Text = e.KeyCode.ToString();
+            }
+        }
+
+        private void CheckMouseInput (object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.XButton1 || e.Button == MouseButtons.XButton2)
+            {
+                NewAssignmentTxtBox.Text = e.Button.ToString();
+            }
+            if (e.Button == MouseButtons.Middle)
+            {
+                NewAssignmentTxtBox.Text = "MBUTTON";
             }
         }
 
