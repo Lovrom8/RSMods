@@ -390,6 +390,7 @@ namespace RSMods
 
         private void RefreshForm()
         {
+            this.Hide();
             var newForm = new MainForm();
             newForm.Closed += (s, args) => this.Close();
             newForm.Show();
