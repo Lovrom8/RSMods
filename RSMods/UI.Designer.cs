@@ -565,7 +565,7 @@
             this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(214, 190);
             this.ExtendedRangeTuningBox.TabIndex = 49;
             this.ExtendedRangeTuningBox.TabStop = false;
-            this.ExtendedRangeTuningBox.Text = "z";
+            this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
             this.ExtendedRangeTuningBox.Visible = false;
             // 
             // EnabledModsBox
