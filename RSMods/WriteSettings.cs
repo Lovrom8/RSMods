@@ -56,19 +56,19 @@ namespace RSMods
             }},
             {"[String Colors]", new Dictionary<string, string> 
             {
-                { ReadSettings.String0Color_N_Identifier, "bf5f5f" }, // Default Low E String Color (HEX) | Red
-                { ReadSettings.String1Color_N_Identifier, "bfb75f" }, // Default A String Color (HEX) | Yellow
-                { ReadSettings.String2Color_N_Identifier, "5e9dbc" }, // Default D String Color (HEX) | Blue
-                { ReadSettings.String3Color_N_Identifier, "bf8d5f" }, // Default G String Color (HEX) | Orange
-                { ReadSettings.String4Color_N_Identifier, "5fbf97" }, // Default B String Color (HEX) | Green
-                { ReadSettings.String5Color_N_Identifier, "ac5ebc" }, // Default High E String Color (HEX) | Purple
+                { ReadSettings.String0Color_N_Identifier, "ff4f5b" }, // Default Low E String Color (HEX) | Red
+                { ReadSettings.String1Color_N_Identifier, "e2c102" }, // Default A String Color (HEX) | Yellow
+                { ReadSettings.String2Color_N_Identifier, "1dacf9" }, // Default D String Color (HEX) | Blue
+                { ReadSettings.String3Color_N_Identifier, "ff9216" }, // Default G String Color (HEX) | Orange
+                { ReadSettings.String4Color_N_Identifier, "3fcc0c" }, // Default B String Color (HEX) | Green
+                { ReadSettings.String5Color_N_Identifier, "c825ed" }, // Default High E String Color (HEX) | Purple
 
-                { ReadSettings.String0Color_CB_Identifier, "bf5f5f" }, // Colorblind Low E String Color (HEX) | Red
-                { ReadSettings.String1Color_CB_Identifier, "9dbc5e" }, // Colorblind A String Color (HEX) | Yellow
-                { ReadSettings.String2Color_CB_Identifier, "5f9fbf" }, // Colorblind D String Color (HEX) | Blue
-                { ReadSettings.String3Color_CB_Identifier, "bf875f" }, // Colorblind G String Color (HEX) | Orange
-                { ReadSettings.String4Color_CB_Identifier, "5fbfa4" }, // Colorblind B String Color (HEX) | Green
-                { ReadSettings.String5Color_CB_Identifier, "8c5fbf" }, // Colorblind High E String Color (HEX) | Purple
+                { ReadSettings.String0Color_CB_Identifier, "00c68e" }, // Colorblind Low E String Color (HEX) | Red
+                { ReadSettings.String1Color_CB_Identifier, "ff4f5a" }, // Colorblind A String Color (HEX) | Yellow
+                { ReadSettings.String2Color_CB_Identifier, "e2c102" }, // Colorblind D String Color (HEX) | Blue
+                { ReadSettings.String3Color_CB_Identifier, "1dacf9" }, // Colorblind G String Color (HEX) | Orange
+                { ReadSettings.String4Color_CB_Identifier, "ff9216" }, // Colorblind B String Color (HEX) | Green
+                { ReadSettings.String5Color_CB_Identifier, "3fcc0c" }, // Colorblind High E String Color (HEX) | Purple
             }},
             {"[Mod Settings]", new Dictionary<string, string>
             {
