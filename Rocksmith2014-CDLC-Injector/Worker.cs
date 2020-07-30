@@ -8,34 +8,7 @@ namespace Rocksmith2014_CDLC_Injector
     {
         public static string WhereIsRocksmith()
         {
-            if (File.Exists(@"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Rocksmith2014\\Rocksmith2014.exe"))
-            {
-                return @"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Rocksmith2014\\";
-            }
-            else
-            {
-                FolderBrowserDialog AskRocksmithLocation = new FolderBrowserDialog();
-                AskRocksmithLocation.RootFolder = Environment.SpecialFolder.MyComputer;
-                AskRocksmithLocation.Description = "Where is your Rocksmith Installed at?";
-                if (AskRocksmithLocation.ShowDialog() == DialogResult.OK)
-                {
-                    if (File.Exists(@AskRocksmithLocation.SelectedPath + "\\Rocksmith2014.exe"))
-                    {
-                        return @AskRocksmithLocation.SelectedPath;
-                    }
-                    else
-                    {
-                        MessageBox.Show("The folder you selected ''" + AskRocksmithLocation.SelectedPath + "'' does not contain Rocksmith 2014.", "Rocksmith Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        WhereIsRocksmith();
-                    }
-                }
-                else
-                {
-                    Environment.Exit(1);
-                    return "exit";
-                }
-            }
-            return WhereIsRocksmith();
+            return RSMods.Util.GenUtil.GetRSDirectory();
         }
     }
     class DLLStuff
