@@ -560,12 +560,12 @@
             // ExtendedRangeTuningBox
             // 
             this.ExtendedRangeTuningBox.Controls.Add(this.ExtendedRangeTunings);
-            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1037, 268);
+            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1015, 268);
             this.ExtendedRangeTuningBox.Name = "ExtendedRangeTuningBox";
-            this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(215, 188);
+            this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(214, 190);
             this.ExtendedRangeTuningBox.TabIndex = 49;
             this.ExtendedRangeTuningBox.TabStop = false;
-            this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
+            this.ExtendedRangeTuningBox.Text = "z";
             this.ExtendedRangeTuningBox.Visible = false;
             // 
             // EnabledModsBox
@@ -670,11 +670,11 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 798);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 434);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
-            this.ResetToDefaultButton.Size = new System.Drawing.Size(109, 22);
+            this.ResetToDefaultButton.Size = new System.Drawing.Size(127, 22);
             this.ResetToDefaultButton.TabIndex = 32;
-            this.ResetToDefaultButton.Text = "Reset To Default";
+            this.ResetToDefaultButton.Text = "Reset Mods To Default";
             this.ResetToDefaultButton.UseVisualStyleBackColor = true;
             this.ResetToDefaultButton.Click += new System.EventHandler(this.ResetToDefaultSettings);
             // 
@@ -904,7 +904,7 @@
             this.groupSetAndForget.Controls.Add(this.btnAddTuning);
             this.groupSetAndForget.Controls.Add(this.btnRemoveTuning);
             this.groupSetAndForget.Controls.Add(this.listTunings);
-            this.groupSetAndForget.Location = new System.Drawing.Point(162, 517);
+            this.groupSetAndForget.Location = new System.Drawing.Point(80, 517);
             this.groupSetAndForget.Name = "groupSetAndForget";
             this.groupSetAndForget.Size = new System.Drawing.Size(1131, 303);
             this.groupSetAndForget.TabIndex = 68;
@@ -1073,8 +1073,13 @@
             this.nupString0.BackColor = System.Drawing.Color.Tomato;
             this.nupString0.ForeColor = System.Drawing.SystemColors.ControlText;
             this.nupString0.Location = new System.Drawing.Point(448, 20);
+            this.nupString0.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString0.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
@@ -1135,8 +1140,13 @@
             // 
             this.nupString1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.nupString1.Location = new System.Drawing.Point(493, 20);
+            this.nupString1.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString1.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
@@ -1148,8 +1158,13 @@
             // 
             this.nupString5.BackColor = System.Drawing.Color.MediumPurple;
             this.nupString5.Location = new System.Drawing.Point(673, 20);
+            this.nupString5.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString5.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
@@ -1161,8 +1176,13 @@
             // 
             this.nupString4.BackColor = System.Drawing.Color.GreenYellow;
             this.nupString4.Location = new System.Drawing.Point(628, 20);
+            this.nupString4.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString4.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
@@ -1174,8 +1194,13 @@
             // 
             this.nupString3.BackColor = System.Drawing.Color.DarkOrange;
             this.nupString3.Location = new System.Drawing.Point(583, 20);
+            this.nupString3.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString3.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
@@ -1187,8 +1212,13 @@
             // 
             this.nupString2.BackColor = System.Drawing.Color.DeepSkyBlue;
             this.nupString2.Location = new System.Drawing.Point(538, 20);
+            this.nupString2.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
             this.nupString2.Minimum = new decimal(new int[] {
-            100,
+            24,
             0,
             0,
             -2147483648});
