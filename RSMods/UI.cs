@@ -23,19 +23,17 @@ namespace RSMods
         {
             WriteSettings.WhereIsRocksmith(); // Creates GUI Settings File
             if (!File.Exists(@WriteSettings.dumpLocation))
-            {
-                WriteSettings.NoSettingsDetected(); // Creates Settings File
-            }
+                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
             InitializeComponent();
 
             // Fill Songlist List
             this.Songlist.Items.AddRange(new object[] {
-                    ImportPriorSettings()[0], // Song List 1
-                    ImportPriorSettings()[1], // Song List 2
-                    ImportPriorSettings()[2], // Song List 3
-                    ImportPriorSettings()[3], // Song List 4
-                    ImportPriorSettings()[4], // Song List 5
-                    ImportPriorSettings()[5]  // Song List 6 
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier), // Song List 1
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier), // Song List 2
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier), // Song List 3
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier), // Song List 4
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier), // Song List 5
+                    ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)  // Song List 6 
                 });
 
             // Fill Modlist List
@@ -53,7 +51,7 @@ namespace RSMods
 
             // Load Checkbox Values
             {
-                if (ImportPriorSettings()[12].ToString() == "on") // Toggle Loft Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
                 {
                     this.ToggleLoftCheckbox.Checked = true;
                     this.ToggleLoftWhenStartupRadio.Visible = true;
@@ -61,15 +59,15 @@ namespace RSMods
                     this.ToggleLoftWhenSongRadio.Visible = true;
                     this.ToggleLoftOffWhenBox.Visible = true;
 
-                    if (ImportPriorSettings()[27].ToString() == "startup")
+                    if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "startup")
                     {
                         this.ToggleLoftWhenStartupRadio.Checked = true;
                     }
-                    if (ImportPriorSettings()[27].ToString() == "manual")
+                    if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "manual")
                     {
                         this.ToggleLoftWhenManualRadio.Checked = true;
                     }
-                    if (ImportPriorSettings()[27].ToString() == "song")
+                    if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "song")
                     {
                         this.ToggleLoftWhenSongRadio.Checked = true;
                     }
@@ -79,7 +77,7 @@ namespace RSMods
                     this.ToggleLoftCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[13].ToString() == "on") // Add Volume Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
                 {
                     this.AddVolumeCheckbox.Checked = true;
                 }
@@ -87,7 +85,7 @@ namespace RSMods
                 {
                     this.AddVolumeCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[14].ToString() == "on") // Decrease Volume Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
                 {
                     this.DecreaseVolumeCheckbox.Checked = true;
                 }
@@ -95,7 +93,7 @@ namespace RSMods
                 {
                     this.DecreaseVolumeCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[15].ToString() == "on") // Show Song Timer Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
                 {
                     this.SongTimerCheckbox.Checked = true;
                 }
@@ -103,13 +101,13 @@ namespace RSMods
                 {
                     this.SongTimerCheckbox.Checked = false;
                 }
-                if (ImportPriorSettings()[16].ToString() != "false") // Force Enumeration Settings
+                if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "false") // Force Enumeration Settings
                 {
                     this.ForceEnumerationCheckbox.Checked = true;
                     this.ForceEnumerationAutomaticRadio.Visible = true;
                     this.ForceEnumerationManualRadio.Visible = true;
                     this.HowToEnumerateBox.Visible = true;
-                    if (ImportPriorSettings()[16].ToString() == "automatic")
+                    if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) == "automatic")
                     {
                         this.ForceEnumerationAutomaticRadio.Checked = true;
                     }
@@ -126,7 +124,7 @@ namespace RSMods
                     this.ForceEnumerationManualRadio.Visible = false;
                     this.HowToEnumerateBox.Visible = false;
                 }
-                if (ImportPriorSettings()[17].ToString() == "on") // Rainbow String Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
                 {
                     this.RainbowStringsEnabled.Checked = true;
                 }
@@ -134,7 +132,7 @@ namespace RSMods
                 {
                     this.RainbowStringsEnabled.Checked = false;
                 }
-                if (ImportPriorSettings()[18].ToString() == "on") // Extended Range Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
                 {
                     this.ExtendedRangeEnabled.Checked = true;
                     this.ExtendedRangeTuningBox.Visible = true;
@@ -144,13 +142,13 @@ namespace RSMods
                 {
                     this.ExtendedRangeEnabled.Checked = false;
                 }
-                if (ImportPriorSettings()[19].ToString() != "0") // Custom String Colors
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
                 {
                     this.customColorsCheckbox.Checked = true;
                     this.ChangeStringColorsBox.Visible = true;
                 }
 
-                if (ImportPriorSettings()[20].ToString() == "on") // Disco Mode Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
                 {
                     this.DiscoModeCheckbox.Checked = true;
                 }
@@ -159,7 +157,7 @@ namespace RSMods
                     this.DiscoModeCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[21].ToString() == "on") // Remove Headstock Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
                 {
                     this.HeadstockCheckbox.Checked = true;
                 }
@@ -168,7 +166,7 @@ namespace RSMods
                     this.HeadstockCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[22].ToString() == "on") // Remove Skyline Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
                 {
                     this.RemoveSkylineCheckbox.Checked = true;
                     this.ToggleSkylineBox.Visible = true;
@@ -178,7 +176,7 @@ namespace RSMods
                     this.RemoveSkylineCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[23].ToString() == "on") // Greenscreen Wall Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
                 {
                     this.GreenScreenWallCheckbox.Checked = true;
                 }
@@ -187,7 +185,7 @@ namespace RSMods
                     this.GreenScreenWallCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[24].ToString() == "on") // Force Load Profile On Game Boot Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
                 {
                     this.AutoLoadProfileCheckbox.Checked = true;
                 }
@@ -196,7 +194,7 @@ namespace RSMods
                     this.AutoLoadProfileCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[25].ToString() == "on") // Fretless Mode Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
                 {
                     this.FretlessModeCheckbox.Checked = true;
                 }
@@ -205,7 +203,7 @@ namespace RSMods
                     this.FretlessModeCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[26].ToString() == "on") // Remove Inlay Markers Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on") // Remove Inlay Markers Enabled / Disabled
                 {
                     this.RemoveInlaysCheckbox.Checked = true;
                 }
@@ -214,7 +212,7 @@ namespace RSMods
                     this.RemoveInlaysCheckbox.Checked = false;
                 }
 
-                if (ImportPriorSettings()[28].ToString() == "on") // Remove Line Markers Enabled / Disabled
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
                 {
                     this.RemoveLineMarkersCheckBox.Checked = true;
                 }
@@ -222,16 +220,16 @@ namespace RSMods
                 {
                     this.RemoveLineMarkersCheckBox.Checked = false;
                 }
-                if (ImportPriorSettings()[29].ToString() == "song") // Remove Skyline on Song Load
+                if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "song") // Remove Skyline on Song Load
                 {
                     this.ToggleSkylineSongRadio.Checked = true;
                 }
-                else if (ImportPriorSettings()[29].ToString() == "startup") // Remove Skyline on Game Startup 
+                else if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "startup") // Remove Skyline on Game Startup 
                 {
                     this.ToggleSkylineStartupRadio.Checked = true;
                 }
 
-                if (ImportPriorSettings()[44].ToString() == "on") // Remove Lyrics
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
                 {
                     this.RemoveLyricsCheckbox.Checked = true;
                 }
@@ -243,60 +241,60 @@ namespace RSMods
 
             // Initialize Default String Colors
             {
-                String0Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[30].ToString());
-                String1Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[31].ToString());
-                String2Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[32].ToString());
-                String3Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[33].ToString());
-                String4Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[34].ToString());
-                String5Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[35].ToString());
+                String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
+                String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
+                String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
+                String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
+                String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
+                String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
             }
 
             // Mod Settings
             {
 
-                this.EnumerateEveryXMS.Value = Decimal.Parse(ImportPriorSettings()[43].ToString()) / 1000; // Loads old settings for enumeration every x ms
+                this.EnumerateEveryXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
                 {
-                    if (ImportPriorSettings()[42].ToString() == "-2")
+                    if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-2")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 0;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-3")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-3")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 1;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-4")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-4")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 2;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-5")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-5")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 3;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-6")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-6")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 4;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-7")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-7")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 5;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-8")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-8")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 6;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-9")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-9")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 7;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-10")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-10")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 8;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-11")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-11")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 9;
                     }
-                    if (ImportPriorSettings()[42].ToString() == "-12")
+                    else if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) == "-12")
                     {
                         this.ExtendedRangeTunings.SelectedIndex = 10;
                     }
@@ -312,27 +310,27 @@ namespace RSMods
         {
             if (this.ModList.GetSelected(0))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(6);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
             }
             if (this.ModList.GetSelected(1))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(7);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
             }
             if (this.ModList.GetSelected(2))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(8);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
             }
             if (this.ModList.GetSelected(3))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(9);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
             }
             if (this.ModList.GetSelected(4))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(10);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
             }
             if (this.ModList.GetSelected(5))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(16);
+                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
             }
         }
 
@@ -397,329 +395,273 @@ namespace RSMods
             newForm.Show();
         }
 
-        private void SaveChanges(int ElementToChange, string ChangedSettingValue)
-        {
-            if (File.ReadLines(@WriteSettings.dumpLocation).Count() == WriteSettings.StringArray.Length)
-            {
-                string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
 
+        private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
+        {
                 if (ChangedSettingValue == "true")
-                {
                     ChangedSettingValue = "on";
-                }
                 else if (ChangedSettingValue == "false")
-                {
                     ChangedSettingValue = "off";
-                }
-                // Song Lists
+
+                foreach (string section in WriteSettings.Settings.Keys)
                 {
-                    if (ElementToChange == 1) // Songlist 1
+                    foreach (KeyValuePair<string, string> entry in WriteSettings.Settings[section])
                     {
-                        StringArray[1] = ReadSettings.Songlist1Identifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 2) // Songlist 2
-                    {
-                        StringArray[2] = ReadSettings.Songlist2Identifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 3) // Songlist 3
-                    {
-                        StringArray[3] = ReadSettings.Songlist3Identifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 4) // Songlist 4
-                    {
-                        StringArray[4] = ReadSettings.Songlist4Identifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 5) // Songlist 5
-                    {
-                        StringArray[5] = ReadSettings.Songlist5Identifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 6) // Songlist 6
-                    {
-                        StringArray[6] = ReadSettings.Songlist6Identifier + ChangedSettingValue;
+                        if (IdentifierToChange == entry.Key)
+                        {
+                            WriteSettings.Settings[section][IdentifierToChange] = ChangedSettingValue;
+                        break;
+                        }
                     }
                 }
-                // Toggle On Key Press
-                {
-                    if (ElementToChange == 7) // Toggle Loft Key
-                    {
-                        StringArray[8] = ReadSettings.ToggleLoftIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 8) // Add Volume Key
-                    {
-                        StringArray[9] = ReadSettings.AddVolumeIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 9) // Decrease Volume Key
-                    {
-                        StringArray[10] = ReadSettings.DecreaseVolumeIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 10) // Show Timer Key
-                    {
-                        StringArray[11] = ReadSettings.ShowSongTimerIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 11) // Force ReEnumeration Key
-                    {
-                        StringArray[12] = ReadSettings.ForceReEnumerationIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 12) // Rainbow Strings Key
-                    {
-                        StringArray[13] = ReadSettings.RainbowStringsIdentifier + ChangedSettingValue;
-                    }
-                }
-                // Toggle Effects
-                {
-                    if (ElementToChange == 13) // Toggle Loft Enabled / Disabled
-                    {
-                        StringArray[15] = ReadSettings.ToggleLoftEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 14) // Add Volume Enabled / Disabled
-                    {
-                        StringArray[16] = ReadSettings.AddVolumeEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 15) // Decrease Volume Enabled / Disabled
-                    {
-                        StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 16) // Show Song Timer Enabled / Disabled
-                    {
-                        StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 17) // Force ReEnumeration Manual / Automatic / Disabled
-                    {
-                        StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 18) // Rainbow String Enabled / Disabled
-                    {
-                        StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 19) // Extended Range Enabled / Disabled
-                    {
-                        StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 20) // Custom String Enabled / Disabled
-                    {
-                        StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 21) // Disco Mode Enabled / Disabled
-                    {
-                        StringArray[23] = ReadSettings.DiscoModeIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 22) // Remove Headstock Enabled / Disabled
-                    {
-                        StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 23) // Remove Skyline Enabled / Disabled
-                    {
-                        StringArray[25] = ReadSettings.RemoveSkylineIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 24) // Greenscreen Wall Enabled / Disabled
-                    {
-                        StringArray[26] = ReadSettings.GreenScreenWallIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 25) // Force Load Profile On Game Boot Enabled / Disabled
-                    {
-                        StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 26) // Fretless Mode Enabled / Disabled
-                    {
-                        StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 27) // Remove Inlay Markers Enabled / Disabled
-                    {
-                        StringArray[29] = ReadSettings.RemoveInlaysIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 28) // Toggle Loft When Startup / Manual / OnSong
-                    {
-                        StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 29) // Remove Lane Markers Enabled / Disabled
-                    {
-                        StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 30) // Toggle Skyline When Startup / OnSong
-                    {
-                        StringArray[32] = ReadSettings.ToggleSkylineWhenIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 45) // Remove Lyrics Enabled / Disabled
-                    {
-                        StringArray[33] = ReadSettings.RemoveLyricsIdentifier + ChangedSettingValue;
-                    }
-                }
-                // String Colors (Normal {N} & Colorblind {CB})
-                {
-                    // Normal String Colors
-                    {
-                        if (ElementToChange == 31)
-                        {
-                            StringArray[35] = ReadSettings.String0Color_N_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 32)
-                        {
-                            StringArray[36] = ReadSettings.String1Color_N_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 33)
-                        {
-                            StringArray[37] = ReadSettings.String2Color_N_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 34)
-                        {
-                            StringArray[38] = ReadSettings.String3Color_N_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 35)
-                        {
-                            StringArray[39] = ReadSettings.String4Color_N_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 36)
-                        {
-                            StringArray[40] = ReadSettings.String5Color_N_Identifier + ChangedSettingValue;
-                        }
-                    }
-                    // Colorblind String Colors
-                    {
-                        if (ElementToChange == 37)
-                        {
-                            StringArray[41] = ReadSettings.String0Color_CB_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 38)
-                        {
-                            StringArray[42] = ReadSettings.String1Color_CB_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 39)
-                        {
-                            StringArray[43] = ReadSettings.String2Color_CB_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 40)
-                        {
-                            StringArray[44] = ReadSettings.String3Color_CB_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 41)
-                        {
-                            StringArray[45] = ReadSettings.String4Color_CB_Identifier + ChangedSettingValue;
-                        }
-                        if (ElementToChange == 42)
-                        {
-                            StringArray[46] = ReadSettings.String5Color_CB_Identifier + ChangedSettingValue;
-                        }
-                    }
-
-                }
-                // Mod Settings
-                {
-                    if (ElementToChange == 43) // Extended Range Tuning Name
-                    {
-                        StringArray[48] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
-                    }
-                    if (ElementToChange == 44)
-                    {
-                        StringArray[49] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
-                    }
-
-                }
-
-                WriteSettings.ModifyINI(StringArray);
-            }
-            else
-            {
-                string tempDumpFile = "dump.ini";
-                File.WriteAllText(@tempDumpFile, File.ReadAllText(WriteSettings.dumpLocation));
-
-                WriteSettings.NoSettingsDetected();
-
-                MessageBox.Show("Your INI is out of date. We created a new INI file in the folder of this application.\n" +
-                                "Please copy your old settings, now in " + tempDumpFile + " into your " + WriteSettings.dumpLocation + " settings.\n" +
-                                "We are extremely sorry for this inconvience", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
-                return;
-            }
-        }
-        public object[] ImportPriorSettings() // To check new settings against old settings
-        {
-            object[] priorSettings = new object[46];
-            priorSettings[0] = ReadSettings.ProcessSettings(0); // Song List 1
-            priorSettings[1] = ReadSettings.ProcessSettings(1); // Song List 2
-            priorSettings[2] = ReadSettings.ProcessSettings(2); // Song List 3
-            priorSettings[3] = ReadSettings.ProcessSettings(3); // Song List 4
-            priorSettings[4] = ReadSettings.ProcessSettings(4); // Song List 5
-            priorSettings[5] = ReadSettings.ProcessSettings(5); // Song List 6
-
-            priorSettings[6] = ReadSettings.ProcessSettings(6); // Toggle Loft Key
-            priorSettings[7] = ReadSettings.ProcessSettings(7); // Add Volume Key
-            priorSettings[8] = ReadSettings.ProcessSettings(8); // Decrease Volume Key
-            priorSettings[9] = ReadSettings.ProcessSettings(9); // Show Song Timer Key
-            priorSettings[10] = ReadSettings.ProcessSettings(10); // Force Enumeration Key
-            priorSettings[11] = ReadSettings.ProcessSettings(16); // Rainbow Strings Key
-
-            priorSettings[12] = ReadSettings.ProcessSettings(11); // Toggle Loft Enabled / Disabled
-            priorSettings[13] = ReadSettings.ProcessSettings(12); // Add Volume Enabled / Disabled
-            priorSettings[14] = ReadSettings.ProcessSettings(13); // Decrease Volume Enabled / Disabled
-            priorSettings[15] = ReadSettings.ProcessSettings(14); // Show Song Timer Enabled / Disabled
-            priorSettings[16] = ReadSettings.ProcessSettings(15); // Force Enumeration Manual / Automatic / Disabled
-            priorSettings[17] = ReadSettings.ProcessSettings(17); // Rainbow Strings Enabled / Disabled
-            priorSettings[18] = ReadSettings.ProcessSettings(18); // Extended Range Enabled / Disabled
-            priorSettings[19] = ReadSettings.ProcessSettings(43); // Custom String Settings (0 - Default, 1 - ZZ, 2 - Custom)
-            priorSettings[20] = ReadSettings.ProcessSettings(20); // Disco Mode Enabled / Disabled
-            priorSettings[21] = ReadSettings.ProcessSettings(21); // Remove Headstock Enabled / Disabled
-            priorSettings[22] = ReadSettings.ProcessSettings(22); // Remove Skyline Enabled / Disabled
-            priorSettings[23] = ReadSettings.ProcessSettings(23); // Greenscreen Wall Enabled / Disabled
-            priorSettings[24] = ReadSettings.ProcessSettings(24); // Force Load Profile On Game Boot Enabled / Disabled
-            priorSettings[25] = ReadSettings.ProcessSettings(25); // Fretless Mode Enabled / Disabled
-            priorSettings[26] = ReadSettings.ProcessSettings(26); // Remove Inlay Markers Enabled / Disabled
-            priorSettings[27] = ReadSettings.ProcessSettings(27); // Toggle Loft When Startup / Manual / Song
-            priorSettings[28] = ReadSettings.ProcessSettings(28); // Remove Lane Markers Enabled / Disabled
-            priorSettings[29] = ReadSettings.ProcessSettings(29); // Toggle Skyline When Startup / Song
-            priorSettings[44] = ReadSettings.ProcessSettings(43); // Remove Lyrics
-
-            priorSettings[30] = ReadSettings.ProcessSettings(30); // Default Low E String Color
-            priorSettings[31] = ReadSettings.ProcessSettings(31); // Default A String Color
-            priorSettings[32] = ReadSettings.ProcessSettings(32); // Default D String Color
-            priorSettings[33] = ReadSettings.ProcessSettings(33); // Default G String Color
-            priorSettings[34] = ReadSettings.ProcessSettings(34); // Default B String Color
-            priorSettings[35] = ReadSettings.ProcessSettings(35); // Default High E String Color
-            priorSettings[36] = ReadSettings.ProcessSettings(36); // Colorblind Low E String Color
-            priorSettings[37] = ReadSettings.ProcessSettings(37); // Colorblind A String Color
-            priorSettings[38] = ReadSettings.ProcessSettings(38); // Colorblind D String Color
-            priorSettings[39] = ReadSettings.ProcessSettings(39); // Colorblind G String Color
-            priorSettings[40] = ReadSettings.ProcessSettings(40); // Colorblind B String Color
-            priorSettings[41] = ReadSettings.ProcessSettings(41); // Colorblind High E String Color
-
-            priorSettings[42] = ReadSettings.ProcessSettings(19); // Extended Range At X Tuning
-            priorSettings[43] = ReadSettings.ProcessSettings(42); // Check For Songs Every X ms
-
-            return priorSettings;
+            WriteSettings.WriteINI(WriteSettings.Settings);
         }
 
-        //public Dictionary<string, string> ImportPriorSettingsNew = new Dictionary<string, string>() 
+
+
+        //private void SaveChanges(int ElementToChange, string ChangedSettingValue)
         //{
-        //    {"SongList1", ReadSettings.ProcessSettings(0)},
-        //    {"SongList2", ReadSettings.ProcessSettings(1)},
-        //    {"SongList3", ReadSettings.ProcessSettings(2)},
-        //    {"SongList4", ReadSettings.ProcessSettings(3)},
-        // //To Do: Finish merging
-        //};
+        //        string[] StringArray = File.ReadAllLines(WriteSettings.dumpLocation);
+
+        //        if (ChangedSettingValue == "true")
+        //        {
+        //            ChangedSettingValue = "on";
+        //        }
+        //        else if (ChangedSettingValue == "false")
+        //        {
+        //            ChangedSettingValue = "off";
+        //        }
+        //        // Song Lists
+        //        {
+        //            if (ElementToChange == 1) // Songlist 1
+        //            {
+        //                StringArray[1] = ReadSettings.Songlist1Identifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 2) // Songlist 2
+        //            {
+        //                StringArray[2] = ReadSettings.Songlist2Identifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 3) // Songlist 3
+        //            {
+        //                StringArray[3] = ReadSettings.Songlist3Identifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 4) // Songlist 4
+        //            {
+        //                StringArray[4] = ReadSettings.Songlist4Identifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 5) // Songlist 5
+        //            {
+        //                StringArray[5] = ReadSettings.Songlist5Identifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 6) // Songlist 6
+        //            {
+        //                StringArray[6] = ReadSettings.Songlist6Identifier + ChangedSettingValue;
+        //            }
+        //        }
+        //        // Toggle On Key Press
+        //        {
+        //            if (ElementToChange == 7) // Toggle Loft Key
+        //            {
+        //                StringArray[8] = ReadSettings.ToggleLoftIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 8) // Add Volume Key
+        //            {
+        //                StringArray[9] = ReadSettings.AddVolumeIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 9) // Decrease Volume Key
+        //            {
+        //                StringArray[10] = ReadSettings.DecreaseVolumeIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 10) // Show Timer Key
+        //            {
+        //                StringArray[11] = ReadSettings.ShowSongTimerIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 11) // Force ReEnumeration Key
+        //            {
+        //                StringArray[12] = ReadSettings.ForceReEnumerationIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 12) // Rainbow Strings Key
+        //            {
+        //                StringArray[13] = ReadSettings.RainbowStringsIdentifier + ChangedSettingValue;
+        //            }
+        //        }
+        //        // Toggle Effects
+        //        {
+        //            if (ElementToChange == 13) // Toggle Loft Enabled / Disabled
+        //            {
+        //                StringArray[15] = ReadSettings.ToggleLoftEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 14) // Add Volume Enabled / Disabled
+        //            {
+        //                StringArray[16] = ReadSettings.AddVolumeEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 15) // Decrease Volume Enabled / Disabled
+        //            {
+        //                StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 16) // Show Song Timer Enabled / Disabled
+        //            {
+        //                StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 17) // Force ReEnumeration Manual / Automatic / Disabled
+        //            {
+        //                StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 18) // Rainbow String Enabled / Disabled
+        //            {
+        //                StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 19) // Extended Range Enabled / Disabled
+        //            {
+        //                StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 20) // Custom String Enabled / Disabled
+        //            {
+        //                StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 21) // Disco Mode Enabled / Disabled
+        //            {
+        //                StringArray[23] = ReadSettings.DiscoModeIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 22) // Remove Headstock Enabled / Disabled
+        //            {
+        //                StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 23) // Remove Skyline Enabled / Disabled
+        //            {
+        //                StringArray[25] = ReadSettings.RemoveSkylineIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 24) // Greenscreen Wall Enabled / Disabled
+        //            {
+        //                StringArray[26] = ReadSettings.GreenScreenWallIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 25) // Force Load Profile On Game Boot Enabled / Disabled
+        //            {
+        //                StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 26) // Fretless Mode Enabled / Disabled
+        //            {
+        //                StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 27) // Remove Inlay Markers Enabled / Disabled
+        //            {
+        //                StringArray[29] = ReadSettings.RemoveInlaysIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 28) // Toggle Loft When Startup / Manual / OnSong
+        //            {
+        //                StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 29) // Remove Lane Markers Enabled / Disabled
+        //            {
+        //                StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 30) // Toggle Skyline When Startup / OnSong
+        //            {
+        //                StringArray[32] = ReadSettings.ToggleSkylineWhenIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 45) // Remove Lyrics Enabled / Disabled
+        //            {
+        //                StringArray[33] = ReadSettings.RemoveLyricsIdentifier + ChangedSettingValue;
+        //            }
+        //        }
+        //        // String Colors (Normal {N} & Colorblind {CB})
+        //        {
+        //            // Normal String Colors
+        //            {
+        //                if (ElementToChange == 31)
+        //                {
+        //                    StringArray[35] = ReadSettings.String0Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 32)
+        //                {
+        //                    StringArray[36] = ReadSettings.String1Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 33)
+        //                {
+        //                    StringArray[37] = ReadSettings.String2Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 34)
+        //                {
+        //                    StringArray[38] = ReadSettings.String3Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 35)
+        //                {
+        //                    StringArray[39] = ReadSettings.String4Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 36)
+        //                {
+        //                    StringArray[40] = ReadSettings.String5Color_N_Identifier + ChangedSettingValue;
+        //                }
+        //            }
+        //            // Colorblind String Colors
+        //            {
+        //                if (ElementToChange == 37)
+        //                {
+        //                    StringArray[41] = ReadSettings.String0Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 38)
+        //                {
+        //                    StringArray[42] = ReadSettings.String1Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 39)
+        //                {
+        //                    StringArray[43] = ReadSettings.String2Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 40)
+        //                {
+        //                    StringArray[44] = ReadSettings.String3Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 41)
+        //                {
+        //                    StringArray[45] = ReadSettings.String4Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //                if (ElementToChange == 42)
+        //                {
+        //                    StringArray[46] = ReadSettings.String5Color_CB_Identifier + ChangedSettingValue;
+        //                }
+        //            }
+
+        //        }
+        //        // Mod Settings
+        //        {
+        //            if (ElementToChange == 43) // Extended Range Tuning Name
+        //            {
+        //                StringArray[48] = ReadSettings.ExtendedRangeTuningIdentifier + ChangedSettingValue;
+        //            }
+        //            if (ElementToChange == 44)
+        //            {
+        //                StringArray[49] = ReadSettings.CheckForNewSongIntervalIdentifier + ChangedSettingValue;
+        //            }
+
+        //        }
+        //        // Rewrite to a dictionary.
+        //        //WriteSettings.ModifyINI(StringArray);
+        //    }
 
         private void ChangeString0ColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[30].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[36].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String0Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(31, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String0Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(37, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String0Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -729,25 +671,25 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[31].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[37].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String1Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(32, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String1Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(38, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String1Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -757,25 +699,25 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[32].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[38].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String2Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(33, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String2Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(39, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String2Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -785,25 +727,25 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[33].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[39].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String3Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(34, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String3Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(40, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String3Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -813,25 +755,25 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[34].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[40].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String4Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(35, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String4Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(41, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String4Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
@@ -841,47 +783,47 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[35].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
             }
             else
             {
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ImportPriorSettings()[41].ToString());
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
             }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String5Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "on")
+                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
-                    SaveChanges(36, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String5Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
                 else
                 {
-                    SaveChanges(42, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                    SaveChanges(ReadSettings.String5Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
                 }
             }
         }
 
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e)
         {
-            String0Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[30].ToString());
-            String1Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[31].ToString());
-            String2Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[32].ToString());
-            String3Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[33].ToString());
-            String4Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[34].ToString());
-            String5Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[35].ToString());
+            String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
+            String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
+            String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
+            String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
+            String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
+            String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
         }
 
         private void ColorBlindStringColorsRadio_CheckedChanged(object sender, EventArgs e)
         {
-            String0Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[36].ToString());
-            String1Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[37].ToString());
-            String2Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[38].ToString());
-            String3Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[39].ToString());
-            String4Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[40].ToString());
-            String5Color.BackColor = ColorTranslator.FromHtml("#" + ImportPriorSettings()[41].ToString());
+            String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
+            String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
+            String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
+            String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
+            String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
+            String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
         }
 
         private static TuningDefinitionList tuningsCollection;
@@ -1189,63 +1131,63 @@ namespace RSMods
         {
             // Songlists
             {
-                if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(0)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
+                if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 1
                 {
-                    SaveChanges(1, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist1Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[0] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(1)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 2
+                if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 2
                 {
-                    SaveChanges(2, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist2Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[1] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(2)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 3
+                if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 3
                 {
-                    SaveChanges(3, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist3Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[2] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(3)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 4
+                if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 4
                 {
-                    SaveChanges(4, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist4Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[3] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(4)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 5
+                if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 5
                 {
-                    SaveChanges(5, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist5Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[4] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(5)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 6
+                if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)) & (this.NewSongListNameTxtbox.Text != "")) // Songlist 6
                 {
-                    SaveChanges(6, this.NewSongListNameTxtbox.Text);
+                    SaveChanges(ReadSettings.Songlist6Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[5] = this.NewSongListNameTxtbox.Text;
                 }
             }
 
             // Mods on KeyPress
             {
-                if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(6)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
+                if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
                 {
-                    SaveChanges(7, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.ToggleLoftIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(1) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(7)) & (this.NewAssignmentTxtBox.Text != "")) // Add Volume Key
+                if (this.ModList.GetSelected(1) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Add Volume Key
                 {
-                    SaveChanges(8, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.AddVolumeIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(2) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(8)) & (this.NewAssignmentTxtBox.Text != "")) // Decrease Volume Key
+                if (this.ModList.GetSelected(2) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Decrease Volume Key
                 {
-                    SaveChanges(9, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.DecreaseVolumeIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(3) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(9)) & (this.NewAssignmentTxtBox.Text != "")) // Show Song Timer Key
+                if (this.ModList.GetSelected(3) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Show Song Timer Key
                 {
-                    SaveChanges(10, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.ShowSongTimerIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(4) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(10)) & (this.NewAssignmentTxtBox.Text != "")) // Force ReEnumeration Key
+                if (this.ModList.GetSelected(4) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Force ReEnumeration Key
                 {
-                    SaveChanges(11, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.ForceReEnumerationIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
-                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(16)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
+                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
                 {
-                    SaveChanges(12, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    SaveChanges(ReadSettings.RainbowStringsIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
                 this.NewAssignmentTxtBox.Text = "";
             }
@@ -1256,7 +1198,7 @@ namespace RSMods
         {
             if (this.ToggleLoftCheckbox.Checked)
             {
-                SaveChanges(13, "true");
+                SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "true");
                 this.ToggleLoftCheckbox.Checked = true;
                 this.ToggleLoftWhenStartupRadio.Visible = true;
                 this.ToggleLoftWhenManualRadio.Visible = true;
@@ -1265,7 +1207,7 @@ namespace RSMods
             }
             else
             {
-                SaveChanges(13, "false");
+                SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "false");
                 this.ToggleLoftCheckbox.Checked = false;
                 this.ToggleLoftWhenStartupRadio.Visible = false;
                 this.ToggleLoftWhenManualRadio.Visible = false;
@@ -1277,25 +1219,25 @@ namespace RSMods
         private void AddVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (this.AddVolumeCheckbox.Checked)
-                SaveChanges(14, "true");
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "true");
             else
-                SaveChanges(14, "false");
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "false");
         }
 
         private void DecreaseVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (this.DecreaseVolumeCheckbox.Checked)
-                SaveChanges(15, "true");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "true");
             else
-                SaveChanges(15, "false");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "false");
         }
 
         private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (this.SongTimerCheckbox.Checked)
-                SaveChanges(16, "true");
+                SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "true");
             else
-                SaveChanges(16, "false");
+                SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "false");
         }
 
         private void ForceEnumerationCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1309,7 +1251,7 @@ namespace RSMods
             }
             else
             {
-                SaveChanges(17, "false");
+                SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "false");
                 this.ForceEnumerationCheckbox.Checked = false;
                 this.ForceEnumerationAutomaticRadio.Visible = false;
                 this.ForceEnumerationManualRadio.Visible = false;
@@ -1319,29 +1261,29 @@ namespace RSMods
 
         private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e)
         {
-            SaveChanges(44, (this.EnumerateEveryXMS.Value * 1000).ToString());
+            SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (this.EnumerateEveryXMS.Value * 1000).ToString());
         }
 
         private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
         {
             this.CheckEveryXmsText.Visible = true;
             this.EnumerateEveryXMS.Visible = true;
-            SaveChanges(17, "automatic");
+            SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "automatic");
         }
 
         private void ForceEnumerationManualRadio_CheckedChanged(object sender, EventArgs e)
         {
             this.CheckEveryXmsText.Visible = false;
             this.EnumerateEveryXMS.Visible = false;
-            SaveChanges(17, "manual");
+            SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
         }
 
         private void RainbowStringsEnabled_CheckedChanged(object sender, EventArgs e)
         {
             if (RainbowStringsEnabled.Checked)
-                SaveChanges(18, "true");
+                SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "true");
             else
-                SaveChanges(18, "false");
+                SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "false");
         }
 
         private void ExtendedRangeEnabled_CheckedChanged(object sender, EventArgs e)
@@ -1350,13 +1292,13 @@ namespace RSMods
             {
                 this.ExtendedRangeTuningBox.Visible = true;
                 this.ExtendedRangeTunings.Visible = true;
-                SaveChanges(19, "true");
+                SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "true");
             }
             else
             {
                 this.ExtendedRangeTuningBox.Visible = false;
                 this.ExtendedRangeTunings.Visible = false;
-                SaveChanges(19, "false");
+                SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "false");
             }
         }
 
@@ -1364,13 +1306,13 @@ namespace RSMods
         {
             if (customColorsCheckbox.Checked)
             {
-                SaveChanges(20, "2");
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 this.customColorsCheckbox.Checked = true;
                 this.ChangeStringColorsBox.Visible = true;
             }
             else
             {
-                SaveChanges(20, "0");
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
                 this.customColorsCheckbox.Checked = false;
                 this.ChangeStringColorsBox.Visible = false;
             }
@@ -1379,29 +1321,29 @@ namespace RSMods
         private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (DiscoModeCheckbox.Checked)
-                SaveChanges(21, "true");
+                SaveChanges(ReadSettings.DiscoModeIdentifier, "true");
             else
-                SaveChanges(21, "false");
+                SaveChanges(ReadSettings.DiscoModeIdentifier, "false");
         }
 
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (HeadstockCheckbox.Checked)
-                SaveChanges(22, "true");
+                SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "true");
             else
-                SaveChanges(22, "false");
+                SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
         }
 
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveSkylineCheckbox.Checked)
             {
-                SaveChanges(23, "true");
+                SaveChanges(ReadSettings.RemoveSkylineIdentifier, "true");
                 this.ToggleSkylineBox.Visible = true;
             }
             else
             {
-                SaveChanges(23, "false");
+                SaveChanges(ReadSettings.RemoveSkylineIdentifier, "false");
                 this.ToggleSkylineBox.Visible = false;
             }
         }
@@ -1409,118 +1351,118 @@ namespace RSMods
         private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (GreenScreenWallCheckbox.Checked)
-                SaveChanges(24, "true");
+                SaveChanges(ReadSettings.GreenScreenWallIdentifier, "true");
             else
-                SaveChanges(24, "false");
+                SaveChanges(ReadSettings.GreenScreenWallIdentifier, "false");
         }
 
         private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (AutoLoadProfileCheckbox.Checked)
-                SaveChanges(25, "true");
+                SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "true");
             else
-                SaveChanges(25, "false");
+                SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "false");
         }
 
         private void FretlessModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (FretlessModeCheckbox.Checked)
-                SaveChanges(26, "true");
+                SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "true");
             else
-                SaveChanges(26, "false");
+                SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "false");
         }
 
         private void RemoveInlaysCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveInlaysCheckbox.Checked)
-                SaveChanges(27, "true");
+                SaveChanges(ReadSettings.RemoveInlaysIdentifier, "true");
             else
-                SaveChanges(27, "false");
+                SaveChanges(ReadSettings.RemoveInlaysIdentifier, "false");
         }
 
         private void ToggleLoftWhenManualRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleLoftWhenManualRadio.Checked)
-                SaveChanges(28, "manual");
+                SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "manual");
         }
 
         private void ToggleLoftWhenSongRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleLoftWhenSongRadio.Checked)
-                SaveChanges(28, "song");
+                SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "song");
         }
 
         private void ToggleLoftWhenStartupRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleLoftWhenStartupRadio.Checked)
-                SaveChanges(28, "startup");
+                SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "startup");
         }
 
         private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveLineMarkersCheckBox.Checked)
-                SaveChanges(29, "true");
+                SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "true");
             else
-                SaveChanges(29, "false");
+                SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "false");
         }
 
         private void ToggleSkylineSongRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleSkylineSongRadio.Checked)
-                SaveChanges(30, "song");
+                SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "song");
         }
 
         private void ToggleSkylineStartupRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleSkylineStartupRadio.Checked)
-                SaveChanges(30, "startup");
+                SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "startup");
         }
 
         private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ExtendedRangeTunings.GetSelected(0))
             {
-                SaveChanges(43, "-2");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-2");
             }
             else if (this.ExtendedRangeTunings.GetSelected(1))
             {
-                SaveChanges(43, "-3");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-3");
             }
             else if (this.ExtendedRangeTunings.GetSelected(2))
             {
-                SaveChanges(43, "-4");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-4");
             }
             else if (this.ExtendedRangeTunings.GetSelected(3))
             {
-                SaveChanges(43, "-5");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-5");
             }
             else if (this.ExtendedRangeTunings.GetSelected(4))
             {
-                SaveChanges(43, "-6");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-6");
             }
             else if (this.ExtendedRangeTunings.GetSelected(5))
             {
-                SaveChanges(43, "-7");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-7");
             }
             else if (this.ExtendedRangeTunings.GetSelected(6))
             {
-                SaveChanges(43, "-8");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-8");
             }
             else if (this.ExtendedRangeTunings.GetSelected(7))
             {
-                SaveChanges(43, "-9");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-9");
             }
             else if (this.ExtendedRangeTunings.GetSelected(8))
             {
-                SaveChanges(43, "-10");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-10");
             }
             else if (this.ExtendedRangeTunings.GetSelected(9))
             {
-                SaveChanges(43, "-11");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-11");
             }
             else if (this.ExtendedRangeTunings.GetSelected(10))
             {
-                SaveChanges(43, "-12");
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-12");
             }
         }
 
@@ -1528,48 +1470,46 @@ namespace RSMods
         {
             this.NewAssignmentTxtBox.Text = "";
             if (this.ModList.GetSelected(0)) // Toggle Loft Key
-                SaveChanges(7, "");
+                SaveChanges(ReadSettings.ToggleLoftIdentifier, "");
             else if (this.ModList.GetSelected(1)) // Add Volume Key
-                SaveChanges(8, "");
+                SaveChanges(ReadSettings.AddVolumeIdentifier, "");
             else if (this.ModList.GetSelected(2)) // Decrease Volume Key
-                SaveChanges(9, "");
+                SaveChanges(ReadSettings.DecreaseVolumeIdentifier, "");
             else if (this.ModList.GetSelected(3)) // Show Song Timer Key
-                SaveChanges(10, "");
+                SaveChanges(ReadSettings.ShowSongTimerIdentifier, "");
             else if (this.ModList.GetSelected(4)) // Force ReEnumerate Key
-                SaveChanges(11, "");
+                SaveChanges(ReadSettings.ForceReEnumerationIdentifier, "");
             else if (this.ModList.GetSelected(5)) // Rainbow Strings Key
-                SaveChanges(12, "");
+                SaveChanges(ReadSettings.RainbowStringsIdentifier, "");
 
             ResetModKeyValues();
         }
 
         private void ResetModKeyValues()
         {
-            this.ToggleLoftKey.Text = "Toggle Loft: " + ImportPriorSettings()[6];
-            this.AddVolumeKey.Text = "Add Volume: " + ImportPriorSettings()[7];
-            this.DecreaseVolumeKey.Text = "Decrease Volume: " + ImportPriorSettings()[8];
-            this.SongTimerKey.Text = "Show Song Timer: " + ImportPriorSettings()[9];
-            this.ReEnumerationKey.Text = "Force ReEnumeration: " + ImportPriorSettings()[10];
-            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ImportPriorSettings()[11];
+            this.ToggleLoftKey.Text = "Toggle Loft: " + ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
+            this.AddVolumeKey.Text = "Add Volume: " + ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
+            this.DecreaseVolumeKey.Text = "Decrease Volume: " + ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
+            this.SongTimerKey.Text = "Show Song Timer: " + ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
+            this.ReEnumerationKey.Text = "Force ReEnumeration: " + ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
+            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveLyricsCheckbox.Checked)
-                SaveChanges(45, "on");
+                SaveChanges(ReadSettings.RemoveLyricsIdentifier, "on");
             else
-                SaveChanges(45, "off");
+                SaveChanges(ReadSettings.RemoveLyricsIdentifier, "off");
         }
 
-        // This example assumes that the Form_Load event handling method
-        // is connected to the Load event of the form.
-        // shamelessly lifted from https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
+       
 
         private void MainForm_Load(object sender, System.EventArgs e)
         {
             StartToolTips();
         }
-        private void StartToolTips()
+        private void StartToolTips()  // Documentation: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
         {
             // Create the ToolTip and associate with the Form container.
             ToolTip toolTip1 = new ToolTip();
@@ -1726,16 +1666,6 @@ namespace RSMods
             {
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
-        }
-
-        private void groupSetAndForget_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void rbTone1_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

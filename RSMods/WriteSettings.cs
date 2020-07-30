@@ -6,101 +6,92 @@ using System.Collections.Generic;
 
 namespace RSMods
 {
-    class IniEntry
-    {
-        public string Section { get; set; }
-        public string Value { get; set; }
-    }
-
     class WriteSettings
     {
-        
+
         public static string dumpLocation = "RSMods.ini";
         public static string guiSettings = "GUI_Settings.ini";
         public static string[] StringArray = new String[50];
 
-        public Dictionary<string, IniEntry> WriteToINI = new Dictionary<string, IniEntry>()
+        public static Dictionary<string, Dictionary<string, string>> Settings = new Dictionary<string, Dictionary<string, string>>()
         {
-            {"SongListTitle", new IniEntry{Section="[SongListTitle]", Value="[SongListTitle]"}},
-                {ReadSettings.Songlist1Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist1Identifier + "" }},
-                {ReadSettings.Songlist2Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist2Identifier + ""}},
-                {ReadSettings.Songlist3Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist3Identifier + ""}},
-                {ReadSettings.Songlist4Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist4Identifier + ""}},
-                {ReadSettings.Songlist5Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist5Identifier + ""}},
-                {ReadSettings.Songlist6Identifier, new IniEntry{Section="[SongListTitle]", Value=ReadSettings.Songlist6Identifier + ""}},
-            {"KeybindsTitle", new IniEntry{Section="[Keybinds]", Value="[Keybinds]"}},
-                {ReadSettings.ToggleLoftIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ToggleLoftIdentifier}},
-                {ReadSettings.AddVolumeIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.AddVolumeIdentifier}},
-                {ReadSettings.DecreaseVolumeIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.DecreaseVolumeIdentifier}},
-                {ReadSettings.ShowSongTimerIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ShowSongTimerIdentifier}},
-                {ReadSettings.ForceReEnumerationIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.ForceReEnumerationIdentifier}},
-                {ReadSettings.RainbowStringsIdentifier, new IniEntry{Section="[Keybinds]", Value=ReadSettings.RainbowStringsIdentifier}},
-            {"ToggleSwitchTitle", new IniEntry{Section="[Toggle Switches]", Value="[Toggle Switches]"}},
-                // To Do: Finish converting
+            // Section                           mod   default
+            {"[SongListTitles]", new Dictionary<string, string> {
+                { ReadSettings.Songlist1Identifier, "Define Song List 1 Here" }, // Songlist 1
+                { ReadSettings.Songlist2Identifier, "Define Song List 2 Here" }, // Songlist 2
+                { ReadSettings.Songlist3Identifier, "Define Song List 3 Here" }, // Songlist 3
+                { ReadSettings.Songlist4Identifier, "Define Song List 4 Here" }, // Songlist 4
+                { ReadSettings.Songlist5Identifier, "Define Song List 5 Here" }, // Songlist 5
+                { ReadSettings.Songlist6Identifier, "Define Song List 6 Here" }, // Songlist 6
+            }},
+            {"[Keybinds]", new Dictionary<string, string> {
+                { ReadSettings.ToggleLoftIdentifier, "" }, // Toggle Loft
+                { ReadSettings.AddVolumeIdentifier, "" }, // Add Volume
+                { ReadSettings.DecreaseVolumeIdentifier, "" }, // Decrease Volume
+                { ReadSettings.ShowSongTimerIdentifier, "" }, // Show Song Timer
+                { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
+                { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
+            }},
+            {"[Toggle Switches]", new Dictionary<string, string>
+            {
+                { ReadSettings.ToggleLoftEnabledIdentifier, "off" }, // Toggle Loft Enabled / Disabled
+                { ReadSettings.AddVolumeEnabledIdentifier, "off" }, // Add Volume Enabled / Disabled
+                { ReadSettings.DecreaseVolumeEnabledIdentifier, "off" }, // Decrease Volume Enabled/ Disabled
+                { ReadSettings.ShowSongTimerEnabledIdentifier, "off" }, // Show Song Timer Enabled / Disabled
+                { ReadSettings.ForceReEnumerationEnabledIdentifier, "off" }, // Force ReEnumeration Manual / Automatic / Disabled
+                { ReadSettings.RainbowStringsEnabledIdentifier, "off" }, // Rainbow String Enabled / Disabled
+                { ReadSettings.ExtendedRangeEnabledIdentifier, "off" }, // Extended Range Enabled / Disabled
+                { ReadSettings.CustomStringColorNumberIndetifier, "0" }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
+                { ReadSettings.DiscoModeIdentifier, "off" }, // Disco Mode Enabled / Disabled
+                { ReadSettings.RemoveHeadstockIdentifier, "off" }, // Remove Headstock Enabled / Disabled
+                { ReadSettings.RemoveSkylineIdentifier, "off" }, // Remove Skyline Enabled / Disabled
+                { ReadSettings.GreenScreenWallIdentifier, "off"}, // Greenscreen Back Wall Enabled / Disabled
+                { ReadSettings.ForceProfileEnabledIdentifier, "off" }, // Force Load Profile On Game Boot Enabled / Disabled
+                { ReadSettings.FretlessModeEnabledIdentifier, "off" }, // Fretless Mode Enabled / Disabled
+                { ReadSettings.RemoveInlaysIdentifier, "off" }, // Remove Inlay Markers Enabled / Disabled
+                { ReadSettings.ToggleLoftWhenIdentifier, "manual" }, // Define how or when the loft is disabled - game startup, on key command, or in song only
+                { ReadSettings.RemoveLaneMarkersIdentifier, "off" }, // Remove Lane Markers Enabled / Disabled
+                { ReadSettings.ToggleSkylineWhenIdentifier, "song" }, // Define how or when the skyline is disabled - game startup, or in song only
+                { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
+            }},
+            {"[String Colors]", new Dictionary<string, string> 
+            {
+                { ReadSettings.String0Color_N_Identifier, "bf5f5f" }, // Default Low E String Color (HEX) | Red
+                { ReadSettings.String1Color_N_Identifier, "bfb75f" }, // Default A String Color (HEX) | Yellow
+                { ReadSettings.String2Color_N_Identifier, "5e9dbc" }, // Default D String Color (HEX) | Blue
+                { ReadSettings.String3Color_N_Identifier, "bf8d5f" }, // Default G String Color (HEX) | Orange
+                { ReadSettings.String4Color_N_Identifier, "5fbf97" }, // Default B String Color (HEX) | Green
+                { ReadSettings.String5Color_N_Identifier, "ac5ebc" }, // Default High E String Color (HEX) | Purple
+
+                { ReadSettings.String0Color_CB_Identifier, "bf5f5f" }, // Colorblind Low E String Color (HEX) | Red
+                { ReadSettings.String1Color_CB_Identifier, "9dbc5e" }, // Colorblind A String Color (HEX) | Yellow
+                { ReadSettings.String2Color_CB_Identifier, "5f9fbf" }, // Colorblind D String Color (HEX) | Blue
+                { ReadSettings.String3Color_CB_Identifier, "bf875f" }, // Colorblind G String Color (HEX) | Orange
+                { ReadSettings.String4Color_CB_Identifier, "5fbfa4" }, // Colorblind B String Color (HEX) | Green
+                { ReadSettings.String5Color_CB_Identifier, "8c5fbf" }, // Colorblind High E String Color (HEX) | Purple
+            }},
+            {"[Mod Settings]", new Dictionary<string, string>
+            {
+                { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
+                { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
+            }},
         };
 
-        public static void ModifyINI(string[] StringArray)
+        public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)
         {
-            var dumpINI = File.Create(WhereIsRocksmith());
-            dumpINI.Close();
-            File.WriteAllLines(WhereIsRocksmith(), StringArray);
+            using (StreamWriter sw = File.CreateText(WhereIsRocksmith()))
+            {
+                foreach (string section in DictionaryToWrite.Keys)
+                {
+                    sw.WriteLine(section);
+                    foreach (KeyValuePair<string, string> entry in DictionaryToWrite[section])
+                    {
+                        sw.WriteLine(entry.Key + entry.Value);
+                    }
+                }
+            }
         }
 
-        public static void NoSettingsDetected()
-        {
-                StringArray[0]  = "[SongListTitles]";
-                StringArray[1]  = ReadSettings.Songlist1Identifier + "Define Song List 1 Here"; // Songlist 1
-                StringArray[2]  = ReadSettings.Songlist2Identifier + "Define Song List 2 Here"; // Songlist 2
-                StringArray[3]  = ReadSettings.Songlist3Identifier + "Define Song List 3 Here"; // Songlist 3
-                StringArray[4]  = ReadSettings.Songlist4Identifier + "Define Song List 4 Here"; // Songlist 4
-                StringArray[5]  = ReadSettings.Songlist5Identifier + "Define Song List 5 Here"; // Songlist 5
-                StringArray[6]  = ReadSettings.Songlist6Identifier + "Define Song List 6 Here"; // Songlist 6
-                StringArray[7]  = "[Keybinds]";
-                StringArray[8]  = ReadSettings.ToggleLoftIdentifier; // Toggle Loft
-                StringArray[9]  = ReadSettings.AddVolumeIdentifier; // Add Volume
-                StringArray[10] = ReadSettings.DecreaseVolumeIdentifier; // Decrease Volume
-                StringArray[11] = ReadSettings.ShowSongTimerIdentifier; // Show Song Timer
-                StringArray[12] = ReadSettings.ForceReEnumerationIdentifier; // Force ReEnumeration
-                StringArray[13] = ReadSettings.RainbowStringsIdentifier; // Rainbow Strings
-                StringArray[14] = "[Toggle Switches]";
-                StringArray[15] = ReadSettings.ToggleLoftEnabledIdentifier + "off"; // Toggle Loft Enabled / Disabled
-                StringArray[16] = ReadSettings.AddVolumeEnabledIdentifier + "off"; // Add Volume Enabled / Disabled
-                StringArray[17] = ReadSettings.DecreaseVolumeEnabledIdentifier + "off"; // Decrease Volume Enabled/ Disabled
-                StringArray[18] = ReadSettings.ShowSongTimerEnabledIdentifier + "off"; // Show Song Timer Enabled / Disabled
-                StringArray[19] = ReadSettings.ForceReEnumerationEnabledIdentifier + "off"; // Force ReEnumeration Manual / Automatic / Disabled
-                StringArray[20] = ReadSettings.RainbowStringsEnabledIdentifier + "off"; // Rainbow String Enabled / Disabled
-                StringArray[21] = ReadSettings.ExtendedRangeEnabledIdentifier + "off"; // Extended Range Enabled / Disabled
-                StringArray[22] = ReadSettings.CustomStringColorNumberIndetifier + "0"; // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
-                StringArray[23] = ReadSettings.DiscoModeIdentifier + "off"; // Disco Mode Enabled / Disabled
-                StringArray[24] = ReadSettings.RemoveHeadstockIdentifier + "off"; // Remove Headstock Enabled / Disabled
-                StringArray[25] = ReadSettings.RemoveSkylineIdentifier + "off"; // Remove Skyline Enabled / Disabled
-                StringArray[26] = ReadSettings.GreenScreenWallIdentifier + "off"; // Greenscreen Back Wall Enabled / Disabled
-                StringArray[27] = ReadSettings.ForceProfileEnabledIdentifier + "off"; // Force Load Profile On Game Boot Enabled / Disabled
-                StringArray[28] = ReadSettings.FretlessModeEnabledIdentifier + "off"; // Fretless Mode Enabled / Disabled
-                StringArray[29] = ReadSettings.RemoveInlaysIdentifier + "off"; // Remove Inlay Markers Enabled / Disabled
-                StringArray[30] = ReadSettings.ToggleLoftWhenIdentifier + "manual"; // Define how or when the loft is disabled - game startup, on key command or in song only
-                StringArray[31] = ReadSettings.RemoveLaneMarkersIdentifier + "off"; // Remove Inlays  Enabled / Disabled
-                StringArray[32] = ReadSettings.ToggleSkylineWhenIdentifier + "song"; // Define how or when the skyline is disabled - game startup, or in song only
-                StringArray[33] = ReadSettings.RemoveLyricsIdentifier + "off"; // Remove Song Lyrics Enabled / Disabled
-                StringArray[34] = "[String Colors]";
-                StringArray[35] = ReadSettings.String0Color_N_Identifier + "bf5f5f"; // Default Low E String Color (HEX) | Red
-                StringArray[36] = ReadSettings.String1Color_N_Identifier + "bfb75f"; // Default A String Color (HEX) | Yellow
-                StringArray[37] = ReadSettings.String2Color_N_Identifier + "5e9dbc"; // Default D String Color (HEX) | Blue
-                StringArray[38] = ReadSettings.String3Color_N_Identifier + "bf8d5f"; // Default G String Color (HEX) | Orange
-                StringArray[39] = ReadSettings.String4Color_N_Identifier + "5fbf97"; // Default B String Color (HEX) | Green
-                StringArray[40] = ReadSettings.String5Color_N_Identifier + "ac5ebc"; // Default High E String Color (HEX) | Purple
-                StringArray[41] = ReadSettings.String0Color_CB_Identifier + "bf5f5f"; // Colorblind Low E String Color (HEX) | Red
-                StringArray[42] = ReadSettings.String1Color_CB_Identifier + "9dbc5e"; // Colorblind A String Color (HEX) | Yellow
-                StringArray[43] = ReadSettings.String2Color_CB_Identifier + "5f9fbf"; // Colorblind D String Color (HEX) | Blue
-                StringArray[44] = ReadSettings.String3Color_CB_Identifier + "bf875f"; // Colorblind G String Color (HEX) | Orange
-                StringArray[45] = ReadSettings.String4Color_CB_Identifier + "5fbfa4"; // Colorblind B String Color (HEX) | Green
-                StringArray[46] = ReadSettings.String5Color_CB_Identifier + "8c5fbf"; // Colorblind High E String Color (HEX) | Purple
-                StringArray[47] = "[Mod Settings]";
-                StringArray[48] = ReadSettings.ExtendedRangeTuningIdentifier + "-5"; // Enable Extended Range Mode When Low E Is X Below E
-                StringArray[49] = ReadSettings.CheckForNewSongIntervalIdentifier + "5000"; // Enumerate new CDLC / ODLC every X ms
-                
-                ModifyINI(StringArray);
-        }
         public static string WhereIsRocksmith()
         {
             if (File.Exists(@guiSettings)) // If there is already a save file

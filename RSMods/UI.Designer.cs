@@ -910,7 +910,6 @@
             this.groupSetAndForget.TabIndex = 68;
             this.groupSetAndForget.TabStop = false;
             this.groupSetAndForget.Text = "Set-and-forget mods";
-            this.groupSetAndForget.Enter += new System.EventHandler(this.groupSetAndForget_Enter);
             // 
             // rbTone2
             // 
@@ -931,7 +930,6 @@
             this.rbTone1.TabIndex = 101;
             this.rbTone1.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.rbTone1.UseVisualStyleBackColor = true;
-            this.rbTone1.CheckedChanged += new System.EventHandler(this.rbTone1_CheckedChanged);
             // 
             // rbTone0
             // 
