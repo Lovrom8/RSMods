@@ -861,10 +861,10 @@ namespace RSMods
             return ReplacementValue;
         }
 
-        public static System.Windows.Forms.Keys[] KeyDownDictionary = new System.Windows.Forms.Keys[41] // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://i.imgur.com/0g7hurj.png
+        public static System.Windows.Forms.Keys[] KeyDownDictionary = new System.Windows.Forms.Keys[39] // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://i.imgur.com/0g7hurj.png
         {
             // Standard Function Keys
-             Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7,  Keys.F8, Keys.F9, Keys.F10, Keys.F11,
+             Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F9, Keys.F10,
 
             // Elgato Keys / Extended Function Keys
             Keys.F13, Keys.F14, Keys.F15, Keys.F16, Keys.F17, Keys.F18, Keys.F19, Keys.F20, Keys.F21, Keys.F22,  Keys.F23, Keys.F24,
