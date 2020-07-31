@@ -536,9 +536,9 @@ namespace RSMods
 
                         if(currentLine.Contains(RemoveLyricsWhenIdentifier))
                         {
-                            if(currentLine.Substring(RemoveLyricsWhenIdentifier.Length, currentLine.Length - RemoveLyricsWhenIdentifier.Length) == "automatic")
+                            if(currentLine.Substring(RemoveLyricsWhenIdentifier.Length, currentLine.Length - RemoveLyricsWhenIdentifier.Length) == "startup")
                             {
-                                RemoveLyricsWhen = "automatic";
+                                RemoveLyricsWhen = "startup";
                             }
                             else
                             {

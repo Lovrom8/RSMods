@@ -1313,6 +1313,7 @@
             this.ToggleLyricsManualRadio.TabStop = true;
             this.ToggleLyricsManualRadio.Text = "Lyrics Off Via Key Press Only";
             this.ToggleLyricsManualRadio.UseVisualStyleBackColor = true;
+            this.ToggleLyricsManualRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsManualRadio_CheckedChanged);
             // 
             // ToggleLyricsRadio
             // 
@@ -1324,6 +1325,7 @@
             this.ToggleLyricsRadio.TabStop = true;
             this.ToggleLyricsRadio.Text = "Lyrics Always Off";
             this.ToggleLyricsRadio.UseVisualStyleBackColor = true;
+            this.ToggleLyricsRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsRadio_CheckedChanged);
             // 
             // MainForm
             // 

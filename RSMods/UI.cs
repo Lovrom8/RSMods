@@ -246,7 +246,7 @@ namespace RSMods
                     this.HowToToggleLyrics.Visible = false;
                 }
 
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "automatic") // Remove Lyrics When ...
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
                 {
                     this.ToggleLyricsRadio.Checked = true;
                 }
@@ -1497,6 +1497,18 @@ namespace RSMods
             {
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
+        }
+
+        private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleLyricsRadio.Checked)
+                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "startup");
+        }
+
+        private void ToggleLyricsManualRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ToggleLyricsManualRadio.Checked)
+                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
         }
     }
 }
