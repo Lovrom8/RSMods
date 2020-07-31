@@ -696,7 +696,8 @@ namespace RSMods
             int currentTuningIndex = 69000; // Cos we can ;)
             try
             {
-                string currentUIName, newUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
+                string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
+                //string newUIName;
 
                 using (StreamWriter sw = new StreamWriter(Constants.LocalizationCSV_CustomPath, true))
                 {
