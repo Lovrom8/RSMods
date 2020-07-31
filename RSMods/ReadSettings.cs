@@ -9,8 +9,7 @@ namespace RSMods
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                             ExtendedRangeTuning, CheckForNewSongInterval, 
-                             RocksmithInstallLocation;
+                             ExtendedRangeTuning, CheckForNewSongInterval;
 
         public static string
                 // Song List Identifiers
