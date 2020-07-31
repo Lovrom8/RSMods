@@ -853,10 +853,12 @@ namespace RSMods
 
         public static string VKeyToUI(string VKey)
         {
-            VKey.Replace("VK_", "");
-            VKey.Replace("_", " ");
+            string ReplacementValue = VKey;
+            if (VKey.Contains("VK_"))
+                ReplacementValue = ReplacementValue.Substring(3, ReplacementValue.Length - 3);
+            
 
-            return VKey;
+            return ReplacementValue;
         }
 
         public static System.Windows.Forms.Keys[] KeyDownDictionary = new System.Windows.Forms.Keys[41] // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://i.imgur.com/0g7hurj.png
