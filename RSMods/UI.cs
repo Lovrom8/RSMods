@@ -1102,12 +1102,14 @@ namespace RSMods
                 this.ExtendedRangeTuningBox.Visible = true;
                 this.ExtendedRangeTunings.Visible = true;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "true");
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "1");
             }
             else
             {
                 this.ExtendedRangeTuningBox.Visible = false;
                 this.ExtendedRangeTunings.Visible = false;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "false");
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
             }
         }
 
@@ -1374,12 +1376,14 @@ namespace RSMods
             toolTip1.SetToolTip(this.BtnSaveTuningChanges, "Saves the tuning list to Rocksmith.");
             toolTip1.SetToolTip(this.BtnUnpackCacheAgain, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
             toolTip1.SetToolTip(this.BtnRemoveTempFolders, "Removes the temporary files used by RSMods.");
-            toolTip1.SetToolTip(this.ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here.");
+            toolTip1.SetToolTip(this.ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here. See the Custom Colors - Color Blind mode, for the colors that will be used while in ER mode,");
             toolTip1.SetToolTip(this.HowToEnumerateBox, "Choose to Enumerate on key press, or automatically scan for changes every X seconds and start enumeration if a new file has been added.");
             toolTip1.SetToolTip(this.ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
             toolTip1.SetToolTip(this.ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
+            toolTip1.SetToolTip(this.ColorBlindStringColorsRadio, "When ER mode is enabled, these are the colors that the strings will be changed to.");
         }
 
+        
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.Songlist.SelectedIndex > -1)

@@ -680,7 +680,7 @@
             // 
             // String0ColorButton
             // 
-            this.String0ColorButton.Location = new System.Drawing.Point(26, 49);
+            this.String0ColorButton.Location = new System.Drawing.Point(26, 63);
             this.String0ColorButton.Name = "String0ColorButton";
             this.String0ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String0ColorButton.TabIndex = 53;
@@ -690,7 +690,7 @@
             // 
             // String0Color
             // 
-            this.String0Color.Location = new System.Drawing.Point(152, 49);
+            this.String0Color.Location = new System.Drawing.Point(152, 63);
             this.String0Color.Name = "String0Color";
             this.String0Color.ReadOnly = true;
             this.String0Color.Size = new System.Drawing.Size(108, 20);
@@ -698,7 +698,7 @@
             // 
             // String1Color
             // 
-            this.String1Color.Location = new System.Drawing.Point(152, 79);
+            this.String1Color.Location = new System.Drawing.Point(152, 93);
             this.String1Color.Name = "String1Color";
             this.String1Color.ReadOnly = true;
             this.String1Color.Size = new System.Drawing.Size(108, 20);
@@ -706,7 +706,7 @@
             // 
             // String1ColorButton
             // 
-            this.String1ColorButton.Location = new System.Drawing.Point(26, 79);
+            this.String1ColorButton.Location = new System.Drawing.Point(26, 93);
             this.String1ColorButton.Name = "String1ColorButton";
             this.String1ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String1ColorButton.TabIndex = 55;
@@ -716,7 +716,7 @@
             // 
             // String2Color
             // 
-            this.String2Color.Location = new System.Drawing.Point(152, 108);
+            this.String2Color.Location = new System.Drawing.Point(152, 122);
             this.String2Color.Name = "String2Color";
             this.String2Color.ReadOnly = true;
             this.String2Color.Size = new System.Drawing.Size(108, 20);
@@ -724,7 +724,7 @@
             // 
             // String2ColorButton
             // 
-            this.String2ColorButton.Location = new System.Drawing.Point(26, 108);
+            this.String2ColorButton.Location = new System.Drawing.Point(26, 122);
             this.String2ColorButton.Name = "String2ColorButton";
             this.String2ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String2ColorButton.TabIndex = 57;
@@ -734,7 +734,7 @@
             // 
             // String3Color
             // 
-            this.String3Color.Location = new System.Drawing.Point(152, 139);
+            this.String3Color.Location = new System.Drawing.Point(152, 153);
             this.String3Color.Name = "String3Color";
             this.String3Color.ReadOnly = true;
             this.String3Color.Size = new System.Drawing.Size(108, 20);
@@ -742,7 +742,7 @@
             // 
             // String3ColorButton
             // 
-            this.String3ColorButton.Location = new System.Drawing.Point(26, 139);
+            this.String3ColorButton.Location = new System.Drawing.Point(26, 153);
             this.String3ColorButton.Name = "String3ColorButton";
             this.String3ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String3ColorButton.TabIndex = 59;
@@ -752,7 +752,7 @@
             // 
             // String4Color
             // 
-            this.String4Color.Location = new System.Drawing.Point(152, 171);
+            this.String4Color.Location = new System.Drawing.Point(152, 185);
             this.String4Color.Name = "String4Color";
             this.String4Color.ReadOnly = true;
             this.String4Color.Size = new System.Drawing.Size(108, 20);
@@ -760,7 +760,7 @@
             // 
             // String4ColorButton
             // 
-            this.String4ColorButton.Location = new System.Drawing.Point(26, 171);
+            this.String4ColorButton.Location = new System.Drawing.Point(26, 185);
             this.String4ColorButton.Name = "String4ColorButton";
             this.String4ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String4ColorButton.TabIndex = 61;
@@ -770,7 +770,7 @@
             // 
             // String5Color
             // 
-            this.String5Color.Location = new System.Drawing.Point(152, 201);
+            this.String5Color.Location = new System.Drawing.Point(152, 215);
             this.String5Color.Name = "String5Color";
             this.String5Color.ReadOnly = true;
             this.String5Color.Size = new System.Drawing.Size(108, 20);
@@ -778,7 +778,7 @@
             // 
             // String5ColorButton
             // 
-            this.String5ColorButton.Location = new System.Drawing.Point(26, 201);
+            this.String5ColorButton.Location = new System.Drawing.Point(26, 215);
             this.String5ColorButton.Name = "String5ColorButton";
             this.String5ColorButton.Size = new System.Drawing.Size(120, 21);
             this.String5ColorButton.TabIndex = 63;
@@ -804,7 +804,7 @@
             this.ChangeStringColorsBox.Controls.Add(this.String0ColorButton);
             this.ChangeStringColorsBox.Location = new System.Drawing.Point(713, 226);
             this.ChangeStringColorsBox.Name = "ChangeStringColorsBox";
-            this.ChangeStringColorsBox.Size = new System.Drawing.Size(282, 232);
+            this.ChangeStringColorsBox.Size = new System.Drawing.Size(282, 243);
             this.ChangeStringColorsBox.TabIndex = 65;
             this.ChangeStringColorsBox.TabStop = false;
             this.ChangeStringColorsBox.Text = "Change String Colors";
@@ -813,12 +813,12 @@
             // ColorBlindStringColorsRadio
             // 
             this.ColorBlindStringColorsRadio.AutoSize = true;
-            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 18);
+            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 6);
             this.ColorBlindStringColorsRadio.Name = "ColorBlindStringColorsRadio";
-            this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(103, 17);
+            this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(138, 43);
             this.ColorBlindStringColorsRadio.TabIndex = 66;
             this.ColorBlindStringColorsRadio.TabStop = true;
-            this.ColorBlindStringColorsRadio.Text = "Colorblind Colors";
+            this.ColorBlindStringColorsRadio.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
             this.ColorBlindStringColorsRadio.UseVisualStyleBackColor = true;
             this.ColorBlindStringColorsRadio.CheckedChanged += new System.EventHandler(this.ColorBlindStringColorsRadio_CheckedChanged);
             // 
