@@ -143,7 +143,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
 	for (int i = 0; i < 16;i++) {
-		RSColor iniColor = Settings.GetCustomColors(i % 8)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
+		RSColor iniColor = Settings.GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
