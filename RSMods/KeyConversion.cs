@@ -851,6 +851,14 @@ namespace RSMods
         }
 
 
+        public static string VKeyToUI(string VKey)
+        {
+            VKey.Replace("VK_", "");
+            VKey.Replace("_", " ");
+
+            return VKey;
+        }
+
         public static System.Windows.Forms.Keys[] KeyDownDictionary = new System.Windows.Forms.Keys[41] // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://i.imgur.com/0g7hurj.png
         {
             // Standard Function Keys
@@ -881,8 +889,8 @@ namespace RSMods
         };
         public static System.Windows.Forms.MouseButtons[] MouseButtonDictionary = new System.Windows.Forms.MouseButtons[3] // Same with KeyUpDictonary, and KeyDownDictionary but with the mouse's extra buttons.
         {
-            // Middle Mouse Button
-            MouseButtons.Middle,
+             // Middle Mouse Button
+             MouseButtons.Middle,
 
              // Side Buttons
              MouseButtons.XButton1, MouseButtons.XButton2

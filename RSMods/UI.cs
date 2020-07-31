@@ -272,27 +272,27 @@ namespace RSMods
         {
             if (this.ModList.GetSelected(0))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
             }
             if (this.ModList.GetSelected(1))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
             }
             if (this.ModList.GetSelected(2))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
             }
             if (this.ModList.GetSelected(3))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
             }
             if (this.ModList.GetSelected(4))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             }
             if (this.ModList.GetSelected(5))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
             }
         }
 
@@ -1262,12 +1262,12 @@ namespace RSMods
 
         private void ResetModKeyValues()
         {
-            this.ToggleLoftKey.Text = "Toggle Loft: " + ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
-            this.AddVolumeKey.Text = "Add Volume: " + ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
-            this.DecreaseVolumeKey.Text = "Decrease Volume: " + ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
-            this.SongTimerKey.Text = "Show Song Timer: " + ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
-            this.ReEnumerationKey.Text = "Force ReEnumeration: " + ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
-            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
+            this.ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+            this.AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+            this.DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            this.SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+            this.ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
