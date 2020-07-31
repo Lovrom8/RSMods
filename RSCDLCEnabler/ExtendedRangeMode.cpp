@@ -169,6 +169,10 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			SetColors(stringsGlow, "Glow");
 			SetColors(stringsDisabled, "Disabled");
 			SetColors(stringsText, "TextIndicator");
+			SetColors(stringsPegInTune, "PegInTune");
+			SetColors(stringsPegNotInTune, "PegOutTune");
+			SetColors(stringsBodyNorm, "BodyNorm");
+			SetColors(stringsBodyAcc, "BodyAcc");
 			//etc.
 		}
 	}
