@@ -105,12 +105,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Lib\ddc\ddc_default.cfg" />
-    <None Include="Lib\ddc\ddc_keep_all_levels.cfg" />
-    <None Include="Lib\ddc\ddc_merge_all_levels.cfg" />
-    <None Include="Lib\tools\OpenCmd.bat" />
-    <None Include="Lib\tools\packed_codebooks.bin" />
-    <None Include="Lib\tools\packed_codebooks_aoTuV_603.bin" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -151,13 +145,6 @@
   <ItemGroup>
     <None Include="Assets\LogoX256.ico" />
     <Content Include="Lib\7z.dll" />
-    <Content Include="Lib\ddc\ddc.exe" />
-    <Content Include="Lib\ddc\ddc_chords_protector.xml" />
-    <Content Include="Lib\ddc\ddc_chords_remover.xml" />
-    <Content Include="Lib\ddc\ddc_dd_remover.xml" />
-    <Content Include="Lib\ddc\ddc_default.xml" />
-    <Content Include="Lib\ddc\license.txt" />
-    <Content Include="Lib\ddc\readme.txt" />
     <Content Include="Lib\ICSharpCode.SharpZipLib.dll" />
     <Content Include="Lib\MiscUtil.dll" />
     <Content Include="Lib\NDesk.Options.dll" />
@@ -166,21 +153,9 @@
     <Content Include="Lib\Ookii.Dialogs.dll" />
     <Content Include="Lib\PSTaskDialog.dll" />
     <Content Include="Lib\RocksmithToolkitLib.dll" />
-    <Content Include="Lib\RocksmithToTabLib.dll" />
     <Content Include="Lib\SevenZipSharp.dll" />
     <Content Include="Lib\SharpConfig.dll" />
     <Content Include="Lib\tools\7za.exe" />
-    <Content Include="Lib\tools\core.jar" />
-    <Content Include="Lib\tools\CreateToolkitShortcut.exe" />
-    <Content Include="Lib\tools\nvdxt.exe" />
-    <Content Include="Lib\tools\oggCut.exe" />
-    <Content Include="Lib\tools\oggdec.exe" />
-    <Content Include="Lib\tools\oggenc.exe" />
-    <Content Include="Lib\tools\readme.txt" />
-    <Content Include="Lib\tools\revorb.exe" />
-    <Content Include="Lib\tools\topng.exe" />
-    <Content Include="Lib\tools\ww2ogg.exe" />
-    <Content Include="Lib\X360.dll" />
     <Content Include="Lib\zlib.net.dll" />
   </ItemGroup>
   <ItemGroup>
