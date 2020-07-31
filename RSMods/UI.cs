@@ -1102,7 +1102,7 @@ namespace RSMods
                 this.ExtendedRangeTuningBox.Visible = true;
                 this.ExtendedRangeTunings.Visible = true;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "true");
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "1");
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
             }
             else
             {
