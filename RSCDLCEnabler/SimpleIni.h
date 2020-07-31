@@ -192,6 +192,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma warning(disable: 26812) // Unscoped enum
+
 #ifndef INCLUDED_SimpleIni_h
 #define INCLUDED_SimpleIni_h
 

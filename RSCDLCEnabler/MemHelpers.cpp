@@ -1,4 +1,5 @@
 #include "MemHelpers.h"
+#pragma warning(disable: 4805) // Mix of byte & bool
 
 cMemHelpers MemHelpers;
 
