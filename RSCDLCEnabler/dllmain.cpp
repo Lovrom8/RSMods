@@ -83,6 +83,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				ERMode.ToggleRainbowMode();
 				std::cout << "Rainbows Are Pretty Cool" << std::endl;
 			}
+			else if (keyPressed == Settings.GetKeyBind("RemoveLyricsKey") && Settings.ReturnSettingValue("RemoveLyricsWhen") == "manual") {
+				RemoveLyrics = !RemoveLyrics;
+				std::cout << "No Karaoke For You" << std::endl;
+			}
 		}
 
 		if (debug) {
@@ -523,7 +527,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			return D3D_OK;
 		if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
 			return D3D_OK;
-		if (Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
+		if (RemoveLyrics && Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
 	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on")
@@ -752,6 +756,9 @@ unsigned WINAPI MainThread(void*) {
 			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Turn the skyline off on startup
 				toggleSkyline = true;
 			}
+
+			if (!RemoveLyrics && Settings.ReturnSettingValue("RemoveLyricsWhen") == "startup")
+				RemoveLyrics = true;
 
 			if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) // If User Is Entering Song
 			{

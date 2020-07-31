@@ -51,6 +51,7 @@
 		bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
 		bool GreenScreenWall = false; // If true, set the Greenscreen wall up. This helps call it in Lesson mode for No-Loft users (True - Black wall, False - Loft)
 		bool GuitarSpeakPresent = false; // If true, read the notes inputted and press the key combo provided. (True - On, False - Off)
+		bool RemoveLyrics = false; // If true, remove the lyrics from Learn A Song & Non-stop Play. (True - No Lyrics, False - Keep Lyrics)
 	// Menus
 		std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
 		bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?

@@ -13,6 +13,7 @@ cSettings::cSettings()
 	{"ShowSongTimerKey", "S"},
 	{"ForceReEnumerationKey", "F"},
 	{"RainbowStringsKey", "R"},
+	{"RemoveLyricsKey", "L"},
 	{"MenuToggleKey", "M"},
 	{"ForceReEnumerationEnabled", "automatic"},
 	{"ToggleLoftEnabled", "on"},
@@ -32,7 +33,8 @@ cSettings::cSettings()
 	{"ToggleLoftWhen", "manual"},
 	{"ToggleSkylineWhen", "song"},
 	{"RemoveLaneMarkersEnabled", "off"},
-	{"RemoveLyrics", "off"}
+	{"RemoveLyrics", "off"},
+	{"RemoveLyricsWhen", "manual"}
 	};
 
 	customSettings = {
@@ -244,6 +246,7 @@ void cSettings::ReadKeyBinds() {
 			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
 			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
 			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
+			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
 			// Mods Enabled / Disabled
 				{"ToggleLoftEnabled", reader.GetValue("Toggle Switches", "ToggleLoft", "on")},
 				{"AddVolumeEnabled", reader.GetValue("Toggle Switches", "AddVolume", "off")},
@@ -262,7 +265,8 @@ void cSettings::ReadKeyBinds() {
 				{"ToggleLoftWhen", reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual")},
 				{"ToggleSkylineWhen", reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song")},
 				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")},
-				{"RemoveLyrics", reader.GetValue("Toggle Switches", "Lyrics", "off")}
+				{"RemoveLyrics", reader.GetValue("Toggle Switches", "Lyrics", "off")},
+				{"RemoveLyricsWhen", reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual")}
 	};
 }
 
