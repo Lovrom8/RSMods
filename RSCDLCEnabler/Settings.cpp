@@ -1,4 +1,5 @@
 #include "Settings.h"
+#pragma warning(disable: 4996) // strcpy potentially unsafe
 
 cSettings Settings;
 

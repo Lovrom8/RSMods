@@ -1,4 +1,5 @@
 #include "CustomSongTitles.h"
+#pragma warning(disable: 4302 4172) // Typecast truncated from const _Elem* -> char | returning address of local variable: str
 
 cCustomST CustomSongTitles;
 

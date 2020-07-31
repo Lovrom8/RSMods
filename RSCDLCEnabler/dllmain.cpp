@@ -1,4 +1,5 @@
 #include "Main.h"
+#pragma warning(disable: 4838 4018 4996) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | 
 
 #if defined _DEBUG
 bool debug = true;
