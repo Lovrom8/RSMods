@@ -120,7 +120,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
-	std::cout << Settings.GetModSetting("CustomStringColors") << std::endl;
+	//std::cout << Settings.GetModSetting("CustomStringColors") << std::endl;
 	if (MemHelpers.IsExtendedRangeSong()) {
 		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
