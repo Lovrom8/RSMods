@@ -6,8 +6,8 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval;
 
@@ -26,6 +26,7 @@ namespace RSMods
                 ShowSongTimerIdentifier = "ShowSongTimerKey = ",
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
+                RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
                 // Toggle Effects (Change Names to easier naming scheme before public launch)
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
                 AddVolumeEnabledIdentifier = "AddVolume = ",
@@ -46,6 +47,7 @@ namespace RSMods
                 ToggleSkylineWhenIdentifier = "ToggleSkylineWhen = ",
                 RemoveLaneMarkersIdentifier = "LaneMarkers = ",
                 RemoveLyricsIdentifier = "Lyrics = ",
+                RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
                     String0Color_N_Identifier = "string0_N = ",
@@ -206,6 +208,19 @@ namespace RSMods
                             if (identifierToGrab == RainbowStringsIdentifier)
                             {
                                 return RainbowStringsKey;
+                            }
+                        }
+
+                        if (currentLine.Contains(RemoveLyricsKeyIdentifier))
+                        {
+                            RemoveLyricsKey = currentLine.Substring(RemoveLyricsKeyIdentifier.Length, (currentLine.Length - RemoveLyricsKeyIdentifier.Length));
+                            if (KeyConversion.VirtualKey(RemoveLyricsKey) != "")
+                            {
+                                RemoveLyricsKey = KeyConversion.VirtualKey(RemoveLyricsKey);
+                            }
+                            if (identifierToGrab == RemoveLyricsKeyIdentifier)
+                            {
+                                return RemoveLyricsKey;
                             }
                         }
                     }
@@ -503,6 +518,7 @@ namespace RSMods
                         }
 
                         if (currentLine.Contains(RemoveLyricsIdentifier))
+                        {
                             if (currentLine.Substring(RemoveLyricsIdentifier.Length, currentLine.Length - RemoveLyricsIdentifier.Length) == "on")
                             {
                                 RemoveLyricsEnabled = "on";
@@ -512,10 +528,29 @@ namespace RSMods
                                 RemoveLyricsEnabled = "off";
                             }
 
-                        if (identifierToGrab == RemoveLyricsIdentifier)
-                        {
-                            return RemoveLyricsEnabled;
+                            if (identifierToGrab == RemoveLyricsIdentifier)
+                            {
+                                return RemoveLyricsEnabled;
+                            }
                         }
+
+                        if(currentLine.Contains(RemoveLyricsWhenIdentifier))
+                        {
+                            if(currentLine.Substring(RemoveLyricsWhenIdentifier.Length, currentLine.Length - RemoveLyricsWhenIdentifier.Length) == "automatic")
+                            {
+                                RemoveLyricsWhen = "automatic";
+                            }
+                            else
+                            {
+                                RemoveLyricsWhen = "manual";
+                            }
+
+                            if(identifierToGrab == RemoveLyricsWhenIdentifier)
+                            {
+                                return RemoveLyricsWhen;
+                            }
+                        }
+                            
                     }
 
                     // String Colors (Normal {N} & Colorblind {CB})

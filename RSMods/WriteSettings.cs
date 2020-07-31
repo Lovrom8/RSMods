@@ -31,6 +31,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerIdentifier, "" }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
+                { ReadSettings.RemoveLyricsKeyIdentifier, "" }, // Remove Lyrics Key
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -53,6 +54,7 @@ namespace RSMods
                 { ReadSettings.RemoveLaneMarkersIdentifier, "off" }, // Remove Lane Markers Enabled / Disabled
                 { ReadSettings.ToggleSkylineWhenIdentifier, "song" }, // Define how or when the skyline is disabled - game startup, or in song only
                 { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
+                { ReadSettings.RemoveLyricsWhenIdentifier, "manual" } // When should we remove lyrics Manual / Automatic
             }},
             {"[String Colors]", new Dictionary<string, string> 
             {

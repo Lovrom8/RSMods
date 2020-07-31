@@ -48,7 +48,8 @@ namespace RSMods
                 "Decrease Volume",
                 "Show Song Timer",
                 "Force ReEnumeration",
-                "Rainbow Strings"});
+                "Rainbow Strings",
+                "Remove Lyrics"});
 
             // Mod Key Values
             ResetModKeyValues();
@@ -244,6 +245,15 @@ namespace RSMods
                     this.RemoveLyricsCheckbox.Checked = false;
                     this.HowToToggleLyrics.Visible = false;
                 }
+
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "automatic") // Remove Lyrics When ...
+                {
+                    this.ToggleLyricsRadio.Checked = true;
+                }
+                else
+                {
+                    this.ToggleLyricsManualRadio.Checked = true;
+                }
             }
 
             // Initialize Default String Colors
@@ -294,6 +304,10 @@ namespace RSMods
             if (this.ModList.GetSelected(5))
             {
                 this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+            }
+            if (this.ModList.GetSelected(6))
+            {
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
             }
         }
 
@@ -377,6 +391,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier) }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings
+                { ReadSettings.RemoveLyricsKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier) }, // Remove Lyrics Key
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -399,6 +414,7 @@ namespace RSMods
                 { ReadSettings.RemoveLaneMarkersIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) }, // Remove Lane Markers Enabled / Disabled
                 { ReadSettings.ToggleSkylineWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) }, // Define how or when the skyline is disabled - game startup, or in song only
                 { ReadSettings.RemoveLyricsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) }, // Remove Song Lyrics Enabled / Disabled
+                { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -1003,6 +1019,10 @@ namespace RSMods
                 {
                     SaveChanges(ReadSettings.RainbowStringsIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
                 }
+                if (this.ModList.GetSelected(6) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
+                {
+                    SaveChanges(ReadSettings.RemoveLyricsKeyIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                }
                 this.NewAssignmentTxtBox.Text = "";
             }
             ResetModKeyValues();
@@ -1256,7 +1276,8 @@ namespace RSMods
                 SaveChanges(ReadSettings.ForceReEnumerationIdentifier, "");
             else if (this.ModList.GetSelected(5)) // Rainbow Strings Key
                 SaveChanges(ReadSettings.RainbowStringsIdentifier, "");
-
+            else if (this.ModList.GetSelected(6)) // Remove Lyrics Key
+                SaveChanges(ReadSettings.RemoveLyricsKeyIdentifier, "");
             ResetModKeyValues();
         }
 
@@ -1268,6 +1289,7 @@ namespace RSMods
             this.SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
             this.ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             this.RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+            this.RemoveLyricsKeyLabel.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1475,11 +1497,6 @@ namespace RSMods
             {
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
-        }
-
-        private void GroupSetAndForget_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -73,6 +73,7 @@
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
+            this.RemoveLyricsKeyLabel = new System.Windows.Forms.Label();
             this.ClearKeyBind = new System.Windows.Forms.Button();
             this.ResetToDefaultButton = new System.Windows.Forms.Button();
             this.String0ColorButton = new System.Windows.Forms.Button();
@@ -218,7 +219,7 @@
             // ToggleLoftKey
             // 
             this.ToggleLoftKey.AutoSize = true;
-            this.ToggleLoftKey.Location = new System.Drawing.Point(464, 38);
+            this.ToggleLoftKey.Location = new System.Drawing.Point(464, 21);
             this.ToggleLoftKey.Name = "ToggleLoftKey";
             this.ToggleLoftKey.Size = new System.Drawing.Size(0, 13);
             this.ToggleLoftKey.TabIndex = 14;
@@ -226,7 +227,7 @@
             // AddVolumeKey
             // 
             this.AddVolumeKey.AutoSize = true;
-            this.AddVolumeKey.Location = new System.Drawing.Point(464, 61);
+            this.AddVolumeKey.Location = new System.Drawing.Point(464, 44);
             this.AddVolumeKey.Name = "AddVolumeKey";
             this.AddVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.AddVolumeKey.TabIndex = 15;
@@ -234,7 +235,7 @@
             // DecreaseVolumeKey
             // 
             this.DecreaseVolumeKey.AutoSize = true;
-            this.DecreaseVolumeKey.Location = new System.Drawing.Point(464, 84);
+            this.DecreaseVolumeKey.Location = new System.Drawing.Point(464, 67);
             this.DecreaseVolumeKey.Name = "DecreaseVolumeKey";
             this.DecreaseVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.DecreaseVolumeKey.TabIndex = 16;
@@ -242,7 +243,7 @@
             // SongTimerKey
             // 
             this.SongTimerKey.AutoSize = true;
-            this.SongTimerKey.Location = new System.Drawing.Point(464, 107);
+            this.SongTimerKey.Location = new System.Drawing.Point(464, 90);
             this.SongTimerKey.Name = "SongTimerKey";
             this.SongTimerKey.Size = new System.Drawing.Size(0, 13);
             this.SongTimerKey.TabIndex = 17;
@@ -250,7 +251,7 @@
             // ReEnumerationKey
             // 
             this.ReEnumerationKey.AutoSize = true;
-            this.ReEnumerationKey.Location = new System.Drawing.Point(464, 130);
+            this.ReEnumerationKey.Location = new System.Drawing.Point(464, 113);
             this.ReEnumerationKey.Name = "ReEnumerationKey";
             this.ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
             this.ReEnumerationKey.TabIndex = 18;
@@ -319,7 +320,7 @@
             // RainbowStringsAssignment
             // 
             this.RainbowStringsAssignment.AutoSize = true;
-            this.RainbowStringsAssignment.Location = new System.Drawing.Point(464, 152);
+            this.RainbowStringsAssignment.Location = new System.Drawing.Point(464, 135);
             this.RainbowStringsAssignment.Name = "RainbowStringsAssignment";
             this.RainbowStringsAssignment.Size = new System.Drawing.Size(0, 13);
             this.RainbowStringsAssignment.TabIndex = 28;
@@ -645,6 +646,7 @@
             // 
             // KeybindingsBox
             // 
+            this.KeybindingsBox.Controls.Add(this.RemoveLyricsKeyLabel);
             this.KeybindingsBox.Controls.Add(this.ClearKeyBind);
             this.KeybindingsBox.Controls.Add(this.NewAssignment);
             this.KeybindingsBox.Controls.Add(this.NewAssignmentTxtBox);
@@ -661,6 +663,14 @@
             this.KeybindingsBox.TabIndex = 52;
             this.KeybindingsBox.TabStop = false;
             this.KeybindingsBox.Text = "Key Bindings";
+            // 
+            // RemoveLyricsKeyLabel
+            // 
+            this.RemoveLyricsKeyLabel.AutoSize = true;
+            this.RemoveLyricsKeyLabel.Location = new System.Drawing.Point(464, 156);
+            this.RemoveLyricsKeyLabel.Name = "RemoveLyricsKeyLabel";
+            this.RemoveLyricsKeyLabel.Size = new System.Drawing.Size(0, 13);
+            this.RemoveLyricsKeyLabel.TabIndex = 30;
             // 
             // ClearKeyBind
             // 
@@ -878,7 +888,6 @@
             this.GroupSetAndForget.TabIndex = 68;
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
-            this.GroupSetAndForget.Enter += new System.EventHandler(this.GroupSetAndForget_Enter);
             // 
             // RbTone2
             // 
@@ -1472,6 +1481,7 @@
         private System.Windows.Forms.GroupBox HowToToggleLyrics;
         private System.Windows.Forms.RadioButton ToggleLyricsManualRadio;
         private System.Windows.Forms.RadioButton ToggleLyricsRadio;
+        private System.Windows.Forms.Label RemoveLyricsKeyLabel;
     }
 }
 
