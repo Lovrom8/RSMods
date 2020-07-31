@@ -1268,6 +1268,7 @@
             this.ToggleSkylineSongRadio.TabStop = true;
             this.ToggleSkylineSongRadio.Text = "Only When In A Song";
             this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
+            this.ToggleSkylineSongRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineSongRadio_CheckedChanged);
             // 
             // ToggleSkylineStartupRadio
             // 
@@ -1279,6 +1280,7 @@
             this.ToggleSkylineStartupRadio.TabStop = true;
             this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
+            this.ToggleSkylineStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineStartupRadio_CheckedChanged);
             // 
             // HowToToggleLyrics
             // 
