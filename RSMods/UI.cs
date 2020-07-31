@@ -1443,6 +1443,8 @@ namespace RSMods
 
             ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
+            RepackCachePsarc();
+
             MessageBox.Show("Successfully changed default tones!", "Success");
         }
 
