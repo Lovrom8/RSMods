@@ -90,16 +90,13 @@
             this.ChangeStringColorsBox = new System.Windows.Forms.GroupBox();
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
-            this.ToggleSkylineBox = new System.Windows.Forms.GroupBox();
-            this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
-            this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.GroupSetAndForget = new System.Windows.Forms.GroupBox();
             this.RbTone2 = new System.Windows.Forms.RadioButton();
             this.RbTone1 = new System.Windows.Forms.RadioButton();
             this.RbTone0 = new System.Windows.Forms.RadioButton();
             this.BtnLoadTonesFromProfiles = new System.Windows.Forms.Button();
             this.ListProfileTones = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.ChangeTonesHeader = new System.Windows.Forms.Label();
             this.BtnSetDefaultTones = new System.Windows.Forms.Button();
             this.BtnRemoveTempFolders = new System.Windows.Forms.Button();
             this.TuningNoteNameLabel = new System.Windows.Forms.Label();
@@ -126,6 +123,9 @@
             this.BtnRemoveTuning = new System.Windows.Forms.Button();
             this.ListTunings = new System.Windows.Forms.ListBox();
             this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.ToggleSkylineBox = new System.Windows.Forms.GroupBox();
+            this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -134,7 +134,6 @@
             this.SongListBox.SuspendLayout();
             this.KeybindingsBox.SuspendLayout();
             this.ChangeStringColorsBox.SuspendLayout();
-            this.ToggleSkylineBox.SuspendLayout();
             this.GroupSetAndForget.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NupString0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupTuningIndex)).BeginInit();
@@ -143,6 +142,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.NupString4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupString3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupString2)).BeginInit();
+            this.ToggleSkylineBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -501,7 +501,7 @@
             this.HowToEnumerateBox.Controls.Add(this.EnumerateEveryXMS);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationAutomaticRadio);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
-            this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 111);
+            this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 174);
             this.HowToEnumerateBox.Name = "HowToEnumerateBox";
             this.HowToEnumerateBox.Size = new System.Drawing.Size(293, 77);
             this.HowToEnumerateBox.TabIndex = 47;
@@ -835,42 +835,6 @@
             this.DefaultStringColorsRadio.UseVisualStyleBackColor = true;
             this.DefaultStringColorsRadio.CheckedChanged += new System.EventHandler(this.DefaultStringColorsRadio_CheckedChanged);
             // 
-            // ToggleSkylineBox
-            // 
-            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineSongRadio);
-            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineStartupRadio);
-            this.ToggleSkylineBox.Location = new System.Drawing.Point(1015, 194);
-            this.ToggleSkylineBox.Name = "ToggleSkylineBox";
-            this.ToggleSkylineBox.Size = new System.Drawing.Size(293, 68);
-            this.ToggleSkylineBox.TabIndex = 66;
-            this.ToggleSkylineBox.TabStop = false;
-            this.ToggleSkylineBox.Text = "Toggle Skyline Off When:";
-            this.ToggleSkylineBox.Visible = false;
-            // 
-            // ToggleSkylineSongRadio
-            // 
-            this.ToggleSkylineSongRadio.AutoSize = true;
-            this.ToggleSkylineSongRadio.Location = new System.Drawing.Point(16, 42);
-            this.ToggleSkylineSongRadio.Name = "ToggleSkylineSongRadio";
-            this.ToggleSkylineSongRadio.Size = new System.Drawing.Size(128, 17);
-            this.ToggleSkylineSongRadio.TabIndex = 46;
-            this.ToggleSkylineSongRadio.TabStop = true;
-            this.ToggleSkylineSongRadio.Text = "Only When In A Song";
-            this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
-            this.ToggleSkylineSongRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineSongRadio_CheckedChanged);
-            // 
-            // ToggleSkylineStartupRadio
-            // 
-            this.ToggleSkylineStartupRadio.AutoSize = true;
-            this.ToggleSkylineStartupRadio.Location = new System.Drawing.Point(16, 19);
-            this.ToggleSkylineStartupRadio.Name = "ToggleSkylineStartupRadio";
-            this.ToggleSkylineStartupRadio.Size = new System.Drawing.Size(180, 17);
-            this.ToggleSkylineStartupRadio.TabIndex = 44;
-            this.ToggleSkylineStartupRadio.TabStop = true;
-            this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
-            this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
-            this.ToggleSkylineStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineStartupRadio_CheckedChanged);
-            // 
             // GroupSetAndForget
             // 
             this.GroupSetAndForget.Controls.Add(this.RbTone2);
@@ -878,7 +842,7 @@
             this.GroupSetAndForget.Controls.Add(this.RbTone0);
             this.GroupSetAndForget.Controls.Add(this.BtnLoadTonesFromProfiles);
             this.GroupSetAndForget.Controls.Add(this.ListProfileTones);
-            this.GroupSetAndForget.Controls.Add(this.label1);
+            this.GroupSetAndForget.Controls.Add(this.ChangeTonesHeader);
             this.GroupSetAndForget.Controls.Add(this.BtnSetDefaultTones);
             this.GroupSetAndForget.Controls.Add(this.BtnRemoveTempFolders);
             this.GroupSetAndForget.Controls.Add(this.TuningNoteNameLabel);
@@ -904,17 +868,18 @@
             this.GroupSetAndForget.Controls.Add(this.BtnAddTuning);
             this.GroupSetAndForget.Controls.Add(this.BtnRemoveTuning);
             this.GroupSetAndForget.Controls.Add(this.ListTunings);
-            this.GroupSetAndForget.Location = new System.Drawing.Point(80, 517);
+            this.GroupSetAndForget.Location = new System.Drawing.Point(80, 475);
             this.GroupSetAndForget.Name = "GroupSetAndForget";
-            this.GroupSetAndForget.Size = new System.Drawing.Size(1131, 303);
+            this.GroupSetAndForget.Size = new System.Drawing.Size(1131, 345);
             this.GroupSetAndForget.TabIndex = 68;
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
+            this.GroupSetAndForget.Enter += new System.EventHandler(this.GroupSetAndForget_Enter);
             // 
             // RbTone2
             // 
             this.RbTone2.AutoSize = true;
-            this.RbTone2.Location = new System.Drawing.Point(397, 211);
+            this.RbTone2.Location = new System.Drawing.Point(398, 225);
             this.RbTone2.Name = "RbTone2";
             this.RbTone2.Size = new System.Drawing.Size(256, 17);
             this.RbTone2.TabIndex = 102;
@@ -924,7 +889,7 @@
             // RbTone1
             // 
             this.RbTone1.AutoSize = true;
-            this.RbTone1.Location = new System.Drawing.Point(397, 165);
+            this.RbTone1.Location = new System.Drawing.Point(398, 179);
             this.RbTone1.Name = "RbTone1";
             this.RbTone1.Size = new System.Drawing.Size(257, 17);
             this.RbTone1.TabIndex = 101;
@@ -935,7 +900,7 @@
             // 
             this.RbTone0.AutoSize = true;
             this.RbTone0.Checked = true;
-            this.RbTone0.Location = new System.Drawing.Point(397, 188);
+            this.RbTone0.Location = new System.Drawing.Point(398, 202);
             this.RbTone0.Name = "RbTone0";
             this.RbTone0.Size = new System.Drawing.Size(269, 17);
             this.RbTone0.TabIndex = 100;
@@ -945,7 +910,7 @@
             // 
             // BtnLoadTonesFromProfiles
             // 
-            this.BtnLoadTonesFromProfiles.Location = new System.Drawing.Point(4, 165);
+            this.BtnLoadTonesFromProfiles.Location = new System.Drawing.Point(5, 179);
             this.BtnLoadTonesFromProfiles.Name = "BtnLoadTonesFromProfiles";
             this.BtnLoadTonesFromProfiles.Size = new System.Drawing.Size(187, 35);
             this.BtnLoadTonesFromProfiles.TabIndex = 99;
@@ -956,22 +921,23 @@
             // ListProfileTones
             // 
             this.ListProfileTones.FormattingEnabled = true;
-            this.ListProfileTones.Location = new System.Drawing.Point(200, 165);
+            this.ListProfileTones.Location = new System.Drawing.Point(201, 179);
             this.ListProfileTones.Name = "ListProfileTones";
             this.ListProfileTones.Size = new System.Drawing.Size(184, 134);
             this.ListProfileTones.TabIndex = 98;
             // 
-            // label1
+            // ChangeTonesHeader
             // 
-            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label1.Location = new System.Drawing.Point(2, 157);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1123, 5);
-            this.label1.TabIndex = 97;
+            this.ChangeTonesHeader.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.ChangeTonesHeader.Location = new System.Drawing.Point(2, 157);
+            this.ChangeTonesHeader.Name = "ChangeTonesHeader";
+            this.ChangeTonesHeader.Size = new System.Drawing.Size(1123, 19);
+            this.ChangeTonesHeader.TabIndex = 97;
+            this.ChangeTonesHeader.Text = "Change Default Tones";
             // 
             // BtnSetDefaultTones
             // 
-            this.BtnSetDefaultTones.Location = new System.Drawing.Point(393, 262);
+            this.BtnSetDefaultTones.Location = new System.Drawing.Point(394, 276);
             this.BtnSetDefaultTones.Name = "BtnSetDefaultTones";
             this.BtnSetDefaultTones.Size = new System.Drawing.Size(187, 35);
             this.BtnSetDefaultTones.TabIndex = 96;
@@ -1276,6 +1242,40 @@
             this.ToolTip.ReshowDelay = 500;
             this.ToolTip.ShowAlways = true;
             // 
+            // ToggleSkylineBox
+            // 
+            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineSongRadio);
+            this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineStartupRadio);
+            this.ToggleSkylineBox.Location = new System.Drawing.Point(1015, 106);
+            this.ToggleSkylineBox.Name = "ToggleSkylineBox";
+            this.ToggleSkylineBox.Size = new System.Drawing.Size(293, 68);
+            this.ToggleSkylineBox.TabIndex = 69;
+            this.ToggleSkylineBox.TabStop = false;
+            this.ToggleSkylineBox.Text = "Toggle Skyline Off When:";
+            this.ToggleSkylineBox.Visible = false;
+            // 
+            // ToggleSkylineSongRadio
+            // 
+            this.ToggleSkylineSongRadio.AutoSize = true;
+            this.ToggleSkylineSongRadio.Location = new System.Drawing.Point(16, 42);
+            this.ToggleSkylineSongRadio.Name = "ToggleSkylineSongRadio";
+            this.ToggleSkylineSongRadio.Size = new System.Drawing.Size(128, 17);
+            this.ToggleSkylineSongRadio.TabIndex = 46;
+            this.ToggleSkylineSongRadio.TabStop = true;
+            this.ToggleSkylineSongRadio.Text = "Only When In A Song";
+            this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
+            // 
+            // ToggleSkylineStartupRadio
+            // 
+            this.ToggleSkylineStartupRadio.AutoSize = true;
+            this.ToggleSkylineStartupRadio.Location = new System.Drawing.Point(16, 19);
+            this.ToggleSkylineStartupRadio.Name = "ToggleSkylineStartupRadio";
+            this.ToggleSkylineStartupRadio.Size = new System.Drawing.Size(180, 17);
+            this.ToggleSkylineStartupRadio.TabIndex = 44;
+            this.ToggleSkylineStartupRadio.TabStop = true;
+            this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
+            this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1283,8 +1283,8 @@
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1334, 832);
-            this.Controls.Add(this.GroupSetAndForget);
             this.Controls.Add(this.ToggleSkylineBox);
+            this.Controls.Add(this.GroupSetAndForget);
             this.Controls.Add(this.ChangeStringColorsBox);
             this.Controls.Add(this.KeybindingsBox);
             this.Controls.Add(this.SongListBox);
@@ -1312,8 +1312,6 @@
             this.KeybindingsBox.PerformLayout();
             this.ChangeStringColorsBox.ResumeLayout(false);
             this.ChangeStringColorsBox.PerformLayout();
-            this.ToggleSkylineBox.ResumeLayout(false);
-            this.ToggleSkylineBox.PerformLayout();
             this.GroupSetAndForget.ResumeLayout(false);
             this.GroupSetAndForget.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NupString0)).EndInit();
@@ -1323,6 +1321,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.NupString4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupString3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupString2)).EndInit();
+            this.ToggleSkylineBox.ResumeLayout(false);
+            this.ToggleSkylineBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1388,9 +1388,6 @@
         private System.Windows.Forms.NumericUpDown EnumerateEveryXMS;
         private System.Windows.Forms.Label CheckEveryXmsText;
         private System.Windows.Forms.CheckBox CustomColorsCheckbox;
-        private System.Windows.Forms.GroupBox ToggleSkylineBox;
-        private System.Windows.Forms.RadioButton ToggleSkylineSongRadio;
-        private System.Windows.Forms.RadioButton ToggleSkylineStartupRadio;
         private System.Windows.Forms.GroupBox GroupSetAndForget;
         private System.Windows.Forms.Button BtnAddFastLoadMod;
         private System.Windows.Forms.Button BtnUnpackCacheAgain;
@@ -1422,10 +1419,13 @@
         private System.Windows.Forms.Button BtnSetDefaultTones;
         private System.Windows.Forms.Button BtnLoadTonesFromProfiles;
         private System.Windows.Forms.ListBox ListProfileTones;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label ChangeTonesHeader;
         private System.Windows.Forms.RadioButton RbTone2;
         private System.Windows.Forms.RadioButton RbTone1;
         private System.Windows.Forms.RadioButton RbTone0;
+        private System.Windows.Forms.GroupBox ToggleSkylineBox;
+        private System.Windows.Forms.RadioButton ToggleSkylineSongRadio;
+        private System.Windows.Forms.RadioButton ToggleSkylineStartupRadio;
     }
 }
 

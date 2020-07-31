@@ -1350,10 +1350,10 @@ namespace RSMods
             toolTip1.SetToolTip(this.RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
             toolTip1.SetToolTip(this.SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
             toolTip1.SetToolTip(this.KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications. You need to press ENTER after setting teh key for it to be saved");
-            toolTip1.SetToolTip(this.BtnAddCustomTunings, "Adds named definitions for some common Custom Tunings.");
+            toolTip1.SetToolTip(this.BtnAddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
             toolTip1.SetToolTip(this.BtnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
             toolTip1.SetToolTip(this.BtnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
-            toolTip1.SetToolTip(this.ListProfileTones, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
+            toolTip1.SetToolTip(this.ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
             toolTip1.SetToolTip(this.ResetToDefaultButton, "Resets all RSMods values to defaults."); // button beside tone selection
             toolTip1.SetToolTip(this.BtnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
             toolTip1.SetToolTip(this.BtnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
@@ -1362,6 +1362,22 @@ namespace RSMods
             toolTip1.SetToolTip(this.RbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
             toolTip1.SetToolTip(this.RbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
             toolTip1.SetToolTip(this.BtnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
+            toolTip1.SetToolTip(this.ListTunings, "Shows the list of tuning definitions currently in Rocksmith.");
+            toolTip1.SetToolTip(this.NupString0, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.NupString1, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.NupString2, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.NupString3, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.NupString4, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.NupString5, "Set the offset for each string.");
+            toolTip1.SetToolTip(this.BtnAddTuning, "Adds the tuning as defined above.");
+            toolTip1.SetToolTip(this.BtnRemoveTuning, "Removes the highlighted tuning.");
+            toolTip1.SetToolTip(this.BtnSaveTuningChanges, "Saves the tuning list to Rocksmith.");
+            toolTip1.SetToolTip(this.BtnUnpackCacheAgain, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
+            toolTip1.SetToolTip(this.BtnRemoveTempFolders, "Removes the temporary files used by RSMods.");
+            toolTip1.SetToolTip(this.ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here.");
+            toolTip1.SetToolTip(this.HowToEnumerateBox, "Choose to Enumerate on key press, or automatically scan for changes every X seconds and start enumeration if a new file has been added.");
+            toolTip1.SetToolTip(this.ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
+            toolTip1.SetToolTip(this.ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
@@ -1477,6 +1493,11 @@ namespace RSMods
             {
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
+        }
+
+        private void GroupSetAndForget_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
