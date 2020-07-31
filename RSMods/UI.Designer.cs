@@ -126,6 +126,9 @@
             this.ToggleSkylineBox = new System.Windows.Forms.GroupBox();
             this.ToggleSkylineSongRadio = new System.Windows.Forms.RadioButton();
             this.ToggleSkylineStartupRadio = new System.Windows.Forms.RadioButton();
+            this.HowToToggleLyrics = new System.Windows.Forms.GroupBox();
+            this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
+            this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -143,6 +146,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.NupString3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NupString2)).BeginInit();
             this.ToggleSkylineBox.SuspendLayout();
+            this.HowToToggleLyrics.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -203,7 +207,7 @@
             // SongTimerCheckbox
             // 
             this.SongTimerCheckbox.AutoSize = true;
-            this.SongTimerCheckbox.Location = new System.Drawing.Point(166, 22);
+            this.SongTimerCheckbox.Location = new System.Drawing.Point(131, 38);
             this.SongTimerCheckbox.Name = "SongTimerCheckbox";
             this.SongTimerCheckbox.Size = new System.Drawing.Size(110, 17);
             this.SongTimerCheckbox.TabIndex = 10;
@@ -304,7 +308,7 @@
             // ExtendedRangeEnabled
             // 
             this.ExtendedRangeEnabled.AutoSize = true;
-            this.ExtendedRangeEnabled.Location = new System.Drawing.Point(166, 68);
+            this.ExtendedRangeEnabled.Location = new System.Drawing.Point(131, 84);
             this.ExtendedRangeEnabled.Name = "ExtendedRangeEnabled";
             this.ExtendedRangeEnabled.Size = new System.Drawing.Size(146, 17);
             this.ExtendedRangeEnabled.TabIndex = 27;
@@ -335,7 +339,7 @@
             "F#",
             "F",
             "Octave Down"});
-            this.ExtendedRangeTunings.Location = new System.Drawing.Point(63, 21);
+            this.ExtendedRangeTunings.Location = new System.Drawing.Point(66, 33);
             this.ExtendedRangeTunings.Name = "ExtendedRangeTunings";
             this.ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.ExtendedRangeTunings.TabIndex = 29;
@@ -356,7 +360,7 @@
             // DiscoModeCheckbox
             // 
             this.DiscoModeCheckbox.AutoSize = true;
-            this.DiscoModeCheckbox.Location = new System.Drawing.Point(166, 137);
+            this.DiscoModeCheckbox.Location = new System.Drawing.Point(131, 153);
             this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
             this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
             this.DiscoModeCheckbox.TabIndex = 33;
@@ -378,7 +382,7 @@
             // RemoveSkylineCheckbox
             // 
             this.RemoveSkylineCheckbox.AutoSize = true;
-            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(166, 114);
+            this.RemoveSkylineCheckbox.Location = new System.Drawing.Point(131, 130);
             this.RemoveSkylineCheckbox.Name = "RemoveSkylineCheckbox";
             this.RemoveSkylineCheckbox.Size = new System.Drawing.Size(103, 17);
             this.RemoveSkylineCheckbox.TabIndex = 36;
@@ -400,7 +404,7 @@
             // AutoLoadProfileCheckbox
             // 
             this.AutoLoadProfileCheckbox.AutoSize = true;
-            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(166, 159);
+            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(131, 175);
             this.AutoLoadProfileCheckbox.Name = "AutoLoadProfileCheckbox";
             this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(151, 17);
             this.AutoLoadProfileCheckbox.TabIndex = 38;
@@ -560,9 +564,9 @@
             // ExtendedRangeTuningBox
             // 
             this.ExtendedRangeTuningBox.Controls.Add(this.ExtendedRangeTunings);
-            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(1015, 268);
+            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(785, 24);
             this.ExtendedRangeTuningBox.Name = "ExtendedRangeTuningBox";
-            this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(214, 190);
+            this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(214, 196);
             this.ExtendedRangeTuningBox.TabIndex = 49;
             this.ExtendedRangeTuningBox.TabStop = false;
             this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
@@ -589,7 +593,7 @@
             this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
             this.EnabledModsBox.Location = new System.Drawing.Point(487, 20);
             this.EnabledModsBox.Name = "EnabledModsBox";
-            this.EnabledModsBox.Size = new System.Drawing.Size(486, 182);
+            this.EnabledModsBox.Size = new System.Drawing.Size(292, 200);
             this.EnabledModsBox.TabIndex = 50;
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
@@ -597,7 +601,7 @@
             // RemoveLyricsCheckbox
             // 
             this.RemoveLyricsCheckbox.AutoSize = true;
-            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(321, 22);
+            this.RemoveLyricsCheckbox.Location = new System.Drawing.Point(131, 15);
             this.RemoveLyricsCheckbox.Name = "RemoveLyricsCheckbox";
             this.RemoveLyricsCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveLyricsCheckbox.TabIndex = 45;
@@ -608,7 +612,7 @@
             // CustomColorsCheckbox
             // 
             this.CustomColorsCheckbox.AutoSize = true;
-            this.CustomColorsCheckbox.Location = new System.Drawing.Point(166, 91);
+            this.CustomColorsCheckbox.Location = new System.Drawing.Point(131, 107);
             this.CustomColorsCheckbox.Name = "CustomColorsCheckbox";
             this.CustomColorsCheckbox.Size = new System.Drawing.Size(123, 17);
             this.CustomColorsCheckbox.TabIndex = 44;
@@ -619,7 +623,7 @@
             // RemoveLineMarkersCheckBox
             // 
             this.RemoveLineMarkersCheckBox.AutoSize = true;
-            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(166, 45);
+            this.RemoveLineMarkersCheckBox.Location = new System.Drawing.Point(131, 61);
             this.RemoveLineMarkersCheckBox.Name = "RemoveLineMarkersCheckBox";
             this.RemoveLineMarkersCheckBox.Size = new System.Drawing.Size(130, 17);
             this.RemoveLineMarkersCheckBox.TabIndex = 43;
@@ -634,7 +638,7 @@
             this.SongListBox.Controls.Add(this.Songlist);
             this.SongListBox.Location = new System.Drawing.Point(6, 20);
             this.SongListBox.Name = "SongListBox";
-            this.SongListBox.Size = new System.Drawing.Size(459, 182);
+            this.SongListBox.Size = new System.Drawing.Size(459, 200);
             this.SongListBox.TabIndex = 51;
             this.SongListBox.TabStop = false;
             this.SongListBox.Text = "Song Lists";
@@ -1276,6 +1280,40 @@
             this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
             this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
             // 
+            // HowToToggleLyrics
+            // 
+            this.HowToToggleLyrics.Controls.Add(this.ToggleLyricsManualRadio);
+            this.HowToToggleLyrics.Controls.Add(this.ToggleLyricsRadio);
+            this.HowToToggleLyrics.Location = new System.Drawing.Point(1015, 257);
+            this.HowToToggleLyrics.Name = "HowToToggleLyrics";
+            this.HowToToggleLyrics.Size = new System.Drawing.Size(293, 68);
+            this.HowToToggleLyrics.TabIndex = 70;
+            this.HowToToggleLyrics.TabStop = false;
+            this.HowToToggleLyrics.Text = "Toggle Lyrics Off When:";
+            this.HowToToggleLyrics.Visible = false;
+            // 
+            // ToggleLyricsManualRadio
+            // 
+            this.ToggleLyricsManualRadio.AutoSize = true;
+            this.ToggleLyricsManualRadio.Location = new System.Drawing.Point(16, 42);
+            this.ToggleLyricsManualRadio.Name = "ToggleLyricsManualRadio";
+            this.ToggleLyricsManualRadio.Size = new System.Drawing.Size(161, 17);
+            this.ToggleLyricsManualRadio.TabIndex = 46;
+            this.ToggleLyricsManualRadio.TabStop = true;
+            this.ToggleLyricsManualRadio.Text = "Lyrics Off Via Key Press Only";
+            this.ToggleLyricsManualRadio.UseVisualStyleBackColor = true;
+            // 
+            // ToggleLyricsRadio
+            // 
+            this.ToggleLyricsRadio.AutoSize = true;
+            this.ToggleLyricsRadio.Location = new System.Drawing.Point(16, 19);
+            this.ToggleLyricsRadio.Name = "ToggleLyricsRadio";
+            this.ToggleLyricsRadio.Size = new System.Drawing.Size(105, 17);
+            this.ToggleLyricsRadio.TabIndex = 44;
+            this.ToggleLyricsRadio.TabStop = true;
+            this.ToggleLyricsRadio.Text = "Lyrics Always Off";
+            this.ToggleLyricsRadio.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1283,6 +1321,7 @@
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1334, 832);
+            this.Controls.Add(this.HowToToggleLyrics);
             this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.GroupSetAndForget);
             this.Controls.Add(this.ChangeStringColorsBox);
@@ -1323,6 +1362,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.NupString2)).EndInit();
             this.ToggleSkylineBox.ResumeLayout(false);
             this.ToggleSkylineBox.PerformLayout();
+            this.HowToToggleLyrics.ResumeLayout(false);
+            this.HowToToggleLyrics.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1426,6 +1467,9 @@
         private System.Windows.Forms.GroupBox ToggleSkylineBox;
         private System.Windows.Forms.RadioButton ToggleSkylineSongRadio;
         private System.Windows.Forms.RadioButton ToggleSkylineStartupRadio;
+        private System.Windows.Forms.GroupBox HowToToggleLyrics;
+        private System.Windows.Forms.RadioButton ToggleLyricsManualRadio;
+        private System.Windows.Forms.RadioButton ToggleLyricsRadio;
     }
 }
 

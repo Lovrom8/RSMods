@@ -238,10 +238,12 @@ namespace RSMods
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
                 {
                     this.RemoveLyricsCheckbox.Checked = true;
+                    this.HowToToggleLyrics.Visible = true;
                 }
                 else
                 {
                     this.RemoveLyricsCheckbox.Checked = false;
+                    this.HowToToggleLyrics.Visible = false;
                 }
             }
 
@@ -1272,9 +1274,20 @@ namespace RSMods
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (RemoveLyricsCheckbox.Checked)
+            {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "on");
+                this.ToggleLyricsRadio.Visible = true;
+                this.ToggleLyricsManualRadio.Visible = true;
+                this.HowToToggleLyrics.Visible = true;
+            }
+
             else
+            {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "off");
+                this.ToggleLyricsRadio.Visible = false;
+                this.ToggleLyricsManualRadio.Visible = false;
+                this.HowToToggleLyrics.Visible = false;
+            }
         }
 
        
