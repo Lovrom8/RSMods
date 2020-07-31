@@ -85,7 +85,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}
 			else if (keyPressed == Settings.GetKeyBind("RemoveLyricsKey") && Settings.ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				RemoveLyrics = !RemoveLyrics;
-				std::cout << "No Karaoke For You" << std::endl;
+				if (RemoveLyrics)
+					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when off and "Karaoke For You" when on.
+				std::cout << "Karaoke For You" << std::endl;
 			}
 		}
 
