@@ -13,7 +13,6 @@ using SevenZip;
 using RocksmithToolkitLib.DLCPackage;
 using System.Collections.Generic;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
-using RocksmithToolkitLib.DLCPackage.Manifest.Tone;
 
 
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
