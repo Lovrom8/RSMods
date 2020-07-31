@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+#pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
+#pragma warning disable IDE0029 // "Null Check can be simplified"... Yeah we know, but it works so why should we mess with it.
+
 namespace RSMods.Util
 {
     public static class GenUtil

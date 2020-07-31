@@ -10,6 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+#pragma warning disable IDE0060 // Unused Parameter (May be used in the future)
+#pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
+#pragma warning disable IDE0028 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
+
 namespace RSMods.Util
 {
     // Originally written by cozy1
