@@ -272,27 +272,27 @@ namespace RSMods
         {
             if (this.ModList.GetSelected(0))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
             }
             if (this.ModList.GetSelected(1))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
             }
             if (this.ModList.GetSelected(2))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
             }
             if (this.ModList.GetSelected(3))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
             }
             if (this.ModList.GetSelected(4))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             }
             if (this.ModList.GetSelected(5))
             {
-                this.NewAssignmentTxtBox.Text = ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
+                this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
             }
         }
 
@@ -686,7 +686,6 @@ namespace RSMods
 
         private void AddLocalizationForTuningEntries()
         {
-            int currentTuningIndex = 69000; // Cos we can ;)
             try
             {
                 string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
@@ -701,19 +700,19 @@ namespace RSMods
                         string index = tuning.Item1;
 
                         if (index == "0") // I.e. if it does not contain an index, give it one
-                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", currentTuningIndex++, currentUIName); // Append its index in front
+                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", index, currentUIName); // Append its index in front
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
-                            MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
-                            /* sw.Write(currentTuningIndex);
-                             for (int i = 0; i < 7; i++) //TODO: maybe add some actual translations for standard/drop tunings
+                             //MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
+                             sw.Write(index);
+                             for (int i = 0; i < 7; i++)
                              {
                                  sw.Write(',');
-                                 sw.Write(currentUIName);
+                                 sw.Write(tuning.Item2);
                              }
 
-                             sw.Write(sw.NewLine);*/
+                             sw.Write(sw.NewLine);
                         }
                     }
                 }
@@ -1262,12 +1261,12 @@ namespace RSMods
 
         private void ResetModKeyValues()
         {
-            this.ToggleLoftKey.Text = "Toggle Loft: " + ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier);
-            this.AddVolumeKey.Text = "Add Volume: " + ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier);
-            this.DecreaseVolumeKey.Text = "Decrease Volume: " + ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier);
-            this.SongTimerKey.Text = "Show Song Timer: " + ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier);
-            this.ReEnumerationKey.Text = "Force ReEnumeration: " + ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier);
-            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier);
+            this.ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+            this.AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+            this.DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            this.SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+            this.ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
