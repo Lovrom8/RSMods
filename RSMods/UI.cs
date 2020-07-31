@@ -686,7 +686,6 @@ namespace RSMods
 
         private void AddLocalizationForTuningEntries()
         {
-            int currentTuningIndex = 69000; // Cos we can ;)
             try
             {
                 string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
@@ -701,19 +700,19 @@ namespace RSMods
                         string index = tuning.Item1;
 
                         if (index == "0") // I.e. if it does not contain an index, give it one
-                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", currentTuningIndex++, currentUIName); // Append its index in front
+                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", index, currentUIName); // Append its index in front
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
                             MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
-                            /* sw.Write(currentTuningIndex);
+                             sw.Write(index);
                              for (int i = 0; i < 7; i++) //TODO: maybe add some actual translations for standard/drop tunings
                              {
                                  sw.Write(',');
-                                 sw.Write(currentUIName);
+                                 sw.Write(tuning.Item2);
                              }
 
-                             sw.Write(sw.NewLine);*/
+                             sw.Write(sw.NewLine);
                         }
                     }
                 }
