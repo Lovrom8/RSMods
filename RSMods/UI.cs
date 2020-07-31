@@ -706,9 +706,9 @@ namespace RSMods
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
-                            MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
+                             //MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
                              sw.Write(index);
-                             for (int i = 0; i < 7; i++) //TODO: maybe add some actual translations for standard/drop tunings
+                             for (int i = 0; i < 7; i++)
                              {
                                  sw.Write(',');
                                  sw.Write(tuning.Item2);

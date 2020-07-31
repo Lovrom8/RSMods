@@ -30,8 +30,9 @@ namespace RSMods.Data
         public static string IntroGFX_InternalPath { get { return Path.Combine("gfxassets", "views", "introsequence.gfx"); } }
         public static string IntroGFX_CustomPath { get { return Path.Combine(CustomModsFolder, "introsequence.gfx"); } }
         public static string CacheBackupPath { get { return Path.Combine(RSFolder, "cache.bak"); } }
-        public static string ExtendedMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui.menu.pillar.mission.database.json"); } }
-        public static string ExtendedMenuJson_InternalPath { get { return Path.Combine("manifests", "ui.menu.pillar.mission.database.json"); } }
+        public static string ExtendedMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui_menu_pillar_mission.database.json"); } }
+        public static string ExtendedMenuJson_InternalPath { get { return Path.Combine("manifests", "ui_menu_pillar_mission.database.json"); } }
+                                                                                                     
         public static string MainMenuJson_CustomPath { get { return Path.Combine(CustomModsFolder, "ui_menu_pillar_main.database.json"); } }
         public static string MainMenuJson_InternalPath { get { return Path.Combine("manifests", "ui_menu_pillar_main.database.json"); } }
         public static string ToneManager_InternalPath { get { return Path.Combine("manifests", "tonemanager.database.json"); } }
