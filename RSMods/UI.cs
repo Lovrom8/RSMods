@@ -145,7 +145,7 @@ namespace RSMods
                 }
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
                 {
-                    this.customColorsCheckbox.Checked = true;
+                    this.CustomColorsCheckbox.Checked = true;
                     this.ChangeStringColorsBox.Visible = true;
                 }
 
@@ -353,24 +353,6 @@ namespace RSMods
             newForm.Show();
         }
 
-
-        private void ImportPriorSettings(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)
-        {
-            using (StreamWriter sw = File.CreateText(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-            {
-                foreach (string section in DictionaryToWrite.Keys)
-                {
-                    sw.WriteLine(section);
-                    foreach (KeyValuePair<string, string> entry in DictionaryToWrite[section])
-                    {
-                        sw.WriteLine(entry.Key + entry.Value);
-                    }
-                }
-            }
-        }
-
-
-
         public static Dictionary<string, Dictionary<string, string>> priorSettings = new Dictionary<string, Dictionary<string, string>>()
         {
             // Section                           mod   default
@@ -457,7 +439,7 @@ namespace RSMods
                 }
             WriteSettings.WriteINI(priorSettings);
         }
-      
+
         private void ChangeString0ColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
@@ -735,12 +717,12 @@ namespace RSMods
 
         private void FillUI()
         {
-            listTunings.Items.Clear();
+            ListTunings.Items.Clear();
             tuningsCollection = LoadTuningsCollection();
 
-            listTunings.Items.Add("<New>");
+            ListTunings.Items.Add("<New>");
             foreach (var key in tuningsCollection.Keys)
-                listTunings.Items.Add(key);
+                ListTunings.Items.Add(key);
         }
 
         private TuningDefinitionInfo GetCurrentTuningInfo()
@@ -752,7 +734,7 @@ namespace RSMods
                 strings[$"string{strIdx}"] = (int)((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value;
 
             tuningDefinition.Strings = strings;
-            tuningDefinition.UIName = String.Format("$[{0}]{1}", nupTuningIndex.Value.ToString(), txtUIName.Text);
+            tuningDefinition.UIName = String.Format("$[{0}]{1}", NupTuningIndex.Value.ToString(), TxtUIName.Text);
 
             return tuningDefinition;
         }
@@ -789,7 +771,7 @@ namespace RSMods
             }
         }
 
-        private void btnRestoreDefaults_Click(object sender, EventArgs e)
+        private void BtnRestoreDefaults_Click(object sender, EventArgs e)
         {
             try
             {
@@ -809,7 +791,7 @@ namespace RSMods
             }
         }
 
-        private void btnUnpackCacheAgain_Click(object sender, EventArgs e)
+        private void BtnUnpackCacheAgain_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(Constants.CachePcPath))
                 return;
@@ -819,7 +801,7 @@ namespace RSMods
             UnpackCachePsarc();
         }
 
-        private void btnAddCustomTunings_Click(object sender, EventArgs e)
+        private void BtnAddCustomTunings_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
                 UnpackCachePsarc();
@@ -832,7 +814,7 @@ namespace RSMods
             RepackCachePsarc();
         }
 
-        private void btnAddFastLoadMod_Click(object sender, EventArgs e)
+        private void BtnAddFastLoadMod_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(Constants.CachePcPath))
                 UnpackCachePsarc();
@@ -867,37 +849,37 @@ namespace RSMods
             FillUI();
         }
 
-        private void listTunings_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listTunings.SelectedItem == null)
+            if (ListTunings.SelectedItem == null)
                 return;
 
-            string selectedItem = listTunings.SelectedItem.ToString();
+            string selectedItem = ListTunings.SelectedItem.ToString();
 
             if (selectedItem == "<New>")
             {
-                txtInternalName.Text = "";
-                nupTuningIndex.Value = 0;
-                txtUIName.Text = "";
+                TxtInternalName.Text = "";
+                NupTuningIndex.Value = 0;
+                TxtUIName.Text = "";
                 return;
             }
 
             var selectedTuning = tuningsCollection[selectedItem];
             var uiName = SplitTuningUIName(selectedTuning.UIName);
 
-            txtInternalName.Text = selectedItem;
-            nupTuningIndex.Value = Convert.ToInt32(uiName.Item1);
-            txtUIName.Text = uiName.Item2;
+            TxtInternalName.Text = selectedItem;
+            NupTuningIndex.Value = Convert.ToInt32(uiName.Item1);
+            TxtUIName.Text = uiName.Item2;
 
             for (int strIdx = 0; strIdx < 6; strIdx++) // If you are lazy and don't want to list each string separately, just do this sexy two-liner
                 ((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
         }
 
-        private void btnSaveTuningChanges_Click(object sender, EventArgs e)
+        private void BtnSaveTuningChanges_Click(object sender, EventArgs e)
         {
-            if (listTunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
+            if (ListTunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
             {
-                string selectedItem = listTunings.SelectedItem.ToString();
+                string selectedItem = ListTunings.SelectedItem.ToString();
 
                 if (selectedItem != "<New>")
                     tuningsCollection[selectedItem] = GetCurrentTuningInfo();
@@ -906,36 +888,36 @@ namespace RSMods
             SaveTuningsJSON();
         }
 
-        private void btnRemoveTuning_Click(object sender, EventArgs e)
+        private void BtnRemoveTuning_Click(object sender, EventArgs e)
         {
-            if (listTunings.SelectedItem == null)
+            if (ListTunings.SelectedItem == null)
                 return;
 
-            string selectedItem = listTunings.SelectedItem.ToString();
+            string selectedItem = ListTunings.SelectedItem.ToString();
 
             if (selectedItem == "<New>")
                 return;
 
             tuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
-            listTunings.Items.Remove(selectedItem);
+            ListTunings.Items.Remove(selectedItem);
         }
 
-        private void btnAddTuning_Click(object sender, EventArgs e)
+        private void BtnAddTuning_Click(object sender, EventArgs e)
         {
-            if (listTunings.SelectedItem.ToString() != "<New>")
+            if (ListTunings.SelectedItem.ToString() != "<New>")
                 return;
 
             var currTuning = GetCurrentTuningInfo();
-            string internalName = txtInternalName.Text;
+            string internalName = TxtInternalName.Text;
 
             if (!tuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
             {
                 tuningsCollection.Add(internalName, currTuning);
-                listTunings.Items.Add(internalName);
+                ListTunings.Items.Add(internalName);
             }
         }
 
-        private void btnAddCustomMenu_Click(object sender, EventArgs e)
+        private void BtnAddCustomMenu_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(Constants.CachePcPath))
                 UnpackCachePsarc();
@@ -1124,18 +1106,18 @@ namespace RSMods
             }
         }
 
-        private void customColorsCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void CustomColorsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (customColorsCheckbox.Checked)
+            if (CustomColorsCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                this.customColorsCheckbox.Checked = true;
+                this.CustomColorsCheckbox.Checked = true;
                 this.ChangeStringColorsBox.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
-                this.customColorsCheckbox.Checked = false;
+                this.CustomColorsCheckbox.Checked = false;
                 this.ChangeStringColorsBox.Visible = false;
             }
         }
@@ -1354,7 +1336,7 @@ namespace RSMods
             toolTip1.SetToolTip(this.SongTimerCheckbox, "Experimental - Intent is to show a box with your timestamp position through the song.");
             toolTip1.SetToolTip(this.DecreaseVolumeCheckbox, "Experimental");
             toolTip1.SetToolTip(this.ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
-            toolTip1.SetToolTip(this.customColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
+            toolTip1.SetToolTip(this.CustomColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
             toolTip1.SetToolTip(this.RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS. Use in conjunction with No Loft for a cleaner UI. Options for always off,only off when in a song, or only when toggled by key press.");
             toolTip1.SetToolTip(this.DiscoModeCheckbox, "Experimental.");
             toolTip1.SetToolTip(this.AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu. Lets you auto load the last used profile without needing to interact with the game at all.");
@@ -1363,18 +1345,18 @@ namespace RSMods
             toolTip1.SetToolTip(this.RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
             toolTip1.SetToolTip(this.SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
             toolTip1.SetToolTip(this.KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications. You need to press ENTER after setting teh key for it to be saved");
-            toolTip1.SetToolTip(this.btnAddCustomTunings, "Adds named definitions for some common Custom Tunings.");
-            toolTip1.SetToolTip(this.btnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
-            toolTip1.SetToolTip(this.btnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
-            toolTip1.SetToolTip(this.listProfileTones, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
+            toolTip1.SetToolTip(this.BtnAddCustomTunings, "Adds named definitions for some common Custom Tunings.");
+            toolTip1.SetToolTip(this.BtnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
+            toolTip1.SetToolTip(this.BtnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
+            toolTip1.SetToolTip(this.ListProfileTones, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
             toolTip1.SetToolTip(this.ResetToDefaultButton, "Resets all RSMods values to defaults."); // button beside tone selection
-            toolTip1.SetToolTip(this.btnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
-            toolTip1.SetToolTip(this.btnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
-            toolTip1.SetToolTip(this.listProfileTones, "Step2, highlight a tone name.");
-            toolTip1.SetToolTip(this.rbTone0, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.rbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.rbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.btnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
+            toolTip1.SetToolTip(this.BtnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
+            toolTip1.SetToolTip(this.BtnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
+            toolTip1.SetToolTip(this.ListProfileTones, "Step2, highlight a tone name.");
+            toolTip1.SetToolTip(this.RbTone0, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.RbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.RbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip1.SetToolTip(this.BtnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
@@ -1385,7 +1367,7 @@ namespace RSMods
             }
         }
 
-        private void btnRemoveTempFolders_Click(object sender, EventArgs e)
+        private void BtnRemoveTempFolders_Click(object sender, EventArgs e)
         {
             ZipUtilities.DeleteDirectory(Constants.WorkFolder);
             ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
@@ -1424,9 +1406,9 @@ namespace RSMods
             }
         }*/
 
-        private void btnSetDefaultTones_Click(object sender, EventArgs e)
+        private void BtnSetDefaultTones_Click(object sender, EventArgs e)
         {
-            if (listProfileTones.SelectedItem == null)
+            if (ListProfileTones.SelectedItem == null)
                 return;
 
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
@@ -1436,12 +1418,12 @@ namespace RSMods
             var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
             var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
 
-            var selectedTone = TonesFromAllProfiles[listProfileTones.SelectedItem.ToString()];
-            if (rbTone0.Checked)
+            var selectedTone = TonesFromAllProfiles[ListProfileTones.SelectedItem.ToString()];
+            if (RbTone0.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][0]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if(rbTone1.Checked)
+            else if(RbTone1.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][1]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if(rbTone2.Checked)
+            else if(RbTone2.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][2]["GearList"] = JObject.FromObject(selectedTone.GearList);
 
             try
@@ -1459,7 +1441,7 @@ namespace RSMods
             MessageBox.Show("Successfully changed default tones!", "Success");
         }
 
-        private void btnLoadTonesFromProfiles_Click(object sender, EventArgs e)
+        private void BtnLoadTonesFromProfiles_Click(object sender, EventArgs e)
         {
             string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
             try
@@ -1472,12 +1454,12 @@ namespace RSMods
                     var profiles = Directory.EnumerateFiles(userprofileFolder.FullName, "*_PRFLDB", SearchOption.AllDirectories).ToList();
 
                     TonesFromAllProfiles.Clear();
-                    listProfileTones.Items.Clear();
+                    ListProfileTones.Items.Clear();
 
                     foreach (string profile in profiles)
                         foreach (var tone in Tone2014.Import(profile))
                         {
-                            listProfileTones.Items.Add(tone.Name);
+                            ListProfileTones.Items.Add(tone.Name);
                             TonesFromAllProfiles.Add(tone.Name, tone);
                         }
                 }
