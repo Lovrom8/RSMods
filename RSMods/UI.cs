@@ -462,6 +462,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String0Color.BackColor = colorDialog.Color;
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
                     SaveChanges(ReadSettings.String0Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
@@ -490,6 +491,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String1Color.BackColor = colorDialog.Color;
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
                     SaveChanges(ReadSettings.String1Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
@@ -518,6 +520,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String2Color.BackColor = colorDialog.Color;
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
                     SaveChanges(ReadSettings.String2Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
@@ -546,6 +549,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String3Color.BackColor = colorDialog.Color;
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
                     SaveChanges(ReadSettings.String3Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
@@ -574,6 +578,7 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String4Color.BackColor = colorDialog.Color;
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {
                     SaveChanges(ReadSettings.String4Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
@@ -601,6 +606,7 @@ namespace RSMods
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 String5Color.BackColor = colorDialog.Color;
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
                 {

@@ -813,7 +813,7 @@
             // ColorBlindStringColorsRadio
             // 
             this.ColorBlindStringColorsRadio.AutoSize = true;
-            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(152, 6);
+            this.ColorBlindStringColorsRadio.Location = new System.Drawing.Point(138, 14);
             this.ColorBlindStringColorsRadio.Name = "ColorBlindStringColorsRadio";
             this.ColorBlindStringColorsRadio.Size = new System.Drawing.Size(138, 43);
             this.ColorBlindStringColorsRadio.TabIndex = 66;
@@ -826,7 +826,7 @@
             // 
             this.DefaultStringColorsRadio.AutoSize = true;
             this.DefaultStringColorsRadio.Checked = true;
-            this.DefaultStringColorsRadio.Location = new System.Drawing.Point(26, 19);
+            this.DefaultStringColorsRadio.Location = new System.Drawing.Point(26, 27);
             this.DefaultStringColorsRadio.Name = "DefaultStringColorsRadio";
             this.DefaultStringColorsRadio.Size = new System.Drawing.Size(91, 17);
             this.DefaultStringColorsRadio.TabIndex = 65;
