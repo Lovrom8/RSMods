@@ -1237,50 +1237,8 @@ namespace RSMods
 
         private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.ExtendedRangeTunings.GetSelected(0))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-2");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(1))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-3");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(2))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-4");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(3))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-5");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(4))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-6");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(5))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-7");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(6))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-8");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(7))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-9");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(8))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-10");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(9))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-11");
-            }
-            else if (this.ExtendedRangeTunings.GetSelected(10))
-            {
-                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, "-12");
-            }
+            
+            SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((this.ExtendedRangeTunings.SelectedIndex * -1) - 2));
         }
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
