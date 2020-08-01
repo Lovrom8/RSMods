@@ -812,9 +812,11 @@ void Initialize(void) {
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
-		AllocConsole();
-		freopen("CONIN$", "r", stdin);
-		freopen("CONOUT$", "w", stdout);
+		if (debug) {
+			AllocConsole();
+			freopen("CONIN$", "r", stdin);
+			freopen("CONOUT$", "w", stdout);
+		}
 		DisableThreadLibraryCalls(hModule);
 
 		InitProxy();
