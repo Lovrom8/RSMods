@@ -50,12 +50,26 @@ byte cGuitarSpeak::GetCurrentNote() {
 
 
 void cGuitarSpeak::TimerTick() {
-	// Debug Commands
-	//strKeyList[40] = "ENTER"; Only press this when note 40 (E2) is played.
+		bool debugMode = true;
+		/*
+		Template:
+		strKeyList[noteID] = (std::string)"X-Variable" // Where "X-Variable" is a string in keyPressArray[].
+		*/
+		
+	strKeyList[Settings.GetModSetting("Delete")] = (std::string)"DELETE";
+	strKeyList[Settings.GetModSetting("Space")] = (std::string)"SPACE";
+	strKeyList[Settings.GetModSetting("Enter")] = (std::string)"ENTER";
+	strKeyList[Settings.GetModSetting("Tab")] = (std::string)"TAB";
+	strKeyList[Settings.GetModSetting("PageUp")] = (std::string)"PGUP";
+	strKeyList[Settings.GetModSetting("PageDown")] = (std::string)"PGDN";
+	strKeyList[Settings.GetModSetting("UpArrow")] = (std::string)"UP";
+	strKeyList[Settings.GetModSetting("DownArrow")] = (std::string)"DOWN";
+	strKeyList[Settings.GetModSetting("Escape")] = (std::string)"ESCAPE";
+	strKeyList[Settings.GetModSetting("CloseGuitarSpeak")] = (std::string)"CLOSE";
+	
 
-	bool debugMode = true;
 
-	// Main Function
+
 	while (true) {
 		Sleep(timer);
 		/*if (debugMode)
@@ -105,7 +119,7 @@ void cGuitarSpeak::TimerTick() {
 		}
 		newNote = false;
 
-		if (sendKeystrokesToRS2014 && strSend != "") { // Are we sending a keystroke RIGHT now?
+		if (sendKeystrokesToRS2014 && strSend != "") { // We sending a keystroke right?
 			if (debugMode)
 				std::cout << "Command Found!" << std::endl;
 
@@ -113,12 +127,16 @@ void cGuitarSpeak::TimerTick() {
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_DELETE, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DELETE, 0);
+				if (debugMode)
+					std::cout << "Delete was pressed!" << std::endl;
 			}
 
 			else if (strSend == keyPressArray[1]) { // Space
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_SPACE, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_SPACE, 0);
+				if (debugMode)
+					std::cout << "Space was pressed!" << std::endl;
 			}
 				
 			else if (strSend == keyPressArray[2]) { // Enter
@@ -132,37 +150,52 @@ void cGuitarSpeak::TimerTick() {
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_TAB, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_TAB, 0);
+				if (debugMode)
+					std::cout << "Tab was pressed!" << std::endl;
 			}
 
 			else if (strSend == keyPressArray[4]) { // Page UP
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_PRIOR, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_PRIOR, 0);
+				if (debugMode)
+					std::cout << "Page Up was pressed!" << std::endl;
 			}
 			else if (strSend == keyPressArray[5]) { // Page DOWN
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_NEXT, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_NEXT, 0);
+				if (debugMode)
+					std::cout << "Page Down was pressed!" << std::endl;
 			}
 				
 			else if (strSend == keyPressArray[6]) { // Up Arrow
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_UP, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_UP, 0);
+				if (debugMode)
+					std::cout << "Up Arrow was pressed!" << std::endl;
 			}
 			else if (strSend == keyPressArray[7]) { // Down Arrow
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_DOWN, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DOWN, 0);
+				if (debugMode)
+					std::cout << "Down Arrow was pressed!" << std::endl;
 			}
 
 			else if (strSend == keyPressArray[8]) { // Escape
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_ESCAPE, 0);
 				Sleep(30);
 				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_ESCAPE, 0);
+				if (debugMode)
+					std::cout << "Escape was pressed!" << std::endl;
 			}
-			else if (strSend == keyPressArray[9]) // User wants to stop using GuitarSpeak mod for the current time.
+			else if (strSend == keyPressArray[9]) { // User wants to stop using GuitarSpeak mod for the current time.
 				sendKeystrokesToRS2014 = false;
+				if (debugMode)
+					std::cout << "CLOSE!!!" << std::endl;
+			}
 		}
 		strSend = ""; // Reset Mapping || Prevents spam
 	}

@@ -42,6 +42,7 @@ cSettings::cSettings()
 		{"CheckForNewSongsInterval", 5000}
 	};
 
+
 	cSettings::keyMap = { //talk about taking the easy way out ;)
 		{ "VK_LBUTTON" , 0x01 },
 		{ "VK_RBUTTON" , 0x02 },
@@ -274,6 +275,7 @@ int cSettings::GetModSetting(std::string name) {
 	return customSettings[name];
 }
 
+
 std::string cSettings::ReturnSettingValue(std::string name) {
 	return keyBinds[name];
 }
@@ -288,7 +290,17 @@ void cSettings::ReadModSettings() {
 	cSettings::customSettings = {
 		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
-		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)} //0 = default, 1 = Zag, 2 = custom colors
+		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
+		{"Delete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
+		{"Space", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
+		{"Enter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
+		{"Tab", reader.GetLongValue("Guitar Speak", "GuitarSpeakTabWhen", 0)},
+		{"PageUp", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGUPWhen", 0)},
+		{"PageDown", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGDNWhen", 0)},
+		{"UpArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeakUPWhen", 0)},
+		{"DownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
+		{"Escape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
+		{"CloseGuitarSpeak", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
 	};
 }
 
