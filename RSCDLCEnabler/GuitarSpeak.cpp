@@ -49,12 +49,9 @@ byte cGuitarSpeak::GetCurrentNote() {
 
 
 
-void cGuitarSpeak::TimerTick() {
-		bool debugMode = true;
-		/*
-		Template:
-		strKeyList[noteID] = (std::string)"X-Variable" // Where "X-Variable" is a string in keyPressArray[].
-		*/
+bool cGuitarSpeak::TimerTick() {
+
+	bool debugMode = true;
 		
 	strKeyList[Settings.GetModSetting("Delete")] = (std::string)"DELETE";
 	strKeyList[Settings.GetModSetting("Space")] = (std::string)"SPACE";
@@ -74,6 +71,19 @@ void cGuitarSpeak::TimerTick() {
 		Sleep(timer);
 		/*if (debugMode)
 			std::cout << "Tick" << std::endl;*/
+
+		std::string currentMenu = MemHelpers.GetCurrentMenu();
+
+
+
+
+
+
+		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) || std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
+			std::cout << "Entered Bad Menu!" << std::endl;
+			return false;
+		}
+
 
 		int mem = GetCurrentNote();
 
@@ -199,6 +209,7 @@ void cGuitarSpeak::TimerTick() {
 		}
 		strSend = ""; // Reset Mapping || Prevents spam
 	}
+	return false;
 }
 std::string* noteNames = new std::string[12]{ "A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#" };
 
@@ -209,5 +220,3 @@ void cGuitarSpeak::ForceNewSettings(std::string noteName, std::string keyPress) 
 		}
 	}
 }
-
-// ToDo: Convert Line 405-543 (checkbox-> strKey) to enable the mod. Needs some work done with ImGUI.

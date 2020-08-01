@@ -799,7 +799,8 @@ unsigned WINAPI MainThread(void*) {
 
 				if(!GuitarSpeakPresent) {
 					GuitarSpeakPresent = true;
-					GuitarSpeak.TimerTick();
+					if (!GuitarSpeak.TimerTick()) // If we are in a menu where we don't want to read bad values
+						GuitarSpeakPresent = false;
 				}
 
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
@@ -810,7 +811,7 @@ unsigned WINAPI MainThread(void*) {
 
 			}
 
-			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
+			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
 			}

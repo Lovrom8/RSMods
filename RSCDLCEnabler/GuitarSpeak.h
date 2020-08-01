@@ -1,18 +1,24 @@
 #pragma once
 
-#include "windows.h"
-#include "MemUtil.h"
-#include "Offsets.h"
 #include <vector>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include "windows.h"
+
+
+#include "MemHelpers.h"
+#include "Offsets.h"
+#include "MemUtil.h"
 #include "Settings.h"
+
+#include "DirectX/d3dx9.h"
+#include "D3D.h"
 
 class cGuitarSpeak {
 public:
 	byte GetCurrentNote();
-	void TimerTick();
+	bool TimerTick();
 	void ForceNewSettings(std::string noteName, std::string keyPress);
 	std::string* keyPressArray = new std::string[10]{ "DELETE", "SPACE", "ENTER", "TAB", "PGUP", "PGDN", "UP", "DOWN", "ESCAPE", "CLOSE" };
 	std::string* noteNames = new std::string[12]{ "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
