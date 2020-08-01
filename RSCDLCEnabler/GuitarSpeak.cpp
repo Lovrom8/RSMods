@@ -7,40 +7,41 @@ Modified / Translated from the Visual Basic code provided by UKLooney
 Open source here: https://cdn.discordapp.com/attachments/711634414240530462/735574443035721798/G2RS_v0.3_source.zip
 */
 
-//int cGuitarSpeak::NoteToInt(char* note, int octave){
-//	int notePlayed = 0;
-//	octave = octave - 2; // The first full set of notes is at the 2nd octave so we do the math as if they were our zero-point.
-//
-//	if (note == "C")
-//		notePlayed = 36;
-//	else if (note == "Db" || note == "C#")
-//		notePlayed = 37;
-//	else if (note == "D")
-//		notePlayed = 38;
-//	else if (note == "Eb" || note == "D#")
-//		notePlayed = 39;
-//	else if (note == "E")
-//		notePlayed = 40;
-//	else if (note == "F")
-//		notePlayed = 41;
-//	else if (note == "Gb" || note == "F#")
-//		notePlayed = 42;
-//	else if (note == "G")
-//		notePlayed = 43;
-//	else if (note == "Ab" || note == "G#")
-//		notePlayed = 44;
-//	else if (note == "A")
-//		notePlayed = 45;
-//	else if (note == "Bb" || note == "A#")
-//		notePlayed = 46;
-//	else if (note == "B")
-//		notePlayed = 47;
-//
-//	if (notePlayed != 0x0)
-//		notePlayed = notePlayed + (octave * 12); // Ex. If note is G5 then 43 + ((5-2) * 12) = 79, so our end note is 79, not 43;
-//
-//	return notePlayed;
-//}
+/* Moved over to the RSMods GUI to make INI reading easier with ints instead of parasing out the int (octave) out of the char* note.
+int cGuitarSpeak::NoteToInt(char* note, int octave){
+	int notePlayed = 0;
+	octave = octave - 2; // The first full set of notes is at the 2nd octave so we do the math as if they were our zero-point.
+
+	if (note == "C")
+		notePlayed = 36;
+	else if (note == "Db" || note == "C#")
+		notePlayed = 37;
+	else if (note == "D")
+		notePlayed = 38;
+	else if (note == "Eb" || note == "D#")
+		notePlayed = 39;
+	else if (note == "E")
+		notePlayed = 40;
+	else if (note == "F")
+		notePlayed = 41;
+	else if (note == "Gb" || note == "F#")
+		notePlayed = 42;
+	else if (note == "G")
+		notePlayed = 43;
+	else if (note == "Ab" || note == "G#")
+		notePlayed = 44;
+	else if (note == "A")
+		notePlayed = 45;
+	else if (note == "Bb" || note == "A#")
+		notePlayed = 46;
+	else if (note == "B")
+		notePlayed = 47;
+
+	if (notePlayed != 0x0)
+		notePlayed = notePlayed + (octave * 12); // Ex. If note is G5 then 43 + ((5-2) * 12) = 79, so our end note is 79, not 43;
+
+	return notePlayed;
+}*/
 
 byte cGuitarSpeak::GetCurrentNote() {
 	return *(byte*)MemUtil.FindDMAAddy(Offsets.ptr_guitarSpeak, Offsets.ptr_guitarSpeakOffets);
@@ -50,7 +51,7 @@ byte cGuitarSpeak::GetCurrentNote() {
 
 void cGuitarSpeak::TimerTick() {
 	// Debug Commands
-	strKeyList[40] = "{ENTER}";
+	//strKeyList[40] = "ENTER"; Only press this when note 40 (E2) is played.
 
 	bool debugMode = true;
 
@@ -59,13 +60,12 @@ void cGuitarSpeak::TimerTick() {
 		Sleep(timer);
 		/*if (debugMode)
 			std::cout << "Tick" << std::endl;*/
-		strKeyList[7] = "{ENTER}";
 
 		int mem = GetCurrentNote();
 
 
 		if (debugMode && mem != 0xFF)
-			std::cout << "Memory Pointers: " << mem << std::endl;
+			std::cout << "Note: " << mem << std::endl;
 
 		lastNoteBuffer = currentNoteBuffer;
 		currentNoteBuffer = mem;

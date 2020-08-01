@@ -11,7 +11,6 @@
 
 class cGuitarSpeak {
 public:
-	int NoteToInt(char* note, int octave);
 	byte GetCurrentNote();
 	void TimerTick();
 	void ForceNewSettings(std::string noteName, std::string keyPress);
@@ -24,7 +23,7 @@ private:
 	int timer = 50; // Milliseconds | Original value of 50ms
 	bool sendKeystrokesToRS2014 = true;
 	bool newNote = false;
-	std::string* strKeyList = new std::string[96]; // 12 notes in an octave, 8 octaves spanned.
+	std::string* strKeyList = new std::string[96]; // 12 notes in an octave, 8 octaves spanned (-1 <-> 6)
 	std::string strSend;
 };
 

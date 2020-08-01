@@ -797,10 +797,10 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = true;
 				}
 
-				/*if(!GuitarSpeakPresent) {
+				if(!GuitarSpeakPresent) {
 					GuitarSpeakPresent = true;
 					GuitarSpeak.TimerTick();
-				}*/
+				}
 
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 
