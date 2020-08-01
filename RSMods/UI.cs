@@ -254,6 +254,17 @@ namespace RSMods
                 {
                     this.ToggleLyricsManualRadio.Checked = true;
                 }
+
+                if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
+                {
+                    this.GuitarSpeakEnableCheckbox.Checked = true;
+                    this.GuitarSpeakBox.Visible = true;
+                }
+                else
+                {
+                    this.GuitarSpeakEnableCheckbox.Checked = false;
+                    this.GuitarSpeakBox.Visible = false;
+                }
             }
 
             // Initialize Default String Colors
@@ -415,6 +426,7 @@ namespace RSMods
                 { ReadSettings.ToggleSkylineWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) }, // Define how or when the skyline is disabled - game startup, or in song only
                 { ReadSettings.RemoveLyricsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) }, // Remove Song Lyrics Enabled / Disabled
                 { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
+                { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -1560,5 +1572,21 @@ namespace RSMods
             {"Escape", ReadSettings.GuitarSpeakESCIdentifier },
             {"Close Guitar Speak", ReadSettings.GuitarSpeakCloseIdentifier }
         };
+
+        private void GuitarSpeakEnableCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(GuitarSpeakEnableCheckbox.Checked)
+            {
+                this.GuitarSpeakEnableCheckbox.Checked = true;
+                this.GuitarSpeakBox.Visible = true;
+                SaveChanges(ReadSettings.GuitarSpeakIdentifier, "on");
+            }
+            else
+            {
+                this.GuitarSpeakEnableCheckbox.Checked = false;
+                this.GuitarSpeakBox.Visible = false;
+                SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
+            }
+        }
     }
 }

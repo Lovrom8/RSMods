@@ -54,7 +54,8 @@ namespace RSMods
                 { ReadSettings.RemoveLaneMarkersIdentifier, "off" }, // Remove Lane Markers Enabled / Disabled
                 { ReadSettings.ToggleSkylineWhenIdentifier, "song" }, // Define how or when the skyline is disabled - game startup, or in song only
                 { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
-                { ReadSettings.RemoveLyricsWhenIdentifier, "manual" } // When should we remove lyrics Manual / Automatic
+                { ReadSettings.RemoveLyricsWhenIdentifier, "manual" }, // When should we remove lyrics Manual / Automatic
+                { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

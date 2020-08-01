@@ -130,7 +130,7 @@
             this.HowToToggleLyrics = new System.Windows.Forms.GroupBox();
             this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
-            this.GuitarSpeak = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakBox = new System.Windows.Forms.GroupBox();
             this.GuitarSpeakSaveButton = new System.Windows.Forms.Button();
             this.GuitarSpeakKeyLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakOctaveLabel = new System.Windows.Forms.Label();
@@ -138,6 +138,7 @@
             this.GuitarSpeakKeypress = new System.Windows.Forms.ListBox();
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
+            this.GuitarSpeakEnableCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -156,7 +157,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.NupString2)).BeginInit();
             this.ToggleSkylineBox.SuspendLayout();
             this.HowToToggleLyrics.SuspendLayout();
-            this.GuitarSpeak.SuspendLayout();
+            this.GuitarSpeakBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -180,7 +181,7 @@
             // ToggleLoftCheckbox
             // 
             this.ToggleLoftCheckbox.AutoSize = true;
-            this.ToggleLoftCheckbox.Location = new System.Drawing.Point(11, 22);
+            this.ToggleLoftCheckbox.Location = new System.Drawing.Point(11, 15);
             this.ToggleLoftCheckbox.Name = "ToggleLoftCheckbox";
             this.ToggleLoftCheckbox.Size = new System.Drawing.Size(80, 17);
             this.ToggleLoftCheckbox.TabIndex = 6;
@@ -307,7 +308,7 @@
             // RainbowStringsEnabled
             // 
             this.RainbowStringsEnabled.AutoSize = true;
-            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 68);
+            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 61);
             this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
             this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
             this.RainbowStringsEnabled.TabIndex = 26;
@@ -359,7 +360,7 @@
             // ForceEnumerationCheckbox
             // 
             this.ForceEnumerationCheckbox.AutoSize = true;
-            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(11, 137);
+            this.ForceEnumerationCheckbox.Location = new System.Drawing.Point(11, 130);
             this.ForceEnumerationCheckbox.Name = "ForceEnumerationCheckbox";
             this.ForceEnumerationCheckbox.Size = new System.Drawing.Size(115, 17);
             this.ForceEnumerationCheckbox.TabIndex = 31;
@@ -381,7 +382,7 @@
             // HeadstockCheckbox
             // 
             this.HeadstockCheckbox.AutoSize = true;
-            this.HeadstockCheckbox.Location = new System.Drawing.Point(11, 91);
+            this.HeadstockCheckbox.Location = new System.Drawing.Point(11, 84);
             this.HeadstockCheckbox.Name = "HeadstockCheckbox";
             this.HeadstockCheckbox.Size = new System.Drawing.Size(121, 17);
             this.HeadstockCheckbox.TabIndex = 34;
@@ -403,7 +404,7 @@
             // GreenScreenWallCheckbox
             // 
             this.GreenScreenWallCheckbox.AutoSize = true;
-            this.GreenScreenWallCheckbox.Location = new System.Drawing.Point(11, 114);
+            this.GreenScreenWallCheckbox.Location = new System.Drawing.Point(11, 107);
             this.GreenScreenWallCheckbox.Name = "GreenScreenWallCheckbox";
             this.GreenScreenWallCheckbox.Size = new System.Drawing.Size(111, 17);
             this.GreenScreenWallCheckbox.TabIndex = 37;
@@ -425,7 +426,7 @@
             // FretlessModeCheckbox
             // 
             this.FretlessModeCheckbox.AutoSize = true;
-            this.FretlessModeCheckbox.Location = new System.Drawing.Point(11, 160);
+            this.FretlessModeCheckbox.Location = new System.Drawing.Point(11, 153);
             this.FretlessModeCheckbox.Name = "FretlessModeCheckbox";
             this.FretlessModeCheckbox.Size = new System.Drawing.Size(92, 17);
             this.FretlessModeCheckbox.TabIndex = 41;
@@ -436,7 +437,7 @@
             // RemoveInlaysCheckbox
             // 
             this.RemoveInlaysCheckbox.AutoSize = true;
-            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(11, 45);
+            this.RemoveInlaysCheckbox.Location = new System.Drawing.Point(11, 38);
             this.RemoveInlaysCheckbox.Name = "RemoveInlaysCheckbox";
             this.RemoveInlaysCheckbox.Size = new System.Drawing.Size(96, 17);
             this.RemoveInlaysCheckbox.TabIndex = 42;
@@ -584,6 +585,7 @@
             // 
             // EnabledModsBox
             // 
+            this.EnabledModsBox.Controls.Add(this.GuitarSpeakEnableCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveLyricsCheckbox);
             this.EnabledModsBox.Controls.Add(this.CustomColorsCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveLineMarkersCheckBox);
@@ -1336,21 +1338,22 @@
             this.ToggleLyricsRadio.UseVisualStyleBackColor = true;
             this.ToggleLyricsRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsRadio_CheckedChanged);
             // 
-            // GuitarSpeak
+            // GuitarSpeakBox
             // 
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakSaveButton);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakKeyLabel);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakOctaveLabel);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakNoteLabel);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakKeypress);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakOctave);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakNote);
-            this.GuitarSpeak.Location = new System.Drawing.Point(1017, 335);
-            this.GuitarSpeak.Name = "GuitarSpeak";
-            this.GuitarSpeak.Size = new System.Drawing.Size(291, 175);
-            this.GuitarSpeak.TabIndex = 71;
-            this.GuitarSpeak.TabStop = false;
-            this.GuitarSpeak.Text = "Guitar Speak";
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakSaveButton);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakKeyLabel);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakOctaveLabel);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakNoteLabel);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakKeypress);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakOctave);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakNote);
+            this.GuitarSpeakBox.Location = new System.Drawing.Point(1017, 335);
+            this.GuitarSpeakBox.Name = "GuitarSpeakBox";
+            this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 175);
+            this.GuitarSpeakBox.TabIndex = 71;
+            this.GuitarSpeakBox.TabStop = false;
+            this.GuitarSpeakBox.Text = "Guitar Speak";
+            this.GuitarSpeakBox.Visible = false;
             // 
             // GuitarSpeakSaveButton
             // 
@@ -1446,6 +1449,17 @@
             this.GuitarSpeakNote.Size = new System.Drawing.Size(46, 82);
             this.GuitarSpeakNote.TabIndex = 0;
             // 
+            // GuitarSpeakEnableCheckbox
+            // 
+            this.GuitarSpeakEnableCheckbox.AutoSize = true;
+            this.GuitarSpeakEnableCheckbox.Location = new System.Drawing.Point(11, 175);
+            this.GuitarSpeakEnableCheckbox.Name = "GuitarSpeakEnableCheckbox";
+            this.GuitarSpeakEnableCheckbox.Size = new System.Drawing.Size(88, 17);
+            this.GuitarSpeakEnableCheckbox.TabIndex = 46;
+            this.GuitarSpeakEnableCheckbox.Text = "Guitar Speak";
+            this.GuitarSpeakEnableCheckbox.UseVisualStyleBackColor = true;
+            this.GuitarSpeakEnableCheckbox.CheckedChanged += new System.EventHandler(this.GuitarSpeakEnableCheckbox_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1454,7 +1468,7 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1334, 832);
             this.Controls.Add(this.GroupSetAndForget);
-            this.Controls.Add(this.GuitarSpeak);
+            this.Controls.Add(this.GuitarSpeakBox);
             this.Controls.Add(this.HowToToggleLyrics);
             this.Controls.Add(this.ToggleSkylineBox);
             this.Controls.Add(this.ChangeStringColorsBox);
@@ -1497,8 +1511,8 @@
             this.ToggleSkylineBox.PerformLayout();
             this.HowToToggleLyrics.ResumeLayout(false);
             this.HowToToggleLyrics.PerformLayout();
-            this.GuitarSpeak.ResumeLayout(false);
-            this.GuitarSpeak.PerformLayout();
+            this.GuitarSpeakBox.ResumeLayout(false);
+            this.GuitarSpeakBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1606,7 +1620,7 @@
         private System.Windows.Forms.RadioButton ToggleLyricsManualRadio;
         private System.Windows.Forms.RadioButton ToggleLyricsRadio;
         private System.Windows.Forms.Label RemoveLyricsKeyLabel;
-        private System.Windows.Forms.GroupBox GuitarSpeak;
+        private System.Windows.Forms.GroupBox GuitarSpeakBox;
         private System.Windows.Forms.ListBox GuitarSpeakKeypress;
         private System.Windows.Forms.ListBox GuitarSpeakOctave;
         private System.Windows.Forms.ListBox GuitarSpeakNote;
@@ -1614,6 +1628,7 @@
         private System.Windows.Forms.Label GuitarSpeakOctaveLabel;
         private System.Windows.Forms.Label GuitarSpeakNoteLabel;
         private System.Windows.Forms.Button GuitarSpeakSaveButton;
+        private System.Windows.Forms.CheckBox GuitarSpeakEnableCheckbox;
     }
 }
 
