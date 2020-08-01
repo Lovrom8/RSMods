@@ -1,7 +1,7 @@
 #include "Main.h"
 #pragma warning(disable: 4838 4018 4996) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | 
 
-#if defined _DEBUG
+#ifdef _DEBUG
 bool debug = true;
 #else
 bool debug = false;
@@ -325,38 +325,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (ImGui::Button("Restore default colors"))
 			ERMode.ResetString(selectedString);
-
-		ImGui::End();
-
-		static int selectedValues[12]; // NOTE: this is called every frame, so if you declare your non-static variables here, they will be reset to default values every call - either make them static or declare them globally in the header
-
-		ImGui::Begin("Guitar Speak Settings");
-		int optionsImGUI = -1;
-		for (int note = 0; note < 12; note++) {
-			std::string noteName = GuitarSpeak.noteNames[note];
-
-			if (optionsImGUI > -1 && ImGui::Button("Save Settings")) {
-				GuitarSpeak.ForceNewSettings(noteName, GuitarSpeak.keyPressArray[optionsImGUI]);
-			}
-
-			if (ImGui::BeginCombo(noteName.c_str(), GuitarSpeakStartingTexts[note].c_str())) {
-
-				for (int options = 0; options < 12; options++)
-				{
-					bool is_selected = (selectedValues[options] == options);
-					if (ImGui::Selectable(GuitarSpeak.keyPressArray[options].c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups)) {
-						selectedValues[options] = options;
-						optionsImGUI = options;
-					}
-
-					if (is_selected) {
-						GuitarSpeakStartingTexts[note] = GuitarSpeak.keyPressArray[options];
-					}
-				}
-
-				ImGui::EndCombo();
-			}
-		}
 
 		ImGui::End();
 
