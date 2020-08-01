@@ -797,7 +797,7 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = true;
 				}
 
-				if(!GuitarSpeakPresent) {
+				if(!GuitarSpeakPresent && Settings.ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
 					GuitarSpeakPresent = true;
 					if (!GuitarSpeak.TimerTick()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;

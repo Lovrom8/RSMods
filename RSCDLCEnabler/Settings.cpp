@@ -34,14 +34,25 @@ cSettings::cSettings()
 	{"ToggleSkylineWhen", "song"},
 	{"RemoveLaneMarkersEnabled", "off"},
 	{"RemoveLyrics", "off"},
-	{"RemoveLyricsWhen", "manual"}
+	{"RemoveLyricsWhen", "manual"},
+	{"GuitarSpeak", "off"},
 	};
 
 	customSettings = {
 		{"ExtendedRangeMode", -5 },
-		{"CheckForNewSongsInterval", 5000}
+		{"CheckForNewSongsInterval", 5000},
+		{"CustomStringColors", 0},
+		{"GuitarSpeakDelete", 0},
+		{"GuitarSpeakSpace", 0},
+		{"GuitarSpeakEnter", 0},
+		{"GuitarSpeakTab", 0},
+		{"GuitarSpeakPageUp", 0},
+		{"GuitarSpeakPageDown", 0},
+		{"GuitarSpeakUpArrow", 0},
+		{"GuitarSpeakDownArrow", 0},
+		{"GuitarSpeakEscape", 0},
+		{"GuitarSpeakClose", 0}
 	};
-
 
 	cSettings::keyMap = { //talk about taking the easy way out ;)
 		{ "VK_LBUTTON" , 0x01 },
@@ -267,7 +278,8 @@ void cSettings::ReadKeyBinds() {
 				{"ToggleSkylineWhen", reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song")},
 				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")},
 				{"RemoveLyrics", reader.GetValue("Toggle Switches", "Lyrics", "off")},
-				{"RemoveLyricsWhen", reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual")}
+				{"RemoveLyricsWhen", reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual")},
+				{"GuitarSpeak", reader.GetValue("Toggle Switches", "GuitarSpeak", "off")},
 	};
 }
 
@@ -291,16 +303,16 @@ void cSettings::ReadModSettings() {
 		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
-		{"Delete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
-		{"Space", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
-		{"Enter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
-		{"Tab", reader.GetLongValue("Guitar Speak", "GuitarSpeakTabWhen", 0)},
-		{"PageUp", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGUPWhen", 0)},
-		{"PageDown", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGDNWhen", 0)},
-		{"UpArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeakUPWhen", 0)},
-		{"DownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
-		{"Escape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
-		{"CloseGuitarSpeak", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
+		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
+		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
+		{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
+		{"GuitarSpeakTab", reader.GetLongValue("Guitar Speak", "GuitarSpeakTabWhen", 0)},
+		{"GuitarSpeakPageUp", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGUPWhen", 0)},
+		{"GuitarSpeakPageDown", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGDNWhen", 0)},
+		{"GuitarSpeakUpArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeakUPWhen", 0)},
+		{"GuitarSpeakDownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
+		{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
+		{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
 	};
 }
 

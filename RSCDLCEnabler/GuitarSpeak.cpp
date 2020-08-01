@@ -7,42 +7,6 @@ Modified / Translated from the Visual Basic code provided by UKLooney
 Open source here: https://cdn.discordapp.com/attachments/711634414240530462/735574443035721798/G2RS_v0.3_source.zip
 */
 
-/* Moved over to the RSMods GUI to make INI reading easier with ints instead of parasing out the int (octave) out of the char* note.
-int cGuitarSpeak::NoteToInt(char* note, int octave){
-	int notePlayed = 0;
-	octave = octave - 2; // The first full set of notes is at the 2nd octave so we do the math as if they were our zero-point.
-
-	if (note == "C")
-		notePlayed = 36;
-	else if (note == "Db" || note == "C#")
-		notePlayed = 37;
-	else if (note == "D")
-		notePlayed = 38;
-	else if (note == "Eb" || note == "D#")
-		notePlayed = 39;
-	else if (note == "E")
-		notePlayed = 40;
-	else if (note == "F")
-		notePlayed = 41;
-	else if (note == "Gb" || note == "F#")
-		notePlayed = 42;
-	else if (note == "G")
-		notePlayed = 43;
-	else if (note == "Ab" || note == "G#")
-		notePlayed = 44;
-	else if (note == "A")
-		notePlayed = 45;
-	else if (note == "Bb" || note == "A#")
-		notePlayed = 46;
-	else if (note == "B")
-		notePlayed = 47;
-
-	if (notePlayed != 0x0)
-		notePlayed = notePlayed + (octave * 12); // Ex. If note is G5 then 43 + ((5-2) * 12) = 79, so our end note is 79, not 43;
-
-	return notePlayed;
-}*/
-
 byte cGuitarSpeak::GetCurrentNote() {
 	return *(byte*)MemUtil.FindDMAAddy(Offsets.ptr_guitarSpeak, Offsets.ptr_guitarSpeakOffets);
 }
@@ -53,16 +17,16 @@ bool cGuitarSpeak::TimerTick() {
 
 	bool debugMode = true;
 		
-	strKeyList[Settings.GetModSetting("Delete")] = (std::string)"DELETE";
-	strKeyList[Settings.GetModSetting("Space")] = (std::string)"SPACE";
-	strKeyList[Settings.GetModSetting("Enter")] = (std::string)"ENTER";
-	strKeyList[Settings.GetModSetting("Tab")] = (std::string)"TAB";
-	strKeyList[Settings.GetModSetting("PageUp")] = (std::string)"PGUP";
-	strKeyList[Settings.GetModSetting("PageDown")] = (std::string)"PGDN";
-	strKeyList[Settings.GetModSetting("UpArrow")] = (std::string)"UP";
-	strKeyList[Settings.GetModSetting("DownArrow")] = (std::string)"DOWN";
-	strKeyList[Settings.GetModSetting("Escape")] = (std::string)"ESCAPE";
-	strKeyList[Settings.GetModSetting("CloseGuitarSpeak")] = (std::string)"CLOSE";
+	strKeyList[Settings.GetModSetting("GuitarSpeakDelete")] = (std::string)"DELETE";
+	strKeyList[Settings.GetModSetting("GuitarSpeakSpace")] = (std::string)"SPACE";
+	strKeyList[Settings.GetModSetting("GuitarSpeakEnter")] = (std::string)"ENTER";
+	strKeyList[Settings.GetModSetting("GuitarSpeakTab")] = (std::string)"TAB";
+	strKeyList[Settings.GetModSetting("GuitarSpeakPageUp")] = (std::string)"PGUP";
+	strKeyList[Settings.GetModSetting("GuitarSpeakPageDown")] = (std::string)"PGDN";
+	strKeyList[Settings.GetModSetting("GuitarSpeakUpArrow")] = (std::string)"UP";
+	strKeyList[Settings.GetModSetting("GuitarSpeakDownArrow")] = (std::string)"DOWN";
+	strKeyList[Settings.GetModSetting("GuitarSpeakEscape")] = (std::string)"ESCAPE";
+	strKeyList[Settings.GetModSetting("GuitarSpeakClose")] = (std::string)"CLOSE";
 	
 
 
@@ -73,12 +37,6 @@ bool cGuitarSpeak::TimerTick() {
 			std::cout << "Tick" << std::endl;*/
 
 		std::string currentMenu = MemHelpers.GetCurrentMenu();
-
-
-
-
-
-
 		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) || std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
 			std::cout << "Entered Bad Menu!" << std::endl;
 			return false;
@@ -114,8 +72,6 @@ bool cGuitarSpeak::TimerTick() {
 			mem = 0;
 			lastNote = 0;
 		}
-
-		
 
 		if (newNote) {
 			std::string strSendTemp = "";
