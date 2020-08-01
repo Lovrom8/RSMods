@@ -437,6 +437,19 @@ namespace RSMods
                 { ReadSettings.ExtendedRangeTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier) }, // Enumerate new CDLC / ODLC every X ms
             }},
+            {"[Guitar Speak]", new Dictionary<string, string>
+            {
+                { ReadSettings.GuitarSpeakDeleteIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier) },
+                { ReadSettings.GuitarSpeakSpaceIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier) },
+                { ReadSettings.GuitarSpeakEnterIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier) },
+                { ReadSettings.GuitarSpeakTabIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier) },
+                { ReadSettings.GuitarSpeakPGUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier) },
+                { ReadSettings.GuitarSpeakPGDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier) },
+                { ReadSettings.GuitarSpeakUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier) },
+                { ReadSettings.GuitarSpeakDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier) },
+                { ReadSettings.GuitarSpeakESCIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier) },
+                { ReadSettings.GuitarSpeakCloseIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier) },
+            }}
         };
 
 
@@ -1509,6 +1522,62 @@ namespace RSMods
         {
             if (ToggleLyricsManualRadio.Checked)
                 SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
+        }
+
+
+        //int NoteToInt(string note, int octave)
+        //{
+        //    int notePlayed = 0;
+
+        //    octave -= 2; // The first full set of notes is at the 2nd octave so we do the math as if they were our zero-point.
+
+        //    if (note == "C")
+        //        notePlayed = 36;
+        //    else if (note == "Db" || note == "C#")
+        //        notePlayed = 37;
+        //    else if (note == "D")
+        //        notePlayed = 38;
+        //    else if (note == "Eb" || note == "D#")
+        //        notePlayed = 39;
+        //    else if (note == "E")
+        //        notePlayed = 40;
+        //    else if (note == "F")
+        //        notePlayed = 41;
+        //    else if (note == "Gb" || note == "F#")
+        //        notePlayed = 42;
+        //    else if (note == "G")
+        //        notePlayed = 43;
+        //    else if (note == "Ab" || note == "G#")
+        //        notePlayed = 44;
+        //    else if (note == "A")
+        //        notePlayed = 45;
+        //    else if (note == "Bb" || note == "A#")
+        //        notePlayed = 46;
+        //    else if (note == "B")
+        //        notePlayed = 47;
+
+        //    if (notePlayed != 0x0)
+        //        notePlayed += (octave * 12); // Ex. If note is G5 then 43 + ((5-2) * 12) = 79, so our end note is 79, not 43;
+
+        //    int noteToSave = GuitarSpeakNote.SelectedIndex + 36;
+        //    MessageBox.Show(noteToSave.ToString(), "Note Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        //    return notePlayed;
+        //}
+
+        private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
+        {
+            if (GuitarSpeakNote.SelectedIndex > -1 && GuitarSpeakOctave.SelectedIndex > -1 && GuitarSpeakKeypress.SelectedIndex > -1)
+            {
+                int inputNote = GuitarSpeakNote.SelectedIndex + 36;
+                int inputOctave = GuitarSpeakOctave.SelectedIndex - 3;
+                int outputNoteOctave = inputNote + (inputOctave * 12);
+                //MessageBox.Show(Convert.ToString(outputNoteOctave), Convert.ToString(inputOctave+2));
+
+
+            }
+            else
+                MessageBox.Show("One of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

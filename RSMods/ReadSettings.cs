@@ -9,9 +9,11 @@ namespace RSMods
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber, DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen, ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                             ExtendedRangeTuning, CheckForNewSongInterval;
+                             ExtendedRangeTuning, CheckForNewSongInterval,
+                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose;
 
         public static string
+
                 // Song List Identifiers
                 Songlist1Identifier = "SongListTitle_1 = ",
                 Songlist2Identifier = "SongListTitle_2 = ",
@@ -19,36 +21,39 @@ namespace RSMods
                 Songlist4Identifier = "SongListTitle_4 = ",
                 Songlist5Identifier = "SongListTitle_5 = ",
                 Songlist6Identifier = "SongListTitle_6 = ",
+
                 // Toggle On Key Identifiers
-                ToggleLoftIdentifier = "ToggleLoftKey = ",
-                AddVolumeIdentifier = "AddVolumeKey = ",
-                DecreaseVolumeIdentifier = "DecreaseVolumeKey = ",
-                ShowSongTimerIdentifier = "ShowSongTimerKey = ",
+                ToggleLoftIdentifier         = "ToggleLoftKey = ",
+                AddVolumeIdentifier          = "AddVolumeKey = ",
+                DecreaseVolumeIdentifier     = "DecreaseVolumeKey = ",
+                ShowSongTimerIdentifier      = "ShowSongTimerKey = ",
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
-                RainbowStringsIdentifier = "RainbowStringsKey = ",
-                RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
+                RainbowStringsIdentifier     = "RainbowStringsKey = ",
+                RemoveLyricsKeyIdentifier    = "RemoveLyricsKey = ",
+
                 // Toggle Effects (Change Names to easier naming scheme before public launch)
-                ToggleLoftEnabledIdentifier = "ToggleLoft = ",
-                AddVolumeEnabledIdentifier = "AddVolume = ",
-                DecreaseVolumeEnabledIdentifier = "DecreaseVolume = ",
-                ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
+                ToggleLoftEnabledIdentifier         = "ToggleLoft = ",
+                AddVolumeEnabledIdentifier          = "AddVolume = ",
+                DecreaseVolumeEnabledIdentifier     = "DecreaseVolume = ",
+                ShowSongTimerEnabledIdentifier      = "ShowSongTimer = ",
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
-                RainbowStringsEnabledIdentifier = "RainbowStrings = ",
-                ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
-                CustomStringColorNumberIndetifier = "CustomStringColors = ",
-                DiscoModeIdentifier = "DiscoMode = ",
-                RemoveHeadstockIdentifier = "Headstock = ",
-                RemoveSkylineIdentifier = "Skyline = ",
-                GreenScreenWallIdentifier = "GreenScreenWall = ",
-                ForceProfileEnabledIdentifier = "ForceProfileLoad = ",
-                FretlessModeEnabledIdentifier = "Fretless = ",
-                RemoveInlaysIdentifier = "Inlays = ",
-                ToggleLoftWhenIdentifier = "ToggleLoftWhen = ",
-                ToggleSkylineWhenIdentifier = "ToggleSkylineWhen = ",
-                RemoveLaneMarkersIdentifier = "LaneMarkers = ",
-                RemoveLyricsIdentifier = "Lyrics = ",
-                RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
-                    // String Colors (Normal {N} & Colorblind {CB})
+                RainbowStringsEnabledIdentifier     = "RainbowStrings = ",
+                ExtendedRangeEnabledIdentifier      = "ExtendedRange = ",
+                CustomStringColorNumberIndetifier   = "CustomStringColors = ",
+                DiscoModeIdentifier                 = "DiscoMode = ",
+                RemoveHeadstockIdentifier           = "Headstock = ",
+                RemoveSkylineIdentifier             = "Skyline = ",
+                GreenScreenWallIdentifier           = "GreenScreenWall = ",
+                ForceProfileEnabledIdentifier       = "ForceProfileLoad = ",
+                FretlessModeEnabledIdentifier       = "Fretless = ",
+                RemoveInlaysIdentifier              = "Inlays = ",
+                ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
+                ToggleSkylineWhenIdentifier         = "ToggleSkylineWhen = ",
+                RemoveLaneMarkersIdentifier         = "LaneMarkers = ",
+                RemoveLyricsIdentifier              = "Lyrics = ",
+                RemoveLyricsWhenIdentifier          = "RemoveLyricsWhen = ",
+
+                // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
                     String0Color_N_Identifier = "string0_N = ",
                     String1Color_N_Identifier = "string1_N = ",
@@ -63,9 +68,22 @@ namespace RSMods
                     String3Color_CB_Identifier = "string3_CB = ",
                     String4Color_CB_Identifier = "string4_CB = ",
                     String5Color_CB_Identifier = "string5_CB = ",
+
                 // Mod Settings
-                ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
-                CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ";
+                ExtendedRangeTuningIdentifier     = "ExtendedRangeModeAt = ",
+                CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
+
+                // Guitar Speak
+                GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
+                GuitarSpeakSpaceIdentifier  = "GuitarSpeakSpaceWhen = ",
+                GuitarSpeakEnterIdentifier  = "GuitarSpeakEnterWhen = ",
+                GuitarSpeakTabIdentifier    = "GuitarSpeakTabWhen = ",
+                GuitarSpeakPGUPIdentifier   = "GuitarSpeakPGUPWhen = ",
+                GuitarSpeakPGDNIdentifier   = "GuitarSpeakPGDNWhen = ",
+                GuitarSpeakUPIdentifier     = "GuitarSpeakUPWhen = ",
+                GuitarSpeakDNIdentifier     = "GuitarSpeanDNWhen = ",
+                GuitarSpeakESCIdentifier    = "GuitarSpeakESCWhen = ",
+                GuitarSpeakCloseIdentifier  = "GuitarSpeakCloseWhen = ";
 
 
         public static string ProcessSettings(string identifierToGrab)
@@ -78,8 +96,6 @@ namespace RSMods
             }
             else
             {
-
-
                 foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
                 {
                     // Song Lists
@@ -694,6 +710,100 @@ namespace RSMods
                             }
                         }
 
+                    }
+
+                    // Guitar Speak
+                    {
+                        if(currentLine.Contains(GuitarSpeakDeleteIdentifier))
+                        {
+                            GuitarSpeakDelete = currentLine.Substring(GuitarSpeakDeleteIdentifier.Length, (currentLine.Length - GuitarSpeakDeleteIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakDeleteIdentifier)
+                            {
+                                return GuitarSpeakDelete;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakSpaceIdentifier))
+                        {
+                            GuitarSpeakSpace = currentLine.Substring(GuitarSpeakSpaceIdentifier.Length, (currentLine.Length - GuitarSpeakSpaceIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakSpaceIdentifier)
+                            {
+                                return GuitarSpeakSpace;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakEnterIdentifier))
+                        {
+                            GuitarSpeakEnter = currentLine.Substring(GuitarSpeakEnterIdentifier.Length, (currentLine.Length - GuitarSpeakEnterIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakEnterIdentifier)
+                            {
+                                return GuitarSpeakEnter;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakTabIdentifier))
+                        {
+                            GuitarSpeakTab = currentLine.Substring(GuitarSpeakTabIdentifier.Length, (currentLine.Length - GuitarSpeakTabIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakTabIdentifier)
+                            {
+                                return GuitarSpeakTab;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakPGUPIdentifier))
+                        {
+                            GuitarSpeakPGUP = currentLine.Substring(GuitarSpeakPGUPIdentifier.Length, (currentLine.Length - GuitarSpeakPGUPIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakPGUPIdentifier)
+                            {
+                                return GuitarSpeakPGUP;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakPGDNIdentifier))
+                        {
+                            GuitarSpeakPGDN = currentLine.Substring(GuitarSpeakPGDNIdentifier.Length, (currentLine.Length - GuitarSpeakPGDNIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakPGDNIdentifier)
+                            {
+                                return GuitarSpeakPGDN;
+                            }    
+                        }
+                        if(currentLine.Contains(GuitarSpeakUPIdentifier))
+                        {
+                            GuitarSpeakUP = currentLine.Substring(GuitarSpeakUPIdentifier.Length, (currentLine.Length - GuitarSpeakUPIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakUPIdentifier)
+                            {
+                                return GuitarSpeakUP;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakDNIdentifier))
+                        {
+                            GuitarSpeakDN = currentLine.Substring(GuitarSpeakDNIdentifier.Length, (currentLine.Length - GuitarSpeakDNIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakDNIdentifier)
+                            {
+                                return GuitarSpeakDN;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakESCIdentifier))
+                        {
+                            GuitarSpeakESC = currentLine.Substring(GuitarSpeakESCIdentifier.Length, (currentLine.Length - GuitarSpeakESCIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakESCIdentifier)
+                            {
+                                return GuitarSpeakESC;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakCloseIdentifier))
+                        {
+                            GuitarSpeakClose = currentLine.Substring(GuitarSpeakCloseIdentifier.Length, (currentLine.Length - GuitarSpeakCloseIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakCloseIdentifier)
+                            {
+                                return GuitarSpeakClose;
+                            }
+                        }
                     }
                 }
                 return "";

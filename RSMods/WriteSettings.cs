@@ -56,7 +56,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
                 { ReadSettings.RemoveLyricsWhenIdentifier, "manual" } // When should we remove lyrics Manual / Automatic
             }},
-            {"[String Colors]", new Dictionary<string, string> 
+            {"[String Colors]", new Dictionary<string, string>
             {
                 { ReadSettings.String0Color_N_Identifier, "ff4f5b" }, // Default Low E String Color (HEX) | Red
                 { ReadSettings.String1Color_N_Identifier, "e2c102" }, // Default A String Color (HEX) | Yellow
@@ -77,6 +77,20 @@ namespace RSMods
                 { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
             }},
+
+            {"[Guitar Speak]", new Dictionary<string, string>
+            {
+                { ReadSettings.GuitarSpeakDeleteIdentifier, "" },
+                { ReadSettings.GuitarSpeakSpaceIdentifier, "" },
+                { ReadSettings.GuitarSpeakEnterIdentifier, "" },
+                { ReadSettings.GuitarSpeakTabIdentifier, "" },
+                { ReadSettings.GuitarSpeakPGUPIdentifier, "" },
+                { ReadSettings.GuitarSpeakPGDNIdentifier, "" },
+                { ReadSettings.GuitarSpeakUPIdentifier, "" },
+                { ReadSettings.GuitarSpeakDNIdentifier, "" },
+                { ReadSettings.GuitarSpeakESCIdentifier, "" },
+                { ReadSettings.GuitarSpeakCloseIdentifier, "" },
+            }}
         };
 
         public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)
