@@ -14,8 +14,16 @@ namespace RSMods.Util
 {
     public static class GenUtil
     {
+        public static bool IsDirectoryEmpty(string path)
+        {
+            return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
         public static void ExtractEmbeddedResource(string outputDir, Assembly resourceAssembly, string resourceLocation, string[] files)
         {
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
             string[] names = resourceAssembly.GetManifestResourceNames();
 
             string resourcePath = String.Empty;
@@ -27,11 +35,6 @@ namespace RSMods.Util
                 using (FileStream fileStream = new FileStream(resourcePath, FileMode.Create))
                     stream.CopyTo(fileStream);
             }
-        }
-
-        public static bool IsDirectoryEmpty(string path)
-        {
-            return !Directory.EnumerateFileSystemEntries(path).Any();
         }
 
         private static bool IsRSFolder(this string folderPath)

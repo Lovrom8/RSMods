@@ -468,22 +468,22 @@ namespace RSMods
 
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
-                if (ChangedSettingValue == "true")
-                    ChangedSettingValue = "on";
-                else if (ChangedSettingValue == "false")
-                    ChangedSettingValue = "off";
+            if (ChangedSettingValue == "true")
+                ChangedSettingValue = "on";
+            else if (ChangedSettingValue == "false")
+                ChangedSettingValue = "off";
 
-                foreach (string section in priorSettings.Keys)
+            foreach (string section in priorSettings.Keys)
+            {
+                foreach (KeyValuePair<string, string> entry in priorSettings[section])
                 {
-                    foreach (KeyValuePair<string, string> entry in priorSettings[section])
+                    if (IdentifierToChange == entry.Key)
                     {
-                        if (IdentifierToChange == entry.Key)
-                        {
                         priorSettings[section][IdentifierToChange] = ChangedSettingValue;
-                            break;
-                        }
+                        break;
                     }
                 }
+            }
             WriteSettings.WriteINI(priorSettings);
         }
 
@@ -704,7 +704,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Error: " + ioex.ToString());
+                MessageBox.Show("Error: " + ioex.ToString(), "Error");
             }
         }
 
@@ -731,7 +731,7 @@ namespace RSMods
             try
             {
                 string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
-                //string newUIName;
+                int newIndex = 37500;
 
                 using (StreamWriter sw = new StreamWriter(Constants.LocalizationCSV_CustomPath, true))
                 {
@@ -740,28 +740,34 @@ namespace RSMods
                         currentUIName = tuningDefinition.Value.UIName;
                         var tuning = SplitTuningUIName(currentUIName);
                         string index = tuning.Item1;
+                        string onlyName = tuning.Item2;
 
                         if (index == "0") // I.e. if it does not contain an index, give it one
-                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", index, currentUIName); // Append its index in front
+                        {
+                            while (csvContents.Contains(newIndex.ToString())) // Efficient ? Nope, but does the job
+                                newIndex++;
+
+                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", newIndex, onlyName); // Append its index in front
+                            index = newIndex.ToString();
+                        }
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
-                             //MessageBox.Show(tuningDefinition.Value.UIName); //TODO: check which index is actually added
-                             sw.Write(index);
-                             for (int i = 0; i < 7; i++)
-                             {
-                                 sw.Write(',');
-                                 sw.Write(tuning.Item2);
-                             }
+                            sw.Write(index);
+                            for (int i = 0; i < 7; i++)
+                            {
+                                sw.Write(',');
+                                sw.Write(tuning.Item2);
+                            }
 
-                             sw.Write(sw.NewLine);
+                            sw.Write(sw.NewLine);
                         }
                     }
                 }
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Error: " + ioex.Message.ToString());
+                MessageBox.Show("Error: " + ioex.Message.ToString(), "Error");
             }
 
             SaveTuningsJSON();
@@ -790,6 +796,7 @@ namespace RSMods
 
             return tuningDefinition;
         }
+
         private void UnpackCachePsarc()
         {
             if (!Directory.Exists(Constants.WorkFolder))
@@ -855,7 +862,7 @@ namespace RSMods
 
         private void BtnAddCustomTunings_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
+            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
                 UnpackCachePsarc();
 
             AddLocalizationForTuningEntries();
@@ -868,7 +875,7 @@ namespace RSMods
 
         private void BtnAddFastLoadMod_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Constants.CachePcPath))
+            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
 
             ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
@@ -938,6 +945,8 @@ namespace RSMods
             }
 
             SaveTuningsJSON();
+
+            MessageBox.Show("Saved current tuning, don't forget to press \"Add Custom Tunings\" button when you are done!", "Success");
         }
 
         private void BtnRemoveTuning_Click(object sender, EventArgs e)
@@ -971,7 +980,7 @@ namespace RSMods
 
         private void BtnAddCustomMenu_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Constants.CachePcPath))
+            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
 
             ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
@@ -979,8 +988,6 @@ namespace RSMods
 
             RepackCachePsarc();
         }
-
-
 
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
@@ -1282,7 +1289,7 @@ namespace RSMods
 
         private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
             SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((this.ExtendedRangeTunings.SelectedIndex * -1) - 2));
         }
 
@@ -1336,12 +1343,11 @@ namespace RSMods
             }
         }
 
-       
-
         private void MainForm_Load(object sender, System.EventArgs e)
         {
             StartToolTips();
         }
+
         private void StartToolTips()  // Documentation: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
         {
             // Create the ToolTip and associate with the Form container.
@@ -1408,7 +1414,6 @@ namespace RSMods
             toolTip1.SetToolTip(this.HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
         }
 
-        
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.Songlist.SelectedIndex > -1)
@@ -1425,37 +1430,6 @@ namespace RSMods
 
         private static Dictionary<string, Tone2014> TonesFromAllProfiles = new Dictionary<string, Tone2014>();
 
-        /* private class IniEntry
-         {
-             public static string Section { get; set; }
-             public static string 
-         }*/
-
-        /*private TuningDefinitionList LoadTuningsCollection()
-        {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            var tuningsList = tuningsJson["Static"]["TuningDefinitions"];
-
-            return JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
-        }
-
-        private void SaveTuningsJSON()
-        {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            tuningsJson["Static"]["TuningDefinitions"] = JObject.FromObject(tuningsCollection);
-
-            try
-            {
-                File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show("Error: " + ioex.ToString());
-            }
-        }*/
-
         private void BtnSetDefaultTones_Click(object sender, EventArgs e)
         {
             if (ListProfileTones.SelectedItem == null)
@@ -1471,9 +1445,9 @@ namespace RSMods
             var selectedTone = TonesFromAllProfiles[ListProfileTones.SelectedItem.ToString()];
             if (RbTone0.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][0]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if(RbTone1.Checked)
+            else if (RbTone1.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][1]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if(RbTone2.Checked)
+            else if (RbTone2.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][2]["GearList"] = JObject.FromObject(selectedTone.GearList);
 
             try
@@ -1523,7 +1497,6 @@ namespace RSMods
                 MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
             }
         }
-
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleLyricsRadio.Checked)
@@ -1575,7 +1548,7 @@ namespace RSMods
 
         private void GuitarSpeakEnableCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if(GuitarSpeakEnableCheckbox.Checked)
+            if (GuitarSpeakEnableCheckbox.Checked)
             {
                 this.GuitarSpeakEnableCheckbox.Checked = true;
                 this.GuitarSpeakBox.Visible = true;
