@@ -1524,60 +1524,41 @@ namespace RSMods
                 SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
         }
 
-
-        //int NoteToInt(string note, int octave)
-        //{
-        //    int notePlayed = 0;
-
-        //    octave -= 2; // The first full set of notes is at the 2nd octave so we do the math as if they were our zero-point.
-
-        //    if (note == "C")
-        //        notePlayed = 36;
-        //    else if (note == "Db" || note == "C#")
-        //        notePlayed = 37;
-        //    else if (note == "D")
-        //        notePlayed = 38;
-        //    else if (note == "Eb" || note == "D#")
-        //        notePlayed = 39;
-        //    else if (note == "E")
-        //        notePlayed = 40;
-        //    else if (note == "F")
-        //        notePlayed = 41;
-        //    else if (note == "Gb" || note == "F#")
-        //        notePlayed = 42;
-        //    else if (note == "G")
-        //        notePlayed = 43;
-        //    else if (note == "Ab" || note == "G#")
-        //        notePlayed = 44;
-        //    else if (note == "A")
-        //        notePlayed = 45;
-        //    else if (note == "Bb" || note == "A#")
-        //        notePlayed = 46;
-        //    else if (note == "B")
-        //        notePlayed = 47;
-
-        //    if (notePlayed != 0x0)
-        //        notePlayed += (octave * 12); // Ex. If note is G5 then 43 + ((5-2) * 12) = 79, so our end note is 79, not 43;
-
-        //    int noteToSave = GuitarSpeakNote.SelectedIndex + 36;
-        //    MessageBox.Show(noteToSave.ToString(), "Note Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-        //    return notePlayed;
-        //}
-
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
             if (GuitarSpeakNote.SelectedIndex > -1 && GuitarSpeakOctave.SelectedIndex > -1 && GuitarSpeakKeypress.SelectedIndex > -1)
             {
                 int inputNote = GuitarSpeakNote.SelectedIndex + 36;
-                int inputOctave = GuitarSpeakOctave.SelectedIndex - 3;
+                int inputOctave = GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
                 int outputNoteOctave = inputNote + (inputOctave * 12);
-                //MessageBox.Show(Convert.ToString(outputNoteOctave), Convert.ToString(inputOctave+2));
+                MessageBox.Show(GuitarSpeakNote.SelectedItem.ToString() + GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                foreach (KeyValuePair<string, string> entry in GuitarSpeakKeyPressDictionary)
+                {
+                    if (GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
+                        SaveChanges(entry.Value, outputNoteOctave.ToString());
+                }
 
+                GuitarSpeakNote.ClearSelected();
+                GuitarSpeakOctave.ClearSelected();
+                GuitarSpeakKeypress.ClearSelected();
             }
             else
                 MessageBox.Show("One of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        private Dictionary<string, string> GuitarSpeakKeyPressDictionary = new Dictionary<string, string>()
+        {
+            {"Delete", ReadSettings.GuitarSpeakDeleteIdentifier },
+            {"Space", ReadSettings.GuitarSpeakSpaceIdentifier },
+            {"Enter", ReadSettings.GuitarSpeakEnterIdentifier },
+            {"Tab", ReadSettings.GuitarSpeakTabIdentifier },
+            {"Page Up", ReadSettings.GuitarSpeakPGUPIdentifier },
+            {"Page Down", ReadSettings.GuitarSpeakPGDNIdentifier },
+            {"Up Arrow", ReadSettings.GuitarSpeakUPIdentifier },
+            {"Down Arrow", ReadSettings.GuitarSpeakDNIdentifier },
+            {"Escape", ReadSettings.GuitarSpeakESCIdentifier },
+            {"Close Guitar Speak", ReadSettings.GuitarSpeakCloseIdentifier }
+        };
     }
 }

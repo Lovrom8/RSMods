@@ -132,8 +132,6 @@
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.GuitarSpeak = new System.Windows.Forms.GroupBox();
             this.GuitarSpeakSaveButton = new System.Windows.Forms.Button();
-            this.GuitarSpeakPresetList = new System.Windows.Forms.ListBox();
-            this.GuitarSpeakPresetLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakKeyLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakOctaveLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakNoteLabel = new System.Windows.Forms.Label();
@@ -1341,8 +1339,6 @@
             // GuitarSpeak
             // 
             this.GuitarSpeak.Controls.Add(this.GuitarSpeakSaveButton);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakPresetList);
-            this.GuitarSpeak.Controls.Add(this.GuitarSpeakPresetLabel);
             this.GuitarSpeak.Controls.Add(this.GuitarSpeakKeyLabel);
             this.GuitarSpeak.Controls.Add(this.GuitarSpeakOctaveLabel);
             this.GuitarSpeak.Controls.Add(this.GuitarSpeakNoteLabel);
@@ -1351,7 +1347,7 @@
             this.GuitarSpeak.Controls.Add(this.GuitarSpeakNote);
             this.GuitarSpeak.Location = new System.Drawing.Point(1017, 335);
             this.GuitarSpeak.Name = "GuitarSpeak";
-            this.GuitarSpeak.Size = new System.Drawing.Size(316, 294);
+            this.GuitarSpeak.Size = new System.Drawing.Size(291, 175);
             this.GuitarSpeak.TabIndex = 71;
             this.GuitarSpeak.TabStop = false;
             this.GuitarSpeak.Text = "Guitar Speak";
@@ -1362,26 +1358,9 @@
             this.GuitarSpeakSaveButton.Name = "GuitarSpeakSaveButton";
             this.GuitarSpeakSaveButton.Size = new System.Drawing.Size(95, 23);
             this.GuitarSpeakSaveButton.TabIndex = 8;
-            this.GuitarSpeakSaveButton.Text = "Save To Preset";
+            this.GuitarSpeakSaveButton.Text = "Save Keybind";
             this.GuitarSpeakSaveButton.UseVisualStyleBackColor = true;
             this.GuitarSpeakSaveButton.Click += new System.EventHandler(this.GuitarSpeakSaveButton_Click);
-            // 
-            // GuitarSpeakPresetList
-            // 
-            this.GuitarSpeakPresetList.FormattingEnabled = true;
-            this.GuitarSpeakPresetList.Location = new System.Drawing.Point(145, 188);
-            this.GuitarSpeakPresetList.Name = "GuitarSpeakPresetList";
-            this.GuitarSpeakPresetList.Size = new System.Drawing.Size(131, 95);
-            this.GuitarSpeakPresetList.TabIndex = 7;
-            // 
-            // GuitarSpeakPresetLabel
-            // 
-            this.GuitarSpeakPresetLabel.AutoSize = true;
-            this.GuitarSpeakPresetLabel.Location = new System.Drawing.Point(182, 172);
-            this.GuitarSpeakPresetLabel.Name = "GuitarSpeakPresetLabel";
-            this.GuitarSpeakPresetLabel.Size = new System.Drawing.Size(37, 13);
-            this.GuitarSpeakPresetLabel.TabIndex = 6;
-            this.GuitarSpeakPresetLabel.Text = "Preset";
             // 
             // GuitarSpeakKeyLabel
             // 
@@ -1634,8 +1613,6 @@
         private System.Windows.Forms.Label GuitarSpeakKeyLabel;
         private System.Windows.Forms.Label GuitarSpeakOctaveLabel;
         private System.Windows.Forms.Label GuitarSpeakNoteLabel;
-        private System.Windows.Forms.ListBox GuitarSpeakPresetList;
-        private System.Windows.Forms.Label GuitarSpeakPresetLabel;
         private System.Windows.Forms.Button GuitarSpeakSaveButton;
     }
 }
