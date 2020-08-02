@@ -431,10 +431,3 @@ cSettings::cSettings()
 
 		return c;
 	}
-
-
-
-
-
-
-
