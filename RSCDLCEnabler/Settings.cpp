@@ -5,7 +5,7 @@ cSettings Settings;
 
 cSettings::cSettings()
 {
-	cSettings::keyBinds = {  //default values incase the INI doesn't load
+	cSettings::modSettings = {  //default values incase the INI doesn't load
 	{"VolumeUpKey",  "O"},
 	{"VolumeDownKey", "I"},
 	{"CustomSongListTitles", "K"},
@@ -238,7 +238,7 @@ int cSettings::GetVKCodeForString(std::string vkString) {
 }
 
 int cSettings::GetKeyBind(std::string name) {
-	return GetVKCodeForString(keyBinds[name]);
+	return GetVKCodeForString(modSettings[name]);
 }
 
 void cSettings::ReadKeyBinds() {
@@ -248,7 +248,7 @@ void cSettings::ReadKeyBinds() {
 		return;
 	}
 		
-	cSettings::keyBinds = {
+	cSettings::modSettings = {
 		// Mods
 			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
 			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
@@ -259,27 +259,6 @@ void cSettings::ReadKeyBinds() {
 			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
 			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
-			// Mods Enabled / Disabled
-				{"ToggleLoftEnabled", reader.GetValue("Toggle Switches", "ToggleLoft", "on")},
-				{"AddVolumeEnabled", reader.GetValue("Toggle Switches", "AddVolume", "off")},
-				{"DecreaseVolumeEnabled", reader.GetValue("Toggle Switches", "DecreaseVolume", "off")},
-				{"ShowSongTimerEnabled", reader.GetValue("Toggle Switches", "ShowSongTimer", "on")},
-				{"ForceReEnumerationEnabled", reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic")},
-				{"RainbowStringsEnabled", reader.GetValue("Toggle Switches", "RainbowStrings", "off")},
-				{"ExtendedRangeEnabled", reader.GetValue("Toggle Switches", "ExtendedRange", "on")},
-				{"DiscoModeEnabled", reader.GetValue("Toggle Switches", "DiscoMode", "off")},
-				{"RemoveHeadstockEnabled", reader.GetValue("Toggle Switches", "Headstock", "off")},
-				{"RemoveSkylineEnabled", reader.GetValue("Toggle Switches", "Skyline", "off")},
-				{"GreenScreenWallEnabled", reader.GetValue("Toggle Switches", "GreenScreenWall", "off")},
-				{"ForceProfileEnabled", reader.GetValue("Toggle Switches", "ForceProfileLoad", "off")},
-				{"FretlessModeEnabled", reader.GetValue("Toggle Switches", "Fretless", "off")},
-				{"RemoveInlaysEnabled", reader.GetValue("Toggle Switches", "Inlays", "off")},
-				{"ToggleLoftWhen", reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual")},
-				{"ToggleSkylineWhen", reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song")},
-				{"RemoveLaneMarkersEnabled", reader.GetValue("Toggle Switches", "LaneMarkers", "off")},
-				{"RemoveLyrics", reader.GetValue("Toggle Switches", "Lyrics", "off")},
-				{"RemoveLyricsWhen", reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual")},
-				{"GuitarSpeak", reader.GetValue("Toggle Switches", "GuitarSpeak", "off")},
 	};
 }
 
@@ -289,7 +268,7 @@ int cSettings::GetModSetting(std::string name) {
 
 
 std::string cSettings::ReturnSettingValue(std::string name) {
-	return keyBinds[name];
+	return modSettings[name];
 }
 
 void cSettings::ReadModSettings() {
@@ -314,6 +293,28 @@ void cSettings::ReadModSettings() {
 		{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
 		{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
 	};
+
+	// Mods Enabled / Disabled
+	modSettings["ToggleLoftEnabled"] = reader.GetValue("Toggle Switches", "ToggleLoft", "on");
+	modSettings["AddVolumeEnabled"] = reader.GetValue("Toggle Switches", "AddVolume", "off");
+	modSettings["DecreaseVolumeEnabled"] = reader.GetValue("Toggle Switches", "DecreaseVolume", "off");
+	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "on");
+	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
+	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
+	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "on");
+	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
+	modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
+	modSettings["RemoveSkylineEnabled"] = reader.GetValue("Toggle Switches", "Skyline", "off");
+	modSettings["GreenScreenWallEnabled"] = reader.GetValue("Toggle Switches", "GreenScreenWall", "off");
+	modSettings["ForceProfileEnabled"] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
+	modSettings["FretlessModeEnabled"] = reader.GetValue("Toggle Switches", "Fretless", "off");
+	modSettings["RemoveInlaysEnabled"] = reader.GetValue("Toggle Switches", "Inlays", "off");
+	modSettings["ToggleLoftWhen"] = reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual");
+	modSettings["ToggleSkylineWhen"] = reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song");
+	modSettings["RemoveLaneMarkersEnabled"] = reader.GetValue("Toggle Switches", "LaneMarkers", "off");
+	modSettings["RemoveLyrics"] = reader.GetValue("Toggle Switches", "Lyrics", "off");
+	modSettings["RemoveLyricsWhen"] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
+	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
 }
 
 std::vector<std::string> cSettings::GetCustomSongTitles() {
