@@ -7,7 +7,6 @@ bool debug = true;
 bool debug = false;
 #endif
 
-
 unsigned WINAPI EnumerationThread(void*) {
 	while (!GameLoaded) // We are in no hurry :)
 		Sleep(5000);
@@ -34,12 +33,8 @@ unsigned WINAPI EnumerationThread(void*) {
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
-	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam)) {
-		//if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK || msg == WM_LBUTTONUP)
-		//	return true;
-
+	if (menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
 		return true;
-	}
 
 	if (msg == WM_KEYUP) {
 		/*
@@ -139,7 +134,7 @@ void SetCustomColors() {
 }
 
 void GenerateTexture(IDirect3DDevice9* pDevice) {
-	while (GetModuleHandleA("gdiplus.dll") == NULL) //JIC, to prevent crashing
+	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
 		Sleep(500);
 
 	using namespace Gdiplus;
@@ -209,7 +204,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	HRESULT hRet = oEndScene(pDevice);
-	DWORD dwReturnAddress = (DWORD)_ReturnAddress(); //EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
+	DWORD dwReturnAddress = (DWORD)_ReturnAddress(); // EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
 
 	if (dwReturnAddress > Offsets.baseEnd)
 		return hRet;
@@ -239,13 +234,12 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		GenerateTexture(pDevice, &Blue, D3DCOLOR_ARGB(255, 0, 0, 255));
 		GenerateTexture(pDevice, &Yellow, D3DCOLOR_ARGB(255, 255, 255, 0));
 
+		/* Used before, not necessary anymore because we generate our texture
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible" | 6-String Model
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors 
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
-
-		for (int i = 0; i < 12;i++)
-			GuitarSpeakStartingTexts.push_back("No value set!");
+		*/
 
 		std::cout << "ImGUI Init" << std::endl;
 
@@ -308,7 +302,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 					selectedString = n;
 
 				if (is_selected) {
-					//std::cout << selectedString << std::endl;
 					previewValue = std::to_string(selectedString);
 
 					RSColor currColors = Settings.GetCustomColors(CB)[selectedString];
@@ -335,7 +328,9 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
-		/*ImGui::Begin("Game colors testing");
+		/* This block is used to test colors and appropriate offsets for colors defined in gamecolormanager.flat
+		
+		ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
 
 		char label[10];
@@ -369,7 +364,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	return hRet;
 }
 
-HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { //gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
@@ -379,25 +374,25 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 	return ResetReturn;
 }
 
-HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount) {
+HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails PogU
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
 		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 		pDevice->SetTexture(1, ourTexture);
 	}
 
-	return oDrawPrimitive(pDevice, PrimType, startIndex, primCount);
+	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
 
-HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount) {
+HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) {
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	// Enable if you want to risk running the game at 3 FPS
+	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
 		Settings.UpdateSettings();
 		GenerateTexture(pDevice);
@@ -406,54 +401,54 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	if (setAllToNoteGradientTexture) {
 		pDevice->SetTexture(currStride, gradientTextureSeven);
-		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 	}
 
-	Mesh current(Stride, primCount, NumVertices);
-	ThiccMesh currentThicc(Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
+	Mesh current(Stride, PrimCount, NumVertices);
+	ThiccMesh currentThicc(Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
 	if (debug) {
-		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)//page up
+		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)// Page up
 			currIdx++;
-		if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) //page down
+		if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) // Page down
 			currIdx--;
 
 		if (GetAsyncKeyState(VK_END) & 1) // Toggle logging
 			startLogging = !startLogging;
 
-		if (GetAsyncKeyState(VK_F8) & 1) { //save logged meshes to file
+		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
 			for (auto mesh : allMeshes) {
 				Log(mesh.ToString().c_str());
 			}
 		}
 
-		if (GetAsyncKeyState(VK_F7) & 1) { //save only removed 
+		if (GetAsyncKeyState(VK_F7) & 1) { // Save only removed 
 			for (auto mesh : removedMeshes) {
 				Log(mesh.ToString().c_str());
 			}
 		}
 
 		if (GetAsyncKeyState(VK_CONTROL) & 1)
-			Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements);
+			Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
 		if (startLogging) {
 			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 				allMeshes.push_back(currentThicc);
-			//Log("{ %d, %d, %d},", Stride, primCount, NumVertices); // Log Current Texture -> Mesh
-			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, primCount, NumVertices, startIndex, mStartregister, PrimType, decl->Type, mVectorCount, numElements); // Log Current Texture -> ThiccMesh
+			//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
+			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
 			//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
 		}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
 			currStride = Stride;
 			currNumVertices = NumVertices;
-			currPrimCount = primCount;
-			currStartIndex = startIndex;
-			currStartRegister = mStartregister;
+			currPrimCount = PrimCount;
+			currStartIndex = StartIndex;
+			currStartRegister = StartRegister;
 			currPrimType = PrimType;
 			currDeclType = decl->Type;
-			currVectorCount = mVectorCount;
-			currNumElements = numElements;
+			currVectorCount = VectorCount;
+			currNumElements = NumElements;
 			//pDevice->SetTexture(1, Yellow);
 			return D3D_OK;
 		}
@@ -468,7 +463,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
 		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
 
-		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 	}
 
 	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) { // Extended Range Mode
@@ -476,27 +471,29 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 			pDevice->SetTexture(1, ourTexture);
 		}
-		else if (FRETNUM_AND_MISS_INDICATOR && numElements == 7 && mVectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
+		else if (FRETNUM_AND_MISS_INDICATOR && NumElements == 7 && VectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
 
 			if (!pBaseTexture)
-				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
 			if (calculatedCRC) {
 				if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
 					pDevice->SetTexture(1, ourTexture);
 			}
 			else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
-				if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
+				if (crc == 0x02a50002) { // Same checksum for stems and accents, because they use the same texture
 					AddToTextureList(notewayTexturePointers, pCurrTexture);
+					pDevice->SetTexture(1, ourTexture);
+				}
 
-				if (notewayTexturePointers.size() == 1) {
+				if (notewayTexturePointers.size() == 2) {
 					std::cout << "Calculated stem CRC" << std::endl;
 					calculatedCRC = true;
 				}
 			}
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 		}
 	}
 
@@ -526,7 +523,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (toggleSkyline && Stride == 16) {
 		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
 			SkylineOff = false;
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 		}
 
 		// Skyline Removal
@@ -586,20 +583,20 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 
-	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount); // KEEP THIS LINE. It means for it to display the graphics!
+	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount); // KEEP THIS LINE. It means for it to display the graphics!
 }
 
 HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl) {
 	if (pdecl != NULL)
-		pdecl->GetDeclaration(decl, &numElements);
+		pdecl->GetDeclaration(decl, &NumElements);
 
 	return oSetVertexDeclaration(pDevice, pdecl);
 }
 
 HRESULT APIENTRY Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT StartRegister, const float* pConstantData, UINT Vector4fCount) {
 	if (pConstantData != NULL) {
-		mStartregister = StartRegister;
-		mVectorCount = Vector4fCount;
+		StartRegister = StartRegister;
+		VectorCount = Vector4fCount;
 	}
 
 	return oSetVertexShaderConstantF(pDevice, StartRegister, pConstantData, Vector4fCount);
@@ -626,7 +623,7 @@ HRESULT APIENTRY Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelSh
 HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
-	if (Stride == 32 && numElements == 8 && mVectorCount == 4 && decl->Type == 2) { // Remove Line Markers
+	if (Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { // Remove Line Markers
 		pStreamData->GetDesc(&desc);
 		vertexBufferSize = desc.Size;
 	}
@@ -635,7 +632,7 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 }
 
 void GUI() {
-	DWORD d3d9Base, adr, * vTable = NULL;
+	DWORD d3d9Base, adr, *vTable = NULL;
 	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
 		Sleep(500);
 
@@ -658,7 +655,8 @@ void GUI() {
 	oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
 	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
 
-	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);
+	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);	
+	//oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction, but... it crashes instead
 	oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)Hook_EndScene, 7);
 	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)Hook_DIP, 5);
 	oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)Hook_DP, 7);

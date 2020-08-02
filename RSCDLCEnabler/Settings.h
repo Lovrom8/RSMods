@@ -50,7 +50,6 @@ private:
 	std::vector<std::string> defaultStrColorsCB = {
 		"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
 	};
-
 };
 
 extern cSettings Settings;

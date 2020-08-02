@@ -9,11 +9,11 @@
 
 /*----------------------- FORCE ENUMERATION -----------------------*/
 
-typedef void(__thiscall * _tForceEnumeration)(byte *rs_dlc_service_flags); //maybe in the future
+typedef void(__thiscall* _tForceEnumeration)(byte* rs_dlc_service_flags); //maybe in the future
 _tForceEnumeration forceEnumeration;
 
 
-void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
+void __fastcall tForceEnumeration(byte* rs_dlc_service_flags) {
 	return forceEnumeration(rs_dlc_service_flags);
 }
 
@@ -22,7 +22,7 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 typedef AKRESULT(__cdecl* tSetRTPCValue) (const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
 tSetRTPCValue SetRTPCValue;
 
-typedef AKRESULT(__cdecl* tGetRTPCValue)(const char* in_pszRtpcName, AkGameObjectID in_gameObjectID, AkRtpcValue *out_rValue, RTPCValue_type *io_rValueType);
+typedef AKRESULT(__cdecl* tGetRTPCValue)(const char* in_pszRtpcName, AkGameObjectID in_gameObjectID, AkRtpcValue* out_rValue, RTPCValue_type* io_rValueType);
 tGetRTPCValue GetRTPCValue;
 
 
@@ -31,19 +31,19 @@ tGetRTPCValue GetRTPCValue;
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
 
-typedef HRESULT(WINAPI* tDrawIndexedPrimitive)(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT primCount);
+typedef HRESULT(WINAPI* tDrawIndexedPrimitive)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
 tDrawIndexedPrimitive oDrawIndexedPrimitive;
 
-typedef HRESULT(WINAPI* tBeginScene)(IDirect3DDevice9* pDevice);
+typedef HRESULT(WINAPI* tBeginScene)(IDirect3DDevice9*);
 tBeginScene oBeginScene;
 
-typedef HRESULT(WINAPI* tDrawPrimitive)(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT startIndex, UINT primCount);
+typedef HRESULT(WINAPI* tDrawPrimitive)(IDirect3DDevice9*, D3DPRIMITIVETYPE, UINT, UINT);
 tDrawPrimitive oDrawPrimitive;
 
-typedef HRESULT(__stdcall* tEndScene)(IDirect3DDevice9* pDevice);
-tEndScene oEndScene; 
+typedef HRESULT(__stdcall* tEndScene)(IDirect3DDevice9*);
+tEndScene oEndScene;
 
-typedef HRESULT(APIENTRY* tReset)(IDirect3DDevice9 *, D3DPRESENT_PARAMETERS*);
+typedef HRESULT(APIENTRY* tReset)(IDirect3DDevice9*, D3DPRESENT_PARAMETERS*);
 tReset oReset;
 
 typedef HRESULT(APIENTRY* tSetStreamSource)(IDirect3DDevice9*, UINT, IDirect3DVertexBuffer9*, UINT, UINT);

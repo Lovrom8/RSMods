@@ -7,15 +7,15 @@
 HWND hThisWnd = NULL;
 WNDPROC oWndProc = NULL;
 
-UINT mStartregister;
-UINT mVectorCount;
+UINT StartRegister;
+UINT VectorCount;
 
 UINT Stride;
 D3DVERTEXBUFFER_DESC vdesc;
 
 IDirect3DVertexDeclaration9* pDecl;
 D3DVERTEXELEMENT9 decl[MAXD3DDECLLENGTH];
-UINT numElements;
+UINT NumElements;
 
 IDirect3DVertexShader9* vShader;
 UINT vSize;
@@ -106,22 +106,22 @@ struct ThiccMesh {
 	UINT Stride;
 	UINT PrimCount;
 	UINT NumVertices;
-	UINT startIndex;
-	UINT mStartRegister;
+	UINT StartIndex;
+	UINT StartRegister;
 	UINT PrimType;
 	UINT DeclType;
-	UINT mVectorCount;
+	UINT VectorCount;
 	UINT NumElements;
 
 	ThiccMesh(UINT s, UINT p, UINT n, UINT si, UINT mSR, UINT pt, UINT dt, UINT mvc, UINT nm) {
 		Stride = s;
 		PrimCount = p;
 		NumVertices = n;
-		startIndex = si;
-		mStartRegister = mSR;
+		StartIndex = si;
+		StartRegister = mSR;
 		PrimType = pt;
 		DeclType = dt;
-		mVectorCount = mvc;
+		VectorCount = mvc;
 		NumElements = nm;
 	}
 
@@ -134,15 +134,15 @@ struct ThiccMesh {
 		ret += ",";
 		ret += std::to_string(NumVertices);
 		ret += ",";
-		ret += std::to_string(startIndex);
+		ret += std::to_string(StartIndex);
 		ret += ",";
-		ret += std::to_string(mStartRegister);
+		ret += std::to_string(StartRegister);
 		ret += ",";
 		ret += std::to_string(PrimType);
 		ret += ",";
 		ret += std::to_string(DeclType);
 		ret += ",";
-		ret += std::to_string(mVectorCount);
+		ret += std::to_string(VectorCount);
 		ret += ",";
 		ret += std::to_string(NumElements);
 
@@ -155,11 +155,11 @@ struct ThiccMesh {
 		return (Stride == meshB.Stride
 			&& PrimCount == meshB.PrimCount
 			&& NumVertices == meshB.NumVertices
-			&& startIndex == meshB.startIndex
-			&& mStartRegister == meshB.mStartRegister
+			&& StartIndex == meshB.StartIndex
+			&& StartRegister == meshB.StartRegister
 			&& PrimType == meshB.PrimType
 			&& DeclType == meshB.DeclType
-			&& mVectorCount == meshB.mVectorCount
+			&& VectorCount == meshB.VectorCount
 			&& NumElements == meshB.NumElements);
 	}
 };
@@ -259,15 +259,15 @@ std::vector<ThiccMesh> allMeshes;
 std::vector<ThiccMesh> removedMeshes;
 
 // Misc
-#define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && primCount == 2 && NumVertices == 4)
-#define CHORD_OUTLINE_THINGY (Stride == 34 && primCount == 48 && NumVertices == 80)
-#define CHORD_OUTLINE_CORNERS (Stride == 24 && primCount == 108 && NumVertices == 208)
-#define PAUSE_MENU_BGD (Stride == 16 && primCount == 18 && NumVertices == 16)
-#define BUTTONS_BOTTOM_1 (Stride == 8 && primCount == 20 && NumVertices == 16)
-#define VERTICAL_LINES (Stride == 32 && primCount == 6 && NumVertices == 8)
-#define CHORD_NAMES (Stride == 24 && primCount == 2 && NumVertices == 4)
-#define FHP (Stride == 12 && primCount == 6 && NumVertices == 8)
-#define SLIDERS_AND_BUTTONS (Stride == 8 && primCount == 20 && NumVertices == 16)
+#define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && PrimCount == 2 && NumVertices == 4)
+#define CHORD_OUTLINE_THINGY (Stride == 34 && PrimCount == 48 && NumVertices == 80)
+#define CHORD_OUTLINE_CORNERS (Stride == 24 && PrimCount == 108 && NumVertices == 208)
+#define PAUSE_MENU_BGD (Stride == 16 && PrimCount == 18 && NumVertices == 16)
+#define BUTTONS_BOTTOM_1 (Stride == 8 && PrimCount == 20 && NumVertices == 16)
+#define VERTICAL_LINES (Stride == 32 && PrimCount == 6 && NumVertices == 8)
+#define CHORD_NAMES (Stride == 24 && PrimCount == 2 && NumVertices == 4)
+#define FHP (Stride == 12 && PrimCount == 6 && NumVertices == 8)
+#define SLIDERS_AND_BUTTONS (Stride == 8 && PrimCount == 20 && NumVertices == 16)
 
 std::string tuningMenus[17] = { // These are all the menus where you need to tune
 	(std::string)"SelectionListDialog",
@@ -332,7 +332,7 @@ std::string dontAutoEnter[16] = {
 /*------------------------ CRC Calculation --------------------------------------- */
 std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers; // the guitar / bass headstock
 std::vector<LPDIRECT3DTEXTURE9> skylineTexturePointers; // the dynamic difficulty bars
-std::vector<LPDIRECT3DTEXTURE9> notewayTexturePointers; //stems & accents
+std::vector<LPDIRECT3DTEXTURE9> notewayTexturePointers; // stems & accents
 
 LPDIRECT3DBASETEXTURE9 pBaseTextures[3];
 LPDIRECT3DTEXTURE9 pCurrTextures[3];
@@ -342,7 +342,7 @@ void AddToTextureList(std::vector<LPDIRECT3DTEXTURE9>& textureList, LPDIRECT3DTE
 		textureList.push_back(newTexture);
 }
 
-DWORD QuickCheckSum(DWORD* BufferData, size_t Size)
+DWORD QuickCheckSum(DWORD* BufferData, size_t Size) // Yes, we are aware it's not exactly CRC anymore, but it does the job :)
 {
 	if (!BufferData) return 0x0;
 	DWORD Temp = 0, Sum = *BufferData;
