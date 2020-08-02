@@ -236,198 +236,187 @@ cSettings::cSettings()
 
 // Read INI
 
-	std::vector<std::string> cSettings::GetCustomSongTitles() {
-		std::vector<std::string> retList(6);
-		CSimpleIniA reader;
-		if (reader.LoadFile("RSMods.ini") < 0)
-			return retList;
-
-		for (int i = 0; i < 6; i++) {
-			char songListName[80];
-			strcpy(songListName, "SongListTitle_");
-			strcat(songListName, (std::to_string(i + 1)).c_str());
-			retList[i] = reader.GetValue("SongListTitles", songListName, "SONG LIST");
-			//std::cout << "Song List #" << (i+1) << ": " << retList[i] << std::endl;
-		}
-
+std::vector<std::string> cSettings::GetCustomSongTitles() {
+	std::vector<std::string> retList(6);
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0)
 		return retList;
+
+	for (int i = 0; i < 6; i++) {
+		char songListName[80];
+		strcpy(songListName, "SongListTitle_");
+		strcat(songListName, (std::to_string(i + 1)).c_str());
+		retList[i] = reader.GetValue("SongListTitles", songListName, "SONG LIST");
+		//std::cout << "Song List #" << (i+1) << ": " << retList[i] << std::endl;
 	}
 
+	return retList;
+}
 
-	void cSettings::ReadKeyBinds() {
-		CSimpleIniA reader;
-		if (reader.LoadFile("RSMods.ini") < 0) {
-			std::cout << "Error reading saved settings" << std::endl;
-			return;
-		}
 
-		cSettings::modSettings = {
-			// Mods
-				{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
-				{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
-				{ "DecreaseVolumeKey",  reader.GetValue("Keybinds", "DecreaseVolumeKey", "I") },
-				{ "CustomSongListTitles", reader.GetValue("Keybinds", "CustomSongListTitles", "K")},
-				{ "ShowSongTimerKey", reader.GetValue("Keybinds", "ShowSongTimerKey", "N")},
-				{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
-				{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
-				{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
-				{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
-		};
+void cSettings::ReadKeyBinds() {
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) {
+		std::cout << "Error reading saved settings" << std::endl;
+		return;
 	}
 
-	void cSettings::ReadModSettings() {
-		CSimpleIniA reader;
-		if (reader.LoadFile("RSMods.ini") < 0) {
-			std::cout << "Error reading saved settings" << std::endl;
-			return;
-		}
+	cSettings::modSettings = {
+		// Mods
+			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
+			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
+			{ "DecreaseVolumeKey",  reader.GetValue("Keybinds", "DecreaseVolumeKey", "I") },
+			{ "CustomSongListTitles", reader.GetValue("Keybinds", "CustomSongListTitles", "K")},
+			{ "ShowSongTimerKey", reader.GetValue("Keybinds", "ShowSongTimerKey", "N")},
+			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
+			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
+			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
+			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
+	};
+}
 
-		cSettings::customSettings = {
-			{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
-			{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
-			{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
-			{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
-			{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
-			{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
-			{"GuitarSpeakTab", reader.GetLongValue("Guitar Speak", "GuitarSpeakTabWhen", 0)},
-			{"GuitarSpeakPageUp", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGUPWhen", 0)},
-			{"GuitarSpeakPageDown", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGDNWhen", 0)},
-			{"GuitarSpeakUpArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeakUPWhen", 0)},
-			{"GuitarSpeakDownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
-			{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
-			{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
-		};
-
-		// Mods Enabled / Disabled
-		modSettings["ToggleLoftEnabled"] = reader.GetValue("Toggle Switches", "ToggleLoft", "on");
-		modSettings["AddVolumeEnabled"] = reader.GetValue("Toggle Switches", "AddVolume", "off");
-		modSettings["DecreaseVolumeEnabled"] = reader.GetValue("Toggle Switches", "DecreaseVolume", "off");
-		modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "on");
-		modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
-		modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
-		modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "on");
-		modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
-		modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
-		modSettings["RemoveSkylineEnabled"] = reader.GetValue("Toggle Switches", "Skyline", "off");
-		modSettings["GreenScreenWallEnabled"] = reader.GetValue("Toggle Switches", "GreenScreenWall", "off");
-		modSettings["ForceProfileEnabled"] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
-		modSettings["FretlessModeEnabled"] = reader.GetValue("Toggle Switches", "Fretless", "off");
-		modSettings["RemoveInlaysEnabled"] = reader.GetValue("Toggle Switches", "Inlays", "off");
-		modSettings["ToggleLoftWhen"] = reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual");
-		modSettings["ToggleSkylineWhen"] = reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song");
-		modSettings["RemoveLaneMarkersEnabled"] = reader.GetValue("Toggle Switches", "LaneMarkers", "off");
-		modSettings["RemoveLyrics"] = reader.GetValue("Toggle Switches", "Lyrics", "off");
-		modSettings["RemoveLyricsWhen"] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
-		modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
+void cSettings::ReadModSettings() {
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) {
+		std::cout << "Error reading saved settings" << std::endl;
+		return;
 	}
 
-	void cSettings::ReadStringColors() {
-		CSimpleIniA reader;
-		if (reader.LoadFile("RSMods.ini") < 0)
-			return;
+	cSettings::customSettings = {
+		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
+		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
+		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
+		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
+		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
+		{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
+		{"GuitarSpeakTab", reader.GetLongValue("Guitar Speak", "GuitarSpeakTabWhen", 0)},
+		{"GuitarSpeakPageUp", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGUPWhen", 0)},
+		{"GuitarSpeakPageDown", reader.GetLongValue("Guitar Speak", "GuitarSpeakPGDNWhen", 0)},
+		{"GuitarSpeakUpArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeakUPWhen", 0)},
+		{"GuitarSpeakDownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
+		{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
+		{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
+	};
 
-		for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
-			std::string strKey = "";
-			std::string val;
+	// Mods Enabled / Disabled
+	modSettings["ToggleLoftEnabled"] = reader.GetValue("Toggle Switches", "ToggleLoft", "on");
+	modSettings["AddVolumeEnabled"] = reader.GetValue("Toggle Switches", "AddVolume", "off");
+	modSettings["DecreaseVolumeEnabled"] = reader.GetValue("Toggle Switches", "DecreaseVolume", "off");
+	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "on");
+	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
+	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
+	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "on");
+	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
+	modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
+	modSettings["RemoveSkylineEnabled"] = reader.GetValue("Toggle Switches", "Skyline", "off");
+	modSettings["GreenScreenWallEnabled"] = reader.GetValue("Toggle Switches", "GreenScreenWall", "off");
+	modSettings["ForceProfileEnabled"] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
+	modSettings["FretlessModeEnabled"] = reader.GetValue("Toggle Switches", "Fretless", "off");
+	modSettings["RemoveInlaysEnabled"] = reader.GetValue("Toggle Switches", "Inlays", "off");
+	modSettings["ToggleLoftWhen"] = reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual");
+	modSettings["ToggleSkylineWhen"] = reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song");
+	modSettings["RemoveLaneMarkersEnabled"] = reader.GetValue("Toggle Switches", "LaneMarkers", "off");
+	modSettings["RemoveLyrics"] = reader.GetValue("Toggle Switches", "Lyrics", "off");
+	modSettings["RemoveLyricsWhen"] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
+	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
+}
 
-			strKey = "string" + std::to_string(stringIdx) + "_N";
-			val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
+void cSettings::ReadStringColors() {
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0)
+		return;
 
-			customStringColorsNormal.push_back(ConvertHexToColor(val));
+	for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
+		std::string strKey = "";
+		std::string val;
 
-			strKey = "string" + std::to_string(stringIdx) + "_CB";
-			val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
+		strKey = "string" + std::to_string(stringIdx) + "_N";
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 
-			customStringColorsCB.push_back(ConvertHexToColor(val));
-		}
+		customStringColorsNormal.push_back(ConvertHexToColor(val));
 
-		for (int stringIdx = 6; stringIdx < 8; stringIdx++) {
-			customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
-			customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
-		}
+		strKey = "string" + std::to_string(stringIdx) + "_CB";
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
+
+		customStringColorsCB.push_back(ConvertHexToColor(val));
 	}
+
+	for (int stringIdx = 6; stringIdx < 8; stringIdx++) {
+		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
+		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
+	}
+}
 
 
 
 // Return INI Settings
 
-	int cSettings::GetKeyBind(std::string name) {
-		return GetVKCodeForString(modSettings[name]);
-	}
+int cSettings::GetKeyBind(std::string name) {
+	return GetVKCodeForString(modSettings[name]);
+}
 
-	int cSettings::GetModSetting(std::string name) {
-		return customSettings[name];
-	}
+int cSettings::GetModSetting(std::string name) {
+	return customSettings[name];
+}
 
-	std::string cSettings::ReturnSettingValue(std::string name) {
-		return modSettings[name];
-	}
+std::string cSettings::ReturnSettingValue(std::string name) {
+	return modSettings[name];
+}
 
 
 
 	
 // Functions
 
-	int cSettings::GetVKCodeForString(std::string vkString) {
-		return keyMap[vkString];
-	}
+int cSettings::GetVKCodeForString(std::string vkString) {
+	return keyMap[vkString];
+}
 
-	/*
-	float cSettings::GetStringColor(std::string string) {
-		return stringColors[string];
-	}
-	*/
+/*
+float cSettings::GetStringColor(std::string string) {
+	return stringColors[string];
+}
+*/
 
-	std::vector<Color> cSettings::GetCustomColors(bool CB) {
-		if (CB)
-			return customStringColorsCB;
-		else
-			return customStringColorsNormal;
-	}
+std::vector<Color> cSettings::GetCustomColors(bool CB) {
+	if (CB)
+		return customStringColorsCB;
+	else
+		return customStringColorsNormal;
+}
 
-	void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
-		if (CB)
-			customStringColorsCB[strIndex] = c;
-		else
-			customStringColorsNormal[strIndex] = c;
-	}
+void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
+	if (CB)
+		customStringColorsCB[strIndex] = c;
+	else
+		customStringColorsNormal[strIndex] = c;
+}
 
-	void cSettings::UpdateSettings() {
-		ReadKeyBinds();
-		ReadModSettings();
-		ReadStringColors();
-	}
+void cSettings::UpdateSettings() {
+	ReadKeyBinds();
+	ReadModSettings();
+	ReadStringColors();
+}
 
 
 // Misc
 
-	std::vector<std::string> defaultStrColors = {
-		"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
-	};
+std::vector<std::string> defaultStrColors = {
+	"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
+};
 
-	/* String normal CB
-	191 95 95
-	157 188 94
-	95 159 191
-	191 135 95
-	95 191 164
-	140 95 191
-	*/
+std::vector<std::string> defaultStrColorsCB = {
+	"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
+};
 
-	std::vector<std::string> defaultStrColorsCB = {
-		"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
-	};
+std::vector<Color> customStringColorsNormal;
+std::vector<Color> customStringColorsCB;
 
-	std::vector<Color> customStringColorsNormal;
-	std::vector<Color> customStringColorsCB;
+Color ConvertHexToColor(std::string hexStr) {
+	int r, g, b;
+	sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
 
+	Color c((float)r / 255, (float)g / 255, (float)b / 255);
 
-
-	Color ConvertHexToColor(std::string hexStr) {
-		int r, g, b;
-		sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
-
-		Color c((float)r / 255, (float)g / 255, (float)b / 255);
-
-		return c;
-	}
+	return c;
+}
