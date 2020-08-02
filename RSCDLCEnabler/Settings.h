@@ -9,26 +9,35 @@
 class cSettings
 {
 public:
-	cSettings();
-	std::vector<std::string> GetCustomSongTitles();
-	int GetKeyBind(std::string name);
-	void ReadKeyBinds();
-	void ReadModSettings();
-	int GetModSetting(std::string name);
-	int GetVKCodeForString(std::string vkString);
-	std::string ReturnSettingValue(std::string name);
-	void ReadStringColors();
-	float GetStringColor(std::string);
-	std::vector<Color> GetCustomColors(bool CB);
-	void SetStringColors(int strIndex, Color c, bool CB);
-	void UpdateSettings();
+	cSettings(); // Default Settings
+
+	// Read INI
+		std::vector<std::string> GetCustomSongTitles();
+		void ReadKeyBinds();
+		void ReadModSettings();
+		void ReadStringColors();
+
+	// Return INI Settings
+		int GetKeyBind(std::string name);
+		int GetModSetting(std::string name);
+		std::string ReturnSettingValue(std::string name);
+
+	// Functions
+		int GetVKCodeForString(std::string vkString);
+		// float GetStringColor(std::string);
+		std::vector<Color> GetCustomColors(bool CB);
+		void SetStringColors(int strIndex, Color c, bool CB);
+		void UpdateSettings();
+
 private:
-	std::map<std::string, std::string> keyBinds;
-	std::map<std::string, std::string> modSettings;
-	std::map<std::string, int> customSettings;
-	std::map<std::string, int> guitarSpeakNotes;
-	std::map<std::string, int> keyMap;
-	std::map<std::string, float> stringColors;
+	// INI Setting Maps
+		std::map<std::string, std::string> keyBinds;
+		std::map<std::string, std::string> modSettings;
+		std::map<std::string, int> customSettings;
+
+	// Misc 
+		std::map<std::string, int> keyMap;
+
 };
 
 extern cSettings Settings;
