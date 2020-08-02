@@ -6,6 +6,9 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 
+
+/*----------------------- FORCE ENUMERATION -----------------------*/
+
 typedef void(__thiscall * _tForceEnumeration)(byte *rs_dlc_service_flags); //maybe in the future
 _tForceEnumeration forceEnumeration;
 
@@ -15,15 +18,15 @@ void __fastcall tForceEnumeration(byte *rs_dlc_service_flags) {
 }
 
 /*-------------------- AUDIO KINETIC STUFF ------------------------*/
+
 typedef AKRESULT(__cdecl* tSetRTPCValue) (const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
 tSetRTPCValue SetRTPCValue;
 
 typedef AKRESULT(__cdecl* tGetRTPCValue)(const char* in_pszRtpcName, AkGameObjectID in_gameObjectID, AkRtpcValue *out_rValue, RTPCValue_type *io_rValueType);
 tGetRTPCValue GetRTPCValue;
 
-/*-------------------- AUDIO KINETIC STUFF ------------------------*/
 
-/* ------------------- D3D ---------------------------------*/
+/*--------------------------- D3D ---------------------------------*/
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
@@ -63,5 +66,3 @@ tSetTexture oSetTexture;
 
 typedef HRESULT(APIENTRY* tPresent) (IDirect3DDevice9*, const RECT*, const RECT*, HWND, const RGNDATA*);
 tPresent oPresent;
-
-/* ------------------- D3D ---------------------------------*/
