@@ -36,20 +36,6 @@ enum string_state {
 	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.
 	
-//= 0x4b8 //name = "GuitarcadeMainBlind"id = "2332417892"
-	//= 0x4d0 //name = "GuitarcadeAdditiveBlind"id = "1537455274"
-	//= 0x4e8 //name = "GuitarcadeUIBlind"id = "2107771575"
-
-
-	//0x350 = unknown
-	//0x3b0 = tuning peg glow color (not realtime)
-	//0x3c8 = unknown
-	//0x3e0 = inactive tuning peg glow (only string index 0, applies to all pegs, not realtime)
-	//0x3f8 = tuner note letter color (not realtime)
-	//0x410 = lit text at bottom of note way - maybe
-	//0x428 = unknown
-	//0x440 = unknown
-	//0x458 = unknown
 	/*
 	in theroy based on order within gamecolormanager.flat and adding 18 hex to each address;
 	350 - start point may be off however....
@@ -298,10 +284,7 @@ enum RTPCValue_type
 	RTPCValue_Unavailable   ///< The value is not available for the RTPC specified.
 };
 
-
-/*------------------AUDIO KINETIC STUFF---------------------------------*/
-
-/*------------------FOR REFERENCE---------------------------------------*/
+/*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo
 {

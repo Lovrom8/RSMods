@@ -1,10 +1,10 @@
 #pragma once
+#include "windows.h"
 #include <cstdlib>
 #include <stdio.h>
 #include <fstream>
 #include <stdlib.h>
-#include <stdarg.h> 
-#include "windows.h"
+#include <stdarg.h>
 #include <iostream>
 #include <random>
 
