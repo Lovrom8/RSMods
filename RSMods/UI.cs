@@ -1561,21 +1561,6 @@ namespace RSMods
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
-
-        /*
-        C
-        C#
-        D
-        Eb
-        E
-        F
-        F#
-        G
-        Ab
-        A
-        Bb
-        B
-         */
         private void NupString0_ValueChanged(object sender, EventArgs e)
         {
             decimal StringLetterInt = NupString0.Value;
@@ -1629,8 +1614,6 @@ namespace RSMods
             }
         }
 
-
-
         private bool StringLetterIntIsEqual(int numberToCompareAgainst, decimal currentValue)
         {
             int postitive = numberToCompareAgainst;
@@ -1641,6 +1624,271 @@ namespace RSMods
             if (currentValue == postitive || currentValue == negative || currentValue == postitiveOctave || currentValue == negativeOctave)
                 return true;
             return false;
+        }
+
+        private void NupString1_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString1.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display A
+            {
+                CustomTuningAStringLetter.Text = "A";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Bb
+            {
+                CustomTuningAStringLetter.Text = "Bb";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display B
+            {
+                CustomTuningAStringLetter.Text = "B";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display C
+            {
+                CustomTuningAStringLetter.Text = "C";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display C#
+            {
+                CustomTuningAStringLetter.Text = "C#";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display D
+            {
+                CustomTuningAStringLetter.Text = "D";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Eb
+            {
+                CustomTuningAStringLetter.Text = "Eb";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display E
+            {
+                CustomTuningAStringLetter.Text = "E";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display F
+            {
+                CustomTuningAStringLetter.Text = "F";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display F#
+            {
+                CustomTuningAStringLetter.Text = "F#";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display G
+            {
+                CustomTuningAStringLetter.Text = "G";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Ab
+            {
+                CustomTuningAStringLetter.Text = "Ab";
+            }
+        }
+
+        private void NupString2_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString2.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display D
+            {
+                CustomTuningDStringLetter.Text = "D";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Eb
+            {
+                CustomTuningDStringLetter.Text = "Eb";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display E
+            {
+                CustomTuningDStringLetter.Text = "E";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display F
+            {
+                CustomTuningDStringLetter.Text = "F";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display F#
+            {
+                CustomTuningDStringLetter.Text = "F#";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display G
+            {
+                CustomTuningDStringLetter.Text = "G";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Ab
+            {
+                CustomTuningDStringLetter.Text = "Ab";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display A
+            {
+                CustomTuningDStringLetter.Text = "A";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display Bb
+            {
+                CustomTuningDStringLetter.Text = "Bb";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display B
+            {
+                CustomTuningDStringLetter.Text = "B";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display C
+            {
+                CustomTuningDStringLetter.Text = "C";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display C#
+            {
+                CustomTuningDStringLetter.Text = "C#";
+            }
+        }
+
+        private void NupString3_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString3.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display G
+            {
+                CustomTuningGStringLetter.Text = "G";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Ab
+            {
+                CustomTuningGStringLetter.Text = "Ab";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display A
+            {
+                CustomTuningGStringLetter.Text = "A";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display Bb
+            {
+                CustomTuningGStringLetter.Text = "Bb";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display B
+            {
+                CustomTuningGStringLetter.Text = "B";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display C
+            {
+                CustomTuningGStringLetter.Text = "C";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display C#
+            {
+                CustomTuningGStringLetter.Text = "C#";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display D
+            {
+                CustomTuningGStringLetter.Text = "D";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display Eb
+            {
+                CustomTuningGStringLetter.Text = "Eb";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display E
+            {
+                CustomTuningGStringLetter.Text = "E";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display F
+            {
+                CustomTuningGStringLetter.Text = "F";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display F#
+            {
+                CustomTuningGStringLetter.Text = "F#";
+            }
+        }
+
+        private void NupString4_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString4.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display B
+            {
+                CustomTuningBStringLetter.Text = "B";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display C
+            {
+                CustomTuningBStringLetter.Text = "C";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display C#
+            {
+                CustomTuningBStringLetter.Text = "C#";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display D
+            {
+                CustomTuningBStringLetter.Text = "D";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display Eb
+            {
+                CustomTuningBStringLetter.Text = "Eb";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display E
+            {
+                CustomTuningBStringLetter.Text = "E";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display F
+            {
+                CustomTuningBStringLetter.Text = "F";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display F#
+            {
+                CustomTuningBStringLetter.Text = "F#";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display G
+            {
+                CustomTuningBStringLetter.Text = "G";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display Ab
+            {
+                CustomTuningBStringLetter.Text = "Ab";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display A
+            {
+                CustomTuningBStringLetter.Text = "A";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Bb
+            {
+                CustomTuningBStringLetter.Text = "Bb";
+            }
+        }
+
+        private void NupString5_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString5.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display e
+            {
+                CustomTuningHighEStringLetter.Text = "e";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display f
+            {
+                CustomTuningHighEStringLetter.Text = "f";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display f#
+            {
+                CustomTuningHighEStringLetter.Text = "f#";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display g
+            {
+                CustomTuningHighEStringLetter.Text = "g";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display ab
+            {
+                CustomTuningHighEStringLetter.Text = "ab";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display a
+            {
+                CustomTuningHighEStringLetter.Text = "a";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display bb
+            {
+                CustomTuningHighEStringLetter.Text = "bb";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display b
+            {
+                CustomTuningHighEStringLetter.Text = "b";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display c
+            {
+                CustomTuningHighEStringLetter.Text = "c";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display c#
+            {
+                CustomTuningHighEStringLetter.Text = "c#";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display d
+            {
+                CustomTuningHighEStringLetter.Text = "d";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display eb
+            {
+                CustomTuningHighEStringLetter.Text = "eb";
+            }
         }
     }
 }

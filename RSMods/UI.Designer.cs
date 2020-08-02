@@ -93,6 +93,12 @@
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.GroupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningBStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningGStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningDStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningAStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningLowEStringLetter = new System.Windows.Forms.Label();
             this.RbTone2 = new System.Windows.Forms.RadioButton();
             this.RbTone1 = new System.Windows.Forms.RadioButton();
             this.RbTone0 = new System.Windows.Forms.RadioButton();
@@ -138,12 +144,6 @@
             this.GuitarSpeakKeypress = new System.Windows.Forms.ListBox();
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
-            this.CustomTuningLowEStringLetter = new System.Windows.Forms.Label();
-            this.CustomTuningAStringLetter = new System.Windows.Forms.Label();
-            this.CustomTuningDStringLetter = new System.Windows.Forms.Label();
-            this.CustomTuningGStringLetter = new System.Windows.Forms.Label();
-            this.CustomTuningBStringLetter = new System.Windows.Forms.Label();
-            this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -921,6 +921,66 @@
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
             // 
+            // CustomTuningHighEStringLetter
+            // 
+            this.CustomTuningHighEStringLetter.AutoSize = true;
+            this.CustomTuningHighEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningHighEStringLetter.Location = new System.Drawing.Point(677, 42);
+            this.CustomTuningHighEStringLetter.Name = "CustomTuningHighEStringLetter";
+            this.CustomTuningHighEStringLetter.Size = new System.Drawing.Size(14, 13);
+            this.CustomTuningHighEStringLetter.TabIndex = 108;
+            this.CustomTuningHighEStringLetter.Text = "e";
+            // 
+            // CustomTuningBStringLetter
+            // 
+            this.CustomTuningBStringLetter.AutoSize = true;
+            this.CustomTuningBStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningBStringLetter.Location = new System.Drawing.Point(632, 42);
+            this.CustomTuningBStringLetter.Name = "CustomTuningBStringLetter";
+            this.CustomTuningBStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningBStringLetter.TabIndex = 107;
+            this.CustomTuningBStringLetter.Text = "B";
+            // 
+            // CustomTuningGStringLetter
+            // 
+            this.CustomTuningGStringLetter.AutoSize = true;
+            this.CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningGStringLetter.Location = new System.Drawing.Point(586, 42);
+            this.CustomTuningGStringLetter.Name = "CustomTuningGStringLetter";
+            this.CustomTuningGStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.CustomTuningGStringLetter.TabIndex = 106;
+            this.CustomTuningGStringLetter.Text = "G";
+            // 
+            // CustomTuningDStringLetter
+            // 
+            this.CustomTuningDStringLetter.AutoSize = true;
+            this.CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningDStringLetter.Location = new System.Drawing.Point(541, 42);
+            this.CustomTuningDStringLetter.Name = "CustomTuningDStringLetter";
+            this.CustomTuningDStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.CustomTuningDStringLetter.TabIndex = 105;
+            this.CustomTuningDStringLetter.Text = "D";
+            // 
+            // CustomTuningAStringLetter
+            // 
+            this.CustomTuningAStringLetter.AutoSize = true;
+            this.CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningAStringLetter.Location = new System.Drawing.Point(498, 42);
+            this.CustomTuningAStringLetter.Name = "CustomTuningAStringLetter";
+            this.CustomTuningAStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningAStringLetter.TabIndex = 104;
+            this.CustomTuningAStringLetter.Text = "A";
+            // 
+            // CustomTuningLowEStringLetter
+            // 
+            this.CustomTuningLowEStringLetter.AutoSize = true;
+            this.CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningLowEStringLetter.Location = new System.Drawing.Point(452, 41);
+            this.CustomTuningLowEStringLetter.Name = "CustomTuningLowEStringLetter";
+            this.CustomTuningLowEStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningLowEStringLetter.TabIndex = 103;
+            this.CustomTuningLowEStringLetter.Text = "E";
+            // 
             // RbTone2
             // 
             this.RbTone2.AutoSize = true;
@@ -1155,6 +1215,7 @@
             this.NupString1.Name = "NupString1";
             this.NupString1.Size = new System.Drawing.Size(39, 20);
             this.NupString1.TabIndex = 81;
+            this.NupString1.ValueChanged += new System.EventHandler(this.NupString1_ValueChanged);
             // 
             // NupString5
             // 
@@ -1173,6 +1234,7 @@
             this.NupString5.Name = "NupString5";
             this.NupString5.Size = new System.Drawing.Size(39, 20);
             this.NupString5.TabIndex = 80;
+            this.NupString5.ValueChanged += new System.EventHandler(this.NupString5_ValueChanged);
             // 
             // NupString4
             // 
@@ -1191,6 +1253,7 @@
             this.NupString4.Name = "NupString4";
             this.NupString4.Size = new System.Drawing.Size(39, 20);
             this.NupString4.TabIndex = 79;
+            this.NupString4.ValueChanged += new System.EventHandler(this.NupString4_ValueChanged);
             // 
             // NupString3
             // 
@@ -1209,6 +1272,7 @@
             this.NupString3.Name = "NupString3";
             this.NupString3.Size = new System.Drawing.Size(39, 20);
             this.NupString3.TabIndex = 78;
+            this.NupString3.ValueChanged += new System.EventHandler(this.NupString3_ValueChanged);
             // 
             // NupString2
             // 
@@ -1227,6 +1291,7 @@
             this.NupString2.Name = "NupString2";
             this.NupString2.Size = new System.Drawing.Size(39, 20);
             this.NupString2.TabIndex = 77;
+            this.NupString2.ValueChanged += new System.EventHandler(this.NupString2_ValueChanged);
             // 
             // TxtUIName
             // 
@@ -1460,66 +1525,6 @@
             this.GuitarSpeakNote.Name = "GuitarSpeakNote";
             this.GuitarSpeakNote.Size = new System.Drawing.Size(46, 82);
             this.GuitarSpeakNote.TabIndex = 0;
-            // 
-            // CustomTuningLowEStringLetter
-            // 
-            this.CustomTuningLowEStringLetter.AutoSize = true;
-            this.CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningLowEStringLetter.Location = new System.Drawing.Point(452, 41);
-            this.CustomTuningLowEStringLetter.Name = "CustomTuningLowEStringLetter";
-            this.CustomTuningLowEStringLetter.Size = new System.Drawing.Size(15, 13);
-            this.CustomTuningLowEStringLetter.TabIndex = 103;
-            this.CustomTuningLowEStringLetter.Text = "E";
-            // 
-            // CustomTuningAStringLetter
-            // 
-            this.CustomTuningAStringLetter.AutoSize = true;
-            this.CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningAStringLetter.Location = new System.Drawing.Point(498, 42);
-            this.CustomTuningAStringLetter.Name = "CustomTuningAStringLetter";
-            this.CustomTuningAStringLetter.Size = new System.Drawing.Size(15, 13);
-            this.CustomTuningAStringLetter.TabIndex = 104;
-            this.CustomTuningAStringLetter.Text = "A";
-            // 
-            // CustomTuningDStringLetter
-            // 
-            this.CustomTuningDStringLetter.AutoSize = true;
-            this.CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningDStringLetter.Location = new System.Drawing.Point(541, 42);
-            this.CustomTuningDStringLetter.Name = "CustomTuningDStringLetter";
-            this.CustomTuningDStringLetter.Size = new System.Drawing.Size(16, 13);
-            this.CustomTuningDStringLetter.TabIndex = 105;
-            this.CustomTuningDStringLetter.Text = "D";
-            // 
-            // CustomTuningGStringLetter
-            // 
-            this.CustomTuningGStringLetter.AutoSize = true;
-            this.CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningGStringLetter.Location = new System.Drawing.Point(586, 42);
-            this.CustomTuningGStringLetter.Name = "CustomTuningGStringLetter";
-            this.CustomTuningGStringLetter.Size = new System.Drawing.Size(16, 13);
-            this.CustomTuningGStringLetter.TabIndex = 106;
-            this.CustomTuningGStringLetter.Text = "G";
-            // 
-            // CustomTuningBStringLetter
-            // 
-            this.CustomTuningBStringLetter.AutoSize = true;
-            this.CustomTuningBStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningBStringLetter.Location = new System.Drawing.Point(632, 42);
-            this.CustomTuningBStringLetter.Name = "CustomTuningBStringLetter";
-            this.CustomTuningBStringLetter.Size = new System.Drawing.Size(15, 13);
-            this.CustomTuningBStringLetter.TabIndex = 107;
-            this.CustomTuningBStringLetter.Text = "B";
-            // 
-            // CustomTuningHighEStringLetter
-            // 
-            this.CustomTuningHighEStringLetter.AutoSize = true;
-            this.CustomTuningHighEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CustomTuningHighEStringLetter.Location = new System.Drawing.Point(677, 42);
-            this.CustomTuningHighEStringLetter.Name = "CustomTuningHighEStringLetter";
-            this.CustomTuningHighEStringLetter.Size = new System.Drawing.Size(14, 13);
-            this.CustomTuningHighEStringLetter.TabIndex = 108;
-            this.CustomTuningHighEStringLetter.Text = "e";
             // 
             // MainForm
             // 
