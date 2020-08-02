@@ -24,6 +24,7 @@ public:
 	void UpdateSettings();
 private:
 	std::map<std::string, std::string> keyBinds;
+	std::map<std::string, std::string> modSettings;
 	std::map<std::string, int> customSettings;
 	std::map<std::string, int> guitarSpeakNotes;
 	std::map<std::string, int> keyMap;
