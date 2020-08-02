@@ -53,8 +53,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		}
 		*/
 
-		if (GameLoaded) {
-			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") { // Game must not be on the startup videos or it will crash
+		if (GameLoaded) { // Game must not be on the startup videos or it will crash
+			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") { 
 				MemHelpers.ToggleLoft();
 				std::cout << "Toggle Loft" << std::endl;
 			}
@@ -86,7 +86,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings.GetKeyBind("RemoveLyricsKey") && Settings.ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				RemoveLyrics = !RemoveLyrics;
 				if (RemoveLyrics)
-					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when off and "Karaoke For You" when on.
+					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when on and "Karaoke For You" when off.
 				std::cout << "Karaoke For You" << std::endl;
 			}
 		}
@@ -390,14 +390,6 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-
-	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
-		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
-		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
-
-		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-	}
-
 	if (setAllToNoteGradientTexture) {
 		pDevice->SetTexture(currStride, gradientTextureSeven);
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -458,7 +450,14 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	// Mods
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) {
+	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
+		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
+		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
+
+		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+	}
+
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) { // Extended Range Mode
 		if (IsToBeRemoved(sevenstring, current)) { // Change all pieces of note head's textures
 			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
 			pDevice->SetTexture(1, ourTexture);
@@ -487,7 +486,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 
-	else if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
+	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
 
 	if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
@@ -510,72 +509,70 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			return D3D_OK;
 	}
 
+	if (toggleSkyline && Stride == 16) {
+		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
+			SkylineOff = false;
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+		}
 
+		// Skyline Removal
+		pDevice->GetTexture(1, &pBaseTextures[1]);
+		pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-	if (!lowPerformancePC) {
-		if (toggleSkyline && Stride == 16) {
-			if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
-				SkylineOff = false;
-				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-			}
-
-			// Skyline Removal
-			pDevice->GetTexture(1, &pBaseTextures[1]);
-			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
-
-			if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
-				if (CRCForTexture(pCurrTextures[1], crc)) {
-					if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles + orange line beneath them
-						SkylineOff = true;
-						return D3D_OK;
-					}
-				}
-			}
-
-			pDevice->GetTexture(0, &pBaseTextures[0]);
-			pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
-
-			if (pBaseTextures[0]) {
-				if (CRCForTexture(pCurrTextures[0], crc)) {
-					if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
-						SkylineOff = true;
-						return D3D_OK;
-					}
+		if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
+			if (CRCForTexture(pCurrTextures[1], crc)) {
+				if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles + orange line beneath them
+					SkylineOff = true;
+					return D3D_OK;
 				}
 			}
 		}
-		else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
-			if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
-				pDevice->GetTexture(1, &pBaseTextures[1]);
-				pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
-				if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
-					if (!pBaseTextures[1]) //if there's no texture for Stage 1
-						return D3D_OK;
+		pDevice->GetTexture(0, &pBaseTextures[0]);
+		pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
 
-					if (CRCForTexture(pCurrTextures[1], crc)) {
-						if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039)
-							AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
-					}
-
-					//Log("0x%08x", crc);
-
-					if (headstockTexturePointers.size() == 3) {
-						calculatedHeadstocks = true;
-						resetHeadstockCache = false;
-						std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
-					}
-
+		if (pBaseTextures[0]) {
+			if (CRCForTexture(pCurrTextures[0], crc)) {
+				if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+					SkylineOff = true;
 					return D3D_OK;
 				}
-
-				if (calculatedHeadstocks)
-					if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
-						return D3D_OK;
 			}
 		}
 	}
-	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
+
+	else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
+		if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+			pDevice->GetTexture(1, &pBaseTextures[1]);
+			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+
+			if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
+				if (!pBaseTextures[1]) //if there's no texture for Stage 1
+					return D3D_OK;
+
+				if (CRCForTexture(pCurrTextures[1], crc)) {
+					if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039)
+						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
+				}
+
+				//Log("0x%08x", crc);
+
+				if (headstockTexturePointers.size() == 3) {
+					calculatedHeadstocks = true;
+					resetHeadstockCache = false;
+					std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
+				}
+
+				return D3D_OK;
+			}
+
+			if (calculatedHeadstocks)
+				if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
+					return D3D_OK;
+		}
+	}
+
+	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount); // KEEP THIS LINE. It means for it to display the graphics!
 }
 
 HRESULT APIENTRY Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl) {
