@@ -731,6 +731,7 @@
             // 
             // String0Color
             // 
+            this.String0Color.Enabled = false;
             this.String0Color.Location = new System.Drawing.Point(152, 63);
             this.String0Color.Name = "String0Color";
             this.String0Color.ReadOnly = true;
@@ -739,6 +740,7 @@
             // 
             // String1Color
             // 
+            this.String1Color.Enabled = false;
             this.String1Color.Location = new System.Drawing.Point(152, 93);
             this.String1Color.Name = "String1Color";
             this.String1Color.ReadOnly = true;
@@ -757,6 +759,7 @@
             // 
             // String2Color
             // 
+            this.String2Color.Enabled = false;
             this.String2Color.Location = new System.Drawing.Point(152, 122);
             this.String2Color.Name = "String2Color";
             this.String2Color.ReadOnly = true;
@@ -775,6 +778,7 @@
             // 
             // String3Color
             // 
+            this.String3Color.Enabled = false;
             this.String3Color.Location = new System.Drawing.Point(152, 153);
             this.String3Color.Name = "String3Color";
             this.String3Color.ReadOnly = true;
@@ -793,6 +797,7 @@
             // 
             // String4Color
             // 
+            this.String4Color.Enabled = false;
             this.String4Color.Location = new System.Drawing.Point(152, 185);
             this.String4Color.Name = "String4Color";
             this.String4Color.ReadOnly = true;
@@ -811,6 +816,7 @@
             // 
             // String5Color
             // 
+            this.String5Color.Enabled = false;
             this.String5Color.Location = new System.Drawing.Point(152, 215);
             this.String5Color.Name = "String5Color";
             this.String5Color.ReadOnly = true;
@@ -1175,7 +1181,7 @@
             this.NupTuningIndex.Size = new System.Drawing.Size(100, 20);
             this.NupTuningIndex.TabIndex = 84;
             this.NupTuningIndex.Value = new decimal(new int[] {
-            36500,
+            37500,
             0,
             0,
             0});
@@ -1342,6 +1348,7 @@
             this.ToolTip.InitialDelay = 1000;
             this.ToolTip.ReshowDelay = 500;
             this.ToolTip.ShowAlways = true;
+            this.ToolTip.ToolTipTitle = "ToolTip";
             // 
             // ToggleSkylineBox
             // 

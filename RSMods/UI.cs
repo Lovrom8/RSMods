@@ -1351,67 +1351,68 @@ namespace RSMods
         private void StartToolTips()  // Documentation: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
         {
             // Create the ToolTip and associate with the Form container.
-            ToolTip toolTip1 = new ToolTip();
+            ToolTip toolTip = new ToolTip();
 
             // Set up the delays for the ToolTip.
-            toolTip1.AutoPopDelay = 5000;
-            toolTip1.InitialDelay = 1000;
-            toolTip1.ReshowDelay = 500;
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 1000;
+            toolTip.ReshowDelay = 500;
             // Force the ToolTip text to be displayed whether or not the form is active.
-            toolTip1.ShowAlways = true;
+            toolTip.ShowAlways = true;
 
             // Set up the ToolTip text for the Button and Checkbox.
-            toolTip1.SetToolTip(this.ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings. Best used with Venue Mode off (setting in game). Used by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background. Player just sees an all black background when this is enabled. Options for turning the loft off only when in a song, when the game first starts up, or on a key press.");
-            toolTip1.SetToolTip(this.AddVolumeCheckbox, "Experimental");
-            toolTip1.SetToolTip(this.RainbowStringsEnabled, "How Pro are you? This makes the players guitar strings constantly cycling through colors.");
-            toolTip1.SetToolTip(this.HeadstockCheckbox, "Stops the Headstock of the guitar being drawn. “Headless” guitar mode. Just cleans up some more of the UI.");
-            toolTip1.SetToolTip(this.GreenScreenWallCheckbox, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience. Invalidated by “No Loft”.");
-            toolTip1.SetToolTip(this.ForceEnumerationCheckbox, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder. Not necesary to enable if you're already using Rocksniffer to do the same thing.");
-            toolTip1.SetToolTip(this.FretlessModeCheckbox, "Removes the Fret Wire from the neck, making your instrument appear to be Fretless.");
-            toolTip1.SetToolTip(this.SongTimerCheckbox, "Experimental - Intent is to show a box with your timestamp position through the song.");
-            toolTip1.SetToolTip(this.DecreaseVolumeCheckbox, "Experimental");
-            toolTip1.SetToolTip(this.ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
-            toolTip1.SetToolTip(this.CustomColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
-            toolTip1.SetToolTip(this.RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS. Use in conjunction with No Loft for a cleaner UI. Options for always off,only off when in a song, or only when toggled by key press.");
-            toolTip1.SetToolTip(this.DiscoModeCheckbox, "Experimental.");
-            toolTip1.SetToolTip(this.AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu. Lets you auto load the last used profile without needing to interact with the game at all.");
-            toolTip1.SetToolTip(this.RemoveInlaysCheckbox, "Disables the guitar neck inlay display entirely.");
-            toolTip1.SetToolTip(this.RemoveLineMarkersCheckBox, "Removes the additional lane marker lines seen in the display. When used with No Loft, provides a cleaner Luma Key.");
-            toolTip1.SetToolTip(this.RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
-            toolTip1.SetToolTip(this.SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
-            toolTip1.SetToolTip(this.KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications. You need to press ENTER after setting teh key for it to be saved");
-            toolTip1.SetToolTip(this.BtnAddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
-            toolTip1.SetToolTip(this.BtnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
-            toolTip1.SetToolTip(this.BtnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
-            toolTip1.SetToolTip(this.ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
-            toolTip1.SetToolTip(this.ResetToDefaultButton, "Resets all RSMods values to defaults."); // button beside tone selection
-            toolTip1.SetToolTip(this.BtnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
-            toolTip1.SetToolTip(this.BtnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
-            toolTip1.SetToolTip(this.ListProfileTones, "Step2, highlight a tone name.");
-            toolTip1.SetToolTip(this.RbTone0, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.RbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.RbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
-            toolTip1.SetToolTip(this.BtnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
-            toolTip1.SetToolTip(this.ListTunings, "Shows the list of tuning definitions currently in Rocksmith.");
-            toolTip1.SetToolTip(this.NupString0, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.NupString1, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.NupString2, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.NupString3, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.NupString4, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.NupString5, "Set the offset for each string.");
-            toolTip1.SetToolTip(this.BtnAddTuning, "Adds the tuning as defined above.");
-            toolTip1.SetToolTip(this.BtnRemoveTuning, "Removes the highlighted tuning.");
-            toolTip1.SetToolTip(this.BtnSaveTuningChanges, "Saves the tuning list to Rocksmith.");
-            toolTip1.SetToolTip(this.BtnUnpackCacheAgain, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
-            toolTip1.SetToolTip(this.BtnRemoveTempFolders, "Removes the temporary files used by RSMods.");
-            toolTip1.SetToolTip(this.ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here. See the Custom Colors - Color Blind mode, for the colors that will be used while in ER mode,");
-            toolTip1.SetToolTip(this.HowToEnumerateBox, "Choose to Enumerate on key press, or automatically scan for changes every X seconds and start enumeration if a new file has been added.");
-            toolTip1.SetToolTip(this.ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
-            toolTip1.SetToolTip(this.ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
-            toolTip1.SetToolTip(this.ColorBlindStringColorsRadio, "When ER mode is enabled, these are the colors that the strings will be changed to.");
-            toolTip1.SetToolTip(this.ToggleLyricsRadio, "Lyrics display will always be disabled in Learn-A-Song game mode.");
-            toolTip1.SetToolTip(this.ToggleLyricsManualRadio, "Lyrics can be toggled on or off by a defined hotkey.");
-            toolTip1.SetToolTip(this.HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
+            toolTip.SetToolTip(this.ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings. Best used with Venue Mode off (setting in game). Used by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background. Player just sees an all black background when this is enabled. Options for turning the loft off only when in a song, when the game first starts up, or on a key press.");
+            toolTip.SetToolTip(this.AddVolumeCheckbox, "Experimental");
+            toolTip.SetToolTip(this.RainbowStringsEnabled, "How Pro are you? This makes the players guitar strings constantly cycling through colors.");
+            toolTip.SetToolTip(this.HeadstockCheckbox, "Stops the Headstock of the guitar being drawn. “Headless” guitar mode. Just cleans up some more of the UI.");
+            toolTip.SetToolTip(this.GreenScreenWallCheckbox, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience. Invalidated by “No Loft”.");
+            toolTip.SetToolTip(this.ForceEnumerationCheckbox, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder. Not necesary to enable if you're already using Rocksniffer to do the same thing.");
+            toolTip.SetToolTip(this.FretlessModeCheckbox, "Removes the Fret Wire from the neck, making your instrument appear to be Fretless.");
+            toolTip.SetToolTip(this.SongTimerCheckbox, "Experimental - Intent is to show a box with your timestamp position through the song.");
+            toolTip.SetToolTip(this.DecreaseVolumeCheckbox, "Experimental");
+            toolTip.SetToolTip(this.ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
+            toolTip.SetToolTip(this.CustomColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
+            toolTip.SetToolTip(this.RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS. Use in conjunction with No Loft for a cleaner UI. Options for always off,only off when in a song, or only when toggled by key press.");
+            toolTip.SetToolTip(this.DiscoModeCheckbox, "Experimental - Make the game look trippy by making the colors that appear on top of the amps stick to the background.");
+            toolTip.SetToolTip(this.AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu. Lets you auto load the last used profile without needing to interact with the game at all.");
+            toolTip.SetToolTip(this.RemoveInlaysCheckbox, "Disables the guitar neck inlay display entirely.");
+            toolTip.SetToolTip(this.RemoveLineMarkersCheckBox, "Removes the additional lane marker lines seen in the display. When used with No Loft, provides a cleaner Luma Key.");
+            toolTip.SetToolTip(this.RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
+            toolTip.SetToolTip(this.SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
+            toolTip.SetToolTip(this.KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications. You need to press ENTER after setting teh key for it to be saved");
+            toolTip.SetToolTip(this.BtnAddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
+            toolTip.SetToolTip(this.BtnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences. Combined with Auto Load Last Profile and huzzah!");
+            toolTip.SetToolTip(this.BtnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations. Also replaces UPLAY on the main menu with an EXIT GAME option.");
+            toolTip.SetToolTip(this.ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass. You need to have the tone you want to set saved in your profile first, then you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
+            toolTip.SetToolTip(this.ResetToDefaultButton, "Resets all RSMods values to defaults."); // button beside tone selection
+            toolTip.SetToolTip(this.BtnRestoreDefaults, "Restores the original cache.psarc file - undoes all 'set and forget' mods."); //reset button in "set and forget" section "restore cache backup"
+            toolTip.SetToolTip(this.BtnLoadTonesFromProfiles, "Step 1, click this to load the tones that are saved in your profile.");
+            toolTip.SetToolTip(this.ListProfileTones, "Step2, highlight a tone name.");
+            toolTip.SetToolTip(this.RbTone0, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip.SetToolTip(this.RbTone1, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip.SetToolTip(this.RbTone2, "Choose Lead, Rhythm or Bass to assign the highlighted tone to.");
+            toolTip.SetToolTip(this.BtnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
+            toolTip.SetToolTip(this.ListTunings, "Shows the list of tuning definitions currently in Rocksmith.");
+            toolTip.SetToolTip(this.NupString0, "Set the offset for each string.");
+            toolTip.SetToolTip(this.NupString1, "Set the offset for each string.");
+            toolTip.SetToolTip(this.NupString2, "Set the offset for each string.");
+            toolTip.SetToolTip(this.NupString3, "Set the offset for each string.");
+            toolTip.SetToolTip(this.NupString4, "Set the offset for each string.");
+            toolTip.SetToolTip(this.NupString5, "Set the offset for each string.");
+            toolTip.SetToolTip(this.BtnAddTuning, "Adds the tuning as defined above.");
+            toolTip.SetToolTip(this.BtnRemoveTuning, "Removes the highlighted tuning.");
+            toolTip.SetToolTip(this.BtnSaveTuningChanges, "Saves the tuning list to Rocksmith.");
+            toolTip.SetToolTip(this.BtnUnpackCacheAgain, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
+            toolTip.SetToolTip(this.BtnRemoveTempFolders, "Removes the temporary files used by RSMods.");
+            toolTip.SetToolTip(this.ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here. See the Custom Colors - Color Blind mode, for the colors that will be used while in ER mode,");
+            toolTip.SetToolTip(this.HowToEnumerateBox, "Choose to Enumerate on key press, or automatically scan for changes every X seconds and start enumeration if a new file has been added.");
+            toolTip.SetToolTip(this.ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
+            toolTip.SetToolTip(this.ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
+            toolTip.SetToolTip(this.ColorBlindStringColorsRadio, "When ER mode is enabled, these are the colors that the strings will be changed to.");
+            toolTip.SetToolTip(this.ToggleLyricsRadio, "Lyrics display will always be disabled in Learn-A-Song game mode.");
+            toolTip.SetToolTip(this.ToggleLyricsManualRadio, "Lyrics can be toggled on or off by a defined hotkey.");
+            toolTip.SetToolTip(this.HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
+            toolTip.SetToolTip(this.GuitarSpeakEnableCheckbox, "Use your guitar to control the menus!");
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
