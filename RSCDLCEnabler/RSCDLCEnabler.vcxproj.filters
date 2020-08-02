@@ -22,9 +22,6 @@
     <Filter Include="Mods">
       <UniqueIdentifier>{c3164239-7db1-4636-8512-4903a737ec2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Mods\CustomTuningFix files">
-      <UniqueIdentifier>{cfb627fb-fa28-47a2-bb5b-a4ea7818f2ae}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -207,24 +204,6 @@
     </None>
     <None Include="DirectX\d3dx9math.inl">
       <Filter>Header Files\DirectX</Filter>
-    </None>
-    <None Include="Mods\Custom Tuning Fix Files\introsequence.gfx">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="maingame - additions.csv">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="tuning.database.json">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="tuning.database basic.json">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="maingame - additions basic.csv">
-      <Filter>Mods\CustomTuningFix files</Filter>
-    </None>
-    <None Include="ui_menu_pillar_main.database.json">
-      <Filter>Mods\CustomTuningFix files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
