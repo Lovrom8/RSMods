@@ -1,6 +1,6 @@
-#include "MemUtil.h"
-#include "Offsets.h"
-#include "Settings.h"
+#include "../MemUtil.h"
+#include "../Offsets.h"
+#include "../Settings.h"
 #include <string>
 #include <vector>
 

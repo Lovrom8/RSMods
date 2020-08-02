@@ -37,6 +37,19 @@ private:
 
 	// Misc 
 	std::map<std::string, int> keyMap;
+	
+	Color ConvertHexToColor(std::string hexStr);
+
+	std::vector<Color> customStringColorsNormal;
+	std::vector<Color> customStringColorsCB;
+
+	std::vector<std::string> defaultStrColors = {
+		"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
+	};
+
+	std::vector<std::string> defaultStrColorsCB = {
+		"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
+	};
 
 };
 

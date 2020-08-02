@@ -16,13 +16,13 @@
 #include <intrin.h>
 
 // Mods
-#include "Enumeration.h"
+#include "Mods/Enumeration.h"
 #include "D3D.h"
-#include "CustomSongTitles.h"
-#include "ExtendedRangeMode.h"
-#include "CollectColors.h"
-#include "GuitarSkeletons.h"
-#include "GuitarSpeak.h"
+#include "Mods/CustomSongTitles.h"
+#include "Mods/ExtendedRangeMode.h"
+#include "Mods/CollectColors.h"
+#include "Mods/GuitarSkeletons.h"
+#include "Mods/GuitarSpeak.h"
 
 // ImGUI
 #include "imgui_includeMe.h"

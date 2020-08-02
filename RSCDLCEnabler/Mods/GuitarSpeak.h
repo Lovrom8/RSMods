@@ -7,10 +7,10 @@
 #include "windows.h"
 
 
-#include "MemHelpers.h"
-#include "Offsets.h"
-#include "MemUtil.h"
-#include "Settings.h"
+#include "../MemHelpers.h"
+#include "../Offsets.h"
+#include "../MemUtil.h"
+#include "../Settings.h"
 
 class cGuitarSpeak {
 public:

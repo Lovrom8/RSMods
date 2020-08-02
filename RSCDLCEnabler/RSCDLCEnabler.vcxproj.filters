@@ -60,25 +60,25 @@
     <ClCompile Include="ImGUI\RobotoFont.cpp">
       <Filter>ImGUI</Filter>
     </ClCompile>
-    <ClCompile Include="Enumeration.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
-    <ClCompile Include="ExtendedRangeMode.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSongTitles.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="MemHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CollectColors.cpp">
+    <ClCompile Include="Mods\Enumeration.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="GuitarSkeletons.cpp">
+    <ClCompile Include="Mods\ExtendedRangeMode.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="GuitarSpeak.cpp">
+    <ClCompile Include="Mods\GuitarSkeletons.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSpeak.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomSongTitles.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\CollectColors.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,20 +167,8 @@
     <ClInclude Include="D3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enumeration.h">
-      <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="ExtendedRangeMode.h">
-      <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSongTitles.h">
-      <Filter>Mods</Filter>
-    </ClInclude>
     <ClInclude Include="MemHelpers.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollectColors.h">
-      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
       <Filter>Header Files</Filter>
@@ -188,14 +176,26 @@
     <ClInclude Include="SimpleIni.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GuitarSkeletons.h">
-      <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="GuitarSpeak.h">
-      <Filter>Mods</Filter>
-    </ClInclude>
     <ClInclude Include="imgui_includeMe.h">
       <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ExtendedRangeMode.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CollectColors.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomSongTitles.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSkeletons.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSpeak.h">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\Enumeration.h">
+      <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

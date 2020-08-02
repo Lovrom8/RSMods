@@ -401,18 +401,7 @@ void cSettings::UpdateSettings() {
 
 // Misc
 
-std::vector<std::string> defaultStrColors = {
-	"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
-};
-
-std::vector<std::string> defaultStrColorsCB = {
-	"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
-};
-
-std::vector<Color> customStringColorsNormal;
-std::vector<Color> customStringColorsCB;
-
-Color ConvertHexToColor(std::string hexStr) {
+Color cSettings::ConvertHexToColor(std::string hexStr) {
 	int r, g, b;
 	sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
 

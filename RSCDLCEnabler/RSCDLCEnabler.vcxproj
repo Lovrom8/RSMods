@@ -10,14 +10,23 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+    <ItemGroup>
+	<ClCompile Include="Mods\GuitarSkeletons.cpp" />
+    <ClCompile Include="Mods\CollectColors.cpp" />
+    <ClCompile Include="Mods\CustomSongTitles.cpp" />
+	<ClCompile Include="Mods\Enumeration.cpp" />
+    <ClCompile Include="Mods\ExtendedRangeMode.cpp" />
+    <ClCompile Include="Mods\GuitarSpeak.cpp" />
+	<ClInclude Include="Mods\CollectColors.h" />
+    <ClInclude Include="Mods\GuitarSkeletons.h" />
+    <ClInclude Include="Mods\GuitarSpeak.h" />
+	<ClInclude Include="Mods\Enumeration.h" />
+    <ClInclude Include="Mods\ExtendedRangeMode.h" />
+    <ClInclude Include="Mods\CustomSongTitles.h" />
+  </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CollectColors.cpp" />
-    <ClCompile Include="CustomSongTitles.cpp" />
     <ClCompile Include="D3DX9_42.cpp" />
     <ClCompile Include="DLLMain.cpp" />
-    <ClCompile Include="Enumeration.cpp" />
-    <ClCompile Include="ExtendedRangeMode.cpp" />
-    <ClCompile Include="GuitarSpeak.cpp" />
     <ClCompile Include="ImGUI\imgui.cpp" />
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
@@ -29,10 +38,8 @@
     <ClCompile Include="MemHelpers.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
-    <ClCompile Include="GuitarSkeletons.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomSongTitles.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="D3DX9_42.h" />
@@ -47,12 +54,7 @@
     <ClInclude Include="DirectX\d3dx9shape.h" />
     <ClInclude Include="DirectX\d3dx9tex.h" />
     <ClInclude Include="DirectX\d3dx9xof.h" />
-    <ClInclude Include="Enumeration.h" />
-    <ClInclude Include="ExtendedRangeMode.h" />
     <ClInclude Include="Functions.h" />
-    <ClInclude Include="CollectColors.h" />
-    <ClInclude Include="GuitarSkeletons.h" />
-    <ClInclude Include="GuitarSpeak.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
     <ClInclude Include="ImGUI\imgui_impl_dx9.h" />

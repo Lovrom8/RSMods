@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-#include "Structs.h"
+#include "../Structs.h"
 
 class cGuitarSkeletons {
 public:
