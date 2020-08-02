@@ -54,7 +54,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		*/
 
 		if (GameLoaded) { // Game must not be on the startup videos or it will crash
-			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") { 
+			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") {
 				MemHelpers.ToggleLoft();
 				std::cout << "Toggle Loft" << std::endl;
 			}
@@ -88,6 +88,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (RemoveLyrics)
 					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when on and "Karaoke For You" when off.
 				std::cout << "Karaoke For You" << std::endl;
+			}
+			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) { //CTRL + A
+				Settings.UpdateSettings();
+				std::cout << "Value: " << Settings.ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
+				std::cout << "Reloaded settings" << std::endl;
 			}
 		}
 
@@ -245,6 +250,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		std::cout << "ImGUI Init" << std::endl;
 
 		GenerateTexture(pDevice);
+
+		Settings.UpdateSettings();
 	}
 
 	ImGui_ImplDX9_NewFrame();
@@ -390,6 +397,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
+	// Enable if you want to risk running the game at 3 FPS
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
+		Settings.UpdateSettings();
+		GenerateTexture(pDevice);
+		std::cout << "Reloaded settings" << std::endl;
+	}
+
 	if (setAllToNoteGradientTexture) {
 		pDevice->SetTexture(currStride, gradientTextureSeven);
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
@@ -477,7 +491,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				if (crc == 0x02a50002) // Same checksum for stems and accents, because they use the same texture
 					AddToTextureList(notewayTexturePointers, pCurrTexture);
 
-				if (notewayTexturePointers.size() == 2) {
+				if (notewayTexturePointers.size() == 1) {
 					std::cout << "Calculated stem CRC" << std::endl;
 					calculatedCRC = true;
 				}
@@ -762,7 +776,7 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = true;
 				}
 
-				if(!GuitarSpeakPresent && Settings.ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
+				if (!GuitarSpeakPresent && Settings.ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
 					GuitarSpeakPresent = true;
 					if (!GuitarSpeak.TimerTick()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;
