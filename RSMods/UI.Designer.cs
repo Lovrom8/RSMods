@@ -68,6 +68,7 @@
             this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
             this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
             this.EnabledModsBox = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakEnableCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.CustomColorsCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
@@ -100,7 +101,6 @@
             this.ChangeTonesHeader = new System.Windows.Forms.Label();
             this.BtnSetDefaultTones = new System.Windows.Forms.Button();
             this.BtnRemoveTempFolders = new System.Windows.Forms.Button();
-            this.TuningNoteNameLabel = new System.Windows.Forms.Label();
             this.BtnAddCustomMenu = new System.Windows.Forms.Button();
             this.BtnAddFastLoadMod = new System.Windows.Forms.Button();
             this.BtnUnpackCacheAgain = new System.Windows.Forms.Button();
@@ -138,7 +138,12 @@
             this.GuitarSpeakKeypress = new System.Windows.Forms.ListBox();
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
-            this.GuitarSpeakEnableCheckbox = new System.Windows.Forms.CheckBox();
+            this.CustomTuningLowEStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningAStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningDStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningGStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningBStringLetter = new System.Windows.Forms.Label();
+            this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -610,6 +615,17 @@
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
             // 
+            // GuitarSpeakEnableCheckbox
+            // 
+            this.GuitarSpeakEnableCheckbox.AutoSize = true;
+            this.GuitarSpeakEnableCheckbox.Location = new System.Drawing.Point(11, 175);
+            this.GuitarSpeakEnableCheckbox.Name = "GuitarSpeakEnableCheckbox";
+            this.GuitarSpeakEnableCheckbox.Size = new System.Drawing.Size(88, 17);
+            this.GuitarSpeakEnableCheckbox.TabIndex = 46;
+            this.GuitarSpeakEnableCheckbox.Text = "Guitar Speak";
+            this.GuitarSpeakEnableCheckbox.UseVisualStyleBackColor = true;
+            this.GuitarSpeakEnableCheckbox.CheckedChanged += new System.EventHandler(this.GuitarSpeakEnableCheckbox_CheckedChanged);
+            // 
             // RemoveLyricsCheckbox
             // 
             this.RemoveLyricsCheckbox.AutoSize = true;
@@ -862,6 +878,12 @@
             // 
             // GroupSetAndForget
             // 
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningHighEStringLetter);
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningBStringLetter);
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningGStringLetter);
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningDStringLetter);
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningAStringLetter);
+            this.GroupSetAndForget.Controls.Add(this.CustomTuningLowEStringLetter);
             this.GroupSetAndForget.Controls.Add(this.RbTone2);
             this.GroupSetAndForget.Controls.Add(this.RbTone1);
             this.GroupSetAndForget.Controls.Add(this.RbTone0);
@@ -870,7 +892,6 @@
             this.GroupSetAndForget.Controls.Add(this.ChangeTonesHeader);
             this.GroupSetAndForget.Controls.Add(this.BtnSetDefaultTones);
             this.GroupSetAndForget.Controls.Add(this.BtnRemoveTempFolders);
-            this.GroupSetAndForget.Controls.Add(this.TuningNoteNameLabel);
             this.GroupSetAndForget.Controls.Add(this.BtnAddCustomMenu);
             this.GroupSetAndForget.Controls.Add(this.BtnAddFastLoadMod);
             this.GroupSetAndForget.Controls.Add(this.BtnUnpackCacheAgain);
@@ -979,16 +1000,6 @@
             this.BtnRemoveTempFolders.UseVisualStyleBackColor = true;
             this.BtnRemoveTempFolders.Click += new System.EventHandler(this.BtnRemoveTempFolders_Click);
             // 
-            // TuningNoteNameLabel
-            // 
-            this.TuningNoteNameLabel.AutoSize = true;
-            this.TuningNoteNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TuningNoteNameLabel.Location = new System.Drawing.Point(452, 41);
-            this.TuningNoteNameLabel.Name = "TuningNoteNameLabel";
-            this.TuningNoteNameLabel.Size = new System.Drawing.Size(240, 13);
-            this.TuningNoteNameLabel.TabIndex = 94;
-            this.TuningNoteNameLabel.Text = "E         A         D         G          B         e";
-            // 
             // BtnAddCustomMenu
             // 
             this.BtnAddCustomMenu.Location = new System.Drawing.Point(723, 119);
@@ -1076,6 +1087,7 @@
             this.NupString0.Name = "NupString0";
             this.NupString0.Size = new System.Drawing.Size(39, 20);
             this.NupString0.TabIndex = 86;
+            this.NupString0.ValueChanged += new System.EventHandler(this.NupString0_ValueChanged);
             // 
             // LblUIIndex
             // 
@@ -1449,16 +1461,65 @@
             this.GuitarSpeakNote.Size = new System.Drawing.Size(46, 82);
             this.GuitarSpeakNote.TabIndex = 0;
             // 
-            // GuitarSpeakEnableCheckbox
+            // CustomTuningLowEStringLetter
             // 
-            this.GuitarSpeakEnableCheckbox.AutoSize = true;
-            this.GuitarSpeakEnableCheckbox.Location = new System.Drawing.Point(11, 175);
-            this.GuitarSpeakEnableCheckbox.Name = "GuitarSpeakEnableCheckbox";
-            this.GuitarSpeakEnableCheckbox.Size = new System.Drawing.Size(88, 17);
-            this.GuitarSpeakEnableCheckbox.TabIndex = 46;
-            this.GuitarSpeakEnableCheckbox.Text = "Guitar Speak";
-            this.GuitarSpeakEnableCheckbox.UseVisualStyleBackColor = true;
-            this.GuitarSpeakEnableCheckbox.CheckedChanged += new System.EventHandler(this.GuitarSpeakEnableCheckbox_CheckedChanged);
+            this.CustomTuningLowEStringLetter.AutoSize = true;
+            this.CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningLowEStringLetter.Location = new System.Drawing.Point(452, 41);
+            this.CustomTuningLowEStringLetter.Name = "CustomTuningLowEStringLetter";
+            this.CustomTuningLowEStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningLowEStringLetter.TabIndex = 103;
+            this.CustomTuningLowEStringLetter.Text = "E";
+            // 
+            // CustomTuningAStringLetter
+            // 
+            this.CustomTuningAStringLetter.AutoSize = true;
+            this.CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningAStringLetter.Location = new System.Drawing.Point(498, 42);
+            this.CustomTuningAStringLetter.Name = "CustomTuningAStringLetter";
+            this.CustomTuningAStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningAStringLetter.TabIndex = 104;
+            this.CustomTuningAStringLetter.Text = "A";
+            // 
+            // CustomTuningDStringLetter
+            // 
+            this.CustomTuningDStringLetter.AutoSize = true;
+            this.CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningDStringLetter.Location = new System.Drawing.Point(541, 42);
+            this.CustomTuningDStringLetter.Name = "CustomTuningDStringLetter";
+            this.CustomTuningDStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.CustomTuningDStringLetter.TabIndex = 105;
+            this.CustomTuningDStringLetter.Text = "D";
+            // 
+            // CustomTuningGStringLetter
+            // 
+            this.CustomTuningGStringLetter.AutoSize = true;
+            this.CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningGStringLetter.Location = new System.Drawing.Point(586, 42);
+            this.CustomTuningGStringLetter.Name = "CustomTuningGStringLetter";
+            this.CustomTuningGStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.CustomTuningGStringLetter.TabIndex = 106;
+            this.CustomTuningGStringLetter.Text = "G";
+            // 
+            // CustomTuningBStringLetter
+            // 
+            this.CustomTuningBStringLetter.AutoSize = true;
+            this.CustomTuningBStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningBStringLetter.Location = new System.Drawing.Point(632, 42);
+            this.CustomTuningBStringLetter.Name = "CustomTuningBStringLetter";
+            this.CustomTuningBStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.CustomTuningBStringLetter.TabIndex = 107;
+            this.CustomTuningBStringLetter.Text = "B";
+            // 
+            // CustomTuningHighEStringLetter
+            // 
+            this.CustomTuningHighEStringLetter.AutoSize = true;
+            this.CustomTuningHighEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CustomTuningHighEStringLetter.Location = new System.Drawing.Point(677, 42);
+            this.CustomTuningHighEStringLetter.Name = "CustomTuningHighEStringLetter";
+            this.CustomTuningHighEStringLetter.Size = new System.Drawing.Size(14, 13);
+            this.CustomTuningHighEStringLetter.TabIndex = 108;
+            this.CustomTuningHighEStringLetter.Text = "e";
             // 
             // MainForm
             // 
@@ -1601,7 +1662,6 @@
         private System.Windows.Forms.Button BtnRemoveTuning;
         private System.Windows.Forms.ListBox ListTunings;
         private System.Windows.Forms.Button BtnAddCustomMenu;
-        private System.Windows.Forms.Label TuningNoteNameLabel;
         private System.Windows.Forms.Button ClearKeyBind;
         private System.Windows.Forms.CheckBox RemoveLyricsCheckbox;
         private System.Windows.Forms.ToolTip ToolTip;
@@ -1629,6 +1689,12 @@
         private System.Windows.Forms.Label GuitarSpeakNoteLabel;
         private System.Windows.Forms.Button GuitarSpeakSaveButton;
         private System.Windows.Forms.CheckBox GuitarSpeakEnableCheckbox;
+        private System.Windows.Forms.Label CustomTuningLowEStringLetter;
+        private System.Windows.Forms.Label CustomTuningHighEStringLetter;
+        private System.Windows.Forms.Label CustomTuningBStringLetter;
+        private System.Windows.Forms.Label CustomTuningGStringLetter;
+        private System.Windows.Forms.Label CustomTuningDStringLetter;
+        private System.Windows.Forms.Label CustomTuningAStringLetter;
     }
 }
 

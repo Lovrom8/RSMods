@@ -1561,5 +1561,86 @@ namespace RSMods
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
+
+        /*
+        C
+        C#
+        D
+        Eb
+        E
+        F
+        F#
+        G
+        Ab
+        A
+        Bb
+        B
+         */
+        private void NupString0_ValueChanged(object sender, EventArgs e)
+        {
+            decimal StringLetterInt = NupString0.Value;
+            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display E
+            {
+                CustomTuningLowEStringLetter.Text = "E";
+            }
+            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display F
+            {
+                CustomTuningLowEStringLetter.Text = "F";
+            }
+            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display F#
+            {
+                CustomTuningLowEStringLetter.Text = "F#";
+            }
+            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display G
+            {
+                CustomTuningLowEStringLetter.Text = "G";
+            }
+            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display Ab
+            {
+                CustomTuningLowEStringLetter.Text = "Ab";
+            }
+            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display A
+            {
+                CustomTuningLowEStringLetter.Text = "A";
+            }
+            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Bb
+            {
+                CustomTuningLowEStringLetter.Text = "Bb";
+            }
+            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display B
+            {
+                CustomTuningLowEStringLetter.Text = "B";
+            }
+            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display C
+            {
+                CustomTuningLowEStringLetter.Text = "C";
+            }
+            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display C#
+            {
+                CustomTuningLowEStringLetter.Text = "C#";
+            }
+            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display D
+            {
+                CustomTuningLowEStringLetter.Text = "D";
+            }
+            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Eb
+            {
+                CustomTuningLowEStringLetter.Text = "Eb";
+            }
+        }
+
+
+
+        private bool StringLetterIntIsEqual(int numberToCompareAgainst, decimal currentValue)
+        {
+            int postitive = numberToCompareAgainst;
+            int negative = numberToCompareAgainst - 12;
+            int postitiveOctave = postitive + 12;
+            int negativeOctave = negative - 12;
+
+            if (currentValue == postitive || currentValue == negative || currentValue == postitiveOctave || currentValue == negativeOctave)
+                return true;
+            return false;
+        }
     }
 }
