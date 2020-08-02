@@ -4,11 +4,11 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-#include "Structs.h"
-#include "Offsets.h"
-#include "MemUtil.h"
-#include "Settings.h"
-#include "MemHelpers.h"
+#include "../Structs.h"
+#include "../Offsets.h"
+#include "../MemUtil.h"
+#include "../Settings.h"
+#include "../MemHelpers.h"
 
 class cERMode {
 public:
