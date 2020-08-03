@@ -144,6 +144,7 @@
             this.GuitarSpeakKeypress = new System.Windows.Forms.ListBox();
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
+            this.SongListWarning = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -661,6 +662,7 @@
             // 
             // SongListBox
             // 
+            this.SongListBox.Controls.Add(this.SongListWarning);
             this.SongListBox.Controls.Add(this.NewSongListNameTxtbox);
             this.SongListBox.Controls.Add(this.NewSonglistName);
             this.SongListBox.Controls.Add(this.Songlist);
@@ -1533,6 +1535,18 @@
             this.GuitarSpeakNote.Size = new System.Drawing.Size(46, 82);
             this.GuitarSpeakNote.TabIndex = 0;
             // 
+            // SongListWarning
+            // 
+            this.SongListWarning.AutoSize = true;
+            this.SongListWarning.Location = new System.Drawing.Point(245, 114);
+            this.SongListWarning.Name = "SongListWarning";
+            this.SongListWarning.Size = new System.Drawing.Size(183, 78);
+            this.SongListWarning.TabIndex = 24;
+            this.SongListWarning.Text = "Unlimited (untested) length available\r\nas the text streches\r\n\r\nWarning: This work" +
+    "s best if your\r\nsonglist name is below 25 characters,\r\nas otherwise the text str" +
+    "eches oddly.\r\n";
+            this.SongListWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1707,6 +1721,7 @@
         private System.Windows.Forms.Label CustomTuningGStringLetter;
         private System.Windows.Forms.Label CustomTuningDStringLetter;
         private System.Windows.Forms.Label CustomTuningAStringLetter;
+        private System.Windows.Forms.Label SongListWarning;
     }
 }
 
