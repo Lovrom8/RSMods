@@ -45,12 +45,10 @@
             this.NewAssignment = new System.Windows.Forms.Label();
             this.NewSonglistName = new System.Windows.Forms.Label();
             this.NewSongListNameTxtbox = new System.Windows.Forms.TextBox();
-            this.RainbowStringsEnabled = new System.Windows.Forms.CheckBox();
             this.ExtendedRangeEnabled = new System.Windows.Forms.CheckBox();
             this.RainbowStringsAssignment = new System.Windows.Forms.Label();
             this.ExtendedRangeTunings = new System.Windows.Forms.ListBox();
             this.ForceEnumerationCheckbox = new System.Windows.Forms.CheckBox();
-            this.DiscoModeCheckbox = new System.Windows.Forms.CheckBox();
             this.HeadstockCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveSkylineCheckbox = new System.Windows.Forms.CheckBox();
             this.GreenScreenWallCheckbox = new System.Windows.Forms.CheckBox();
@@ -73,6 +71,7 @@
             this.CustomColorsCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
+            this.SongListWarning = new System.Windows.Forms.Label();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
             this.RemoveLyricsKeyLabel = new System.Windows.Forms.Label();
             this.ClearKeyBind = new System.Windows.Forms.Button();
@@ -144,8 +143,8 @@
             this.GuitarSpeakKeypress = new System.Windows.Forms.ListBox();
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
-            this.SongListWarning = new System.Windows.Forms.Label();
             this.CreditsLabel = new System.Windows.Forms.Label();
+            this.RainbowStringsEnabled = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -312,17 +311,6 @@
             this.NewSongListNameTxtbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.NewSongListNameTxtbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
             // 
-            // RainbowStringsEnabled
-            // 
-            this.RainbowStringsEnabled.AutoSize = true;
-            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 61);
-            this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
-            this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
-            this.RainbowStringsEnabled.TabIndex = 26;
-            this.RainbowStringsEnabled.Text = "Rainbow Strings";
-            this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
-            this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
-            // 
             // ExtendedRangeEnabled
             // 
             this.ExtendedRangeEnabled.AutoSize = true;
@@ -375,17 +363,6 @@
             this.ForceEnumerationCheckbox.UseVisualStyleBackColor = true;
             this.ForceEnumerationCheckbox.CheckedChanged += new System.EventHandler(this.ForceEnumerationCheckbox_CheckedChanged);
             // 
-            // DiscoModeCheckbox
-            // 
-            this.DiscoModeCheckbox.AutoSize = true;
-            this.DiscoModeCheckbox.Location = new System.Drawing.Point(131, 153);
-            this.DiscoModeCheckbox.Name = "DiscoModeCheckbox";
-            this.DiscoModeCheckbox.Size = new System.Drawing.Size(83, 17);
-            this.DiscoModeCheckbox.TabIndex = 33;
-            this.DiscoModeCheckbox.Text = "Disco Mode";
-            this.DiscoModeCheckbox.UseVisualStyleBackColor = true;
-            this.DiscoModeCheckbox.CheckedChanged += new System.EventHandler(this.DiscoModeCheckbox_CheckedChanged);
-            // 
             // HeadstockCheckbox
             // 
             this.HeadstockCheckbox.AutoSize = true;
@@ -422,7 +399,7 @@
             // AutoLoadProfileCheckbox
             // 
             this.AutoLoadProfileCheckbox.AutoSize = true;
-            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(131, 175);
+            this.AutoLoadProfileCheckbox.Location = new System.Drawing.Point(131, 153);
             this.AutoLoadProfileCheckbox.Name = "AutoLoadProfileCheckbox";
             this.AutoLoadProfileCheckbox.Size = new System.Drawing.Size(151, 17);
             this.AutoLoadProfileCheckbox.TabIndex = 38;
@@ -607,7 +584,6 @@
             this.EnabledModsBox.Controls.Add(this.ExtendedRangeEnabled);
             this.EnabledModsBox.Controls.Add(this.GreenScreenWallCheckbox);
             this.EnabledModsBox.Controls.Add(this.ForceEnumerationCheckbox);
-            this.EnabledModsBox.Controls.Add(this.DiscoModeCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveSkylineCheckbox);
             this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
             this.EnabledModsBox.Location = new System.Drawing.Point(487, 20);
@@ -673,6 +649,18 @@
             this.SongListBox.TabIndex = 51;
             this.SongListBox.TabStop = false;
             this.SongListBox.Text = "Song Lists";
+            // 
+            // SongListWarning
+            // 
+            this.SongListWarning.AutoSize = true;
+            this.SongListWarning.Location = new System.Drawing.Point(245, 114);
+            this.SongListWarning.Name = "SongListWarning";
+            this.SongListWarning.Size = new System.Drawing.Size(183, 78);
+            this.SongListWarning.TabIndex = 24;
+            this.SongListWarning.Text = "Unlimited (untested) length available\r\nas the text streches\r\n\r\nWarning: This work" +
+    "s best if your\r\nsonglist name is below 25 characters,\r\nas otherwise the text str" +
+    "eches oddly.\r\n";
+            this.SongListWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // KeybindingsBox
             // 
@@ -1536,18 +1524,6 @@
             this.GuitarSpeakNote.Size = new System.Drawing.Size(46, 82);
             this.GuitarSpeakNote.TabIndex = 0;
             // 
-            // SongListWarning
-            // 
-            this.SongListWarning.AutoSize = true;
-            this.SongListWarning.Location = new System.Drawing.Point(245, 114);
-            this.SongListWarning.Name = "SongListWarning";
-            this.SongListWarning.Size = new System.Drawing.Size(183, 78);
-            this.SongListWarning.TabIndex = 24;
-            this.SongListWarning.Text = "Unlimited (untested) length available\r\nas the text streches\r\n\r\nWarning: This work" +
-    "s best if your\r\nsonglist name is below 25 characters,\r\nas otherwise the text str" +
-    "eches oddly.\r\n";
-            this.SongListWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // CreditsLabel
             // 
             this.CreditsLabel.AutoSize = true;
@@ -1559,6 +1535,17 @@
             this.CreditsLabel.Text = "Originally Created By:\r\nFfio - Main GUI Dev\r\nLovroM8 - Set-and-Forget\r\nZagatoZee " +
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // RainbowStringsEnabled
+            // 
+            this.RainbowStringsEnabled.AutoSize = true;
+            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 61);
+            this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
+            this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
+            this.RainbowStringsEnabled.TabIndex = 26;
+            this.RainbowStringsEnabled.Text = "Rainbow Strings";
+            this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
+            this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1637,12 +1624,10 @@
         private System.Windows.Forms.Label NewAssignment;
         private System.Windows.Forms.Label NewSonglistName;
         private System.Windows.Forms.TextBox NewSongListNameTxtbox;
-        private System.Windows.Forms.CheckBox RainbowStringsEnabled;
         private System.Windows.Forms.CheckBox ExtendedRangeEnabled;
         private System.Windows.Forms.Label RainbowStringsAssignment;
         private System.Windows.Forms.ListBox ExtendedRangeTunings;
         private System.Windows.Forms.CheckBox ForceEnumerationCheckbox;
-        private System.Windows.Forms.CheckBox DiscoModeCheckbox;
         private System.Windows.Forms.CheckBox HeadstockCheckbox;
         private System.Windows.Forms.CheckBox RemoveSkylineCheckbox;
         private System.Windows.Forms.CheckBox GreenScreenWallCheckbox;
@@ -1738,6 +1723,7 @@
         private System.Windows.Forms.Label CustomTuningAStringLetter;
         private System.Windows.Forms.Label SongListWarning;
         private System.Windows.Forms.Label CreditsLabel;
+        private System.Windows.Forms.CheckBox RainbowStringsEnabled;
     }
 }
 

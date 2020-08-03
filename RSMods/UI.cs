@@ -154,7 +154,8 @@ namespace RSMods
                     this.ChangeStringColorsBox.Visible = true;
                 }
 
-                if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
+                /*
+                 if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
                 {
                     this.DiscoModeCheckbox.Checked = true;
                 }
@@ -162,6 +163,9 @@ namespace RSMods
                 {
                     this.DiscoModeCheckbox.Checked = false;
                 }
+                 
+                 */
+
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
                 {
@@ -414,7 +418,7 @@ namespace RSMods
                 { ReadSettings.RainbowStringsEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) }, // Rainbow String Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) }, // Extended Range Enabled / Disabled
                 { ReadSettings.CustomStringColorNumberIndetifier, ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
-                { ReadSettings.DiscoModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) }, // Disco Mode Enabled / Disabled
+                //{ ReadSettings.DiscoModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) }, // Disco Mode Enabled / Disabled
                 { ReadSettings.RemoveHeadstockIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) }, // Remove Headstock Enabled / Disabled
                 { ReadSettings.RemoveSkylineIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) }, // Remove Skyline Enabled / Disabled
                 { ReadSettings.GreenScreenWallIdentifier, ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier)}, // Greenscreen Back Wall Enabled / Disabled
@@ -1186,7 +1190,7 @@ namespace RSMods
                 this.ChangeStringColorsBox.Visible = false;
             }
         }
-
+        /*
         private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (DiscoModeCheckbox.Checked)
@@ -1194,6 +1198,7 @@ namespace RSMods
             else
                 SaveChanges(ReadSettings.DiscoModeIdentifier, "false");
         }
+        */
 
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
         {
@@ -1373,7 +1378,7 @@ namespace RSMods
             toolTip.SetToolTip(this.ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
             toolTip.SetToolTip(this.CustomColorsCheckbox, "Lets you define the string / note colors you want. Saves a normal set and a Colorblind mode set.");
             toolTip.SetToolTip(this.RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS. Use in conjunction with No Loft for a cleaner UI. Options for always off,only off when in a song, or only when toggled by key press.");
-            toolTip.SetToolTip(this.DiscoModeCheckbox, "Experimental - Make the game look trippy by making the colors that appear on top of the amps stick to the background.");
+            //toolTip.SetToolTip(this.DiscoModeCheckbox, "Experimental - Make the game look trippy by making the colors that appear on top of the amps stick to the background.");
             toolTip.SetToolTip(this.AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu. Lets you auto load the last used profile without needing to interact with the game at all.");
             toolTip.SetToolTip(this.RemoveInlaysCheckbox, "Disables the guitar neck inlay display entirely.");
             toolTip.SetToolTip(this.RemoveLineMarkersCheckBox, "Removes the additional lane marker lines seen in the display. When used with No Loft, provides a cleaner Luma Key.");
