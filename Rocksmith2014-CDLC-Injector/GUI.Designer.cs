@@ -29,20 +29,20 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GUI));
-            this.UseCDLCButton = new System.Windows.Forms.Button();
+            this.UseModsButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // UseCDLCButton
+            // UseModsButton
             // 
-            this.UseCDLCButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 64F, System.Drawing.FontStyle.Bold);
-            this.UseCDLCButton.Location = new System.Drawing.Point(12, 71);
-            this.UseCDLCButton.Name = "UseCDLCButton";
-            this.UseCDLCButton.Size = new System.Drawing.Size(911, 443);
-            this.UseCDLCButton.TabIndex = 1;
-            this.UseCDLCButton.Text = "Click To Enable CDLC";
-            this.UseCDLCButton.UseVisualStyleBackColor = true;
-            this.UseCDLCButton.Click += new System.EventHandler(this.UseCDLCButton_Click);
+            this.UseModsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 64F, System.Drawing.FontStyle.Bold);
+            this.UseModsButton.Location = new System.Drawing.Point(12, 71);
+            this.UseModsButton.Name = "UseModsButton";
+            this.UseModsButton.Size = new System.Drawing.Size(911, 443);
+            this.UseModsButton.TabIndex = 1;
+            this.UseModsButton.Text = "Click To Use Mods";
+            this.UseModsButton.UseVisualStyleBackColor = true;
+            this.UseModsButton.Click += new System.EventHandler(this.UseCDLCButton_Click);
             // 
             // label1
             // 
@@ -61,17 +61,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 526);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.UseCDLCButton);
+            this.Controls.Add(this.UseModsButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GUI";
-            this.Text = "Rocksmith CDLC Enabler";
+            this.Text = "Rocksmith Mods Installer";
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Button UseCDLCButton;
+        private System.Windows.Forms.Button UseModsButton;
         private System.Windows.Forms.Label label1;
     }
 }
