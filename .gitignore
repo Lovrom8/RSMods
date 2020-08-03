@@ -1,7 +1,3 @@
-
-*.exe
-*.config
-*.pdb
 .vs/RS2014-One-Click-CDLC/v16/.suo
 Rocksmith2014-CDLC-Injector/obj/Debug/.NETFramework,Version=v4.7.2.AssemblyAttributes.cs
 Rocksmith2014-CDLC-Injector/obj/Debug/Rocksmith2014_CDLC_Injector.GUI.resources
