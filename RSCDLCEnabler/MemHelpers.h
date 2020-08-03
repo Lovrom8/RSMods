@@ -20,6 +20,7 @@ public:
 	void ShowSongTimer();
 	void ShowCurrentTuning();
 	bool IsExtendedRangeSong();
+	float GetCurrentMusicVolume();
 
 	std::string GetCurrentMenu();
 	void ToggleCB(bool enabled);

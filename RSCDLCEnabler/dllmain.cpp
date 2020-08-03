@@ -78,15 +78,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Value: " << Settings.ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
 				std::cout << "Reloaded settings" << std::endl;
 			}
-			else if (keyPressed == VK_DELETE) {
-				float volume = 75.0f;
-				RTPCValue_type type;
+			else if (keyPressed == VK_PRIOR) {
+				float volume = MemHelpers.GetCurrentMusicVolume();
 
-				SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-				SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				if (volume < 100.0f) {
+					volume += 5.0f;
+
+					SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+					SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				}
+				
+
+				//RTPCValue_type type;
 				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
 				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
-				std::cout << volume << std::endl;
+				//std::cout << volume << std::endl;
+			}
+			else if (keyPressed == VK_NEXT) {
+				float volume = MemHelpers.GetCurrentMusicVolume();
+
+				if (volume > 0.0f) {
+					volume -= 5.0f;
+
+					SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+					SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				}
 			}
 		}
 
@@ -705,7 +721,7 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	while (true) {
-		Sleep(50);
+		Sleep(2000);
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 
