@@ -145,6 +145,7 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.SongListWarning = new System.Windows.Forms.Label();
+            this.CreditsLabel = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -1547,6 +1548,18 @@
     "eches oddly.\r\n";
             this.SongListWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // CreditsLabel
+            // 
+            this.CreditsLabel.AutoSize = true;
+            this.CreditsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CreditsLabel.Location = new System.Drawing.Point(1164, 768);
+            this.CreditsLabel.Name = "CreditsLabel";
+            this.CreditsLabel.Size = new System.Drawing.Size(152, 52);
+            this.CreditsLabel.TabIndex = 72;
+            this.CreditsLabel.Text = "Originally Created By:\r\nFfio - Main GUI Dev\r\nLovroM8 - Set-and-Forget\r\nZagatoZee " +
+    "- Co-GUI Dev";
+            this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1554,6 +1567,7 @@
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1334, 832);
+            this.Controls.Add(this.CreditsLabel);
             this.Controls.Add(this.GroupSetAndForget);
             this.Controls.Add(this.GuitarSpeakBox);
             this.Controls.Add(this.HowToToggleLyrics);
@@ -1601,6 +1615,7 @@
             this.GuitarSpeakBox.ResumeLayout(false);
             this.GuitarSpeakBox.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1722,6 +1737,7 @@
         private System.Windows.Forms.Label CustomTuningDStringLetter;
         private System.Windows.Forms.Label CustomTuningAStringLetter;
         private System.Windows.Forms.Label SongListWarning;
+        private System.Windows.Forms.Label CreditsLabel;
     }
 }
 
