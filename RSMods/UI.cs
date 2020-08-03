@@ -1363,7 +1363,7 @@ namespace RSMods
             // Set up the ToolTip text for the Button and Checkbox.
             toolTip.SetToolTip(this.ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings. Best used with Venue Mode off (setting in game). Used by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background. Player just sees an all black background when this is enabled. Options for turning the loft off only when in a song, when the game first starts up, or on a key press.");
             toolTip.SetToolTip(this.AddVolumeCheckbox, "Experimental");
-            toolTip.SetToolTip(this.RainbowStringsEnabled, "How Pro are you? This makes the players guitar strings constantly cycling through colors.");
+            toolTip.SetToolTip(this.RainbowStringsEnabled, "Experimental - How Pro are you? This makes the players guitar strings constantly cycling through colors.");
             toolTip.SetToolTip(this.HeadstockCheckbox, "Stops the Headstock of the guitar being drawn. “Headless” guitar mode. Just cleans up some more of the UI.");
             toolTip.SetToolTip(this.GreenScreenWallCheckbox, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience. Invalidated by “No Loft”.");
             toolTip.SetToolTip(this.ForceEnumerationCheckbox, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder. Not necesary to enable if you're already using Rocksniffer to do the same thing.");
