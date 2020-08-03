@@ -7,4 +7,4 @@ How to compile:
 2. Click the build tab at the top of the screen
 3. Click build solution
 4. Wait a couple seconds
-5. Navigate to the main folder (RSMods), whereever you downloaded it, then go into bin/Debug (or bin/Release), and grab the "RSMods.exe". All the other files are garbage you don't need to have.
+5. Press F5
