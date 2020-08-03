@@ -70,6 +70,7 @@
             this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.CustomColorsCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLineMarkersCheckBox = new System.Windows.Forms.CheckBox();
+            this.RainbowStringsEnabled = new System.Windows.Forms.CheckBox();
             this.SongListBox = new System.Windows.Forms.GroupBox();
             this.SongListWarning = new System.Windows.Forms.Label();
             this.KeybindingsBox = new System.Windows.Forms.GroupBox();
@@ -144,7 +145,7 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.RainbowStringsEnabled = new System.Windows.Forms.CheckBox();
+            this.VolumeControlsCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -569,6 +570,7 @@
             // 
             // EnabledModsBox
             // 
+            this.EnabledModsBox.Controls.Add(this.VolumeControlsCheckbox);
             this.EnabledModsBox.Controls.Add(this.GuitarSpeakEnableCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveLyricsCheckbox);
             this.EnabledModsBox.Controls.Add(this.CustomColorsCheckbox);
@@ -586,9 +588,9 @@
             this.EnabledModsBox.Controls.Add(this.ForceEnumerationCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveSkylineCheckbox);
             this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
-            this.EnabledModsBox.Location = new System.Drawing.Point(487, 20);
+            this.EnabledModsBox.Location = new System.Drawing.Point(473, 20);
             this.EnabledModsBox.Name = "EnabledModsBox";
-            this.EnabledModsBox.Size = new System.Drawing.Size(292, 200);
+            this.EnabledModsBox.Size = new System.Drawing.Size(284, 207);
             this.EnabledModsBox.TabIndex = 50;
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
@@ -637,6 +639,17 @@
             this.RemoveLineMarkersCheckBox.UseVisualStyleBackColor = true;
             this.RemoveLineMarkersCheckBox.CheckedChanged += new System.EventHandler(this.RemoveLineMarkersCheckBox_CheckedChanged);
             // 
+            // RainbowStringsEnabled
+            // 
+            this.RainbowStringsEnabled.AutoSize = true;
+            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 61);
+            this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
+            this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
+            this.RainbowStringsEnabled.TabIndex = 26;
+            this.RainbowStringsEnabled.Text = "Rainbow Strings";
+            this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
+            this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
+            // 
             // SongListBox
             // 
             this.SongListBox.Controls.Add(this.SongListWarning);
@@ -675,7 +688,7 @@
             this.KeybindingsBox.Controls.Add(this.ToggleLoftKey);
             this.KeybindingsBox.Controls.Add(this.RainbowStringsAssignment);
             this.KeybindingsBox.Controls.Add(this.ModList);
-            this.KeybindingsBox.Location = new System.Drawing.Point(6, 242);
+            this.KeybindingsBox.Location = new System.Drawing.Point(6, 257);
             this.KeybindingsBox.Name = "KeybindingsBox";
             this.KeybindingsBox.Size = new System.Drawing.Size(701, 176);
             this.KeybindingsBox.TabIndex = 52;
@@ -702,7 +715,7 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 434);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 443);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(127, 22);
             this.ResetToDefaultButton.TabIndex = 32;
@@ -840,7 +853,7 @@
             this.ChangeStringColorsBox.Controls.Add(this.String1ColorButton);
             this.ChangeStringColorsBox.Controls.Add(this.String0Color);
             this.ChangeStringColorsBox.Controls.Add(this.String0ColorButton);
-            this.ChangeStringColorsBox.Location = new System.Drawing.Point(713, 226);
+            this.ChangeStringColorsBox.Location = new System.Drawing.Point(727, 233);
             this.ChangeStringColorsBox.Name = "ChangeStringColorsBox";
             this.ChangeStringColorsBox.Size = new System.Drawing.Size(282, 243);
             this.ChangeStringColorsBox.TabIndex = 65;
@@ -1538,16 +1551,16 @@
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // RainbowStringsEnabled
+            // VolumeControlsCheckbox
             // 
-            this.RainbowStringsEnabled.AutoSize = true;
-            this.RainbowStringsEnabled.Location = new System.Drawing.Point(11, 61);
-            this.RainbowStringsEnabled.Name = "RainbowStringsEnabled";
-            this.RainbowStringsEnabled.Size = new System.Drawing.Size(103, 17);
-            this.RainbowStringsEnabled.TabIndex = 26;
-            this.RainbowStringsEnabled.Text = "Rainbow Strings";
-            this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
-            this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
+            this.VolumeControlsCheckbox.AutoSize = true;
+            this.VolumeControlsCheckbox.Location = new System.Drawing.Point(131, 175);
+            this.VolumeControlsCheckbox.Name = "VolumeControlsCheckbox";
+            this.VolumeControlsCheckbox.Size = new System.Drawing.Size(125, 17);
+            this.VolumeControlsCheckbox.TabIndex = 47;
+            this.VolumeControlsCheckbox.Text = "Control Song Volume";
+            this.VolumeControlsCheckbox.UseVisualStyleBackColor = true;
+            this.VolumeControlsCheckbox.CheckedChanged += new System.EventHandler(this.VolumeControlsCheckbox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1726,6 +1739,7 @@
         private System.Windows.Forms.Label SongListWarning;
         private System.Windows.Forms.Label CreditsLabel;
         private System.Windows.Forms.CheckBox RainbowStringsEnabled;
+        private System.Windows.Forms.CheckBox VolumeControlsCheckbox;
     }
 }
 

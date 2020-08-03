@@ -1906,5 +1906,19 @@ namespace RSMods
                 CustomTuningHighEStringLetter.Text = "eb";
             }
         }
+
+        private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(VolumeControlsCheckbox.Checked)
+            {
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "on");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "on");
+            }
+            else
+            {
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "off");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "off");
+            }
+        }
     }
 }
