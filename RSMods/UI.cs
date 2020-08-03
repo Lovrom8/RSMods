@@ -845,7 +845,11 @@ namespace RSMods
             try
             {
                 if (File.Exists(Constants.CacheBackupPath))
+                {
                     File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
+                    MessageBox.Show("Cache backup was restored!", "Backup restored", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                    
                 else
                     MessageBox.Show("No cache backup found!", "Error");
 
