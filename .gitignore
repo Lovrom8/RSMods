@@ -1,9 +1,3 @@
 .vs/RS2014-One-Click-CDLC/v16/.suo
-Rocksmith2014-CDLC-Injector/obj/Debug/.NETFramework,Version=v4.7.2.AssemblyAttributes.cs
-Rocksmith2014-CDLC-Injector/obj/Debug/Rocksmith2014_CDLC_Injector.GUI.resources
-Rocksmith2014-CDLC-Injector/obj/Debug/Rocksmith2014_CDLC_Injector.Properties.Resources.resources
-Rocksmith2014-CDLC-Injector/obj/Debug/RS2014-One-Click-CDLC.csproj.CoreCompileInputs.cache
-Rocksmith2014-CDLC-Injector/obj/Debug/RS2014-One-Click-CDLC.csproj.FileListAbsolute.txt
-Rocksmith2014-CDLC-Injector/obj/Debug/RS2014-One-Click-CDLC.csproj.GenerateResource.cache
-Rocksmith2014-CDLC-Injector/obj/Debug/RS2014-One-Click-CDLC.csprojAssemblyReference.cache
-.vs/RS2014-One-Click-CDLC/v16/.suo
+Rocksmith2014-CDLC-Injector/obj/*
+Rocksmith2014-CDLC-Injector/bin/*
