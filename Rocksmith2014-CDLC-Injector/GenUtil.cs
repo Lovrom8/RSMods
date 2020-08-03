@@ -4,17 +4,39 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+
+#pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
+#pragma warning disable IDE0029 // "Null Check can be simplified"... Yeah we know, but it works so why should we mess with it.
 
 namespace RSMods.Util
 {
     public static class GenUtil
     {
-
         public static bool IsDirectoryEmpty(string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
+        public static void ExtractEmbeddedResource(string outputDir, Assembly resourceAssembly, string resourceLocation, string[] files)
+        {
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
+            string[] names = resourceAssembly.GetManifestResourceNames();
+
+            string resourcePath = String.Empty;
+            foreach (string file in files)
+            {
+                resourcePath = Path.Combine(outputDir, file);
+
+                Stream stream = resourceAssembly.GetManifestResourceStream(String.Format("{0}.{1}", resourceLocation, file));
+                using (FileStream fileStream = new FileStream(resourcePath, FileMode.Create))
+                    stream.CopyTo(fileStream);
+            }
         }
 
         private static bool IsRSFolder(this string folderPath)
@@ -84,21 +106,23 @@ namespace RSMods.Util
             string rsFolderPath = string.Empty;
             bool found = false;
 
-            customSteamppsFolders.ForEach(dir =>
+            foreach (var customSteamappsFolder in customSteamppsFolders)
             {
-                string dirPath = Path.Combine(dir, "steamapps", "appmanifest_221680.acf");
+                string dirPath = Path.Combine(customSteamappsFolder, "steamapps", "appmanifest_221680.acf");
 
                 if (File.Exists(dirPath))
+                {
                     finalPath = Path.GetDirectoryName(dirPath);
 
-                rsFolderPath = Path.Combine(finalPath, "common", "Rocksmith2014");
+                    rsFolderPath = Path.Combine(finalPath, "common", "Rocksmith2014");
 
-                if (rsFolderPath.IsRSFolder())
-                {
-                    found = true;
-                    finalPath = rsFolderPath;
+                    if (rsFolderPath.IsRSFolder())
+                    {
+                        found = true;
+                        break;
+                    }
                 }
-            });
+            }
 
             if (found)
             {
@@ -117,18 +141,18 @@ namespace RSMods.Util
             return GetStringValueFromRegistry(steamRegPath, "SteamPath").Replace('/', '\\');
         }
 
+        public static List<Tuple<string, string>> InstallRegKeys = new List<Tuple<string, string>>()
+        {
+            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Ubisoft\Rocksmith2014", "installdir"),
+            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation"),
+            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Ubisoft\Rocksmith2014", "InstallLocation"),
+            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
+        };
+
         public static string GetRSDirectory()
         {
             try
             {
-                const string installValueName = "InstallLocation";
-
-                const string rsX64Path = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Ubisoft\Rocksmith2014";
-                const string rsX64Steam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680";
-
-                const string rsX86Path = @"HKEY_LOCAL_MACHINE\SOFTWARE\Ubisoft\Rocksmith2014";
-                const string rsX86Steam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680";
-
                 var rs2RootDir = String.Empty;
                 var steamRootPath = GetSteamDirectory();
 
@@ -136,21 +160,27 @@ namespace RSMods.Util
                 {
                     rs2RootDir = Path.Combine(steamRootPath, "SteamApps\\common\\Rocksmith2014");
 
-                    if (!Directory.Exists(rs2RootDir) || !rs2RootDir.IsRSFolder())
-                        rs2RootDir = GetCustomRSFolder(steamRootPath);
-                    else if (!String.IsNullOrEmpty(rs2RootDir))
+                    if (!Directory.Exists(rs2RootDir))
                     {
-                        if (!String.IsNullOrEmpty(GetStringValueFromRegistry(rsX64Path, "installdir")))
-                            rs2RootDir = GetStringValueFromRegistry(rsX64Path, "installdir");
-                        else if (!String.IsNullOrEmpty(GetStringValueFromRegistry(rsX64Steam, installValueName)))
-                            rs2RootDir = GetStringValueFromRegistry(rsX64Steam, installValueName);
-                        else if (!String.IsNullOrEmpty(GetStringValueFromRegistry(rsX86Path, installValueName)))
-                            rs2RootDir = GetStringValueFromRegistry(rsX86Path, installValueName);
-                        else if (!String.IsNullOrEmpty(GetStringValueFromRegistry(rsX86Steam, installValueName)))
-                            rs2RootDir = GetStringValueFromRegistry(rsX86Steam, installValueName);
+                        // Go through each possible registry location
+                        foreach (var installRegKey in InstallRegKeys)
+                        {
+                            var path = GetStringValueFromRegistry(installRegKey.Item1, installRegKey.Item2);
+
+                            if (!string.IsNullOrEmpty(path))
+                            {
+                                rs2RootDir = path;
+                                break;
+                            }
+                        }
 
                         //if (!String.IsNullOrEmpty(rs2RootDir))
                         //    MessageBox.Show("Found Steam RS2014 Installation Directory in Registry ...");
+                    }
+
+                    if (!rs2RootDir.IsRSFolder())
+                    {
+                        rs2RootDir = GetCustomRSFolder(steamRootPath);
                     }
                     // else
                     //      MessageBox.Show("<WARNING> Steam RS2014 Installation Directory not found in Registry ...");
