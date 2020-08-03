@@ -91,19 +91,19 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
                 {
-                    this.AddVolumeCheckbox.Checked = true;
+                    this.VolumeControlsCheckbox.Checked = true;
                 }
                 else
                 {
-                    this.AddVolumeCheckbox.Checked = false;
+                    this.VolumeControlsCheckbox.Checked = false;
                 }
                 if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
                 {
-                    this.DecreaseVolumeCheckbox.Checked = true;
+                    this.VolumeControlsCheckbox.Checked = true;
                 }
                 else
                 {
-                    this.DecreaseVolumeCheckbox.Checked = false;
+                    this.VolumeControlsCheckbox.Checked = false;
                 }
                 if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
                 {
