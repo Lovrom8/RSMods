@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 
-namespace Rocksmith2014_CDLC_Injector
+namespace RS2014_Mod_Installer
 {
     class Worker
     {
