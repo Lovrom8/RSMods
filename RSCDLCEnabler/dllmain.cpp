@@ -37,17 +37,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		return true;
 
 	if (msg == WM_KEYUP) {
-		/*
-		if (keyPressed == VK_DELETE) {
-			float volume;
-			RTPCValue_type type;
-
-			SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-			GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type);
-			std::cout << volume << std::endl;
-		}
-		*/
-
 		if (GameLoaded) { // Game must not be on the startup videos or it will crash
 			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") {
 				MemHelpers.ToggleLoft();
@@ -88,6 +77,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				Settings.UpdateSettings();
 				std::cout << "Value: " << Settings.ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
 				std::cout << "Reloaded settings" << std::endl;
+			}
+			else if (keyPressed == VK_DELETE) {
+				float volume = 75.0f;
+				RTPCValue_type type;
+
+				SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
+				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
+				std::cout << volume << std::endl;
 			}
 		}
 
@@ -236,7 +235,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		/* Used before, not necessary anymore because we generate our texture
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible" | 6-String Model
-		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors 
+		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors
 		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
 		*/
@@ -329,7 +328,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::End();
 
 		/* This block is used to test colors and appropriate offsets for colors defined in gamecolormanager.flat
-		
+
 		ImGui::Begin("Game colors testing");
 		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
 
@@ -431,13 +430,13 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (GetAsyncKeyState(VK_CONTROL) & 1)
 			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
-		if (startLogging) {
-			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
-				allMeshes.push_back(currentThicc);
-			//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
-			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
-			//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
-		}
+			if (startLogging) {
+				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
+					allMeshes.push_back(currentThicc);
+				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
+				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
+				//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
+			}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
 			currStride = Stride;
@@ -632,7 +631,7 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 }
 
 void GUI() {
-	DWORD d3d9Base, adr, *vTable = NULL;
+	DWORD d3d9Base, adr, * vTable = NULL;
 	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
 		Sleep(500);
 
@@ -655,7 +654,7 @@ void GUI() {
 	oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
 	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
 
-	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);	
+	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);
 	//oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction, but... it crashes instead
 	oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)Hook_EndScene, 7);
 	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)Hook_DIP, 5);
@@ -706,15 +705,12 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	while (true) {
-		Sleep(2000);
+		Sleep(50);
 
 		currentMenu = MemHelpers.GetCurrentMenu();
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
-
-			ERMode.Toggle7StringMode();
-
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
@@ -806,7 +802,10 @@ unsigned WINAPI MainThread(void*) {
 		if (enableColorBlindCheckboxGUI)
 			MemHelpers.ToggleCB(cbEnabled);
 
-		ERMode.DoRainbow();
+		if (ERMode.IsRainbowEnabled())
+			ERMode.DoRainbow();
+		else
+			ERMode.Toggle7StringMode();
 	}
 
 	return 0;

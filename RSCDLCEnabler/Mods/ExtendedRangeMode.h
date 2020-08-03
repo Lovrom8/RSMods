@@ -15,6 +15,7 @@ public:
 	void Toggle7StringMode();
 	void DoRainbow();
 	void ToggleRainbowMode();
+	bool IsRainbowEnabled();
 	void ResetString(int strIndex);
 	void SetCustomColors(int strIdx, std::map<std::string, RSColor> customColorMap);
 	void Initialize();

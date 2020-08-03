@@ -311,17 +311,21 @@ void cERMode::ToggleRainbowMode() {
 	RainbowEnabled = !RainbowEnabled;
 }
 
+bool cERMode::IsRainbowEnabled() {
+	return RainbowEnabled;
+}
+
 void cERMode::DoRainbow() {
 	if (!RainbowEnabled)
 		return;
 
-	std::vector<uintptr_t> stringsAmb;
+	std::vector<uintptr_t> stringsEnabled;
 	std::vector<uintptr_t> stringsHigh;
 	std::vector<uintptr_t> stringsDisabled;
-	std::vector<Color> oldAmb, oldHigh, oldDisabled;
+	std::vector<Color> oldEnabled, oldHigh, oldDisabled;
 
 	for (int i = 0; i < 6; i++) {
-		stringsAmb.push_back(GetStringColor(i, Ambient));
+		stringsEnabled.push_back(GetStringColor(i, Enabled));
 		stringsHigh.push_back(GetStringColor(i, Glow));
 		stringsDisabled.push_back(GetStringColor(i, Disabled));
 	}
@@ -336,18 +340,17 @@ void cERMode::DoRainbow() {
 	float stringOffset = 20.f;
 
 	while (RainbowEnabled) {
-
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
 
 		for (int i = 0; i < 6; i++) {
-			oldAmb.push_back(*(Color*)stringsAmb[i]);
+			oldEnabled.push_back(*(Color*)stringsEnabled[i]);
 			oldHigh.push_back(*(Color*)stringsHigh[i]);
 			oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 
 			c.setH(h + (stringOffset * i));
 
-			*(Color*)stringsAmb[i] = c;
+			*(Color*)stringsEnabled[i] = c;
 			*(Color*)stringsHigh[i] = c;
 			*(Color*)stringsDisabled[i] = c;
 		}
@@ -355,11 +358,11 @@ void cERMode::DoRainbow() {
 		Sleep(16);
 	}
 
-	if (oldAmb.size() == 0)
+	if (oldEnabled.size() == 0)
 		return;
 
 	for (int i = 0; i < 6; i++) {
-		*(Color*)stringsAmb[i] = oldAmb[i];
+		*(Color*)stringsEnabled[i] = oldEnabled[i];
 		*(Color*)stringsHigh[i] = oldHigh[i];
 		*(Color*)stringsDisabled[i] = oldDisabled[i];
 	}
