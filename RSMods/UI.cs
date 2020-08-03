@@ -113,7 +113,7 @@ namespace RSMods
                 {
                     this.SongTimerCheckbox.Checked = false;
                 }
-                if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "false") // Force Enumeration Settings
+                if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
                 {
                     this.ForceEnumerationCheckbox.Checked = true;
                     this.ForceEnumerationAutomaticRadio.Visible = true;
