@@ -43,16 +43,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Toggle Loft" << std::endl;
 			}
 
-			else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
-				//MemHelpers.AddVolume(5); TODO: find out how to use Set/GetRTPCValue to change volume
-				std::cout << "Adding 5 Volume" << std::endl;
-			}
-
-			else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-				//MemHelpers.DecreaseVolume(5);
-				std::cout << "Subtracting 5 Volume" << std::endl;
-			}
-
 			else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnSettingValue("ShowSongTimerEnabled") == "on") {
 				MemHelpers.ShowSongTimer();
 				std::cout << "Show Me Dat Timer Bruh" << std::endl;
@@ -78,7 +68,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Value: " << Settings.ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
 				std::cout << "Reloaded settings" << std::endl;
 			}
-			else if (keyPressed == VK_PRIOR) {
+			else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
 				float volume = MemHelpers.GetCurrentMusicVolume();
 
 				if (volume < 100.0f) {
@@ -94,7 +84,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
 				//std::cout << volume << std::endl;
 			}
-			else if (keyPressed == VK_NEXT) {
+			else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
 				float volume = MemHelpers.GetCurrentMusicVolume();
 
 				if (volume > 0.0f) {
