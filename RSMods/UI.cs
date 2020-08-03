@@ -993,32 +993,32 @@ namespace RSMods
         {
             // Songlists
             {
-                if (this.Songlist.GetSelected(0) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 1
+                if (this.Songlist.GetSelected(0) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 1
                 {
                     SaveChanges(ReadSettings.Songlist1Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[0] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(1) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 2
+                if (this.Songlist.GetSelected(1) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 2
                 {
                     SaveChanges(ReadSettings.Songlist2Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[1] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(2) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 3
+                if (this.Songlist.GetSelected(2) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 3
                 {
                     SaveChanges(ReadSettings.Songlist3Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[2] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(3) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 4
+                if (this.Songlist.GetSelected(3) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 4
                 {
                     SaveChanges(ReadSettings.Songlist4Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[3] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(4) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 5
+                if (this.Songlist.GetSelected(4) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 5
                 {
                     SaveChanges(ReadSettings.Songlist5Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[4] = this.NewSongListNameTxtbox.Text;
                 }
-                if (this.Songlist.GetSelected(5) & (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)) & (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 6
+                if (this.Songlist.GetSelected(5) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 6
                 {
                     SaveChanges(ReadSettings.Songlist6Identifier, this.NewSongListNameTxtbox.Text);
                     this.Songlist.Items[5] = this.NewSongListNameTxtbox.Text;
