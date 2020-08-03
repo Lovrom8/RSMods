@@ -78,12 +78,68 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\RSModsGUI\ddc\ddc_default.cfg" />
+    <None Include="Resources\RSModsGUI\ddc\ddc_keep_all_levels.cfg" />
+    <None Include="Resources\RSModsGUI\ddc\ddc_merge_all_levels.cfg" />
+    <None Include="Resources\RSModsGUI\Resources\introsequence.gfx" />
+    <None Include="Resources\RSModsGUI\Resources\introsequence_original.gfx" />
+    <None Include="Resources\RSModsGUI\Resources\maingame.csv" />
+    <None Include="Resources\RSModsGUI\Resources\maingame_original.csv" />
+    <None Include="Resources\RSModsGUI\Resources\sltsv1_aggregategraph.nt" />
+    <None Include="Resources\RSModsGUI\Resources\tuning.database.json" />
+    <None Include="Resources\RSModsGUI\Resources\ui_menu_pillar_main.database.json" />
+    <None Include="Resources\RSModsGUI\Resources\ui_menu_pillar_mission.database.json" />
+    <None Include="Resources\RSModsGUI\RSMods.exe.config" />
+    <None Include="Resources\RSModsGUI\tools\OpenCmd.bat" />
+    <None Include="Resources\RSModsGUI\tools\packed_codebooks.bin" />
+    <None Include="Resources\RSModsGUI\tools\packed_codebooks_aoTuV_603.bin" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\D3DX9_42.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\LogoX256.ico" />
+    <Content Include="Resources\RSModsGUI\7z.dll" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc.exe" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_protector.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_remover.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_dd_remover.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_default.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\license.txt" />
+    <Content Include="Resources\RSModsGUI\ddc\readme.txt" />
+    <Content Include="Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="Resources\RSModsGUI\MiscUtil.dll" />
+    <Content Include="Resources\RSModsGUI\NDesk.Options.dll" />
+    <Content Include="Resources\RSModsGUI\Newtonsoft.Json.dll" />
+    <Content Include="Resources\RSModsGUI\NLog.dll" />
+    <Content Include="Resources\RSModsGUI\Ookii.Dialogs.dll" />
+    <Content Include="Resources\RSModsGUI\PSTaskDialog.dll" />
+    <Content Include="Resources\RSModsGUI\RocksmithToolkitLib.dll" />
+    <Content Include="Resources\RSModsGUI\RocksmithToTabLib.dll" />
+    <Content Include="Resources\RSModsGUI\RSMods.exe" />
+    <Content Include="Resources\RSModsGUI\RSMods.pdb" />
+    <Content Include="Resources\RSModsGUI\SevenZipSharp.dll" />
+    <Content Include="Resources\RSModsGUI\SharpConfig.dll" />
+    <Content Include="Resources\RSModsGUI\tools\7za.exe" />
+    <Content Include="Resources\RSModsGUI\tools\core.jar" />
+    <Content Include="Resources\RSModsGUI\tools\CreateToolkitShortcut.exe" />
+    <Content Include="Resources\RSModsGUI\tools\nvdxt.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggCut.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggdec.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggenc.exe" />
+    <Content Include="Resources\RSModsGUI\tools\readme.txt" />
+    <Content Include="Resources\RSModsGUI\tools\revorb.exe" />
+    <Content Include="Resources\RSModsGUI\tools\topng.exe" />
+    <Content Include="Resources\RSModsGUI\tools\ww2ogg.exe" />
+    <Content Include="Resources\RSModsGUI\X360.dll" />
+    <Content Include="Resources\RSModsGUI\zlib.net.dll" />
+    <None Include="Resources\version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\RSModsGUI\CustomMods\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
