@@ -418,18 +418,18 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
 			for (auto mesh : allMeshes) {
-				Log(mesh.ToString().c_str());
+				//Log(mesh.ToString().c_str());
 			}
 		}
 
 		if (GetAsyncKeyState(VK_F7) & 1) { // Save only removed 
 			for (auto mesh : removedMeshes) {
-				Log(mesh.ToString().c_str());
+				//Log(mesh.ToString().c_str());
 			}
 		}
 
 		if (GetAsyncKeyState(VK_CONTROL) & 1)
-			Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
+			//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
 		if (startLogging) {
 			if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
