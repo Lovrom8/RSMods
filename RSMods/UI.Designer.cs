@@ -1154,6 +1154,7 @@
             this.LblUIIndex.Size = new System.Drawing.Size(50, 13);
             this.LblUIIndex.TabIndex = 85;
             this.LblUIIndex.Text = "UI Index:";
+            this.LblUIIndex.Visible = false;
             // 
             // NupTuningIndex
             // 
@@ -1176,6 +1177,7 @@
             0,
             0,
             0});
+            this.NupTuningIndex.Visible = false;
             // 
             // LblUIName
             // 
