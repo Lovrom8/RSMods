@@ -810,7 +810,7 @@ unsigned WINAPI MainThread(void*) {
 		}
 		else // Game Hasn't Loaded Yet
 		{
-			if (MemHelpers.GetCurrentMenu() == "MainMenu") { // Yay We Loaded :P
+			if (MemHelpers.GetCurrentMenu(true) == "MainMenu") { // Yay We Loaded :P
 				GameLoaded = true;
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
 			}
