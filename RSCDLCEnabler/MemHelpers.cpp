@@ -41,7 +41,7 @@ std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 		return "pre_enter_prompt";
 
 	if (!currentMenuAdr)
-		return "";
+		return "where are we actually";
 
 	std::string currentMenu((char*)currentMenuAdr);
 
