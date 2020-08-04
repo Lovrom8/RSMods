@@ -70,8 +70,8 @@ public:
 
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
 
-	uintptr_t ptr_currentMenu = 0x00F5C5B4;
-	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x14, 0x34, 0x28, 0x8C, 0x0 };
+	uintptr_t ptr_currentMenu = 0x00F5C5AC;
+	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 };
 
 	uintptr_t ptr_timer = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };

@@ -8,7 +8,12 @@ Open source here: https://cdn.discordapp.com/attachments/711634414240530462/7355
 */
 
 byte cGuitarSpeak::GetCurrentNote() {
-	return *(byte*)MemUtil.FindDMAAddy(Offsets.ptr_guitarSpeak, Offsets.ptr_guitarSpeakOffets);
+	uintptr_t noteAdr = MemUtil.FindDMAAddy(Offsets.ptr_guitarSpeak, Offsets.ptr_guitarSpeakOffets); // Copied & Modified from GetCurrentMenu()
+
+	if (!noteAdr)
+		return -1;
+
+	return *(byte*)noteAdr;
 }
 
 

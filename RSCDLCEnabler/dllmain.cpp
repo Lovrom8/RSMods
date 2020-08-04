@@ -717,7 +717,7 @@ unsigned WINAPI MainThread(void*) {
 	while (true) {
 		Sleep(2000);
 
-		currentMenu = MemHelpers.GetCurrentMenu(!GameLoaded);
+		currentMenu = MemHelpers.GetCurrentMenu(false);
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
