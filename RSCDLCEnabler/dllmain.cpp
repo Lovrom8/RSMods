@@ -77,7 +77,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					SetRTPCValue("Mixer_Music", (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 					SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 				}
-				
+
 
 				//RTPCValue_type type;
 				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
@@ -648,6 +648,11 @@ void GUI() {
 		return;
 	}
 
+	if (!*(DWORD*)adr) { // Wing it
+		MessageBoxA(NULL, "Could not find DX9 device, please restart the game!", "Error", NULL);
+		return;
+	}
+
 	vTable = *(DWORD**)adr;
 	if (!vTable) {
 		std::cout << "Could not find game device's vTable address" << std::endl;
@@ -706,14 +711,13 @@ unsigned WINAPI MainThread(void*) {
 	ERMode.Initialize();
 
 	GUI();
-	InitEngineFunctions();
 
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
-
+	
 	while (true) {
 		Sleep(2000);
 
-		currentMenu = MemHelpers.GetCurrentMenu();
+		currentMenu = MemHelpers.GetCurrentMenu(!GameLoaded);
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
@@ -795,23 +799,25 @@ unsigned WINAPI MainThread(void*) {
 				headstockTexturePointers.clear();
 			}
 			previousMenu = currentMenu;
+
+			if (enableColorBlindCheckboxGUI)
+				MemHelpers.ToggleCB(cbEnabled);
+
+			if (ERMode.IsRainbowEnabled())
+				ERMode.DoRainbow();
+			else
+				ERMode.Toggle7StringMode();
 		}
 		else // Game Hasn't Loaded Yet
 		{
-			if (MemHelpers.GetCurrentMenu() == "MainMenu") // Yay We Loaded :P
+			if (MemHelpers.GetCurrentMenu() == "MainMenu") { // Yay We Loaded :P
 				GameLoaded = true;
+				InitEngineFunctions(); // Anti-crash or not, let's try atleast
+			}
 
 			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
-		}
-
-		if (enableColorBlindCheckboxGUI)
-			MemHelpers.ToggleCB(cbEnabled);
-
-		if (ERMode.IsRainbowEnabled())
-			ERMode.DoRainbow();
-		else
-			ERMode.Toggle7StringMode();
+		} 
 	}
 
 	return 0;

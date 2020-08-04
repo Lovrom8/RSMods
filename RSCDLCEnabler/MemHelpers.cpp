@@ -24,7 +24,7 @@ float cMemHelpers::GetCurrentMusicVolume() { // Alternative to GetRTPCValue
 bool cMemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_timer, Offsets.ptr_timerOffsets);
 
-	if (!addrTimer) 
+	if (!addrTimer)
 		return false;
 
 	byte currentTuning = cMemHelpers::getLowestStringTuning();
@@ -34,10 +34,10 @@ bool cMemHelpers::IsExtendedRangeSong() {
 	return false;
 }
 
-std::string cMemHelpers::GetCurrentMenu() {
-	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets);
+std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
+	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets, GameNotLoaded); // If game hasn't loaded, take the safer, but possibly slower route
 
-	if (currentMenuAdr > 0x30000000) //pls don't kill me for doing a check like this, but I really don't know a more reliable way to check if it points to an actual value (it gets initialized when you click on first Enter prompt)... instead it usually points to 0x6XXXXXXX
+	if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
 		return "pre_enter_prompt";
 
 	if (!currentMenuAdr)

@@ -22,7 +22,7 @@ public:
 	bool IsExtendedRangeSong();
 	float GetCurrentMusicVolume();
 
-	std::string GetCurrentMenu();
+	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
 
 	void PatchCDLCCheck();

@@ -66,12 +66,31 @@ PBYTE cMemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 		return nullptr;
 }
 
-uintptr_t cMemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets)
+bool cMemUtil::IsBadReadPtr(void* p) //NOTE: We are very aware this is not exactly the optimal (neither completely thread safe nor very fast) way to handle pointers to a non-initialized variable, but for now it will have to do the job until we figure out a better current menu check 
+{
+	MEMORY_BASIC_INFORMATION mbi = { 0 };
+	if (::VirtualQuery(p, &mbi, sizeof(mbi)))
+	{
+		DWORD mask = (PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY);
+		bool b = !(mbi.Protect & mask);
+		// check the page is not a guard page
+		if (mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) b = true;
+
+		return b;
+	}
+	return true;
+}
+
+
+uintptr_t cMemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets, bool safe)
 {
 	uintptr_t addr = ptr;
 
 	for (unsigned int i = 0; i < offsets.size(); ++i)
 	{
+		if (safe && IsBadReadPtr((void*)addr))
+			return NULL;
+
 		if (!addr)
 			return NULL;
 
