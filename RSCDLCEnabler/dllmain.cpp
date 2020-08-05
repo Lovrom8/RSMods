@@ -715,7 +715,7 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 	
 	while (true) {
-		Sleep(2000);
+		Sleep(250);
 
 		currentMenu = MemHelpers.GetCurrentMenu(false);
 
