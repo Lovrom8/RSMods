@@ -155,7 +155,6 @@
     <Content Include="Resources\RSModsGUI\tools\ww2ogg.exe" />
     <Content Include="Resources\RSModsGUI\X360.dll" />
     <Content Include="Resources\RSModsGUI\zlib.net.dll" />
-    <None Include="Resources\version.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\RSModsGUI\CustomMods\" />

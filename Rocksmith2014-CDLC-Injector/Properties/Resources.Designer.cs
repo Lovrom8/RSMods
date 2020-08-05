@@ -618,15 +618,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to v1.0.0 (08/02/2020).
-        /// </summary>
-        internal static string version {
-            get {
-                return ResourceManager.GetString("version", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] ww2ogg {

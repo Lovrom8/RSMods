@@ -53,7 +53,6 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "SharpConfig.dll"), Properties.Resources.SharpConfig);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "X360.dll"), Properties.Resources.X360);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "zlib.net.dll"), Properties.Resources.zlib_net);
-                File.WriteAllText(Path.Combine(rootModFolder, "version.txt"), Properties.Resources.version);
             // ddc Folder
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc.exe"), Properties.Resources.ddc);
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_chords_protector.xml"), Properties.Resources.ddc);
