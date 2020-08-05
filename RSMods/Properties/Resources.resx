@@ -118,25 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="introsequence.gfx" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\introsequence.gfx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\LogoX256.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="maingame.csv" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\maingame.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="maingame_original.csv" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\maingame_original.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="sltsv1_aggregategraph.nt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sltsv1_aggregategraph.nt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tuning_database.json" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tuning.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ui_menu_pillar_main.database.json" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ui_menu_pillar_main.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

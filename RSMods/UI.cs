@@ -25,7 +25,8 @@ namespace RSMods
     {
         public MainForm()
         {
-            if (GenUtil.GetRSDirectory() == String.Empty){
+            if (GenUtil.GetRSDirectory() == String.Empty)
+            {
                 MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
                 return;
@@ -849,7 +850,7 @@ namespace RSMods
                     File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
                     MessageBox.Show("Cache backup was restored!", "Backup restored", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                    
+
                 else
                     MessageBox.Show("No cache backup found!", "Error");
 
@@ -891,6 +892,17 @@ namespace RSMods
         {
             if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
+            try
+            {
+                if (MessageBox.Show("Do you have a NVMe drive? (if you don't, fastest loading option is likely to crash your game!", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    File.Copy(Constants.IntroGFX_MaxPath, Constants.IntroGFX_CustomPath, true);
+                else
+                    File.Copy(Constants.IntroGFX_MidPath, Constants.IntroGFX_CustomPath, true);
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Unable to copy required files. Error: {ioex.Message.ToString()}");
+            }
 
             ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
@@ -902,8 +914,11 @@ namespace RSMods
             if (!File.Exists(Path.Combine(Constants.TuningJSON_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
 
-            if (!File.Exists(Path.Combine(Constants.IntroGFX_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence.gfx" });
+            if (!File.Exists(Path.Combine(Constants.IntroGFX_MidPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_mid.gfx" });
+
+            if (!File.Exists(Path.Combine(Constants.IntroGFX_MaxPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_max.gfx" });
 
             if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
@@ -1472,7 +1487,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Error: " + ioex.ToString());
+                MessageBox.Show($"Error:{ioex.Message}");
                 return;
             }
 
@@ -1510,7 +1525,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Could not find Steam profiles folder: " + ioex.Message.ToString(), "Error");
+                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
             }
         }
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
@@ -1909,7 +1924,7 @@ namespace RSMods
 
         private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if(VolumeControlsCheckbox.Checked)
+            if (VolumeControlsCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "on");
                 SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "on");

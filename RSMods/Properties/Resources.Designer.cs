@@ -61,82 +61,12 @@ namespace RSMods.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] introsequence_gfx {
-            get {
-                object obj = ResourceManager.GetObject("introsequence.gfx", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon Logo {
             get {
                 object obj = ResourceManager.GetObject("Logo", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5857,Invite a Friend,,,,,フレンドを誘う,,
-        ///5858,Double-check before making a purchase. It is possible to download the same content multiple times.,,,,,購入する前にもう一度ご確認ください。同じコンテンツを何度も購入することができます,,
-        ///5859,You need to be signed in to Xbox LIVE for this operation. Would you like to sign in now?,,,,,この操作を実行するにはXbox LIVEにサインインする必要があります。今すぐサインインしますか？,,
-        ///5860,Invite a Friend,Inviter un ami,Invitar a amigo,,,,,
-        ///5861,Account,Compte,Cuenta,,,,,
-        ///5862,Account,,,,,アカウント,,
-        ///5863,Invite a Friend,Inviter un ami,Invitar a amigo,Invi [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string maingame_csv {
-            get {
-                return ResourceManager.GetString("maingame.csv", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5857,Invite a Friend,,,,,フレンドを誘う,,
-        ///5858,Double-check before making a purchase. It is possible to download the same content multiple times.,,,,,購入する前にもう一度ご確認ください。同じコンテンツを何度も購入することができます,,
-        ///5859,You need to be signed in to Xbox LIVE for this operation. Would you like to sign in now?,,,,,この操作を実行するにはXbox LIVEにサインインする必要があります。今すぐサインインしますか？,,
-        ///5860,Invite a Friend,Inviter un ami,Invitar a amigo,,,,,
-        ///5861,Account,Compte,Cuenta,,,,,
-        ///5862,Account,,,,,アカウント,,
-        ///5863,Invite a Friend,Inviter un ami,Invitar a amigo,Invi [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string maingame_original_csv {
-            get {
-                return ResourceManager.GetString("maingame_original.csv", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] sltsv1_aggregategraph_nt {
-            get {
-                object obj = ResourceManager.GetObject("sltsv1_aggregategraph.nt", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] tuning_database_json {
-            get {
-                object obj = ResourceManager.GetObject("tuning_database.json", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] ui_menu_pillar_main_database_json {
-            get {
-                object obj = ResourceManager.GetObject("ui_menu_pillar_main.database.json", resourceCulture);
-                return ((byte[])(obj));
             }
         }
     }

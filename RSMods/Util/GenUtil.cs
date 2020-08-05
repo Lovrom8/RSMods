@@ -174,8 +174,23 @@ namespace RSMods.Util
                             }
                         }
 
-                        //if (!String.IsNullOrEmpty(rs2RootDir))
-                        //    MessageBox.Show("Found Steam RS2014 Installation Directory in Registry ...");
+                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // You only get one chance, user, use it well
+                        {
+                            using (var fbd = new OpenFileDialog())  // Screw FolderOpenDialog, it sux
+                            {
+                                fbd.CheckFileExists = false;
+                                fbd.CheckPathExists = true;
+
+                                if (fbd.ShowDialog() == DialogResult.OK)
+                                {
+                                    string folderPath = Path.GetDirectoryName(fbd.FileName);
+
+                                    if (folderPath.IsRSFolder())
+                                        return folderPath;
+                                }
+
+                            }
+                        }
                     }
 
                     if (!rs2RootDir.IsRSFolder())
