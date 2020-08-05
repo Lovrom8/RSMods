@@ -49,12 +49,20 @@ std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 }
 
 void cMemHelpers::ToggleLoft() {
-	uintptr_t addr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loftOffsets);
+	
+	// Old Method (Works for most builds but bugged out for some)
+	//uintptr_t nearAddr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loft_nearOffsets);
+	//if (*(float*)nearAddr == 10)
+	//	*(float*)nearAddr = 10000;
+	//else
+	//	*(float*)nearAddr = 10;
 
-	if (*(float*)addr == 10)
-		*(float*)addr = 10000;
+	uintptr_t farAddr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loft_farOffsets);
+
+	if (*(float*)farAddr == 10000)
+		*(float*)farAddr = 1;
 	else
-		*(float*)addr = 10;
+		*(float*)farAddr = 10000;
 }
 
 void cMemHelpers::ShowSongTimer() {

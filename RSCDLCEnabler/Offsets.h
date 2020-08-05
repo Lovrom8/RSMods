@@ -10,7 +10,8 @@ public:
 
 	// Toggle Loft
 	uintptr_t ptr_loft = 0x00F5C4EC;
-	std::vector<unsigned int> ptr_loftOffsets{ 0x108, 0x14, 0x28, 0x7C };
+	std::vector<unsigned int> ptr_loft_nearOffsets{ 0x108, 0x14, 0x28, 0x7C };
+	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
 	// Extended Range
 	uintptr_t ptr_tuning = 0x00F5C4D8;
