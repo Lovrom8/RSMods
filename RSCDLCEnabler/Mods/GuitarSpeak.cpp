@@ -50,6 +50,8 @@ bool cGuitarSpeak::TimerTick() {
 
 		int mem = GetCurrentNote();
 
+		if (mem > 96) // The limit of Rocksmith
+			mem = 0;
 
 		if (debugMode && mem != 0xFF)
 			std::cout << "Note: " << mem << std::endl;
