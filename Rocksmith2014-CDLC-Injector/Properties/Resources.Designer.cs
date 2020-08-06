@@ -227,26 +227,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] introsequence {
-            get {
-                object obj = ResourceManager.GetObject("introsequence", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] introsequence_original {
-            get {
-                object obj = ResourceManager.GetObject("introsequence_original", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to     DDC is a Dynamic Difficulty Creator for Custom DownLoadable Contents
         ///    Copyright (C) 2013-2018, Chlipouni 
         ///
@@ -271,36 +251,6 @@ namespace RS2014_Mod_Installer.Properties {
             get {
                 object obj = ResourceManager.GetObject("LogoX256", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5857,Invite a Friend,,,,,フレンドを誘う,,
-        ///5858,Double-check before making a purchase. It is possible to download the same content multiple times.,,,,,購入する前にもう一度ご確認ください。同じコンテンツを何度も購入することができます,,
-        ///5859,You need to be signed in to Xbox LIVE for this operation. Would you like to sign in now?,,,,,この操作を実行するにはXbox LIVEにサインインする必要があります。今すぐサインインしますか？,,
-        ///5860,Invite a Friend,Inviter un ami,Invitar a amigo,,,,,
-        ///5861,Account,Compte,Cuenta,,,,,
-        ///5862,Account,,,,,アカウント,,
-        ///5863,Invite a Friend,Inviter un ami,Invitar a amigo,Invi [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string maingame {
-            get {
-                return ResourceManager.GetString("maingame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5857,Invite a Friend,,,,,フレンドを誘う,,
-        ///5858,Double-check before making a purchase. It is possible to download the same content multiple times.,,,,,購入する前にもう一度ご確認ください。同じコンテンツを何度も購入することができます,,
-        ///5859,You need to be signed in to Xbox LIVE for this operation. Would you like to sign in now?,,,,,この操作を実行するにはXbox LIVEにサインインする必要があります。今すぐサインインしますか？,,
-        ///5860,Invite a Friend,Inviter un ami,Invitar a amigo,,,,,
-        ///5861,Account,Compte,Cuenta,,,,,
-        ///5862,Account,,,,,アカウント,,
-        ///5863,Invite a Friend,Inviter un ami,Invitar a amigo,Invi [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string maingame_original {
-            get {
-                return ResourceManager.GetString("maingame_original", resourceCulture);
             }
         }
         
@@ -570,49 +520,9 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] sltsv1_aggregategraph {
-            get {
-                object obj = ResourceManager.GetObject("sltsv1_aggregategraph", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] topng {
             get {
                 object obj = ResourceManager.GetObject("topng", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] tuning_database {
-            get {
-                object obj = ResourceManager.GetObject("tuning_database", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] ui_menu_pillar_main_database {
-            get {
-                object obj = ResourceManager.GetObject("ui_menu_pillar_main_database", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] ui_menu_pillar_mission_database {
-            get {
-                object obj = ResourceManager.GetObject("ui_menu_pillar_mission_database", resourceCulture);
                 return ((byte[])(obj));
             }
         }

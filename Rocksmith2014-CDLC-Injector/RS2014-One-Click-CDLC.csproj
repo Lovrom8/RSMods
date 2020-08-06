@@ -65,6 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GenUtil.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Worker.cs" />
     <Compile Include="GUI.cs">
       <SubType>Form</SubType>
@@ -79,14 +84,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -99,14 +99,6 @@
     <None Include="Resources\RSModsGUI\ddc\ddc_default.cfg" />
     <None Include="Resources\RSModsGUI\ddc\ddc_keep_all_levels.cfg" />
     <None Include="Resources\RSModsGUI\ddc\ddc_merge_all_levels.cfg" />
-    <None Include="Resources\RSModsGUI\Resources\introsequence.gfx" />
-    <None Include="Resources\RSModsGUI\Resources\introsequence_original.gfx" />
-    <None Include="Resources\RSModsGUI\Resources\maingame.csv" />
-    <None Include="Resources\RSModsGUI\Resources\maingame_original.csv" />
-    <None Include="Resources\RSModsGUI\Resources\sltsv1_aggregategraph.nt" />
-    <None Include="Resources\RSModsGUI\Resources\tuning.database.json" />
-    <None Include="Resources\RSModsGUI\Resources\ui_menu_pillar_main.database.json" />
-    <None Include="Resources\RSModsGUI\Resources\ui_menu_pillar_mission.database.json" />
     <None Include="Resources\RSModsGUI\RSMods.exe.config" />
     <None Include="Resources\RSModsGUI\tools\OpenCmd.bat" />
     <None Include="Resources\RSModsGUI\tools\packed_codebooks.bin" />

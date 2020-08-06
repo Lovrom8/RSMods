@@ -154,23 +154,11 @@
   <data name="ICSharpCode_SharpZipLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="introsequence" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\introsequence.gfx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="introsequence_original" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\introsequence_original.gfx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="license" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\ddc\license.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="LogoX256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\LogoX256.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="maingame" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\maingame.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="maingame_original" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\maingame_original.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="MiscUtil" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\MiscUtil.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -241,20 +229,8 @@
   <data name="SharpConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\SharpConfig.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="sltsv1_aggregategraph" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\sltsv1_aggregategraph.nt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="topng" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\tools\topng.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tuning_database" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\tuning.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ui_menu_pillar_main_database" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\ui_menu_pillar_main.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ui_menu_pillar_mission_database" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Resources\ui_menu_pillar_mission.database.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ww2ogg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\tools\ww2ogg.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

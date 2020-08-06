@@ -26,13 +26,11 @@ namespace RS2014_Mod_Installer
             string rootModFolder = Path.Combine(rocksmithLocation, "RSMods");
             string customModsFolder = Path.Combine(rootModFolder, "CustomMods");
             string ddcFolder = Path.Combine(rootModFolder, "ddc");
-            string resourcesFolder = Path.Combine(rootModFolder, "Resources");
             string toolsFolder = Path.Combine(rootModFolder, "tools");
 
             Directory.CreateDirectory(rootModFolder);
             Directory.CreateDirectory(customModsFolder);
             Directory.CreateDirectory(ddcFolder);
-            Directory.CreateDirectory(resourcesFolder);
             Directory.CreateDirectory(toolsFolder);
 
             // Root Folder
@@ -64,15 +62,6 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_merge_all_levels.cfg"), Properties.Resources.ddc);
                 File.WriteAllText(Path.Combine(ddcFolder, "license.txt"), Properties.Resources.license);
                 File.WriteAllText(Path.Combine(ddcFolder, "readme.txt"), Properties.Resources.readme1);
-            // Resources Folder
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "introsequence.gfx"), Properties.Resources.introsequence);
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "introsequence_original.gfx"), Properties.Resources.introsequence_original);
-                File.WriteAllText(Path.Combine(resourcesFolder, "maingame.csv"), Properties.Resources.maingame);
-                File.WriteAllText(Path.Combine(resourcesFolder, "maingame_original.csv"), Properties.Resources.maingame_original);
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "sltsv1_aggregategraph.nt"), Properties.Resources.sltsv1_aggregategraph);
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "tuning.database.json"), Properties.Resources.tuning_database);
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "ui_menu_pillar_main.database.json"), Properties.Resources.ui_menu_pillar_main_database);
-                File.WriteAllBytes(Path.Combine(resourcesFolder, "ui_menu_pillar_mission.database.json"), Properties.Resources.ui_menu_pillar_mission_database);
             // tools Folder
                 File.WriteAllBytes(Path.Combine(toolsFolder, "7za.exe"), Properties.Resources._7za);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "core.jar"), Properties.Resources.core);
