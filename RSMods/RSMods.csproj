@@ -120,33 +120,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Resources\introsequence_original.gfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\tuning.database.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\introsequence_max.gfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\maingame_original.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\maingame.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\introsequence_mid.gfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\introsequence_original.gfx" />
+    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt" />
+    <EmbeddedResource Include="Resources\tuning.database.json" />
+    <EmbeddedResource Include="Resources\introsequence_max.gfx" />
+    <EmbeddedResource Include="Resources\maingame_original.csv" />
+    <EmbeddedResource Include="Resources\maingame.csv" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json" />
+    <EmbeddedResource Include="Resources\introsequence_mid.gfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
