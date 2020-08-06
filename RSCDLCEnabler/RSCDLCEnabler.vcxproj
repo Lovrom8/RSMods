@@ -139,7 +139,8 @@
       <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
+      <Command>
+IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
