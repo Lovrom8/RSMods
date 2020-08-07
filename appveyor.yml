@@ -39,20 +39,27 @@
   configuration: Release
   before_build:
     - cmd: >-
-        rmdir -rf %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
-        
-        del /f %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\D3DX9_42.dll
-        
-        appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI
-        
-        appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future
-     
-        7z x RSMods.zip -o*%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
-        
-        7z x DLL.zip %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\
+       del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources
+       
+       appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI
+                
+       appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future
+            
+       7z x RSMods.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
+                
+       7z x DLL.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\
   build:
     parallel: true
     verbosity: quiet
   artifacts:
-  - path: '**\*.exe'
+  - path: '**\bin\Release\RS2014-Mod-Installer.exe'
     name: OneClick_Release
+  deploy:
+  - provider: GitHub
+    tag: RSModsInstaller-v$(appveyor_build_version)
+    release: RSModsInstaller-v$(appveyor_build_version)
+    auth_token:
+       secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
+    artifact: OneClick_Release
+    prerelease: true
+      
