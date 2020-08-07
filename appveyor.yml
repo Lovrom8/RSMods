@@ -1,0 +1,31 @@
+# configuration for "Future" branch
+-
+  branches:
+    only:
+    - Future
+  image: Visual Studio 2019
+  configuration: Release
+  build:
+      parallel: true
+      verbosity: quiet
+  artifacts:
+    - path: '**\D3DX9_42.dll'
+      name: DLL
+
+# configuration for "GUI" branch
+-
+  branches:
+    only:
+      - GUI
+  image: Visual Studio 2019
+  configuration: Release
+  build:
+    parallel: true
+    verbosity: quiet
+  artifacts:
+     - path: '**\*.zip'
+       name: GUI_Release
+  on_success:
+     -cmd: 
+       7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\Release\*.* -r
+       appveyor PushArtifact RSMods.zip
