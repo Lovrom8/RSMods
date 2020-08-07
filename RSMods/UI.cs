@@ -986,6 +986,8 @@ namespace RSMods
                 {
                     if (MessageBox.Show(@"It appears as though Rocksmith installed on a hard disk drive. HDDs are normally too slow to support fast load mod and will likely result in a crash. \n Do you wish to proceed?", "Drive too slow for fast load", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                         return;
+
+                    AddFastLoadMod(false);
                 }
                 else if (driveType.Item1 == "SSD")
                 {
