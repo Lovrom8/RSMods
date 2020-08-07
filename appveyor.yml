@@ -37,6 +37,7 @@
       - One-Click-Installer
   image: Visual Studio 2019
   configuration: Release
+  skip_tags: true
   before_build:
     - cmd: >-
        del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources
