@@ -39,7 +39,7 @@
   configuration: Release
   before_build:
     - cmd: >-
-        rmdir %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
+        rmdir -rf %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
         
         del /f %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\D3DX9_42.dll
         
