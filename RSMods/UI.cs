@@ -13,6 +13,7 @@ using SevenZip;
 using RocksmithToolkitLib.DLCPackage;
 using System.Collections.Generic;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
+using System.Management;
 
 
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
@@ -888,16 +889,119 @@ namespace RSMods
             RepackCachePsarc();
         }
 
+        private Tuple<string, bool> GetDriveType(char driveLetter) // This may not work on Win7, MSDN says its for >= Win8
+        {
+            try
+            {
+                uint driveNumber = 0;
+
+                ManagementScope scope = new ManagementScope(@"\\.\root\microsoft\windows\storage");
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
+                {
+                    scope.Connect();
+                    searcher.Scope = scope;
+
+                    foreach (ManagementObject queryObj in searcher.Get())
+                    {
+                        char letter = (char)queryObj["DriveLetter"];
+
+                        if (letter == driveLetter)
+                        {
+                            driveNumber = (uint)queryObj["DiskNumber"];
+                            break;
+                        }
+                    }
+                }
+
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_PhysicalDisk"))
+                {
+                    string type = "";
+                    bool isNVMe = false;
+                    scope.Connect();
+                    searcher.Scope = scope;
+
+                    foreach (ManagementObject queryObj in searcher.Get())
+                    {
+                        string devID = queryObj["DeviceId"].ToString();
+
+                        if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
+                            continue;
+
+                        switch (Convert.ToInt16(queryObj["MediaType"]))
+                        {
+                            case 1:
+                                type = "Unspecified";
+                                break;
+
+                            case 3:
+                                type = "HDD";
+                                break;
+
+                            case 4:
+                                type = "SSD";
+                                break;
+
+                            case 5:
+                                type = "SCM";
+                                break;
+
+                            default:
+                                type = "Unspecified";
+                                break;
+                        }
+
+                        if (Convert.ToInt16(queryObj["BusType"]) == 17)
+                            isNVMe = true;
+
+                        return new Tuple<string, bool>(type, isNVMe);
+                    }
+                }
+            }
+            catch (ManagementException ex) //Not much we can do in this case and it's not really important that we inform the user
+            {
+            }
+
+            return new Tuple<string, bool>("Unspecified", false);
+        }
+
+        private void AddFastLoadMod(bool NVMe)
+        {
+            if (NVMe)
+                File.Copy(Constants.IntroGFX_MaxPath, Constants.IntroGFX_CustomPath, true);
+            else
+                File.Copy(Constants.IntroGFX_MidPath, Constants.IntroGFX_CustomPath, true);
+        }
+
         private void BtnAddFastLoadMod_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
+
             try
             {
-                if (MessageBox.Show("Do you have a NVMe drive? (if you don't, fastest loading option is likely to crash your game!", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    File.Copy(Constants.IntroGFX_MaxPath, Constants.IntroGFX_CustomPath, true);
+                char driveLetter = Constants.RSFolder.ToUpper()[0];
+                var driveType = GetDriveType(driveLetter);
+
+                if (driveType.Item1 == "HDD")
+                {
+                    if (MessageBox.Show(@"It appears as though Rocksmith installed on a hard disk drive. HDDs are normally too slow to support fast load mod and will likely result in a crash. \n Do you wish to proceed?", "Drive too slow for fast load", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        return;
+                }
+                else if (driveType.Item1 == "SSD")
+                {
+                    if (driveType.Item2) // If is NVMe
+                        if (MessageBox.Show("Can you confirm Rocksmith is installed on a NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on a NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            AddFastLoadMod(true);
+                        else
+                            AddFastLoadMod(false);
+                }
                 else
-                    File.Copy(Constants.IntroGFX_MidPath, Constants.IntroGFX_CustomPath, true);
+                {
+                    if (MessageBox.Show(@"We were unable to detect the drive type on which Rocksmith is installed. \n Is it on a NVMe drive? (if it's not, fastest loading option is likely to crash your game!)", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        AddFastLoadMod(true);
+                    else
+                        AddFastLoadMod(false);
+                }
             }
             catch (IOException ioex)
             {
