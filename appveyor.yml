@@ -25,7 +25,7 @@
   artifacts:
      - path: '**\*.zip'
        name: GUI_Release
-  on_success:
+  on_finish:
      -cmd: 
        7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\Release\*.* -r
        appveyor PushArtifact RSMods.zip
