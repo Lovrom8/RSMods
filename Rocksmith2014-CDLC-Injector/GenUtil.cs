@@ -151,6 +151,17 @@ namespace RSMods.Util
 
         public static string GetRSDirectory()
         {
+            if (!IsRSFolder(Constants.RSFolder))
+            {
+                if (File.Exists(Constants.SettingsPath))
+                {
+                    Constants.RSFolder = File.ReadAllText(Constants.SettingsPath).Split('=')[1].Trim();
+                    return Constants.RSFolder;
+                }
+            }
+            else
+                return Constants.RSFolder;
+
             try
             {
                 var rs2RootDir = String.Empty;
@@ -174,34 +185,28 @@ namespace RSMods.Util
                             }
                         }
 
-                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // You only get one chance, user, use it well
+                        rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
+
+                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
                         {
-                            using (var fbd = new OpenFileDialog())  // Screw FolderOpenDialog, it sux
+                            MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!", "Your help is required!");
+                            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
                             {
-                                fbd.CheckFileExists = false;
-                                fbd.CheckPathExists = true;
-
-                                if (fbd.ShowDialog() == DialogResult.OK)
+                                dialog.IsFolderPicker = true;
+                                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                                 {
-                                    string folderPath = Path.GetDirectoryName(fbd.FileName);
+                                    string rsFolder = dialog.FileName;
 
-                                    if (folderPath.IsRSFolder())
-                                        return folderPath;
+                                    if (rsFolder.IsRSFolder())
+                                    {
+                                        Constants.RSFolder = rsFolder;
+                                        return rsFolder;
+                                    }
                                 }
-
                             }
                         }
                     }
-
-                    if (!rs2RootDir.IsRSFolder())
-                    {
-                        rs2RootDir = GetCustomRSFolder(steamRootPath);
-                    }
-                    // else
-                    //      MessageBox.Show("<WARNING> Steam RS2014 Installation Directory not found in Registry ...");
                 }
-                //else
-                //    MessageBox.Show("<WARNING> Steam root path not found in Registry ... ");
 
                 return rs2RootDir;
             }
