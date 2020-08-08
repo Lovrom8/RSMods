@@ -26,16 +26,23 @@ namespace RSMods
     {
         public MainForm()
         {
-            if (GenUtil.GetRSDirectory() == String.Empty)
+            string RSFolder = GenUtil.GetRSDirectory();
+            if (RSFolder == String.Empty)
             {
                 MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
                 return;
             }
+            else
+                Constants.RSFolder = RSFolder;
 
             WriteSettings.IsVoid(GenUtil.GetRSDirectory());
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
                 WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
+
+            if (!File.Exists(Constants.SettingsPath))
+                File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
+
             InitializeComponent();
 
 
