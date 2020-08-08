@@ -187,9 +187,11 @@ namespace RSMods.Util
                             }
                         }
 
-                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder())
+                        rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
+
+                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
                         {
-                            MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!");
+                            MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!", "Your help is required!");
                             using (CommonOpenFileDialog dialog = new CommonOpenFileDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
                             {
                                 dialog.IsFolderPicker = true;
@@ -206,16 +208,7 @@ namespace RSMods.Util
                             }
                         }
                     }
-
-                    if (!rs2RootDir.IsRSFolder())
-                    {
-                        rs2RootDir = GetCustomRSFolder(steamRootPath);
-                    }
-                    // else
-                    //      MessageBox.Show("<WARNING> Steam RS2014 Installation Directory not found in Registry ...");
                 }
-                //else
-                //    MessageBox.Show("<WARNING> Steam root path not found in Registry ... ");
 
                 return rs2RootDir;
             }

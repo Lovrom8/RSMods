@@ -44,7 +44,7 @@ namespace RSMods
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
 
             InitializeComponent();
-
+            this.Text = $"{this.Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
 
             // Fill Songlist List
             this.Songlist.Items.AddRange(new object[] {
