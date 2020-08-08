@@ -151,17 +151,6 @@ namespace RSMods.Util
 
         public static string GetRSDirectory()
         {
-            if (!IsRSFolder(Constants.RSFolder))
-            {
-                if (File.Exists(Constants.SettingsPath))
-                {
-                    Constants.RSFolder = File.ReadAllText(Constants.SettingsPath).Split('=')[1].Trim();
-                    return Constants.RSFolder;
-                }
-            }
-            else
-                return Constants.RSFolder;
-
             try
             {
                 var rs2RootDir = String.Empty;
