@@ -1,35 +1,3 @@
-# configuration for "Future" branch
--
-  branches:
-    only:
-    - Future
-  image: Visual Studio 2019
-  configuration: Release
-  build:
-      parallel: true
-      verbosity: quiet
-  on_finish:
-  - cmd: >-
-       7z a DLL.zip %APPVEYOR_BUILD_FOLDER%\Release\D3DX9_42.dll
-
-       appveyor PushArtifact DLL.zip
-     
-# configuration for "GUI" branch
--
-  branches:
-    only:
-      - GUI
-  image: Visual Studio 2019
-  configuration: Release
-  build:
-    parallel: true
-    verbosity: quiet
-  on_finish:
-  - cmd: >-
-       7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\Release\*.* -r
-     
-       appveyor PushArtifact RSMods.zip
-      
 # configuration for "One-Click-Installer" branch      
 -
   branches:
@@ -39,6 +7,8 @@
   configuration: Release
   skip_tags: true
   before_build:
+    - ps: >-
+        nuget restore
     - cmd: >-
        del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources
        
