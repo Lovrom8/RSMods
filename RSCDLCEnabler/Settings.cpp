@@ -36,6 +36,7 @@ cSettings::cSettings()
 	{"RemoveLyrics", "off"},
 	{"RemoveLyricsWhen", "manual"},
 	{"GuitarSpeak", "off"},
+	{"GuitarSpeakWhileTuning", "off"},
 	};
 
 	customSettings = {
@@ -316,6 +317,7 @@ void cSettings::ReadModSettings() {
 	modSettings["RemoveLyrics"] = reader.GetValue("Toggle Switches", "Lyrics", "off");
 	modSettings["RemoveLyricsWhen"] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
 	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
+	modSettings["GuitarSpeakWhileTuning"] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 }
 
 void cSettings::ReadStringColors() {

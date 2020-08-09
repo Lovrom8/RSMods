@@ -42,8 +42,15 @@ bool cGuitarSpeak::TimerTick() {
 			std::cout << "Tick" << std::endl;*/
 
 		std::string currentMenu = MemHelpers.GetCurrentMenu();
-		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) || std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
-			std::cout << "Entered Bad Menu!" << std::endl;
+
+		
+		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+			std::cout << "Entered Tuning Menu!" << std::endl;
+			return false;
+		}
+
+		if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
+			std::cout << "Entered Song Menu!" << std::endl;
 			return false;
 		}
 

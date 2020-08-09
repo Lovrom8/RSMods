@@ -30,11 +30,10 @@ private:
 	std::string strSend;
 
 
-	std::string cGuitarSpeak::tuningMenus[17] = { // These are all the menus where you need to tune
+	std::string cGuitarSpeak::tuningMenus[16] = { // These are all the menus where you need to tune
 	(std::string)"SelectionListDialog",
 	(std::string)"LearnASong_PreSongTuner",
 	(std::string)"LearnASong_PreSongTunerMP",
-	(std::string)"LearnASong_SongOptions",
 	(std::string)"NonStopPlay_PreSongTuner",
 	(std::string)"NonStopPlay_PreSongTunerMP",
 	(std::string)"ScoreAttack_PreSongTuner",
