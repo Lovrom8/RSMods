@@ -1697,7 +1697,7 @@ namespace RSMods
         {
             if (GuitarSpeakNote.SelectedIndex > -1 && GuitarSpeakOctave.SelectedIndex > -1 && GuitarSpeakKeypress.SelectedIndex > -1)
             {
-                int inputNote = GuitarSpeakNote.SelectedIndex + 36;
+                int inputNote = GuitarSpeakNote.SelectedIndex + 36; // We skip the first 3 octaves to give an accurate representation of the notes being played
                 int inputOctave = GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
                 int outputNoteOctave = inputNote + (inputOctave * 12);
                 MessageBox.Show(GuitarSpeakNote.SelectedItem.ToString() + GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1705,10 +1705,13 @@ namespace RSMods
                 foreach (KeyValuePair<string, string> entry in GuitarSpeakKeyPressDictionary)
                 {
                     if (GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
+                    {
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
-                }
-                
-
+                        GuitarSpeakPresetsBox.ClearSelected();
+                        GuitarSpeakPresetsBox.Items.RemoveAt(GuitarSpeakKeypress.SelectedIndex);
+                        GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " +  GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                    }
+                }      
 
                 GuitarSpeakNote.ClearSelected();
                 GuitarSpeakOctave.ClearSelected();
@@ -1755,332 +1758,38 @@ namespace RSMods
         }
         private void NupString0_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString0.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display E
-            {
-                CustomTuningLowEStringLetter.Text = "E";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display F
-            {
-                CustomTuningLowEStringLetter.Text = "F";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display F#
-            {
-                CustomTuningLowEStringLetter.Text = "F#";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display G
-            {
-                CustomTuningLowEStringLetter.Text = "G";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display Ab
-            {
-                CustomTuningLowEStringLetter.Text = "Ab";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display A
-            {
-                CustomTuningLowEStringLetter.Text = "A";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Bb
-            {
-                CustomTuningLowEStringLetter.Text = "Bb";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display B
-            {
-                CustomTuningLowEStringLetter.Text = "B";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display C
-            {
-                CustomTuningLowEStringLetter.Text = "C";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display C#
-            {
-                CustomTuningLowEStringLetter.Text = "C#";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display D
-            {
-                CustomTuningLowEStringLetter.Text = "D";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Eb
-            {
-                CustomTuningLowEStringLetter.Text = "Eb";
-            }
-        }
-
-        private bool StringLetterIntIsEqual(int numberToCompareAgainst, decimal currentValue)
-        {
-            int postitive = numberToCompareAgainst;
-            int negative = numberToCompareAgainst - 12;
-            int postitiveOctave = postitive + 12;
-            int negativeOctave = negative - 12;
-
-            if (currentValue == postitive || currentValue == negative || currentValue == postitiveOctave || currentValue == negativeOctave)
-                return true;
-            return false;
+            int offset = 28; // Offset from (24 - 1) + 5
+            CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(NupString0.Value) + offset);
         }
 
         private void NupString1_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString1.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display A
-            {
-                CustomTuningAStringLetter.Text = "A";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Bb
-            {
-                CustomTuningAStringLetter.Text = "Bb";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display B
-            {
-                CustomTuningAStringLetter.Text = "B";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display C
-            {
-                CustomTuningAStringLetter.Text = "C";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display C#
-            {
-                CustomTuningAStringLetter.Text = "C#";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display D
-            {
-                CustomTuningAStringLetter.Text = "D";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Eb
-            {
-                CustomTuningAStringLetter.Text = "Eb";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display E
-            {
-                CustomTuningAStringLetter.Text = "E";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display F
-            {
-                CustomTuningAStringLetter.Text = "F";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display F#
-            {
-                CustomTuningAStringLetter.Text = "F#";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display G
-            {
-                CustomTuningAStringLetter.Text = "G";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Ab
-            {
-                CustomTuningAStringLetter.Text = "Ab";
-            }
+            int offset = 33; // Offset from (24 - 1) + 10
+            CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(NupString1.Value) + offset);
         }
 
         private void NupString2_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString2.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display D
-            {
-                CustomTuningDStringLetter.Text = "D";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Eb
-            {
-                CustomTuningDStringLetter.Text = "Eb";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display E
-            {
-                CustomTuningDStringLetter.Text = "E";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display F
-            {
-                CustomTuningDStringLetter.Text = "F";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display F#
-            {
-                CustomTuningDStringLetter.Text = "F#";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display G
-            {
-                CustomTuningDStringLetter.Text = "G";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display Ab
-            {
-                CustomTuningDStringLetter.Text = "Ab";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display A
-            {
-                CustomTuningDStringLetter.Text = "A";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display Bb
-            {
-                CustomTuningDStringLetter.Text = "Bb";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display B
-            {
-                CustomTuningDStringLetter.Text = "B";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display C
-            {
-                CustomTuningDStringLetter.Text = "C";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display C#
-            {
-                CustomTuningDStringLetter.Text = "C#";
-            }
+            int offset = 26; // Offset from (24 - 1) + 3
+            CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(NupString2.Value) + offset);
         }
 
         private void NupString3_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString3.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display G
-            {
-                CustomTuningGStringLetter.Text = "G";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display Ab
-            {
-                CustomTuningGStringLetter.Text = "Ab";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display A
-            {
-                CustomTuningGStringLetter.Text = "A";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display Bb
-            {
-                CustomTuningGStringLetter.Text = "Bb";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display B
-            {
-                CustomTuningGStringLetter.Text = "B";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display C
-            {
-                CustomTuningGStringLetter.Text = "C";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display C#
-            {
-                CustomTuningGStringLetter.Text = "C#";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display D
-            {
-                CustomTuningGStringLetter.Text = "D";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display Eb
-            {
-                CustomTuningGStringLetter.Text = "Eb";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display E
-            {
-                CustomTuningGStringLetter.Text = "E";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display F
-            {
-                CustomTuningGStringLetter.Text = "F";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display F#
-            {
-                CustomTuningGStringLetter.Text = "F#";
-            }
+            int offset = 31;// Offset from (24 - 1) + 8
+            CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(NupString3.Value) + offset);
         }
 
         private void NupString4_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString4.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display B
-            {
-                CustomTuningBStringLetter.Text = "B";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display C
-            {
-                CustomTuningBStringLetter.Text = "C";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display C#
-            {
-                CustomTuningBStringLetter.Text = "C#";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display D
-            {
-                CustomTuningBStringLetter.Text = "D";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display Eb
-            {
-                CustomTuningBStringLetter.Text = "Eb";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display E
-            {
-                CustomTuningBStringLetter.Text = "E";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display F
-            {
-                CustomTuningBStringLetter.Text = "F";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display F#
-            {
-                CustomTuningBStringLetter.Text = "F#";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display G
-            {
-                CustomTuningBStringLetter.Text = "G";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display Ab
-            {
-                CustomTuningBStringLetter.Text = "Ab";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display A
-            {
-                CustomTuningBStringLetter.Text = "A";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display Bb
-            {
-                CustomTuningBStringLetter.Text = "Bb";
-            }
+            int offset = 35; // Offset from (24 - 1) + 12
+            CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(NupString4.Value) + offset);
         }
 
         private void NupString5_ValueChanged(object sender, EventArgs e)
         {
-            decimal StringLetterInt = NupString5.Value;
-            if (StringLetterIntIsEqual(0, StringLetterInt) || StringLetterInt == 24) // Display e
-            {
-                CustomTuningHighEStringLetter.Text = "e";
-            }
-            else if (StringLetterIntIsEqual(1, StringLetterInt)) // Display f
-            {
-                CustomTuningHighEStringLetter.Text = "f";
-            }
-            else if (StringLetterIntIsEqual(2, StringLetterInt)) // Display f#
-            {
-                CustomTuningHighEStringLetter.Text = "f#";
-            }
-            else if (StringLetterIntIsEqual(3, StringLetterInt)) // Display g
-            {
-                CustomTuningHighEStringLetter.Text = "g";
-            }
-            else if (StringLetterIntIsEqual(4, StringLetterInt)) // Display ab
-            {
-                CustomTuningHighEStringLetter.Text = "ab";
-            }
-            else if (StringLetterIntIsEqual(5, StringLetterInt)) // Display a
-            {
-                CustomTuningHighEStringLetter.Text = "a";
-            }
-            else if (StringLetterIntIsEqual(6, StringLetterInt)) // Display bb
-            {
-                CustomTuningHighEStringLetter.Text = "bb";
-            }
-            else if (StringLetterIntIsEqual(7, StringLetterInt)) // Display b
-            {
-                CustomTuningHighEStringLetter.Text = "b";
-            }
-            else if (StringLetterIntIsEqual(8, StringLetterInt)) // Display c
-            {
-                CustomTuningHighEStringLetter.Text = "c";
-            }
-            else if (StringLetterIntIsEqual(9, StringLetterInt)) // Display c#
-            {
-                CustomTuningHighEStringLetter.Text = "c#";
-            }
-            else if (StringLetterIntIsEqual(10, StringLetterInt)) // Display d
-            {
-                CustomTuningHighEStringLetter.Text = "d";
-            }
-            else if (StringLetterIntIsEqual(11, StringLetterInt)) // Display eb
-            {
-                CustomTuningHighEStringLetter.Text = "eb";
-            }
+            int offset = 28; // Offset from (24 - 1) + 5
+            CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(NupString5.Value) + offset);
         }
 
         private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -2115,41 +1824,19 @@ namespace RSMods
                 return "";
 
             int inputInt = Int32.Parse(inputString);
+            
+            int octave = (inputInt / 12) - 1; // We support the -1st octave, so we need to minus 1 from our octave.
 
-            string noteString;
-            int octave = (inputInt / 12) - 1;
-            int note = (inputInt % 12) + 1;
-
-            if (note == 1)
-                noteString = "C";
-            else if (note == 2)
-                noteString = "C#";
-            else if (note == 3)
-                noteString = "D";
-            else if (note == 4)
-                noteString = "Eb";
-            else if (note == 5)
-                noteString = "E";
-            else if (note == 6)
-                noteString = "F";
-            else if (note == 7)
-                noteString = "F#";
-            else if (note == 8)
-                noteString = "G";
-            else if (note == 9)
-                noteString = "Ab";
-            else if (note == 10)
-                noteString = "A";
-            else if (note == 11)
-                noteString = "Bb";
-            else if (note == 12)
-                noteString = "B";
-            else
-                noteString = "";
-
-            return noteString + octave.ToString();
+            return IntToNote(inputInt) + octave.ToString();
         }
 
+
+        private string IntToNote(int intToConvert)
+        {
+            return noteArray[intToConvert % 12];
+        }
+
+        private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
         
     }
 }
