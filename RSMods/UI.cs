@@ -1697,7 +1697,7 @@ namespace RSMods
         {
             if (GuitarSpeakNote.SelectedIndex > -1 && GuitarSpeakOctave.SelectedIndex > -1 && GuitarSpeakKeypress.SelectedIndex > -1)
             {
-                int inputNote = GuitarSpeakNote.SelectedIndex + 36;
+                int inputNote = GuitarSpeakNote.SelectedIndex + 36; // We skip the first 3 octaves to give an accurate representation of the notes being played
                 int inputOctave = GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
                 int outputNoteOctave = inputNote + (inputOctave * 12);
                 MessageBox.Show(GuitarSpeakNote.SelectedItem.ToString() + GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1705,18 +1705,21 @@ namespace RSMods
                 foreach (KeyValuePair<string, string> entry in GuitarSpeakKeyPressDictionary)
                 {
                     if (GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
+                    {
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
-                }
-                
-
+                        GuitarSpeakPresetsBox.ClearSelected();
+                        GuitarSpeakPresetsBox.Items.RemoveAt(GuitarSpeakKeypress.SelectedIndex);
+                        GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " +  GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                    }
+                }      
 
                 GuitarSpeakNote.ClearSelected();
                 GuitarSpeakOctave.ClearSelected();
                 GuitarSpeakKeypress.ClearSelected();
-            }
+                }
             else
                 MessageBox.Show("One of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+           }
 
         private Dictionary<string, string> GuitarSpeakKeyPressDictionary = new Dictionary<string, string>()
         {
