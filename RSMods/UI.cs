@@ -1824,13 +1824,10 @@ namespace RSMods
                 return "";
 
             int inputInt = Int32.Parse(inputString);
+            
+            int octave = (inputInt / 12) - 1; // We support the -1st octave, so we need to minus 1 from our octave.
 
-            string noteString;
-            int octave = (inputInt / 12) - 1;
-
-            noteString = IntToNote(inputInt);
-
-            return noteString + octave.ToString();
+            return IntToNote(inputInt) + octave.ToString();
         }
 
 
