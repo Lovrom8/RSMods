@@ -23,7 +23,7 @@ namespace RS2014_Mod_Installer
             
             IsVoid(Worker.WhereIsRocksmith());
             DLLStuff.InjectGUI(Worker.WhereIsRocksmith());
-            MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by openning: " + Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe", "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by opening: " + Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe", "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Process.Start(Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe");
             DLLStuff.InjectDLL(Worker.WhereIsRocksmith());
         }
