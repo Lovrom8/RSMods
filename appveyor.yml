@@ -9,10 +9,10 @@
   before_build:
     - ps: >-
         nuget restore
-        
+
         $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Rocksmith2014-Mod-Installer\Properties\AssemblyInfo.cs"
 
-        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyInformationalVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
 
         $content = [IO.File]::ReadAllText($assemblyFile)
 
@@ -21,12 +21,10 @@
         $match = $regex.Match($content)
         
         if($match.Success) {
-        
             $version = $match.groups[3].value
-            
         }
-
-        Update-AppveyorBuild -Version $version    
+        
+        $env:releaseVersion=$version
     - cmd: >-
        del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-Mod-Installer\Resources
        
@@ -45,8 +43,8 @@
     name: OneClick_Release
   deploy:
   - provider: GitHub
-    tag: RSModsInstaller-v$(appveyor_build_version)
-    release: RSModsInstaller-v$(appveyor_build_version)
+    tag: RSModsInstaller-v$(releaseVersion)
+    release: RSModsInstaller-v$(releaseVersion)
     auth_token:
        secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
     artifact: OneClick_Release
