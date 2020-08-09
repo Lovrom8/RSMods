@@ -493,6 +493,10 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier) },
                 { ReadSettings.GuitarSpeakESCIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier) },
                 { ReadSettings.GuitarSpeakCloseIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier) },
+                { ReadSettings.GuitarSpeakOBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier) },
+                { ReadSettings.GuitarSpeakCBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier) },
+                { ReadSettings.GuitarSpeakTildeaIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier) },
+                { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) },
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },
             }}
         };
@@ -1702,6 +1706,10 @@ namespace RSMods
             {"Up Arrow", ReadSettings.GuitarSpeakUPIdentifier },
             {"Down Arrow", ReadSettings.GuitarSpeakDNIdentifier },
             {"Escape", ReadSettings.GuitarSpeakESCIdentifier },
+            {"Open Bracket", ReadSettings.GuitarSpeakOBracketIdentifier},
+            {"Close Bracket", ReadSettings.GuitarSpeakCBracketIdentifier},
+            {"Tilde / Tilda", ReadSettings.GuitarSpeakTildeaIdentifier},
+            {"Forward Slash", ReadSettings.GuitarSpeakForSlashIdentifier},
             {"Close Guitar Speak", ReadSettings.GuitarSpeakCloseIdentifier }
         };
 

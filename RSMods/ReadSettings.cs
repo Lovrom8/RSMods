@@ -12,7 +12,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
-                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakWhileTuning;
+                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning;
 
         public static string
 
@@ -77,17 +77,21 @@ namespace RSMods
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
 
                 // Guitar Speak
-                GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
-                GuitarSpeakSpaceIdentifier  = "GuitarSpeakSpaceWhen = ",
-                GuitarSpeakEnterIdentifier  = "GuitarSpeakEnterWhen = ",
-                GuitarSpeakTabIdentifier    = "GuitarSpeakTabWhen = ",
-                GuitarSpeakPGUPIdentifier   = "GuitarSpeakPGUPWhen = ",
-                GuitarSpeakPGDNIdentifier   = "GuitarSpeakPGDNWhen = ",
-                GuitarSpeakUPIdentifier     = "GuitarSpeakUPWhen = ",
-                GuitarSpeakDNIdentifier     = "GuitarSpeanDNWhen = ",
-                GuitarSpeakESCIdentifier    = "GuitarSpeakESCWhen = ",
-                GuitarSpeakCloseIdentifier  = "GuitarSpeakCloseWhen = ",
-                GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ";
+                GuitarSpeakDeleteIdentifier   = "GuitarSpeakDeleteWhen = ",
+                GuitarSpeakSpaceIdentifier    = "GuitarSpeakSpaceWhen = ",
+                GuitarSpeakEnterIdentifier    = "GuitarSpeakEnterWhen = ",
+                GuitarSpeakTabIdentifier      = "GuitarSpeakTabWhen = ",
+                GuitarSpeakPGUPIdentifier     = "GuitarSpeakPGUPWhen = ",
+                GuitarSpeakPGDNIdentifier     = "GuitarSpeakPGDNWhen = ",
+                GuitarSpeakUPIdentifier       = "GuitarSpeakUPWhen = ",
+                GuitarSpeakDNIdentifier       = "GuitarSpeanDNWhen = ",
+                GuitarSpeakESCIdentifier      = "GuitarSpeakESCWhen = ",
+                GuitarSpeakCloseIdentifier    = "GuitarSpeakCloseWhen = ",
+                GuitarSpeakOBracketIdentifier = "GuitarSpeakOBracketWhen = ",
+                GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
+                GuitarSpeakTildeaIdentifier   = "GuitarSpeakTildeaWhen = ",
+                GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
+                GuitarSpeakTuningIdentifier   = "GuitarSpeakWhileTuning = ";
 
 
         public static string ProcessSettings(string identifierToGrab)
@@ -824,7 +828,44 @@ namespace RSMods
                                 return GuitarSpeakClose;
                             }
                         }
-                        if(currentLine.Contains(GuitarSpeakTuningIdentifier))
+                        if (currentLine.Contains(GuitarSpeakOBracketIdentifier))
+                        {
+                            GuitarSpeakOBracket = currentLine.Substring(GuitarSpeakOBracketIdentifier.Length, (currentLine.Length - GuitarSpeakOBracketIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakOBracketIdentifier)
+                            {
+                                return GuitarSpeakOBracket;
+                            }
+                        }
+                        if (currentLine.Contains(GuitarSpeakCBracketIdentifier))
+                        {
+                            GuitarSpeakCBracket = currentLine.Substring(GuitarSpeakCBracketIdentifier.Length, (currentLine.Length - GuitarSpeakCBracketIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakCBracketIdentifier)
+                            {
+                                return GuitarSpeakCBracket;
+                            }
+                        }
+                        if (currentLine.Contains(GuitarSpeakTildeaIdentifier))
+                        {
+                            GuitarSpeakTildea = currentLine.Substring(GuitarSpeakTildeaIdentifier.Length, (currentLine.Length - GuitarSpeakTildeaIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakTildeaIdentifier)
+                            {
+                                return GuitarSpeakTildea;
+                            }
+                        }
+                        if (currentLine.Contains(GuitarSpeakForSlashIdentifier))
+                        {
+                            GuitarSpeakForSlash = currentLine.Substring(GuitarSpeakForSlashIdentifier.Length, (currentLine.Length - GuitarSpeakForSlashIdentifier.Length));
+
+                            if (identifierToGrab == GuitarSpeakForSlashIdentifier)
+                            {
+                                return GuitarSpeakForSlash;
+                            }
+                        }
+
+                        if (currentLine.Contains(GuitarSpeakTuningIdentifier))
                         {
                             if (currentLine.Substring(GuitarSpeakTuningIdentifier.Length, (currentLine.Length - GuitarSpeakTuningIdentifier.Length)) == "on")
                             {

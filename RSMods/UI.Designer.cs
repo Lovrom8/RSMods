@@ -138,6 +138,7 @@
             this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.GuitarSpeakBox = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
             this.GuitarSpeakSaveButton = new System.Windows.Forms.Button();
             this.GuitarSpeakKeyLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakOctaveLabel = new System.Windows.Forms.Label();
@@ -146,7 +147,6 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -1458,6 +1458,17 @@
             this.GuitarSpeakBox.Text = "Guitar Speak";
             this.GuitarSpeakBox.Visible = false;
             // 
+            // GuitarSpeakWhileTuningBox
+            // 
+            this.GuitarSpeakWhileTuningBox.AutoSize = true;
+            this.GuitarSpeakWhileTuningBox.Location = new System.Drawing.Point(133, 171);
+            this.GuitarSpeakWhileTuningBox.Name = "GuitarSpeakWhileTuningBox";
+            this.GuitarSpeakWhileTuningBox.Size = new System.Drawing.Size(111, 17);
+            this.GuitarSpeakWhileTuningBox.TabIndex = 9;
+            this.GuitarSpeakWhileTuningBox.Text = "Use While Tuning";
+            this.GuitarSpeakWhileTuningBox.UseVisualStyleBackColor = true;
+            this.GuitarSpeakWhileTuningBox.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
+            // 
             // GuitarSpeakSaveButton
             // 
             this.GuitarSpeakSaveButton.Location = new System.Drawing.Point(181, 140);
@@ -1508,6 +1519,10 @@
             "Up Arrow",
             "Down Arrow",
             "Escape",
+            "Open Bracket",
+            "Close Bracket",
+            "Tilde / Tilda",
+            "Forward Slash",
             "Close Guitar Speak"});
             this.GuitarSpeakKeypress.Location = new System.Drawing.Point(150, 48);
             this.GuitarSpeakKeypress.Name = "GuitarSpeakKeypress";
@@ -1563,17 +1578,6 @@
             this.CreditsLabel.Text = "Originally Created By:\r\nFfio - Main GUI Dev\r\nLovroM8 - Set-and-Forget\r\nZagatoZee " +
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // GuitarSpeakWhileTuningBox
-            // 
-            this.GuitarSpeakWhileTuningBox.AutoSize = true;
-            this.GuitarSpeakWhileTuningBox.Location = new System.Drawing.Point(133, 171);
-            this.GuitarSpeakWhileTuningBox.Name = "GuitarSpeakWhileTuningBox";
-            this.GuitarSpeakWhileTuningBox.Size = new System.Drawing.Size(111, 17);
-            this.GuitarSpeakWhileTuningBox.TabIndex = 9;
-            this.GuitarSpeakWhileTuningBox.Text = "Use While Tuning";
-            this.GuitarSpeakWhileTuningBox.UseVisualStyleBackColor = true;
-            this.GuitarSpeakWhileTuningBox.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
             // 
             // MainForm
             // 
