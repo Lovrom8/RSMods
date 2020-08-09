@@ -17,7 +17,7 @@ public:
 	byte GetCurrentNote();
 	bool TimerTick();
 	void ForceNewSettings(std::string noteName, std::string keyPress);
-	std::string* keyPressArray = new std::string[10]{ "DELETE", "SPACE", "ENTER", "TAB", "PGUP", "PGDN", "UP", "DOWN", "ESCAPE", "CLOSE" };
+	std::string* keyPressArray = new std::string[14]{ "DELETE", "SPACE", "ENTER", "TAB", "PGUP", "PGDN", "UP", "DOWN", "ESCAPE", "CLOSE", "OBRACKET", "CBRACKET", "TILDEA", "FORSLASH"};
 	std::string* noteNames = new std::string[12]{ "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	int* octaves = new int[8]{ -1, 0, 1, 2, 3, 4, 5, 6 };
 private:

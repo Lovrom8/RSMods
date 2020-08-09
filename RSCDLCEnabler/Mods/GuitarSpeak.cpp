@@ -32,7 +32,10 @@ bool cGuitarSpeak::TimerTick() {
 	strKeyList[Settings.GetModSetting("GuitarSpeakDownArrow")] = (std::string)"DOWN";
 	strKeyList[Settings.GetModSetting("GuitarSpeakEscape")] = (std::string)"ESCAPE";
 	strKeyList[Settings.GetModSetting("GuitarSpeakClose")] = (std::string)"CLOSE";
-	
+	strKeyList[Settings.GetModSetting("GuitarSpeakOBracket")] = (std::string)"OBRACKET";
+	strKeyList[Settings.GetModSetting("GuitarSpeakCBracket")] = (std::string)"CBRACKET";
+	strKeyList[Settings.GetModSetting("GuitarSpeakTildea")] = (std::string)"TILDEA";
+	strKeyList[Settings.GetModSetting("GuitarSpeakForSlash")] = (std::string)"FORSLASH";
 
 
 
@@ -175,6 +178,34 @@ bool cGuitarSpeak::TimerTick() {
 				sendKeystrokesToRS2014 = false;
 				if (debugMode)
 					std::cout << "CLOSE!!!" << std::endl;
+			}
+			else if (strSend == keyPressArray[10]) { // Open Bracket
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_4, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_4, 0);
+				if (debugMode)
+					std::cout << "Open Bracket was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[11]) { // Close Bracket
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_6, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_6, 0);
+				if (debugMode)
+					std::cout << "Close Bracket was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[12]) { // Tilde/a
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_3, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_3, 0);
+				if (debugMode)
+					std::cout << "Tilde/ Tilda was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[13]) { // Forward Slash
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_2, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_2, 0);
+				if (debugMode)
+					std::cout << "Forward Slash was pressed!" << std::endl;
 			}
 		}
 		strSend = ""; // Reset Mapping || Prevents spam

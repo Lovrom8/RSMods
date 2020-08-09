@@ -52,7 +52,11 @@ cSettings::cSettings()
 		{"GuitarSpeakUpArrow", 0},
 		{"GuitarSpeakDownArrow", 0},
 		{"GuitarSpeakEscape", 0},
-		{"GuitarSpeakClose", 0}
+		{"GuitarSpeakClose", 0},
+		{"GuitarSpeakOBracket", 0},
+		{"GuitarSpeakCBracket", 0},
+		{"GuitarSpeakTildea", 0},
+		{"GuitarSpeakForSlash", 0}
 	};
 
 	cSettings::keyMap = { //talk about taking the easy way out ;)
@@ -294,6 +298,10 @@ void cSettings::ReadModSettings() {
 		{"GuitarSpeakDownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
 		{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
 		{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
+		{"GuitarSpeakOBracket", reader.GetLongValue("Guitar Speak", "GuitarSpeakOBracket", 0)},
+		{"GuitarSpeakCBracket", reader.GetLongValue("Guitar Speak", "GuitarSpeakCBracket", 0)},
+		{"GuitarSpeakTildea", reader.GetLongValue("Guitar Speak", "GuitarSpeakTildea", 0)},
+		{"GuitarSpeakForSlash", reader.GetLongValue("Guitar Speak", "GuitarSpeakForSlash", 0)},
 	};
 
 	// Mods Enabled / Disabled
