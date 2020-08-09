@@ -49,7 +49,7 @@ bool cGuitarSpeak::TimerTick() {
 			return false;
 		}
 
-		if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
+		if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songMenus), std::end(songMenus), currentMenu.c_str()) != std::end(songMenus) || std::find(std::begin(calibrationMenus), std::end(calibrationMenus), currentMenu.c_str()) != std::end(calibrationMenus)) {
 			std::cout << "Entered Song Menu!" << std::endl;
 			return false;
 		}

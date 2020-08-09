@@ -721,6 +721,7 @@ unsigned WINAPI MainThread(void*) {
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
+			// std::cout << currentMenu.c_str() << std::endl;
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
