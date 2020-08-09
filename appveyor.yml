@@ -9,16 +9,31 @@
   before_build:
     - ps: >-
         nuget restore
+        
+        $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Rocksmith2014-Mod-Installer\Properties\AssemblyInfo.cs"
+
+        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyInformationalVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', 
+                 [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+
+        $content = [IO.File]::ReadAllText($assemblyFile)
+
+        $version = $null
+        $match = $regex.Match($content)
+        if($match.Success) {
+            $version = $match.groups[3].value
+        }
+
+        Update-AppveyorBuild -Version $version    
     - cmd: >-
-       del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources
+       del /S /q %APPVEYOR_BUILD_FOLDER%\Rocksmith2014-Mod-Installer\Resources
        
        appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI
                 
        appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future
             
-       7z x RSMods.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\RSModsGUI
+       7z x RSMods.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-Mod-Installer\Resources\RSModsGUI
                 
-       7z x DLL.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-CDLC-Injector\Resources\
+       7z x DLL.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-Mod-Installer\Resources\
   build:
     parallel: true
     verbosity: quiet
