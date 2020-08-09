@@ -1,0 +1,14 @@
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\bin\Debug\RS2014-Mod-Installer.exe.config
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\bin\Debug\RS2014-Mod-Installer.exe
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\bin\Debug\RS2014-Mod-Installer.pdb
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.csprojAssemblyReference.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014_Mod_Installer.GUI.resources
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014_Mod_Installer.Properties.Resources.resources
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.csproj.GenerateResource.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.csproj.CoreCompileInputs.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.csproj.Fody.CopyLocal.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.csproj.CopyComplete
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.exe
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-Mod-Installer\obj\Debug\RS2014-Mod-Installer.pdb

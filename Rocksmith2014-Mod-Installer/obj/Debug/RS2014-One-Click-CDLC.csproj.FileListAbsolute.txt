@@ -1,0 +1,10 @@
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.exe.config
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.exe
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\bin\Debug\Rocksmith2014-CDLC-Injector.pdb
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\RS2014-One-Click-CDLC.csprojAssemblyReference.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014_CDLC_Injector.GUI.resources
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014_CDLC_Injector.Properties.Resources.resources
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\RS2014-One-Click-CDLC.csproj.GenerateResource.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\RS2014-One-Click-CDLC.csproj.CoreCompileInputs.cache
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.exe
+C:\Users\corbi\Desktop\OneClickInstaller\Rocksmith2014-CDLC-Injector\obj\Debug\Rocksmith2014-CDLC-Injector.pdb

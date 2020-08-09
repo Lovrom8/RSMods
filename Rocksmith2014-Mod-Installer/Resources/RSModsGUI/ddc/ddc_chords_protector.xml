@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ddc>
+  <level maxCategory="1" maxSubCategory= "1" maxChordNotes="6"/>
+  <level maxCategory="2" maxSubCategory= "1" maxChordNotes="6"/>
+  <level maxCategory="3" maxSubCategory= "1" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "1" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "2" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "3" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "4" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "5" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "6" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "7" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "8" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory= "9" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="10" maxChordNotes="6"/>  
+  <level maxCategory="4" maxSubCategory="11" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="12" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="13" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="14" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="15" maxChordNotes="6"/>
+  <level maxCategory="4" maxSubCategory="16" maxChordNotes="6"/>
+</ddc>
