@@ -1570,6 +1570,7 @@ namespace RSMods
             toolTip.SetToolTip(this.ToggleLyricsManualRadio, "Lyrics can be toggled on or off by a defined hotkey.");
             toolTip.SetToolTip(this.HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
             toolTip.SetToolTip(this.GuitarSpeakEnableCheckbox, "Use your guitar to control the menus!");
+            toolTip.SetToolTip(this.GuitarSpeakWhileTuningBox, "For Advanced Users Only! Use Guitar Speak in tuning menus. This can potentially stop you from tuning, or playing songs if setup improperly.");
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
