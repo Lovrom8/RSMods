@@ -26,6 +26,7 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        
         public MainForm()
         {
             string RSFolder = GenUtil.GetRSDirectory();
@@ -71,6 +72,24 @@ namespace RSMods
             // Mod Key Values
             ResetModKeyValues();
 
+
+            // Guitar Speak Preset Values
+
+            this.GuitarSpeakPresetsBox.Items.AddRange(new object[]
+            {
+                "Delete: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)),
+                "Space: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)),
+                "Enter: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier)),
+                "Tab: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier)),
+                "Page Up: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier)),
+                "Page Down: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier)),
+                "Escape: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier)),
+                "Open Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier)),
+                "Close Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier)),
+                "Tilde / Tilda: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier)),
+                "Forward Slash: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)),
+                "Close Guitar Speak: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier))
+            });
 
             // Load Checkbox Values
             {
@@ -1686,6 +1705,8 @@ namespace RSMods
                     if (GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
                 }
+                
+
 
                 GuitarSpeakNote.ClearSelected();
                 GuitarSpeakOctave.ClearSelected();
@@ -2085,5 +2106,48 @@ namespace RSMods
                 SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "off");
             }
         }
+
+        private string GuitarSpeakNoteOctaveMath(string inputString)
+        {
+            if (inputString == "")
+                return "";
+
+            int inputInt = Int32.Parse(inputString);
+
+            string noteString;
+            int octave = (inputInt / 12) - 1;
+            int note = (inputInt % 12) + 1;
+
+            if (note == 1)
+                noteString = "C";
+            else if (note == 2)
+                noteString = "C#";
+            else if (note == 3)
+                noteString = "D";
+            else if (note == 4)
+                noteString = "Eb";
+            else if (note == 5)
+                noteString = "E";
+            else if (note == 6)
+                noteString = "F";
+            else if (note == 7)
+                noteString = "F#";
+            else if (note == 8)
+                noteString = "G";
+            else if (note == 9)
+                noteString = "Ab";
+            else if (note == 10)
+                noteString = "A";
+            else if (note == 11)
+                noteString = "Bb";
+            else if (note == 12)
+                noteString = "B";
+            else
+                noteString = "";
+
+            return noteString + octave.ToString();
+        }
+
+        
     }
 }

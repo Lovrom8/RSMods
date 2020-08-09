@@ -147,6 +147,8 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
+            this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
+            this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -1442,6 +1444,8 @@
             // 
             // GuitarSpeakBox
             // 
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakPresetsLabel);
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakPresetsBox);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakWhileTuningBox);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakSaveButton);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakKeyLabel);
@@ -1452,7 +1456,7 @@
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakNote);
             this.GuitarSpeakBox.Location = new System.Drawing.Point(1017, 335);
             this.GuitarSpeakBox.Name = "GuitarSpeakBox";
-            this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 194);
+            this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 354);
             this.GuitarSpeakBox.TabIndex = 71;
             this.GuitarSpeakBox.TabStop = false;
             this.GuitarSpeakBox.Text = "Guitar Speak";
@@ -1578,6 +1582,23 @@
             this.CreditsLabel.Text = "Originally Created By:\r\nFfio - Main GUI Dev\r\nLovroM8 - Set-and-Forget\r\nZagatoZee " +
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // GuitarSpeakPresetsBox
+            // 
+            this.GuitarSpeakPresetsBox.FormattingEnabled = true;
+            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
+            this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
+            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
+            this.GuitarSpeakPresetsBox.TabIndex = 10;
+            // 
+            // GuitarSpeakPresetsLabel
+            // 
+            this.GuitarSpeakPresetsLabel.AutoSize = true;
+            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
+            this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
+            this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
+            this.GuitarSpeakPresetsLabel.TabIndex = 11;
+            this.GuitarSpeakPresetsLabel.Text = "Presets";
             // 
             // MainForm
             // 
@@ -1758,6 +1779,8 @@
         private System.Windows.Forms.CheckBox RainbowStringsEnabled;
         private System.Windows.Forms.CheckBox VolumeControlsCheckbox;
         private System.Windows.Forms.CheckBox GuitarSpeakWhileTuningBox;
+        private System.Windows.Forms.Label GuitarSpeakPresetsLabel;
+        private System.Windows.Forms.ListBox GuitarSpeakPresetsBox;
     }
 }
 
