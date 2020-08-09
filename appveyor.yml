@@ -12,15 +12,18 @@
         
         $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Rocksmith2014-Mod-Installer\Properties\AssemblyInfo.cs"
 
-        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyInformationalVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', 
-                 [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyInformationalVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
 
         $content = [IO.File]::ReadAllText($assemblyFile)
 
         $version = $null
+        
         $match = $regex.Match($content)
+        
         if($match.Success) {
+        
             $version = $match.groups[3].value
+            
         }
 
         Update-AppveyorBuild -Version $version    
