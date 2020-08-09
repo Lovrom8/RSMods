@@ -19,6 +19,8 @@ using System.Management;
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
 #pragma warning disable IDE0044 // "This should be readonly" .... No. No it shouldn't.
 #pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
+#pragma warning disable IDE0071 // "Interpolation can be simplified"
+#pragma warning disable CS0168 // Variable Declared But Not Used
 
 namespace RSMods
 {

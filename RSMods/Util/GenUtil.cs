@@ -1,15 +1,13 @@
 ﻿using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using RSMods.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 #pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
 #pragma warning disable IDE0029 // "Null Check can be simplified"... Yeah we know, but it works so why should we mess with it.
@@ -186,6 +184,8 @@ namespace RSMods.Util
                                 break;
                             }
                         }
+                        
+                        
 
                         rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
 
