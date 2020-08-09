@@ -1836,11 +1836,7 @@ namespace RSMods
 
         private string IntToNote(int intToConvert)
         {
-            int intToWorkWith = intToConvert;
-
-            intToWorkWith = (intToWorkWith % 12);
-
-            return noteArray[intToWorkWith];
+            return noteArray[intToConvert % 12];
         }
 
         private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
