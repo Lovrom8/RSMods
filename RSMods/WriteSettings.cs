@@ -91,6 +91,7 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakDNIdentifier, "" },
                 { ReadSettings.GuitarSpeakESCIdentifier, "" },
                 { ReadSettings.GuitarSpeakCloseIdentifier, "" },
+                { ReadSettings.GuitarSpeakTuningIdentifier, "off" },
             }}
         };
 

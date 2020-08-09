@@ -66,6 +66,7 @@
             this.ToggleLoftOffWhenBox = new System.Windows.Forms.GroupBox();
             this.ExtendedRangeTuningBox = new System.Windows.Forms.GroupBox();
             this.EnabledModsBox = new System.Windows.Forms.GroupBox();
+            this.VolumeControlsCheckbox = new System.Windows.Forms.CheckBox();
             this.GuitarSpeakEnableCheckbox = new System.Windows.Forms.CheckBox();
             this.RemoveLyricsCheckbox = new System.Windows.Forms.CheckBox();
             this.CustomColorsCheckbox = new System.Windows.Forms.CheckBox();
@@ -145,7 +146,7 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.VolumeControlsCheckbox = new System.Windows.Forms.CheckBox();
+            this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -594,6 +595,17 @@
             this.EnabledModsBox.TabIndex = 50;
             this.EnabledModsBox.TabStop = false;
             this.EnabledModsBox.Text = "Enabled Mods";
+            // 
+            // VolumeControlsCheckbox
+            // 
+            this.VolumeControlsCheckbox.AutoSize = true;
+            this.VolumeControlsCheckbox.Location = new System.Drawing.Point(131, 175);
+            this.VolumeControlsCheckbox.Name = "VolumeControlsCheckbox";
+            this.VolumeControlsCheckbox.Size = new System.Drawing.Size(125, 17);
+            this.VolumeControlsCheckbox.TabIndex = 47;
+            this.VolumeControlsCheckbox.Text = "Control Song Volume";
+            this.VolumeControlsCheckbox.UseVisualStyleBackColor = true;
+            this.VolumeControlsCheckbox.CheckedChanged += new System.EventHandler(this.VolumeControlsCheckbox_CheckedChanged);
             // 
             // GuitarSpeakEnableCheckbox
             // 
@@ -1430,6 +1442,7 @@
             // 
             // GuitarSpeakBox
             // 
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakWhileTuningBox);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakSaveButton);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakKeyLabel);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakOctaveLabel);
@@ -1439,7 +1452,7 @@
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakNote);
             this.GuitarSpeakBox.Location = new System.Drawing.Point(1017, 335);
             this.GuitarSpeakBox.Name = "GuitarSpeakBox";
-            this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 175);
+            this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 194);
             this.GuitarSpeakBox.TabIndex = 71;
             this.GuitarSpeakBox.TabStop = false;
             this.GuitarSpeakBox.Text = "Guitar Speak";
@@ -1551,16 +1564,16 @@
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // VolumeControlsCheckbox
+            // GuitarSpeakWhileTuningBox
             // 
-            this.VolumeControlsCheckbox.AutoSize = true;
-            this.VolumeControlsCheckbox.Location = new System.Drawing.Point(131, 175);
-            this.VolumeControlsCheckbox.Name = "VolumeControlsCheckbox";
-            this.VolumeControlsCheckbox.Size = new System.Drawing.Size(125, 17);
-            this.VolumeControlsCheckbox.TabIndex = 47;
-            this.VolumeControlsCheckbox.Text = "Control Song Volume";
-            this.VolumeControlsCheckbox.UseVisualStyleBackColor = true;
-            this.VolumeControlsCheckbox.CheckedChanged += new System.EventHandler(this.VolumeControlsCheckbox_CheckedChanged);
+            this.GuitarSpeakWhileTuningBox.AutoSize = true;
+            this.GuitarSpeakWhileTuningBox.Location = new System.Drawing.Point(133, 171);
+            this.GuitarSpeakWhileTuningBox.Name = "GuitarSpeakWhileTuningBox";
+            this.GuitarSpeakWhileTuningBox.Size = new System.Drawing.Size(111, 17);
+            this.GuitarSpeakWhileTuningBox.TabIndex = 9;
+            this.GuitarSpeakWhileTuningBox.Text = "Use While Tuning";
+            this.GuitarSpeakWhileTuningBox.UseVisualStyleBackColor = true;
+            this.GuitarSpeakWhileTuningBox.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1740,6 +1753,7 @@
         private System.Windows.Forms.Label CreditsLabel;
         private System.Windows.Forms.CheckBox RainbowStringsEnabled;
         private System.Windows.Forms.CheckBox VolumeControlsCheckbox;
+        private System.Windows.Forms.CheckBox GuitarSpeakWhileTuningBox;
     }
 }
 

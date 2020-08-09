@@ -12,7 +12,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
-                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose;
+                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakWhileTuning;
 
         public static string
 
@@ -86,7 +86,8 @@ namespace RSMods
                 GuitarSpeakUPIdentifier     = "GuitarSpeakUPWhen = ",
                 GuitarSpeakDNIdentifier     = "GuitarSpeanDNWhen = ",
                 GuitarSpeakESCIdentifier    = "GuitarSpeakESCWhen = ",
-                GuitarSpeakCloseIdentifier  = "GuitarSpeakCloseWhen = ";
+                GuitarSpeakCloseIdentifier  = "GuitarSpeakCloseWhen = ",
+                GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ";
 
 
         public static string ProcessSettings(string identifierToGrab)
@@ -821,6 +822,22 @@ namespace RSMods
                             if (identifierToGrab == GuitarSpeakCloseIdentifier)
                             {
                                 return GuitarSpeakClose;
+                            }
+                        }
+                        if(currentLine.Contains(GuitarSpeakTuningIdentifier))
+                        {
+                            if (currentLine.Substring(GuitarSpeakTuningIdentifier.Length, (currentLine.Length - GuitarSpeakTuningIdentifier.Length)) == "on")
+                            {
+                                GuitarSpeakWhileTuning = "on";
+                            }
+                            else
+                            {
+                                GuitarSpeakWhileTuning = "off";
+                            }
+
+                            if (identifierToGrab == GuitarSpeakTuningIdentifier)
+                            {
+                                return GuitarSpeakWhileTuning;
                             }
                         }
                     }

@@ -280,11 +280,22 @@ namespace RSMods
                 {
                     this.GuitarSpeakEnableCheckbox.Checked = true;
                     this.GuitarSpeakBox.Visible = true;
+                    this.GuitarSpeakWhileTuningBox.Visible = true;
                 }
                 else
                 {
                     this.GuitarSpeakEnableCheckbox.Checked = false;
                     this.GuitarSpeakBox.Visible = false;
+                    this.GuitarSpeakWhileTuningBox.Visible = false;
+                }
+
+                if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
+                {
+                    this.GuitarSpeakWhileTuningBox.Checked = true;
+                }
+                else
+                {
+                    this.GuitarSpeakWhileTuningBox.Checked = false;
                 }
             }
 
@@ -482,6 +493,7 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier) },
                 { ReadSettings.GuitarSpeakESCIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier) },
                 { ReadSettings.GuitarSpeakCloseIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier) },
+                { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },
             }}
         };
 
@@ -1698,12 +1710,14 @@ namespace RSMods
             {
                 this.GuitarSpeakEnableCheckbox.Checked = true;
                 this.GuitarSpeakBox.Visible = true;
+                this.GuitarSpeakWhileTuningBox.Visible = true;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "on");
             }
             else
             {
                 this.GuitarSpeakEnableCheckbox.Checked = false;
                 this.GuitarSpeakBox.Visible = false;
+                this.GuitarSpeakWhileTuningBox.Visible = false;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
@@ -2048,6 +2062,18 @@ namespace RSMods
             {
                 SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "off");
                 SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "off");
+            }
+        }
+
+        private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (GuitarSpeakWhileTuningBox.Checked)
+            {
+                SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "on");
+            }
+            else
+            {
+                SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "off");
             }
         }
     }
