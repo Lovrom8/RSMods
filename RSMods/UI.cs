@@ -1838,35 +1838,12 @@ namespace RSMods
         {
             int intToWorkWith = intToConvert;
 
-            intToWorkWith = (intToWorkWith % 12) + 1;
+            intToWorkWith = (intToWorkWith % 12);
 
-            if (intToWorkWith == 1)
-                return "C";
-            else if (intToWorkWith == 2)
-                return "C#";
-            else if (intToWorkWith == 3)
-                return "D";
-            else if (intToWorkWith == 4)
-                return "Eb";
-            else if (intToWorkWith == 5)
-                return "E";
-            else if (intToWorkWith == 6)
-                return "F";
-            else if (intToWorkWith == 7)
-                return "F#";
-            else if (intToWorkWith == 8)
-                return "G";
-            else if (intToWorkWith == 9)
-                return "Ab";
-            else if (intToWorkWith == 10)
-                return "A";
-            else if (intToWorkWith == 11)
-                return "Bb";
-            else if (intToWorkWith == 12)
-                return "B";
-            else
-                return "";
+            return noteArray[intToWorkWith];
         }
+
+        private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
         
     }
 }
