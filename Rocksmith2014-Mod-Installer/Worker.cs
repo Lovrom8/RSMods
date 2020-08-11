@@ -35,14 +35,9 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.dll"), Properties.Resources.Microsoft_WindowsAPICodePack);
-                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.pdb"), Properties.Resources.Microsoft_WindowsAPICodePack1);
                 File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.xml"), Properties.Resources.Microsoft_WindowsAPICodePack2);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.dll"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell);
-                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.pdb"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell1);
                 File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.xml"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell2);
-                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.ShellExtensions.dll"), Properties.Resources.Microsoft_WindowsAPICodePack_ShellExtensions);
-                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.ShellExtensions.pdb"), Properties.Resources.Microsoft_WindowsAPICodePack_ShellExtensions1);
-                File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.ShellExtensions.xml"), Properties.Resources.Microsoft_WindowsAPICodePack_ShellExtensions2);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "MiscUtil.dll"), Properties.Resources.MiscUtil);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "NDesk.Options.dll"), Properties.Resources.NDesk_Options);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Newtonsoft.Json.dll"), Properties.Resources.Newtonsoft_Json);

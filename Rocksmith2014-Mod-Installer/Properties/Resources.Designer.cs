@@ -275,16 +275,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Microsoft_WindowsAPICodePack_Shell1 {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_Shell1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;doc&gt;
         ///    &lt;assembly&gt;
@@ -302,55 +292,6 @@ namespace RS2014_Mod_Installer.Properties {
         internal static string Microsoft_WindowsAPICodePack_Shell2 {
             get {
                 return ResourceManager.GetString("Microsoft_WindowsAPICodePack_Shell2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Microsoft_WindowsAPICodePack_ShellExtensions {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_ShellExtensions", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Microsoft_WindowsAPICodePack_ShellExtensions1 {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_ShellExtensions1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;doc&gt;
-        ///    &lt;assembly&gt;
-        ///        &lt;name&gt;Microsoft.WindowsAPICodePack.ShellExtensions&lt;/name&gt;
-        ///    &lt;/assembly&gt;
-        ///    &lt;members&gt;
-        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.ShellExtensions.IPreviewFromStream&quot;&gt;
-        ///            &lt;summary&gt;
-        ///            This interface exposes the &lt;see cref=&quot;M:Microsoft.WindowsAPICodePack.ShellExtensions.IPreviewFromStream.Load(System.IO.Stream)&quot;/&gt; function for initializing the 
-        ///            Preview Handler with a &lt;typeparamref name=&quot;Stream&quot;/&gt;.
-        ///             [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Microsoft_WindowsAPICodePack_ShellExtensions2 {
-            get {
-                return ResourceManager.GetString("Microsoft_WindowsAPICodePack_ShellExtensions2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Microsoft_WindowsAPICodePack1 {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack1", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
