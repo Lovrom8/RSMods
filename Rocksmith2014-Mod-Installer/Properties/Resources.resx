@@ -160,6 +160,33 @@
   <data name="LogoX256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\LogoX256.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Microsoft_WindowsAPICodePack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.pdb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_Shell" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_Shell1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.pdb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_Shell2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_ShellExtensions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_ShellExtensions1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.pdb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_ShellExtensions2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="MiscUtil" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\MiscUtil.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

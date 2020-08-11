@@ -257,6 +257,125 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack_Shell {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_Shell", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack_Shell1 {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_Shell1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;doc&gt;
+        ///    &lt;assembly&gt;
+        ///        &lt;name&gt;Microsoft.WindowsAPICodePack.Shell&lt;/name&gt;
+        ///    &lt;/assembly&gt;
+        ///    &lt;members&gt;
+        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.Shell.EventHandlerExtensionMethods&quot;&gt;
+        ///            &lt;summary&gt;
+        ///            Provides extension methods for raising events safely.
+        ///            &lt;/summary&gt;
+        ///        &lt;/member&gt;
+        ///        &lt;member name=&quot;M:Microsoft.WindowsAPICodePack.Shell.EventHandlerExtensionMethods.SafeRaise(System.EventHandler,System.Object)&quot;&gt;
+        ///            &lt;summ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Microsoft_WindowsAPICodePack_Shell2 {
+            get {
+                return ResourceManager.GetString("Microsoft_WindowsAPICodePack_Shell2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack_ShellExtensions {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_ShellExtensions", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack_ShellExtensions1 {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_ShellExtensions1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;doc&gt;
+        ///    &lt;assembly&gt;
+        ///        &lt;name&gt;Microsoft.WindowsAPICodePack.ShellExtensions&lt;/name&gt;
+        ///    &lt;/assembly&gt;
+        ///    &lt;members&gt;
+        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.ShellExtensions.IPreviewFromStream&quot;&gt;
+        ///            &lt;summary&gt;
+        ///            This interface exposes the &lt;see cref=&quot;M:Microsoft.WindowsAPICodePack.ShellExtensions.IPreviewFromStream.Load(System.IO.Stream)&quot;/&gt; function for initializing the 
+        ///            Preview Handler with a &lt;typeparamref name=&quot;Stream&quot;/&gt;.
+        ///             [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Microsoft_WindowsAPICodePack_ShellExtensions2 {
+            get {
+                return ResourceManager.GetString("Microsoft_WindowsAPICodePack_ShellExtensions2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Microsoft_WindowsAPICodePack1 {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;doc&gt;
+        ///    &lt;assembly&gt;
+        ///        &lt;name&gt;Microsoft.WindowsAPICodePack&lt;/name&gt;
+        ///    &lt;/assembly&gt;
+        ///    &lt;members&gt;
+        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.ApplicationServices.ApplicationRestartRecoveryManager&quot;&gt;
+        ///            &lt;summary&gt;
+        ///            Provides access to the Application Restart and Recovery
+        ///            features available in Windows Vista or higher. Application Restart and Recovery lets an
+        ///            application do some recovery work to save data before the process ex [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Microsoft_WindowsAPICodePack2 {
+            get {
+                return ResourceManager.GetString("Microsoft_WindowsAPICodePack2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] MiscUtil {
             get {
                 object obj = ResourceManager.GetObject("MiscUtil", resourceCulture);

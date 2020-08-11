@@ -126,6 +126,15 @@
   <ItemGroup>
     <None Include="Assets\LogoX256.ico" />
     <Content Include="LogoX256.ico" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.pdb" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.pdb" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.ShellExtensions.xml" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.pdb" />
+    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll" />
     <Content Include="Resources\RSModsGUI\7z.dll" />
     <Content Include="Resources\RSModsGUI\ddc\ddc.exe" />
     <Content Include="Resources\RSModsGUI\ddc\ddc_chords_protector.xml" />
