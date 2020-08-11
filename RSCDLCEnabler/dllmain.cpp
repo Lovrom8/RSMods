@@ -703,6 +703,12 @@ void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6
 }
 
 unsigned WINAPI MainThread(void*) {
+	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
+	if (!RSModsFileInput) {
+		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
+		RSModsFileOutput.close();
+	}
+
 	Offsets.Initialize();
 	MemHelpers.PatchCDLCCheck();
 
