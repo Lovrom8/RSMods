@@ -654,7 +654,7 @@ void GUI() {
 	}
 
 	vTable = *(DWORD**)adr;
-	if (!vTable) {
+	if (!vTable || vTable < (DWORD*)Offsets.baseHandle) {
 		std::cout << "Could not find game device's vTable address" << std::endl;
 		return;
 	}

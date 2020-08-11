@@ -18,7 +18,7 @@ public:
 	void ReadStringColors();
 
 	// Return INI Settings
-	int GetKeyBind(std::string name);
+	unsigned int GetKeyBind(std::string name);
 	int GetModSetting(std::string name);
 	std::string ReturnSettingValue(std::string name);
 

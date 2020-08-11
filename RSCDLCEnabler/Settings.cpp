@@ -348,7 +348,7 @@ void cSettings::ReadStringColors() {
 
 // Return INI Settings
 
-int cSettings::GetKeyBind(std::string name) {
+unsigned int cSettings::GetKeyBind(std::string name) {
 	return GetVKCodeForString(modSettings[name]);
 }
 
