@@ -248,7 +248,7 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 		return retList;
 
 	for (int i = 0; i < 6; i++) {
-		std::string songListName = "SongListTitle_" + std::to_string(i);
+		std::string songListName = "SongListTitle_" + std::to_string(i+1);
 		retList[i] = reader.GetValue("SongListTitles", songListName.c_str(), "SONG LIST");
 		//std::cout << "Song List #" << (i+1) << ": " << retList[i] << std::endl;
 	}
