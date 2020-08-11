@@ -655,7 +655,7 @@ void GUI() {
 
 	vTable = *(DWORD**)adr;
 	if (!vTable || vTable < (DWORD*)Offsets.baseHandle) {
-		std::cout << "Could not find game device's vTable address" << std::endl;
+		MessageBoxA(NULL, "Could not find D3D device's vTable address \n Restart the game and if you still get this error after a few tries, please report the error!", "Error", NULL);
 		return;
 	}
 
