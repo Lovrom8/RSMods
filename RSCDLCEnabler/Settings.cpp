@@ -36,6 +36,7 @@ cSettings::cSettings()
 	{"RemoveLyrics", "off"},
 	{"RemoveLyricsWhen", "manual"},
 	{"GuitarSpeak", "off"},
+	{"GuitarSpeakWhileTuning", "off"},
 	};
 
 	customSettings = {
@@ -51,7 +52,11 @@ cSettings::cSettings()
 		{"GuitarSpeakUpArrow", 0},
 		{"GuitarSpeakDownArrow", 0},
 		{"GuitarSpeakEscape", 0},
-		{"GuitarSpeakClose", 0}
+		{"GuitarSpeakClose", 0},
+		{"GuitarSpeakOBracket", 0},
+		{"GuitarSpeakCBracket", 0},
+		{"GuitarSpeakTildea", 0},
+		{"GuitarSpeakForSlash", 0}
 	};
 
 	cSettings::keyMap = { //talk about taking the easy way out ;)
@@ -293,6 +298,10 @@ void cSettings::ReadModSettings() {
 		{"GuitarSpeakDownArrow", reader.GetLongValue("Guitar Speak", "GuitarSpeanDNWhen", 0)},
 		{"GuitarSpeakEscape", reader.GetLongValue("Guitar Speak", "GuitarSpeakESCWhen", 0)},
 		{"GuitarSpeakClose", reader.GetLongValue("Guitar Speak", "GuitarSpeakCloseWhen", 0)},
+		{"GuitarSpeakOBracket", reader.GetLongValue("Guitar Speak", "GuitarSpeakOBracketWhen", 0)},
+		{"GuitarSpeakCBracket", reader.GetLongValue("Guitar Speak", "GuitarSpeakCBracketWhen", 0)},
+		{"GuitarSpeakTildea", reader.GetLongValue("Guitar Speak", "GuitarSpeakTildeaWhen", 0)},
+		{"GuitarSpeakForSlash", reader.GetLongValue("Guitar Speak", "GuitarSpeakForSlashWhen", 0)},
 	};
 
 	// Mods Enabled / Disabled
@@ -316,6 +325,7 @@ void cSettings::ReadModSettings() {
 	modSettings["RemoveLyrics"] = reader.GetValue("Toggle Switches", "Lyrics", "off");
 	modSettings["RemoveLyricsWhen"] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
 	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
+	modSettings["GuitarSpeakWhileTuning"] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 }
 
 void cSettings::ReadStringColors() {

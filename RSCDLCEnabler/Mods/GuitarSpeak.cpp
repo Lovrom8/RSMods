@@ -32,7 +32,10 @@ bool cGuitarSpeak::TimerTick() {
 	strKeyList[Settings.GetModSetting("GuitarSpeakDownArrow")] = (std::string)"DOWN";
 	strKeyList[Settings.GetModSetting("GuitarSpeakEscape")] = (std::string)"ESCAPE";
 	strKeyList[Settings.GetModSetting("GuitarSpeakClose")] = (std::string)"CLOSE";
-	
+	strKeyList[Settings.GetModSetting("GuitarSpeakOBracket")] = (std::string)"OBRACKET";
+	strKeyList[Settings.GetModSetting("GuitarSpeakCBracket")] = (std::string)"CBRACKET";
+	strKeyList[Settings.GetModSetting("GuitarSpeakTildea")] = (std::string)"TILDEA";
+	strKeyList[Settings.GetModSetting("GuitarSpeakForSlash")] = (std::string)"FORSLASH";
 
 
 
@@ -42,8 +45,15 @@ bool cGuitarSpeak::TimerTick() {
 			std::cout << "Tick" << std::endl;*/
 
 		std::string currentMenu = MemHelpers.GetCurrentMenu();
-		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) || std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
-			std::cout << "Entered Bad Menu!" << std::endl;
+
+		
+		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+			std::cout << "Entered Tuning Menu!" << std::endl;
+			return false;
+		}
+
+		if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songMenus), std::end(songMenus), currentMenu.c_str()) != std::end(songMenus) || std::find(std::begin(calibrationMenus), std::end(calibrationMenus), currentMenu.c_str()) != std::end(calibrationMenus)) {
+			std::cout << "Entered Song Menu!" << std::endl;
 			return false;
 		}
 
@@ -168,6 +178,34 @@ bool cGuitarSpeak::TimerTick() {
 				sendKeystrokesToRS2014 = false;
 				if (debugMode)
 					std::cout << "CLOSE!!!" << std::endl;
+			}
+			else if (strSend == keyPressArray[10]) { // Open Bracket
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_4, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_4, 0);
+				if (debugMode)
+					std::cout << "Open Bracket was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[11]) { // Close Bracket
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_6, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_6, 0);
+				if (debugMode)
+					std::cout << "Close Bracket was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[12]) { // Tilde/a
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_3, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_3, 0);
+				if (debugMode)
+					std::cout << "Tilde/ Tilda was pressed!" << std::endl;
+			}
+			else if (strSend == keyPressArray[13]) { // Forward Slash
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_OEM_2, 0);
+				Sleep(30);
+				PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_OEM_2, 0);
+				if (debugMode)
+					std::cout << "Forward Slash was pressed!" << std::endl;
 			}
 		}
 		strSend = ""; // Reset Mapping || Prevents spam

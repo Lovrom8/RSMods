@@ -14,6 +14,8 @@
 #include <gdiplus.h>
 #include <process.h>
 #include <intrin.h>
+#include <iostream>
+#include <fstream>
 
 // Mods
 #include "Mods/Enumeration.h"
