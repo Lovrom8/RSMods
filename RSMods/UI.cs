@@ -159,7 +159,6 @@ namespace RSMods
                     {
                         this.ForceEnumerationManualRadio.Checked = true;
                     }
-
                 }
                 else
                 {
@@ -208,10 +207,21 @@ namespace RSMods
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
                 {
                     this.HeadstockCheckbox.Checked = true;
+                    this.ToggleHeadstockWhenBox.Visible = true;
+
+                    if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "startup")
+                    {
+                        this.HeadStockAlwaysOffButton.Checked = true;
+                    }
+                    else if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "song")
+                    {
+                        this.HeadstockOffInSongOnlyButton.Checked = true;
+                    }
                 }
                 else
                 {
                     this.HeadstockCheckbox.Checked = false;
+                    this.ToggleHeadstockWhenBox.Visible = false;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
@@ -480,6 +490,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) }, // Remove Song Lyrics Enabled / Disabled
                 { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
+                { ReadSettings.RemoveHeadstockWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) }, // Remove Headstock When Startup / Song
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -1380,9 +1391,17 @@ namespace RSMods
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (HeadstockCheckbox.Checked)
+            {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "true");
+                this.ToggleHeadstockWhenBox.Visible = true;
+            }
+                
             else
+            {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
+                this.ToggleHeadstockWhenBox.Visible = false;
+            }
+                
         }
 
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1837,6 +1856,17 @@ namespace RSMods
         }
 
         private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
-        
+
+        private void HeadStockAlwaysOffButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (HeadStockAlwaysOffButton.Checked)
+                SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "startup");
+        }
+
+        private void HeadstockOffInSongOnlyButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (HeadstockOffInSongOnlyButton.Checked)
+                SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
+        }
     }
 }

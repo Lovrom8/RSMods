@@ -56,6 +56,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
                 { ReadSettings.RemoveLyricsWhenIdentifier, "manual" }, // When should we remove lyrics Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
+                { ReadSettings.RemoveHeadstockWhenIdentifier, "song" } // Remove Headstock When Startup / Song
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

@@ -138,6 +138,8 @@
             this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.GuitarSpeakBox = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
+            this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
             this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
             this.GuitarSpeakSaveButton = new System.Windows.Forms.Button();
             this.GuitarSpeakKeyLabel = new System.Windows.Forms.Label();
@@ -147,8 +149,9 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
-            this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
+            this.ToggleHeadstockWhenBox = new System.Windows.Forms.GroupBox();
+            this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
+            this.HeadstockOffInSongOnlyButton = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -168,6 +171,7 @@
             this.ToggleSkylineBox.SuspendLayout();
             this.HowToToggleLyrics.SuspendLayout();
             this.GuitarSpeakBox.SuspendLayout();
+            this.ToggleHeadstockWhenBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -438,10 +442,10 @@
             this.ToggleLoftWhenStartupRadio.AutoSize = true;
             this.ToggleLoftWhenStartupRadio.Location = new System.Drawing.Point(16, 14);
             this.ToggleLoftWhenStartupRadio.Name = "ToggleLoftWhenStartupRadio";
-            this.ToggleLoftWhenStartupRadio.Size = new System.Drawing.Size(180, 17);
+            this.ToggleLoftWhenStartupRadio.Size = new System.Drawing.Size(96, 17);
             this.ToggleLoftWhenStartupRadio.TabIndex = 44;
             this.ToggleLoftWhenStartupRadio.TabStop = true;
-            this.ToggleLoftWhenStartupRadio.Text = "As Soon As The Game Starts Up";
+            this.ToggleLoftWhenStartupRadio.Text = "Loft Always Off";
             this.ToggleLoftWhenStartupRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenStartupRadio.Visible = false;
             this.ToggleLoftWhenStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenStartupRadio_CheckedChanged);
@@ -451,10 +455,10 @@
             this.ToggleLoftWhenManualRadio.AutoSize = true;
             this.ToggleLoftWhenManualRadio.Location = new System.Drawing.Point(17, 37);
             this.ToggleLoftWhenManualRadio.Name = "ToggleLoftWhenManualRadio";
-            this.ToggleLoftWhenManualRadio.Size = new System.Drawing.Size(220, 17);
+            this.ToggleLoftWhenManualRadio.Size = new System.Drawing.Size(115, 17);
             this.ToggleLoftWhenManualRadio.TabIndex = 45;
             this.ToggleLoftWhenManualRadio.TabStop = true;
-            this.ToggleLoftWhenManualRadio.Text = "Only When I Manually Trigger Via Hotkey";
+            this.ToggleLoftWhenManualRadio.Text = "Loft Off Via Hotkey";
             this.ToggleLoftWhenManualRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenManualRadio.Visible = false;
             this.ToggleLoftWhenManualRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenManualRadio_CheckedChanged);
@@ -464,10 +468,10 @@
             this.ToggleLoftWhenSongRadio.AutoSize = true;
             this.ToggleLoftWhenSongRadio.Location = new System.Drawing.Point(17, 60);
             this.ToggleLoftWhenSongRadio.Name = "ToggleLoftWhenSongRadio";
-            this.ToggleLoftWhenSongRadio.Size = new System.Drawing.Size(128, 17);
+            this.ToggleLoftWhenSongRadio.Size = new System.Drawing.Size(100, 17);
             this.ToggleLoftWhenSongRadio.TabIndex = 46;
             this.ToggleLoftWhenSongRadio.TabStop = true;
-            this.ToggleLoftWhenSongRadio.Text = "Only When In A Song";
+            this.ToggleLoftWhenSongRadio.Text = "Loft Off In Song";
             this.ToggleLoftWhenSongRadio.UseVisualStyleBackColor = true;
             this.ToggleLoftWhenSongRadio.Visible = false;
             this.ToggleLoftWhenSongRadio.CheckedChanged += new System.EventHandler(this.ToggleLoftWhenSongRadio_CheckedChanged);
@@ -552,9 +556,9 @@
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenSongRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenManualRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenStartupRadio);
-            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1015, 20);
+            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1015, 84);
             this.ToggleLoftOffWhenBox.Name = "ToggleLoftOffWhenBox";
-            this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(293, 86);
+            this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(145, 86);
             this.ToggleLoftOffWhenBox.TabIndex = 48;
             this.ToggleLoftOffWhenBox.TabStop = false;
             this.ToggleLoftOffWhenBox.Text = "Toggle Loft Off When:";
@@ -1374,9 +1378,9 @@
             // 
             this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineSongRadio);
             this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineStartupRadio);
-            this.ToggleSkylineBox.Location = new System.Drawing.Point(1015, 106);
+            this.ToggleSkylineBox.Location = new System.Drawing.Point(1163, 102);
             this.ToggleSkylineBox.Name = "ToggleSkylineBox";
-            this.ToggleSkylineBox.Size = new System.Drawing.Size(293, 68);
+            this.ToggleSkylineBox.Size = new System.Drawing.Size(145, 68);
             this.ToggleSkylineBox.TabIndex = 69;
             this.ToggleSkylineBox.TabStop = false;
             this.ToggleSkylineBox.Text = "Toggle Skyline Off When:";
@@ -1387,10 +1391,10 @@
             this.ToggleSkylineSongRadio.AutoSize = true;
             this.ToggleSkylineSongRadio.Location = new System.Drawing.Point(16, 42);
             this.ToggleSkylineSongRadio.Name = "ToggleSkylineSongRadio";
-            this.ToggleSkylineSongRadio.Size = new System.Drawing.Size(128, 17);
+            this.ToggleSkylineSongRadio.Size = new System.Drawing.Size(116, 17);
             this.ToggleSkylineSongRadio.TabIndex = 46;
             this.ToggleSkylineSongRadio.TabStop = true;
-            this.ToggleSkylineSongRadio.Text = "Only When In A Song";
+            this.ToggleSkylineSongRadio.Text = "Skyline Off In Song";
             this.ToggleSkylineSongRadio.UseVisualStyleBackColor = true;
             this.ToggleSkylineSongRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineSongRadio_CheckedChanged);
             // 
@@ -1399,10 +1403,10 @@
             this.ToggleSkylineStartupRadio.AutoSize = true;
             this.ToggleSkylineStartupRadio.Location = new System.Drawing.Point(16, 19);
             this.ToggleSkylineStartupRadio.Name = "ToggleSkylineStartupRadio";
-            this.ToggleSkylineStartupRadio.Size = new System.Drawing.Size(180, 17);
+            this.ToggleSkylineStartupRadio.Size = new System.Drawing.Size(112, 17);
             this.ToggleSkylineStartupRadio.TabIndex = 44;
             this.ToggleSkylineStartupRadio.TabStop = true;
-            this.ToggleSkylineStartupRadio.Text = "As Soon As The Game Starts Up";
+            this.ToggleSkylineStartupRadio.Text = "Skyline Always Off";
             this.ToggleSkylineStartupRadio.UseVisualStyleBackColor = true;
             this.ToggleSkylineStartupRadio.CheckedChanged += new System.EventHandler(this.ToggleSkylineStartupRadio_CheckedChanged);
             // 
@@ -1412,7 +1416,7 @@
             this.HowToToggleLyrics.Controls.Add(this.ToggleLyricsRadio);
             this.HowToToggleLyrics.Location = new System.Drawing.Point(1015, 257);
             this.HowToToggleLyrics.Name = "HowToToggleLyrics";
-            this.HowToToggleLyrics.Size = new System.Drawing.Size(293, 68);
+            this.HowToToggleLyrics.Size = new System.Drawing.Size(145, 68);
             this.HowToToggleLyrics.TabIndex = 70;
             this.HowToToggleLyrics.TabStop = false;
             this.HowToToggleLyrics.Text = "Toggle Lyrics Off When:";
@@ -1423,10 +1427,10 @@
             this.ToggleLyricsManualRadio.AutoSize = true;
             this.ToggleLyricsManualRadio.Location = new System.Drawing.Point(16, 42);
             this.ToggleLyricsManualRadio.Name = "ToggleLyricsManualRadio";
-            this.ToggleLyricsManualRadio.Size = new System.Drawing.Size(161, 17);
+            this.ToggleLyricsManualRadio.Size = new System.Drawing.Size(124, 17);
             this.ToggleLyricsManualRadio.TabIndex = 46;
             this.ToggleLyricsManualRadio.TabStop = true;
-            this.ToggleLyricsManualRadio.Text = "Lyrics Off Via Key Press Only";
+            this.ToggleLyricsManualRadio.Text = "Lyrics Off Via Hotkey";
             this.ToggleLyricsManualRadio.UseVisualStyleBackColor = true;
             this.ToggleLyricsManualRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsManualRadio_CheckedChanged);
             // 
@@ -1461,6 +1465,23 @@
             this.GuitarSpeakBox.TabStop = false;
             this.GuitarSpeakBox.Text = "Guitar Speak";
             this.GuitarSpeakBox.Visible = false;
+            // 
+            // GuitarSpeakPresetsLabel
+            // 
+            this.GuitarSpeakPresetsLabel.AutoSize = true;
+            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
+            this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
+            this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
+            this.GuitarSpeakPresetsLabel.TabIndex = 11;
+            this.GuitarSpeakPresetsLabel.Text = "Presets";
+            // 
+            // GuitarSpeakPresetsBox
+            // 
+            this.GuitarSpeakPresetsBox.FormattingEnabled = true;
+            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
+            this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
+            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
+            this.GuitarSpeakPresetsBox.TabIndex = 10;
             // 
             // GuitarSpeakWhileTuningBox
             // 
@@ -1583,22 +1604,41 @@
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // GuitarSpeakPresetsBox
+            // ToggleHeadstockWhenBox
             // 
-            this.GuitarSpeakPresetsBox.FormattingEnabled = true;
-            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
-            this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
-            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
-            this.GuitarSpeakPresetsBox.TabIndex = 10;
+            this.ToggleHeadstockWhenBox.Controls.Add(this.HeadstockOffInSongOnlyButton);
+            this.ToggleHeadstockWhenBox.Controls.Add(this.HeadStockAlwaysOffButton);
+            this.ToggleHeadstockWhenBox.Location = new System.Drawing.Point(1163, 257);
+            this.ToggleHeadstockWhenBox.Name = "ToggleHeadstockWhenBox";
+            this.ToggleHeadstockWhenBox.Size = new System.Drawing.Size(145, 68);
+            this.ToggleHeadstockWhenBox.TabIndex = 73;
+            this.ToggleHeadstockWhenBox.TabStop = false;
+            this.ToggleHeadstockWhenBox.Text = "Toggle Headstock When:";
+            this.ToggleHeadstockWhenBox.Visible = false;
             // 
-            // GuitarSpeakPresetsLabel
+            // HeadStockAlwaysOffButton
             // 
-            this.GuitarSpeakPresetsLabel.AutoSize = true;
-            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
-            this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
-            this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
-            this.GuitarSpeakPresetsLabel.TabIndex = 11;
-            this.GuitarSpeakPresetsLabel.Text = "Presets";
+            this.HeadStockAlwaysOffButton.AutoSize = true;
+            this.HeadStockAlwaysOffButton.Location = new System.Drawing.Point(7, 21);
+            this.HeadStockAlwaysOffButton.Name = "HeadStockAlwaysOffButton";
+            this.HeadStockAlwaysOffButton.Size = new System.Drawing.Size(130, 17);
+            this.HeadStockAlwaysOffButton.TabIndex = 0;
+            this.HeadStockAlwaysOffButton.TabStop = true;
+            this.HeadStockAlwaysOffButton.Text = "Headstock Always Off";
+            this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
+            this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
+            // 
+            // HeadstockOffInSongOnlyButton
+            // 
+            this.HeadstockOffInSongOnlyButton.AutoSize = true;
+            this.HeadstockOffInSongOnlyButton.Location = new System.Drawing.Point(7, 41);
+            this.HeadstockOffInSongOnlyButton.Name = "HeadstockOffInSongOnlyButton";
+            this.HeadstockOffInSongOnlyButton.Size = new System.Drawing.Size(134, 17);
+            this.HeadstockOffInSongOnlyButton.TabIndex = 1;
+            this.HeadstockOffInSongOnlyButton.TabStop = true;
+            this.HeadstockOffInSongOnlyButton.Text = "Headstock Off In Song";
+            this.HeadstockOffInSongOnlyButton.UseVisualStyleBackColor = true;
+            this.HeadstockOffInSongOnlyButton.CheckedChanged += new System.EventHandler(this.HeadstockOffInSongOnlyButton_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1607,6 +1647,7 @@
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1334, 832);
+            this.Controls.Add(this.ToggleHeadstockWhenBox);
             this.Controls.Add(this.CreditsLabel);
             this.Controls.Add(this.GroupSetAndForget);
             this.Controls.Add(this.GuitarSpeakBox);
@@ -1654,6 +1695,8 @@
             this.HowToToggleLyrics.PerformLayout();
             this.GuitarSpeakBox.ResumeLayout(false);
             this.GuitarSpeakBox.PerformLayout();
+            this.ToggleHeadstockWhenBox.ResumeLayout(false);
+            this.ToggleHeadstockWhenBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1781,6 +1824,9 @@
         private System.Windows.Forms.CheckBox GuitarSpeakWhileTuningBox;
         private System.Windows.Forms.Label GuitarSpeakPresetsLabel;
         private System.Windows.Forms.ListBox GuitarSpeakPresetsBox;
+        private System.Windows.Forms.GroupBox ToggleHeadstockWhenBox;
+        private System.Windows.Forms.RadioButton HeadstockOffInSongOnlyButton;
+        private System.Windows.Forms.RadioButton HeadStockAlwaysOffButton;
     }
 }
 

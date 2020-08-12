@@ -9,7 +9,7 @@ namespace RSMods
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
-                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled,
+                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning;
@@ -55,6 +55,7 @@ namespace RSMods
                 RemoveLyricsIdentifier              = "Lyrics = ",
                 RemoveLyricsWhenIdentifier          = "RemoveLyricsWhen = ",
                 GuitarSpeakIdentifier               = "GuitarSpeak = ",
+                RemoveHeadstockWhenIdentifier       = "RemoveHeadstockWhen = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -588,6 +589,22 @@ namespace RSMods
                             if(identifierToGrab == GuitarSpeakIdentifier)
                             {
                                 return GuitarSpeakEnabled;
+                            }
+                        }
+                        if (currentLine.Contains(RemoveHeadstockWhenIdentifier))
+                        {
+                            if (currentLine.Substring(RemoveHeadstockWhenIdentifier.Length, currentLine.Length - RemoveHeadstockWhenIdentifier.Length) == "startup")
+                            {
+                                RemoveHeadstockWhen = "startup";
+                            }
+                            else
+                            {
+                                RemoveHeadstockWhen = "song";
+                            }
+
+                            if (identifierToGrab == RemoveHeadstockWhenIdentifier)
+                            {
+                                return RemoveHeadstockWhen;
                             }
                         }
                             
