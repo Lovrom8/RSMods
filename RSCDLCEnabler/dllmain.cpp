@@ -559,6 +559,10 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 		if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+			
+			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
+				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
 
@@ -756,6 +760,9 @@ unsigned WINAPI MainThread(void*) {
 			{
 				GuitarSpeakPresent = false;
 
+				if (Settings.ReturnSettingValue("RemoveHeadstock") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+					RemoveHeadstockInThisMenu = true;
+
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
 				{
 					if (!LoftOff)
@@ -772,6 +779,9 @@ unsigned WINAPI MainThread(void*) {
 			}
 			else // If User Is Exiting Song / In A Menu
 			{
+				if (Settings.ReturnSettingValue("RemoveHeadstock") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+					RemoveHeadstockInThisMenu = false;
+
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
 					if (LoftOff) {
 						MemHelpers.ToggleLoft();
