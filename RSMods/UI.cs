@@ -75,23 +75,7 @@ namespace RSMods
 
             // Guitar Speak Preset Values
 
-            this.GuitarSpeakPresetsBox.Items.AddRange(new object[]
-            {
-                "Delete: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)),
-                "Space: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)),
-                "Enter: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier)),
-                "Tab: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier)),
-                "Page Up: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier)),
-                "Page Down: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier)),
-                "Up Arrow: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier)),
-                "Down Arrow: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier)),
-                "Escape: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier)),
-                "Open Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier)),
-                "Close Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier)),
-                "Tilde / Tilda: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier)),
-                "Forward Slash: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)),
-                "Close Guitar Speak: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier))
-            });
+            RefreshGuitarSpeakPresets();
 
             // Load Checkbox Values
             {
@@ -1736,8 +1720,8 @@ namespace RSMods
                                 break;
                             }
                         }
-
                         GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " +  GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                        RefreshGuitarSpeakPresets();
                     }
                 }      
 
@@ -1880,6 +1864,29 @@ namespace RSMods
         {
             if (HeadstockOffInSongOnlyButton.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
+        }
+
+        private void RefreshGuitarSpeakPresets()
+        {
+            this.GuitarSpeakPresetsBox.Items.Clear();
+
+            this.GuitarSpeakPresetsBox.Items.AddRange(new object[]
+            {
+                "Delete: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)),
+                "Space: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)),
+                "Enter: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier)),
+                "Tab: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier)),
+                "Page Up: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier)),
+                "Page Down: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier)),
+                "Up Arrow: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier)),
+                "Down Arrow: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier)),
+                "Escape: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier)),
+                "Open Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier)),
+                "Close Bracket: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier)),
+                "Tilde / Tilda: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier)),
+                "Forward Slash: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)),
+                "Close Guitar Speak: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier))
+            });
         }
     }
 }
