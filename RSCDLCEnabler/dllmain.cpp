@@ -515,7 +515,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (RemoveLyrics && Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
-	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on")
+	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 			return D3D_OK;
@@ -737,6 +737,10 @@ unsigned WINAPI MainThread(void*) {
 			else
 				LessonMode = false;
 
+			if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "startup")
+				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
+
+
 			if (LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
 				if (LoftOff)
 					MemHelpers.ToggleLoft();
@@ -760,7 +764,7 @@ unsigned WINAPI MainThread(void*) {
 			{
 				GuitarSpeakPresent = false;
 
-				if (Settings.ReturnSettingValue("RemoveHeadstock") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = true;
 
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
@@ -779,7 +783,9 @@ unsigned WINAPI MainThread(void*) {
 			}
 			else // If User Is Exiting Song / In A Menu
 			{
-				if (Settings.ReturnSettingValue("RemoveHeadstock") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+
+
+				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = false;
 
 				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
