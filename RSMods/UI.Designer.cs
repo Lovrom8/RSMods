@@ -138,6 +138,7 @@
             this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.GuitarSpeakBox = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakHelpButton = new System.Windows.Forms.Button();
             this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
             this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
             this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
@@ -149,10 +150,9 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.GuitarSpeakHelpButton = new System.Windows.Forms.Button();
             this.ToggleHeadstockWhenBox = new System.Windows.Forms.GroupBox();
-            this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
             this.HeadstockOffInSongOnlyButton = new System.Windows.Forms.RadioButton();
+            this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -1468,6 +1468,18 @@
             this.GuitarSpeakBox.Text = "Guitar Speak";
             this.GuitarSpeakBox.Visible = false;
             // 
+            // GuitarSpeakHelpButton
+            // 
+            this.GuitarSpeakHelpButton.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.GuitarSpeakHelpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GuitarSpeakHelpButton.Location = new System.Drawing.Point(262, 7);
+            this.GuitarSpeakHelpButton.Name = "GuitarSpeakHelpButton";
+            this.GuitarSpeakHelpButton.Size = new System.Drawing.Size(24, 23);
+            this.GuitarSpeakHelpButton.TabIndex = 12;
+            this.GuitarSpeakHelpButton.Text = "?";
+            this.GuitarSpeakHelpButton.UseVisualStyleBackColor = false;
+            this.GuitarSpeakHelpButton.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
+            // 
             // GuitarSpeakPresetsLabel
             // 
             this.GuitarSpeakPresetsLabel.AutoSize = true;
@@ -1606,17 +1618,6 @@
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // GuitarSpeakHelpButton
-            // 
-            this.GuitarSpeakHelpButton.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.GuitarSpeakHelpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GuitarSpeakHelpButton.Location = new System.Drawing.Point(262, 7);
-            this.GuitarSpeakHelpButton.Name = "GuitarSpeakHelpButton";
-            this.GuitarSpeakHelpButton.Size = new System.Drawing.Size(24, 23);
-            this.GuitarSpeakHelpButton.TabIndex = 12;
-            this.GuitarSpeakHelpButton.Text = "?";
-            this.GuitarSpeakHelpButton.UseVisualStyleBackColor = false;
-            this.GuitarSpeakHelpButton.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
             // ToggleHeadstockWhenBox
             // 
             this.ToggleHeadstockWhenBox.Controls.Add(this.HeadstockOffInSongOnlyButton);
@@ -1629,18 +1630,6 @@
             this.ToggleHeadstockWhenBox.Text = "Toggle Headstock When:";
             this.ToggleHeadstockWhenBox.Visible = false;
             // 
-            // HeadStockAlwaysOffButton
-            // 
-            this.HeadStockAlwaysOffButton.AutoSize = true;
-            this.HeadStockAlwaysOffButton.Location = new System.Drawing.Point(7, 21);
-            this.HeadStockAlwaysOffButton.Name = "HeadStockAlwaysOffButton";
-            this.HeadStockAlwaysOffButton.Size = new System.Drawing.Size(130, 17);
-            this.HeadStockAlwaysOffButton.TabIndex = 0;
-            this.HeadStockAlwaysOffButton.TabStop = true;
-            this.HeadStockAlwaysOffButton.Text = "Headstock Always Off";
-            this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
-            this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
-            // 
             // HeadstockOffInSongOnlyButton
             // 
             this.HeadstockOffInSongOnlyButton.AutoSize = true;
@@ -1652,6 +1641,18 @@
             this.HeadstockOffInSongOnlyButton.Text = "Headstock Off In Song";
             this.HeadstockOffInSongOnlyButton.UseVisualStyleBackColor = true;
             this.HeadstockOffInSongOnlyButton.CheckedChanged += new System.EventHandler(this.HeadstockOffInSongOnlyButton_CheckedChanged);
+            // 
+            // HeadStockAlwaysOffButton
+            // 
+            this.HeadStockAlwaysOffButton.AutoSize = true;
+            this.HeadStockAlwaysOffButton.Location = new System.Drawing.Point(7, 21);
+            this.HeadStockAlwaysOffButton.Name = "HeadStockAlwaysOffButton";
+            this.HeadStockAlwaysOffButton.Size = new System.Drawing.Size(130, 17);
+            this.HeadStockAlwaysOffButton.TabIndex = 0;
+            this.HeadStockAlwaysOffButton.TabStop = true;
+            this.HeadStockAlwaysOffButton.Text = "Headstock Always Off";
+            this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
+            this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
             // 
             // MainForm
             // 
