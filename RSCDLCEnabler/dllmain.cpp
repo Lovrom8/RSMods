@@ -483,20 +483,21 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 			if (!pBaseTexture)
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
-			if (calculatedCRC) {
-				if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
-					pDevice->SetTexture(1, ourTexture);
-			}
+			// It's very likely there's more than two that we have to replace, so for now, let's just check for the matching checksum
+			//if (calculatedCRC) {
+			//	if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
+			//		pDevice->SetTexture(1, ourTexture);
+			//}
 			else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
 				if (crc == 0x02a50002) { // Same checksum for stems and accents, because they use the same texture
-					AddToTextureList(notewayTexturePointers, pCurrTexture);
+					//AddToTextureList(notewayTexturePointers, pCurrTexture);
 					pDevice->SetTexture(1, ourTexture);
 				}
 
-				if (notewayTexturePointers.size() == 2) {
+				/*if (notewayTexturePointers.size() == 2) {
 					std::cout << "Calculated stem CRC" << std::endl;
 					calculatedCRC = true;
-				}
+				}*/
 			}
 			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 		}
