@@ -1860,6 +1860,7 @@ namespace RSMods
         private void GuitarSpeakHelpButton_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
+        }
         private void HeadStockAlwaysOffButton_CheckedChanged(object sender, EventArgs e)
         {
             if (HeadStockAlwaysOffButton.Checked)
