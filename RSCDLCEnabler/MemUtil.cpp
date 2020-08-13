@@ -94,6 +94,8 @@ uintptr_t cMemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets
 		if (!addr)
 			return NULL;
 
+		bool safeExport = safe;
+		std::vector<unsigned int> offsetsExport = offsets;
 		addr = *(uintptr_t*)addr;
 
 		if (addr == NULL)

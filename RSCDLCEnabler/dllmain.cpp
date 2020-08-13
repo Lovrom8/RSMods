@@ -441,7 +441,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 					allMeshes.push_back(currentThicc);
 				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
 				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
-				//Log("%s", MemHelpers.GetCurrentMenu().c_str()); // Log Current Menu
+				//Log("%s", currentMenu.c_str()); // Log Current Menu
 			}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -515,7 +515,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (RemoveLyrics && Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
-	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), MemHelpers.GetCurrentMenu().c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
+	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 			return D3D_OK;
@@ -727,10 +727,11 @@ unsigned WINAPI MainThread(void*) {
 	while (true) {
 		Sleep(250);
 
-		currentMenu = MemHelpers.GetCurrentMenu(false);
-
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
+			currentMenu = MemHelpers.GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
+
+
 			// std::cout << currentMenu.c_str() << std::endl;
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
@@ -833,6 +834,8 @@ unsigned WINAPI MainThread(void*) {
 		}
 		else // Game Hasn't Loaded Yet
 		{
+			currentMenu = MemHelpers.GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
+
 			if (currentMenu == "MainMenu") { // Yay We Loaded :P
 				GameLoaded = true;
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
