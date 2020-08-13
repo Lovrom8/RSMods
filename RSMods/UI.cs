@@ -1727,7 +1727,16 @@ namespace RSMods
                     {
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
                         GuitarSpeakPresetsBox.ClearSelected();
-                        GuitarSpeakPresetsBox.Items.RemoveAt(GuitarSpeakKeypress.SelectedIndex);
+
+                        foreach(string guitarSpeakItem in GuitarSpeakPresetsBox.Items)
+                        {
+                            if (guitarSpeakItem.Contains(GuitarSpeakKeypress.SelectedItem.ToString()))
+                            {
+                                GuitarSpeakPresetsBox.Items.Remove(guitarSpeakItem);
+                                break;
+                            }
+                        }
+
                         GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " +  GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
                     }
                 }      
