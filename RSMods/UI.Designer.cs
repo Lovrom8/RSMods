@@ -138,6 +138,8 @@
             this.ToggleLyricsManualRadio = new System.Windows.Forms.RadioButton();
             this.ToggleLyricsRadio = new System.Windows.Forms.RadioButton();
             this.GuitarSpeakBox = new System.Windows.Forms.GroupBox();
+            this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
+            this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
             this.GuitarSpeakWhileTuningBox = new System.Windows.Forms.CheckBox();
             this.GuitarSpeakSaveButton = new System.Windows.Forms.Button();
             this.GuitarSpeakKeyLabel = new System.Windows.Forms.Label();
@@ -147,8 +149,7 @@
             this.GuitarSpeakOctave = new System.Windows.Forms.ListBox();
             this.GuitarSpeakNote = new System.Windows.Forms.ListBox();
             this.CreditsLabel = new System.Windows.Forms.Label();
-            this.GuitarSpeakPresetsBox = new System.Windows.Forms.ListBox();
-            this.GuitarSpeakPresetsLabel = new System.Windows.Forms.Label();
+            this.GuitarSpeakHelpButton = new System.Windows.Forms.Button();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -1444,6 +1445,7 @@
             // 
             // GuitarSpeakBox
             // 
+            this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakHelpButton);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakPresetsLabel);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakPresetsBox);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakWhileTuningBox);
@@ -1461,6 +1463,23 @@
             this.GuitarSpeakBox.TabStop = false;
             this.GuitarSpeakBox.Text = "Guitar Speak";
             this.GuitarSpeakBox.Visible = false;
+            // 
+            // GuitarSpeakPresetsLabel
+            // 
+            this.GuitarSpeakPresetsLabel.AutoSize = true;
+            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
+            this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
+            this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
+            this.GuitarSpeakPresetsLabel.TabIndex = 11;
+            this.GuitarSpeakPresetsLabel.Text = "Presets";
+            // 
+            // GuitarSpeakPresetsBox
+            // 
+            this.GuitarSpeakPresetsBox.FormattingEnabled = true;
+            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
+            this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
+            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
+            this.GuitarSpeakPresetsBox.TabIndex = 10;
             // 
             // GuitarSpeakWhileTuningBox
             // 
@@ -1583,22 +1602,17 @@
     "- Co-GUI Dev";
             this.CreditsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // GuitarSpeakPresetsBox
+            // GuitarSpeakHelpButton
             // 
-            this.GuitarSpeakPresetsBox.FormattingEnabled = true;
-            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
-            this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
-            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
-            this.GuitarSpeakPresetsBox.TabIndex = 10;
-            // 
-            // GuitarSpeakPresetsLabel
-            // 
-            this.GuitarSpeakPresetsLabel.AutoSize = true;
-            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
-            this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
-            this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
-            this.GuitarSpeakPresetsLabel.TabIndex = 11;
-            this.GuitarSpeakPresetsLabel.Text = "Presets";
+            this.GuitarSpeakHelpButton.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.GuitarSpeakHelpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GuitarSpeakHelpButton.Location = new System.Drawing.Point(262, 7);
+            this.GuitarSpeakHelpButton.Name = "GuitarSpeakHelpButton";
+            this.GuitarSpeakHelpButton.Size = new System.Drawing.Size(24, 23);
+            this.GuitarSpeakHelpButton.TabIndex = 12;
+            this.GuitarSpeakHelpButton.Text = "?";
+            this.GuitarSpeakHelpButton.UseVisualStyleBackColor = false;
+            this.GuitarSpeakHelpButton.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
             // 
             // MainForm
             // 
@@ -1781,6 +1795,7 @@
         private System.Windows.Forms.CheckBox GuitarSpeakWhileTuningBox;
         private System.Windows.Forms.Label GuitarSpeakPresetsLabel;
         private System.Windows.Forms.ListBox GuitarSpeakPresetsBox;
+        private System.Windows.Forms.Button GuitarSpeakHelpButton;
     }
 }
 

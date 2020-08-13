@@ -1837,6 +1837,10 @@ namespace RSMods
         }
 
         private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
-        
+
+        private void GuitarSpeakHelpButton_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
+        }
     }
 }
