@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\LogoX256.ico" />
-    <None Include="Assets\fretboard.png" />
     <Content Include="Lib\7z.dll" />
     <Content Include="Lib\ddc\ddc.exe" />
     <Content Include="Lib\ddc\ddc_chords_protector.xml" />
