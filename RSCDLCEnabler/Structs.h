@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning(disable: 4244 4305) // Double -> Float may lose data. | initializing truncated double -> float | uninitialized value
 #include <cmath>
+#include <map>
 
 enum string_state {
 	Ambient = 0x350,
@@ -123,6 +124,7 @@ struct xyzPosition {
 };
 
 typedef Color RSColor;
+typedef std::map<std::string, RSColor> ColorMap;
 
 /*------------------AUDIO KINETIC STUFF---------------------------------*/
 

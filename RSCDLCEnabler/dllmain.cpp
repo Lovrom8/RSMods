@@ -105,36 +105,54 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
 
-void SetCustomColors() {
+ColorMap GetCustomColors(int strIdx, bool CB) {
 	RSColor iniColor;
+	std::string ext;
 
+	if (CB)
+		ext = "_CB";
+	else
+		ext = "_N";
+
+	iniColor = Settings.GetCustomColors(CB)[strIdx];
+	int H;
+	float S, L;
+	CollectColors.RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
+
+	ColorMap customColors = {
+		{"Ambient" + ext, CollectColors.GetAmbientStringColor(H, CB)},
+		{"Disabled" + ext, CollectColors.GetDisabledStringColor(H, S, L, CB)},
+		{"Enabled" + ext, iniColor},
+		{"Glow" + ext, CollectColors.GetGlowStringColor(H)},
+		{"PegsTuning" + ext, CollectColors.GetGlowStringColor(H)},
+		{"PegsReset" + ext, CollectColors.GetPegResetColor()},
+		{"PegsSuccess" + ext, CollectColors.GetPegSuccessColor(CB)},
+		{"PegsInTune" + ext, CollectColors.GetPegInTuneColor(H, CB)},
+		{"PegsOutTune" + ext, CollectColors.GetPegOutTuneColor()},
+		{"TextIndicator" + ext, CollectColors.GetRegTextIndicatorColor(H, CB)},
+		{"ForkParticles" + ext, CollectColors.GetRegForkParticlesColor(H, CB)},
+		{"NotewayNormal" + ext, CollectColors.GetNotewayNormalColor(H, S, L, CB)},
+		{"NotewayAccent" + ext, CollectColors.GetNotewayAccentColor(H, CB)},
+		{"NotewayPreview" + ext, CollectColors.GetNotewayPreviewColor(H, CB)},
+		{"GC_Main" + ext, CollectColors.GetGuitarcadeMainColor(H, strIdx, CB)},
+		{"GC_Add" + ext, CollectColors.GetGuitarcadeAdditiveColor(H, strIdx, CB)},
+		{"GC_UI" + ext, CollectColors.GetGuitarcadeUIColor(H, strIdx, CB)}
+	};
+
+	return customColors;
+}
+
+void SetCustomColors() {
 	for (int strIdx = 0; strIdx < 6;strIdx++) {
-		iniColor = Settings.GetCustomColors(true)[strIdx];
-		int H;
-		float S, L;
-		CollectColors.RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
+		ColorMap customColorsFull;
 
-		std::map<std::string, RSColor> customColors = {
-			{"Ambient", CollectColors.GetAmbientStringColor(H, true)},
-			{"Disabled", CollectColors.GetDisabledStringColor(H, S, L, true)},
-			{"Enabled", iniColor},
-			{"Glow", CollectColors.GetGlowStringColor(H)},
-			{"PegsTuning", CollectColors.GetGlowStringColor(H)},
-			{"PegsReset", CollectColors.GetPegResetColor()},
-			{"PegsSuccess", CollectColors.GetPegSuccessColor(true)},
-			{"PegsInTune", CollectColors.GetPegInTuneColor(H, true)},
-			{"PegsOutTune", CollectColors.GetPegOutTuneColor()},
-			{"TextIndicator", CollectColors.GetRegTextIndicatorColor(H, true)},
-			{"ForkParticles", CollectColors.GetRegForkParticlesColor(H, true)},
-			{"NotewayNormal", CollectColors.GetNotewayNormalColor(H, S, L, true)},
-			{"NotewayAccent", CollectColors.GetNotewayAccentColor(H, true)},
-			{"NotewayPreview", CollectColors.GetNotewayPreviewColor(H, true)},
-			{"GC_Main", CollectColors.GetGuitarcadeMainColor(H, strIdx, true)},
-			{"GC_Add", CollectColors.GetGuitarcadeAdditiveColor(H, strIdx, true)},
-			{"GC_UI", CollectColors.GetGuitarcadeUIColor(H, strIdx, true)}
-		};
+		ColorMap normalColors = GetCustomColors(strIdx, false);
+		ColorMap cbColors = GetCustomColors(strIdx, true);
 
-		ERMode.SetCustomColors(strIdx, customColors);
+		customColorsFull.insert(normalColors.begin(), normalColors.end());
+		customColorsFull.insert(cbColors.begin(), cbColors.end());
+
+		ERMode.SetCustomColors(strIdx, customColorsFull);
 	}
 }
 
@@ -560,7 +578,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 		if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
-			
+
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
@@ -724,7 +742,7 @@ unsigned WINAPI MainThread(void*) {
 	GUI();
 
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
-	
+
 	while (true) {
 		Sleep(250);
 
@@ -844,7 +862,7 @@ unsigned WINAPI MainThread(void*) {
 
 			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
-		} 
+		}
 	}
 
 	return 0;

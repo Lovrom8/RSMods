@@ -9,6 +9,7 @@
 #include "Offsets.h"
 #include "MemUtil.h"
 #include "Settings.h"
+#include "Structs.h"
 
 // Windows Libraries
 #include <gdiplus.h>

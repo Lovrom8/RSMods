@@ -3,7 +3,7 @@
 cERMode ERMode;
 
 // I couldn't get it to work - it returns a valid pointer, but not one that would change the colors
-/*uintptr_t GetStringColor(uintptr_t stringnum, int state) {  
+/*uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	uintptr_t pThisAddr = Offsets.ptr_stringColor;
 	uintptr_t pThisPtr = MemUtil.ReadPtr(pThisAddr);
 	uintptr_t pColor = MemUtil.ReadPtr(pThisPtr + state + (stringnum * 0x4));
@@ -56,7 +56,7 @@ void cERMode::Initialize() {
 		customColors.push_back(emptyMap);
 }
 
-void cERMode::SetCustomColors(int strIdx, std::map<std::string, Color> customColorMap) {
+void cERMode::SetCustomColors(int strIdx, ColorMap customColorMap) {
 	customColors[strIdx] = customColorMap;
 }
 
@@ -127,7 +127,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			//SetColors(stringsNormal, colorsNormal);
 
 			//std::cout << std::hex << stringsEnabled[0] << std::endl;
-			
+
 			// Zags custom low B color values manually entered; Glowed
 			SetColors(stringsGlow, colorsGlow);
 
@@ -161,18 +161,18 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
 			//SetColors(stringsBodyPrev, colorsBodyPrev);
 		}
-		else if (Settings.GetModSetting("CustomStringColors") == 0) { //default colors 
+		else if (Settings.GetModSetting("CustomStringColors") == 0) { // Default colors 
 			//do we even need to do anything in this case?
 		}
-		else if (Settings.GetModSetting("CustomStringColors") == 2) { //custom colors
-			SetColors(stringsEnabled, "Enabled");
-			SetColors(stringsGlow, "Glow");
-			SetColors(stringsDisabled, "Disabled");
-			SetColors(stringsText, "TextIndicator");
-			SetColors(stringsPegInTune, "PegInTune");
-			SetColors(stringsPegNotInTune, "PegOutTune");
-			SetColors(stringsBodyNorm, "BodyNorm");
-			SetColors(stringsBodyAcc, "BodyAcc");
+		else if (Settings.GetModSetting("CustomStringColors") == 2) { // CB user-defined colors
+			SetColors(stringsEnabled, "Enabled_CB");
+			SetColors(stringsGlow, "Glow_CB");
+			SetColors(stringsDisabled, "Disabled_CB");
+			SetColors(stringsText, "TextIndicator_CB");
+			SetColors(stringsPegInTune, "PegInTune_CB");
+			SetColors(stringsPegNotInTune, "PegOutTune_CB");
+			SetColors(stringsBodyNorm, "BodyNorm_CB");
+			SetColors(stringsBodyAcc, "BodyAcc_CB");
 			//etc.
 		}
 	}
@@ -305,6 +305,17 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		SetColors(stringsTest, colorsTest);
 		std::cout << "Set colors doe" << std::endl;
 	}
+	else if (Settings.GetModSetting("CustomStringColors") == 2) { // User defined colors
+		SetColors(stringsEnabled, "Enabled_N");
+		SetColors(stringsGlow, "Glow_N");
+		SetColors(stringsDisabled, "Disabled_N");
+		SetColors(stringsText, "TextIndicator_N");
+		SetColors(stringsPegInTune, "PegInTune_N");
+		SetColors(stringsPegNotInTune, "PegOutTune_N");
+		SetColors(stringsBodyNorm, "BodyNorm_N");
+		SetColors(stringsBodyAcc, "BodyAcc_N");
+		//etc.
+	} // If not enabled, colors will auto-reset upon entering a song
 }
 
 void cERMode::ToggleRainbowMode() {
