@@ -87,21 +87,6 @@ void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 	Settings.SetStringColors(strIndex, oldGlow[strIndex], false);
 }
 
-bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
-	if (strings[0] == NULL)
-		return false;
-
-	int r = std::round((*(Color*)strings[0]).r * 255); // Remember, just casting to int doesn't round up :(
-	int g = std::round((*(Color*)strings[0]).g * 255);
-	int b = std::round((*(Color*)strings[0]).b * 255);
-	if (R == 63)
-		std::cout << std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << std::endl;
-
-	if (R == r && G == g && B == b)
-		return true;
-	return false;
-}
-
 std::vector<std::vector<Color>> defaultColors;
 
 void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
@@ -120,7 +105,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
-	//std::cout << Settings.GetModSetting("CustomStringColors") << std::endl;
+
 	if (MemHelpers.IsExtendedRangeSong()) {
 		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
@@ -177,7 +162,6 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		}
 	}
 	else {
-		//restore orignal colors, I guess
 
 		if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
 			for (int i = 0; i < 6; i++) {
@@ -185,86 +169,24 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 				oldEnabled.push_back(*(Color*)stringsEnabled[i]);
 				oldGlow.push_back(*(Color*)stringsGlow[i]);
 				oldAmb.push_back(*(Color*)stringsAmb[i]);
-
-				//std::cout << std::hex << stringsEnabled[0] << std::endl;
-
-				/*std::cout << "Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << std::endl;
-				std::cout << "Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << std::endl;
-				std::cout << "Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << std::endl;
-				std::cout << "Glow" << i << " " << (*(Color*)stringsGlow[i]).r * 255 << " " << (*(Color*)stringsGlow[i]).g * 255 << " " << (*(Color*)stringsGlow[i]).b * 255 << std::endl;
-				std::cout << "Amb" << i << " " << (*(Color*)stringsAmb[i]).r * 255 << " " << (*(Color*)stringsAmb[i]).g * 255 << " " << (*(Color*)stringsAmb[i]).b * 255 << std::endl;
-				std::cout << "PegInTune" << i << " " << (*(Color*)stringsPegInTune[i]).r * 255 << " " << (*(Color*)stringsPegInTune[i]).g * 255 << " " << (*(Color*)stringsPegInTune[i]).b * 255 << std::endl;
-				std::cout << "PegNotInTune" << i << " " << (*(Color*)stringsPegNotInTune[i]).r * 255 << " " << (*(Color*)stringsPegNotInTune[i]).g * 255 << " " << (*(Color*)stringsPegNotInTune[i]).b * 255 << std::endl;
-				std::cout << "Text" << i << " " << (*(Color*)stringsText[i]).r * 255 << " " << (*(Color*)stringsText[i]).g * 255 << " " << (*(Color*)stringsText[i]).b * 255 << std::endl;
-				std::cout << "Part" << i << " " << (*(Color*)stringsPart[i]).r * 255 << " " << (*(Color*)stringsPart[i]).g * 255 << " " << (*(Color*)stringsPart[i]).b * 255 << std::endl;
-				std::cout << "BodyNorm" << i << " " << (*(Color*)stringsBodyNorm[i]).r * 255 << " " << (*(Color*)stringsBodyNorm[i]).g * 255 << " " << (*(Color*)stringsBodyNorm[i]).b * 255 << std::endl;
-				std::cout << "BodyAcc" << i << " " << (*(Color*)stringsBodyAcc[i]).r * 255 << " " << (*(Color*)stringsBodyAcc[i]).g * 255 << " " << (*(Color*)stringsBodyAcc[i]).b * 255 << std::endl;
-				std::cout << "BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << std::endl;
-				std::cout << std::endl;*/
 			}
-			/*int a0 = 0, a1 = 0, a2 = 0, a3 = 0;
-
-			for (int i = 0; i < 17;i++) {
-				stringsTest.clear();
-				int current = 0x350 + i * 0x18;
-				InitStrings(stringsTest, current);
-
-				if (IsMatch(stringsTest, 191, 95, 95))
-					std::cout << "Ambient " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 255, 79, 90))
-					std::cout << "Enabled " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 76, 23, 27))
-					std::cout << "Disabled " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 255, 0, 16))
-					std::cout << "StringsGlow " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 191, 0, 15))
-					std::cout << "PegsTuning " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 0, 0, 0)) {
-					a0++;
-					if (a0 == 1)
-						std::cout << "PegsReset " << std::hex << current << std::endl;
-					else if (a0 == 2)
-						std::cout << "PegsSuccess " << std::hex << current << std::endl;
-				}
-				else if (IsMatch(stringsTest, 255, 255, 255))
-					std::cout << "PegsOutOfTune " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 249, 146, 137))
-					std::cout << "BodypartsAccent " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 178, 0, 14))
-					std::cout << "PegsInTune " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 255, 64, 64)) {
-					a2++;
-					if (a2 == 1)
-						std::cout << "RegistarTextIndicator " << std::hex << current << std::endl;
-					else if (a2 == 2)
-						std::cout << "ForkParticles " << std::hex << current << std::endl;
-				}
-				else if (IsMatch(stringsTest, 64, 41, 41))
-					std::cout << "BodypartsPreview " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 255, 0, 0))
-					std::cout << "BodypartsNormal " << std::hex << current << std::endl;
-				else if (IsMatch(stringsTest, 255, 5, 0)) {
-					a3++;
-					if (a3 == 1)
-						std::cout << "GA_Main " << std::hex << current << std::endl;
-					else if (a3 == 2)
-						std::cout << "GA_Additive " << std::hex << current << std::endl;
-					else if (a3 == 3)
-						std::cout << "GA_UI " << std::hex << current << std::endl;
-				}
-			} */
-
-			/*for (int i = 0; i < 6;i++) {
-				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
-				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).g * 255);
-				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).b * 255);
-				std::cout << std::endl;
-			}*/
-
 			colorsSaved = true;
 		}
+
+		if (Settings.GetModSetting("CustomStringColors") == 2) { // User defined colors
+			SetColors(stringsEnabled, "Enabled_N");
+			SetColors(stringsGlow, "Glow_N");
+			SetColors(stringsDisabled, "Disabled_N");
+			SetColors(stringsText, "TextIndicator_N");
+			SetColors(stringsPegInTune, "PegInTune_N");
+			SetColors(stringsPegNotInTune, "PegOutTune_N");
+			SetColors(stringsBodyNorm, "BodyNorm_N");
+			SetColors(stringsBodyAcc, "BodyAcc_N");
+			//etc.
+		} // If not enabled, colors will auto-reset upon entering a song
 	}
 
+	//NOTE: this overrides string colors, no matter if ER song or not
 	if (Settings.GetModSetting("CustomStringColors") == 3) { // If you want the color testing menu to work
 		if (saveDefaults) {
 			defaultColors.clear();
@@ -305,17 +227,6 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 		SetColors(stringsTest, colorsTest);
 		std::cout << "Set colors doe" << std::endl;
 	}
-	else if (Settings.GetModSetting("CustomStringColors") == 2) { // User defined colors
-		SetColors(stringsEnabled, "Enabled_N");
-		SetColors(stringsGlow, "Glow_N");
-		SetColors(stringsDisabled, "Disabled_N");
-		SetColors(stringsText, "TextIndicator_N");
-		SetColors(stringsPegInTune, "PegInTune_N");
-		SetColors(stringsPegNotInTune, "PegOutTune_N");
-		SetColors(stringsBodyNorm, "BodyNorm_N");
-		SetColors(stringsBodyAcc, "BodyAcc_N");
-		//etc.
-	} // If not enabled, colors will auto-reset upon entering a song
 }
 
 void cERMode::ToggleRainbowMode() {
@@ -378,3 +289,97 @@ void cERMode::DoRainbow() {
 		*(Color*)stringsDisabled[i] = oldDisabled[i];
 	}
 }
+
+
+/* IN CASE THIS IS EVER NEEDED */
+bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
+	if (strings[0] == NULL)
+		return false;
+
+	int r = std::round((*(Color*)strings[0]).r * 255); // Remember, just casting to int doesn't round up :(
+	int g = std::round((*(Color*)strings[0]).g * 255);
+	int b = std::round((*(Color*)strings[0]).b * 255);
+	if (R == 63)
+		std::cout << std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << std::endl;
+
+	if (R == r && G == g && B == b)
+		return true;
+	return false;
+}
+
+
+//std::cout << std::hex << stringsEnabled[0] << std::endl;
+
+/*std::cout << "Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << std::endl;
+std::cout << "Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << std::endl;
+std::cout << "Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << std::endl;
+std::cout << "Glow" << i << " " << (*(Color*)stringsGlow[i]).r * 255 << " " << (*(Color*)stringsGlow[i]).g * 255 << " " << (*(Color*)stringsGlow[i]).b * 255 << std::endl;
+std::cout << "Amb" << i << " " << (*(Color*)stringsAmb[i]).r * 255 << " " << (*(Color*)stringsAmb[i]).g * 255 << " " << (*(Color*)stringsAmb[i]).b * 255 << std::endl;
+std::cout << "PegInTune" << i << " " << (*(Color*)stringsPegInTune[i]).r * 255 << " " << (*(Color*)stringsPegInTune[i]).g * 255 << " " << (*(Color*)stringsPegInTune[i]).b * 255 << std::endl;
+std::cout << "PegNotInTune" << i << " " << (*(Color*)stringsPegNotInTune[i]).r * 255 << " " << (*(Color*)stringsPegNotInTune[i]).g * 255 << " " << (*(Color*)stringsPegNotInTune[i]).b * 255 << std::endl;
+std::cout << "Text" << i << " " << (*(Color*)stringsText[i]).r * 255 << " " << (*(Color*)stringsText[i]).g * 255 << " " << (*(Color*)stringsText[i]).b * 255 << std::endl;
+std::cout << "Part" << i << " " << (*(Color*)stringsPart[i]).r * 255 << " " << (*(Color*)stringsPart[i]).g * 255 << " " << (*(Color*)stringsPart[i]).b * 255 << std::endl;
+std::cout << "BodyNorm" << i << " " << (*(Color*)stringsBodyNorm[i]).r * 255 << " " << (*(Color*)stringsBodyNorm[i]).g * 255 << " " << (*(Color*)stringsBodyNorm[i]).b * 255 << std::endl;
+std::cout << "BodyAcc" << i << " " << (*(Color*)stringsBodyAcc[i]).r * 255 << " " << (*(Color*)stringsBodyAcc[i]).g * 255 << " " << (*(Color*)stringsBodyAcc[i]).b * 255 << std::endl;
+std::cout << "BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << std::endl;
+std::cout << std::endl;*/
+
+
+/*int a0 = 0, a1 = 0, a2 = 0, a3 = 0;
+
+	for (int i = 0; i < 17;i++) {
+		stringsTest.clear();
+		int current = 0x350 + i * 0x18;
+		InitStrings(stringsTest, current);
+
+		if (IsMatch(stringsTest, 191, 95, 95))
+			std::cout << "Ambient " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 255, 79, 90))
+			std::cout << "Enabled " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 76, 23, 27))
+			std::cout << "Disabled " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 255, 0, 16))
+			std::cout << "StringsGlow " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 191, 0, 15))
+			std::cout << "PegsTuning " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 0, 0, 0)) {
+			a0++;
+			if (a0 == 1)
+				std::cout << "PegsReset " << std::hex << current << std::endl;
+			else if (a0 == 2)
+				std::cout << "PegsSuccess " << std::hex << current << std::endl;
+		}
+		else if (IsMatch(stringsTest, 255, 255, 255))
+			std::cout << "PegsOutOfTune " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 249, 146, 137))
+			std::cout << "BodypartsAccent " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 178, 0, 14))
+			std::cout << "PegsInTune " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 255, 64, 64)) {
+			a2++;
+			if (a2 == 1)
+				std::cout << "RegistarTextIndicator " << std::hex << current << std::endl;
+			else if (a2 == 2)
+				std::cout << "ForkParticles " << std::hex << current << std::endl;
+		}
+		else if (IsMatch(stringsTest, 64, 41, 41))
+			std::cout << "BodypartsPreview " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 255, 0, 0))
+			std::cout << "BodypartsNormal " << std::hex << current << std::endl;
+		else if (IsMatch(stringsTest, 255, 5, 0)) {
+			a3++;
+			if (a3 == 1)
+				std::cout << "GA_Main " << std::hex << current << std::endl;
+			else if (a3 == 2)
+				std::cout << "GA_Additive " << std::hex << current << std::endl;
+			else if (a3 == 3)
+				std::cout << "GA_UI " << std::hex << current << std::endl;
+		}
+	} */
+
+	/*for (int i = 0; i < 6;i++) {
+		std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
+		std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).g * 255);
+		std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).b * 255);
+		std::cout << std::endl;
+	}*/

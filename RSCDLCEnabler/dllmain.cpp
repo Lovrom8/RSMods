@@ -489,11 +489,11 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 	}
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong()) { // Extended Range Mode
-		if (IsToBeRemoved(sevenstring, current)) { // Change all pieces of note head's textures
-			MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong() || Settings.GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
+		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+		
+		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
-		}
 		else if (FRETNUM_AND_MISS_INDICATOR && NumElements == 7 && VectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
