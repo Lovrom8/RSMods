@@ -1,6 +1,6 @@
 .vs/Rocksmith2014-Mod-Installer/v16/.suo
-Rocksmith2014-Mod-Installer/obj/*
-Rocksmith2014-Mod-Installer/bin/*
+Rocksmith2014-Mod-Installer/obj/**
+Rocksmith2014-Mod-Installer/bin/**
 *.cache
 .vs/RS2014-Mod-Installer/v16/.suo
 Rocksmith2014-Mod-Installer/obj/Debug/RS2014-Mod-Installer.csprojAssemblyReference.cache
