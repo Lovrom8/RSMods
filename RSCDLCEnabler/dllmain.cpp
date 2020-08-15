@@ -15,7 +15,7 @@ unsigned WINAPI EnumerationThread(void*) {
 	Settings::ReadModSettings();
 
 	int oldDLCCount = Enumeration::GetCurrentDLCCount(), newDLCCount = oldDLCCount;
-
+	
 	while (!GameClosing) {
 		if (Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
@@ -679,6 +679,7 @@ unsigned WINAPI MainThread(void*) {
 
 	Offsets::Initialize();
 	MemHelpers::PatchCDLCCheck();
+	Settings::Initialize();
 
 	UpdateSettings();
 
@@ -691,7 +692,7 @@ unsigned WINAPI MainThread(void*) {
 	//GuitarSpeak.DrawTunerInGame();
 	while (!GameClosing) {
 		Sleep(250);
-		//std::cout << MemHelpers::GetCurrentMenu(false) << std::endl;
+
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.

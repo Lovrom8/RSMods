@@ -40,7 +40,7 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 
 		std::string currentMenu((char*)preMainMenuAdr);
 
-		std::cout << currentMenu << std::endl;
+		//std::cout << currentMenu << std::endl;
 
 		if (currentMenu != "TitleScreen" && currentMenu != "" && currentMenu != "MainOverlay") // I.e. check if its neither one of the possible states
 			canGetRealMenu = true;
