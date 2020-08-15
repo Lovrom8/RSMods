@@ -26,4 +26,5 @@ namespace MemHelpers {
 	void PatchCDLCCheck();
 
 	inline static std::string lastMenu = "";
+	inline static bool canGetRealMenu = false;
 };

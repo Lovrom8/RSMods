@@ -33,8 +33,6 @@ bool MemHelpers::IsExtendedRangeSong() {
 }
 
 std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
-	bool canGetRealMenu = false;
-
 	if (GameNotLoaded) { // It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen, but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay" (before you reach the login) or some gibberish that's always the same (after that) 
 		uintptr_t preMainMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_preMainMenuOffsets, GameNotLoaded);
 

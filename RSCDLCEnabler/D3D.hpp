@@ -269,7 +269,7 @@ std::vector<ThiccMesh> removedMeshes;
 #define FHP (Stride == 12 && PrimCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && PrimCount == 20 && NumVertices == 16)
 
-std::string tuningMenus[17] = { // These are all the menus where you need to tune
+std::vector<std::string> tuningMenus = { // These are all the menus where you need to tune
 	"SelectionListDialog",
 	"LearnASong_PreSongTuner",
 	"LearnASong_PreSongTunerMP",
@@ -289,7 +289,7 @@ std::string tuningMenus[17] = { // These are all the menus where you need to tun
 	"PreGame_GETuner"
 };
 
-std::string songModes[8] = { // These are all the menus where you would play guitar games.
+std::vector<std::string> songModes = { // These are all the menus where you would play guitar games.
 	"LearnASong_Game",
 	"NonStopPlay_Game",
 	"ScoreAttack_Game",
@@ -298,12 +298,12 @@ std::string songModes[8] = { // These are all the menus where you would play gui
 	"ScoreAttack_Pause",
 };
 
-std::string lessonModes[2] = { // These are the Guided Experience / Lessons modes.
+std::vector<std::string> lessonModes = { // These are the Guided Experience / Lessons modes.
 	"GuidedExperience_Game",
 	"GuidedExperience_Pause"
 };
 
-std::string dontAutoEnter[16] = {
+std::vector<std::string> dontAutoEnter = {
 	// First time Player
 	"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
 	"PlayedRS1Select", // Did you play the original Rocksmith?
