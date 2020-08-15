@@ -11,11 +11,13 @@
 #include "../Offsets.h"
 #include "../MemUtil.h"
 #include "../Settings.h"
+#include "../DirectX/d3dx9core.h"
 
 class cGuitarSpeak {
 public:
 	byte GetCurrentNote();
 	bool TimerTick();
+	void DrawTunerInGame();
 	void ForceNewSettings(std::string noteName, std::string keyPress);
 	std::string* keyPressArray = new std::string[14]{ "DELETE", "SPACE", "ENTER", "TAB", "PGUP", "PGDN", "UP", "DOWN", "ESCAPE", "CLOSE", "OBRACKET", "CBRACKET", "TILDEA", "FORSLASH"};
 	std::string* noteNames = new std::string[12]{ "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "A#", "B" };

@@ -16,6 +16,41 @@ byte cGuitarSpeak::GetCurrentNote() {
 	return *(byte*)noteAdr;
 }
 
+void cGuitarSpeak::DrawTunerInGame() {
+	HDC RocksmithHDC = GetDC(FindWindow(NULL, L"Rocksmith 2014"));
+
+	RECT* TextRectangle = new RECT();
+
+	TextRectangle->left = 0;
+	TextRectangle->top = 100;
+	TextRectangle->right = 300;
+	TextRectangle->bottom = 130;
+
+	SetTextColor(RocksmithHDC, 0x00FFFFFF); // White Text
+	SetBkMode(RocksmithHDC, TRANSPARENT);
+
+	while (true)
+	{
+		int currentNoteImport = GetCurrentNote();
+
+		if (currentNoteImport >= 96)
+		{
+			Sleep(timer);
+			cGuitarSpeak::DrawTunerInGame();
+		}
+
+		int octaveNumber = (currentNoteImport / 12) - 1;
+
+		std::string noteName = noteNames[currentNoteImport % 12];
+
+		std::string TextToDraw = "Current Note: " + noteName + std::to_string(octaveNumber);
+
+		DrawTextA(RocksmithHDC, TextToDraw.c_str(), TextToDraw.size(), TextRectangle, DT_NOCLIP);
+
+		
+	}
+
+}
 
 
 bool cGuitarSpeak::TimerTick() {

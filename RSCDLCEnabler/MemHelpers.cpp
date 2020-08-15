@@ -106,3 +106,16 @@ void cMemHelpers::PatchCDLCCheck() {
 			printf("Patch verify_signature success!\n");
 	}
 }
+
+int* cMemHelpers::GetWindowSize() {
+	RECT WindowSize;
+	if (GetWindowRect(FindWindow(NULL, L"Rocksmith 2014"), &WindowSize))
+	{
+		int width = WindowSize.right - WindowSize.left;
+		int height = WindowSize.bottom - WindowSize.top;
+
+		int* dimensions = new int[2]{ width, height };
+
+		return dimensions;
+	}
+}

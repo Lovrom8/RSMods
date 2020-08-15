@@ -21,6 +21,7 @@ public:
 	void ShowCurrentTuning();
 	bool IsExtendedRangeSong();
 	float GetCurrentMusicVolume();
+	int* GetWindowSize();
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
