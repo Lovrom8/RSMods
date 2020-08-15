@@ -35,10 +35,29 @@ bool cMemHelpers::IsExtendedRangeSong() {
 }
 
 std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
+	bool canGetRealMenu = false;
+
+	if (GameNotLoaded) { // It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen, but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay" (before you reach the login) or some gibberish that's always the same (after that) 
+		uintptr_t preMainMenuAdr = MemUtil.FindDMAAddy(Offsets.ptr_currentMenu, Offsets.ptr_preMainMenuOffsets, GameNotLoaded);
+
+		std::string currentMenu((char*)preMainMenuAdr);
+
+		std::cout << currentMenu << std::endl;
+
+		if (currentMenu != "TitleScreen" && currentMenu != "" && currentMenu != "MainOverlay") // I.e. check if its neither one of the possible states
+			canGetRealMenu = true;
+		else
+			return "pre_enter_prompt";
+	}
+
+	if (!canGetRealMenu)
+		return "pre_enter_prompt";
+
 	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets, GameNotLoaded); // If game hasn't loaded, take the safer, but possibly slower route
 
-	if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
-		return "pre_enter_prompt";
+	// Thank you for serving the cause comrade, but you aren't needed any more
+	//if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
+	//	return "pre_enter_prompt";
 
 	if (!currentMenuAdr)
 		return "where are we actually";

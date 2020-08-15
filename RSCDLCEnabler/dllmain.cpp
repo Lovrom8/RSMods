@@ -746,7 +746,7 @@ unsigned WINAPI MainThread(void*) {
 	//GuitarSpeak.DrawTunerInGame();
 	while (true) {
 		Sleep(250);
-		std::cout << MemHelpers.GetCurrentMenu(false) << std::endl;
+		//std::cout << MemHelpers.GetCurrentMenu(false) << std::endl;
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			currentMenu = MemHelpers.GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.

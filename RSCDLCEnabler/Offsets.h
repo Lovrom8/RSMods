@@ -17,11 +17,11 @@ public:
 	uintptr_t ptr_tuning = 0x00F5C4D8;
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
 
-	
+
 	// Guitar Speak
 	uintptr_t ptr_guitarSpeak = 0x135C4FC;
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
-	
+
 	// Audio Stuff
 	uintptr_t func_SetRTPCValue = 0x1F58A91;
 	uintptr_t func_GetRTPCValue = 0x1F5634A;
@@ -76,6 +76,7 @@ public:
 	uintptr_t ptr_currentMenu = 0x0135c5ac; // https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
 
 	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x28, 0x8C, 0x0 }; // But the offsets stay the same, hurray!
+	std::vector<unsigned int> ptr_preMainMenuOffsets{ 0x28, 0x8C };
 
 	uintptr_t ptr_timer = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };
