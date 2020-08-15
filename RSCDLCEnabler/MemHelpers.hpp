@@ -6,15 +6,12 @@
 #include <iostream>
 #include <fstream>
 
-#include "MemUtil.h"
-#include "Offsets.h"
-#include "Structs.h"
-#include "Settings.h"
+#include "MemUtil.hpp"
+#include "Offsets.hpp"
+#include "Structs.hpp"
+#include "Settings.hpp"
 
-
-class cMemHelpers
-{
-public:
+namespace MemHelpers {
 	byte getLowestStringTuning();
 	void ToggleLoft();
 	void ShowSongTimer();
@@ -28,5 +25,3 @@ public:
 
 	void PatchCDLCCheck();
 };
-
-extern cMemHelpers MemHelpers;

@@ -5,10 +5,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-#include "../Structs.h"
+#include "../Structs.hpp"
 
-class cCollectColors {
-public:
+namespace CollectColors {
 	RSColor GetAmbientStringColor(int stringHue, bool isColorBlindMode);
 	RSColor GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode);
 	RSColor GetGlowStringColor(int stringHue);
@@ -32,10 +31,7 @@ public:
 	void RGB2HSL(float R, float G, float B, int& H, float& S, float& L);
 	void HSL2RGB(float H, float S, float L, float& R, float& G, float& B);
 
-private:
 	RSColor GetColor();
-	int H;
-	float S, L, R, G, B;
+	inline int H;
+	inline float S, L, R, G, B;
 };
-
-extern cCollectColors CollectColors;

@@ -1,15 +1,15 @@
 // DLL Hijack. Do NOT remove this line!
-#include "d3dx9_42.h"
+#include "d3dx9_42.hpp"
 
 // DLL Settings
-#include "MemHelpers.h"
+#include "MemHelpers.hpp"
 #include "Utils.h"
-#include "Functions.h"
-#include "detours.h"
-#include "Offsets.h"
-#include "MemUtil.h"
-#include "Settings.h"
-#include "Structs.h"
+#include "Functions.hpp"
+#include "detours.hpp"
+#include "Offsets.hpp"
+#include "MemUtil.hpp"
+#include "Settings.hpp"
+#include "Structs.hpp"
 
 // Windows Libraries
 #include <gdiplus.h>
@@ -19,13 +19,13 @@
 #include <fstream>
 
 // Mods
-#include "Mods/Enumeration.h"
-#include "D3D.h"
-#include "Mods/CustomSongTitles.h"
-#include "Mods/ExtendedRangeMode.h"
-#include "Mods/CollectColors.h"
-#include "Mods/GuitarSkeletons.h"
-#include "Mods/GuitarSpeak.h"
+#include "Mods/Enumeration.hpp"
+#include "D3D.hpp"
+#include "Mods/CustomSongTitles.hpp"
+#include "Mods/ExtendedRangeMode.hpp"
+#include "Mods/CollectColors.hpp"
+#include "Mods/GuitarSkeletons.hpp"
+#include "Mods/GuitarSpeak.hpp"
 
 // ImGUI
 #include "imgui_includeMe.h"

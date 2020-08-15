@@ -1,4 +1,4 @@
-#include "Main.h"
+#include "Main.hpp"
 #pragma warning(disable: 4838 4018 4996) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | 
 
 #ifdef _DEBUG
@@ -11,21 +11,21 @@ unsigned WINAPI EnumerationThread(void*) {
 	while (!GameLoaded) // We are in no hurry :)
 		Sleep(5000);
 
-	Settings.ReadKeyBinds();
-	Settings.ReadModSettings();
+	Settings::ReadKeyBinds();
+	Settings::ReadModSettings();
 
-	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
+	int oldDLCCount = Enumeration::GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
 	while (!GameClosing) {
-		if (Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
+		if (Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
-			newDLCCount = Enumeration.GetCurrentDLCCount();
+			newDLCCount = Enumeration::GetCurrentDLCCount();
 
 			if (oldDLCCount != newDLCCount)
-				Enumeration.ForceEnumeration();
+				Enumeration::ForceEnumeration();
 		}
 
-		Sleep(Settings.GetModSetting("CheckForNewSongsInterval"));
+		Sleep(Settings::GetModSetting("CheckForNewSongsInterval"));
 		//Sleep(EnumSliderVal);
 	}
 
@@ -38,38 +38,38 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 	if (msg == WM_KEYUP) {
 		if (GameLoaded) { // Game must not be on the startup videos or it will crash
-			if (keyPressed == Settings.GetKeyBind("ToggleLoftKey") && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on") {
-				MemHelpers.ToggleLoft();
+			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") {
+				MemHelpers::ToggleLoft();
 				std::cout << "Toggle Loft" << std::endl;
 			}
 
-			else if (keyPressed == Settings.GetKeyBind("ShowSongTimerKey") && Settings.ReturnSettingValue("ShowSongTimerEnabled") == "on") {
-				MemHelpers.ShowSongTimer();
+			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") {
+				MemHelpers::ShowSongTimer();
 				std::cout << "Show Me Dat Timer Bruh" << std::endl;
 			}
 
-			else if (keyPressed == Settings.GetKeyBind("ForceReEnumerationKey") && Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
-				Enumeration.ForceEnumeration();
+			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
+				Enumeration::ForceEnumeration();
 				std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
 			}
 
-			else if (keyPressed == Settings.GetKeyBind("RainbowStringsKey") && Settings.ReturnSettingValue("RainbowStringsEnabled") == "on") {
-				ERMode.ToggleRainbowMode();
+			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") {
+				ERMode::ToggleRainbowMode();
 				std::cout << "Rainbows Are Pretty Cool" << std::endl;
 			}
-			else if (keyPressed == Settings.GetKeyBind("RemoveLyricsKey") && Settings.ReturnSettingValue("RemoveLyricsWhen") == "manual") {
+			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				RemoveLyrics = !RemoveLyrics;
 				if (RemoveLyrics)
 					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when on and "Karaoke For You" when off.
 				std::cout << "Karaoke For You" << std::endl;
 			}
 			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) { //CTRL + A
-				Settings.UpdateSettings();
-				std::cout << "Value: " << Settings.ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
+				Settings::UpdateSettings();
+				std::cout << "Value: " << Settings::ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
 				std::cout << "Reloaded settings" << std::endl;
 			}
-			else if (keyPressed == Settings.GetKeyBind("AddVolumeKey") && Settings.ReturnSettingValue("AddVolumeEnabled") == "on") {
-				float volume = MemHelpers.GetCurrentMusicVolume();
+			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
+				float volume = MemHelpers::GetCurrentMusicVolume();
 
 				if (volume < 100.0f) {
 					volume += 5.0f;
@@ -84,8 +84,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
 				//std::cout << volume << std::endl;
 			}
-			else if (keyPressed == Settings.GetKeyBind("DecreaseVolumeKey") && Settings.ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-				float volume = MemHelpers.GetCurrentMusicVolume();
+			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
+				float volume = MemHelpers::GetCurrentMusicVolume();
 
 				if (volume > 0.0f) {
 					volume -= 5.0f;
@@ -117,29 +117,29 @@ ColorMap GetCustomColors(int strIdx, bool CB) {
 	else
 		ext = "_N";
 
-	iniColor = Settings.GetCustomColors(CB)[strIdx];
+	iniColor = Settings::GetCustomColors(CB)[strIdx];
 	int H;
 	float S, L;
-	CollectColors.RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
+	CollectColors::RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
 
 	ColorMap customColors = {
-		{"Ambient" + ext, CollectColors.GetAmbientStringColor(H, CB)},
-		{"Disabled" + ext, CollectColors.GetDisabledStringColor(H, S, L, CB)},
+		{"Ambient" + ext, CollectColors::GetAmbientStringColor(H, CB)},
+		{"Disabled" + ext, CollectColors::GetDisabledStringColor(H, S, L, CB)},
 		{"Enabled" + ext, iniColor},
-		{"Glow" + ext, CollectColors.GetGlowStringColor(H)},
-		{"PegsTuning" + ext, CollectColors.GetGlowStringColor(H)},
-		{"PegsReset" + ext, CollectColors.GetPegResetColor()},
-		{"PegsSuccess" + ext, CollectColors.GetPegSuccessColor(CB)},
-		{"PegsInTune" + ext, CollectColors.GetPegInTuneColor(H, CB)},
-		{"PegsOutTune" + ext, CollectColors.GetPegOutTuneColor()},
-		{"TextIndicator" + ext, CollectColors.GetRegTextIndicatorColor(H, CB)},
-		{"ForkParticles" + ext, CollectColors.GetRegForkParticlesColor(H, CB)},
-		{"NotewayNormal" + ext, CollectColors.GetNotewayNormalColor(H, S, L, CB)},
-		{"NotewayAccent" + ext, CollectColors.GetNotewayAccentColor(H, CB)},
-		{"NotewayPreview" + ext, CollectColors.GetNotewayPreviewColor(H, CB)},
-		{"GC_Main" + ext, CollectColors.GetGuitarcadeMainColor(H, strIdx, CB)},
-		{"GC_Add" + ext, CollectColors.GetGuitarcadeAdditiveColor(H, strIdx, CB)},
-		{"GC_UI" + ext, CollectColors.GetGuitarcadeUIColor(H, strIdx, CB)}
+		{"Glow" + ext, CollectColors::GetGlowStringColor(H)},
+		{"PegsTuning" + ext, CollectColors::GetGlowStringColor(H)},
+		{"PegsReset" + ext, CollectColors::GetPegResetColor()},
+		{"PegsSuccess" + ext, CollectColors::GetPegSuccessColor(CB)},
+		{"PegsInTune" + ext, CollectColors::GetPegInTuneColor(H, CB)},
+		{"PegsOutTune" + ext, CollectColors::GetPegOutTuneColor()},
+		{"TextIndicator" + ext, CollectColors::GetRegTextIndicatorColor(H, CB)},
+		{"ForkParticles" + ext, CollectColors::GetRegForkParticlesColor(H, CB)},
+		{"NotewayNormal" + ext, CollectColors::GetNotewayNormalColor(H, S, L, CB)},
+		{"NotewayAccent" + ext, CollectColors::GetNotewayAccentColor(H, CB)},
+		{"NotewayPreview" + ext, CollectColors::GetNotewayPreviewColor(H, CB)},
+		{"GC_Main" + ext, CollectColors::GetGuitarcadeMainColor(H, strIdx, CB)},
+		{"GC_Add" + ext, CollectColors::GetGuitarcadeAdditiveColor(H, strIdx, CB)},
+		{"GC_UI" + ext, CollectColors::GetGuitarcadeUIColor(H, strIdx, CB)}
 	};
 
 	return customColors;
@@ -155,7 +155,7 @@ void SetCustomColors() {
 		customColorsFull.insert(normalColors.begin(), normalColors.end());
 		customColorsFull.insert(cbColors.begin(), cbColors.end());
 
-		ERMode.SetCustomColors(strIdx, customColorsFull);
+		ERMode::SetCustomColors(strIdx, customColorsFull);
 	}
 }
 
@@ -176,7 +176,7 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
 	for (int i = 0; i < 16;i++) {
-		RSColor iniColor = Settings.GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
+		RSColor iniColor = Settings::GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
@@ -230,9 +230,9 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	HRESULT hRet = oEndScene(pDevice);
-	DWORD dwReturnAddress = (DWORD)_ReturnAddress(); // EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
+	uint32_t returnAddress = (uint32_t)_ReturnAddress(); // EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
 
-	if (dwReturnAddress > Offsets.baseEnd)
+	if (returnAddress > Offsets::baseEnd)
 		return hRet;
 
 	static bool init = false; // Has this been ran before (AKA run only once, at startup)
@@ -271,7 +271,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		GenerateTexture(pDevice);
 
-		Settings.UpdateSettings();
+		Settings::UpdateSettings();
 	}
 
 	ImGui_ImplDX9_NewFrame();
@@ -281,42 +281,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (menuEnabled) {
 		ImGui::Begin("RS Modz");
-		/*
-		ImGui::SliderInt("Enumeration Interval", &EnumSliderVal, 100, 100000);
-		ImGui::InputInt("Curr Slide", &currStride);
-		ImGui::InputInt("Curr PrimCount", &currPrimCount);
-		ImGui::InputInt("Curr NumVertices", &currNumVertices);
-		ImGui::InputInt("Curr StartIndex", &currStartIndex);
-		ImGui::InputInt("Curr StarRegister", &currStartRegister);
-		ImGui::InputInt("Curr PrimType", &currPrimType);
-		ImGui::InputInt("Curr DeclType", &currDeclType);
-		ImGui::InputInt("Curr VectorCount", &currVectorCount);
-		ImGui::InputInt("Curr NumElements", &currNumElements);
-		ImGui::InputInt("Curr Idx", &currIdx);
-
-		if (enableColorBlindCheckboxGUI)
-			ImGui::Checkbox("Colorblind Mode", &cbEnabled);
-
-		if (ImGui::Button("Add"))
-			if (allMeshes.size() > 0)
-				removedMeshes.push_back(allMeshes[currIdx]);
-
-		ImGui::End();
-
-		ImGui::Begin("LOOSE CANNONS");
-		ImGui::ListBoxHeader("Removed models");
-		counter = 0;
-		for (auto mesh : removedMeshes) {
-			if (ImGui::Selectable(mesh.ToString().c_str(), false))
-				selectedIdx = counter;
-
-			counter++;
-		}
-
-		ImGui::ListBoxFooter();
-		if (ImGui::Button("Remove"))
-			removedMeshes.erase(removedMeshes.begin() + selectedIdx);
-		ImGui::End();*/
 
 		static bool CB = false;
 		static std::string previewValue = "Select a string";
@@ -330,7 +294,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 				if (is_selected) {
 					previewValue = std::to_string(selectedString);
 
-					RSColor currColors = Settings.GetCustomColors(CB)[selectedString];
+					RSColor currColors = Settings::GetCustomColors(CB)[selectedString];
 					strR = currColors.r * 255;
 					strG = currColors.g * 255;
 					strB = currColors.b * 255;
@@ -345,36 +309,14 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::Checkbox("CB", &CB);
 
 		if (ImGui::Button("Generate Texture")) {
-			Settings.SetStringColors(selectedString, Color(strR, strG, strB), CB);
+			Settings::SetStringColors(selectedString, Color(strR, strG, strB), CB);
 			generateTexture = true;
 		}
 
 		if (ImGui::Button("Restore default colors"))
-			ERMode.ResetString(selectedString);
+			ERMode::ResetString(selectedString);
 
 		ImGui::End();
-
-		/* This block is used to test colors and appropriate offsets for colors defined in gamecolormanager.flat
-
-		ImGui::Begin("Game colors testing");
-		ImGui::SliderInt("Index", &ERMode.currentOffsetIdx, 0, 16);
-
-		char label[10];
-		sprintf(label, "0x%03x", (ERMode.currentOffsetIdx * 0x18 + 0x350));
-
-		ImGui::LabelText("Offset:", label);
-
-		ImGui::SliderInt("Black (0) / white (1) ", &ERMode.currColor, 0, 1);
-
-		if (ImGui::Button("Save Defaults")) {
-			ERMode.saveDefaults = true;
-		}
-
-		if (ImGui::Button("Restore Defaults")) {
-			ERMode.restoreDefaults = true;
-		}
-
-		ImGui::End();*/
 	}
 
 	ImGui::EndFrame();
@@ -404,8 +346,8 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
-		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
+		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 		pDevice->SetTexture(1, ourTexture);
 	}
 
@@ -419,8 +361,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		Stream_Data->Release();
 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
-		Settings.UpdateSettings();
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
+		Settings::UpdateSettings();
 		GenerateTexture(pDevice);
 		std::cout << "Reloaded settings" << std::endl;
 	}
@@ -485,15 +427,15 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	// Mods
 
-	if (Settings.ReturnSettingValue("DiscoModeEnabled") == "on") {
+	if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
 		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
 		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
 
 		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 	}
 
-	if (Settings.ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers.IsExtendedRangeSong() || Settings.GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
-		MemHelpers.ToggleCB(MemHelpers.IsExtendedRangeSong());
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
+		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 		
 		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
@@ -528,16 +470,16 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		return D3D_OK;
 
 	if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) {
-		if (Settings.ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
+		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return D3D_OK;
-		if (Settings.ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
+		if (Settings::ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
 			return D3D_OK;
-		if (Settings.ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
+		if (Settings::ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
 			return D3D_OK;
-		if (RemoveLyrics && Settings.ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
+		if (RemoveLyrics && Settings::ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
-	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
+	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 			return D3D_OK;
@@ -579,7 +521,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 	}
 
-	else if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
+	else if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 		if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
@@ -663,44 +605,44 @@ HRESULT APIENTRY Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumb
 }
 
 void GUI() {
-	DWORD d3d9Base, adr, * vTable = NULL;
-	while ((d3d9Base = (DWORD)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
+	uint32_t d3d9Base, adr, * vTable = NULL;
+	while ((d3d9Base = (uint32_t)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
 		Sleep(500);
 
-	adr = MemUtil.FindPattern(d3d9Base, Offsets.d3dDevice_SearchLen, (PBYTE)Offsets.d3dDevice_Pattern, Offsets.d3dDevice_Mask) + 2; //and that's it... (:
+	adr = MemUtil::FindPattern<uint32_t>(d3d9Base, Offsets::d3dDevice_SearchLen, (PBYTE)Offsets::d3dDevice_Pattern, Offsets::d3dDevice_Mask) + 2; //and that's it... (:
 
 	if (!adr) {
 		std::cout << "Could not find D3D9 device pointer" << std::endl;
 		return;
 	}
 
-	if (!*(DWORD*)adr) { // Wing it
+	if (!*(uint32_t*)adr) { // Wing it
 		MessageBoxA(NULL, "Could not find DX9 device, please restart the game!", "Error", NULL);
 		return;
 	}
 
-	vTable = *(DWORD**)adr;
-	if (!vTable || vTable < (DWORD*)Offsets.baseHandle) {
+	vTable = *(uint32_t**)adr;
+	if (!vTable || vTable < (uint32_t*)Offsets::baseHandle) {
 		MessageBoxA(NULL, "Could not find D3D device's vTable address \n Restart the game and if you still get this error after a few tries, please report the error!", "Error", NULL);
 		return;
 	}
 
-	oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexDeclaration_Index], (PBYTE)Hook_SetVertexDeclaration, 7);
-	oSetVertexShader = (tSetVertexShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)Hook_SetVertexShader, 7);
-	oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)Hook_SetVertexShaderConstantF, 7);
-	oSetPixelShader = (tSetPixelShader)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
-	oSetStreamSource = (tSetStreamSource)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
+	oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexDeclaration_Index], (PBYTE)Hook_SetVertexDeclaration, 7);
+	oSetVertexShader = (tSetVertexShader)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)Hook_SetVertexShader, 7);
+	oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)Hook_SetVertexShaderConstantF, 7);
+	oSetPixelShader = (tSetPixelShader)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetPixelShader_Index], (PBYTE)Hook_SetPixelShader, 7);
+	oSetStreamSource = (tSetStreamSource)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)Hook_SetStreamSource, 7);
 
 	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset);
-	//oReset = (tReset)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction, but... it crashes instead
-	oEndScene = (tEndScene)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)Hook_EndScene, 7);
-	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)Hook_DIP, 5);
-	oDrawPrimitive = (tDrawPrimitive)MemUtil.TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)Hook_DP, 7);
+	//oReset = (tReset)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction, but... it crashes instead
+	oEndScene = (tEndScene)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)Hook_EndScene, 7);
+	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)Hook_DIP, 5);
+	oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)Hook_DP, 7);
 }
 
 void InitEngineFunctions() {
-	SetRTPCValue = (tSetRTPCValue)Offsets.func_SetRTPCValue;
-	GetRTPCValue = (tGetRTPCValue)Offsets.func_GetRTPCValue;
+	SetRTPCValue = (tSetRTPCValue)Offsets::func_SetRTPCValue;
+	GetRTPCValue = (tGetRTPCValue)Offsets::func_GetRTPCValue;
 }
 
 void AutoEnterGame() {	//very big brain || "Fork in the toaster"
@@ -710,11 +652,11 @@ void AutoEnterGame() {	//very big brain || "Fork in the toaster"
 }
 
 void UpdateSettings() { // Live updates from the INI
-	Settings.UpdateSettings();
+	Settings::UpdateSettings();
 	Sleep(500);
-	CustomSongTitles.LoadSettings();
+	CustomSongTitles::LoadSettings();
 	Sleep(500);
-	CustomSongTitles.HookSongListsKoko();
+	CustomSongTitles::HookSongListsKoko();
 	Sleep(500);
 }
 
@@ -735,12 +677,12 @@ unsigned WINAPI MainThread(void*) {
 		RSModsFileOutput.close();
 	}
 
-	Offsets.Initialize();
-	MemHelpers.PatchCDLCCheck();
+	Offsets::Initialize();
+	MemHelpers::PatchCDLCCheck();
 
 	UpdateSettings();
 
-	ERMode.Initialize();
+	ERMode::Initialize();
 
 	GUI();
 
@@ -749,56 +691,54 @@ unsigned WINAPI MainThread(void*) {
 	//GuitarSpeak.DrawTunerInGame();
 	while (!GameClosing) {
 		Sleep(250);
-		//std::cout << MemHelpers.GetCurrentMenu(false) << std::endl;
+		//std::cout << MemHelpers::GetCurrentMenu(false) << std::endl;
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
-			currentMenu = MemHelpers.GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
+			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
 
-
-			
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
 				LessonMode = false;
 
-			if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "startup")
+			if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup")
 				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
 
 
-			if (LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
+			if (LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
 				if (LoftOff)
-					MemHelpers.ToggleLoft();
+					MemHelpers::ToggleLoft();
 				LoftOff = false;
 				GreenScreenWall = true;
 			}
 
-			if (!LoftOff && !LessonMode && Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "startup") { // Turn the loft off on startup
-				MemHelpers.ToggleLoft();
+			if (!LoftOff && !LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "startup") { // Turn the loft off on startup
+				MemHelpers::ToggleLoft();
 				LoftOff = true;
 				GreenScreenWall = false;
 			}
-			if (!SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Turn the skyline off on startup
+			if (!SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Turn the skyline off on startup
 				toggleSkyline = true;
 			}
 
-			if (!RemoveLyrics && Settings.ReturnSettingValue("RemoveLyricsWhen") == "startup")
+			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
 			if (std::find(std::begin(songModes), std::end(songModes), currentMenu.c_str()) != std::end(songModes)) // If User Is Entering Song
 			{
 				GuitarSpeakPresent = false;
 
-				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = true;
 
-				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
+				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
 				{
 					if (!LoftOff)
-						MemHelpers.ToggleLoft();
+						MemHelpers::ToggleLoft();
 					LoftOff = true;
 				}
 
-				if (Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") // Turn the skyline off when entering a song
+				if (Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") // Turn the skyline off when entering a song
 				{
 					if (!SkylineOff)
 						toggleSkyline = true;
@@ -807,12 +747,12 @@ unsigned WINAPI MainThread(void*) {
 			}
 			else // If User Is Exiting Song / In A Menu
 			{
-				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings.ReturnSettingValue("RemoveHeadstockWhen") == "song")
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = false;
 
-				if (Settings.ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings.ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
+				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
 					if (LoftOff) {
-						MemHelpers.ToggleLoft();
+						MemHelpers::ToggleLoft();
 						LoftOff = false;
 					}
 					if (!LessonMode)
@@ -820,21 +760,21 @@ unsigned WINAPI MainThread(void*) {
 						GreenScreenWall = false;
 					}
 				}
-				if (SkylineOff && Settings.ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings.ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline back on after exiting a song
+				if (SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline back on after exiting a song
 					toggleSkyline = true;
 					DrawSkylineInMenu = true;
 				}
 
-				if (!GuitarSpeakPresent && Settings.ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
+				if (!GuitarSpeakPresent && Settings::ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
 					GuitarSpeakPresent = true;
-					if (!GuitarSpeak.TimerTick()) // If we are in a menu where we don't want to read bad values
+					if (!GuitarSpeak::TimerTick()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;
 				}
 
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 
 
-				if (Settings.ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)) || currentMenu.c_str() == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus)) || currentMenu.c_str() == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 
 			}
@@ -846,23 +786,23 @@ unsigned WINAPI MainThread(void*) {
 			previousMenu = currentMenu;
 
 			if (enableColorBlindCheckboxGUI)
-				MemHelpers.ToggleCB(cbEnabled);
+				MemHelpers::ToggleCB(cbEnabled);
 
-			if (ERMode.IsRainbowEnabled())
-				ERMode.DoRainbow();
+			if (ERMode::IsRainbowEnabled())
+				ERMode::DoRainbow();
 			else
-				ERMode.Toggle7StringMode();
+				ERMode::Toggle7StringMode();
 		}
 		else // Game Hasn't Loaded Yet
 		{
-			currentMenu = MemHelpers.GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
+			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
 			if (currentMenu == "MainMenu") { // Yay We Loaded :P
 				GameLoaded = true;
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
 			}
 
-			if (Settings.ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
+			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
 		}
 	}
@@ -876,7 +816,7 @@ void Initialize(void) {
 	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
@@ -886,11 +826,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved) {
 		}
 		DisableThreadLibraryCalls(hModule);
 
-		InitProxy();
+		D3DX9_42::InitProxy();
 		Initialize();
 		return TRUE;
 	case DLL_PROCESS_DETACH:
-		ShutdownProxy();
+		D3DX9_42::ShutdownProxy();
 		ImGui_ImplWin32_Shutdown();
 		ImGui_ImplDX9_Shutdown();
 		ImGui::DestroyContext();

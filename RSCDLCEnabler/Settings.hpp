@@ -1,15 +1,13 @@
 #pragma once
-#include "Settings.h"
+#include "Settings.hpp"
 #include "SimpleIni.h"
 #include "windows.h"
 #include <iostream>
-#include "Structs.h"
+#include "Structs.hpp"
 #include <vector>
 
-class cSettings
-{
-public:
-	cSettings(); // Default Settings
+namespace Settings {
+	void Initialize(); // Default Settings
 
 	// Read INI
 	std::vector<std::string> GetCustomSongTitles();
@@ -29,27 +27,24 @@ public:
 	void SetStringColors(int strIndex, Color c, bool CB);
 	void UpdateSettings();
 
-private:
 	// INI Setting Maps
-	std::map<std::string, std::string> keyBinds;
-	std::map<std::string, std::string> modSettings;
-	std::map<std::string, int> customSettings;
+	inline std::map<std::string, std::string> keyBinds;
+	inline std::map<std::string, std::string> modSettings;
+	inline std::map<std::string, int> customSettings;
 
 	// Misc 
-	std::map<std::string, int> keyMap;
+	inline std::map<std::string, int> keyMap;
 	
 	Color ConvertHexToColor(std::string hexStr);
 
-	std::vector<Color> customStringColorsNormal;
-	std::vector<Color> customStringColorsCB;
+	inline std::vector<Color> customStringColorsNormal;
+	inline std::vector<Color> customStringColorsCB;
 
-	std::vector<std::string> defaultStrColors = {
+	inline std::vector<std::string> defaultStrColors = {
 		"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
 	};
 
-	std::vector<std::string> defaultStrColorsCB = {
+	inline std::vector<std::string> defaultStrColorsCB = {
 		"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
 	};
 };
-
-extern cSettings Settings;

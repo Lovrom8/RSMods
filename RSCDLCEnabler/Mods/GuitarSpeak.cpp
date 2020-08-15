@@ -1,14 +1,12 @@
-#include "GuitarSpeak.h"
-
-cGuitarSpeak GuitarSpeak;
+#include "GuitarSpeak.hpp"
 
 /*
 Modified / Translated from the Visual Basic code provided by UKLooney
 Open source here: https://cdn.discordapp.com/attachments/711634414240530462/735574443035721798/G2RS_v0.3_source.zip
 */
 
-byte cGuitarSpeak::GetCurrentNote() {
-	uintptr_t noteAdr = MemUtil.FindDMAAddy(Offsets.ptr_guitarSpeak, Offsets.ptr_guitarSpeakOffets); // Copied & Modified from GetCurrentMenu()
+byte GuitarSpeak::GetCurrentNote() {
+	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets); // Copied & Modified from GetCurrentMenu()
 
 	if (!noteAdr)
 		return -1;
@@ -16,7 +14,7 @@ byte cGuitarSpeak::GetCurrentNote() {
 	return *(byte*)noteAdr;
 }
 
-void cGuitarSpeak::DrawTunerInGame() {
+void GuitarSpeak::DrawTunerInGame() {
 	HDC RocksmithHDC = GetDC(FindWindow(NULL, L"Rocksmith 2014"));
 
 	RECT* TextRectangle = new RECT();
@@ -36,7 +34,7 @@ void cGuitarSpeak::DrawTunerInGame() {
 		if (currentNoteImport >= 96)
 		{
 			Sleep(timer);
-			cGuitarSpeak::DrawTunerInGame();
+			GuitarSpeak::DrawTunerInGame();
 		}
 
 		int octaveNumber = (currentNoteImport / 12) - 1;
@@ -53,24 +51,24 @@ void cGuitarSpeak::DrawTunerInGame() {
 }
 
 
-bool cGuitarSpeak::TimerTick() {
+bool GuitarSpeak::TimerTick() {
 
 	bool debugMode = true;
 		
-	strKeyList[Settings.GetModSetting("GuitarSpeakDelete")] = (std::string)"DELETE";
-	strKeyList[Settings.GetModSetting("GuitarSpeakSpace")] = (std::string)"SPACE";
-	strKeyList[Settings.GetModSetting("GuitarSpeakEnter")] = (std::string)"ENTER";
-	strKeyList[Settings.GetModSetting("GuitarSpeakTab")] = (std::string)"TAB";
-	strKeyList[Settings.GetModSetting("GuitarSpeakPageUp")] = (std::string)"PGUP";
-	strKeyList[Settings.GetModSetting("GuitarSpeakPageDown")] = (std::string)"PGDN";
-	strKeyList[Settings.GetModSetting("GuitarSpeakUpArrow")] = (std::string)"UP";
-	strKeyList[Settings.GetModSetting("GuitarSpeakDownArrow")] = (std::string)"DOWN";
-	strKeyList[Settings.GetModSetting("GuitarSpeakEscape")] = (std::string)"ESCAPE";
-	strKeyList[Settings.GetModSetting("GuitarSpeakClose")] = (std::string)"CLOSE";
-	strKeyList[Settings.GetModSetting("GuitarSpeakOBracket")] = (std::string)"OBRACKET";
-	strKeyList[Settings.GetModSetting("GuitarSpeakCBracket")] = (std::string)"CBRACKET";
-	strKeyList[Settings.GetModSetting("GuitarSpeakTildea")] = (std::string)"TILDEA";
-	strKeyList[Settings.GetModSetting("GuitarSpeakForSlash")] = (std::string)"FORSLASH";
+	strKeyList[Settings::GetModSetting("GuitarSpeakDelete")] = "DELETE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakSpace")] = "SPACE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakEnter")] = "ENTER";
+	strKeyList[Settings::GetModSetting("GuitarSpeakTab")] = "TAB";
+	strKeyList[Settings::GetModSetting("GuitarSpeakPageUp")] = "PGUP";
+	strKeyList[Settings::GetModSetting("GuitarSpeakPageDown")] = "PGDN";
+	strKeyList[Settings::GetModSetting("GuitarSpeakUpArrow")] = "UP";
+	strKeyList[Settings::GetModSetting("GuitarSpeakDownArrow")] = "DOWN";
+	strKeyList[Settings::GetModSetting("GuitarSpeakEscape")] = "ESCAPE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakClose")] = "CLOSE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakOBracket")] = "OBRACKET";
+	strKeyList[Settings::GetModSetting("GuitarSpeakCBracket")] = "CBRACKET";
+	strKeyList[Settings::GetModSetting("GuitarSpeakTildea")] = "TILDEA";
+	strKeyList[Settings::GetModSetting("GuitarSpeakForSlash")] = "FORSLASH";
 
 
 
@@ -79,10 +77,10 @@ bool cGuitarSpeak::TimerTick() {
 		/*if (debugMode)
 			std::cout << "Tick" << std::endl;*/
 
-		std::string currentMenu = MemHelpers.GetCurrentMenu();
+		std::string currentMenu = MemHelpers::GetCurrentMenu();
 
 		
-		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings.ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
 			std::cout << "Entered Tuning Menu!" << std::endl;
 			return false;
 		}
@@ -249,7 +247,7 @@ bool cGuitarSpeak::TimerTick() {
 }
 std::string* noteNames = new std::string[12]{ "A", "Bb", "B", "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#" };
 
-void cGuitarSpeak::ForceNewSettings(std::string noteName, std::string keyPress) {
+void GuitarSpeak::ForceNewSettings(std::string noteName, std::string keyPress) {
 	for (int n = 0; n < 12; n++) {
 		if (noteName == noteNames[n]) { // If the noteName variable sent is equal to an actual note name.
 			strKeyList[n] = keyPress;

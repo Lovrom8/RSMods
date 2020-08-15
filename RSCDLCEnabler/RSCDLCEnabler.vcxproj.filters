@@ -33,9 +33,6 @@
     <ClCompile Include="Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Offsets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,29 +78,11 @@
     <ClCompile Include="Mods\CollectColors.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="MemUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3dx9_42.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Settings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MemUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Offsets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="detours.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImGUI\imgui_impl_dx9.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
@@ -161,41 +140,59 @@
     <ClInclude Include="DirectX\d3dx9core.h">
       <Filter>Header Files\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MemHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleIni.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="imgui_includeMe.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\ExtendedRangeMode.h">
+    <ClInclude Include="MemUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSpeak.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\CollectColors.h">
+    <ClInclude Include="D3D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DX9_42.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemHelpers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Offsets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Structs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CollectColors.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\CustomSongTitles.h">
+    <ClInclude Include="Mods\Enumeration.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\GuitarSkeletons.h">
+    <ClInclude Include="Mods\GuitarSkeletons.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\GuitarSpeak.h">
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\Enumeration.h">
+    <ClInclude Include="detours.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomSongTitles.hpp">
       <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleIni.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

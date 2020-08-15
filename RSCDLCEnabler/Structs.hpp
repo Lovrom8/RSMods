@@ -70,7 +70,9 @@ struct Color {
 	float b;
 
 	Color() {
-
+		r = 1.0f;
+		g = 0.0f;
+		b = 0.0f;
 	}
 
 	Color(int R, int G, int B) {
@@ -113,7 +115,9 @@ struct xyzPosition {
 	double z;
 
 	xyzPosition() {
-
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
 	}
 
 	xyzPosition(double X, double Y, double Z) {

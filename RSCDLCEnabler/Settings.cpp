@@ -1,11 +1,8 @@
-#include "Settings.h"
-#pragma warning(disable: 4996) // strcpy potentially unsafe
+#include "Settings.hpp"
 
-cSettings Settings;
-
-cSettings::cSettings()
+void Settings::Initialize()
 {
-	cSettings::modSettings = {  //default values incase the INI doesn't load
+	modSettings = {  //default values incase the INI doesn't load
 	{"VolumeUpKey",  "O"},
 	{"VolumeDownKey", "I"},
 	{"CustomSongListTitles", "K"},
@@ -60,7 +57,7 @@ cSettings::cSettings()
 		{"GuitarSpeakForSlash", 0}
 	};
 
-	cSettings::keyMap = { //talk about taking the easy way out ;)
+	keyMap = { //talk about taking the easy way out ;)
 		{ "VK_LBUTTON" , 0x01 },
 		{ "VK_RBUTTON" , 0x02 },
 		{ "VK_CANCEL" , 0x03 },
@@ -242,7 +239,7 @@ cSettings::cSettings()
 
 // Read INI
 
-std::vector<std::string> cSettings::GetCustomSongTitles() {
+std::vector<std::string> Settings::GetCustomSongTitles() {
 	std::vector<std::string> retList(6);
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
@@ -257,14 +254,14 @@ std::vector<std::string> cSettings::GetCustomSongTitles() {
 	return retList;
 }
 
-void cSettings::ReadKeyBinds() {
+void Settings::ReadKeyBinds() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
 		std::cout << "Error reading saved settings" << std::endl;
 		return;
 	}
 
-	cSettings::modSettings = {
+	modSettings = {
 		// Mods
 			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
 			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
@@ -278,14 +275,14 @@ void cSettings::ReadKeyBinds() {
 	};
 }
 
-void cSettings::ReadModSettings() {
+void Settings::ReadModSettings() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
 		std::cout << "Error reading saved settings" << std::endl;
 		return;
 	}
 
-	cSettings::customSettings = {
+	customSettings = {
 		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
@@ -330,7 +327,7 @@ void cSettings::ReadModSettings() {
 	modSettings["RemoveHeadstockWhen"] = reader.GetValue("Toggle Switches", "RemoveHeadstockWhen", "song");
 }
 
-void cSettings::ReadStringColors() {
+void Settings::ReadStringColors() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return;
@@ -357,27 +354,25 @@ void cSettings::ReadStringColors() {
 }
 
 
-
 // Return INI Settings
 
-unsigned int cSettings::GetKeyBind(std::string name) {
+unsigned int Settings::GetKeyBind(std::string name) {
 	return GetVKCodeForString(modSettings[name]);
 }
 
-int cSettings::GetModSetting(std::string name) {
+int Settings::GetModSetting(std::string name) {
 	return customSettings[name];
 }
 
-std::string cSettings::ReturnSettingValue(std::string name) {
+std::string Settings::ReturnSettingValue(std::string name) {
 	return modSettings[name];
 }
 
 
 
-	
 // Functions
 
-int cSettings::GetVKCodeForString(std::string vkString) {
+int Settings::GetVKCodeForString(std::string vkString) {
 	return keyMap[vkString];
 }
 
@@ -387,21 +382,21 @@ float cSettings::GetStringColor(std::string string) {
 }
 */
 
-std::vector<Color> cSettings::GetCustomColors(bool CB) {
+std::vector<Color> Settings::GetCustomColors(bool CB) {
 	if (CB)
 		return customStringColorsCB;
 	else
 		return customStringColorsNormal;
 }
 
-void cSettings::SetStringColors(int strIndex, Color c, bool CB) {
+void Settings::SetStringColors(int strIndex, Color c, bool CB) {
 	if (CB)
 		customStringColorsCB[strIndex] = c;
 	else
 		customStringColorsNormal[strIndex] = c;
 }
 
-void cSettings::UpdateSettings() {
+void Settings::UpdateSettings() {
 	ReadKeyBinds();
 	ReadModSettings();
 	ReadStringColors();
@@ -410,7 +405,7 @@ void cSettings::UpdateSettings() {
 
 // Misc
 
-Color cSettings::ConvertHexToColor(std::string hexStr) {
+Color Settings::ConvertHexToColor(std::string hexStr) {
 	int r, g, b;
 	sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
 

@@ -1,6 +1,4 @@
-#include "CollectColors.h"
-
-cCollectColors CollectColors;
+#include "CollectColors.hpp"
 
 /*
 This is probably pretty janky, but it's based on the research I did below
@@ -9,7 +7,7 @@ https://docs.google.com/spreadsheets/d/1X3UjY68Z5oOuZpV_UpckOy-G-XZe7lWaskc31C7F
 Feel free to modify this pile of shit, I don't know how we wanted it formatted.
 */
 
-Color cCollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 4;
 	else
@@ -21,7 +19,7 @@ Color cCollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode
 	return GetColor();
 }
 
-Color cCollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
+Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		S = stringSaturation - .144;
 		L = stringLightness / 3.136;
@@ -36,7 +34,7 @@ Color cCollectColors::GetDisabledStringColor(int stringHue, float stringSaturati
 	return GetColor();
 }
 
-Color cCollectColors::GetGlowStringColor(int stringHue) {
+Color CollectColors::GetGlowStringColor(int stringHue) {
 	H = stringHue - 4;
 	S = 1.0f;
 	L = 0.5f;
@@ -44,7 +42,7 @@ Color cCollectColors::GetGlowStringColor(int stringHue) {
 	return GetColor();
 }
 
-Color cCollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue - 4;
 		L = 0.3385f;
@@ -59,7 +57,7 @@ Color cCollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
-Color cCollectColors::GetPegResetColor() {
+Color CollectColors::GetPegResetColor() {
 	H = 0.0f;
 	S = 0.0f;
 	L = 0.0f;
@@ -67,7 +65,7 @@ Color cCollectColors::GetPegResetColor() {
 	return GetColor();
 }
 
-Color cCollectColors::GetPegSuccessColor(bool isColorBlindMode) {
+Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		L = 0.0f;
 	else
@@ -78,7 +76,7 @@ Color cCollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 	return GetColor();
 }
 
-Color cCollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 4;
 	else
@@ -90,7 +88,7 @@ Color cCollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
-Color cCollectColors::GetPegOutTuneColor() {
+Color CollectColors::GetPegOutTuneColor() {
 	H = 0.0f;
 	S = 0.0f;
 	L = 1.0f;
@@ -98,7 +96,7 @@ Color cCollectColors::GetPegOutTuneColor() {
 	return GetColor();
 }
 
-Color cCollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 3;
 		L = 0.625f;
@@ -113,7 +111,7 @@ Color cCollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindM
 	return GetColor();
 }
 
-Color cCollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		L = 0.625f;
 	else
@@ -125,7 +123,7 @@ Color cCollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindM
 	return GetColor();
 }
 
-Color cCollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
+Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 5;
 		S = 1.0f;
@@ -140,7 +138,7 @@ Color cCollectColors::GetNotewayNormalColor(int stringHue, float stringSaturatio
 	return GetColor();
 }
 
-Color cCollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 3;
 		S = 0.909f;
@@ -155,7 +153,7 @@ Color cCollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode
 	return GetColor();
 }
 
-Color cCollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
+Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue - 1;
 		S = 0.219f;
@@ -170,7 +168,7 @@ Color cCollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMod
 	return GetColor();
 }
 
-Color cCollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) { //TODO: finish the rest
+Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) { //TODO: finish the rest
 	if (!isColorBlindMode)
 		H = stringHue + 12;
 	else
@@ -188,7 +186,7 @@ Color cCollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bo
 	return GetColor();
 }
 
-Color cCollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
+Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
 	else
@@ -206,7 +204,7 @@ Color cCollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber
 	return GetColor();
 }
 
-Color cCollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
+Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
 	else
@@ -226,7 +224,7 @@ Color cCollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool
 
 // This section about Min, & Max, was totally not stolen off StackOverflow :)
 
-float cCollectColors::Min(float fR, float fG, float fB)
+float CollectColors::Min(float fR, float fG, float fB)
 {
 	float fMin = fR;
 	if (fG < fMin)
@@ -241,7 +239,7 @@ float cCollectColors::Min(float fR, float fG, float fB)
 }
 
 
-float cCollectColors::Max(float fR, float fG, float fB)
+float CollectColors::Max(float fR, float fG, float fB)
 {
 	float fMax = fR;
 	if (fG > fMax)
@@ -256,7 +254,7 @@ float cCollectColors::Max(float fR, float fG, float fB)
 }
 
 // From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms - so not totally stolen :P 
-void cCollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
+void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
 	float min = Min(R, G, B);
 	float max = Max(R, G, B);
 	float d, h;
@@ -284,7 +282,7 @@ void cCollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float&
 	}
 }
 
-void cCollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
+void CollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
 	float v, min, sv, fract, vsf, mid1, mid2;
 	int sextant;
 
@@ -318,12 +316,12 @@ void cCollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, floa
 	}
 }
 
-Color cCollectColors::GetColor() {
+Color CollectColors::GetColor() {
 	HSL2RGB(H, S, L, R, G, B);
 	return Color(R, G, B);
 }
 
-void cCollectColors::SetColors(RSColor color) {
+void CollectColors::SetColors(RSColor color) {
 	R = color.r;
 	G = color.g;
 	B = color.b;

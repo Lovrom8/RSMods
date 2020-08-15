@@ -1,27 +1,16 @@
-#include "ExtendedRangeMode.h"
-
-cERMode ERMode;
-
-// I couldn't get it to work - it returns a valid pointer, but not one that would change the colors
-/*uintptr_t GetStringColor(uintptr_t stringnum, int state) {
-	uintptr_t pThisAddr = Offsets.ptr_stringColor;
-	uintptr_t pThisPtr = MemUtil.ReadPtr(pThisAddr);
-	uintptr_t pColor = MemUtil.ReadPtr(pThisPtr + state + (stringnum * 0x4));
-
-	return pColor;
-}*/
+#include "ExtendedRangeMode.hpp"
 
 uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	uintptr_t edx = stringnum;
 	uintptr_t eax = 0;
-	uintptr_t magic1 = Offsets.ptr_stringColor;
+	uintptr_t magic1 = Offsets::ptr_stringColor;
 
-	uintptr_t ecx = MemUtil.ReadPtr(magic1);
+	uintptr_t ecx = MemUtil::ReadPtr(magic1);
 
 	if (!ecx)
 		return NULL;
 
-	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + 0x348);
+	eax = MemUtil::ReadPtr(ecx + eax * 0x4 + 0x348);
 
 	if (eax >= 2) {
 		return NULL;
@@ -30,18 +19,18 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	eax = eax * 0xA8;
 	eax += edx;
 
-	eax = MemUtil.ReadPtr(ecx + eax * 0x4 + state);
+	eax = MemUtil::ReadPtr(ecx + eax * 0x4 + state);
 
 	return eax;
 }
 
-void cERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
+void ERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
 	strings.clear();
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
 
-void cERMode::SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
+void ERMode::SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		if (strings[strIndex] == NULL)
 			return;
@@ -49,18 +38,18 @@ void cERMode::SetColors(std::vector<uintptr_t> strings, std::vector<Color> color
 	}
 }
 
-void cERMode::Initialize() {
+void ERMode::Initialize() {
 	std::map<std::string, RSColor> emptyMap;
 
 	for (int str = 0; str < 6; str++)
 		customColors.push_back(emptyMap);
 }
 
-void cERMode::SetCustomColors(int strIdx, ColorMap customColorMap) {
+void ERMode::SetCustomColors(int strIdx, ColorMap customColorMap) {
 	customColors[strIdx] = customColorMap;
 }
 
-void cERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
+void ERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		if (strings[strIndex] == NULL)
 			return;
@@ -71,7 +60,7 @@ void cERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 
 std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 
-void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
+void ERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 	std::vector<uintptr_t> stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsGlow, Glow);
@@ -84,12 +73,12 @@ void cERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 	//*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
 	*(Color*)stringsEnabled[strIndex] = oldEnabled[strIndex];
 
-	Settings.SetStringColors(strIndex, oldGlow[strIndex], false);
+	Settings::SetStringColors(strIndex, oldGlow[strIndex], false);
 }
 
 std::vector<std::vector<Color>> defaultColors;
 
-void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and load settings here for matching string colors
+void ERMode::Toggle7StringMode() {
 	static bool colorsSaved = false;
 	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
@@ -106,8 +95,8 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
 
-	if (MemHelpers.IsExtendedRangeSong()) {
-		if (Settings.GetModSetting("CustomStringColors") == 1) { //Zag's colors
+	if (MemHelpers::IsExtendedRangeSong()) {
+		if (Settings::GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
 			//SetColors(stringsNormal, colorsNormal);
 
@@ -146,10 +135,10 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
 			//SetColors(stringsBodyPrev, colorsBodyPrev);
 		}
-		else if (Settings.GetModSetting("CustomStringColors") == 0) { // Default colors 
+		else if (Settings::GetModSetting("CustomStringColors") == 0) { // Default colors 
 			//do we even need to do anything in this case?
 		}
-		else if (Settings.GetModSetting("CustomStringColors") == 2) { // CB user-defined colors
+		else if (Settings::GetModSetting("CustomStringColors") == 2) { // CB user-defined colors
 			SetColors(stringsEnabled, "Enabled_CB");
 			SetColors(stringsGlow, "Glow_CB");
 			SetColors(stringsDisabled, "Disabled_CB");
@@ -163,7 +152,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 	else {
 
-		if (!colorsSaved && MemHelpers.GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
+		if (!colorsSaved && MemHelpers::GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
 			for (int i = 0; i < 6; i++) {
 				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 				oldEnabled.push_back(*(Color*)stringsEnabled[i]);
@@ -173,7 +162,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 			colorsSaved = true;
 		}
 
-		if (Settings.GetModSetting("CustomStringColors") == 2) { // User defined colors
+		if (Settings::GetModSetting("CustomStringColors") == 2) { // User defined colors
 			SetColors(stringsEnabled, "Enabled_N");
 			SetColors(stringsGlow, "Glow_N");
 			SetColors(stringsDisabled, "Disabled_N");
@@ -187,7 +176,7 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 
 	//NOTE: this overrides string colors, no matter if ER song or not
-	if (Settings.GetModSetting("CustomStringColors") == 3) { // If you want the color testing menu to work
+	if (Settings::GetModSetting("CustomStringColors") == 3) { // If you want the color testing menu to work
 		if (saveDefaults) {
 			defaultColors.clear();
 			for (int idx = 0; idx < 17;idx++) {
@@ -229,15 +218,15 @@ void cERMode::Toggle7StringMode() { //TODO: use the GUI to make DDS files and lo
 	}
 }
 
-void cERMode::ToggleRainbowMode() {
+void ERMode::ToggleRainbowMode() {
 	RainbowEnabled = !RainbowEnabled;
 }
 
-bool cERMode::IsRainbowEnabled() {
+bool ERMode::IsRainbowEnabled() {
 	return RainbowEnabled;
 }
 
-void cERMode::DoRainbow() {
+void ERMode::DoRainbow() {
 	if (!RainbowEnabled)
 		return;
 

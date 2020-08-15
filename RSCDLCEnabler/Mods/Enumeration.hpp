@@ -1,15 +1,10 @@
-#include "../Offsets.h"
-#include "../MemUtil.h"
+#include "../Offsets.hpp"
+#include "../MemUtil.hpp"
 #include <vector>
 #include <filesystem>
 
-class cEnum {
-public:
+namespace Enumeration {
 	void ForceEnumeration();
 	int GetCurrentDLCCount();
-
-private:
 	int GetFileCount(std::filesystem::path path);
 };
-
-extern cEnum Enumeration;

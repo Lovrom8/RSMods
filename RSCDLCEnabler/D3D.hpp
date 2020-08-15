@@ -270,63 +270,63 @@ std::vector<ThiccMesh> removedMeshes;
 #define SLIDERS_AND_BUTTONS (Stride == 8 && PrimCount == 20 && NumVertices == 16)
 
 std::string tuningMenus[17] = { // These are all the menus where you need to tune
-	(std::string)"SelectionListDialog",
-	(std::string)"LearnASong_PreSongTuner",
-	(std::string)"LearnASong_PreSongTunerMP",
-	(std::string)"LearnASong_SongOptions",
-	(std::string)"NonStopPlay_PreSongTuner",
-	(std::string)"NonStopPlay_PreSongTunerMP",
-	(std::string)"ScoreAttack_PreSongTuner",
-	(std::string)"SessionMode_PreSMTunerMP",
-	(std::string)"SessionMode_PreSMTuner",
-	(std::string)"UIMenu_Tuner",
-	(std::string)"UIMenu_TunerMP",
-	(std::string)"Guitarcade_Tuner",
-	(std::string)"Tuner",
-	(std::string)"Duet_PreSongTuner",
-	(std::string)"H2H_PreSongTuner",
-	(std::string)"GETuner",
-	(std::string)"PreGame_GETuner"
+	"SelectionListDialog",
+	"LearnASong_PreSongTuner",
+	"LearnASong_PreSongTunerMP",
+	"LearnASong_SongOptions",
+	"NonStopPlay_PreSongTuner",
+	"NonStopPlay_PreSongTunerMP",
+	"ScoreAttack_PreSongTuner",
+	"SessionMode_PreSMTunerMP",
+	"SessionMode_PreSMTuner",
+	"UIMenu_Tuner",
+	"UIMenu_TunerMP",
+	"Guitarcade_Tuner",
+	"Tuner",
+	"Duet_PreSongTuner",
+	"H2H_PreSongTuner",
+	"GETuner",
+	"PreGame_GETuner"
 };
 
 std::string songModes[8] = { // These are all the menus where you would play guitar games.
-	(std::string)"LearnASong_Game",
-	(std::string)"NonStopPlay_Game",
-	(std::string)"ScoreAttack_Game",
-	(std::string)"LearnASong_Pause",
-	(std::string)"NonStopPlay_Pause",
-	(std::string)"ScoreAttack_Pause",
+	"LearnASong_Game",
+	"NonStopPlay_Game",
+	"ScoreAttack_Game",
+	"LearnASong_Pause",
+	"NonStopPlay_Pause",
+	"ScoreAttack_Pause",
 };
 
 std::string lessonModes[2] = { // These are the Guided Experience / Lessons modes.
-	(std::string)"GuidedExperience_Game",
-	(std::string)"GuidedExperience_Pause"
+	"GuidedExperience_Game",
+	"GuidedExperience_Pause"
 };
 
 std::string dontAutoEnter[16] = {
 	// First time Player
-	(std::string)"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
-	(std::string)"PlayedRS1Select", // Did you play the original Rocksmith?
-	(std::string)"ExperienceSelect", // How good at guitar do you think you are?
-	(std::string)"PathSelect", // What path do you want to play? (Lead, Rhythm, Bass)
-	(std::string)"HandSelect", // Are you left handed or right handed? (Left, Right)
-	(std::string)"HeadstockSelect", // Select between (3+3 or 6-inline) (2+2 or 4-inline).
-	(std::string)"FE_InputSelect", // What cable method do you have? (RTC, Mic, Disconnected)
-	(std::string)"FECalibrationMeter", // First time calibrating.
-	(std::string)"VideoPlayer", // Intro videos on how to calibrate, tune, play the game.
-	(std::string)"FETuner", // First time tuning.
-	(std::string)"FirstEncounter_Game", // Intro to game, teaches basic UI elements.
-	(std::string)"SelectionListDialog", // Occasional Yes/ No Prompts.
+	"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
+	"PlayedRS1Select", // Did you play the original Rocksmith?
+	"ExperienceSelect", // How good at guitar do you think you are?
+	"PathSelect", // What path do you want to play? (Lead, Rhythm, Bass)
+	"HandSelect", // Are you left handed or right handed? (Left, Right)
+	"HeadstockSelect", // Select between (3+3 or 6-inline) (2+2 or 4-inline).
+	"FE_InputSelect", // What cable method do you have? (RTC, Mic, Disconnected)
+	"FECalibrationMeter", // First time calibrating.
+	"VideoPlayer", // Intro videos on how to calibrate, tune, play the game.
+	"FETuner", // First time tuning.
+	"FirstEncounter_Game", // Intro to game, teaches basic UI elements.
+	"SelectionListDialog", // Occasional Yes/ No Prompts.
 
 	// Played RS1 before
-	(std::string)"RefresherSelect", // User has played Rocksmith before, but do they need some touchup on their knowledge.
+	"RefresherSelect", // User has played Rocksmith before, but do they need some touchup on their knowledge.
 
 	// Disconnected Mode
-	(std::string)"ImageDialog", // Disconnected Mode Pictures.
+	"ImageDialog", // Disconnected Mode Pictures.
 
 	// Uplay section
-	(std::string)"UplayLoginDialog", // User needs to login to uPlay.
-	(std::string)"UplayAccountCreationDialog" // User needs to create a uPlay account.
+	"UplayLoginDialog", // User needs to login to uPlay.
+	"UplayAccountCreationDialog" // User needs to create a uPlay account.
 };
 
 /*------------------------ CRC Calculation --------------------------------------- */
@@ -373,4 +373,30 @@ bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, DWORD& crc) {
 	return false;
 }
 
-/*-------------------------------------------------------------------------*/
+/*--------------------------- LOG -----------------------------*/
+
+char dlldir[320];
+char* GetDirFile(char* name)
+{
+	static char pldir[320];
+	strcpy_s(pldir, dlldir);
+	strcat_s(pldir, name);
+	return pldir;
+}
+
+void Log(const char* fmt, ...)
+{
+	using namespace std;
+	if (!fmt)	return;
+
+	char		text[4096];
+	va_list		ap;
+	va_start(ap, fmt);
+	vsprintf_s(text, fmt, ap);
+	va_end(ap);
+
+	ofstream logfile;
+	logfile.open(GetDirFile((PCHAR)"log.txt"), ios::app);
+	if (logfile.is_open() && text)	logfile << text << endl;
+	logfile.close();
+}

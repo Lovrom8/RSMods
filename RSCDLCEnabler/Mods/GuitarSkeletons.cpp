@@ -1,6 +1,4 @@
-#include "GuitarSkeletons.h"
-
-cGuitarSkeletons GuitarSkeletons;
+#include "GuitarSkeletons.hpp"
 
 /*
 From Rocksmith 2014's Cache.psarc\cache7.7z\manifests\ folder.
@@ -14,13 +12,13 @@ Y is the distance from around the 11th fret. Normally - means right handed (move
 Z is the distance from the middle of the headstock. Normally - means down, and + means up. This dimension is from the bottom of your screen, to the top (width)
 */
 
-xyzPosition cGuitarSkeletons::GetSkeletonPosition() {
+xyzPosition GuitarSkeletons::GetSkeletonPosition() {
 	return xyzPosition(X, Y, Z);
 }
 
 // Where should the string be in relationship to the headstock? Z+ up, Z- down, Z0 center of fretboard.
 //WARNING: !Moves tuning camera with strings!
-xyzPosition cGuitarSkeletons::StringAttachPosition(bool leftHanded, bool bass, int stringNumber, bool setToDefaults, double inputZ) {
+xyzPosition GuitarSkeletons::StringAttachPosition(bool leftHanded, bool bass, int stringNumber, bool setToDefaults, double inputZ) {
 	X = 1.33226762955E-15;
 	Y = -53.6527178626;
 
@@ -57,7 +55,7 @@ xyzPosition cGuitarSkeletons::StringAttachPosition(bool leftHanded, bool bass, i
 
 // bool topOfFretBar -> 1 = A (top of fretbar), 0 = B (bottom of fretbar).
 // int fretNumber starts at 1 (for first fret)
-xyzPosition cGuitarSkeletons::FretBarPosition(bool leftHanded, bool topOfFretBar, bool setToDefaults, int fretNumber, double inputZ)
+xyzPosition GuitarSkeletons::FretBarPosition(bool leftHanded, bool topOfFretBar, bool setToDefaults, int fretNumber, double inputZ)
 {
 
 	X = 0.0;
@@ -143,7 +141,7 @@ xyzPosition cGuitarSkeletons::FretBarPosition(bool leftHanded, bool topOfFretBar
 
 // bool tipOfCameraMarker -> 1 = Tip, 0 = Tail.
 // bool topOfCameraMarker -> 1 = Top, 0 = Bottom
-xyzPosition cGuitarSkeletons::CameraMarkerPosition(bool leftHanded, bool tipOfCameraMarker, bool topOfCameraMarker, bool setToDefaults, double inputZ)
+xyzPosition GuitarSkeletons::CameraMarkerPosition(bool leftHanded, bool tipOfCameraMarker, bool topOfCameraMarker, bool setToDefaults, double inputZ)
 {
 	if (tipOfCameraMarker) { // Tip
 		X = 1.33226762955e-15;

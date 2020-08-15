@@ -1,16 +1,17 @@
 // DON'T TOUCH THIS FILE!!!!!! IT IS NEEDED FOR ROCKSMITH TO RUN!
 
 #include "windows.h"
+#include "D3DX9_42.hpp"
 #pragma pack(1)
 
 FARPROC p[329] = { 0 };
 HINSTANCE hL;
 
-void ShutdownProxy() {
+void D3DX9_42::ShutdownProxy() {
 	FreeLibrary(hL);
 }
 
-bool InitProxy() {
+bool D3DX9_42::InitProxy() {
 	char winpath[MAX_PATH];
 
 	if (hL)

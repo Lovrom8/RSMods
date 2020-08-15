@@ -1,7 +1,5 @@
-#include "CustomSongTitles.h"
+#include "CustomSongTitles.hpp"
 #pragma warning(disable: 4302 4172) // Typecast truncated from const _Elem* -> char | returning address of local variable: str
-
-cCustomST CustomSongTitles;
 
 std::vector<std::string> songTitles(6);
 void __declspec(naked) hook_fakeTitles() {
@@ -16,7 +14,7 @@ void __declspec(naked) hook_fakeTitles() {
 		mov byte ptr[eax + 0x2], 0x34 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ... | with 0x34, there's no string with key [4696x] - it returns the whole thing back
 		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
 		popad
-		jmp[Offsets.hookBackAddr_FakeTitles]
+		jmp[Offsets::hookBackAddr_FakeTitles]
 	}
 }
 
@@ -64,37 +62,37 @@ void __declspec(naked) missingLocalizationHookFunc() {
 
 		add esp, 0x8
 		push eax
-		jmp[Offsets.hookBackAddr_missingLocalization]
+		jmp[Offsets::hookBackAddr_missingLocalization]
 	}
 }
 
 
-void cCustomST::PatchSongListAppendages() {
-	MemUtil.PatchAdr((BYTE*)Offsets.patch_addedSpaces, (UINT*)Offsets.patch_ListSpaces, 5); //MemUtil out " "
-	MemUtil.PatchAdr((BYTE*)Offsets.patch_addedNumbers, (UINT*)Offsets.patch_ListNumbers, 5); //MemUtil 1-6
+void CustomSongTitles::PatchSongListAppendages() {
+	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedSpaces, (UINT*)Offsets::patch_ListSpaces, 5); //MemUtil out " "
+	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedNumbers, (UINT*)Offsets::patch_ListNumbers, 5); //MemUtil 1-6
 }
 
-void cCustomST::SetFakeListNames() {
+void CustomSongTitles::SetFakeListNames() {
 	PatchSongListAppendages();
 
 	len = 6;
 
-	Offsets.hookBackAddr_FakeTitles = Offsets.hookAddr_ModifyLocalized + len;
-	MemUtil.PlaceHook((void*)Offsets.hookAddr_ModifyLocalized, hook_fakeTitles, len);
+	Offsets::hookBackAddr_FakeTitles = Offsets::hookAddr_ModifyLocalized + len;
+	MemUtil::PlaceHook((void*)Offsets::hookAddr_ModifyLocalized, hook_fakeTitles, len);
 }
 
-void cCustomST::HookSongListsKoko() {
+void CustomSongTitles::HookSongListsKoko() {
 	SetFakeListNames();
 
 	len = 5;
-	Offsets.hookBackAddr_missingLocalization = Offsets.hookAddr_MissingLocalization + len;
+	Offsets::hookBackAddr_missingLocalization = Offsets::hookAddr_MissingLocalization + len;
 
 	//Skip less printf parameters if those have been removed
-	MemUtil.PatchAdr((BYTE*)Offsets.patch_sprintfArg, (BYTE*)Offsets.patch_SprintfArgs, 1);
+	MemUtil::PatchAdr((BYTE*)Offsets::patch_sprintfArg, (BYTE*)Offsets::patch_SprintfArgs, 1);
 
-	MemUtil.PlaceHook((void*)Offsets.hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
+	MemUtil::PlaceHook((void*)Offsets::hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
 
-void cCustomST::LoadSettings() {
-	songTitles = Settings.GetCustomSongTitles();
+void CustomSongTitles::LoadSettings() {
+	songTitles = Settings::GetCustomSongTitles();
 }
