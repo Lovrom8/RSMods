@@ -693,14 +693,10 @@ unsigned WINAPI MainThread(void*) {
 	while (!GameClosing) {
 		Sleep(250);
 
-		//for (std::string kek : songModes)
-		//	std::cout << kek << std::endl;
-
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
 			//std::cout << currentMenu << std::endl;
-			//std::cout << (std::find(std::begin(songModes), std::end(songModes), currentMenu) != std::end(songModes)) << std::endl;
 
 			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu) != std::end(lessonModes)) // Is User In A Lesson
 				LessonMode = true;
@@ -709,7 +705,6 @@ unsigned WINAPI MainThread(void*) {
 
 			if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup")
 				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
-
 
 			if (LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
 				if (LoftOff)
@@ -782,7 +777,6 @@ unsigned WINAPI MainThread(void*) {
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
-
 			}
 
 			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
@@ -812,7 +806,6 @@ unsigned WINAPI MainThread(void*) {
 				AutoEnterGame();
 		}
 	}
-
 	return 0;
 }
 
