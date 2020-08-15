@@ -35,7 +35,7 @@ bool cMemHelpers::IsExtendedRangeSong() {
 }
 
 std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
-	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets, GameNotLoaded); // If game hasn't loaded, take the safer, but possibly slower route
+	uintptr_t currentMenuAdr = MemUtil.FindDMAAddy(Offsets.ptr_currentMenu, Offsets.ptr_currentMenuOffsets, GameNotLoaded); // If game hasn't loaded, take the safer, but possibly slower route
 
 	if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
 		return "pre_enter_prompt";
@@ -49,7 +49,7 @@ std::string cMemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 }
 
 void cMemHelpers::ToggleLoft() {
-	
+
 	// Old Method (Works for most builds but bugged out for some)
 	//uintptr_t nearAddr = MemUtil.FindDMAAddy(Offsets.baseHandle + Offsets.ptr_loft, Offsets.ptr_loft_nearOffsets);
 	//if (*(float*)nearAddr == 10)
