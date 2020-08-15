@@ -24,4 +24,6 @@ namespace MemHelpers {
 	void ToggleCB(bool enabled);
 
 	void PatchCDLCCheck();
+
+	inline static std::string lastMenu = "";
 };

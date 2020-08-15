@@ -40,12 +40,12 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 
 		std::string currentMenu((char*)preMainMenuAdr);
 
-		//std::cout << currentMenu << std::endl;
-
-		if (currentMenu != "TitleScreen" && currentMenu != "" && currentMenu != "MainOverlay") // I.e. check if its neither one of the possible states
+		if (lastMenu == "TitleScreen" && lastMenu != currentMenu)  // I.e. check if its neither one of the possible states
 			canGetRealMenu = true;
-		else
+		else {
+			lastMenu = currentMenu;
 			return "pre_enter_prompt";
+		}
 	}
 
 	if (!canGetRealMenu)
@@ -61,7 +61,7 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 		return "where are we actually";
 
 	std::string currentMenu((char*)currentMenuAdr);
-
+	std::cout << currentMenu << std::endl;
 	return currentMenu;
 }
 
