@@ -69,6 +69,7 @@ bool LessonMode = false; // Is the user in LessonMode?
 // Misc
 bool lowPerformancePC = false; // Does your game lag with all of our mods? Toggle on to disable us running mods for an "original DLL" experience.
 bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
+bool GameClosing = false; // Inform the threads that their work is done just before the game closes
 
 // Dev Functions
 bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory

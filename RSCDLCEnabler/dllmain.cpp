@@ -16,7 +16,7 @@ unsigned WINAPI EnumerationThread(void*) {
 
 	int oldDLCCount = Enumeration.GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
-	while (true) {
+	while (!GameClosing) {
 		if (Settings.ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
 			newDLCCount = Enumeration.GetCurrentDLCCount();
@@ -101,6 +101,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				menuEnabled = !menuEnabled;
 		}
 	}
+
+	if (msg == WM_CLOSE)
+		GameClosing = true;
 
 	return CallWindowProc(oWndProc, hWnd, msg, keyPressed, lParam);
 }
@@ -744,7 +747,7 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	//GuitarSpeak.DrawTunerInGame();
-	while (true) {
+	while (!GameClosing) {
 		Sleep(250);
 		//std::cout << MemHelpers.GetCurrentMenu(false) << std::endl;
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
