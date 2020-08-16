@@ -26,7 +26,7 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
-        
+
         public MainForm()
         {
             string RSFolder = GenUtil.GetRSDirectory();
@@ -1033,10 +1033,14 @@ namespace RSMods
                 else if (driveType.Item1 == "SSD")
                 {
                     if (driveType.Item2) // If is NVMe
+                    {
                         if (MessageBox.Show("Can you confirm Rocksmith is installed on a NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on a NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             AddFastLoadMod(true);
                         else
                             AddFastLoadMod(false);
+                    }
+                    else
+                        AddFastLoadMod(false);
                 }
                 else
                 {
@@ -1379,13 +1383,13 @@ namespace RSMods
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "true");
                 this.ToggleHeadstockWhenBox.Visible = true;
             }
-                
+
             else
             {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
                 this.ToggleHeadstockWhenBox.Visible = false;
             }
-                
+
         }
 
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1712,7 +1716,7 @@ namespace RSMods
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
                         GuitarSpeakPresetsBox.ClearSelected();
 
-                        foreach(string guitarSpeakItem in GuitarSpeakPresetsBox.Items)
+                        foreach (string guitarSpeakItem in GuitarSpeakPresetsBox.Items)
                         {
                             if (guitarSpeakItem.Contains(GuitarSpeakKeypress.SelectedItem.ToString()))
                             {
@@ -1720,10 +1724,10 @@ namespace RSMods
                                 break;
                             }
                         }
-                        GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " +  GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                        GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
                         RefreshGuitarSpeakPresets();
                     }
-                }      
+                }
 
                 GuitarSpeakNote.ClearSelected();
                 GuitarSpeakOctave.ClearSelected();
@@ -1836,7 +1840,7 @@ namespace RSMods
                 return "";
 
             int inputInt = Int32.Parse(inputString);
-            
+
             int octave = (inputInt / 12) - 1; // We support the -1st octave, so we need to minus 1 from our octave.
 
             return IntToNote(inputInt) + octave.ToString();
