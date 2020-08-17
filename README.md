@@ -15,26 +15,28 @@
    * **Options**
    1. ZZ's color set - this mode will replicate the default color of high B string (green) and make it match the color of the low B string (7-th string) - [See the ER mode in action](https://www.youtube.com/watch?v=FPjFwt-Dpdo)
    2. Custom color set - defined by you as the colorblind color set in the settings, it will be used only in extended range mode songs, while regular songs will use the normal colors
+   ** Known bugs: Some highlights for accented open strings or HO / PO notations, flicker between the default colors and the modified ER mode colors.
+                  The string pegs shown in the tuner are not changed correctly. The colors change when the song starts, not in the tuner, meaning on first ER use, default colrs will be shown in the tuner. It also means that if you last played an ER song, then go back to a standard tuned song - the pegs in the tuner will still show in ER colors.
       
 * **Custom Song List Titles**
   * Normally those are not customizable in-game and simply listed as SONG LIST 1 to SONG LIST 6. Now you can customize those, in for example, a song list for only B Standard songs, only Excercise songs, etc.
   
 * **Add/Decrease Song Volume**
-  * In case you are playing a song which is unusually low in volume, or is ear-piercingly loud, by invoking the functions of AudioKinetic audio engine used by the game, you can now modify volume of the music on the fly, without going in to the mixer 
+  * In case you are playing a song which is unusually low in volume, or is ear-piercingly loud, by invoking the functions of AudioKinetic audio engine used by the game, you can now modify volume of the music on the fly, without going in to the mixer. 
   
 * **Toggle Loft**
-  * If you are a streamer, this one will especially come in handy. The background behind the noteway (be it a crowd in the venue or just a plain wall), can now be removed on the fly with a dark background
-  * **Options** - loft can be automatically toggled off on startup or when entering a song, or by pressing the hotkey
+  * If you are a streamer, this one will especially come in handy. The background behind the noteway (be it a crowd in the venue or just a plain wall), can now be removed on the fly with a dark background. It is suggested that you also turn off "Venue Mode" in the game settings as this will help with performance a little.
+  * **Options** - loft can be automatically toggled off as soon as the game is started or only when in a song, or by pressing the hotkey that you define.
   
 * **Force ReEnumeration**
   * Normally after adding a new song to your collection, you would have had to either restart the game, or enter the in-game Shop in order for the game to recognize the new songs.
   * **Options**
   1. Automatic - check if any new songs have been added every X seconds (even while a song is playing!)
   2. By going into Enumerate menu - SHOP in the menu has now been replaced with **Enumerate** and conveniently moved to the second place **(GUI only)**
-  3. By hotkey - press a hotkey to force the game to enumerate your songs
+  3. By hotkey - press a hotkey to force the game to enumerate your songs.
 
 * **Removal of certain visual game elements**
-  * Again something which may come in handy if you are a streamer (or just prefer your screen to be cluttered the least possible), you can now remove certain elements from the screen
+  * Again something which may come in handy if you are a streamer (or just prefer your screen to be as uncluttered as possible), you can now remove certain elements from the screen
   * **Options**
   1. Headstock
   2. Skyline
@@ -44,19 +46,19 @@
   6. Lyrics
   
 * **Rainbow Strings**
-  * A fun mod which will continously hue-shift the colors of your strings, making them look like rainbow! 
+  * A fun mod which will continously hue-shift the colors of your strings, making them look like a rainbow! 
   
 * **GuitarSpeak**
-  * What hides behind this mysterious name is an exciting feature that will let you control the game by playing certain notes on your guitar (fully customizable!). Forget your keyboard and mouse, guitar is where it's at!  
+  * What hides behind this mysterious name is an exciting feature that will let you control the game by playing certain notes on your guitar (fully customizable!). Forget your keyboard and mouse, guitar is where it's at! There is an option to continue to use it while in the tuner - it is off be default as it can cause issues, but if you're happy to continue using it there - hit that button. It is OFF while in a song. 
 
 * **Auto enter last used profile**
   * Also know as the Fork-in-the-toaster mod, due to it's simple but effective nature, it is best used in conjunction with the Fast Load mod. The DLL will spam Enter key in order to automatically enter the game. It may cause potential issues if UPLAY servers are unavailable, but in general it makes your life quite a bit easier.
 
 * **CDLC Enabler**
-  * After all, this mod is based on the proxy DLL which bypassed the check which enabled users to play non-official songs in the game.
+  * After all, this mod is based on the proxy DLL which bypassed the check which enabled users to play community made songs in the game.
 
 * **Fast Load** - **GUI Only**
-  * If you are running the game of a SSD or especially a NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in matter of seconds. It can be fairly unstable, but in general it should work provided you don't used it on a good old HDD
+  * If you are running the game from an SSD or especially an NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in matter of seconds. It can be fairly unstable, but in general it should work provided you don't used it on a good old HDD.
   
 * **Custom Tunings** - **GUI Only**
   * By default, the game has a fairly limited set of tunings it can recongnize and in cases where it doesn't find in the list, it will just display CUSTOM TUNING. And that isn't of much help, is it? But don't worry, you can now make the game know that a B Standard song is actually B Standard, and not just _Custom Tuning_ :(
@@ -65,8 +67,12 @@
 * **EXIT GAME in the menu** - **GUI Only**
   * As useful of a device your mouse is, it is not really the most convenient option when you want to exit the game. And until now, you had to use the said mouse to do that, but fret no more. It took only six and a half years, but now you can exit the game by pressing EXIT GAME in the menu (which replaces the UPLAY button, and let's be honest, nooone used that)
   
+* **Enable Direct Connect Mode** - **GUI Only**
+  * This mod is done with the same button as Exit in the Main Menu as behind the scenes it is the same file that needs changed for it and we couldn't be bothered offering 3 choices here. It enables a hidden input mode that UbiSoft made - but for unknown reasons disabled for release. It is basically Microphone Mode - but with the tone simulations enabled. 
+  ** Known issues; Some interfaces report the guitar input channel as one that the game isn't expecting, in this case - Direct Connected mode may not work for you particularly well. If you want to test before applying - go into Microphone Mode and see if your interface lets you have some note detection. If it does - then DC mode should work for you once enabled.
+  
 * **Change Default tones** - **GUI Only**
-  * Add your favorite tones to the tone wheel, and by enabling this mod, your game will use the tone you picked amongst the four as soon as you enter the game. Nifty, isn't it?
+  * Add your favorite tones to slot number 1 on the tone stick. This is the default tone that is applied when the game loads up. There is a seperate one saved for Lead, Rhythm and Bass. You need to have a tone saved in your profile. It does not need to be assigned to a "tone stick" slot for the GUI to be able to load it and then set it as the new default.
 
 ## Installation:
 * There's two options as how this mod can be installed:
