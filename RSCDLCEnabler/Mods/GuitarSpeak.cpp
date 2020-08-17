@@ -93,7 +93,7 @@ bool GuitarSpeak::TimerTick() {
 
 		int mem = GetCurrentNote();
 
-		if (mem > 96) // The limit of Rocksmith
+		if (mem >= 96) // The limit of Rocksmith
 			mem = 0;
 
 		if (debugMode && mem != 0xFF)
