@@ -93,7 +93,7 @@ bool GuitarSpeak::TimerTick() {
 
 		int mem = GetCurrentNote();
 
-		if (mem >= 96) // The limit of Rocksmith
+		if (mem >= 96) // The limit of Rocksmith | If you go over 96, the values will fall out of the array and the game will crash as it's looking for a value that doesn't exist
 			mem = 0;
 
 		if (debugMode && mem != 0xFF)
