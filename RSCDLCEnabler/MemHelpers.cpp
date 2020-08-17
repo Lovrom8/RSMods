@@ -59,7 +59,7 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 		return "where are we actually";
 
 	std::string currentMenu((char*)currentMenuAdr);
-	std::cout << currentMenu << std::endl;
+	//std::cout << currentMenu << std::endl;
 	return currentMenu;
 }
 
