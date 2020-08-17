@@ -10,10 +10,10 @@
 ## Features:
 
 * **Extended Range Mode**
-  * Rocksmith by default doesn't officialy support 7 (or more) string guitars, even though a few low-tuned songs have been released as official DLC. 
+  * Rocksmith by default doesn't officialy support 7 (or more) string guitars or 5 string bass, even though a few low-tuned songs have been released as official DLC. 
     Hence with the power of DX9, GDI+ and some smart reverse engineering, when it detects that a song is in a tuning lower than the set treshold, the color scheme    will change accordingly. What that means is that no more will your brain be confused because the lowest string is colored red (usually indicating the low E string), while you actually need to play the low B! So effectively all the strings will be shifted one place down.
    * **Options**
-   1. ZZ's color set - this mode will replicate the default color of high B string (green) and make it match the color of the low B string (7-th string) - [See the ER mode in action](https://www.youtube.com/watch?v=FPjFwt-Dpdo)
+   1. ZZ's color set - this mode will replicate the default color of high B string (the teal / green used in colorblind mode) and make it match the color of the low B string (7-th string) - [See the ER mode in action](https://www.youtube.com/watch?v=FPjFwt-Dpdo). Note this video is from an older mod method, but the way it displays in game is the same, the enabling of it is now just all done automatically based on tuning, rather than enabling "Colorblind" mode.
    2. Custom color set - defined by you as the colorblind color set in the settings, it will be used only in extended range mode songs, while regular songs will use the normal colors
    ** Known bugs: Some highlights for accented open strings or HO / PO notations, flicker between the default colors and the modified ER mode colors.
                   The string pegs shown in the tuner are not changed correctly. The colors change when the song starts, not in the tuner, meaning on first ER use, default colrs will be shown in the tuner. It also means that if you last played an ER song, then go back to a standard tuned song - the pegs in the tuner will still show in ER colors.
