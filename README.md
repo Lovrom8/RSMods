@@ -8,3 +8,6 @@ How to compile:
 3. Click build solution
 4. Wait a couple seconds
 5. Press F5
+
+
+Keys You Can Set To A Mod: (visual) https://i.imgur.com/lpNv3yG.png , (text) https://pastebin.com/raw/7f1CvkUt
