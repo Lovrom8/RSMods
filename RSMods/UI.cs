@@ -26,7 +26,6 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
-
         public MainForm()
         {
             string RSFolder = GenUtil.GetRSDirectory();
@@ -373,9 +372,8 @@ namespace RSMods
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
             {
-                Save_Songlists_Keybindings(sender, e);
                 e.SuppressKeyPress = true;
-                //RefreshForm();
+                Save_Songlists_Keybindings(sender, e);
             }
 
             else if (sender == this.NewAssignmentTxtBox)
@@ -389,14 +387,15 @@ namespace RSMods
                 // Number or Letter was pressed (Will be overrided by text input)
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
-                    return;
+                    if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        NewAssignmentTxtBox.Text = "";
+                    }
                 }
-
-
-                //else if (e.KeyValue != null) // If key is unknown, give me the int to look at this document for reference: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=netcore-3.1
-                //{
-                //    NewAssignmentTxtBox.Text = e.KeyValue.ToString();
-                //}
             }
         }
 
@@ -406,7 +405,6 @@ namespace RSMods
             {
                 NewAssignmentTxtBox.Text = e.KeyCode.ToString();
             }
-
         }
 
         private void CheckMouseInput(object sender, MouseEventArgs e)
@@ -516,8 +514,6 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },
             }}
         };
-
-
 
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
@@ -1294,6 +1290,7 @@ namespace RSMods
 
             // Mods on KeyPress
             {
+                    
                 if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
                 {
                     SaveChanges(ReadSettings.ToggleLoftIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
