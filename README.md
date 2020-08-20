@@ -10,4 +10,6 @@ How to compile:
 5. Press F5
 
 
-Keys You Can Set To A Mod: (visual) https://i.imgur.com/lpNv3yG.png , (text) https://pastebin.com/raw/7f1CvkUt
+Keys You Can Set To A Mod: ![Visual Representation](https://i.imgur.com/lpNv3yG.png)
+
+[Text Representation](https://pastebin.com/raw/7f1CvkUt)
