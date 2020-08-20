@@ -153,6 +153,7 @@
             this.ToggleHeadstockWhenBox = new System.Windows.Forms.GroupBox();
             this.HeadstockOffInSongOnlyButton = new System.Windows.Forms.RadioButton();
             this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
+            this.btnImportExistingSettings = new System.Windows.Forms.Button();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -907,6 +908,7 @@
             // 
             // GroupSetAndForget
             // 
+            this.GroupSetAndForget.Controls.Add(this.btnImportExistingSettings);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningHighEStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningBStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningGStringLetter);
@@ -1081,9 +1083,9 @@
             // 
             // BtnRemoveTempFolders
             // 
-            this.BtnRemoveTempFolders.Location = new System.Drawing.Point(916, 119);
+            this.BtnRemoveTempFolders.Location = new System.Drawing.Point(916, 135);
             this.BtnRemoveTempFolders.Name = "BtnRemoveTempFolders";
-            this.BtnRemoveTempFolders.Size = new System.Drawing.Size(190, 35);
+            this.BtnRemoveTempFolders.Size = new System.Drawing.Size(190, 20);
             this.BtnRemoveTempFolders.TabIndex = 95;
             this.BtnRemoveTempFolders.Text = "Remove Temporary Folders";
             this.BtnRemoveTempFolders.UseVisualStyleBackColor = true;
@@ -1091,9 +1093,9 @@
             // 
             // BtnAddCustomMenu
             // 
-            this.BtnAddCustomMenu.Location = new System.Drawing.Point(723, 119);
+            this.BtnAddCustomMenu.Location = new System.Drawing.Point(723, 113);
             this.BtnAddCustomMenu.Name = "BtnAddCustomMenu";
-            this.BtnAddCustomMenu.Size = new System.Drawing.Size(187, 35);
+            this.BtnAddCustomMenu.Size = new System.Drawing.Size(187, 42);
             this.BtnAddCustomMenu.TabIndex = 93;
             this.BtnAddCustomMenu.Text = "Add EXIT GAME to Main Menu + Enable Direct Connect Mode";
             this.BtnAddCustomMenu.UseVisualStyleBackColor = true;
@@ -1101,9 +1103,9 @@
             // 
             // BtnAddFastLoadMod
             // 
-            this.BtnAddFastLoadMod.Location = new System.Drawing.Point(723, 70);
+            this.BtnAddFastLoadMod.Location = new System.Drawing.Point(723, 64);
             this.BtnAddFastLoadMod.Name = "BtnAddFastLoadMod";
-            this.BtnAddFastLoadMod.Size = new System.Drawing.Size(187, 35);
+            this.BtnAddFastLoadMod.Size = new System.Drawing.Size(187, 40);
             this.BtnAddFastLoadMod.TabIndex = 92;
             this.BtnAddFastLoadMod.Text = "Enable Fast Load";
             this.BtnAddFastLoadMod.UseVisualStyleBackColor = true;
@@ -1111,9 +1113,9 @@
             // 
             // BtnUnpackCacheAgain
             // 
-            this.BtnUnpackCacheAgain.Location = new System.Drawing.Point(916, 20);
+            this.BtnUnpackCacheAgain.Location = new System.Drawing.Point(916, 113);
             this.BtnUnpackCacheAgain.Name = "BtnUnpackCacheAgain";
-            this.BtnUnpackCacheAgain.Size = new System.Drawing.Size(187, 35);
+            this.BtnUnpackCacheAgain.Size = new System.Drawing.Size(190, 20);
             this.BtnUnpackCacheAgain.TabIndex = 91;
             this.BtnUnpackCacheAgain.Text = "Clean Up Unpacked Cache";
             this.BtnUnpackCacheAgain.UseVisualStyleBackColor = true;
@@ -1121,9 +1123,9 @@
             // 
             // BtnRestoreDefaults
             // 
-            this.BtnRestoreDefaults.Location = new System.Drawing.Point(916, 69);
+            this.BtnRestoreDefaults.Location = new System.Drawing.Point(916, 64);
             this.BtnRestoreDefaults.Name = "BtnRestoreDefaults";
-            this.BtnRestoreDefaults.Size = new System.Drawing.Size(190, 37);
+            this.BtnRestoreDefaults.Size = new System.Drawing.Size(190, 40);
             this.BtnRestoreDefaults.TabIndex = 90;
             this.BtnRestoreDefaults.Text = "Restore Cache Backup";
             this.BtnRestoreDefaults.UseVisualStyleBackColor = true;
@@ -1131,9 +1133,9 @@
             // 
             // BtnAddCustomTunings
             // 
-            this.BtnAddCustomTunings.Location = new System.Drawing.Point(723, 20);
+            this.BtnAddCustomTunings.Location = new System.Drawing.Point(723, 14);
             this.BtnAddCustomTunings.Name = "BtnAddCustomTunings";
-            this.BtnAddCustomTunings.Size = new System.Drawing.Size(187, 34);
+            this.BtnAddCustomTunings.Size = new System.Drawing.Size(187, 40);
             this.BtnAddCustomTunings.TabIndex = 89;
             this.BtnAddCustomTunings.Text = "Add Custom Tunings";
             this.BtnAddCustomTunings.UseVisualStyleBackColor = true;
@@ -1654,6 +1656,16 @@
             this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
             this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
             // 
+            // btnImportExistingSettings
+            // 
+            this.btnImportExistingSettings.Location = new System.Drawing.Point(916, 14);
+            this.btnImportExistingSettings.Name = "btnImportExistingSettings";
+            this.btnImportExistingSettings.Size = new System.Drawing.Size(190, 40);
+            this.btnImportExistingSettings.TabIndex = 109;
+            this.btnImportExistingSettings.Text = "Import Existing Settings";
+            this.btnImportExistingSettings.UseVisualStyleBackColor = true;
+            this.btnImportExistingSettings.Click += new System.EventHandler(this.btnImportExistingSettings_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1842,6 +1854,7 @@
         private System.Windows.Forms.GroupBox ToggleHeadstockWhenBox;
         private System.Windows.Forms.RadioButton HeadstockOffInSongOnlyButton;
         private System.Windows.Forms.RadioButton HeadStockAlwaysOffButton;
+        private System.Windows.Forms.Button btnImportExistingSettings;
     }
 }
 

@@ -1169,6 +1169,93 @@ namespace RSMods
             RepackCachePsarc();
         }
 
+        private void BtnRemoveTempFolders_Click(object sender, EventArgs e)
+        {
+            ZipUtilities.DeleteDirectory(Constants.WorkFolder);
+            ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
+        }
+
+        private static Dictionary<string, Tone2014> TonesFromAllProfiles = new Dictionary<string, Tone2014>();
+
+        private void BtnSetDefaultTones_Click(object sender, EventArgs e)
+        {
+            if (ListProfileTones.SelectedItem == null)
+                return;
+
+            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
+
+            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
+            var tonesJson = JObject.Parse(toneManagerFileContent);
+            var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
+            var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
+
+            var selectedTone = TonesFromAllProfiles[ListProfileTones.SelectedItem.ToString()];
+            if (RbTone0.Checked)
+                tonesJson["Static"]["ToneManager"]["Tones"][0]["GearList"] = JObject.FromObject(selectedTone.GearList);
+            else if (RbTone1.Checked)
+                tonesJson["Static"]["ToneManager"]["Tones"][1]["GearList"] = JObject.FromObject(selectedTone.GearList);
+            else if (RbTone2.Checked)
+                tonesJson["Static"]["ToneManager"]["Tones"][2]["GearList"] = JObject.FromObject(selectedTone.GearList);
+
+            try
+            {
+                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Error:{ioex.Message}");
+                return;
+            }
+
+            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+
+            RepackCachePsarc();
+
+            MessageBox.Show("Successfully changed default tones!", "Success");
+        }
+
+        private void BtnLoadTonesFromProfiles_Click(object sender, EventArgs e)
+        {
+            string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
+            try
+            {
+                var subdirs = new DirectoryInfo(steamUserdataPath).GetDirectories(@"221680", SearchOption.AllDirectories).ToArray();
+                var userprofileFolder = subdirs.FirstOrDefault(dir => !dir.FullName.Contains("760")); //760 is the ID for Steam's screenshot thingy
+
+                if (Directory.Exists(userprofileFolder.FullName))
+                {
+                    var profiles = Directory.EnumerateFiles(userprofileFolder.FullName, "*_PRFLDB", SearchOption.AllDirectories).ToList();
+
+                    TonesFromAllProfiles.Clear();
+                    ListProfileTones.Items.Clear();
+
+                    foreach (string profile in profiles)
+                        foreach (var tone in Tone2014.Import(profile))
+                        {
+                            ListProfileTones.Items.Add(tone.Name);
+                            TonesFromAllProfiles.Add(tone.Name, tone);
+                        }
+                }
+                else
+                    MessageBox.Show("Could not find profile folder!", "Error");
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
+            }
+        }
+
+        private void btnImportExistingSettings_Click(object sender, EventArgs e)
+        {
+            if(!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
+                UnpackCachePsarc();
+
+            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
+            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
+
+            FillUI();
+        }
+
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
             // Songlists
@@ -1613,81 +1700,6 @@ namespace RSMods
             }
         }
 
-        private void BtnRemoveTempFolders_Click(object sender, EventArgs e)
-        {
-            ZipUtilities.DeleteDirectory(Constants.WorkFolder);
-            ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
-        }
-
-        private static Dictionary<string, Tone2014> TonesFromAllProfiles = new Dictionary<string, Tone2014>();
-
-        private void BtnSetDefaultTones_Click(object sender, EventArgs e)
-        {
-            if (ListProfileTones.SelectedItem == null)
-                return;
-
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
-
-            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
-            var tonesJson = JObject.Parse(toneManagerFileContent);
-            var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
-            var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
-
-            var selectedTone = TonesFromAllProfiles[ListProfileTones.SelectedItem.ToString()];
-            if (RbTone0.Checked)
-                tonesJson["Static"]["ToneManager"]["Tones"][0]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if (RbTone1.Checked)
-                tonesJson["Static"]["ToneManager"]["Tones"][1]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if (RbTone2.Checked)
-                tonesJson["Static"]["ToneManager"]["Tones"][2]["GearList"] = JObject.FromObject(selectedTone.GearList);
-
-            try
-            {
-                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error:{ioex.Message}");
-                return;
-            }
-
-            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-
-            MessageBox.Show("Successfully changed default tones!", "Success");
-        }
-
-        private void BtnLoadTonesFromProfiles_Click(object sender, EventArgs e)
-        {
-            string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
-            try
-            {
-                var subdirs = new DirectoryInfo(steamUserdataPath).GetDirectories(@"221680", SearchOption.AllDirectories).ToArray();
-                var userprofileFolder = subdirs.FirstOrDefault(dir => !dir.FullName.Contains("760")); //760 is the ID for Steam's screenshot thingy
-
-                if (Directory.Exists(userprofileFolder.FullName))
-                {
-                    var profiles = Directory.EnumerateFiles(userprofileFolder.FullName, "*_PRFLDB", SearchOption.AllDirectories).ToList();
-
-                    TonesFromAllProfiles.Clear();
-                    ListProfileTones.Items.Clear();
-
-                    foreach (string profile in profiles)
-                        foreach (var tone in Tone2014.Import(profile))
-                        {
-                            ListProfileTones.Items.Add(tone.Name);
-                            TonesFromAllProfiles.Add(tone.Name, tone);
-                        }
-                }
-                else
-                    MessageBox.Show("Could not find profile folder!", "Error");
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
-            }
-        }
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (ToggleLyricsRadio.Checked)
