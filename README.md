@@ -2,12 +2,7 @@
 A GUI tool that communicates with Rocksmith 2014's **NEW** D3DX9_42.dll
 
 How to compile:
-
-1. Load the .sln Visual Studio Project (Compiled with VS 2019)
-2. Click the build tab at the top of the screen
-3. Click build solution
-4. Wait a couple seconds
-5. Press F5
+  There's a lot of repos that require a lot of steps to compile. For us you open the .sln Visual Studio project, and press F5. This will compile, and run the latest version.         That's it...
 
 
 Keys You Can Set To A Mod: ![Visual Representation](https://i.imgur.com/lpNv3yG.png)
