@@ -784,7 +784,7 @@
             this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 443);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(127, 22);
-            this.ResetToDefaultButton.TabIndex = 32;
+            this.ResetToDefaultButton.TabIndex = 100000;
             this.ResetToDefaultButton.Text = "Reset Mods To Default";
             this.ResetToDefaultButton.UseVisualStyleBackColor = true;
             this.ResetToDefaultButton.Click += new System.EventHandler(this.ResetToDefaultSettings);
@@ -928,7 +928,6 @@
             this.ChangeStringColorsBox.TabStop = false;
             this.ChangeStringColorsBox.Text = "Change String Colors";
             this.ChangeStringColorsBox.Visible = false;
-            
             // 
             // ColorBlindStringColorsRadio
             // 
@@ -1531,8 +1530,6 @@
             this.HowToToggleLyrics.TabStop = false;
             this.HowToToggleLyrics.Text = "Toggle Lyrics Off When:";
             this.HowToToggleLyrics.Visible = false;
-            this.ToggleSkylineBox.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.ToggleSkylineBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleLyricsManualRadio
             // 
