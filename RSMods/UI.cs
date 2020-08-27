@@ -1662,7 +1662,7 @@ namespace RSMods
             TooltipDictionary.Add(GuitarSpeakWhileTuningBox, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
 
             // Misc
-            TooltipDictionary.Add(SongListBox, "Custom names for the 6 “SONG LISTS” shown in game.");
+            TooltipDictionary.Add(SongListBox, "Custom names for the 6 \"SONG LISTS\" shown in game.");
             TooltipDictionary.Add(KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting teh key for it to be saved.");
             TooltipDictionary.Add(ResetToDefaultButton, "Resets all RSMods values to defaults");
 
