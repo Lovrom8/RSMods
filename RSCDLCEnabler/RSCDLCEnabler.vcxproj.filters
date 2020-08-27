@@ -140,9 +140,6 @@
     <ClInclude Include="DirectX\d3dx9core.h">
       <Filter>Header Files\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_includeMe.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
     <ClInclude Include="MemUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -63,7 +63,6 @@
     <ClInclude Include="ImGUI\imstb_rectpack.h" />
     <ClInclude Include="ImGUI\imstb_textedit.h" />
     <ClInclude Include="ImGUI\imstb_truetype.h" />
-    <ClInclude Include="imgui_includeMe.h" />
     <ClInclude Include="Main.hpp" />
     <ClInclude Include="MemUtil.hpp" />
     <ClInclude Include="Offsets.hpp" />
