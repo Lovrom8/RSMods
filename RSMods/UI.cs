@@ -1682,6 +1682,7 @@ namespace RSMods
             toolTip.SetToolTip(this.ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
             toolTip.SetToolTip(this.ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
             toolTip.SetToolTip(this.ColorBlindStringColorsRadio, "When ER mode is enabled, these are the colors that the strings will be changed to.");
+            toolTip.SetToolTip(this.VolumeControlsCheckbox, "Allows you to control how loud the song is using the in-game mixer without needing to open it.");
             toolTip.SetToolTip(this.ToggleLyricsRadio, "Lyrics display will always be disabled in Learn-A-Song game mode.");
             toolTip.SetToolTip(this.ToggleLyricsManualRadio, "Lyrics can be toggled on or off by a defined hotkey.");
             toolTip.SetToolTip(this.HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
