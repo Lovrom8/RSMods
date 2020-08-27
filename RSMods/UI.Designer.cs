@@ -204,6 +204,7 @@
             this.ToggleLoftCheckbox.Text = "Toggle Loft";
             this.ToggleLoftCheckbox.UseVisualStyleBackColor = true;
             this.ToggleLoftCheckbox.CheckedChanged += new System.EventHandler(this.ToggleLoftCheckbox_CheckedChanged);
+            this.ToggleLoftCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // AddVolumeCheckbox
             // 
@@ -1381,9 +1382,7 @@
             // 
             // ToolTip
             // 
-            this.ToolTip.AutoPopDelay = 5000;
-            this.ToolTip.InitialDelay = 1000;
-            this.ToolTip.ReshowDelay = 500;
+            this.ToolTip.AutomaticDelay = 0;
             this.ToolTip.ShowAlways = true;
             this.ToolTip.ToolTipTitle = "ToolTip";
             // 
@@ -1691,7 +1690,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.HowToEnumerateBox.ResumeLayout(false);
             this.HowToEnumerateBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).EndInit();
