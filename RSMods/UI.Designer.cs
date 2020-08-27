@@ -94,6 +94,7 @@
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.GroupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.BtnImportExistingSettings = new System.Windows.Forms.Button();
             this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
             this.CustomTuningBStringLetter = new System.Windows.Forms.Label();
             this.CustomTuningGStringLetter = new System.Windows.Forms.Label();
@@ -153,7 +154,6 @@
             this.ToggleHeadstockWhenBox = new System.Windows.Forms.GroupBox();
             this.HeadstockOffInSongOnlyButton = new System.Windows.Forms.RadioButton();
             this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
-            this.btnImportExistingSettings = new System.Windows.Forms.Button();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -908,7 +908,7 @@
             // 
             // GroupSetAndForget
             // 
-            this.GroupSetAndForget.Controls.Add(this.btnImportExistingSettings);
+            this.GroupSetAndForget.Controls.Add(this.BtnImportExistingSettings);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningHighEStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningBStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningGStringLetter);
@@ -951,6 +951,16 @@
             this.GroupSetAndForget.TabIndex = 68;
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // BtnImportExistingSettings
+            // 
+            this.BtnImportExistingSettings.Location = new System.Drawing.Point(916, 14);
+            this.BtnImportExistingSettings.Name = "BtnImportExistingSettings";
+            this.BtnImportExistingSettings.Size = new System.Drawing.Size(190, 40);
+            this.BtnImportExistingSettings.TabIndex = 109;
+            this.BtnImportExistingSettings.Text = "Import Existing Settings";
+            this.BtnImportExistingSettings.UseVisualStyleBackColor = true;
+            this.BtnImportExistingSettings.Click += new System.EventHandler(this.BtnImportExistingSettings_Click);
             // 
             // CustomTuningHighEStringLetter
             // 
@@ -1656,16 +1666,6 @@
             this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
             this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
             // 
-            // btnImportExistingSettings
-            // 
-            this.btnImportExistingSettings.Location = new System.Drawing.Point(916, 14);
-            this.btnImportExistingSettings.Name = "btnImportExistingSettings";
-            this.btnImportExistingSettings.Size = new System.Drawing.Size(190, 40);
-            this.btnImportExistingSettings.TabIndex = 109;
-            this.btnImportExistingSettings.Text = "Import Existing Settings";
-            this.btnImportExistingSettings.UseVisualStyleBackColor = true;
-            this.btnImportExistingSettings.Click += new System.EventHandler(this.BtnImportExistingSettings_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1854,7 +1854,7 @@
         private System.Windows.Forms.GroupBox ToggleHeadstockWhenBox;
         private System.Windows.Forms.RadioButton HeadstockOffInSongOnlyButton;
         private System.Windows.Forms.RadioButton HeadStockAlwaysOffButton;
-        private System.Windows.Forms.Button btnImportExistingSettings;
+        private System.Windows.Forms.Button BtnImportExistingSettings;
     }
 }
 
