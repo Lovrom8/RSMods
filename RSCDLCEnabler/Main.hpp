@@ -3,7 +3,6 @@
 
 // DLL Settings
 #include "MemHelpers.hpp"
-#include "Utils.h"
 #include "Functions.hpp"
 #include "detours.hpp"
 #include "Offsets.hpp"
@@ -28,7 +27,10 @@
 #include "Mods/GuitarSpeak.hpp"
 
 // ImGUI
-#include "imgui_includeMe.h"
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_dx9.h"
+#include "ImGUI/imgui_impl_win32.h"
+#include "ImGUI/RobotoFont.cpp"
 
 #pragma intrinsic(_ReturnAddress)
 #pragma comment (lib, "gdiplus.lib")
