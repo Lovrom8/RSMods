@@ -1708,10 +1708,10 @@ namespace RSMods
             };
         }
 
+        public ToolTip currentTooltip = new ToolTip(); // Fixes toolTip duplication glitch.
+
         private void RunToolTips(object sender, EventArgs e)
         {
-            ToolTip currentTooltip = new ToolTip();
-
             if (CreatedToolTipYet) // Do we already have a filled tooltip? If so, clear it.
             {
                 currentTooltip.Dispose();
