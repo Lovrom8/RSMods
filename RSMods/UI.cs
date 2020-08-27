@@ -893,6 +893,9 @@ namespace RSMods
 
         private void BtnRestoreDefaults_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show(@"Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                return;
+
             try
             {
                 if (File.Exists(Constants.CacheBackupPath))
