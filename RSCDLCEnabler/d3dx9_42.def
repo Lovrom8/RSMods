@@ -1,3 +1,5 @@
+;DON'T TOUCH THIS FILE!!!!!! IT IS NEEDED FOR ROCKSMITH TO RUN!
+
 EXPORTS
 D3DXAssembleShader=__E__0__ @1
 D3DXAssembleShaderFromFileA=__E__1__ @2
