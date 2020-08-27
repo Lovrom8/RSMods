@@ -1241,7 +1241,7 @@ namespace RSMods
             }
         }
 
-        private void btnImportExistingSettings_Click(object sender, EventArgs e)
+        private void BtnImportExistingSettings_Click(object sender, EventArgs e)
         {
             if(!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
                 UnpackCachePsarc();
@@ -1620,6 +1620,15 @@ namespace RSMods
         {
             StartToolTips();
         }
+
+
+        // System.Windows.Forms.Control
+
+
+
+
+
+
 
         private void StartToolTips()  // Documentation: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
         {

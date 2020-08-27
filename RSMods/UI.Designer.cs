@@ -1664,7 +1664,7 @@
             this.btnImportExistingSettings.TabIndex = 109;
             this.btnImportExistingSettings.Text = "Import Existing Settings";
             this.btnImportExistingSettings.UseVisualStyleBackColor = true;
-            this.btnImportExistingSettings.Click += new System.EventHandler(this.btnImportExistingSettings_Click);
+            this.btnImportExistingSettings.Click += new System.EventHandler(this.BtnImportExistingSettings_Click);
             // 
             // MainForm
             // 
