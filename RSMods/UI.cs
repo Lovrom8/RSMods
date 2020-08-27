@@ -1701,7 +1701,7 @@ namespace RSMods
 
         private void HideToolTips(object sender, EventArgs e)
         {
-            if (MainForm.ActiveForm != null)
+            if (MainForm.ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
             {
                 ToolTip.Hide(MainForm.ActiveForm);
                 ToolTip.Active = false;
@@ -1712,7 +1712,7 @@ namespace RSMods
         {
             ToolTip currentTooltip = new ToolTip();
 
-            if (CreatedToolTipYet) // Attempt to stop the double tooltip on hover over attempt is above 1 (so 2, 3, 4, etc) || Works only after 5 seconds?
+            if (CreatedToolTipYet) // Do we already have a filled tooltip? If so, clear it.
             {
                 currentTooltip.Dispose();
                 currentTooltip = new ToolTip();
@@ -1731,9 +1731,9 @@ namespace RSMods
                 {
                     string toolTipString; // Do not inline this as it will break the statement || Needs to be null as it will be written over
                     TooltipDictionary.TryGetValue(ControlHoveredOver, out toolTipString);
-                    currentTooltip.Show(toolTipString, ControlHoveredOver, 5000000); // Shows double tooltip as of now? Not intended / Bug.
+                    currentTooltip.Show(toolTipString, ControlHoveredOver, 5000000); // Don't change the duration number, even if it's higher. It works as it is, and changing it to even Int32.MaxValue causes it to go back to the 5-second max.
                     CreatedToolTipYet = true;
-                    break;
+                    break; // We found what we needed, now GTFO of here.
                 }
             }
             
