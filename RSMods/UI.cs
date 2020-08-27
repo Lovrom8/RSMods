@@ -279,20 +279,20 @@ namespace RSMods
                 {
                     this.RemoveLyricsCheckbox.Checked = true;
                     this.HowToToggleLyrics.Visible = true;
+
+                    if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
+                    {
+                        this.ToggleLyricsRadio.Checked = true;
+                    }
+                    else if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "manual") // Remove Lyrics When ...
+                    {
+                        this.ToggleLyricsManualRadio.Checked = true;
+                    }
                 }
                 else
                 {
                     this.RemoveLyricsCheckbox.Checked = false;
                     this.HowToToggleLyrics.Visible = false;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
-                {
-                    this.ToggleLyricsRadio.Checked = true;
-                }
-                else
-                {
-                    this.ToggleLyricsManualRadio.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
@@ -425,9 +425,8 @@ namespace RSMods
             if (MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini"));
-
-                WriteSettings.WriteINI(WriteSettings.Settings);
                 RefreshForm();
+                WriteSettings.WriteINI(WriteSettings.Settings); // Refresh Form will regenerate all the settings, so we need to overwrite them.
             }
             else
                 MessageBox.Show("All your settings have been saved, and nothing was reset");
