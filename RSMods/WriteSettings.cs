@@ -11,7 +11,6 @@ namespace RSMods
     {
 
         //public static string dumpLocation = "RSMods.ini";
-        public static string[] StringArray = new String[50];
 
         public static Dictionary<string, Dictionary<string, string>> Settings = new Dictionary<string, Dictionary<string, string>>()
         {

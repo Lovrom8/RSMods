@@ -422,11 +422,11 @@ namespace RSMods
 
         private void ResetToDefaultSettings(object sender, EventArgs e)
         {
-            var messageBoxAnswer = MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (messageBoxAnswer == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini"));
+
+                WriteSettings.WriteINI(WriteSettings.Settings);
                 RefreshForm();
             }
             else
