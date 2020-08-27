@@ -234,6 +234,8 @@
             this.DecreaseVolumeCheckbox.UseVisualStyleBackColor = true;
             this.DecreaseVolumeCheckbox.Visible = false;
             this.DecreaseVolumeCheckbox.CheckedChanged += new System.EventHandler(this.DecreaseVolumeCheckbox_CheckedChanged);
+            this.DecreaseVolumeCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.DecreaseVolumeCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // SongTimerCheckbox
             // 
@@ -245,6 +247,8 @@
             this.SongTimerCheckbox.Text = "Show Song Timer";
             this.SongTimerCheckbox.UseVisualStyleBackColor = true;
             this.SongTimerCheckbox.CheckedChanged += new System.EventHandler(this.SongTimerCheckbox_CheckedChanged);
+            this.SongTimerCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.SongTimerCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleLoftKey
             // 
@@ -335,6 +339,8 @@
             this.ExtendedRangeEnabled.Text = "Extended Range Support";
             this.ExtendedRangeEnabled.UseVisualStyleBackColor = true;
             this.ExtendedRangeEnabled.CheckedChanged += new System.EventHandler(this.ExtendedRangeEnabled_CheckedChanged);
+            this.ExtendedRangeEnabled.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ExtendedRangeEnabled.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RainbowStringsAssignment
             // 
@@ -376,6 +382,8 @@
             this.ForceEnumerationCheckbox.Text = "Force Enumeration";
             this.ForceEnumerationCheckbox.UseVisualStyleBackColor = true;
             this.ForceEnumerationCheckbox.CheckedChanged += new System.EventHandler(this.ForceEnumerationCheckbox_CheckedChanged);
+            this.ForceEnumerationCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ForceEnumerationCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // HeadstockCheckbox
             // 
@@ -387,6 +395,8 @@
             this.HeadstockCheckbox.Text = "Remove Headstock";
             this.HeadstockCheckbox.UseVisualStyleBackColor = true;
             this.HeadstockCheckbox.CheckedChanged += new System.EventHandler(this.HeadstockCheckbox_CheckedChanged);
+            this.HeadstockCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.HeadstockCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RemoveSkylineCheckbox
             // 
@@ -398,6 +408,8 @@
             this.RemoveSkylineCheckbox.Text = "Remove Skyline";
             this.RemoveSkylineCheckbox.UseVisualStyleBackColor = true;
             this.RemoveSkylineCheckbox.CheckedChanged += new System.EventHandler(this.RemoveSkylineCheckbox_CheckedChanged);
+            this.RemoveSkylineCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RemoveSkylineCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // GreenScreenWallCheckbox
             // 
@@ -409,6 +421,8 @@
             this.GreenScreenWallCheckbox.Text = "Greenscreen Wall";
             this.GreenScreenWallCheckbox.UseVisualStyleBackColor = true;
             this.GreenScreenWallCheckbox.CheckedChanged += new System.EventHandler(this.GreenScreenWallCheckbox_CheckedChanged);
+            this.GreenScreenWallCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.GreenScreenWallCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // AutoLoadProfileCheckbox
             // 
@@ -420,6 +434,8 @@
             this.AutoLoadProfileCheckbox.Text = "Autoload Last Used Profile";
             this.AutoLoadProfileCheckbox.UseVisualStyleBackColor = true;
             this.AutoLoadProfileCheckbox.CheckedChanged += new System.EventHandler(this.AutoLoadProfileCheckbox_CheckedChanged);
+            this.AutoLoadProfileCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.AutoLoadProfileCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // FretlessModeCheckbox
             // 
@@ -431,6 +447,8 @@
             this.FretlessModeCheckbox.Text = "Fretless Mode";
             this.FretlessModeCheckbox.UseVisualStyleBackColor = true;
             this.FretlessModeCheckbox.CheckedChanged += new System.EventHandler(this.FretlessModeCheckbox_CheckedChanged);
+            this.FretlessModeCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.FretlessModeCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RemoveInlaysCheckbox
             // 
@@ -442,6 +460,8 @@
             this.RemoveInlaysCheckbox.Text = "Remove Inlays";
             this.RemoveInlaysCheckbox.UseVisualStyleBackColor = true;
             this.RemoveInlaysCheckbox.CheckedChanged += new System.EventHandler(this.RemoveInlaysCheckbox_CheckedChanged);
+            this.RemoveInlaysCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RemoveInlaysCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleLoftWhenStartupRadio
             // 
@@ -521,6 +541,8 @@
             this.HowToEnumerateBox.TabStop = false;
             this.HowToEnumerateBox.Text = "How Do You Want To Enumerate?";
             this.HowToEnumerateBox.Visible = false;
+            this.HowToEnumerateBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.HowToEnumerateBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // CheckEveryXmsText
             // 
@@ -569,6 +591,8 @@
             this.ToggleLoftOffWhenBox.TabStop = false;
             this.ToggleLoftOffWhenBox.Text = "Toggle Loft Off When:";
             this.ToggleLoftOffWhenBox.Visible = false;
+            this.ToggleLoftOffWhenBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ToggleLoftOffWhenBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ExtendedRangeTuningBox
             // 
@@ -580,6 +604,8 @@
             this.ExtendedRangeTuningBox.TabStop = false;
             this.ExtendedRangeTuningBox.Text = "Enable Extended Range When Low E Is";
             this.ExtendedRangeTuningBox.Visible = false;
+            this.ExtendedRangeTuningBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ExtendedRangeTuningBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // EnabledModsBox
             // 
@@ -618,6 +644,8 @@
             this.VolumeControlsCheckbox.Text = "Control Song Volume";
             this.VolumeControlsCheckbox.UseVisualStyleBackColor = true;
             this.VolumeControlsCheckbox.CheckedChanged += new System.EventHandler(this.VolumeControlsCheckbox_CheckedChanged);
+            this.VolumeControlsCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.VolumeControlsCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // GuitarSpeakEnableCheckbox
             // 
@@ -629,6 +657,8 @@
             this.GuitarSpeakEnableCheckbox.Text = "Guitar Speak";
             this.GuitarSpeakEnableCheckbox.UseVisualStyleBackColor = true;
             this.GuitarSpeakEnableCheckbox.CheckedChanged += new System.EventHandler(this.GuitarSpeakEnableCheckbox_CheckedChanged);
+            this.GuitarSpeakEnableCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.GuitarSpeakEnableCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RemoveLyricsCheckbox
             // 
@@ -640,6 +670,8 @@
             this.RemoveLyricsCheckbox.Text = "Remove Lyrics";
             this.RemoveLyricsCheckbox.UseVisualStyleBackColor = true;
             this.RemoveLyricsCheckbox.CheckedChanged += new System.EventHandler(this.RemoveLyricsCheckbox_CheckedChanged);
+            this.RemoveLyricsCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RemoveLyricsCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // CustomColorsCheckbox
             // 
@@ -651,6 +683,8 @@
             this.CustomColorsCheckbox.Text = "Custom String Colors";
             this.CustomColorsCheckbox.UseVisualStyleBackColor = true;
             this.CustomColorsCheckbox.CheckedChanged += new System.EventHandler(this.CustomColorsCheckbox_CheckedChanged);
+            this.CustomColorsCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.CustomColorsCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RemoveLineMarkersCheckBox
             // 
@@ -662,6 +696,8 @@
             this.RemoveLineMarkersCheckBox.Text = "Remove Line Markers";
             this.RemoveLineMarkersCheckBox.UseVisualStyleBackColor = true;
             this.RemoveLineMarkersCheckBox.CheckedChanged += new System.EventHandler(this.RemoveLineMarkersCheckBox_CheckedChanged);
+            this.RemoveLineMarkersCheckBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RemoveLineMarkersCheckBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RainbowStringsEnabled
             // 
@@ -673,6 +709,8 @@
             this.RainbowStringsEnabled.Text = "Rainbow Strings";
             this.RainbowStringsEnabled.UseVisualStyleBackColor = true;
             this.RainbowStringsEnabled.CheckedChanged += new System.EventHandler(this.RainbowStringsEnabled_CheckedChanged);
+            this.RainbowStringsEnabled.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RainbowStringsEnabled.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // SongListBox
             // 
@@ -686,6 +724,8 @@
             this.SongListBox.TabIndex = 51;
             this.SongListBox.TabStop = false;
             this.SongListBox.Text = "Song Lists";
+            this.SongListBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.SongListBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // SongListWarning
             // 
@@ -718,6 +758,8 @@
             this.KeybindingsBox.TabIndex = 52;
             this.KeybindingsBox.TabStop = false;
             this.KeybindingsBox.Text = "Key Bindings";
+            this.KeybindingsBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.KeybindingsBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RemoveLyricsKeyLabel
             // 
@@ -746,6 +788,8 @@
             this.ResetToDefaultButton.Text = "Reset Mods To Default";
             this.ResetToDefaultButton.UseVisualStyleBackColor = true;
             this.ResetToDefaultButton.Click += new System.EventHandler(this.ResetToDefaultSettings);
+            this.ResetToDefaultButton.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ResetToDefaultButton.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // String0ColorButton
             // 
@@ -884,6 +928,7 @@
             this.ChangeStringColorsBox.TabStop = false;
             this.ChangeStringColorsBox.Text = "Change String Colors";
             this.ChangeStringColorsBox.Visible = false;
+            
             // 
             // ColorBlindStringColorsRadio
             // 
@@ -896,6 +941,8 @@
             this.ColorBlindStringColorsRadio.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
             this.ColorBlindStringColorsRadio.UseVisualStyleBackColor = true;
             this.ColorBlindStringColorsRadio.CheckedChanged += new System.EventHandler(this.ColorBlindStringColorsRadio_CheckedChanged);
+            this.ColorBlindStringColorsRadio.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ColorBlindStringColorsRadio.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // DefaultStringColorsRadio
             // 
@@ -1035,6 +1082,8 @@
             this.RbTone2.TabIndex = 102;
             this.RbTone2.Text = "Set Highlighted Tone As New Default Bass Tone";
             this.RbTone2.UseVisualStyleBackColor = true;
+            this.RbTone2.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RbTone2.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RbTone1
             // 
@@ -1045,6 +1094,8 @@
             this.RbTone1.TabIndex = 101;
             this.RbTone1.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.RbTone1.UseVisualStyleBackColor = true;
+            this.RbTone1.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RbTone1.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // RbTone0
             // 
@@ -1057,6 +1108,8 @@
             this.RbTone0.TabStop = true;
             this.RbTone0.Text = "Set Highlighted Tone As New Default Rhythm Tone";
             this.RbTone0.UseVisualStyleBackColor = true;
+            this.RbTone0.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.RbTone0.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnLoadTonesFromProfiles
             // 
@@ -1067,6 +1120,8 @@
             this.BtnLoadTonesFromProfiles.Text = "Load Tones From Profile";
             this.BtnLoadTonesFromProfiles.UseVisualStyleBackColor = true;
             this.BtnLoadTonesFromProfiles.Click += new System.EventHandler(this.BtnLoadTonesFromProfiles_Click);
+            this.BtnLoadTonesFromProfiles.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnLoadTonesFromProfiles.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ListProfileTones
             // 
@@ -1075,6 +1130,8 @@
             this.ListProfileTones.Name = "ListProfileTones";
             this.ListProfileTones.Size = new System.Drawing.Size(184, 134);
             this.ListProfileTones.TabIndex = 98;
+            this.ListProfileTones.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ListProfileTones.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ChangeTonesHeader
             // 
@@ -1084,6 +1141,8 @@
             this.ChangeTonesHeader.Size = new System.Drawing.Size(1123, 19);
             this.ChangeTonesHeader.TabIndex = 97;
             this.ChangeTonesHeader.Text = "Change Default Tones";
+            this.ChangeTonesHeader.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ChangeTonesHeader.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnSetDefaultTones
             // 
@@ -1094,6 +1153,8 @@
             this.BtnSetDefaultTones.Text = "Assign Tone As New Default";
             this.BtnSetDefaultTones.UseVisualStyleBackColor = true;
             this.BtnSetDefaultTones.Click += new System.EventHandler(this.BtnSetDefaultTones_Click);
+            this.BtnSetDefaultTones.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnSetDefaultTones.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnRemoveTempFolders
             // 
@@ -1104,6 +1165,8 @@
             this.BtnRemoveTempFolders.Text = "Remove Temporary Folders";
             this.BtnRemoveTempFolders.UseVisualStyleBackColor = true;
             this.BtnRemoveTempFolders.Click += new System.EventHandler(this.BtnRemoveTempFolders_Click);
+            this.BtnRemoveTempFolders.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnRemoveTempFolders.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnAddCustomMenu
             // 
@@ -1114,6 +1177,8 @@
             this.BtnAddCustomMenu.Text = "Add EXIT GAME to Main Menu + Enable Direct Connect Mode";
             this.BtnAddCustomMenu.UseVisualStyleBackColor = true;
             this.BtnAddCustomMenu.Click += new System.EventHandler(this.BtnAddCustomMenu_Click);
+            this.BtnAddCustomMenu.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnAddCustomMenu.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnAddFastLoadMod
             // 
@@ -1124,6 +1189,8 @@
             this.BtnAddFastLoadMod.Text = "Enable Fast Load";
             this.BtnAddFastLoadMod.UseVisualStyleBackColor = true;
             this.BtnAddFastLoadMod.Click += new System.EventHandler(this.BtnAddFastLoadMod_Click);
+            this.BtnAddFastLoadMod.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnAddFastLoadMod.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnUnpackCacheAgain
             // 
@@ -1134,6 +1201,8 @@
             this.BtnUnpackCacheAgain.Text = "Clean Up Unpacked Cache";
             this.BtnUnpackCacheAgain.UseVisualStyleBackColor = true;
             this.BtnUnpackCacheAgain.Click += new System.EventHandler(this.BtnUnpackCacheAgain_Click);
+            this.BtnUnpackCacheAgain.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnUnpackCacheAgain.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnRestoreDefaults
             // 
@@ -1144,6 +1213,8 @@
             this.BtnRestoreDefaults.Text = "Restore Cache Backup";
             this.BtnRestoreDefaults.UseVisualStyleBackColor = true;
             this.BtnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
+            this.BtnRestoreDefaults.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnRestoreDefaults.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnAddCustomTunings
             // 
@@ -1154,6 +1225,8 @@
             this.BtnAddCustomTunings.Text = "Add Custom Tunings";
             this.BtnAddCustomTunings.UseVisualStyleBackColor = true;
             this.BtnAddCustomTunings.Click += new System.EventHandler(this.BtnAddCustomTunings_Click);
+            this.BtnAddCustomTunings.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnAddCustomTunings.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnSaveTuningChanges
             // 
@@ -1164,6 +1237,8 @@
             this.BtnSaveTuningChanges.Text = "Save Changes";
             this.BtnSaveTuningChanges.UseVisualStyleBackColor = true;
             this.BtnSaveTuningChanges.Click += new System.EventHandler(this.BtnSaveTuningChanges_Click);
+            this.BtnSaveTuningChanges.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnSaveTuningChanges.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // LblStrings
             // 
@@ -1193,6 +1268,8 @@
             this.NupString0.Size = new System.Drawing.Size(39, 20);
             this.NupString0.TabIndex = 86;
             this.NupString0.ValueChanged += new System.EventHandler(this.NupString0_ValueChanged);
+            this.NupString0.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString0.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // LblUIIndex
             // 
@@ -1263,6 +1340,8 @@
             this.NupString1.Size = new System.Drawing.Size(39, 20);
             this.NupString1.TabIndex = 81;
             this.NupString1.ValueChanged += new System.EventHandler(this.NupString1_ValueChanged);
+            this.NupString1.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString1.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // NupString5
             // 
@@ -1282,6 +1361,8 @@
             this.NupString5.Size = new System.Drawing.Size(39, 20);
             this.NupString5.TabIndex = 80;
             this.NupString5.ValueChanged += new System.EventHandler(this.NupString5_ValueChanged);
+            this.NupString5.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString5.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // NupString4
             // 
@@ -1301,6 +1382,8 @@
             this.NupString4.Size = new System.Drawing.Size(39, 20);
             this.NupString4.TabIndex = 79;
             this.NupString4.ValueChanged += new System.EventHandler(this.NupString4_ValueChanged);
+            this.NupString4.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString4.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // NupString3
             // 
@@ -1320,6 +1403,8 @@
             this.NupString3.Size = new System.Drawing.Size(39, 20);
             this.NupString3.TabIndex = 78;
             this.NupString3.ValueChanged += new System.EventHandler(this.NupString3_ValueChanged);
+            this.NupString3.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString3.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // NupString2
             // 
@@ -1339,6 +1424,8 @@
             this.NupString2.Size = new System.Drawing.Size(39, 20);
             this.NupString2.TabIndex = 77;
             this.NupString2.ValueChanged += new System.EventHandler(this.NupString2_ValueChanged);
+            this.NupString2.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.NupString2.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // TxtUIName
             // 
@@ -1363,6 +1450,8 @@
             this.BtnAddTuning.Text = "Add Tuning";
             this.BtnAddTuning.UseVisualStyleBackColor = true;
             this.BtnAddTuning.Click += new System.EventHandler(this.BtnAddTuning_Click);
+            this.BtnAddTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnAddTuning.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnRemoveTuning
             // 
@@ -1373,6 +1462,8 @@
             this.BtnRemoveTuning.Text = "Remove Tuning";
             this.BtnRemoveTuning.UseVisualStyleBackColor = true;
             this.BtnRemoveTuning.Click += new System.EventHandler(this.BtnRemoveTuning_Click);
+            this.BtnRemoveTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.BtnRemoveTuning.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ListTunings
             // 
@@ -1382,6 +1473,8 @@
             this.ListTunings.Size = new System.Drawing.Size(185, 134);
             this.ListTunings.TabIndex = 72;
             this.ListTunings.SelectedIndexChanged += new System.EventHandler(this.ListTunings_SelectedIndexChanged);
+            this.ListTunings.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ListTunings.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToolTip
             // 
@@ -1400,6 +1493,8 @@
             this.ToggleSkylineBox.TabStop = false;
             this.ToggleSkylineBox.Text = "Toggle Skyline Off When:";
             this.ToggleSkylineBox.Visible = false;
+            this.ToggleSkylineBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ToggleSkylineBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleSkylineSongRadio
             // 
@@ -1436,6 +1531,8 @@
             this.HowToToggleLyrics.TabStop = false;
             this.HowToToggleLyrics.Text = "Toggle Lyrics Off When:";
             this.HowToToggleLyrics.Visible = false;
+            this.ToggleSkylineBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ToggleSkylineBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleLyricsManualRadio
             // 
@@ -1448,6 +1545,8 @@
             this.ToggleLyricsManualRadio.Text = "Lyrics Off Via Hotkey";
             this.ToggleLyricsManualRadio.UseVisualStyleBackColor = true;
             this.ToggleLyricsManualRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsManualRadio_CheckedChanged);
+            this.ToggleLyricsManualRadio.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ToggleLyricsManualRadio.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // ToggleLyricsRadio
             // 
@@ -1460,6 +1559,8 @@
             this.ToggleLyricsRadio.Text = "Lyrics Always Off";
             this.ToggleLyricsRadio.UseVisualStyleBackColor = true;
             this.ToggleLyricsRadio.CheckedChanged += new System.EventHandler(this.ToggleLyricsRadio_CheckedChanged);
+            this.ToggleLyricsRadio.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ToggleLyricsRadio.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // GuitarSpeakBox
             // 
@@ -1521,6 +1622,8 @@
             this.GuitarSpeakWhileTuningBox.Text = "Use While Tuning";
             this.GuitarSpeakWhileTuningBox.UseVisualStyleBackColor = true;
             this.GuitarSpeakWhileTuningBox.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
+            this.GuitarSpeakWhileTuningBox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.GuitarSpeakWhileTuningBox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // GuitarSpeakSaveButton
             // 
