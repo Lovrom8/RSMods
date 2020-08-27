@@ -204,6 +204,7 @@
             this.ToggleLoftCheckbox.Text = "Toggle Loft";
             this.ToggleLoftCheckbox.UseVisualStyleBackColor = true;
             this.ToggleLoftCheckbox.CheckedChanged += new System.EventHandler(this.ToggleLoftCheckbox_CheckedChanged);
+            this.ToggleLoftCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.ToggleLoftCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // AddVolumeCheckbox
@@ -218,6 +219,8 @@
             this.AddVolumeCheckbox.UseVisualStyleBackColor = true;
             this.AddVolumeCheckbox.Visible = false;
             this.AddVolumeCheckbox.CheckedChanged += new System.EventHandler(this.AddVolumeCheckbox_CheckedChanged);
+            this.AddVolumeCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.AddVolumeCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // DecreaseVolumeCheckbox
             // 
@@ -1382,8 +1385,8 @@
             // 
             // ToolTip
             // 
+            this.ToolTip.Active = false;
             this.ToolTip.AutomaticDelay = 0;
-            this.ToolTip.ShowAlways = true;
             this.ToolTip.ToolTipTitle = "ToolTip";
             // 
             // ToggleSkylineBox

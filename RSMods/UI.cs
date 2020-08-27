@@ -1637,18 +1637,27 @@ namespace RSMods
         {
             HasToolTipDictionaryBeenCreatedYet = true;
             TooltipDictionary.Add(ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings.\n Best used with Venue Mode off (setting in game).\n Used by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\n Player just sees an all black background when this is enabled.\n Options for turning the loft off only when in a song, when the game first starts up, or on a key press.");
-            TooltipDictionary.Add(AddVolumeCheckbox, "Experimental");
+            //TooltipDictionary.Add(AddVolumeCheckbox, "Experimental"); // Changed to "Change Song Volume"
+
+        }
+
+        private void HideToolTips(object sender, EventArgs e)
+        {
+            ToolTip.Hide(MainForm.ActiveForm);
+            ToolTip.Active = false;
         }
 
         private void RunToolTips(object sender, EventArgs e)  // Documentation: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.tooltip.settooltip?view=netcore-3.1
         {
             ToolTip currentTooltip = new ToolTip();
 
-            if (CreatedToolTipYet) // Attempt to stop the double tooltip on hover over attempt is above 1 (so 2, 3, 4, etc) || Does not work in it's current state.
+            if (CreatedToolTipYet) // Attempt to stop the double tooltip on hover over attempt is above 1 (so 2, 3, 4, etc) || Works only after 5 seconds?
             {
                 currentTooltip.Dispose();
                 currentTooltip = new ToolTip();
             }
+
+            currentTooltip.Active = true;
 
             if (!HasToolTipDictionaryBeenCreatedYet) // Have we filled the tooltip dictionary? If so, skip this, if not, fill the dictionary.
             {
