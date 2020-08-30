@@ -4,8 +4,8 @@
 
 ## Branches:
 1) [Future](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/Future) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future)
-2) [GUI](https://github.com/Lovrom8/tree/RSCDLCEnabler-2020Edition/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI)
-3) [One-Click-Installer](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/One-Click-Installer) - one big button :) - [latest build](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/releases/latest)
+2) [GUI](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI)
+3) [One-Click-Installer](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/releases/latest)
 
 ## Features:
 
@@ -39,7 +39,7 @@
   * Again something which may come in handy if you are a streamer (or just prefer your screen to be as uncluttered as possible), you can now remove certain elements from the screen
   * **Options**
   1. Headstock
-  2. Skyline
+  2. Skyline (Dynamic Difficulty bars at the top)
   3. Frets
   4. Inlays
   5. Lane Markers
@@ -49,7 +49,7 @@
   * A fun mod which will continously hue-shift the colors of your strings, making them look like a rainbow! 
   
 * **GuitarSpeak**
-  * What hides behind this mysterious name is an exciting feature that will let you control the game by playing certain notes on your guitar (fully customizable!). Forget your keyboard and mouse, guitar is where it's at! There is an option to continue to use it while in the tuner - it is off be default as it can cause issues, but if you're happy to continue using it there - hit that button. It is OFF while in a song. 
+  * What hides behind this mysterious name is an exciting feature that will let you control the game by playing certain notes on your guitar (fully customizable!). Forget your keyboard and mouse, guitar is where it's at! There is an option to continue to use it while in the tuner - it is off be default as it can cause issues, but if you're happy to continue using it there - hit that button. It is OFF while in a song, tuning menus, and calibration menus by default.
 
 * **Auto enter last used profile**
   * Also know as the Fork-in-the-toaster mod, due to it's simple but effective nature, it is best used in conjunction with the Fast Load mod. The DLL will spam Enter key in order to automatically enter the game. It may cause potential issues if UPLAY servers are unavailable, but in general it makes your life quite a bit easier.
@@ -58,25 +58,27 @@
   * After all, this mod is based on the proxy DLL which bypassed the check which enabled users to play community made songs in the game.
 
 * **Fast Load** - **GUI Only**
-  * If you are running the game from an SSD or especially an NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in matter of seconds. It can be fairly unstable, but in general it should work provided you don't used it on a good old HDD.
+  * If you are running the game from an SSD or especially an NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in matter of seconds. It can be fairly unstable, but in general it should work provided you don't used it on a good old HDD. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   
 * **Custom Tunings** - **GUI Only**
   * By default, the game has a fairly limited set of tunings it can recongnize and in cases where it doesn't find in the list, it will just display CUSTOM TUNING. And that isn't of much help, is it? But don't worry, you can now make the game know that a B Standard song is actually B Standard, and not just _Custom Tuning_ :(
-  Together with the list we include, you can add your own tunings if you find some which aren't included in the list.
+  Together with the list we include, you can add your own tunings if you find some which aren't included in the list. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   
 * **EXIT GAME in the menu** - **GUI Only**
-  * As useful of a device your mouse is, it is not really the most convenient option when you want to exit the game. And until now, you had to use the said mouse to do that, but fret no more. It took only six and a half years, but now you can exit the game by pressing EXIT GAME in the menu (which replaces the UPLAY button, and let's be honest, nooone used that)
+  * As useful of a device your mouse is, it is not really the most convenient option when you want to exit the game. And until now, you had to use the said mouse to do that, but fret no more. It took only six and a half years, but now you can exit the game by pressing EXIT GAME in the menu (which replaces the UPLAY button, and let's be honest, noone used that). This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   
 * **Enable Direct Connect Mode** - **GUI Only**
-  * This mod is done with the same button as Exit in the Main Menu as behind the scenes it is the same file that needs changed for it and we couldn't be bothered offering 3 choices here. It enables a hidden input mode that UbiSoft made - but for unknown reasons disabled for release. It is basically Microphone Mode - but with the tone simulations enabled. 
+  * This mod is done with the same button as Exit in the Main Menu as behind the scenes it is the same file that needs changed for it and we couldn't be bothered offering 3 choices here. It enables a hidden input mode that UbiSoft made - but for unknown reasons disabled for release. It is basically Microphone Mode - but with the tone simulations enabled. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   ** Known issues; Some interfaces report the guitar input channel as one that the game isn't expecting, in this case - Direct Connected mode may not work for you particularly well. If you want to test before applying - go into Microphone Mode and see if your interface lets you have some note detection. If it does - then DC mode should work for you once enabled.
   
 * **Change Default tones** - **GUI Only**
-  * Add your favorite tones to slot number 1 on the tone stick. This is the default tone that is applied when the game loads up. There is a seperate one saved for Lead, Rhythm and Bass. You need to have a tone saved in your profile. It does not need to be assigned to a "tone stick" slot for the GUI to be able to load it and then set it as the new default.
+  * Add your favorite tones to slot number 1 on the tone stick. This is the default tone that is applied when the game loads up. There is a seperate one saved for Lead, Rhythm and Bass. You need to have a tone saved in your profile. It does not need to be assigned to a "tone stick" slot for the GUI to be able to load it and then set it as the new default. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
 
+  * Note: While the ability to change the tone of the Emulated Bass is available and can be added easily, we do not want to edit this tone nor do we condone anyone editting this tone. The Emulated Bass tone has a unique characteristic where it's always the same tone either in song, or in the menus. For this reason we believe that the default tone is most likely the best option to pick for the extensive range of songs / genres it can be used in.
+  
 ## Installation:
 * There's two options as how this mod can be installed:
-1. Manually build/copy the DLL to the root folder of Rocksmith 2014 RM, create a file called RS.ini and fill it with options as [shown below](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition#settings)
+1. Manually build/copy the DLL to the root folder of Rocksmith 2014 RM, create a file called RSMods.ini and fill it with options as [shown below](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition#settings)
    If it is installed in the most common folder (C drive, Program Files/Steam/Steamapps), VS will attempt to copy the DLL to the folder for your convenience.
 2. Use the One-Click-Installer to copy both the DLL and RSMods GUI to the game folder. If it's unable to automatically detect where Rocksmith is installed, it will ask you to point it to the correct folder.
   
@@ -90,8 +92,9 @@
 * Setup as C++17 / VS2019 project
 
 ## Settings:
+If you want to manually create the settings file for the DLL, download the template from [here](https://pastebin.com/raw/tTW5KNdw):
 
-If you want to manually create the settings file for the DLL, the general structure should be as follows:
+And the general file structure should be as follows:
 
 Section        | Entry             | Possible values | Info
 -------------- | ----------------- | --------------- | ------ |
@@ -100,12 +103,12 @@ Section        | Entry             | Possible values | Info
  &nbsp;        |     ...           |     &nbsp;      | &nbsp; |
  &nbsp;        | SongListTitles_6  |  _user defined string_ | &nbsp; |       
  **Keybinds** | &nbsp;            | &nbsp;          | &nbsp; |
-&nbsp;    | ToggleLoftKey | letter (F, G, H) / function key (F1, F10) | &nbsp; |
-&nbsp;    | AddVolumeKey | letter (F, G, H) / function key (F1, F10) | &nbsp; |
-&nbsp;    | DecreaseVolumeKey | letter (F, G, H) / function key (F1, F10)  | &nbsp; |
-&nbsp;    | ShowSongTimerKey | letter (F, G, H) / function key (F1, F10) | &nbsp; |
-&nbsp;    | ForceReEnumerationKey | letter (F, G, H) / function key (F1, F10) | &nbsp; | 
-&nbsp;    | RainbowStringsKey | letter (F, G, H) / function key (F1, F10) | &nbsp; |
+&nbsp;    | ToggleLoftKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) | &nbsp; |
+&nbsp;    | AddVolumeKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) | &nbsp; |
+&nbsp;    | DecreaseVolumeKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack)  | &nbsp; |
+&nbsp;    | ShowSongTimerKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) | &nbsp; |
+&nbsp;    | ForceReEnumerationKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) | &nbsp; | 
+&nbsp;    | RainbowStringsKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) | &nbsp; |
 **Toggle Switches** | &nbsp;            | &nbsp;          | on = feature enabled, off = disabled |
 &nbsp;  | ToggleLoft            | on/off       | &nbsp; |
 &nbsp; | AddVolume            | on/off           | &nbsp; |
@@ -131,15 +134,15 @@ Section        | Entry             | Possible values | Info
 **String Colors** | &nbsp;            | hex defined color (eg. FF0000) | &nbsp; |
 &nbsp;  | string0_N |     &nbsp;      | Colors used in non-ER songs |
 &nbsp;  |     ...           |     &nbsp;      | &nbsp; |
-&nbsp;  | string6_N |     &nbsp;      | &nbsp; |
+&nbsp;  | string5_N |     &nbsp;      | &nbsp; |
 &nbsp;  | string0_CB |     &nbsp;      | Colors used in ER songs |
 &nbsp;  |     ...           |     &nbsp;      | &nbsp; |
-&nbsp;  | string6_CB |     &nbsp;      | &nbsp; |
+&nbsp;  | string5_CB |     &nbsp;      | &nbsp; |
 **Mod Settings** | &nbsp;            | &nbsp;          | &nbsp; |
-ExtendedRangeModeAt         | numerical value         | Offset to E Standard (-1 = EB, -5 = B) |
+ExtendedRangeModeAt         | numerical value         | Offset to E Standard (-1 = Eb, -5 = B) |
 CheckForNewSongsInterval  | interval in milliseconds  | Time between each check |
 **Guitar Speak** | &nbsp;            | &nbsp;          | &nbsp; |
-&nbsp;  | GuitarSpeakWhileTuning     | &nbsp;          | Is GuitarSpeak enabled while tuning |
+&nbsp;  | GuitarSpeakWhileTuning     | on/off          | Is GuitarSpeak enabled while tuning (ONLY FOR ADVANCED USERS) |
 &nbsp;  | GuitarSpeakDeleteWhen | Numeric index | Position in note array (using GUI recommended for this)
 &nbsp;  | GuitarSpeakSpaceWhen | &nbsp;          | &nbsp; |
 &nbsp;  | GuitarSpeakEnterWhen | &nbsp;          | &nbsp; |
@@ -155,7 +158,29 @@ CheckForNewSongsInterval  | interval in milliseconds  | Time between each check 
 &nbsp;  | GuitarSpeakTildeaWhen | &nbsp;          | &nbsp; | 
 &nbsp;  | GuitarSpeakForSlashWhen | &nbsp;          | &nbsp; |
 
+* The available keys for the keybinding section can be seen here: ![Visual Representation](https://i.imgur.com/lpNv3yG.png) You must follow the V-Key format available here: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes (yes that includes the VK_ part). Ex. F3 would be VK_F3, and the music play/ pause button would be VK_MEDIA_PLAY_PAUSE. We understand that us locking down the amount of keys may aggrevate some of you but we want to allow you to search for songs without turning on/ off your mods when you search for "Slipknot".
+
+* String Numbers go from 0-5 as this is zero-index, or how computers normally work. A translation of this is: 0. low E, 1. A, 2. D, 3. G, 4. B, 5. high E.
+
+* Guitar Speak note values are measured from C-1 to C6 starting at 0 and moving up to 96. Ex. The low E string at the 12th fret is E3, and would translate to the number 52.
+
+* GuitarSpeakWhileTuning is only for advanced users because if it is on and you have one of your GuitarSpeak values set wrong it can prevent you from tuning or playing this game. This decision was made to prevent people from uninstalling the mod because GuitarSpeak stops them from rocking out.
+
+* Song list names should be below 25 characters (including spaces) because the text streches out and gets hard to read.
+
+
 ## FAQ
 
-If you have any questions, feel free to reach us on [Rocksmith Discord](https://rocksmith.rocks/discord) and #rsmods channel.
+* Q: I want something added to the mod, like I want to remove XYZ from the game!!!
+* A: Post a request in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/issues) with the name "DLL - FR - XYZ". Please follow this format so we know what we are doing, either fixing something or adding a new feature. Note: Just because you post a request for us to do something doesn't mean we can do it and/ or we will do it. Please don't keep begging us to do your request, we will get to it if we think it's worth our time spent.
+
+
+* Q: I found a bug / somethings not working as it should! How do I get this fixed?
+* A: Please post an issue in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/issues) with the name "DLL - Bug - XYZ" if the bug is in Rocksmith or "GUI - Bug - XYZ" if the bug is in the tool to mod your game. Please try to be descriptive in this, as posting "It don't work" doesn't help us. Screenshots and/ or videos can help, but steps on what you did to get it to break would be greatly appreciated. Sometimes bugs are where we get our best features :)
+
+
+* Q: Who made these mods, and how can I thank you guys?
+* A: Thank you for showing interest in the project. We spent a good two months working on this project trying to flesh it out so people would enjoy using it. The developers are mainly: LovroM8 (Lovro), and Ffio1 (Ffio) but we received a lot of help from ZagatoZee (ZZ), Kokolihapihvi (Koko), and L0fka. All we ask for is a quick thank you, and those can either be sent by starring this project on Github, telling your Rocksmith friends, or just coming into the Discord and saying "Thank You". I know it sounds like it's not much, but it really makes our day(s).
+
+* If you have any questions, feel free to reach us in the [r/Rocksmith Discord](https://rocksmith.rocks/discord) in the #rsmods channel, or in the #general channel of the [CustomsForge Discord](https://discord.gg/cf)
 
