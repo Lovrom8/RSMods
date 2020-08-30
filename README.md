@@ -158,7 +158,7 @@ CheckForNewSongsInterval  | interval in milliseconds  | Time between each check 
 &nbsp;  | GuitarSpeakTildeaWhen | &nbsp;          | &nbsp; | 
 &nbsp;  | GuitarSpeakForSlashWhen | &nbsp;          | &nbsp; |
 
-* The available keys for the keybinding section can be seen here: ![Visual Representation](https://i.imgur.com/lpNv3yG.png) You must follow the V-Key format available here: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes (yes that includes the VK_ part). Ex. F3 would be VK_F3, and the music play/ pause button would be VK_MEDIA_PLAY_PAUSE. We understand that us locking down the amount of keys may aggrevate some of you but we want to allow you to search for songs without turning on/ off your mods when you search for "Slipknot".
+* The available keys for the keybinding section can be seen here: ![Visual Representation](https://i.imgur.com/lpNv3yG.png) You must follow the V-Key format available here: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes (yes that includes the VK_ part). Ex. F3 would be VK_F3, and the music play/ pause button would be VK_MEDIA_PLAY_PAUSE. We understand that us locking down the amount of keys may aggrevate some of you but we want to allow you to search for songs without turning on/ off your mods when you search for "Slipknot". **If you are a streamer and have an Elgato Stream Deck** set your keybinds to the F13-F24 keys as most keyboards don't have those keys but we allow them to be used for keybinds.
 
 * String Numbers go from 0-5 as this is zero-index, or how computers normally work. A translation of this is: 0. low E, 1. A, 2. D, 3. G, 4. B, 5. high E.
 
