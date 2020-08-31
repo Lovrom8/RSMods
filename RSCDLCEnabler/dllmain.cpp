@@ -15,7 +15,7 @@ unsigned WINAPI EnumerationThread(void*) {
 	Settings::ReadModSettings();
 
 	int oldDLCCount = Enumeration::GetCurrentDLCCount(), newDLCCount = oldDLCCount;
-	
+
 	while (!GameClosing) {
 		if (Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
@@ -152,6 +152,7 @@ void SetCustomColors() {
 		ColorMap normalColors = GetCustomColors(strIdx, false);
 		ColorMap cbColors = GetCustomColors(strIdx, true);
 
+
 		customColorsFull.insert(normalColors.begin(), normalColors.end());
 		customColorsFull.insert(cbColors.begin(), cbColors.end());
 
@@ -159,7 +160,18 @@ void SetCustomColors() {
 	}
 }
 
-void GenerateTexture(IDirect3DDevice9* pDevice) {
+RSColor GenerateRandomColor() {
+	RSColor rndColor;
+
+	static std::uniform_real_distribution<> urd(0.0f, 1.0f);
+	rndColor.r = urd(rng);
+	rndColor.g = urd(rng);
+	rndColor.b = urd(rng);
+
+	return rndColor;
+}
+
+void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, bool random = false, bool solid = false) {
 	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
 		Sleep(500);
 
@@ -172,11 +184,21 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 
 	Bitmap bmp(width, height, PixelFormat32bppARGB);
 	Graphics graphics(&bmp);
+	RSColor iniColor;
+
+	if (solid) // If you want to have the same color on all strings 
+		iniColor = GenerateRandomColor();
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
 	for (int i = 0; i < 16;i++) {
-		RSColor iniColor = Settings::GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
+		if (random) { // If we want to generate random colors
+			if (!solid) // But not if we want them to all be the same color
+				iniColor = GenerateRandomColor();
+		}
+		else
+			iniColor = Settings::GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
+
 		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
@@ -204,8 +226,9 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 	BitmapData bitmapData;
 	D3DLOCKED_RECT lockedRect;
 
-	D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &ourTexture);
-	ourTexture->LockRect(0, &lockedRect, 0, 0);
+	D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture);
+
+	(*ppTexture)->LockRect(0, &lockedRect, 0, 0);
 
 	bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
 	unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
@@ -221,11 +244,16 @@ void GenerateTexture(IDirect3DDevice9* pDevice) {
 		pDestPixels += lockedRect.Pitch;
 	}
 
-	ourTexture->UnlockRect(0);
+	(*ppTexture)->UnlockRect(0);
 
-	//D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, ourTexture, 0);
+	//D3DXSaveTextureToFileA("generatedTexture_d3d.dds", D3DXIFF_DDS, (*ppTexture), 0);
 
 	SetCustomColors();
+}
+
+void GenerateRandomTextures(IDirect3DDevice9* pDevice) {
+	for (int textIdx = 0; textIdx < randomTextureCount;textIdx++) 
+		GenerateTexture(pDevice, &randomTextures[textIdx], true, true);
 }
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
@@ -269,7 +297,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		std::cout << "ImGUI Init" << std::endl;
 
-		GenerateTexture(pDevice);
+		GenerateTexture(pDevice, &ourTexture);
+		GenerateRandomTextures(pDevice);
 
 		Settings::UpdateSettings();
 	}
@@ -325,7 +354,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 	if (generateTexture) {
-		GenerateTexture(pDevice);
+		GenerateTexture(pDevice, &ourTexture);
 		generateTexture = false;
 	}
 
@@ -342,13 +371,24 @@ HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 	return ResetReturn;
 }
 
+unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but we don't really need it to be super precise nor thread safe, so yeah
+	while (!GameClosing) {
+		currentRandTexture++;
+		currentRandTexture %= randomTextureCount;
+
+		Sleep(StringChangeInterval);
+	}
+
+	return 0;
+}
+
 HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
-		pDevice->SetTexture(1, ourTexture);
+		pDevice->SetTexture(1, ourTexture); //For random textures, use randomTextures[currentRandTexture]
 	}
 
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -363,7 +403,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
 		Settings::UpdateSettings();
-		GenerateTexture(pDevice);
+		GenerateTexture(pDevice, &ourTexture); 
 		std::cout << "Reloaded settings" << std::endl;
 	}
 
@@ -436,7 +476,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
-		
+
 		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
 		else if (FRETNUM_AND_MISS_INDICATOR && NumElements == 7 && VectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
@@ -814,10 +854,10 @@ unsigned WINAPI MainThread(void*) {
 	return 0;
 }
 
-
 void Initialize(void) {
 	_beginthreadex(NULL, 0, &MainThread, NULL, 0, 0);
 	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
+	_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {

@@ -3,9 +3,13 @@
 #include "d3d9.h"
 #include <vector>
 #include <iostream>
+#include <random>
 
 HWND hThisWnd = NULL;
 WNDPROC oWndProc = NULL;
+
+static std::random_device rd;
+static std::mt19937 rng(rd());
 
 UINT StartRegister;
 UINT VectorCount;
@@ -36,8 +40,10 @@ unsigned long crc;
 
 LPDIRECT3DTEXTURE9 pCurrTexture;
 
+const int randomTextureCount = 10;
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture;
+std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
@@ -45,6 +51,10 @@ bool cbEnabled, generateTexture = false;
 const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
 static int selectedString = 0;
 static int strR, strG, strB;
+
+int StringChangeInterval = 350; // In ms
+bool RandomTexturesEnabled = false;
+int currentRandTexture = 0;
 
 HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32)
 {
