@@ -155,6 +155,9 @@ void Settings::ReadStringColors() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return;
+	
+	customStringColorsNormal.clear();
+	customStringColorsCB.clear();
 
 	for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
 		std::string strKey = "";

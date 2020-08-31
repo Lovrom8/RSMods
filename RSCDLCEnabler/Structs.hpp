@@ -2,12 +2,13 @@
 #pragma warning(disable: 4244 4305) // Double -> Float may lose data. | initializing truncated double -> float | uninitialized value
 #include <cmath>
 #include <map>
+#include <vector>
 
 enum string_state {
 	Ambient = 0x350,
-	Enabled = 0x368,					
-	Disabled = 0x380,						
-	Glow = 0x398,			
+	Enabled = 0x368,
+	Disabled = 0x380,
+	Glow = 0x398,
 	PegsTuning = 0x3b0,
 	PegsReset = 0x3c8,
 	PegsInactive = 0x3e0,
@@ -36,7 +37,7 @@ enum string_state {
 
 	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.
-	
+
 	/*
 	in theroy based on order within gamecolormanager.flat and adding 18 hex to each address;
 	350 - start point may be off however....
@@ -76,9 +77,9 @@ struct Color {
 	}
 
 	Color(int R, int G, int B) {
-		r = (float)R/255;
-		g = (float)G/255;
-		b = (float)B/255;
+		r = (float)R / 255;
+		g = (float)G / 255;
+		b = (float)B / 255;
 	}
 
 	Color(float R, float G, float B) {
@@ -129,6 +130,7 @@ struct xyzPosition {
 
 typedef Color RSColor;
 typedef std::map<std::string, RSColor> ColorMap;
+typedef std::vector<RSColor> ColorList;
 
 /*------------------AUDIO KINETIC STUFF---------------------------------*/
 

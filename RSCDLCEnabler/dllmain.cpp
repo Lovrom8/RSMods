@@ -171,7 +171,7 @@ RSColor GenerateRandomColor() {
 	return rndColor;
 }
 
-void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, bool random = false, bool solid = false) {
+void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet) {
 	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
 		Sleep(500);
 
@@ -184,22 +184,14 @@ void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, b
 
 	Bitmap bmp(width, height, PixelFormat32bppARGB);
 	Graphics graphics(&bmp);
-	RSColor iniColor;
-
-	if (solid) // If you want to have the same color on all strings 
-		iniColor = GenerateRandomColor();
+	RSColor currColor;
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
 	for (int i = 0; i < 16;i++) {
-		if (random) { // If we want to generate random colors
-			if (!solid) // But not if we want them to all be the same color
-				iniColor = GenerateRandomColor();
-		}
-		else
-			iniColor = Settings::GetCustomColors(i > 7)[i % 8]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
+		currColor = colorSet[i]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 
-		Gdiplus::Color middleColor(iniColor.r * 255, iniColor.g * 255, iniColor.b * 255);
+		Gdiplus::Color middleColor(currColor.r * 255, currColor.g * 255, currColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
 		LinearGradientBrush linGrBrush( // Base texture for note gradients (top / normal)
@@ -251,9 +243,62 @@ void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, b
 	SetCustomColors();
 }
 
-void GenerateRandomTextures(IDirect3DDevice9* pDevice) {
-	for (int textIdx = 0; textIdx < randomTextureCount;textIdx++) 
-		GenerateTexture(pDevice, &randomTextures[textIdx], true, true);
+void GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
+	ColorList colorSet;
+
+	if (type == Random || type == Random_Solid) {
+		for (int textIdx = 0; textIdx < randomTextureCount;textIdx++) {
+			if (type == Random_Solid) {
+				RSColor iniColor = GenerateRandomColor();
+
+				for (int i = 0; i < 16; i++)
+					colorSet[i] = iniColor;
+			}
+			else {
+				for (int i = 0; i < 16; i++)
+					colorSet[i] = GenerateRandomColor();
+			}
+
+			GenerateTexture(pDevice, &randomTextures[textIdx], colorSet);
+			colorSet.clear();
+		}
+	}
+	else if (type == Rainbow) {
+		float h = 0.0f, stringOffset = 20.0f;
+		int currTexture = 0;
+
+		Color c;
+		ColorList colorsRainbow;
+
+		while (h < 360.f) {
+			h += rainbowSpeed;
+
+			for (int i = 0; i < 8;i++) { // There's two extra colors per string, so we may need to think about this a bit more
+				c.setH(h + (stringOffset * i));
+
+				colorsRainbow.push_back(c);
+			}
+
+			colorSet.insert(colorSet.begin(), colorsRainbow.begin(), colorsRainbow.end()); // Both CB and regular colors will still look the same in rainbow mode
+			colorSet.insert(colorSet.end(), colorsRainbow.begin(), colorsRainbow.end());
+
+			GenerateTexture(pDevice, &rainbowTextures[currTexture], colorSet);
+
+			colorSet.clear();
+			colorsRainbow.clear();
+
+			currTexture++;
+		}
+	}
+	else if (type == Custom) {
+		ColorList colorsN = Settings::GetCustomColors(false);
+		ColorList colorsCB = Settings::GetCustomColors(true);
+
+		colorSet.insert(colorSet.begin(), colorsN.begin(), colorsN.end());
+		colorSet.insert(colorSet.end(), colorsCB.begin(), colorsCB.end());
+
+		GenerateTexture(pDevice, &ourTexture, colorSet);
+	}
 }
 
 HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
@@ -297,10 +342,12 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		std::cout << "ImGUI Init" << std::endl;
 
-		GenerateTexture(pDevice, &ourTexture);
-		GenerateRandomTextures(pDevice);
-
 		Settings::UpdateSettings();
+
+		GenerateTextures(pDevice, Custom);
+		GenerateTextures(pDevice, Rainbow);
+		//GenerateTextures(pDevice, Random);
+		//GenerateTextures(pDevice, Random_Solid);
 	}
 
 	ImGui_ImplDX9_NewFrame();
@@ -354,19 +401,19 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 	if (generateTexture) {
-		GenerateTexture(pDevice, &ourTexture);
+		GenerateTextures(pDevice, Custom);
 		generateTexture = false;
 	}
 
 	/*if (GameLoaded) {
 		MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
 	}*/
-	
+
 
 	return hRet;
 }
 
-HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+HRESULT APIENTRY Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
 	MemHelpers::DX9DrawText("ERROR: Resetting Text (Lost)", 0xFF000000, 20, 15, FW_HEAVY, 0, 150, 300, 450, pDevice, 1);
@@ -391,7 +438,7 @@ unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but
 	return 0;
 }
 
-HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) {
+HRESULT APIENTRY Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) {
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
@@ -403,7 +450,7 @@ HRESULT APIENTRY Hook_DP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, U
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
 
-HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) {
+HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) {
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
@@ -412,7 +459,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
 		Settings::UpdateSettings();
-		GenerateTexture(pDevice, &ourTexture); 
+		GenerateTextures(pDevice, Custom);
 		std::cout << "Reloaded settings" << std::endl;
 	}
 
@@ -488,29 +535,21 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
-		else if (FRETNUM_AND_MISS_INDICATOR && NumElements == 7 && VectorCount == 4 && decl->Type == 2) { // Colors for note stems (part below the note), and note accents
+		else if (FRETNUM_AND_MISS_INDICATOR) { // Colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
-			pCurrTexture = (LPDIRECT3DTEXTURE9)pBaseTexture;
+			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
 			if (!pBaseTexture)
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
-			// It's very likely there's more than two that we have to replace, so for now, let's just check for the matching checksum
-			//if (calculatedCRC) {
-			//	if (std::find(std::begin(notewayTexturePointers), std::end(notewayTexturePointers), pCurrTexture) != std::end(notewayTexturePointers))
-			//		pDevice->SetTexture(1, ourTexture);
-			//}
-			else if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
-				if (crc == 0x02a50002) { // Same checksum for stems and accents, because they use the same texture
-					//AddToTextureList(notewayTexturePointers, pCurrTexture);
-					pDevice->SetTexture(1, ourTexture);
-				}
+			if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
+				//if (startLogging)
+				//	Log("0x%08x", crc);
 
-				/*if (notewayTexturePointers.size() == 2) {
-					std::cout << "Calculated stem CRC" << std::endl;
-					calculatedCRC = true;
-				}*/
+				if (crc == 0x02a50002)  // Same checksum for stems and accents, because they use the same texture
+					pDevice->SetTexture(1, ourTexture);
 			}
+
 			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 		}
 	}
@@ -518,7 +557,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
 
-	
+
 	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return D3D_OK;
@@ -529,7 +568,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (RemoveLyrics && Settings::ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
-	
+
 	else if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
@@ -548,7 +587,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 
 		// Skyline Removal
 		pDevice->GetTexture(1, &pBaseTextures[1]);
-		pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+		pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
 		if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
 			if (CRCForTexture(pCurrTextures[1], crc)) {
@@ -560,7 +599,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		}
 
 		pDevice->GetTexture(0, &pBaseTextures[0]);
-		pCurrTextures[0] = (LPDIRECT3DTEXTURE9)pBaseTextures[0];
+		pCurrTextures[0] = (IDirect3DTexture9*)pBaseTextures[0];
 
 		if (pBaseTextures[0]) {
 			if (CRCForTexture(pCurrTextures[0], crc)) {
@@ -579,7 +618,7 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
 			pDevice->GetTexture(1, &pBaseTextures[1]);
-			pCurrTextures[1] = (LPDIRECT3DTEXTURE9)pBaseTextures[1];
+			pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
 			if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
 				if (!pBaseTextures[1]) //if there's no texture for Stage 1
@@ -750,7 +789,7 @@ unsigned WINAPI MainThread(void*) {
 			//std::cout << currentMenu << std::endl;
 
 			//MemHelpers::DrawTextOnScreen("BIG OOOOOOF", 0x00FFFFFF, 0, 150, 200, 450);
-			
+
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
@@ -831,7 +870,7 @@ unsigned WINAPI MainThread(void*) {
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
-			
+
 
 			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
@@ -855,7 +894,7 @@ unsigned WINAPI MainThread(void*) {
 				GameLoaded = true;
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
 			}
-			
+
 
 			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();

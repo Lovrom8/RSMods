@@ -38,12 +38,14 @@ LPDIRECT3DBASETEXTURE9 pBaseTexture;
 UINT vertexBufferSize;
 unsigned long crc;
 
-LPDIRECT3DTEXTURE9 pCurrTexture;
+float rainbowSpeed = 2.f;
 
 const int randomTextureCount = 10;
 LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
+LPDIRECT3DTEXTURE9 pCurrTexture;
 LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture;
 std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
+std::vector<LPDIRECT3DTEXTURE9> rainbowTextures(360.0f / rainbowSpeed);
 
 int currIdx = 0, selectedIdx = 0, counter = 0;
 INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
@@ -52,9 +54,16 @@ const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
 static int selectedString = 0;
 static int strR, strG, strB;
 
-int StringChangeInterval = 350; // In ms
+int StringChangeInterval = 50; // In ms
 bool RandomTexturesEnabled = false;
 int currentRandTexture = 0;
+
+enum TextureType {
+	Random = 0,
+	Random_Solid = 1,
+	Rainbow = 2,
+	Custom = 3,
+};
 
 HRESULT GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32)
 {
