@@ -80,12 +80,13 @@ bool GuitarSpeak::TimerTick() {
 		std::string currentMenu = MemHelpers::GetCurrentMenu();
 
 		
-		if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu.c_str()) != std::end(tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+		
+		if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
 			std::cout << "Entered Tuning Menu!" << std::endl;
 			return false;
 		}
-
-		if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu.c_str()) != std::end(lessonModes) || std::find(std::begin(songMenus), std::end(songMenus), currentMenu.c_str()) != std::end(songMenus) || std::find(std::begin(calibrationMenus), std::end(calibrationMenus), currentMenu.c_str()) != std::end(calibrationMenus)) {
+		
+		if (MemHelpers::IsInStringArray(currentMenu, lessonModes) || MemHelpers::IsInStringArray(currentMenu, songMenus) || MemHelpers::IsInStringArray(currentMenu, calibrationMenus)) {
 			std::cout << "Entered Song Menu!" << std::endl;
 			return false;
 		}

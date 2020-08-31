@@ -134,3 +134,11 @@ int* MemHelpers::GetWindowSize() {
 		return dimensions;
 	}
 }
+
+bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray) {
+	for (int i = 0; i < stringArray->length(); i++) {
+		if (stringToCheckIfInsideArray == stringArray[i])
+			return true;
+	}
+		return false;
+}
