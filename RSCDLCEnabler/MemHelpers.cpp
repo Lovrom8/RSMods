@@ -169,3 +169,28 @@ void MemHelpers::DrawTextOnScreen(std::string textToDraw, COLORREF textColor, in
 	while (true)
 		DrawTextA(RocksmithHDC, textToDraw.c_str(), textToDraw.size(), TextRectangle, DT_NOCLIP);
 }
+
+// textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF.
+void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int fontWidth, int fontHeight, int fontWeight, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice)
+{
+
+	RECT TextRectangle;
+
+	TextRectangle.left = topLeftX;
+	TextRectangle.top = topLeftY;
+	TextRectangle.right = bottomRightX;
+	TextRectangle.bottom = bottomRightY;
+
+	ID3DXFont* textToPostToScreen = NULL; // We can't leave this uninitialized or it will flip out.
+
+	HRESULT createFont = D3DXCreateFontA(pDevice, fontWidth, fontHeight, fontWeight, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &textToPostToScreen); // Edited from https://www.drunkenhyena.com/cgi-bin/view_cpp_article.pl?chapter=3;article=17
+
+	HRESULT preloadFont = textToPostToScreen->PreloadTextA(textToDraw.c_str(), textToDraw.length()); // Supposed to reduce the performance hit (but it's D3D/DX9 but still good practice)
+
+	int fontHeightD3D = textToPostToScreen->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
+
+	if (textToPostToScreen) { // Let's clean up our junk, since font's don't do it automatically.
+		textToPostToScreen->Release();
+		textToPostToScreen = NULL;
+	}
+}

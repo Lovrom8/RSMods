@@ -358,6 +358,11 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		generateTexture = false;
 	}
 
+	/*if (GameLoaded) {
+		MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
+	}*/
+	
+
 	return hRet;
 }
 

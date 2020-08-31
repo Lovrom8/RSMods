@@ -18,6 +18,7 @@
     <ClCompile Include="Mods\Enumeration.cpp" />
     <ClCompile Include="Mods\ExtendedRangeMode.cpp" />
     <ClCompile Include="Mods\GuitarSpeak.cpp" />
+    <ClInclude Include="DirectX\d3d9types.h" />
     <ClInclude Include="Mods\CollectColors.hpp" />
     <ClInclude Include="Mods\GuitarSkeletons.hpp" />
     <ClInclude Include="Mods\GuitarSpeak.hpp" />
