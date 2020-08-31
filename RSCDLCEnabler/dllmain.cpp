@@ -480,7 +480,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 		if (RemoveLyrics && Settings::ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
 			return D3D_OK;
 	}
-	else if (std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
+	
+	else if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 			return D3D_OK;
@@ -699,7 +700,8 @@ unsigned WINAPI MainThread(void*) {
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
 			//std::cout << currentMenu << std::endl;
 
-			if (std::find(std::begin(lessonModes), std::end(lessonModes), currentMenu) != std::end(lessonModes)) // Is User In A Lesson
+			
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
 				LessonMode = false;
@@ -726,7 +728,7 @@ unsigned WINAPI MainThread(void*) {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-			if (std::find(std::begin(songModes), std::end(songModes), currentMenu) != std::end(songModes)) // If User Is Entering Song
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) // If User Is Entering Song
 			{
 				GuitarSpeakPresent = false;
 
@@ -776,11 +778,12 @@ unsigned WINAPI MainThread(void*) {
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 
 
-				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
+			
 
-			if (previousMenu != currentMenu && std::find(std::begin(tuningMenus), std::end(tuningMenus), currentMenu) != std::end(tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
+			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
 			}
@@ -802,8 +805,9 @@ unsigned WINAPI MainThread(void*) {
 				GameLoaded = true;
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
 			}
+			
 
-			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(std::find(std::begin(dontAutoEnter), std::end(dontAutoEnter), currentMenu) != std::end(dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
+			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
 		}
 	}

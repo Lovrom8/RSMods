@@ -142,8 +142,7 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 				return true;
 		}
 	}
-	else if (stringVector != std::vector<std::string>())
-	{
+	else if (stringVector != std::vector<std::string>()) {
 		for (int i = 0; i < stringVector.size(); i++) {
 			if (stringToCheckIfInsideArray == stringVector[i])
 				return true;
