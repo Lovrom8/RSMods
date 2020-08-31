@@ -140,5 +140,6 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 		if (stringToCheckIfInsideArray == stringArray[i])
 			return true;
 	}
-		return false;
+
+	return false;
 }
