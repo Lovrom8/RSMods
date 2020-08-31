@@ -151,3 +151,20 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 
 	return false;
 }
+
+void MemHelpers::DrawTextOnScreen(std::string textToDraw, COLORREF textColor, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, bool transparentBackground = true) {
+	HDC RocksmithHDC = GetDC(FindWindow(NULL, L"Rocksmith 2014"));
+
+	RECT* TextRectangle = new RECT();
+
+	TextRectangle->left = topLeftX;
+	TextRectangle->top = topLeftY;
+	TextRectangle->right = bottomRightX;
+	TextRectangle->bottom = bottomRightY;
+
+	SetTextColor(RocksmithHDC, textColor);
+	if (transparentBackground)
+		SetBkMode(RocksmithHDC, TRANSPARENT);
+
+	DrawTextA(RocksmithHDC, textToDraw.c_str(), textToDraw.size(), TextRectangle, DT_NOCLIP);
+}

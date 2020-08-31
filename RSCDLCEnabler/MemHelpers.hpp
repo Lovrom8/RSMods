@@ -20,6 +20,7 @@ namespace MemHelpers {
 	float GetCurrentMusicVolume();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
+	void DrawTextOnScreen(std::string textToDraw, COLORREF textColor, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, bool transparentBackground = true);
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
