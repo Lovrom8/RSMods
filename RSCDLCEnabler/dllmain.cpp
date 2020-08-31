@@ -469,7 +469,8 @@ HRESULT APIENTRY Hook_DIP(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
 
-	if (std::find(std::begin(songModes), std::end(songModes), currentMenu) != std::end(songModes)) {
+	
+	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return D3D_OK;
 		if (Settings::ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))

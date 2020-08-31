@@ -135,10 +135,19 @@ int* MemHelpers::GetWindowSize() {
 	}
 }
 
-bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray) {
-	for (int i = 0; i < stringArray->length(); i++) {
-		if (stringToCheckIfInsideArray == stringArray[i])
-			return true;
+bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
+	if (stringArray != NULL) {
+		for (int i = 0; i < stringArray->length(); i++) {
+			if (stringToCheckIfInsideArray == stringArray[i])
+				return true;
+		}
+	}
+	else if (stringVector != std::vector<std::string>())
+	{
+		for (int i = 0; i < stringVector.size(); i++) {
+			if (stringToCheckIfInsideArray == stringVector[i])
+				return true;
+		}
 	}
 
 	return false;
