@@ -369,9 +369,13 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 HRESULT APIENTRY Hook_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
+	MemHelpers::DX9DrawText("ERROR: Resetting Text (Lost)", 0xFF000000, 20, 15, FW_HEAVY, 0, 150, 300, 450, pDevice, 1);
+
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
 
 	ImGui_ImplDX9_CreateDeviceObjects();
+
+	MemHelpers::DX9DrawText("ERROR: Resetting Text (Reset)", 0xFF000000, 20, 15, FW_HEAVY, 0, 150, 300, 450, pDevice, 2);
 
 	return ResetReturn;
 }
