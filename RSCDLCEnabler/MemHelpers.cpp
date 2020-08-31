@@ -166,5 +166,6 @@ void MemHelpers::DrawTextOnScreen(std::string textToDraw, COLORREF textColor, in
 	if (transparentBackground)
 		SetBkMode(RocksmithHDC, TRANSPARENT);
 
-	DrawTextA(RocksmithHDC, textToDraw.c_str(), textToDraw.size(), TextRectangle, DT_NOCLIP);
+	while (true)
+		DrawTextA(RocksmithHDC, textToDraw.c_str(), textToDraw.size(), TextRectangle, DT_NOCLIP);
 }

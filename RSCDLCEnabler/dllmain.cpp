@@ -740,6 +740,7 @@ unsigned WINAPI MainThread(void*) {
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
 			//std::cout << currentMenu << std::endl;
 
+			//MemHelpers::DrawTextOnScreen("BIG OOOOOOF", 0x00FFFFFF, 0, 150, 200, 450);
 			
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
 				LessonMode = true;
