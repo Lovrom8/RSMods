@@ -152,24 +152,6 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 	return false;
 }
 
-void MemHelpers::DrawTextOnScreen(std::string textToDraw, COLORREF textColor, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, bool transparentBackground) {
-	HDC RocksmithHDC = GetDC(FindWindow(NULL, L"Rocksmith 2014"));
-
-	RECT* TextRectangle = new RECT();
-
-	TextRectangle->left = topLeftX;
-	TextRectangle->top = topLeftY;
-	TextRectangle->right = bottomRightX;
-	TextRectangle->bottom = bottomRightY;
-
-	SetTextColor(RocksmithHDC, textColor);
-	if (transparentBackground)
-		SetBkMode(RocksmithHDC, TRANSPARENT);
-
-	while (true)
-		DrawTextA(RocksmithHDC, textToDraw.c_str(), textToDraw.size(), TextRectangle, DT_NOCLIP);
-}
-
 // textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF.
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int fontWidth, int fontHeight, int fontWeight, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, int hookReset)
 {
@@ -188,9 +170,9 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int fontW
 
 	int fontHeightD3D = textToPostToScreen->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
 
-	if (hookReset = 1)
+	if (hookReset == 1)
 		textToPostToScreen->OnLostDevice();
-	else if (hookReset = 2)
+	else if (hookReset == 2)
 		textToPostToScreen->OnResetDevice();
 
 	if (textToPostToScreen) { // Let's clean up our junk, since font's don't do it automatically.
