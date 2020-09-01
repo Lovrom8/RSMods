@@ -74,6 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def" />
+    <None Include="detours.pdb">
+      <FileType>Document</FileType>
+    </None>
     <None Include="DirectX\d3dx9math.inl" />
   </ItemGroup>
   <ItemGroup>

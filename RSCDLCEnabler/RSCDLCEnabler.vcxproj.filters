@@ -202,6 +202,9 @@
     <None Include="DirectX\d3dx9math.inl">
       <Filter>Header Files\DirectX</Filter>
     </None>
+    <None Include="detours.pdb">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="detours.lib">

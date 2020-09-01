@@ -1,4 +1,5 @@
 #include "Settings.hpp"
+#pragma warning(disable: 4996) // SScanF may be unsafe.
 
 void Settings::Initialize()
 {

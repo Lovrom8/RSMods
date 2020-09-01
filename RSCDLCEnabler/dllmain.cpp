@@ -1,5 +1,5 @@
 #include "Main.hpp"
-#pragma warning(disable: 4838 4018 4996) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | 
+#pragma warning(disable: 4838 4018 4996 26817 6031) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | Potentially exposed variable (mesh) | Return value ignored 'freopen'.
 
 #ifdef _DEBUG
 bool debug = true;
@@ -787,10 +787,10 @@ unsigned WINAPI MainThread(void*) {
 	//GuitarSpeak.DrawTunerInGame();
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
-
-		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
-		{
+		
+		if (GameLoaded) {// If Game Is Loaded (No need to run these while the game is loading.)
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
+			
 			//std::cout << currentMenu << std::endl;
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
@@ -813,36 +813,31 @@ unsigned WINAPI MainThread(void*) {
 				LoftOff = true;
 				GreenScreenWall = false;
 			}
-			if (!SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "startup") { // Turn the skyline off on startup
+			if (!SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "startup") // Turn the skyline off on startup
 				toggleSkyline = true;
-			}
 
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) // If User Is Entering Song
-			{
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) { // If User Is Entering Song
 				GuitarSpeakPresent = false;
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = true;
 
-				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") // Turn the loft off when entering a song
-				{
+				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft off when entering a song
 					if (!LoftOff)
 						MemHelpers::ToggleLoft();
 					LoftOff = true;
 				}
 
-				if (Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") // Turn the skyline off when entering a song
-				{
+				if (Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline off when entering a song
 					if (!SkylineOff)
 						toggleSkyline = true;
 					DrawSkylineInMenu = false;
 				}
 			}
-			else // If User Is Exiting Song / In A Menu
-			{
+			else { // If User Is Exiting Song / In A Menu
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = false;
 
@@ -852,9 +847,7 @@ unsigned WINAPI MainThread(void*) {
 						LoftOff = false;
 					}
 					if (!LessonMode)
-					{
 						GreenScreenWall = false;
-					}
 				}
 				if (SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline back on after exiting a song
 					toggleSkyline = true;
@@ -869,11 +862,9 @@ unsigned WINAPI MainThread(void*) {
 
 				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
 
-
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
-
 
 			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
@@ -889,8 +880,7 @@ unsigned WINAPI MainThread(void*) {
 			else
 				ERMode::Toggle7StringMode();
 		}
-		else // Game Hasn't Loaded Yet
-		{
+		else { // Game Hasn't Loaded Yet
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
 			if (currentMenu == "MainMenu") { // Yay We Loaded :P

@@ -55,6 +55,7 @@ artifacts/
 *.obj
 *.pch
 *.pdb
+!RSCDLCEnabler/detours.pdb
 *.pgc
 *.pgd
 *.rsp
