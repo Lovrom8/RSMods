@@ -217,10 +217,10 @@ namespace Settings {
 	inline std::vector<Color> customStringColorsCB;
 
 	inline std::vector<std::string> defaultStrColors = {
-		"FF0010", "FFC700", "00A9FF", "FF7100", "43FF00", "BE00FF", "0ABCB9", "909090"
+		"FF4F5A", "E2C102", "1DACF9", "FF9216", "3FCC0C", "C825ED", "0ABCB9", "909090"
 	};
 
 	inline std::vector<std::string> defaultStrColorsCB = {
-		"FF0000", "B1FF00", "00A9FF", "FF5800", "00FFA4", "6A00FF", "493647", "4C4C4C"
+		"C12A2A", "A3F400", "1DACF9", "DB7F41", "00C68E", "7648A8", "493647", "4C4C4C"
 	};
 };
