@@ -405,9 +405,14 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		generateTexture = false;
 	}
 
-	/*if (GameLoaded) {
-		MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
-	}*/
+	if (GameLoaded) {
+		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on"){ // If the user wants us to show the volume
+			float songVolume = MemHelpers::GetCurrentMusicVolume();
+			MemHelpers::DX9DrawText("Current Song Volume: " + std::to_string((int)songVolume), 0xFFFFFFFF, 20, 15, FW_NORMAL, 35, 35, 135, 135, pDevice);
+		}
+
+		//MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
+	}
 
 
 	return hRet;
@@ -787,8 +792,6 @@ unsigned WINAPI MainThread(void*) {
 		{
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
 			//std::cout << currentMenu << std::endl;
-
-			//MemHelpers::DrawTextOnScreen("BIG OOOOOOF", 0x00FFFFFF, 0, 150, 200, 450);
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
 				LessonMode = true;
