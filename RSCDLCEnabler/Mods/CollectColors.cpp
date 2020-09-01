@@ -168,7 +168,7 @@ Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode
 	return GetColor();
 }
 
-Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) { //TODO: finish the rest
+Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
 	else
@@ -224,8 +224,7 @@ Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool 
 
 // This section about Min, & Max, was totally not stolen off StackOverflow :)
 
-float CollectColors::Min(float fR, float fG, float fB)
-{
+float CollectColors::Min(float fR, float fG, float fB) {
 	float fMin = fR;
 	if (fG < fMin)
 	{
@@ -239,8 +238,7 @@ float CollectColors::Min(float fR, float fG, float fB)
 }
 
 
-float CollectColors::Max(float fR, float fG, float fB)
-{
+float CollectColors::Max(float fR, float fG, float fB) {
 	float fMax = fR;
 	if (fG > fMax)
 	{
