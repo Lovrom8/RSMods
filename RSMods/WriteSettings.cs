@@ -59,7 +59,7 @@ namespace RSMods
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
-                { ReadSettings.String0Color_N_Identifier, "ff4f5b" }, // Default Low E String Color (HEX) | Red
+                { ReadSettings.String0Color_N_Identifier, "ff4f5a" }, // Default Low E String Color (HEX) | Red
                 { ReadSettings.String1Color_N_Identifier, "e2c102" }, // Default A String Color (HEX) | Yellow
                 { ReadSettings.String2Color_N_Identifier, "1dacf9" }, // Default D String Color (HEX) | Blue
                 { ReadSettings.String3Color_N_Identifier, "ff9216" }, // Default G String Color (HEX) | Orange
