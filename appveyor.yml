@@ -30,7 +30,7 @@
        
        appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI
                 
-       appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future
+       appveyor DownloadFile https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=develop
             
        7z x RSMods.zip -o%APPVEYOR_BUILD_FOLDER%\Rocksmith2014-Mod-Installer\Resources\RSModsGUI
                 
