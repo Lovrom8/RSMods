@@ -2,7 +2,7 @@
 -
   branches:
     only:
-    - Future
+    - develop
   image: Visual Studio 2019
   configuration: Release
   build:
