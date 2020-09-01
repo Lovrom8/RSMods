@@ -786,7 +786,7 @@ unsigned WINAPI MainThread(void*) {
 
 	//GuitarSpeak.DrawTunerInGame();
 	while (!GameClosing) {
-		Sleep(250);
+		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
 
 		if (GameLoaded) // If Game Is Loaded (No need to run these while the game is loading.)
 		{
