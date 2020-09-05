@@ -408,7 +408,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on"){ // If the user wants us to show the volume
 			float songVolume = MemHelpers::GetCurrentMusicVolume();
-			MemHelpers::DX9DrawText("Current Song Volume: " + std::to_string((int)songVolume), 0xFFFFFFFF, 20, 15, FW_NORMAL, 35, 35, 135, 135, pDevice);
+
+			MemHelpers::DX9DrawText("Current Song Volume: " + std::to_string((int)songVolume), 0xFFFFFFFF, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		//MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
