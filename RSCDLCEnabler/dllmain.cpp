@@ -413,7 +413,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if (showSongTimerOnScreen) {
-
 			if (MemHelpers::ShowSongTimer() != "") {
 				std::string currentSongTimeString = MemHelpers::ShowSongTimer();
 				size_t stringSize;
@@ -421,18 +420,17 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 				int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
 				int seconds = currentSongTime, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
 
-				if (currentSongTime / 60 > 0) {
+				if (currentSongTime / 60 > 0) { // Handles Seconds -> Minutes conversion
 					minutes = currentSongTime / 60;
 					seconds = currentSongTime - (minutes * 60);
 				}
 
-				if (minutes >= 60) {
+				if (minutes >= 60) { // Handles Minutes -> Hours conversion
 					hours++;
 					minutes = 0;
 				}
 
 				MemHelpers::DX9DrawText(std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds), 0xFFFFFFFF, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] - 125), 35, (MemHelpers::GetWindowSize()[0] - 225), 135, pDevice);
-
 			}
 		}
 	}
