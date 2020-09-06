@@ -64,7 +64,7 @@ bool RemoveLyrics = false; // If true, remove the lyrics from Learn A Song & Non
 bool RemoveHeadstockInThisMenu = false; // If true, the headstock of the guitar / bass will be disabled in this menu. (True - No Headstock, False - Keep Headstock)
 bool showSongTimerOnScreen = false; // If true, the current song timer will be shown in the top-right of the screen. This will only work when inside a song. (True - Show, False - Hide)
 bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
-inline std::map<IDirect3DDevice9*, std::map<DWORD*, DWORD*>> DiscoModeInitialSetting;
+inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
 
 // Menus
 std::string previousMenu, currentMenu; // What is the last menu, and the current menu?

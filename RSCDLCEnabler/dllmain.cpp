@@ -94,8 +94,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 				}
 			}
-			else if (keyPressed == VK_F9)
+			else if (keyPressed == VK_F9) {
 				DiscoModeEnabled = !DiscoModeEnabled;
+
+				if (debug) {
+					std::cout << "Turning ";
+					if (!DiscoModeEnabled)
+						std::cout << "off";
+					else
+						std::cout << "on";
+					std::cout << " Disco Mode!" << std::endl;
+				}
+			}
 		}
 
 		if (debug) {
@@ -555,26 +565,23 @@ HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, 
 	if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
 		// Need Lovro's Help With This :(
 		//if (DiscoModeInitialSetting.find(pDevice) == DiscoModeInitialSetting.end()) { // We haven't saved this pDevice's initial values yet
-		//	DWORD* initialAlphaValue = FALSE, *initialSeperateValue = FALSE;
-		//	pDevice->GetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, initialSeperateValue);
-		//	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, initialAlphaValue);
-		//	DiscoModeInitialSetting.emplace(std::make_pair(pDevice, std::make_pair(initialAlphaValue, initialSeperateValue)));
+		//	DWORD initialAlphaValue = (DWORD)pDevice, initialSeperateValue = (DWORD)pDevice;
+		//	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, (DWORD*)initialAlphaValue);
+		//	pDevice->GetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, (DWORD*)initialSeperateValue);
+		//	
+		//	DiscoModeInitialSetting.insert({ pDevice, std::make_pair(initialAlphaValue, initialSeperateValue) });
 		//}
+		//else { // We've seen this pDevice value before.
+		//	if (DiscoModeEnabled) { // Key was pressed to have Disco Mode on
+		//		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
+		//		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
+		//	}
 
-		//if (DiscoModeEnabled) { // Key was pressed to have Disco Mode on
-		//	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that breaks things
-		//	pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
-		//}
-		//
-		//else { // Disco mode was turned off, we need to revert the settings so there is no trace of disco mode.
-		//	for (auto pDeviceList : DiscoModeInitialSetting) {
-		//		DWORD* initialAlphaValue = FALSE, *initialSeperateValue = FALSE;
-		//		for (auto initialSettings : pDeviceList.second) {
-		//			initialAlphaValue = (DWORD*)initialSettings.first;
-		//			initialSeperateValue = (DWORD*)initialSettings.second;
+		//	else { // Disco mode was turned off, we need to revert the settings so there is no trace of disco mode.
+		//		for (auto pDeviceList : DiscoModeInitialSetting) {
+		//			pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)pDeviceList.second.first); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
+		//			pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)pDeviceList.second.second); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
 		//		}
-		//		pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)initialAlphaValue); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
-		//		pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)initialSeperateValue); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
 		//	}
 		//}
 	}
