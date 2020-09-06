@@ -44,7 +44,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") {
-				MemHelpers::ShowSongTimer();
+				showSongTimerOnScreen = !showSongTimerOnScreen;
 				std::cout << "Show Me Dat Timer Bruh" << std::endl;
 			}
 
@@ -406,13 +406,35 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	}
 
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
-		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on"){ // If the user wants us to show the volume
+		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, songModes)){ // If the user wants us to show the volume
 			float songVolume = MemHelpers::GetCurrentMusicVolume();
 
 			MemHelpers::DX9DrawText("Current Song Volume: " + std::to_string((int)songVolume), 0xFFFFFFFF, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
-		//MemHelpers::DX9DrawText("Big ooooooF", 0xFF00FF00, 20, 15, FW_NORMAL, 0, 150, 300, 450, pDevice);
+		if (showSongTimerOnScreen) {
+
+			if (MemHelpers::ShowSongTimer() != "") {
+				std::string currentSongTimeString = MemHelpers::ShowSongTimer();
+				size_t stringSize;
+
+				int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
+				int seconds = currentSongTime, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
+
+				if (currentSongTime / 60 > 0) {
+					minutes = currentSongTime / 60;
+					seconds = currentSongTime - (minutes * 60);
+				}
+
+				if (minutes >= 60) {
+					hours++;
+					minutes = 0;
+				}
+
+				MemHelpers::DX9DrawText(std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds), 0xFFFFFFFF, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] - 125), 35, (MemHelpers::GetWindowSize()[0] - 225), 135, pDevice);
+
+			}
+		}
 	}
 
 

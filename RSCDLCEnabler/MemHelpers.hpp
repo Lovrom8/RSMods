@@ -16,7 +16,7 @@
 namespace MemHelpers {
 	byte getLowestStringTuning();
 	void ToggleLoft();
-	void ShowSongTimer();
+	std::string ShowSongTimer();
 	void ShowCurrentTuning();
 	bool IsExtendedRangeSong();
 	float GetCurrentMusicVolume();

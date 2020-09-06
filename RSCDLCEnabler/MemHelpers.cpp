@@ -80,14 +80,13 @@ void MemHelpers::ToggleLoft() {
 		*(float*)farAddr = 10000;
 }
 
-void MemHelpers::ShowSongTimer() {
+std::string MemHelpers::ShowSongTimer() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
 	if (!addrTimer)
-		return;
+		return "";
 
-	std::string valStr = std::to_string(*(float*)addrTimer);
-	std::cout << "Current song time: " << valStr << std::endl;
+	return std::to_string(*(float*)addrTimer);
 }
 
 
