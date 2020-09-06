@@ -573,8 +573,8 @@ HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, 
 		//			initialAlphaValue = (DWORD*)initialSettings.first;
 		//			initialSeperateValue = (DWORD*)initialSettings.second;
 		//		}
-		//		pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)initialAlphaValue);
-		//		pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)initialSeperateValue);
+		//		pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)initialAlphaValue); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
+		//		pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)initialSeperateValue); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
 		//	}
 		//}
 	}
