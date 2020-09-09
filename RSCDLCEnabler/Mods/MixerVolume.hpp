@@ -40,6 +40,7 @@ namespace MixerVolume {
 		{5, "Mixer_Mic"} // MicrophoneVolume();
 		{6, "Mixer_VO"} // VoiceOverVolume();
 		{7, "Mixer_SFX"} // SFXVolume();
+		// There is a mention of "Master_Volume". Maybe this can be changed to have Rocksmith fit into the same standard as all modern games (some people say RS is quieter than other games even at the same volume, assumed to be a console issue / reason).
 	};
 
 	inline std::map<int, std::string> drawTextName{
