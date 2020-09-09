@@ -6,28 +6,37 @@ void Offsets::Initialize() {
 }
 
 namespace Offsets {
-	uintptr_t baseHandle; // Handle for Rocksmith
+	uintptr_t baseHandle; // Beginning of Rocksmith
+	uintptr_t baseEnd = 0x04F80000; // End of Rocksmith
 
+	// Loft Settings
 	uintptr_t ptr_loft = 0x00F5C4EC;
 	std::vector<unsigned int> ptr_loft_nearOffsets{ 0x108, 0x14, 0x28, 0x7C };
 	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
+	// Current Tuning
 	uintptr_t ptr_tuning = 0x00F5C4D8;
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
 
+	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
 	uintptr_t ptr_guitarSpeak = 0x135C4FC;
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
+	// Wwise Audio Volume
 	uintptr_t func_SetRTPCValue = 0x1F58A91;
 	uintptr_t func_GetRTPCValue = 0x1F5634A;
-	uintptr_t ptr_volume = 0x00F4E91C;
-	std::vector<unsigned int> ptr_volumeOffsets{ 0x28, 0x7C0, 0x214, 0x7F4, 0xDC };
 
+	// Mixer Volumes
+	uintptr_t ptr_songVolume = 0x00F4E91C;
+	std::vector<unsigned int> ptr_songVolumeOffsets{ 0x28, 0x7C0, 0x214, 0x7F4, 0xDC };
+
+	// Force Enumeration
 	uintptr_t hookBackAddr_ForceEnumeration, hookBackAddr_Enumeration;
 	uintptr_t func_ForceEnumeration = 0x018D69E7;
 	uintptr_t ptr_enumerateService = 0xF71E10;
 	std::vector<unsigned int> ptr_enumerateServiceOffsets{ 0x8, 0x4 };
-
+	
+	// Custom Song Lists
 	uintptr_t hookBackAddr_FakeTitles, hookBackAddr_CustomNames, hookBackAddr_missingLocalization;
 	uintptr_t hookAddr_ModifyLocalized = 0x01529F2B;
 	uintptr_t hookAddr_ModifyCleanString = 0x01529F61;
@@ -36,12 +45,12 @@ namespace Offsets {
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
 
+	// D3D Stuff
 	const char* d3dDevice_Pattern = "\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86";
 	uint32_t d3dDevice_SearchLen = 0x128000;
 	char* d3dDevice_Mask = "xx????xx????xx";
 
-	uintptr_t baseEnd = 0x04F80000;
-
+	// cDLC Stuff :P
 	uintptr_t cdlcCheckdwAdr = 0x01377000;
 	uintptr_t cdlcCheckSearchLen = 0x00DDE000;
 	uint8_t* cdlcCheckAdr;
@@ -56,21 +65,24 @@ namespace Offsets {
 	const char* patch_SprintfArgs = "\x04";
 	void Initialize();
 
-	uintptr_t ptr_stringColor = 0x135C50C;
-	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
-
-    // uintptr_t ptr_currentMenu = 0x00F5C5AC;
-    // std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 }; // Old menu check, decided it loved to not work on some builds
+	// Current Menu
+	// uintptr_t ptr_currentMenu = 0x00F5C5AC;
+	// std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 }; // Old menu check, decided it loved to not work on some builds
 	uintptr_t ptr_currentMenu = 0x0135c5ac; // https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
-
 	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x28, 0x8C, 0x0 }; // But the offsets stay the same, hurray!
 	std::vector<unsigned int> ptr_preMainMenuOffsets{ 0x28, 0x8C };
 
+	// Timer
 	uintptr_t ptr_timer = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };
 
+	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
+
+	// Misc Mods
+	uintptr_t ptr_stringColor = 0x135C50C;
+	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
 }
 
 

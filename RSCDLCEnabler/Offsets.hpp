@@ -5,27 +5,29 @@
 #include "MemUtil.hpp"
 
 namespace Offsets {
-	extern uintptr_t baseHandle; // Handle for Rocksmith
+	extern uintptr_t baseHandle; // Beginning of Rocksmith
+	extern uintptr_t baseEnd; // End of Rocksmith
 
-	// Toggle Loft
+	// Loft Settings
 	extern uintptr_t ptr_loft;
 	extern std::vector<unsigned int> ptr_loft_nearOffsets;
 	extern std::vector<unsigned int> ptr_loft_farOffsets;
 
-	// Extended Range
+	// Current Tuning
 	extern uintptr_t ptr_tuning;
 	extern std::vector<unsigned int> ptr_tuningOffsets;
 
-
-	// Guitar Speak
+	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
 	extern uintptr_t ptr_guitarSpeak;
 	extern std::vector<unsigned int> ptr_guitarSpeakOffets;
 
-	// Audio Stuff
+	// Wwise Audio Volume
 	extern uintptr_t func_SetRTPCValue;
 	extern uintptr_t func_GetRTPCValue;
-	extern uintptr_t ptr_volume;
-	extern std::vector<unsigned int> ptr_volumeOffsets;
+
+	// Mixer Volumes
+	extern uintptr_t ptr_songVolume;
+	extern std::vector<unsigned int> ptr_songVolumeOffsets;
 
 	// Force Enumeration
 	extern uintptr_t hookBackAddr_ForceEnumeration, hookBackAddr_Enumeration;
@@ -47,10 +49,7 @@ namespace Offsets {
 	extern uint32_t d3dDevice_SearchLen;
 	extern char* d3dDevice_Mask;
 
-	// DLLMain::Hook_EndScene()
-	extern uintptr_t baseEnd;
-
-	// CDLC Stuff :P
+	// cDLC Stuff :P
 	extern uintptr_t cdlcCheckdwAdr;
 	extern uintptr_t cdlcCheckSearchLen;
 	extern uint8_t* cdlcCheckAdr;
@@ -65,21 +64,22 @@ namespace Offsets {
 	extern const char* patch_SprintfArgs;
 	void Initialize();
 
-	// Nisc
-	extern uintptr_t ptr_stringColor;
-
-	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
-
-	// uintptr_t ptr_currentMenu = 0x00F5C5AC;
-	// std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 }; // Old menu check, decided it loved to not work on some builds
+	// Current Menu
+	// extern uintptr_t ptr_currentMenu;
+	// extern std::vector<unsigned int> ptr_currentMenuOffsets; // Old menu check, decided it loved to not work on some builds
 	extern uintptr_t ptr_currentMenu; // https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
-
 	extern std::vector<unsigned int> ptr_currentMenuOffsets; // But the offsets stay the same, hurray!
 	extern std::vector<unsigned int> ptr_preMainMenuOffsets;
 
+	// Timer
 	extern uintptr_t ptr_timer;
 	extern std::vector<unsigned int> ptr_timerOffsets;
 
+	// Colorblind Mode
 	extern uintptr_t ptr_colorBlindMode;
 	extern std::vector<unsigned int> ptr_colorBlindModeOffsets;
+
+	// Misc Mods
+	extern uintptr_t ptr_stringColor;
+	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
 };

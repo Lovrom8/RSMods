@@ -11,7 +11,7 @@ byte MemHelpers::getLowestStringTuning() {
 }
 
 float MemHelpers::GetCurrentMusicVolume() { // Alternative to GetRTPCValue
-	uintptr_t volumeAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_volume, Offsets::ptr_volumeOffsets);
+	uintptr_t volumeAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songVolume, Offsets::ptr_songVolumeOffsets);
 
 	if (!volumeAddr)
 		return false;
