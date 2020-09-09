@@ -32,13 +32,13 @@ namespace MixerVolume {
 	};
 
 	inline std::map<int, char*> mixerInternalNames{ // Needs to be char* as that's what SetRTPCValue needs.
-		{0, "Mixer_Music"} // SongVolume();
-		{1, "Mixer_Player1"} // PlayerOneGuitarVolume()
-		{2, "Mixer_Player1"} // PlayerOneBassVolume();
-		{3, "Mixer_Player2"} // PlayerTwoGuitarVolume();
-		{4, "Mixer_Player2"} // PlayerTwoBassVolume();
-		{5, "Mixer_Mic"} // MicrophoneVolume();
-		{6, "Mixer_VO"} // VoiceOverVolume();
+		{0, "Mixer_Music"}, // SongVolume();
+		{1, "Mixer_Player1"}, // PlayerOneGuitarVolume()
+		{2, "Mixer_Player1"}, // PlayerOneBassVolume();
+		{3, "Mixer_Player2"}, // PlayerTwoGuitarVolume();
+		{4, "Mixer_Player2"}, // PlayerTwoBassVolume();
+		{5, "Mixer_Mic"}, // MicrophoneVolume();
+		{6, "Mixer_VO"}, // VoiceOverVolume();
 		{7, "Mixer_SFX"} // SFXVolume();
 		// There is a mention of "Master_Volume". Maybe this can be changed to have Rocksmith fit into the same standard as all modern games (some people say RS is quieter than other games even at the same volume, assumed to be a console issue / reason).
 	};
