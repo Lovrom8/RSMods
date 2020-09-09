@@ -94,7 +94,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					SetRTPCValue("Mixer_Music", (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 				}
 			}
-			else if (keyPressed == VK_F9) {
+			/*else if (keyPressed == VK_F9) { // Disco Mode
 				DiscoModeEnabled = !DiscoModeEnabled;
 
 				if (debug) {
@@ -105,6 +105,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 						std::cout << "on";
 					std::cout << " Disco Mode!" << std::endl;
 				}
+			}*/
+
+			else if (keyPressed == VK_F9) {
+				currentVolumeToChangeSelection++;
+
+				if (currentVolumeToChangeSelection > 7)
+					currentVolumeToChangeSelection = 0;
 			}
 		}
 
