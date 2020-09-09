@@ -69,30 +69,41 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Reloaded settings" << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
-				float volume = MixerVolume::mixerVolumeSelections[currentVolumeToChangeSelection];
+				//float volume = MixerVolume::SelectVolume(currentVolumeIndex);
+				float volume = MixerVolume::SongVolume();
 
-				if (volume < 100.0f) {
+				//std::cout << volume << std::endl;
+
+				if (volume <= 95.0f)
 					volume += 5.0f;
+				else
+					volume = 100.0f; // Incase the volume is 96-99 we can't throw it over 100.
 
-					SetRTPCValue(MixerVolume::mixerInternalNames.at(currentVolumeToChangeSelection), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-					SetRTPCValue(MixerVolume::mixerInternalNames.at(currentVolumeToChangeSelection), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
-				}
+				/*SetRTPCValue(MixerVolume::mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(MixerVolume::mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);*/
+				SetRTPCValue(MixerVolume::mixerInternalNames[0].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(MixerVolume::mixerInternalNames[0].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 
-
+				
 				//RTPCValue_type type;
 				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
 				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
 				//std::cout << volume << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-				float volume = MixerVolume::mixerVolumeSelections.at(currentVolumeToChangeSelection);
+				//float volume = MixerVolume::SelectVolume(currentVolumeIndex);
+				float volume = MixerVolume::SongVolume();
 
-				if (volume > 0.0f) {
+				if (volume >= 5.0f)
 					volume -= 5.0f;
+				else
+					volume = 0.0f; // Incase the volume is 1-4 we can't throw it below 0.
 
-					SetRTPCValue(MixerVolume::mixerInternalNames.at(currentVolumeToChangeSelection), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-					SetRTPCValue(MixerVolume::mixerInternalNames.at(currentVolumeToChangeSelection), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
-				}
+				/*SetRTPCValue(MixerVolume::mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(MixerVolume::mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);*/
+
+				SetRTPCValue(MixerVolume::mixerInternalNames[0].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(MixerVolume::mixerInternalNames[0].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 			}
 			/*else if (keyPressed == VK_F9) { // Disco Mode
 				DiscoModeEnabled = !DiscoModeEnabled;
@@ -108,10 +119,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}*/
 
 			else if (keyPressed == VK_F9) {
-				currentVolumeToChangeSelection++;
+				currentVolumeIndex++;
 
-				if (currentVolumeToChangeSelection > 7)
-					currentVolumeToChangeSelection = 0;
+				if (currentVolumeIndex > 7)
+					currentVolumeIndex = 0;
 			}
 		}
 
@@ -428,10 +439,11 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
 		// Consistent Fonts: Width = (MemHelpers::GetWindowSize()[0] / 96), Height = (MemHelpers::GetWindowSize()[1] / 72)
-		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, songModes)){ // If the user wants us to show the volume
-			float volume = MixerVolume::mixerVolumeSelections.at(currentVolumeToChangeSelection);
+		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on"){ // If the user wants us to show the volume (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
+			float volume = MixerVolume::SongVolume();
 
-			MemHelpers::DX9DrawText(MixerVolume::drawTextName.at(currentVolumeToChangeSelection) + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			//MemHelpers::DX9DrawText(MixerVolume::drawTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(MixerVolume::drawTextName[0] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {

@@ -71,3 +71,24 @@ float MixerVolume::SFXVolume() { // Returns SFX Volume
 
 	return *(float*)volumeAddr;
 }
+
+float MixerVolume::SelectVolume(int volumeNumberToSelect) { // Does whatever cycle it needs to, to find the volume it needs. Use this for external functions.... I know this is inefficient, but the other ways I tried didn't work.
+	if (volumeNumberToSelect == 0)
+		return SongVolume();
+	else if (volumeNumberToSelect == 1)
+		return PlayerOneGuitarVolume();
+	else if (volumeNumberToSelect == 2)
+		return PlayerOneBassVolume();
+	else if (volumeNumberToSelect == 3)
+		return PlayerTwoGuitarVolume();
+	else if (volumeNumberToSelect == 4)
+		return PlayerTwoBassVolume();
+	else if (volumeNumberToSelect == 5)
+		return MicrophoneVolume();
+	else if (volumeNumberToSelect == 6)
+		return VoiceOverVolume();
+	else if (volumeNumberToSelect == 7)
+		return SFXVolume();
+	
+	return 0.0f;
+}
