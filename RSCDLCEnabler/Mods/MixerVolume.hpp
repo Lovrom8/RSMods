@@ -31,7 +31,7 @@ namespace MixerVolume {
 		{7, SFXVolume()}
 	};
 
-	inline std::map<int, char*> mixerInternalNames{
+	inline std::map<int, char*> mixerInternalNames{ // Needs to be char* as that's what SetRTPCValue needs.
 		{0, "Mixer_Music"} // SongVolume();
 	};
 
