@@ -33,6 +33,13 @@ namespace MixerVolume {
 
 	inline std::map<int, char*> mixerInternalNames{ // Needs to be char* as that's what SetRTPCValue needs.
 		{0, "Mixer_Music"} // SongVolume();
+		{1, "Mixer_Player1"} // PlayerOneGuitarVolume()
+		{2, "Mixer_Player1"} // PlayerOneBassVolume();
+		{3, "Mixer_Player2"} // PlayerTwoGuitarVolume();
+		{4, "Mixer_Player2"} // PlayerTwoBassVolume();
+		{5, "Mixer_Mic"} // MicrophoneVolume();
+		{6, "Mixer_VO"} // VoiceOverVolume();
+		{7, "Mixer_SFX"} // SFXVolume();
 	};
 
 	inline std::map<int, std::string> drawTextName{
@@ -42,7 +49,7 @@ namespace MixerVolume {
 		{3, "Player 2 Guitar Volume: "},
 		{4, "Player 2 Bass Volume: "},
 		{5, "Microphone Volume: "},
-		{6, "Voiceover Volume: "},
+		{6, "Voice-Over Volume: "},
 		{7, "SFX Volume: "}
 	};
 }
