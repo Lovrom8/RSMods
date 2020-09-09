@@ -1,6 +1,6 @@
 #pragma once
 #include "Settings.hpp"
-#include "SimpleIni.h"
+#include "Lib/Ini/SimpleIni.h"
 #include "windows.h"
 #include <iostream>
 #include "Structs.hpp"

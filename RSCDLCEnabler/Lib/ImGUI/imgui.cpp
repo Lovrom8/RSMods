@@ -4,9 +4,9 @@
 // Call and read ImGui::ShowDemoWindow() in imgui_demo.cpp for demo code.
 // Newcomers, read 'Programmer guide' below for notes on how to setup Dear ImGui in your codebase.
 // Get latest version at https://github.com/ocornut/imgui
-// Releases change-log at https://github.com/ocornut/imgui/releases
+// Releases change-log at https://github.com/ocornut/Lib/ImGUI/releases
 // Technical Support for Getting Started https://discourse.dearimgui.org/c/getting-started
-// Gallery (please post your screenshots/video there!): https://github.com/ocornut/imgui/issues/1269
+// Gallery (please post your screenshots/video there!): https://github.com/ocornut/Lib/ImGUI/issues/1269
 // Developed by Omar Cornut and every direct or indirect contributors to the GitHub.
 // This library is free but I need your support to sustain development and maintenance.
 // If you work for a company, please consider financial support, see README. For individuals: https://www.patreon.com/imgui
@@ -304,7 +304,7 @@ CODE
 
  - The gamepad/keyboard navigation is fairly functional and keeps being improved. 
  - Gamepad support is particularly useful to use dear imgui on a console system (e.g. PS4, Switch, XB1) without a mouse!
- - You can ask questions and report issues at https://github.com/ocornut/imgui/issues/787
+ - You can ask questions and report issues at https://github.com/ocornut/Lib/ImGUI/issues/787
  - The initial focus was to support game controllers, but keyboard is becoming increasingly and decently usable.
  - Gamepad:
     - Set io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad to enable.
@@ -344,7 +344,7 @@ CODE
  Occasionally introducing changes that are breaking the API. We try to make the breakage minor and easy to fix.
  Below is a change-log of API breaking changes only. If you are using one of the functions listed, expect to have to fix some code.
  When you are not sure about a old symbol or function name, try using the Search/Find function of your IDE to look for comments or references in all imgui files.
- You can read releases logs https://github.com/ocornut/imgui/releases for more details.
+ You can read releases logs https://github.com/ocornut/Lib/ImGUI/releases for more details.
 
  - 2018/12/10 (1.67) - renamed io.ConfigResizeWindowsFromEdges to io.ConfigWindowsResizeFromEdges as we are doing a large pass on configuration flags.
  - 2018/10/12 (1.66) - renamed misc/stl/imgui_stl.* to misc/cpp/imgui_stdlib.* in prevision for other C++ helper files.
@@ -406,7 +406,7 @@ CODE
  - 2017/11/02 (1.53) - obsoleted IsRootWindowOrAnyChildHovered() in favor of using IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
  - 2017/10/24 (1.52) - renamed IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCS/IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCS to IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS/IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS for consistency.
  - 2017/10/20 (1.52) - changed IsWindowHovered() default parameters behavior to return false if an item is active in another window (e.g. click-dragging item from another window to this window). You can use the newly introduced IsWindowHovered() flags to requests this specific behavior if you need it.
- - 2017/10/20 (1.52) - marked IsItemHoveredRect()/IsMouseHoveringWindow() as obsolete, in favor of using the newly introduced flags for IsItemHovered() and IsWindowHovered(). See https://github.com/ocornut/imgui/issues/1382 for details.
+ - 2017/10/20 (1.52) - marked IsItemHoveredRect()/IsMouseHoveringWindow() as obsolete, in favor of using the newly introduced flags for IsItemHovered() and IsWindowHovered(). See https://github.com/ocornut/Lib/ImGUI/issues/1382 for details.
                        removed the IsItemRectHovered()/IsWindowRectHovered() names introduced in 1.51 since they were merely more consistent names for the two functions we are now obsoleting.
  - 2017/10/17 (1.52) - marked the old 5-parameters version of Begin() as obsolete (still available). Use SetNextWindowSize()+Begin() instead!
  - 2017/10/11 (1.52) - renamed AlignFirstTextHeightToWidgets() to AlignTextToFramePadding(). Kept inline redirection function (will obsolete).
@@ -849,7 +849,7 @@ CODE
  A: - If you are experienced with Dear ImGui and C++, look at the github issues, or docs/TODO.txt and see how you want/can help!
     - Convince your company to sponsor/fund development! Individual users: you can also become a Patron (patreon.com/imgui) or donate on PayPal! See README.
     - Disclose your usage of dear imgui via a dev blog post, a tweet, a screenshot, a mention somewhere etc.
-      You may post screenshot or links in the gallery threads (github.com/ocornut/imgui/issues/1269). Visuals are ideal as they inspire other programmers.
+      You may post screenshot or links in the gallery threads (github.com/ocornut/Lib/ImGUI/issues/1269). Visuals are ideal as they inspire other programmers.
       But even without visuals, disclosing your use of dear imgui help the library grow credibility, and help other teams and programmers with taking decisions.
     - If you have issues or if you need to hack into the library, even if you don't expect any support it is useful that you share your issues (on github or privately).
 
@@ -982,7 +982,7 @@ static void             UpdateManualResize(ImGuiWindow* window, const ImVec2& si
 // CreateContext() will automatically set this pointer if it is NULL. Change to a different context by calling ImGui::SetCurrentContext().
 // If you use DLL hotreloading you might need to call SetCurrentContext() after reloading code from this file.
 // ImGui functions are not thread-safe because of this pointer. If you want thread-safety to allow N threads to access N different contexts, you can:
-// - Change this variable to use thread local storage. You may #define GImGui in imconfig.h for that purpose. Future development aim to make this context pointer explicit to all calls. Also read https://github.com/ocornut/imgui/issues/586
+// - Change this variable to use thread local storage. You may #define GImGui in imconfig.h for that purpose. Future development aim to make this context pointer explicit to all calls. Also read https://github.com/ocornut/Lib/ImGUI/issues/586
 // - Having multiple instances of the ImGui code compiled inside different namespace (easiest/safest, if you have a finite number of contexts)
 #ifndef GImGui
 ImGuiContext*   GImGui = NULL;

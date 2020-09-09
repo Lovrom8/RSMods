@@ -5,8 +5,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "DirectX/d3dx9.h"
-#include "DirectX/d3d9types.h"
+#include "Lib/DirectX/d3dx9.h"
+#include "Lib/DirectX/d3d9types.h"
 
 #include "MemUtil.hpp"
 #include "Offsets.hpp"

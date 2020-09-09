@@ -4,7 +4,7 @@
 // DLL Settings
 #include "MemHelpers.hpp"
 #include "Functions.hpp"
-#include "detours.hpp"
+#include "Lib/Detours/detours.h"
 #include "Offsets.hpp"
 #include "MemUtil.hpp"
 #include "Settings.hpp"
@@ -28,10 +28,10 @@
 #include "Mods/MixerVolume.hpp"
 
 // ImGUI
-#include "ImGUI/imgui.h"
-#include "ImGUI/imgui_impl_dx9.h"
-#include "ImGUI/imgui_impl_win32.h"
-#include "ImGUI/RobotoFont.cpp"
+#include "Lib/ImGUI/imgui.h"
+#include "Lib/ImGUI/imgui_impl_dx9.h"
+#include "Lib/ImGUI/imgui_impl_win32.h"
+#include "Lib/ImGUI/RobotoFont.cpp"
 
 #pragma intrinsic(_ReturnAddress)
 #pragma comment (lib, "gdiplus.lib")

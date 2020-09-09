@@ -18,7 +18,6 @@
     <ClCompile Include="Mods\Enumeration.cpp" />
     <ClCompile Include="Mods\ExtendedRangeMode.cpp" />
     <ClCompile Include="Mods\GuitarSpeak.cpp" />
-    <ClInclude Include="DirectX\d3d9types.h" />
     <ClInclude Include="Mods\CollectColors.hpp" />
     <ClInclude Include="Mods\GuitarSkeletons.hpp" />
     <ClInclude Include="Mods\GuitarSpeak.hpp" />
@@ -29,12 +28,12 @@
   <ItemGroup>
     <ClCompile Include="D3DX9_42.cpp" />
     <ClCompile Include="DLLMain.cpp" />
-    <ClCompile Include="ImGUI\imgui.cpp" />
-    <ClCompile Include="ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
-    <ClCompile Include="ImGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="ImGUI\imgui_widgets.cpp" />
-    <ClCompile Include="ImGUI\RobotoFont.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui_impl_dx9.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Lib\ImGUI\RobotoFont.cpp" />
     <ClCompile Include="Mods\MixerVolume.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="MemHelpers.cpp" />
@@ -42,29 +41,32 @@
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Lib\DirectX\d3d9.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9anim.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9core.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9effect.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9math.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9mesh.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9shader.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9shape.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9tex.h" />
+    <ClInclude Include="Lib\DirectX\d3dx9xof.h" />
+	<ClInclude Include="Lib\DirectX\d3d9types.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="D3D.hpp" />
-    <ClInclude Include="detours.hpp" />
+    <ClInclude Include="Lib\Detours\detours.h" />
     <ClInclude Include="D3DX9_42.hpp" />
-    <ClInclude Include="DirectX\d3d9.h" />
-    <ClInclude Include="DirectX\d3dx9.h" />
-    <ClInclude Include="DirectX\d3dx9anim.h" />
-    <ClInclude Include="DirectX\d3dx9core.h" />
-    <ClInclude Include="DirectX\d3dx9effect.h" />
-    <ClInclude Include="DirectX\d3dx9math.h" />
-    <ClInclude Include="DirectX\d3dx9mesh.h" />
-    <ClInclude Include="DirectX\d3dx9shader.h" />
-    <ClInclude Include="DirectX\d3dx9shape.h" />
-    <ClInclude Include="DirectX\d3dx9tex.h" />
-    <ClInclude Include="DirectX\d3dx9xof.h" />
     <ClInclude Include="Functions.hpp" />
-    <ClInclude Include="ImGUI\imconfig.h" />
-    <ClInclude Include="ImGUI\imgui.h" />
-    <ClInclude Include="ImGUI\imgui_impl_dx9.h" />
-    <ClInclude Include="ImGUI\imgui_impl_win32.h" />
-    <ClInclude Include="ImGUI\imgui_internal.h" />
-    <ClInclude Include="ImGUI\imstb_rectpack.h" />
-    <ClInclude Include="ImGUI\imstb_textedit.h" />
-    <ClInclude Include="ImGUI\imstb_truetype.h" />
+    <ClInclude Include="Lib\ImGUI\imconfig.h" />
+    <ClInclude Include="Lib\ImGUI\imgui.h" />
+    <ClInclude Include="Lib\ImGUI\imgui_impl_dx9.h" />
+    <ClInclude Include="Lib\ImGUI\imgui_impl_win32.h" />
+    <ClInclude Include="Lib\ImGUI\imgui_internal.h" />
+    <ClInclude Include="Lib\ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="Lib\ImGUI\imstb_textedit.h" />
+    <ClInclude Include="Lib\ImGUI\imstb_truetype.h" />
     <ClInclude Include="Main.hpp" />
     <ClInclude Include="MemUtil.hpp" />
     <ClInclude Include="Mods\MixerVolume.hpp" />
@@ -76,15 +78,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def" />
-    <None Include="detours.pdb">
+    <None Include="Lib\Detours\detours.pdb">
       <FileType>Document</FileType>
     </None>
-    <None Include="DirectX\d3dx9math.inl" />
+    <None Include="Lib\DirectX\d3dx9math.inl" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="detours.lib" />
-    <Library Include="DirectX\d3d9.lib" />
-    <Library Include="DirectX\d3dx9.lib" />
+    <Library Include="Lib\Detours\detours.lib" />
+    <Library Include="Lib\DirectX\d3d9.lib" />
+    <Library Include="Lib\DirectX\d3dx9.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}</ProjectGuid>

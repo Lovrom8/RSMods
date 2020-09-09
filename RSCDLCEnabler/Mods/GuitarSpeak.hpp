@@ -11,7 +11,7 @@
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"
 #include "../Settings.hpp"
-#include "../DirectX/d3dx9core.h"
+#include "../Lib/DirectX/d3dx9core.h"
 
 namespace GuitarSpeak {
 	byte GetCurrentNote();
