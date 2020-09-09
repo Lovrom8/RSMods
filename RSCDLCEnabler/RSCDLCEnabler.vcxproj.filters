@@ -81,6 +81,9 @@
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\MixerVolume.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGUI\imgui_impl_dx9.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="DirectX\d3d9types.h">
       <Filter>Header Files\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\MixerVolume.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

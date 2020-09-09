@@ -69,7 +69,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Reloaded settings" << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
-				float volume = MemHelpers::GetCurrentMusicVolume();
+				float volume = MixerVolume::SongVolume();
 
 				if (volume < 100.0f) {
 					volume += 5.0f;
@@ -85,7 +85,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				//std::cout << volume << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-				float volume = MemHelpers::GetCurrentMusicVolume();
+				float volume = MixerVolume::SongVolume();
 
 				if (volume > 0.0f) {
 					volume -= 5.0f;
@@ -422,7 +422,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
 		// Consistent Fonts: Width = (MemHelpers::GetWindowSize()[0] / 96), Height = (MemHelpers::GetWindowSize()[1] / 72)
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, songModes)){ // If the user wants us to show the volume
-			float songVolume = MemHelpers::GetCurrentMusicVolume();
+			float songVolume = MixerVolume::SongVolume();
 
 			MemHelpers::DX9DrawText("Current Song Volume: " + std::to_string((int)songVolume), whiteText, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}

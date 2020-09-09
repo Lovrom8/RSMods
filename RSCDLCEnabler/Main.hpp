@@ -25,6 +25,7 @@
 #include "Mods/CollectColors.hpp"
 #include "Mods/GuitarSkeletons.hpp"
 #include "Mods/GuitarSpeak.hpp"
+#include "Mods/MixerVolume.hpp"
 
 // ImGUI
 #include "ImGUI/imgui.h"

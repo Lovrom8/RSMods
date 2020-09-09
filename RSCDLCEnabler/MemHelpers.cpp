@@ -10,15 +10,6 @@ byte MemHelpers::getLowestStringTuning() {
 	return *(BYTE*)addrTuning;
 }
 
-float MemHelpers::GetCurrentMusicVolume() { // Alternative to GetRTPCValue
-	uintptr_t volumeAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songVolume, Offsets::ptr_songVolumeOffsets);
-
-	if (!volumeAddr)
-		return false;
-
-	return *(float*)volumeAddr;
-}
-
 bool MemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
