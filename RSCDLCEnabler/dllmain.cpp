@@ -131,6 +131,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				menuEnabled = !menuEnabled;
 		}
 	}
+	else if (msg == WM_COPYDATA) {
+		COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+		if (pcds->dwData == 1)
+		{
+			std::string currMsg = (char*)pcds->lpData;
+
+			if (currMsg == "ShowMeRainbow") // TODO: actually use it for what it should be use for. Hint, hint: tweetch 
+				ERMode::ToggleRainbowMode();
+			//else if(currMsg == "ActualSomething")
+		}
+	}
 
 	if (msg == WM_CLOSE)
 		GameClosing = true;
