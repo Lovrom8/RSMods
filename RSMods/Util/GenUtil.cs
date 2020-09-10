@@ -149,13 +149,19 @@ namespace RSMods.Util
             new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
         };
 
+        public static string GetSettingsEntry(string entryName)
+        {
+            var settingsLines = File.ReadAllLines(Constants.SettingsPath);
+            return settingsLines.FirstOrDefault(line => line.Contains(entryName)).Split('=')[1].Trim();
+        }
+
         public static string GetRSDirectory()
         {
             if (!IsRSFolder(Constants.RSFolder))
             {
                 if (File.Exists(Constants.SettingsPath))
                 {
-                    Constants.RSFolder = File.ReadAllText(Constants.SettingsPath).Split('=')[1].Trim();
+                    Constants.RSFolder = GetSettingsEntry("RSPath");
                     return Constants.RSFolder;
                 }
             }
