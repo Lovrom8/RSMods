@@ -154,6 +154,13 @@
             this.ToggleHeadstockWhenBox = new System.Windows.Forms.GroupBox();
             this.HeadstockOffInSongOnlyButton = new System.Windows.Forms.RadioButton();
             this.HeadStockAlwaysOffButton = new System.Windows.Forms.RadioButton();
+            this.TabController = new System.Windows.Forms.TabControl();
+            this.Tab_SongLists = new System.Windows.Forms.TabPage();
+            this.Tab_Keybindings = new System.Windows.Forms.TabPage();
+            this.Tab_ModToggles = new System.Windows.Forms.TabPage();
+            this.Tab_SetAndForget = new System.Windows.Forms.TabPage();
+            this.Tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.Tab_GUISettings = new System.Windows.Forms.TabPage();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -174,6 +181,13 @@
             this.HowToToggleLyrics.SuspendLayout();
             this.GuitarSpeakBox.SuspendLayout();
             this.ToggleHeadstockWhenBox.SuspendLayout();
+            this.TabController.SuspendLayout();
+            this.Tab_SongLists.SuspendLayout();
+            this.Tab_Keybindings.SuspendLayout();
+            this.Tab_ModToggles.SuspendLayout();
+            this.Tab_SetAndForget.SuspendLayout();
+            this.Tab_ModSettings.SuspendLayout();
+            this.Tab_GUISettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // Songlist
@@ -505,6 +519,7 @@
             // ForceEnumerationManualRadio
             // 
             this.ForceEnumerationManualRadio.AutoSize = true;
+            this.ForceEnumerationManualRadio.Checked = true;
             this.ForceEnumerationManualRadio.Location = new System.Drawing.Point(14, 23);
             this.ForceEnumerationManualRadio.Name = "ForceEnumerationManualRadio";
             this.ForceEnumerationManualRadio.Size = new System.Drawing.Size(112, 17);
@@ -522,7 +537,6 @@
             this.ForceEnumerationAutomaticRadio.Name = "ForceEnumerationAutomaticRadio";
             this.ForceEnumerationAutomaticRadio.Size = new System.Drawing.Size(180, 17);
             this.ForceEnumerationAutomaticRadio.TabIndex = 25;
-            this.ForceEnumerationAutomaticRadio.TabStop = true;
             this.ForceEnumerationAutomaticRadio.Text = "Automatic (Scan For New CDLC)";
             this.ForceEnumerationAutomaticRadio.UseVisualStyleBackColor = true;
             this.ForceEnumerationAutomaticRadio.Visible = false;
@@ -534,7 +548,7 @@
             this.HowToEnumerateBox.Controls.Add(this.EnumerateEveryXMS);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationAutomaticRadio);
             this.HowToEnumerateBox.Controls.Add(this.ForceEnumerationManualRadio);
-            this.HowToEnumerateBox.Location = new System.Drawing.Point(1015, 174);
+            this.HowToEnumerateBox.Location = new System.Drawing.Point(583, 301);
             this.HowToEnumerateBox.Name = "HowToEnumerateBox";
             this.HowToEnumerateBox.Size = new System.Drawing.Size(293, 77);
             this.HowToEnumerateBox.TabIndex = 47;
@@ -584,7 +598,7 @@
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenSongRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenManualRadio);
             this.ToggleLoftOffWhenBox.Controls.Add(this.ToggleLoftWhenStartupRadio);
-            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(1015, 84);
+            this.ToggleLoftOffWhenBox.Location = new System.Drawing.Point(968, 103);
             this.ToggleLoftOffWhenBox.Name = "ToggleLoftOffWhenBox";
             this.ToggleLoftOffWhenBox.Size = new System.Drawing.Size(145, 86);
             this.ToggleLoftOffWhenBox.TabIndex = 48;
@@ -597,7 +611,7 @@
             // ExtendedRangeTuningBox
             // 
             this.ExtendedRangeTuningBox.Controls.Add(this.ExtendedRangeTunings);
-            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(785, 24);
+            this.ExtendedRangeTuningBox.Location = new System.Drawing.Point(16, 19);
             this.ExtendedRangeTuningBox.Name = "ExtendedRangeTuningBox";
             this.ExtendedRangeTuningBox.Size = new System.Drawing.Size(214, 196);
             this.ExtendedRangeTuningBox.TabIndex = 49;
@@ -627,7 +641,7 @@
             this.EnabledModsBox.Controls.Add(this.ForceEnumerationCheckbox);
             this.EnabledModsBox.Controls.Add(this.RemoveSkylineCheckbox);
             this.EnabledModsBox.Controls.Add(this.HeadstockCheckbox);
-            this.EnabledModsBox.Location = new System.Drawing.Point(473, 20);
+            this.EnabledModsBox.Location = new System.Drawing.Point(15, 14);
             this.EnabledModsBox.Name = "EnabledModsBox";
             this.EnabledModsBox.Size = new System.Drawing.Size(284, 207);
             this.EnabledModsBox.TabIndex = 50;
@@ -718,7 +732,7 @@
             this.SongListBox.Controls.Add(this.NewSongListNameTxtbox);
             this.SongListBox.Controls.Add(this.NewSonglistName);
             this.SongListBox.Controls.Add(this.Songlist);
-            this.SongListBox.Location = new System.Drawing.Point(6, 20);
+            this.SongListBox.Location = new System.Drawing.Point(8, 8);
             this.SongListBox.Name = "SongListBox";
             this.SongListBox.Size = new System.Drawing.Size(459, 200);
             this.SongListBox.TabIndex = 51;
@@ -752,7 +766,7 @@
             this.KeybindingsBox.Controls.Add(this.ToggleLoftKey);
             this.KeybindingsBox.Controls.Add(this.RainbowStringsAssignment);
             this.KeybindingsBox.Controls.Add(this.ModList);
-            this.KeybindingsBox.Location = new System.Drawing.Point(6, 257);
+            this.KeybindingsBox.Location = new System.Drawing.Point(15, 17);
             this.KeybindingsBox.Name = "KeybindingsBox";
             this.KeybindingsBox.Size = new System.Drawing.Size(701, 176);
             this.KeybindingsBox.TabIndex = 52;
@@ -781,7 +795,7 @@
             // 
             // ResetToDefaultButton
             // 
-            this.ResetToDefaultButton.Location = new System.Drawing.Point(12, 443);
+            this.ResetToDefaultButton.Location = new System.Drawing.Point(16, 356);
             this.ResetToDefaultButton.Name = "ResetToDefaultButton";
             this.ResetToDefaultButton.Size = new System.Drawing.Size(127, 22);
             this.ResetToDefaultButton.TabIndex = 100000;
@@ -921,7 +935,7 @@
             this.ChangeStringColorsBox.Controls.Add(this.String1ColorButton);
             this.ChangeStringColorsBox.Controls.Add(this.String0Color);
             this.ChangeStringColorsBox.Controls.Add(this.String0ColorButton);
-            this.ChangeStringColorsBox.Location = new System.Drawing.Point(727, 233);
+            this.ChangeStringColorsBox.Location = new System.Drawing.Point(583, 19);
             this.ChangeStringColorsBox.Name = "ChangeStringColorsBox";
             this.ChangeStringColorsBox.Size = new System.Drawing.Size(282, 243);
             this.ChangeStringColorsBox.TabIndex = 65;
@@ -958,6 +972,7 @@
             // 
             // GroupSetAndForget
             // 
+            this.GroupSetAndForget.BackColor = System.Drawing.Color.Azure;
             this.GroupSetAndForget.Controls.Add(this.BtnImportExistingSettings);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningHighEStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningBStringLetter);
@@ -995,7 +1010,7 @@
             this.GroupSetAndForget.Controls.Add(this.BtnAddTuning);
             this.GroupSetAndForget.Controls.Add(this.BtnRemoveTuning);
             this.GroupSetAndForget.Controls.Add(this.ListTunings);
-            this.GroupSetAndForget.Location = new System.Drawing.Point(12, 475);
+            this.GroupSetAndForget.Location = new System.Drawing.Point(6, 25);
             this.GroupSetAndForget.Name = "GroupSetAndForget";
             this.GroupSetAndForget.Size = new System.Drawing.Size(1131, 345);
             this.GroupSetAndForget.TabIndex = 68;
@@ -1485,7 +1500,7 @@
             // 
             this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineSongRadio);
             this.ToggleSkylineBox.Controls.Add(this.ToggleSkylineStartupRadio);
-            this.ToggleSkylineBox.Location = new System.Drawing.Point(1163, 102);
+            this.ToggleSkylineBox.Location = new System.Drawing.Point(968, 19);
             this.ToggleSkylineBox.Name = "ToggleSkylineBox";
             this.ToggleSkylineBox.Size = new System.Drawing.Size(145, 68);
             this.ToggleSkylineBox.TabIndex = 69;
@@ -1523,7 +1538,7 @@
             // 
             this.HowToToggleLyrics.Controls.Add(this.ToggleLyricsManualRadio);
             this.HowToToggleLyrics.Controls.Add(this.ToggleLyricsRadio);
-            this.HowToToggleLyrics.Location = new System.Drawing.Point(1015, 257);
+            this.HowToToggleLyrics.Location = new System.Drawing.Point(970, 284);
             this.HowToToggleLyrics.Name = "HowToToggleLyrics";
             this.HowToToggleLyrics.Size = new System.Drawing.Size(145, 68);
             this.HowToToggleLyrics.TabIndex = 70;
@@ -1572,7 +1587,7 @@
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakKeypress);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakOctave);
             this.GuitarSpeakBox.Controls.Add(this.GuitarSpeakNote);
-            this.GuitarSpeakBox.Location = new System.Drawing.Point(1017, 335);
+            this.GuitarSpeakBox.Location = new System.Drawing.Point(243, 12);
             this.GuitarSpeakBox.Name = "GuitarSpeakBox";
             this.GuitarSpeakBox.Size = new System.Drawing.Size(291, 354);
             this.GuitarSpeakBox.TabIndex = 71;
@@ -1724,7 +1739,7 @@
             // 
             this.CreditsLabel.AutoSize = true;
             this.CreditsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CreditsLabel.Location = new System.Drawing.Point(1164, 768);
+            this.CreditsLabel.Location = new System.Drawing.Point(986, 342);
             this.CreditsLabel.Name = "CreditsLabel";
             this.CreditsLabel.Size = new System.Drawing.Size(152, 52);
             this.CreditsLabel.TabIndex = 72;
@@ -1736,7 +1751,7 @@
             // 
             this.ToggleHeadstockWhenBox.Controls.Add(this.HeadstockOffInSongOnlyButton);
             this.ToggleHeadstockWhenBox.Controls.Add(this.HeadStockAlwaysOffButton);
-            this.ToggleHeadstockWhenBox.Location = new System.Drawing.Point(1163, 257);
+            this.ToggleHeadstockWhenBox.Location = new System.Drawing.Point(970, 199);
             this.ToggleHeadstockWhenBox.Name = "ToggleHeadstockWhenBox";
             this.ToggleHeadstockWhenBox.Size = new System.Drawing.Size(145, 68);
             this.ToggleHeadstockWhenBox.TabIndex = 73;
@@ -1768,27 +1783,102 @@
             this.HeadStockAlwaysOffButton.UseVisualStyleBackColor = true;
             this.HeadStockAlwaysOffButton.CheckedChanged += new System.EventHandler(this.HeadStockAlwaysOffButton_CheckedChanged);
             // 
+            // TabController
+            // 
+            this.TabController.Controls.Add(this.Tab_SongLists);
+            this.TabController.Controls.Add(this.Tab_Keybindings);
+            this.TabController.Controls.Add(this.Tab_ModToggles);
+            this.TabController.Controls.Add(this.Tab_SetAndForget);
+            this.TabController.Controls.Add(this.Tab_ModSettings);
+            this.TabController.Controls.Add(this.Tab_GUISettings);
+            this.TabController.Location = new System.Drawing.Point(9, 7);
+            this.TabController.Name = "TabController";
+            this.TabController.SelectedIndex = 0;
+            this.TabController.Size = new System.Drawing.Size(1152, 423);
+            this.TabController.TabIndex = 100001;
+            // 
+            // Tab_SongLists
+            // 
+            this.Tab_SongLists.BackColor = System.Drawing.Color.Azure;
+            this.Tab_SongLists.Controls.Add(this.SongListBox);
+            this.Tab_SongLists.Location = new System.Drawing.Point(4, 22);
+            this.Tab_SongLists.Name = "Tab_SongLists";
+            this.Tab_SongLists.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_SongLists.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_SongLists.TabIndex = 0;
+            this.Tab_SongLists.Text = "Song Lists";
+            // 
+            // Tab_Keybindings
+            // 
+            this.Tab_Keybindings.BackColor = System.Drawing.Color.Azure;
+            this.Tab_Keybindings.Controls.Add(this.KeybindingsBox);
+            this.Tab_Keybindings.Location = new System.Drawing.Point(4, 22);
+            this.Tab_Keybindings.Name = "Tab_Keybindings";
+            this.Tab_Keybindings.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_Keybindings.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_Keybindings.TabIndex = 1;
+            this.Tab_Keybindings.Text = "Keybindings";
+            // 
+            // Tab_ModToggles
+            // 
+            this.Tab_ModToggles.BackColor = System.Drawing.Color.Azure;
+            this.Tab_ModToggles.Controls.Add(this.EnabledModsBox);
+            this.Tab_ModToggles.Location = new System.Drawing.Point(4, 22);
+            this.Tab_ModToggles.Name = "Tab_ModToggles";
+            this.Tab_ModToggles.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_ModToggles.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_ModToggles.TabIndex = 2;
+            this.Tab_ModToggles.Text = "Enable / Disable Mods";
+            // 
+            // Tab_SetAndForget
+            // 
+            this.Tab_SetAndForget.Controls.Add(this.GroupSetAndForget);
+            this.Tab_SetAndForget.Location = new System.Drawing.Point(4, 22);
+            this.Tab_SetAndForget.Name = "Tab_SetAndForget";
+            this.Tab_SetAndForget.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_SetAndForget.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_SetAndForget.TabIndex = 3;
+            this.Tab_SetAndForget.Text = "Set And Forget Mods";
+            this.Tab_SetAndForget.UseVisualStyleBackColor = true;
+            // 
+            // Tab_ModSettings
+            // 
+            this.Tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.Tab_ModSettings.Controls.Add(this.ResetToDefaultButton);
+            this.Tab_ModSettings.Controls.Add(this.HowToToggleLyrics);
+            this.Tab_ModSettings.Controls.Add(this.ToggleHeadstockWhenBox);
+            this.Tab_ModSettings.Controls.Add(this.GuitarSpeakBox);
+            this.Tab_ModSettings.Controls.Add(this.ChangeStringColorsBox);
+            this.Tab_ModSettings.Controls.Add(this.HowToEnumerateBox);
+            this.Tab_ModSettings.Controls.Add(this.ToggleLoftOffWhenBox);
+            this.Tab_ModSettings.Controls.Add(this.ToggleSkylineBox);
+            this.Tab_ModSettings.Controls.Add(this.ExtendedRangeTuningBox);
+            this.Tab_ModSettings.Location = new System.Drawing.Point(4, 22);
+            this.Tab_ModSettings.Name = "Tab_ModSettings";
+            this.Tab_ModSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_ModSettings.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_ModSettings.TabIndex = 4;
+            this.Tab_ModSettings.Text = "Mod Settings";
+            // 
+            // Tab_GUISettings
+            // 
+            this.Tab_GUISettings.BackColor = System.Drawing.Color.Azure;
+            this.Tab_GUISettings.Controls.Add(this.CreditsLabel);
+            this.Tab_GUISettings.Location = new System.Drawing.Point(4, 22);
+            this.Tab_GUISettings.Name = "Tab_GUISettings";
+            this.Tab_GUISettings.Padding = new System.Windows.Forms.Padding(3);
+            this.Tab_GUISettings.Size = new System.Drawing.Size(1144, 397);
+            this.Tab_GUISettings.TabIndex = 5;
+            this.Tab_GUISettings.Text = "GUI Settings";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1334, 832);
-            this.Controls.Add(this.ToggleHeadstockWhenBox);
-            this.Controls.Add(this.CreditsLabel);
-            this.Controls.Add(this.GroupSetAndForget);
-            this.Controls.Add(this.GuitarSpeakBox);
-            this.Controls.Add(this.HowToToggleLyrics);
-            this.Controls.Add(this.ToggleSkylineBox);
-            this.Controls.Add(this.ChangeStringColorsBox);
-            this.Controls.Add(this.KeybindingsBox);
-            this.Controls.Add(this.SongListBox);
-            this.Controls.Add(this.EnabledModsBox);
-            this.Controls.Add(this.ExtendedRangeTuningBox);
-            this.Controls.Add(this.ToggleLoftOffWhenBox);
-            this.Controls.Add(this.HowToEnumerateBox);
-            this.Controls.Add(this.ResetToDefaultButton);
+            this.ClientSize = new System.Drawing.Size(1170, 433);
+            this.Controls.Add(this.TabController);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -1824,8 +1914,15 @@
             this.GuitarSpeakBox.PerformLayout();
             this.ToggleHeadstockWhenBox.ResumeLayout(false);
             this.ToggleHeadstockWhenBox.PerformLayout();
+            this.TabController.ResumeLayout(false);
+            this.Tab_SongLists.ResumeLayout(false);
+            this.Tab_Keybindings.ResumeLayout(false);
+            this.Tab_ModToggles.ResumeLayout(false);
+            this.Tab_SetAndForget.ResumeLayout(false);
+            this.Tab_ModSettings.ResumeLayout(false);
+            this.Tab_GUISettings.ResumeLayout(false);
+            this.Tab_GUISettings.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1956,6 +2053,13 @@
         private System.Windows.Forms.RadioButton HeadstockOffInSongOnlyButton;
         private System.Windows.Forms.RadioButton HeadStockAlwaysOffButton;
         private System.Windows.Forms.Button BtnImportExistingSettings;
+        private System.Windows.Forms.TabControl TabController;
+        private System.Windows.Forms.TabPage Tab_SongLists;
+        private System.Windows.Forms.TabPage Tab_Keybindings;
+        private System.Windows.Forms.TabPage Tab_ModToggles;
+        private System.Windows.Forms.TabPage Tab_SetAndForget;
+        private System.Windows.Forms.TabPage Tab_ModSettings;
+        private System.Windows.Forms.TabPage Tab_GUISettings;
     }
 }
 
