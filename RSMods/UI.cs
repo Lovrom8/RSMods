@@ -22,6 +22,7 @@ using RocksmithToolkitLib.Extensions;
 #pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
 #pragma warning disable IDE0071 // "Interpolation can be simplified"
 #pragma warning disable CS0168 // Variable Declared But Not Used
+#pragma warning disable IDE0018 // Variable Declaration can be inlined, but it can't or it will shoot an error.
 
 namespace RSMods
 {
@@ -546,130 +547,72 @@ namespace RSMods
             WriteSettings.WriteINI(priorSettings);
         }
 
-        private void ChangeString0ColorButton_Click(object sender, EventArgs e)
+        public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
+        {
+            { true, new Dictionary<string, string> { // Normal Colors
+            
+                {"E String", ReadSettings.String0Color_N_Identifier},
+                {"A String", ReadSettings.String1Color_N_Identifier},
+                {"D String", ReadSettings.String2Color_N_Identifier},
+                {"G String", ReadSettings.String3Color_N_Identifier},
+                {"B String", ReadSettings.String4Color_N_Identifier},
+                {"e String", ReadSettings.String5Color_N_Identifier}
+            }},
+
+            { false,  new Dictionary<string, string> { // Colorblind Colors
+            
+                {"E String", ReadSettings.String0Color_CB_Identifier},
+                {"A String", ReadSettings.String1Color_CB_Identifier},
+                {"D String", ReadSettings.String2Color_CB_Identifier},
+                {"G String", ReadSettings.String3Color_CB_Identifier},
+                {"B String", ReadSettings.String4Color_CB_Identifier},
+                {"e String", ReadSettings.String5Color_CB_Identifier}
+            }}
+        };
+
+        public static Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>() {}; // Can't put variables into it until after we create it.
+
+
+        private void ChangeStringColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
+            bool isNormalStrings = DefaultStringColorsRadio.Checked.ToString().ToLower() == "true"; // True = Normal, False = Colorblind
+            string stringColorButtonIdentifier = String.Empty;
+            int stringNumber = 0;
+            FillStringNumberToColorDictionary();
+
+            foreach (KeyValuePair<string, string> stringColorButton in stringColorButtonsToSettingIdentifiers[isNormalStrings])
+            {
+                if (sender.ToString().Contains(stringColorButton.Key.ToString()))
+                {
+                    stringColorButtonIdentifier = stringColorButton.Value.ToString();
+                    break; // We have the one value we need, so we can leave.
+                }
+                stringNumber++;
+            }
+            
+            colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(stringColorButtonIdentifier));
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                String0Color.BackColor = colorDialog.Color;
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String0Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String0Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
+                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2"); // Tell the game to use custom colors
+                SaveChanges(stringColorButtonIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                stringNumberToColorTextBox[stringNumber].BackColor = colorDialog.Color;
             }
         }
 
-        private void String1ColorButton_Click(object sender, EventArgs e)
+        private void FillStringNumberToColorDictionary()
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
+            stringNumberToColorTextBox.Clear();
 
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                String1Color.BackColor = colorDialog.Color;
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String1Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String1Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-            }
-        }
-
-        private void String2ColorButton_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                String2Color.BackColor = colorDialog.Color;
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String2Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String2Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-            }
-        }
-
-        private void String3ColorButton_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                String3Color.BackColor = colorDialog.Color;
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String3Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String3Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-            }
-        }
-
-        private void String4ColorButton_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                String4Color.BackColor = colorDialog.Color;
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String4Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String4Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-            }
-        }
-
-        private void String5ColorButton_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
-            else
-                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                String5Color.BackColor = colorDialog.Color;
-                if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                    SaveChanges(ReadSettings.String5Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                else
-                    SaveChanges(ReadSettings.String5Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-            }
+            stringNumberToColorTextBox.Add(0, String0Color);
+            stringNumberToColorTextBox.Add(1, String1Color);
+            stringNumberToColorTextBox.Add(2, String2Color);
+            stringNumberToColorTextBox.Add(3, String3Color);
+            stringNumberToColorTextBox.Add(4, String4Color);
+            stringNumberToColorTextBox.Add(5, String5Color);
         }
 
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e)

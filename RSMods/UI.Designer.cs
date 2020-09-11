@@ -813,7 +813,8 @@
             this.String0ColorButton.TabIndex = 53;
             this.String0ColorButton.Text = "E String";
             this.String0ColorButton.UseVisualStyleBackColor = true;
-            this.String0ColorButton.Click += new System.EventHandler(this.ChangeString0ColorButton_Click);
+            this.String0ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
+            //this.String0ColorButton.Click += new System.EventHandler(this.ChangeString0ColorButton_Click);
             // 
             // String0Color
             // 
@@ -841,7 +842,7 @@
             this.String1ColorButton.TabIndex = 55;
             this.String1ColorButton.Text = "A String";
             this.String1ColorButton.UseVisualStyleBackColor = true;
-            this.String1ColorButton.Click += new System.EventHandler(this.String1ColorButton_Click);
+            this.String1ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
             // 
             // String2Color
             // 
@@ -860,7 +861,7 @@
             this.String2ColorButton.TabIndex = 57;
             this.String2ColorButton.Text = "D String";
             this.String2ColorButton.UseVisualStyleBackColor = true;
-            this.String2ColorButton.Click += new System.EventHandler(this.String2ColorButton_Click);
+            this.String2ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
             // 
             // String3Color
             // 
@@ -879,7 +880,7 @@
             this.String3ColorButton.TabIndex = 59;
             this.String3ColorButton.Text = "G String";
             this.String3ColorButton.UseVisualStyleBackColor = true;
-            this.String3ColorButton.Click += new System.EventHandler(this.String3ColorButton_Click);
+            this.String3ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
             // 
             // String4Color
             // 
@@ -898,7 +899,7 @@
             this.String4ColorButton.TabIndex = 61;
             this.String4ColorButton.Text = "B String";
             this.String4ColorButton.UseVisualStyleBackColor = true;
-            this.String4ColorButton.Click += new System.EventHandler(this.String4ColorButton_Click);
+            this.String4ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
             // 
             // String5Color
             // 
@@ -917,7 +918,7 @@
             this.String5ColorButton.TabIndex = 63;
             this.String5ColorButton.Text = "e String";
             this.String5ColorButton.UseVisualStyleBackColor = true;
-            this.String5ColorButton.Click += new System.EventHandler(this.String5ColorButton_Click);
+            this.String5ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
             // 
             // ChangeStringColorsBox
             // 
