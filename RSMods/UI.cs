@@ -27,9 +27,9 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        // Global Vars
         bool HasToolTipDictionaryBeenCreatedYet = false;
         bool CreatedToolTipYet = false;
-
 
         public MainForm()
         {
@@ -43,6 +43,7 @@ namespace RSMods
             else
                 Constants.RSFolder = RSFolder;
 
+            // Check if the GUI settings, and DLL settings already exist
             WriteSettings.IsVoid(GenUtil.GetRSDirectory());
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
                 WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
@@ -76,12 +77,10 @@ namespace RSMods
             // Mod Key Values
             ResetModKeyValues();
 
-
             // Guitar Speak Preset Values
-
             RefreshGuitarSpeakPresets();
 
-            // Load Checkbox Values
+            // Load Checkbox Values From RSMods.ini
             {
                 if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
                 {
@@ -180,6 +179,9 @@ namespace RSMods
                 }
 
                 /*
+                
+                Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
+
                  if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
                 {
                     this.DiscoModeCheckbox.Checked = true;
@@ -377,13 +379,13 @@ namespace RSMods
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
             {
-                e.SuppressKeyPress = true;
+                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
                 Save_Songlists_Keybindings(sender, e);
             }
 
             else if (sender == this.NewAssignmentTxtBox)
             {
-                e.SuppressKeyPress = true;
+                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
 
                 if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
                 {
@@ -393,13 +395,9 @@ namespace RSMods
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
                     if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-                    {
                         return;
-                    }
                     else
-                    {
                         NewAssignmentTxtBox.Text = "";
-                    }
                 }
             }
         }
@@ -442,7 +440,7 @@ namespace RSMods
 
         public static Dictionary<string, Dictionary<string, string>> priorSettings = new Dictionary<string, Dictionary<string, string>>()
         {
-            // Section                           mod   default
+            // [Section]                         mod    default
             {"[SongListTitles]", new Dictionary<string, string> {
                 { ReadSettings.Songlist1Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) }, // Songlist 1
                 { ReadSettings.Songlist2Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier) }, // Songlist 2
@@ -528,6 +526,7 @@ namespace RSMods
 
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
+            // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
             if (ChangedSettingValue == "true")
                 ChangedSettingValue = "on";
             else if (ChangedSettingValue == "false")
@@ -540,7 +539,7 @@ namespace RSMods
                     if (IdentifierToChange == entry.Key)
                     {
                         priorSettings[section][IdentifierToChange] = ChangedSettingValue;
-                        break;
+                        break; // We found what we need, so let's leave.
                     }
                 }
             }
@@ -553,26 +552,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String0Color.BackColor = colorDialog.Color;
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String0Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String0Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
@@ -582,26 +573,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String1Color.BackColor = colorDialog.Color;
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String1Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String1Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
@@ -611,26 +594,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String2Color.BackColor = colorDialog.Color;
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String2Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String2Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
@@ -640,26 +615,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String3Color.BackColor = colorDialog.Color;
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String3Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String3Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
@@ -669,26 +636,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 String4Color.BackColor = colorDialog.Color;
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String4Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String4Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
@@ -698,26 +657,18 @@ namespace RSMods
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
             if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
-            }
             else
-            {
                 colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
-            }
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
                 String5Color.BackColor = colorDialog.Color;
                 if (DefaultStringColorsRadio.Checked.ToString().ToLower() == "true")
-                {
                     SaveChanges(ReadSettings.String5Color_N_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
                 else
-                {
                     SaveChanges(ReadSettings.String5Color_CB_Identifier, (colorDialog.Color.ToArgb() & 0x00FFFFFF).ToString("X6"));
-                }
             }
         }
 
