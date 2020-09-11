@@ -1,5 +1,4 @@
-﻿
-using RSMods.Data;
+﻿using RSMods.Data;
 using Newtonsoft.Json.Linq;
 using RSMods.Data;
 using System;
@@ -135,7 +134,7 @@ namespace RSMods.Util
             };
             WebSocketClient customClient = new WebSocketClient(clientOptions);
             client = new TwitchClient(customClient);
-            client.Initialize(credentials);
+            client.Initialize(credentials, "channel");
 
             client.OnMessageReceived += Client_OnMessageReceived;
             client.OnNewSubscriber += Client_OnNewSubscriber;
