@@ -1048,56 +1048,47 @@ namespace RSMods
 
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
+            string currentTab = this.TabController.SelectedTab.Text.ToString();
 
-            // Songlists
-            foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting) {
-                if(this.NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
-                {
-                    MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    break;
-                }
-
-                else if (currentSongList.Key == this.Songlist.SelectedIndex)
-                {
-                    SaveChanges(currentSongList.Value, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[currentSongList.Key] = this.NewSongListNameTxtbox.Text;
-                    break;
-                };
-            }
-
-            // Mods on KeyPress
+            if (currentTab == "Song Lists")
             {
-                    
-                if (this.ModList.GetSelected(0) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Toggle Loft Key
+                foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting)
                 {
-                    SaveChanges(ReadSettings.ToggleLoftIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    if (this.NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
+                    {
+                        MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                    }
+
+                    else if (currentSongList.Key == this.Songlist.SelectedIndex)
+                    {
+                        SaveChanges(currentSongList.Value, this.NewSongListNameTxtbox.Text);
+                        this.Songlist.Items[currentSongList.Key] = this.NewSongListNameTxtbox.Text;
+                        break;
+                    };
                 }
-                if (this.ModList.GetSelected(1) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Add Volume Key
+            }
+           
+            if (currentTab == "Keybindings")
+            {
+                foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
                 {
-                    SaveChanges(ReadSettings.AddVolumeIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                    if (this.NewAssignmentTxtBox.Text == "")
+                    {
+                        MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                    }
+
+                    else if (currentKeybinding.Key == this.ModList.SelectedIndex)
+                    {
+                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                        break;
+                    }
                 }
-                if (this.ModList.GetSelected(2) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Decrease Volume Key
-                {
-                    SaveChanges(ReadSettings.DecreaseVolumeIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(3) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Show Song Timer Key
-                {
-                    SaveChanges(ReadSettings.ShowSongTimerIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(4) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Force ReEnumeration Key
-                {
-                    SaveChanges(ReadSettings.ForceReEnumerationIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(5) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
-                {
-                    SaveChanges(ReadSettings.RainbowStringsIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
-                if (this.ModList.GetSelected(6) & (this.NewAssignmentTxtBox.Text != ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)) & (this.NewAssignmentTxtBox.Text != "")) // Rainbow Strings Key
-                {
-                    SaveChanges(ReadSettings.RemoveLyricsKeyIdentifier, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
-                }
+
                 this.NewAssignmentTxtBox.Text = String.Empty;
             }
+            
             ResetModKeyValues();
         }
 
