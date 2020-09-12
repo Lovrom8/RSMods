@@ -1166,10 +1166,7 @@ namespace RSMods
             }
         }
 
-        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e)
-        {
-            SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (this.EnumerateEveryXMS.Value * 1000).ToString());
-        }
+        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (this.EnumerateEveryXMS.Value * 1000).ToString());
 
         private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
         {
@@ -1498,7 +1495,6 @@ namespace RSMods
                     break; // We found what we needed, now GTFO of here.
                 }
             }
-            
         }
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
@@ -1647,13 +1643,9 @@ namespace RSMods
         private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e)
         {
             if (GuitarSpeakWhileTuningBox.Checked)
-            {
                 SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "on");
-            }
             else
-            {
                 SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "off");
-            }
         }
 
         private string GuitarSpeakNoteOctaveMath(string inputString)
