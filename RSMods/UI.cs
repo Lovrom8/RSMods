@@ -75,8 +75,8 @@ namespace RSMods
                 "Rainbow Strings",
                 "Remove Lyrics"});
 
-            // Mod Key Values
-            ResetModKeyValues();
+            // Load Keybinding Values
+            ShowCurrentKeybindingValues();
 
             // Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
@@ -1088,8 +1088,8 @@ namespace RSMods
 
                 this.NewAssignmentTxtBox.Text = String.Empty;
             }
-            
-            ResetModKeyValues();
+
+            ShowCurrentKeybindingValues();
         }
 
         private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
@@ -1337,24 +1337,19 @@ namespace RSMods
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
             this.NewAssignmentTxtBox.Text = "";
-            if (this.ModList.GetSelected(0)) // Toggle Loft Key
-                SaveChanges(ReadSettings.ToggleLoftIdentifier, "");
-            else if (this.ModList.GetSelected(1)) // Add Volume Key
-                SaveChanges(ReadSettings.AddVolumeIdentifier, "");
-            else if (this.ModList.GetSelected(2)) // Decrease Volume Key
-                SaveChanges(ReadSettings.DecreaseVolumeIdentifier, "");
-            else if (this.ModList.GetSelected(3)) // Show Song Timer Key
-                SaveChanges(ReadSettings.ShowSongTimerIdentifier, "");
-            else if (this.ModList.GetSelected(4)) // Force ReEnumerate Key
-                SaveChanges(ReadSettings.ForceReEnumerationIdentifier, "");
-            else if (this.ModList.GetSelected(5)) // Rainbow Strings Key
-                SaveChanges(ReadSettings.RainbowStringsIdentifier, "");
-            else if (this.ModList.GetSelected(6)) // Remove Lyrics Key
-                SaveChanges(ReadSettings.RemoveLyricsKeyIdentifier, "");
-            ResetModKeyValues();
+
+            foreach (KeyValuePair<int, string> currentMod in KeybindingsIndexToINISetting)
+            {
+                if (currentMod.Key == this.ModList.SelectedIndex)
+                {
+                    SaveChanges(currentMod.Value, "");
+                    break;
+                }
+            }
+            ShowCurrentKeybindingValues();
         }
 
-        private void ResetModKeyValues()
+        private void ShowCurrentKeybindingValues()
         {
             this.ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
             this.AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
