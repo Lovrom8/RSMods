@@ -119,7 +119,7 @@ namespace RSMods
             if(File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")))
             {
                 MessageBox.Show("You're pretty stupid. The DLL that works with this GUI, doesn't support pirated copies.", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Process.Start("chrome.exe", "https://store.steampowered.com/app/221680/");
+                Process.Start("https://store.steampowered.com/app/221680/");
                 Environment.Exit(1);
                 return;
             }  
