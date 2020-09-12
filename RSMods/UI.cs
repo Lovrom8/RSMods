@@ -1025,40 +1025,44 @@ namespace RSMods
             FillUI();
         }
 
+        public static Dictionary<int, string> SongListIndexToINISetting = new Dictionary<int, string>()
+        {
+            {0, ReadSettings.Songlist1Identifier},
+            {1, ReadSettings.Songlist2Identifier},
+            {2, ReadSettings.Songlist3Identifier},
+            {3, ReadSettings.Songlist4Identifier},
+            {4, ReadSettings.Songlist5Identifier},
+            {5, ReadSettings.Songlist6Identifier}
+        };
+
+        public static Dictionary<int, string> KeybindingsIndexToINISetting = new Dictionary<int, string>()
+        {
+            {0, ReadSettings.ToggleLoftIdentifier},
+            {1, ReadSettings.AddVolumeIdentifier},
+            {2, ReadSettings.DecreaseVolumeIdentifier},
+            {3, ReadSettings.ShowSongTimerIdentifier},
+            {4, ReadSettings.ForceReEnumerationIdentifier},
+            {5, ReadSettings.RainbowStringsIdentifier},
+            {6, ReadSettings.RemoveLyricsKeyIdentifier}
+        };
+
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
+
             // Songlists
-            {
-                if (this.Songlist.GetSelected(0) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 1
+            foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting) {
+                if(this.NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
                 {
-                    SaveChanges(ReadSettings.Songlist1Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[0] = this.NewSongListNameTxtbox.Text;
+                    MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
                 }
-                if (this.Songlist.GetSelected(1) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 2
+
+                else if (currentSongList.Key == this.Songlist.SelectedIndex)
                 {
-                    SaveChanges(ReadSettings.Songlist2Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[1] = this.NewSongListNameTxtbox.Text;
-                }
-                if (this.Songlist.GetSelected(2) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 3
-                {
-                    SaveChanges(ReadSettings.Songlist3Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[2] = this.NewSongListNameTxtbox.Text;
-                }
-                if (this.Songlist.GetSelected(3) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 4
-                {
-                    SaveChanges(ReadSettings.Songlist4Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[3] = this.NewSongListNameTxtbox.Text;
-                }
-                if (this.Songlist.GetSelected(4) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 5
-                {
-                    SaveChanges(ReadSettings.Songlist5Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[4] = this.NewSongListNameTxtbox.Text;
-                }
-                if (this.Songlist.GetSelected(5) && (this.NewSongListNameTxtbox.Text != ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)) && (this.NewSongListNameTxtbox.Text.Trim() != "")) // Songlist 6
-                {
-                    SaveChanges(ReadSettings.Songlist6Identifier, this.NewSongListNameTxtbox.Text);
-                    this.Songlist.Items[5] = this.NewSongListNameTxtbox.Text;
-                }
+                    SaveChanges(currentSongList.Value, this.NewSongListNameTxtbox.Text);
+                    this.Songlist.Items[currentSongList.Key] = this.NewSongListNameTxtbox.Text;
+                    break;
+                };
             }
 
             // Mods on KeyPress
