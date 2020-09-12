@@ -13,6 +13,7 @@ namespace RSMods
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
+                             DarkMode,
 
                 // Song List Identifiers
                 Songlist1Identifier = "SongListTitle_1 = ",
@@ -90,8 +91,11 @@ namespace RSMods
                 GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
                 GuitarSpeakTildeaIdentifier   = "GuitarSpeakTildeaWhen = ",
                 GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
-                GuitarSpeakTuningIdentifier   = "GuitarSpeakWhileTuning = ";
+                GuitarSpeakTuningIdentifier   = "GuitarSpeakWhileTuning = ",
 
+
+                // GUI Settings
+                DarkModeIdentifier = "DarkMode =";
 
         public static string ProcessSettings(string identifierToGrab)
         {
@@ -643,6 +647,18 @@ namespace RSMods
 
                         if (identifierToGrab == GuitarSpeakTuningIdentifier)
                             return GuitarSpeakWhileTuning;
+                    }
+
+                    // GUI Settings
+                    if (currentLine.Contains(DarkModeIdentifier))
+                    {
+                        if (currentLine.Substring(DarkModeIdentifier.Length, (currentLine.Length - DarkModeIdentifier.Length)) == "on")
+                            DarkMode = "on";
+                        else
+                            DarkMode = "off";
+
+                        if (identifierToGrab == DarkModeIdentifier)
+                            return DarkMode;
                     }
                 }
                 return ""; // Yeah, we don't know what you're looking for...

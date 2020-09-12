@@ -161,6 +161,7 @@
             this.Tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.Tab_ModSettings = new System.Windows.Forms.TabPage();
             this.Tab_GUISettings = new System.Windows.Forms.TabPage();
+            this.DarkModeCheckbox = new System.Windows.Forms.CheckBox();
             this.HowToEnumerateBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).BeginInit();
             this.ToggleLoftOffWhenBox.SuspendLayout();
@@ -814,7 +815,6 @@
             this.String0ColorButton.Text = "E String";
             this.String0ColorButton.UseVisualStyleBackColor = true;
             this.String0ColorButton.Click += new System.EventHandler(this.ChangeStringColorButton_Click);
-            //this.String0ColorButton.Click += new System.EventHandler(this.ChangeString0ColorButton_Click);
             // 
             // String0Color
             // 
@@ -1611,7 +1611,7 @@
             // GuitarSpeakPresetsLabel
             // 
             this.GuitarSpeakPresetsLabel.AutoSize = true;
-            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(182, 221);
+            this.GuitarSpeakPresetsLabel.Location = new System.Drawing.Point(6, 222);
             this.GuitarSpeakPresetsLabel.Name = "GuitarSpeakPresetsLabel";
             this.GuitarSpeakPresetsLabel.Size = new System.Drawing.Size(42, 13);
             this.GuitarSpeakPresetsLabel.TabIndex = 11;
@@ -1620,9 +1620,9 @@
             // GuitarSpeakPresetsBox
             // 
             this.GuitarSpeakPresetsBox.FormattingEnabled = true;
-            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(127, 242);
+            this.GuitarSpeakPresetsBox.Location = new System.Drawing.Point(6, 242);
             this.GuitarSpeakPresetsBox.Name = "GuitarSpeakPresetsBox";
-            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(159, 108);
+            this.GuitarSpeakPresetsBox.Size = new System.Drawing.Size(280, 108);
             this.GuitarSpeakPresetsBox.TabIndex = 10;
             // 
             // GuitarSpeakWhileTuningBox
@@ -1864,6 +1864,7 @@
             // Tab_GUISettings
             // 
             this.Tab_GUISettings.BackColor = System.Drawing.Color.Azure;
+            this.Tab_GUISettings.Controls.Add(this.DarkModeCheckbox);
             this.Tab_GUISettings.Controls.Add(this.CreditsLabel);
             this.Tab_GUISettings.Location = new System.Drawing.Point(4, 22);
             this.Tab_GUISettings.Name = "Tab_GUISettings";
@@ -1871,6 +1872,17 @@
             this.Tab_GUISettings.Size = new System.Drawing.Size(1144, 397);
             this.Tab_GUISettings.TabIndex = 5;
             this.Tab_GUISettings.Text = "GUI Settings";
+            // 
+            // DarkModeCheckbox
+            // 
+            this.DarkModeCheckbox.AutoSize = true;
+            this.DarkModeCheckbox.Location = new System.Drawing.Point(19, 18);
+            this.DarkModeCheckbox.Name = "DarkModeCheckbox";
+            this.DarkModeCheckbox.Size = new System.Drawing.Size(79, 17);
+            this.DarkModeCheckbox.TabIndex = 73;
+            this.DarkModeCheckbox.Text = "Dark Mode";
+            this.DarkModeCheckbox.UseVisualStyleBackColor = true;
+            this.DarkModeCheckbox.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -1881,9 +1893,11 @@
             this.ClientSize = new System.Drawing.Size(1170, 433);
             this.Controls.Add(this.TabController);
             this.Cursor = System.Windows.Forms.Cursors.Default;
+            this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.HowToEnumerateBox.ResumeLayout(false);
             this.HowToEnumerateBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.EnumerateEveryXMS)).EndInit();
@@ -2054,13 +2068,14 @@
         private System.Windows.Forms.RadioButton HeadstockOffInSongOnlyButton;
         private System.Windows.Forms.RadioButton HeadStockAlwaysOffButton;
         private System.Windows.Forms.Button BtnImportExistingSettings;
-        private System.Windows.Forms.TabControl TabController;
         private System.Windows.Forms.TabPage Tab_SongLists;
         private System.Windows.Forms.TabPage Tab_Keybindings;
         private System.Windows.Forms.TabPage Tab_ModToggles;
         private System.Windows.Forms.TabPage Tab_SetAndForget;
         private System.Windows.Forms.TabPage Tab_ModSettings;
         private System.Windows.Forms.TabPage Tab_GUISettings;
+        public System.Windows.Forms.TabControl TabController;
+        private System.Windows.Forms.CheckBox DarkModeCheckbox;
     }
 }
 

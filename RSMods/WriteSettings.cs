@@ -4,11 +4,19 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections.Generic;
 using RSMods.Util;
+using System.Drawing;
 
 namespace RSMods
 {
     class WriteSettings
     {
+        // Default Colors
+        public static Color normalBackgroundColor = Color.Azure;
+        public static Color normalTextColor = Color.Black;
+
+        // Dark Mode Colors
+        public static Color darkModeBackgroundColor = Color.DarkSlateGray;
+        public static Color darkModeTextColor = Color.Chocolate;
 
         //public static string dumpLocation = "RSMods.ini";
 
@@ -96,7 +104,11 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakTildeaIdentifier, "" },
                 { ReadSettings.GuitarSpeakForSlashIdentifier, "" },
                 { ReadSettings.GuitarSpeakTuningIdentifier, "off" },
-            }}
+            }},
+            {"[GUI Settings]", new Dictionary<string, string>
+            {
+                { ReadSettings.DarkModeIdentifier, "off"},
+            }},
         };
 
         public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)

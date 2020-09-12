@@ -198,6 +198,9 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
                     this.GuitarSpeakWhileTuningBox.Checked = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
+                    this.DarkModeCheckbox.Checked = true;
             }
 
             // Initialize Default String Colors
@@ -240,6 +243,37 @@ namespace RSMods
                     this.NewAssignmentTxtBox.Text = String.Empty;
                     break;
             }
+        }
+
+        private void ChangeTheme(Color backgroundColor, Color textColor)
+        {
+            // Form Background
+            BackColor = backgroundColor;
+            ForeColor = textColor;
+            
+
+            // Tabs
+            Tab_SongLists.BackColor = backgroundColor;
+            Tab_Keybindings.BackColor = backgroundColor;
+            Tab_ModToggles.BackColor = backgroundColor;
+            Tab_ModSettings.BackColor = backgroundColor;
+            Tab_SetAndForget.BackColor = backgroundColor;
+            Tab_GUISettings.BackColor = backgroundColor;
+
+            // Group Boxes
+            EnabledModsBox.ForeColor = textColor;
+            ExtendedRangeTuningBox.ForeColor = textColor;
+            GuitarSpeakBox.ForeColor = textColor;
+            KeybindingsBox.ForeColor = textColor;
+            SongListBox.ForeColor = textColor;
+            ToggleHeadstockWhenBox.ForeColor = textColor;
+            HowToEnumerateBox.ForeColor = textColor;
+            ToggleLoftOffWhenBox.ForeColor = textColor;
+            ToggleSkylineBox.ForeColor = textColor;
+            ChangeStringColorsBox.ForeColor = textColor;
+            HowToToggleLyrics.ForeColor = textColor;
+            GroupSetAndForget.BackColor = backgroundColor;
+            GroupSetAndForget.ForeColor = textColor;
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
@@ -382,6 +416,9 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakTildeaIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier) },
                 { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) },
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },
+            }},
+            {"[GUI Settings]", new Dictionary<string, string> {
+                {ReadSettings.DarkModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) },
             }}
         };
 
@@ -1699,6 +1736,28 @@ namespace RSMods
                 "Forward Slash: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)),
                 "Close Guitar Speak: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier))
             });
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
+                ChangeTheme(WriteSettings.darkModeBackgroundColor, WriteSettings.darkModeTextColor);
+            else
+                ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
+        }
+
+        private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (DarkModeCheckbox.Checked)
+            {
+                SaveChanges(ReadSettings.DarkModeIdentifier, "on");
+                ChangeTheme(WriteSettings.darkModeBackgroundColor, WriteSettings.darkModeTextColor);
+            }
+            else
+            {
+                SaveChanges(ReadSettings.DarkModeIdentifier, "off");
+                ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
+            }
         }
     }
 }
