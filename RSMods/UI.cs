@@ -1328,11 +1328,7 @@ namespace RSMods
                 SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "startup");
         }
 
-        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((this.ExtendedRangeTunings.SelectedIndex * -1) - 2));
-        }
+        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((this.ExtendedRangeTunings.SelectedIndex * -1) - 2));
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
