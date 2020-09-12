@@ -1495,7 +1495,7 @@ namespace RSMods
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.Songlist.SelectedIndex > -1)
+            if (this.Songlist.SelectedIndex >= 0)
             {
                 this.NewSongListNameTxtbox.Text = this.Songlist.SelectedItem.ToString();
             }
@@ -1515,7 +1515,7 @@ namespace RSMods
 
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
-            if (GuitarSpeakNote.SelectedIndex > -1 && GuitarSpeakOctave.SelectedIndex > -1 && GuitarSpeakKeypress.SelectedIndex > -1)
+            if (GuitarSpeakNote.SelectedIndex >= 0 && GuitarSpeakOctave.SelectedIndex >= 0 && GuitarSpeakKeypress.SelectedIndex >= 0)
             {
                 int inputNote = GuitarSpeakNote.SelectedIndex + 36; // We skip the first 3 octaves to give an accurate representation of the notes being played
                 int inputOctave = GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
