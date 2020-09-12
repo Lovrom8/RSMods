@@ -218,29 +218,29 @@ namespace RSMods
         {
             switch (this.ModList.SelectedIndex) {
                 case 0:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
                     break;
                 case 1:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
                     break;
                 case 2:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
                     break;
                 case 3:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
                     break;
                 case 4:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
                     break;
                 case 5:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
                     break;
                 case 6:
-                    this.NewAssignmentTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
                     break;
 
                 default:
-                    this.NewAssignmentTxtBox.Text = String.Empty;
+                    this.NewKeybindTxtBox.Text = String.Empty;
                     break;
             }
         }
@@ -284,19 +284,19 @@ namespace RSMods
                 Save_Songlists_Keybindings(sender, e);
             }
 
-            else if (sender == this.NewAssignmentTxtBox)
+            else if (sender == this.NewKeybindTxtBox)
             {
                 e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
 
                 if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
-                    NewAssignmentTxtBox.Text = e.KeyCode.ToString();
+                    NewKeybindTxtBox.Text = e.KeyCode.ToString();
                 // Number or Letter was pressed (Will be overrided by text input)
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
                     if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                         return;
                     else
-                        NewAssignmentTxtBox.Text = "";
+                        NewKeybindTxtBox.Text = "";
                 }
             }
         }
@@ -304,13 +304,13 @@ namespace RSMods
         private void CheckKeyPressesUp(object sender, KeyEventArgs e)
         {
             if (KeyConversion.KeyUpDictionary.Contains(e.KeyCode))
-                NewAssignmentTxtBox.Text = e.KeyCode.ToString();
+                NewKeybindTxtBox.Text = e.KeyCode.ToString();
         }
 
         private void CheckMouseInput(object sender, MouseEventArgs e)
         {
             if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
-                NewAssignmentTxtBox.Text = e.Button.ToString();
+                NewKeybindTxtBox.Text = e.Button.ToString();
         }
 
         private void ResetToDefaultSettings(object sender, EventArgs e)
@@ -1118,7 +1118,7 @@ namespace RSMods
             {
                 foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
                 {
-                    if (this.NewAssignmentTxtBox.Text == "")
+                    if (this.NewKeybindTxtBox.Text == "")
                     {
                         MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
@@ -1126,12 +1126,12 @@ namespace RSMods
 
                     else if (currentKeybinding.Key == this.ModList.SelectedIndex)
                     {
-                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(this.NewAssignmentTxtBox.Text));
+                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(this.NewKeybindTxtBox.Text));
                         break;
                     }
                 }
 
-                this.NewAssignmentTxtBox.Text = String.Empty;
+                this.NewKeybindTxtBox.Text = String.Empty;
             }
 
             ShowCurrentKeybindingValues();
@@ -1374,7 +1374,7 @@ namespace RSMods
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
-            this.NewAssignmentTxtBox.Text = "";
+            this.NewKeybindTxtBox.Text = "";
 
             foreach (KeyValuePair<int, string> currentMod in KeybindingsIndexToINISetting)
             {

@@ -41,7 +41,7 @@
             this.DecreaseVolumeKey = new System.Windows.Forms.Label();
             this.SongTimerKey = new System.Windows.Forms.Label();
             this.ReEnumerationKey = new System.Windows.Forms.Label();
-            this.NewAssignmentTxtBox = new System.Windows.Forms.TextBox();
+            this.NewKeybindTxtBox = new System.Windows.Forms.TextBox();
             this.NewAssignment = new System.Windows.Forms.Label();
             this.NewSonglistName = new System.Windows.Forms.Label();
             this.NewSongListNameTxtbox = new System.Windows.Forms.TextBox();
@@ -305,17 +305,17 @@
             this.ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
             this.ReEnumerationKey.TabIndex = 18;
             // 
-            // NewAssignmentTxtBox
+            // NewKeybindTxtBox
             // 
-            this.NewAssignmentTxtBox.Location = new System.Drawing.Point(222, 93);
-            this.NewAssignmentTxtBox.MaxLength = 1;
-            this.NewAssignmentTxtBox.Name = "NewAssignmentTxtBox";
-            this.NewAssignmentTxtBox.Size = new System.Drawing.Size(188, 20);
-            this.NewAssignmentTxtBox.TabIndex = 20;
-            this.NewAssignmentTxtBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewAssignmentTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
-            this.NewAssignmentTxtBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
-            this.NewAssignmentTxtBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
+            this.NewKeybindTxtBox.Location = new System.Drawing.Point(222, 93);
+            this.NewKeybindTxtBox.MaxLength = 1;
+            this.NewKeybindTxtBox.Name = "NewKeybindTxtBox";
+            this.NewKeybindTxtBox.Size = new System.Drawing.Size(188, 20);
+            this.NewKeybindTxtBox.TabIndex = 20;
+            this.NewKeybindTxtBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.NewKeybindTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
+            this.NewKeybindTxtBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
+            this.NewKeybindTxtBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
             // 
             // NewAssignment
             // 
@@ -759,7 +759,7 @@
             this.KeybindingsBox.Controls.Add(this.RemoveLyricsKeyLabel);
             this.KeybindingsBox.Controls.Add(this.ClearKeyBind);
             this.KeybindingsBox.Controls.Add(this.NewAssignment);
-            this.KeybindingsBox.Controls.Add(this.NewAssignmentTxtBox);
+            this.KeybindingsBox.Controls.Add(this.NewKeybindTxtBox);
             this.KeybindingsBox.Controls.Add(this.ReEnumerationKey);
             this.KeybindingsBox.Controls.Add(this.SongTimerKey);
             this.KeybindingsBox.Controls.Add(this.DecreaseVolumeKey);
@@ -1955,7 +1955,7 @@
         private System.Windows.Forms.Label DecreaseVolumeKey;
         private System.Windows.Forms.Label SongTimerKey;
         private System.Windows.Forms.Label ReEnumerationKey;
-        private System.Windows.Forms.TextBox NewAssignmentTxtBox;
+        private System.Windows.Forms.TextBox NewKeybindTxtBox;
         private System.Windows.Forms.Label NewAssignment;
         private System.Windows.Forms.Label NewSonglistName;
         private System.Windows.Forms.TextBox NewSongListNameTxtbox;
