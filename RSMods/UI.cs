@@ -1660,17 +1660,11 @@ namespace RSMods
         }
 
 
-        private string IntToNote(int intToConvert)
-        {
-            return noteArray[intToConvert % 12];
-        }
+        private string IntToNote(int intToConvert) => noteArray[intToConvert % 12];
 
         private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
 
-        private void GuitarSpeakHelpButton_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
-        }
+        private void GuitarSpeakHelpButton_Click(object sender, EventArgs e) => System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
         private void HeadStockAlwaysOffButton_CheckedChanged(object sender, EventArgs e)
         {
             if (HeadStockAlwaysOffButton.Checked)
