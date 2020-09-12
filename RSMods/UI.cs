@@ -1593,40 +1593,41 @@ namespace RSMods
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
-        private void NupString0_ValueChanged(object sender, EventArgs e)
-        {
-            int offset = 28; // Offset from (24 - 1) + 5
-            CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(NupString0.Value) + offset);
-        }
 
-        private void NupString1_ValueChanged(object sender, EventArgs e)
+        private void TuningOffsets(object sender, EventArgs e)
         {
-            int offset = 33; // Offset from (24 - 1) + 10
-            CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(NupString1.Value) + offset);
-        }
-
-        private void NupString2_ValueChanged(object sender, EventArgs e)
-        {
-            int offset = 26; // Offset from (24 - 1) + 3
-            CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(NupString2.Value) + offset);
-        }
-
-        private void NupString3_ValueChanged(object sender, EventArgs e)
-        {
-            int offset = 31;// Offset from (24 - 1) + 8
-            CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(NupString3.Value) + offset);
-        }
-
-        private void NupString4_ValueChanged(object sender, EventArgs e)
-        {
-            int offset = 35; // Offset from (24 - 1) + 12
-            CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(NupString4.Value) + offset);
-        }
-
-        private void NupString5_ValueChanged(object sender, EventArgs e)
-        {
-            int offset = 28; // Offset from (24 - 1) + 5
-            CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(NupString5.Value) + offset);
+            int stringNumber = Int32.Parse(((NumericUpDown)sender).Name.Substring(9, 1)); // Returns the current sender's name.
+            int offset = 0;
+            switch (stringNumber)
+            {
+                case 0:
+                    offset = 28; // Offset from (24 - 1) + 5
+                    CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(NupString0.Value) + offset);
+                    break;
+                case 1:
+                    offset = 33; // Offset from (24 - 1) + 10
+                    CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(NupString1.Value) + offset);
+                    break;
+                case 2:
+                    offset = 26; // Offset from (24 - 1) + 3
+                    CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(NupString2.Value) + offset);
+                    break;
+                case 3:
+                    offset = 31;// Offset from (24 - 1) + 8
+                    CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(NupString3.Value) + offset);
+                    break;
+                case 4:
+                    offset = 35; // Offset from (24 - 1) + 12
+                    CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(NupString4.Value) + offset);
+                    break;
+                case 5:
+                    offset = 28; // Offset from (24 - 1) + 5
+                    CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(NupString5.Value) + offset);
+                    break;
+                default: // Yeah we don't know wtf happened here
+                    MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
+                    break;
+            }
         }
 
         private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)

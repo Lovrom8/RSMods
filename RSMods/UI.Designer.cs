@@ -1282,7 +1282,7 @@
             this.NupString0.Name = "NupString0";
             this.NupString0.Size = new System.Drawing.Size(39, 20);
             this.NupString0.TabIndex = 86;
-            this.NupString0.ValueChanged += new System.EventHandler(this.NupString0_ValueChanged);
+            this.NupString0.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString0.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString0.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -1354,7 +1354,7 @@
             this.NupString1.Name = "NupString1";
             this.NupString1.Size = new System.Drawing.Size(39, 20);
             this.NupString1.TabIndex = 81;
-            this.NupString1.ValueChanged += new System.EventHandler(this.NupString1_ValueChanged);
+            this.NupString1.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString1.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString1.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -1375,7 +1375,7 @@
             this.NupString5.Name = "NupString5";
             this.NupString5.Size = new System.Drawing.Size(39, 20);
             this.NupString5.TabIndex = 80;
-            this.NupString5.ValueChanged += new System.EventHandler(this.NupString5_ValueChanged);
+            this.NupString5.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString5.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString5.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -1396,7 +1396,7 @@
             this.NupString4.Name = "NupString4";
             this.NupString4.Size = new System.Drawing.Size(39, 20);
             this.NupString4.TabIndex = 79;
-            this.NupString4.ValueChanged += new System.EventHandler(this.NupString4_ValueChanged);
+            this.NupString4.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString4.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString4.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -1417,7 +1417,7 @@
             this.NupString3.Name = "NupString3";
             this.NupString3.Size = new System.Drawing.Size(39, 20);
             this.NupString3.TabIndex = 78;
-            this.NupString3.ValueChanged += new System.EventHandler(this.NupString3_ValueChanged);
+            this.NupString3.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString3.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString3.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -1438,7 +1438,7 @@
             this.NupString2.Name = "NupString2";
             this.NupString2.Size = new System.Drawing.Size(39, 20);
             this.NupString2.TabIndex = 77;
-            this.NupString2.ValueChanged += new System.EventHandler(this.NupString2_ValueChanged);
+            this.NupString2.ValueChanged += new System.EventHandler(this.TuningOffsets);
             this.NupString2.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.NupString2.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
