@@ -94,6 +94,7 @@
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.GroupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.HorizontalRule_SetAndForget = new System.Windows.Forms.Label();
             this.BtnImportExistingSettings = new System.Windows.Forms.Button();
             this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
             this.CustomTuningBStringLetter = new System.Windows.Forms.Label();
@@ -974,6 +975,8 @@
             // GroupSetAndForget
             // 
             this.GroupSetAndForget.BackColor = System.Drawing.Color.Azure;
+            this.GroupSetAndForget.Controls.Add(this.ChangeTonesHeader);
+            this.GroupSetAndForget.Controls.Add(this.HorizontalRule_SetAndForget);
             this.GroupSetAndForget.Controls.Add(this.BtnImportExistingSettings);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningHighEStringLetter);
             this.GroupSetAndForget.Controls.Add(this.CustomTuningBStringLetter);
@@ -986,7 +989,6 @@
             this.GroupSetAndForget.Controls.Add(this.RbTone0);
             this.GroupSetAndForget.Controls.Add(this.BtnLoadTonesFromProfiles);
             this.GroupSetAndForget.Controls.Add(this.ListProfileTones);
-            this.GroupSetAndForget.Controls.Add(this.ChangeTonesHeader);
             this.GroupSetAndForget.Controls.Add(this.BtnSetDefaultTones);
             this.GroupSetAndForget.Controls.Add(this.BtnRemoveTempFolders);
             this.GroupSetAndForget.Controls.Add(this.BtnAddCustomMenu);
@@ -1017,6 +1019,16 @@
             this.GroupSetAndForget.TabIndex = 68;
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
+            // 
+            // HorizontalRule_SetAndForget
+            // 
+            this.HorizontalRule_SetAndForget.AutoSize = true;
+            this.HorizontalRule_SetAndForget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.HorizontalRule_SetAndForget.Location = new System.Drawing.Point(8, 156);
+            this.HorizontalRule_SetAndForget.Name = "HorizontalRule_SetAndForget";
+            this.HorizontalRule_SetAndForget.Size = new System.Drawing.Size(1119, 15);
+            this.HorizontalRule_SetAndForget.TabIndex = 110;
+            this.HorizontalRule_SetAndForget.Text = resources.GetString("HorizontalRule_SetAndForget.Text");
             // 
             // BtnImportExistingSettings
             // 
@@ -1150,10 +1162,9 @@
             // 
             // ChangeTonesHeader
             // 
-            this.ChangeTonesHeader.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.ChangeTonesHeader.Location = new System.Drawing.Point(2, 157);
+            this.ChangeTonesHeader.Location = new System.Drawing.Point(5, 158);
             this.ChangeTonesHeader.Name = "ChangeTonesHeader";
-            this.ChangeTonesHeader.Size = new System.Drawing.Size(1123, 19);
+            this.ChangeTonesHeader.Size = new System.Drawing.Size(1132, 19);
             this.ChangeTonesHeader.TabIndex = 97;
             this.ChangeTonesHeader.Text = "Change Default Tones";
             this.ChangeTonesHeader.MouseLeave += new System.EventHandler(this.HideToolTips);
@@ -2076,6 +2087,7 @@
         private System.Windows.Forms.TabPage Tab_GUISettings;
         public System.Windows.Forms.TabControl TabController;
         private System.Windows.Forms.CheckBox DarkModeCheckbox;
+        private System.Windows.Forms.Label HorizontalRule_SetAndForget;
     }
 }
 
