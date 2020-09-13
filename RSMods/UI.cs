@@ -245,57 +245,80 @@ namespace RSMods
             }
         }
 
-        private void ChangeTheme(Color backgroundColor, Color textColor)
+
+        public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>(){}; // Can't be filled by default, so we run a function to fill it.
+        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
+
+        private void FillThemeDictionary()
         {
 
-            // Make adding things easier... Make this a Dictionary<bool, WinFormElement> where bool is BackColor or ForeColor, and WinFormElement is the thing we need to change.
+            // We don't want duplicate values, so let's clear the dictionaries just to make sure.
+            themeDictionaryBackColor.Clear();
+            themeDictionaryForeColor.Clear();
 
-            // Form Background
-            BackColor = backgroundColor;
-            ForeColor = textColor;
+            // Lets start with the Back Colors
 
-            // Tabs (Only needs BackColor)
-            Tab_SongLists.BackColor = backgroundColor;
-            Tab_Keybindings.BackColor = backgroundColor;
-            Tab_ModToggles.BackColor = backgroundColor;
-            Tab_ModSettings.BackColor = backgroundColor;
-            Tab_SetAndForget.BackColor = backgroundColor;
-            Tab_GUISettings.BackColor = backgroundColor;
+            // Tabs
+            themeDictionaryBackColor.Add(Tab_SongLists, true);
+            themeDictionaryBackColor.Add(Tab_Keybindings, true);
+            themeDictionaryBackColor.Add(Tab_ModToggles, true);
+            themeDictionaryBackColor.Add(Tab_ModSettings, true);
+            themeDictionaryBackColor.Add(Tab_SetAndForget, true);
+            themeDictionaryBackColor.Add(Tab_GUISettings, true);
 
-            // Group Boxes (Only needs ForeColor {Except GroupSetAndForget})
-            EnabledModsBox.ForeColor = textColor;
-            ExtendedRangeTuningBox.ForeColor = textColor;
-            GuitarSpeakBox.ForeColor = textColor;
-            KeybindingsBox.ForeColor = textColor;
-            SongListBox.ForeColor = textColor;
-            ToggleHeadstockWhenBox.ForeColor = textColor;
-            HowToEnumerateBox.ForeColor = textColor;
-            ToggleLoftOffWhenBox.ForeColor = textColor;
-            ToggleSkylineBox.ForeColor = textColor;
-            ChangeStringColorsBox.ForeColor = textColor;
-            HowToToggleLyrics.ForeColor = textColor;
-            GroupSetAndForget.BackColor = backgroundColor;
-            GroupSetAndForget.ForeColor = textColor;
+            // Group Boxes
+            themeDictionaryBackColor.Add(GroupSetAndForget, true);
 
-            // List Boxes (BackColor & ForeColor)
-            Songlist.BackColor = backgroundColor;
-            Songlist.ForeColor = textColor;
-            ModList.BackColor = backgroundColor;
-            ModList.ForeColor = textColor;
-            ListTunings.BackColor = backgroundColor;
-            ListTunings.ForeColor = textColor;
-            ListProfileTones.BackColor = backgroundColor;
-            ListProfileTones.ForeColor = textColor;
-            ExtendedRangeTunings.BackColor = backgroundColor;
-            ExtendedRangeTunings.ForeColor = textColor;
-            GuitarSpeakKeypress.BackColor = backgroundColor;
-            GuitarSpeakKeypress.ForeColor = textColor;
-            GuitarSpeakOctave.BackColor = backgroundColor;
-            GuitarSpeakOctave.ForeColor = textColor;
-            GuitarSpeakNote.BackColor = backgroundColor;
-            GuitarSpeakNote.ForeColor = textColor;
-            GuitarSpeakPresetsBox.BackColor = backgroundColor;
-            GuitarSpeakPresetsBox.ForeColor = textColor;
+            // List Boxes
+            themeDictionaryBackColor.Add(Songlist, true);
+            themeDictionaryBackColor.Add(ModList, true);
+            themeDictionaryBackColor.Add(ListTunings, true);
+            themeDictionaryBackColor.Add(ListProfileTones, true);
+            themeDictionaryBackColor.Add(ExtendedRangeTunings, true);
+            themeDictionaryBackColor.Add(GuitarSpeakKeypress, true);
+            themeDictionaryBackColor.Add(GuitarSpeakOctave, true);
+            themeDictionaryBackColor.Add(GuitarSpeakNote, true);
+            themeDictionaryBackColor.Add(GuitarSpeakPresetsBox, true);
+
+            // Now let's fill the ForeColors.
+
+            // Group Boxes
+            themeDictionaryForeColor.Add(ExtendedRangeTuningBox, false);
+            themeDictionaryForeColor.Add(GuitarSpeakBox, false);
+            themeDictionaryForeColor.Add(KeybindingsBox, false);
+            themeDictionaryForeColor.Add(SongListBox, false);
+            themeDictionaryForeColor.Add(ToggleHeadstockWhenBox, false);
+            themeDictionaryForeColor.Add(HowToEnumerateBox, false);
+            themeDictionaryForeColor.Add(ToggleLoftOffWhenBox, false);
+            themeDictionaryForeColor.Add(ToggleSkylineBox, false);
+            themeDictionaryForeColor.Add(ChangeStringColorsBox, false);
+            themeDictionaryForeColor.Add(HowToToggleLyrics, false);
+            themeDictionaryForeColor.Add(GroupSetAndForget, false);
+
+            // List Boxes
+            themeDictionaryForeColor.Add(Songlist, false);
+            themeDictionaryForeColor.Add(ModList, false);
+            themeDictionaryForeColor.Add(ListTunings, false);
+            themeDictionaryForeColor.Add(ListProfileTones, false);
+            themeDictionaryForeColor.Add(ExtendedRangeTunings, false);
+            themeDictionaryForeColor.Add(GuitarSpeakKeypress, false);
+            themeDictionaryForeColor.Add(GuitarSpeakOctave, false);
+            themeDictionaryForeColor.Add(GuitarSpeakNote, false);
+            themeDictionaryForeColor.Add(GuitarSpeakPresetsBox, false);
+        }
+
+
+        private void ChangeTheme(Color backgroundColor, Color textColor)
+        {
+            FillThemeDictionary(); // We need to fill the dictionary since it doesn't like filling itself with form elements.
+
+            BackColor = backgroundColor; // MainForm BackColor
+            ForeColor = textColor; // MainForm ForeColor
+
+            foreach (KeyValuePair<Control, bool> backColorToChange in themeDictionaryBackColor)
+                backColorToChange.Key.BackColor = backgroundColor;
+            foreach (KeyValuePair<Control, bool> foreColorToChange in themeDictionaryForeColor)
+                foreColorToChange.Key.ForeColor = textColor; 
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
