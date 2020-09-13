@@ -16,7 +16,7 @@ namespace RSMods
 
         // Dark Mode Colors
         public static Color darkModeBackgroundColor = Color.DarkSlateGray;
-        public static Color darkModeTextColor = Color.Chocolate;
+        public static Color darkModeTextColor = Color.Black;
 
         //public static string dumpLocation = "RSMods.ini";
 
