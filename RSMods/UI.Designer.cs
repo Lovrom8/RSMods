@@ -162,7 +162,7 @@
             this.tab_Twitch = new System.Windows.Forms.TabPage();
             this.label_AuthorizedAs = new System.Windows.Forms.Label();
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
-            this.btn_ReAuthorize = new System.Windows.Forms.Button();
+            this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
             this.checkBox_DarkMode = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
@@ -1882,7 +1882,7 @@
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
             this.tab_Twitch.Controls.Add(this.label_AuthorizedAs);
             this.tab_Twitch.Controls.Add(this.label_TwitchAuthorized);
-            this.tab_Twitch.Controls.Add(this.btn_ReAuthorize);
+            this.tab_Twitch.Controls.Add(this.button_TwitchReAuthorize);
             this.tab_Twitch.Location = new System.Drawing.Point(4, 22);
             this.tab_Twitch.Name = "tab_Twitch";
             this.tab_Twitch.Padding = new System.Windows.Forms.Padding(3);
@@ -1907,15 +1907,15 @@
             this.label_TwitchAuthorized.TabIndex = 1;
             this.label_TwitchAuthorized.Text = "You are currently authorized as:";
             // 
-            // btn_ReAuthorize
+            // button_TwitchReAuthorize
             // 
-            this.btn_ReAuthorize.Location = new System.Drawing.Point(31, 25);
-            this.btn_ReAuthorize.Name = "btn_ReAuthorize";
-            this.btn_ReAuthorize.Size = new System.Drawing.Size(219, 78);
-            this.btn_ReAuthorize.TabIndex = 0;
-            this.btn_ReAuthorize.Text = "(Re)authorize";
-            this.btn_ReAuthorize.UseVisualStyleBackColor = true;
-            this.btn_ReAuthorize.Click += new System.EventHandler(this.btn_ReAuthorize_Click);
+            this.button_TwitchReAuthorize.Location = new System.Drawing.Point(31, 25);
+            this.button_TwitchReAuthorize.Name = "button_TwitchReAuthorize";
+            this.button_TwitchReAuthorize.Size = new System.Drawing.Size(219, 78);
+            this.button_TwitchReAuthorize.TabIndex = 0;
+            this.button_TwitchReAuthorize.Text = "(Re)authorize";
+            this.button_TwitchReAuthorize.UseVisualStyleBackColor = true;
+            this.button_TwitchReAuthorize.Click += new System.EventHandler(this.button_TwitchReAuthorize_Click);
             // 
             // tab_GUISettings
             // 
@@ -2136,7 +2136,7 @@
         private System.Windows.Forms.Label label_HorizontalRuleSetAndForget;
         private System.Windows.Forms.Button button_CleanUpUnpackedCache;
         private System.Windows.Forms.TabPage tab_Twitch;
-        private System.Windows.Forms.Button btn_ReAuthorize;
+        private System.Windows.Forms.Button button_TwitchReAuthorize;
         private System.Windows.Forms.Label label_TwitchAuthorized;
         private System.Windows.Forms.Label label_AuthorizedAs;
     }

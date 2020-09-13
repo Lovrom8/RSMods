@@ -24,6 +24,7 @@ using RSMods.Twitch;
 #pragma warning disable IDE0071 // "Interpolation can be simplified"
 #pragma warning disable CS0168 // Variable Declared But Not Used
 #pragma warning disable IDE0018 // Variable Declaration can be inlined, but it can't or it will shoot an error.
+#pragma warning disable IDE1006 // Naming Rule Violation... We can name our functions whatever we want.... Plus it was an auto-generated one made by YOU so stop complaining.
 
 namespace RSMods
 {
@@ -1797,7 +1798,7 @@ namespace RSMods
             }
         }
 
-        private void btn_ReAuthorize_Click(object sender, EventArgs e)
+        private void button_TwitchReAuthorize_Click(object sender, EventArgs e)
         {
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
