@@ -268,6 +268,7 @@ namespace RSMods
             themeDictionaryBackColor.Add(tab_ModToggles, true);
             themeDictionaryBackColor.Add(tab_ModSettings, true);
             themeDictionaryBackColor.Add(tab_SetAndForget, true);
+            themeDictionaryBackColor.Add(tab_Twitch, true);
             themeDictionaryBackColor.Add(tab_GUISettings, true);
 
             // Group Boxes
@@ -310,7 +311,6 @@ namespace RSMods
             themeDictionaryForeColor.Add(listBox_GuitarSpeakNote, false);
             themeDictionaryForeColor.Add(listBox_GuitarSpeakPresets, false);
         }
-
 
         private void ChangeTheme(Color backgroundColor, Color textColor)
         {
