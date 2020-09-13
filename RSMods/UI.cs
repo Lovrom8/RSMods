@@ -600,8 +600,8 @@ namespace RSMods
             }
             else
             {
-                textBox_ChangeBackgroundColor.BackColor = WriteSettings.normalBackgroundColor;
-                textBox_ChangeTextColor.BackColor = WriteSettings.normalTextColor;
+                textBox_ChangeBackgroundColor.BackColor = WriteSettings.defaultBackgroundColor;
+                textBox_ChangeTextColor.BackColor = WriteSettings.defaultTextColor;
             }
         }
 
@@ -1802,7 +1802,7 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on" && ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty && ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
                 ChangeTheme(ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier)), ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier)));
             else
-                ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
+                ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
         }
 
         private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1817,7 +1817,7 @@ namespace RSMods
             {
                 SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
                 groupBox_ChangeTheme.Visible = false;
-                ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
+                ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
             }
         }
 
@@ -1843,7 +1843,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            colorDialog.Color = WriteSettings.normalBackgroundColor;
+            colorDialog.Color = WriteSettings.defaultBackgroundColor;
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1857,7 +1857,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            colorDialog.Color = WriteSettings.normalTextColor;
+            colorDialog.Color = WriteSettings.defaultTextColor;
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {

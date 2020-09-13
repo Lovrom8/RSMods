@@ -11,12 +11,8 @@ namespace RSMods
     class WriteSettings
     {
         // Default Colors
-        public static Color normalBackgroundColor = Color.Azure;
-        public static Color normalTextColor = Color.Black;
-
-        // Dark Mode Colors
-        public static Color darkModeBackgroundColor = Color.DarkSlateGray;
-        public static Color darkModeTextColor = Color.Black;
+        public static Color defaultBackgroundColor = Color.Azure;
+        public static Color defaultTextColor = Color.Black;
 
         //public static string dumpLocation = "RSMods.ini";
 
