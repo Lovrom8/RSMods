@@ -56,7 +56,7 @@ namespace RSMods
             Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
 
             // Fill Songlist List
-            Songlist.Items.AddRange(new object[] {
+            listBox_Songlist.Items.AddRange(new object[] {
                     ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier), // Song List 1
                     ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier), // Song List 2
                     ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier), // Song List 3
@@ -66,7 +66,7 @@ namespace RSMods
                 });
 
             // Fill Modlist List
-            ModList.Items.AddRange(new object[] {
+            listBox_Modlist.Items.AddRange(new object[] {
                 "Toggle Loft",
                 "Add Volume",
                 "Decrease Volume",
@@ -85,54 +85,54 @@ namespace RSMods
             {
                 if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
                 {
-                    ToggleLoftCheckbox.Checked = true;
-                    ToggleLoftWhenStartupRadio.Visible = true;
-                    ToggleLoftWhenManualRadio.Visible = true;
-                    ToggleLoftWhenSongRadio.Visible = true;
-                    ToggleLoftOffWhenBox.Visible = true;
+                    checkBox_ToggleLoft.Checked = true;
+                    radio_LoftAlwaysOff.Visible = true;
+                    radio_LoftOffHotkey.Visible = true;
+                    radio_LoftOffInSong.Visible = true;
+                    groupBox_LoftOffWhen.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "startup")
-                        ToggleLoftWhenStartupRadio.Checked = true;
+                        radio_LoftAlwaysOff.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "manual")
-                        ToggleLoftWhenManualRadio.Checked = true;
+                        radio_LoftOffHotkey.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "song")
-                        ToggleLoftWhenSongRadio.Checked = true;
+                        radio_LoftOffInSong.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
-                    VolumeControlsCheckbox.Checked = true;
+                    checkBox_ControlVolume.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
-                    VolumeControlsCheckbox.Checked = true;
+                    checkBox_ControlVolume.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
-                    SongTimerCheckbox.Checked = true;
+                    checkBox_SongTimer.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
                 {
-                    ForceEnumerationCheckbox.Checked = true;
-                    ForceEnumerationAutomaticRadio.Visible = true;
-                    ForceEnumerationManualRadio.Visible = true;
-                    HowToEnumerateBox.Visible = true;
+                    checkBox_ForceEnumeration.Checked = true;
+                    radio_ForceEnumerationAutomatic.Visible = true;
+                    radio_ForceEnumerationManual.Visible = true;
+                    groupBox_HowToEnumerate.Visible = true;
                     if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) == "automatic")
-                        ForceEnumerationAutomaticRadio.Checked = true;
+                        radio_ForceEnumerationAutomatic.Checked = true;
                     else
-                        ForceEnumerationManualRadio.Checked = true;
+                        radio_ForceEnumerationManual.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
-                    RainbowStringsEnabled.Checked = true;
+                    checkBox_RainbowStrings.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
                 {
-                    ExtendedRangeEnabled.Checked = true;
-                    ExtendedRangeTuningBox.Visible = true;
-                    ExtendedRangeTunings.Visible = true;
+                    checkBox_ExtendedRange.Checked = true;
+                    groupBox_ExtendedRangeWhen.Visible = true;
+                    listBox_ExtendedRangeTunings.Visible = true;
                 }
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
                 {
-                    CustomColorsCheckbox.Checked = true;
-                    ChangeStringColorsBox.Visible = true;
+                    checkBox_CustomColors.Checked = true;
+                    groupBox_StringColors.Visible = true;
                 }
 
                 /* Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
@@ -143,72 +143,72 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
                 {
-                    HeadstockCheckbox.Checked = true;
-                    ToggleHeadstockWhenBox.Visible = true;
+                    checkBox_RemoveHeadstock.Checked = true;
+                    groupBox_ToggleHeadstockOffWhen.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "startup")
-                        HeadStockAlwaysOffButton.Checked = true;
+                        radio_HeadstockAlwaysOff.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "song")
-                        HeadstockOffInSongOnlyButton.Checked = true;
+                        radio_HeadstockOffInSong.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
                 {
-                    RemoveSkylineCheckbox.Checked = true;
-                    ToggleSkylineBox.Visible = true;
+                    checkBox_RemoveSkyline.Checked = true;
+                    groupBox_ToggleSkylineWhen.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "song") // Remove Skyline on Song Load
-                        ToggleSkylineSongRadio.Checked = true;
+                        radio_SkylineOffInSong.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "startup") // Remove Skyline on Game Startup 
-                        ToggleSkylineStartupRadio.Checked = true;
+                        radio_SkylineAlwaysOff.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
-                    GreenScreenWallCheckbox.Checked = true;
+                    checkBox_GreenScreen.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
-                    AutoLoadProfileCheckbox.Checked = true;
+                    checkBox_AutoLoadProfile.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
-                    FretlessModeCheckbox.Checked = true;
+                    checkBox_Fretless.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on") // Remove Inlay Markers Enabled / Disabled
-                    RemoveInlaysCheckbox.Checked = true;
+                    checkBox_RemoveInlays.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
-                    RemoveLineMarkersCheckBox.Checked = true;
+                    checkBox_RemoveLineMarkers.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
                 {
-                    RemoveLyricsCheckbox.Checked = true;
-                    HowToToggleLyrics.Visible = true;
+                    checkBox_RemoveLyrics.Checked = true;
+                    groupBox_ToggleLyricsOffWhen.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
-                        ToggleLyricsRadio.Checked = true;
+                        radio_LyricsAlwaysOff.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "manual") // Remove Lyrics When ...
-                        ToggleLyricsManualRadio.Checked = true;
+                        radio_LyricsOffHotkey.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
                 {
-                    GuitarSpeakEnableCheckbox.Checked = true;
-                    GuitarSpeakBox.Visible = true;
-                    GuitarSpeakWhileTuningBox.Visible = true;
+                    checkBox_GuitarSpeak.Checked = true;
+                    groupBox_GuitarSpeak.Visible = true;
+                    checkbox_GuitarSpeakWhileTuning.Visible = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
-                    GuitarSpeakWhileTuningBox.Checked = true;
+                    checkbox_GuitarSpeakWhileTuning.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
-                    DarkModeCheckbox.Checked = true;
+                    checkBox_DarkMode.Checked = true;
             }
 
             // Initialize Default String Colors
             LoadDefaultStringColors();
 
             // Mod Settings
-            EnumerateEveryXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
-            ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2;
+            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
+            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2;
 
             // Set And Forget Mods
             LoadSetAndForgetMods();
@@ -216,31 +216,31 @@ namespace RSMods
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (ModList.SelectedIndex) {
+            switch (listBox_Modlist.SelectedIndex) {
                 case 0:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
                     break;
                 case 1:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
                     break;
                 case 2:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
                     break;
                 case 3:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
                     break;
                 case 4:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
                     break;
                 case 5:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
                     break;
                 case 6:
-                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
                     break;
 
                 default:
-                    NewKeybindTxtBox.Text = String.Empty;
+                    textBox_NewKeyAssignment.Text = String.Empty;
                     break;
             }
         }
@@ -258,52 +258,52 @@ namespace RSMods
             // Lets start with the Back Colors
 
             // Tabs
-            themeDictionaryBackColor.Add(Tab_SongLists, true);
-            themeDictionaryBackColor.Add(Tab_Keybindings, true);
-            themeDictionaryBackColor.Add(Tab_ModToggles, true);
-            themeDictionaryBackColor.Add(Tab_ModSettings, true);
-            themeDictionaryBackColor.Add(Tab_SetAndForget, true);
-            themeDictionaryBackColor.Add(Tab_GUISettings, true);
+            themeDictionaryBackColor.Add(tab_Songlists, true);
+            themeDictionaryBackColor.Add(tab_Keybindings, true);
+            themeDictionaryBackColor.Add(tab_ModToggles, true);
+            themeDictionaryBackColor.Add(tab_ModSettings, true);
+            themeDictionaryBackColor.Add(tab_SetAndForget, true);
+            themeDictionaryBackColor.Add(tab_GUISettings, true);
 
             // Group Boxes
-            themeDictionaryBackColor.Add(GroupSetAndForget, true);
+            themeDictionaryBackColor.Add(groupBox_SetAndForget, true);
 
             // List Boxes
-            themeDictionaryBackColor.Add(Songlist, true);
-            themeDictionaryBackColor.Add(ModList, true);
-            themeDictionaryBackColor.Add(ListTunings, true);
-            themeDictionaryBackColor.Add(ListProfileTones, true);
-            themeDictionaryBackColor.Add(ExtendedRangeTunings, true);
-            themeDictionaryBackColor.Add(GuitarSpeakKeypress, true);
-            themeDictionaryBackColor.Add(GuitarSpeakOctave, true);
-            themeDictionaryBackColor.Add(GuitarSpeakNote, true);
-            themeDictionaryBackColor.Add(GuitarSpeakPresetsBox, true);
+            themeDictionaryBackColor.Add(listBox_Songlist, true);
+            themeDictionaryBackColor.Add(listBox_Modlist, true);
+            themeDictionaryBackColor.Add(listBox_Tunings, true);
+            themeDictionaryBackColor.Add(listBox_ProfileTones, true);
+            themeDictionaryBackColor.Add(listBox_ExtendedRangeTunings, true);
+            themeDictionaryBackColor.Add(listBox_GuitarSpeakKeypress, true);
+            themeDictionaryBackColor.Add(listBox_GuitarSpeakOctave, true);
+            themeDictionaryBackColor.Add(listBox_GuitarSpeakNote, true);
+            themeDictionaryBackColor.Add(listBox_GuitarSpeakPresets, true);
 
             // Now let's fill the ForeColors.
 
             // Group Boxes
-            themeDictionaryForeColor.Add(ExtendedRangeTuningBox, false);
-            themeDictionaryForeColor.Add(GuitarSpeakBox, false);
-            themeDictionaryForeColor.Add(KeybindingsBox, false);
-            themeDictionaryForeColor.Add(SongListBox, false);
-            themeDictionaryForeColor.Add(ToggleHeadstockWhenBox, false);
-            themeDictionaryForeColor.Add(HowToEnumerateBox, false);
-            themeDictionaryForeColor.Add(ToggleLoftOffWhenBox, false);
-            themeDictionaryForeColor.Add(ToggleSkylineBox, false);
-            themeDictionaryForeColor.Add(ChangeStringColorsBox, false);
-            themeDictionaryForeColor.Add(HowToToggleLyrics, false);
-            themeDictionaryForeColor.Add(GroupSetAndForget, false);
+            themeDictionaryForeColor.Add(groupBox_ExtendedRangeWhen, false);
+            themeDictionaryForeColor.Add(groupBox_GuitarSpeak, false);
+            themeDictionaryForeColor.Add(groupBox_Keybindings, false);
+            themeDictionaryForeColor.Add(groupBox_Songlist, false);
+            themeDictionaryForeColor.Add(groupBox_ToggleHeadstockOffWhen, false);
+            themeDictionaryForeColor.Add(groupBox_HowToEnumerate, false);
+            themeDictionaryForeColor.Add(groupBox_LoftOffWhen, false);
+            themeDictionaryForeColor.Add(groupBox_ToggleSkylineWhen, false);
+            themeDictionaryForeColor.Add(groupBox_StringColors, false);
+            themeDictionaryForeColor.Add(groupBox_ToggleLyricsOffWhen, false);
+            themeDictionaryForeColor.Add(groupBox_SetAndForget, false);
 
             // List Boxes
-            themeDictionaryForeColor.Add(Songlist, false);
-            themeDictionaryForeColor.Add(ModList, false);
-            themeDictionaryForeColor.Add(ListTunings, false);
-            themeDictionaryForeColor.Add(ListProfileTones, false);
-            themeDictionaryForeColor.Add(ExtendedRangeTunings, false);
-            themeDictionaryForeColor.Add(GuitarSpeakKeypress, false);
-            themeDictionaryForeColor.Add(GuitarSpeakOctave, false);
-            themeDictionaryForeColor.Add(GuitarSpeakNote, false);
-            themeDictionaryForeColor.Add(GuitarSpeakPresetsBox, false);
+            themeDictionaryForeColor.Add(listBox_Songlist, false);
+            themeDictionaryForeColor.Add(listBox_Modlist, false);
+            themeDictionaryForeColor.Add(listBox_Tunings, false);
+            themeDictionaryForeColor.Add(listBox_ProfileTones, false);
+            themeDictionaryForeColor.Add(listBox_ExtendedRangeTunings, false);
+            themeDictionaryForeColor.Add(listBox_GuitarSpeakKeypress, false);
+            themeDictionaryForeColor.Add(listBox_GuitarSpeakOctave, false);
+            themeDictionaryForeColor.Add(listBox_GuitarSpeakNote, false);
+            themeDictionaryForeColor.Add(listBox_GuitarSpeakPresets, false);
         }
 
 
@@ -328,19 +328,19 @@ namespace RSMods
                 Save_Songlists_Keybindings(sender, e);
             }
 
-            else if (sender == NewKeybindTxtBox)
+            else if (sender == textBox_NewKeyAssignment)
             {
                 e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
 
                 if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
-                    NewKeybindTxtBox.Text = e.KeyCode.ToString();
+                    textBox_NewKeyAssignment.Text = e.KeyCode.ToString();
                 // Number or Letter was pressed (Will be overrided by text input)
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91))
                 {
                     if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                         return;
                     else
-                        NewKeybindTxtBox.Text = "";
+                        textBox_NewKeyAssignment.Text = "";
                 }
             }
         }
@@ -348,13 +348,13 @@ namespace RSMods
         private void CheckKeyPressesUp(object sender, KeyEventArgs e)
         {
             if (KeyConversion.KeyUpDictionary.Contains(e.KeyCode))
-                NewKeybindTxtBox.Text = e.KeyCode.ToString();
+                textBox_NewKeyAssignment.Text = e.KeyCode.ToString();
         }
 
         private void CheckMouseInput(object sender, MouseEventArgs e)
         {
             if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
-                NewKeybindTxtBox.Text = e.Button.ToString();
+                textBox_NewKeyAssignment.Text = e.Button.ToString();
         }
 
         private void ResetToDefaultSettings(object sender, EventArgs e)
@@ -519,7 +519,7 @@ namespace RSMods
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            bool isNormalStrings = DefaultStringColorsRadio.Checked.ToString().ToLower() == "true"; // True = Normal, False = Colorblind
+            bool isNormalStrings = radio_DefaultStringColors.Checked.ToString().ToLower() == "true"; // True = Normal, False = Colorblind
             string stringColorButtonIdentifier = String.Empty;
             int stringNumber = 0;
             FillStringNumberToColorDictionary();
@@ -548,33 +548,33 @@ namespace RSMods
         {
             stringNumberToColorTextBox.Clear();
 
-            stringNumberToColorTextBox.Add(0, String0Color);
-            stringNumberToColorTextBox.Add(1, String1Color);
-            stringNumberToColorTextBox.Add(2, String2Color);
-            stringNumberToColorTextBox.Add(3, String3Color);
-            stringNumberToColorTextBox.Add(4, String4Color);
-            stringNumberToColorTextBox.Add(5, String5Color);
+            stringNumberToColorTextBox.Add(0, textBox_String0Color);
+            stringNumberToColorTextBox.Add(1, textBox_String1Color);
+            stringNumberToColorTextBox.Add(2, textBox_String2Color);
+            stringNumberToColorTextBox.Add(3, textBox_String3Color);
+            stringNumberToColorTextBox.Add(4, textBox_String4Color);
+            stringNumberToColorTextBox.Add(5, textBox_String5Color);
         }
 
         private void LoadDefaultStringColors(bool colorBlind = false)
         {
             if (!colorBlind)
             {
-                String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
-                String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
-                String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
-                String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
-                String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
-                String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
+                textBox_String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
+                textBox_String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
+                textBox_String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
+                textBox_String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
+                textBox_String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
+                textBox_String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
             }
             else
             {
-                String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
-                String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
-                String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
-                String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
-                String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
-                String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
+                textBox_String0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
+                textBox_String1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
+                textBox_String2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
+                textBox_String3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
+                textBox_String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
+                textBox_String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
             }
            
         }
@@ -677,12 +677,12 @@ namespace RSMods
 
         private void FillUI()
         {
-            ListTunings.Items.Clear();
+            listBox_Tunings.Items.Clear();
             tuningsCollection = LoadTuningsCollection();
 
-            ListTunings.Items.Add("<New>");
+            listBox_Tunings.Items.Add("<New>");
             foreach (var key in tuningsCollection.Keys)
-                ListTunings.Items.Add(key);
+                listBox_Tunings.Items.Add(key);
         }
 
         private TuningDefinitionInfo GetCurrentTuningInfo()
@@ -694,7 +694,7 @@ namespace RSMods
                 strings[$"string{strIdx}"] = (int)((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value;
 
             tuningDefinition.Strings = strings;
-            tuningDefinition.UIName = String.Format("$[{0}]{1}", NupTuningIndex.Value.ToString(), TxtUIName.Text);
+            tuningDefinition.UIName = String.Format("$[{0}]{1}", nUpDown_UIIndex.Value.ToString(), textBox_UIName.Text);
 
             return tuningDefinition;
         }
@@ -942,25 +942,25 @@ namespace RSMods
 
         private void ListTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListTunings.SelectedItem == null)
+            if (listBox_Tunings.SelectedItem == null)
                 return;
 
-            string selectedItem = ListTunings.SelectedItem.ToString();
+            string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
             if (selectedItem == "<New>")
             {
-                TxtInternalName.Text = "";
-                NupTuningIndex.Value = 0;
-                TxtUIName.Text = "";
+                textBox_InternalTuningName.Text = "";
+                nUpDown_UIIndex.Value = 0;
+                textBox_UIName.Text = "";
                 return;
             }
 
             var selectedTuning = tuningsCollection[selectedItem];
             var uiName = SplitTuningUIName(selectedTuning.UIName);
 
-            TxtInternalName.Text = selectedItem;
-            NupTuningIndex.Value = Convert.ToInt32(uiName.Item1);
-            TxtUIName.Text = uiName.Item2;
+            textBox_InternalTuningName.Text = selectedItem;
+            nUpDown_UIIndex.Value = Convert.ToInt32(uiName.Item1);
+            textBox_UIName.Text = uiName.Item2;
 
             for (int strIdx = 0; strIdx < 6; strIdx++) // If you are lazy and don't want to list each string separately, just do this sexy two-liner
                 ((NumericUpDown)Controls["groupSetAndForget"].Controls[$"nupString{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
@@ -968,9 +968,9 @@ namespace RSMods
 
         private void BtnSaveTuningChanges_Click(object sender, EventArgs e)
         {
-            if (ListTunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
+            if (listBox_Tunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
             {
-                string selectedItem = ListTunings.SelectedItem.ToString();
+                string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
                 if (selectedItem != "<New>")
                     tuningsCollection[selectedItem] = GetCurrentTuningInfo();
@@ -983,30 +983,30 @@ namespace RSMods
 
         private void BtnRemoveTuning_Click(object sender, EventArgs e)
         {
-            if (ListTunings.SelectedItem == null)
+            if (listBox_Tunings.SelectedItem == null)
                 return;
 
-            string selectedItem = ListTunings.SelectedItem.ToString();
+            string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
             if (selectedItem == "<New>")
                 return;
 
             tuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
-            ListTunings.Items.Remove(selectedItem);
+            listBox_Tunings.Items.Remove(selectedItem);
         }
 
         private void BtnAddTuning_Click(object sender, EventArgs e)
         {
-            if (ListTunings.SelectedItem.ToString() != "<New>")
+            if (listBox_Tunings.SelectedItem.ToString() != "<New>")
                 return;
 
             var currTuning = GetCurrentTuningInfo();
-            string internalName = TxtInternalName.Text;
+            string internalName = textBox_InternalTuningName.Text;
 
             if (!tuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
             {
                 tuningsCollection.Add(internalName, currTuning);
-                ListTunings.Items.Add(internalName);
+                listBox_Tunings.Items.Add(internalName);
             }
         }
 
@@ -1031,7 +1031,7 @@ namespace RSMods
 
         private void BtnSetDefaultTones_Click(object sender, EventArgs e)
         {
-            if (ListProfileTones.SelectedItem == null)
+            if (listBox_ProfileTones.SelectedItem == null)
                 return;
 
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
@@ -1041,12 +1041,12 @@ namespace RSMods
             var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
             var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
 
-            var selectedTone = TonesFromAllProfiles[ListProfileTones.SelectedItem.ToString()];
-            if (RbTone0.Checked)
+            var selectedTone = TonesFromAllProfiles[listBox_ProfileTones.SelectedItem.ToString()];
+            if (radio_DefaultRhythmTone.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][0]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if (RbTone1.Checked)
+            else if (radio_DefaultLeadTone.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][1]["GearList"] = JObject.FromObject(selectedTone.GearList);
-            else if (RbTone2.Checked)
+            else if (radio_DefaultBassTone.Checked)
                 tonesJson["Static"]["ToneManager"]["Tones"][2]["GearList"] = JObject.FromObject(selectedTone.GearList);
 
             try
@@ -1079,12 +1079,12 @@ namespace RSMods
                     var profiles = Directory.EnumerateFiles(userprofileFolder.FullName, "*_PRFLDB", SearchOption.AllDirectories).ToList();
 
                     TonesFromAllProfiles.Clear();
-                    ListProfileTones.Items.Clear();
+                    listBox_ProfileTones.Items.Clear();
 
                     foreach (string profile in profiles)
                         foreach (var tone in Tone2014.Import(profile))
                         {
-                            ListProfileTones.Items.Add(tone.Name);
+                            listBox_ProfileTones.Items.Add(tone.Name);
                             TonesFromAllProfiles.Add(tone.Name, tone);
                         }
                 }
@@ -1137,16 +1137,16 @@ namespace RSMods
             {
                 foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting)
                 {
-                    if (NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
+                    if (textBox_NewSonglistName.Text.Trim() == "") // The game UI will break with a blank name.
                     {
                         MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
 
-                    else if (currentSongList.Key == Songlist.SelectedIndex)
+                    else if (currentSongList.Key == listBox_Songlist.SelectedIndex)
                     {
-                        SaveChanges(currentSongList.Value, NewSongListNameTxtbox.Text);
-                        Songlist.Items[currentSongList.Key] = NewSongListNameTxtbox.Text;
+                        SaveChanges(currentSongList.Value, textBox_NewSonglistName.Text);
+                        listBox_Songlist.Items[currentSongList.Key] = textBox_NewSonglistName.Text;
                         break;
                     };
                 }
@@ -1156,43 +1156,43 @@ namespace RSMods
             {
                 foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
                 {
-                    if (NewKeybindTxtBox.Text == "")
+                    if (textBox_NewKeyAssignment.Text == "")
                     {
                         MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
 
-                    else if (currentKeybinding.Key == ModList.SelectedIndex)
+                    else if (currentKeybinding.Key == listBox_Modlist.SelectedIndex)
                     {
-                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(NewKeybindTxtBox.Text));
+                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(textBox_NewKeyAssignment.Text));
                         break;
                     }
                 }
 
-                NewKeybindTxtBox.Text = String.Empty;
+                textBox_NewKeyAssignment.Text = String.Empty;
             }
             ShowCurrentKeybindingValues();
         }
 
         private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
         {
-            if (ToggleLoftCheckbox.Checked)
+            if (checkBox_ToggleLoft.Checked)
             {
                 SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "true");
-                ToggleLoftCheckbox.Checked = true;
-                ToggleLoftWhenStartupRadio.Visible = true;
-                ToggleLoftWhenManualRadio.Visible = true;
-                ToggleLoftWhenSongRadio.Visible = true;
-                ToggleLoftOffWhenBox.Visible = true;
+                checkBox_ToggleLoft.Checked = true;
+                radio_LoftAlwaysOff.Visible = true;
+                radio_LoftOffHotkey.Visible = true;
+                radio_LoftOffInSong.Visible = true;
+                groupBox_LoftOffWhen.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "false");
-                ToggleLoftCheckbox.Checked = false;
-                ToggleLoftWhenStartupRadio.Visible = false;
-                ToggleLoftWhenManualRadio.Visible = false;
-                ToggleLoftWhenSongRadio.Visible = false;
-                ToggleLoftOffWhenBox.Visible = false;
+                checkBox_ToggleLoft.Checked = false;
+                radio_LoftAlwaysOff.Visible = false;
+                radio_LoftOffHotkey.Visible = false;
+                radio_LoftOffInSong.Visible = false;
+                groupBox_LoftOffWhen.Visible = false;
             }
         }
 
@@ -1214,7 +1214,7 @@ namespace RSMods
 
         private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (SongTimerCheckbox.Checked)
+            if (checkBox_SongTimer.Checked)
                 SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "false");
@@ -1222,43 +1222,43 @@ namespace RSMods
 
         private void ForceEnumerationCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (ForceEnumerationCheckbox.Checked)
+            if (checkBox_ForceEnumeration.Checked)
             {
                 SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
-                ForceEnumerationCheckbox.Checked = true;
-                ForceEnumerationAutomaticRadio.Visible = true;
-                ForceEnumerationManualRadio.Visible = true;
-                HowToEnumerateBox.Visible = true;
+                checkBox_ForceEnumeration.Checked = true;
+                radio_ForceEnumerationAutomatic.Visible = true;
+                radio_ForceEnumerationManual.Visible = true;
+                groupBox_HowToEnumerate.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "false");
-                ForceEnumerationCheckbox.Checked = false;
-                ForceEnumerationAutomaticRadio.Visible = false;
-                ForceEnumerationManualRadio.Visible = false;
-                HowToEnumerateBox.Visible = false;
+                checkBox_ForceEnumeration.Checked = false;
+                radio_ForceEnumerationAutomatic.Visible = false;
+                radio_ForceEnumerationManual.Visible = false;
+                groupBox_HowToEnumerate.Visible = false;
             }
         }
 
-        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (EnumerateEveryXMS.Value * 1000).ToString());
+        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (nUpDown_ForceEnumerationXMS.Value * 1000).ToString());
 
         private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
         {
-            CheckEveryXmsText.Visible = true;
-            EnumerateEveryXMS.Visible = true;
+            label_ForceEnumerationXMS.Visible = true;
+            nUpDown_ForceEnumerationXMS.Visible = true;
             SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "automatic");
         }
 
         private void ForceEnumerationManualRadio_CheckedChanged(object sender, EventArgs e)
         {
-            CheckEveryXmsText.Visible = false;
-            EnumerateEveryXMS.Visible = false;
+            label_ForceEnumerationXMS.Visible = false;
+            nUpDown_ForceEnumerationXMS.Visible = false;
             SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
         }
 
         private void RainbowStringsEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            if (RainbowStringsEnabled.Checked)
+            if (checkBox_RainbowStrings.Checked)
                 SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "false");
@@ -1266,17 +1266,17 @@ namespace RSMods
 
         private void ExtendedRangeEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            if (ExtendedRangeEnabled.Checked)
+            if (checkBox_ExtendedRange.Checked)
             {
-                ExtendedRangeTuningBox.Visible = true;
-                ExtendedRangeTunings.Visible = true;
+                groupBox_ExtendedRangeWhen.Visible = true;
+                listBox_ExtendedRangeTunings.Visible = true;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "true");
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
             }
             else
             {
-                ExtendedRangeTuningBox.Visible = false;
-                ExtendedRangeTunings.Visible = false;
+                groupBox_ExtendedRangeWhen.Visible = false;
+                listBox_ExtendedRangeTunings.Visible = false;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "false");
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
             }
@@ -1284,17 +1284,17 @@ namespace RSMods
 
         private void CustomColorsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (CustomColorsCheckbox.Checked)
+            if (checkBox_CustomColors.Checked)
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                CustomColorsCheckbox.Checked = true;
-                ChangeStringColorsBox.Visible = true;
+                checkBox_CustomColors.Checked = true;
+                groupBox_StringColors.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
-                CustomColorsCheckbox.Checked = false;
-                ChangeStringColorsBox.Visible = false;
+                checkBox_CustomColors.Checked = false;
+                groupBox_StringColors.Visible = false;
             }
         }
         /*
@@ -1309,37 +1309,37 @@ namespace RSMods
 
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (HeadstockCheckbox.Checked)
+            if (checkBox_RemoveHeadstock.Checked)
             {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "true");
-                ToggleHeadstockWhenBox.Visible = true;
+                groupBox_ToggleHeadstockOffWhen.Visible = true;
             }
 
             else
             {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
-                ToggleHeadstockWhenBox.Visible = false;
+                groupBox_ToggleHeadstockOffWhen.Visible = false;
             }
 
         }
 
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (RemoveSkylineCheckbox.Checked)
+            if (checkBox_RemoveSkyline.Checked)
             {
                 SaveChanges(ReadSettings.RemoveSkylineIdentifier, "true");
-                ToggleSkylineBox.Visible = true;
+                groupBox_ToggleSkylineWhen.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.RemoveSkylineIdentifier, "false");
-                ToggleSkylineBox.Visible = false;
+                groupBox_ToggleSkylineWhen.Visible = false;
             }
         }
 
         private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (GreenScreenWallCheckbox.Checked)
+            if (checkBox_GreenScreen.Checked)
                 SaveChanges(ReadSettings.GreenScreenWallIdentifier, "true");
             else
                 SaveChanges(ReadSettings.GreenScreenWallIdentifier, "false");
@@ -1347,7 +1347,7 @@ namespace RSMods
 
         private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (AutoLoadProfileCheckbox.Checked)
+            if (checkBox_AutoLoadProfile.Checked)
                 SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "false");
@@ -1355,7 +1355,7 @@ namespace RSMods
 
         private void FretlessModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (FretlessModeCheckbox.Checked)
+            if (checkBox_Fretless.Checked)
                 SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "false");
@@ -1363,7 +1363,7 @@ namespace RSMods
 
         private void RemoveInlaysCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (RemoveInlaysCheckbox.Checked)
+            if (checkBox_RemoveInlays.Checked)
                 SaveChanges(ReadSettings.RemoveInlaysIdentifier, "true");
             else
                 SaveChanges(ReadSettings.RemoveInlaysIdentifier, "false");
@@ -1371,25 +1371,25 @@ namespace RSMods
 
         private void ToggleLoftWhenManualRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleLoftWhenManualRadio.Checked)
+            if (radio_LoftOffHotkey.Checked)
                 SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "manual");
         }
 
         private void ToggleLoftWhenSongRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleLoftWhenSongRadio.Checked)
+            if (radio_LoftOffInSong.Checked)
                 SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "song");
         }
 
         private void ToggleLoftWhenStartupRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleLoftWhenStartupRadio.Checked)
+            if (radio_LoftAlwaysOff.Checked)
                 SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "startup");
         }
 
         private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (RemoveLineMarkersCheckBox.Checked)
+            if (checkBox_RemoveLineMarkers.Checked)
                 SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "true");
             else
                 SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "false");
@@ -1397,25 +1397,25 @@ namespace RSMods
 
         private void ToggleSkylineSongRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleSkylineSongRadio.Checked)
+            if (radio_SkylineOffInSong.Checked)
                 SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "song");
         }
 
         private void ToggleSkylineStartupRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleSkylineStartupRadio.Checked)
+            if (radio_SkylineAlwaysOff.Checked)
                 SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "startup");
         }
 
-        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((ExtendedRangeTunings.SelectedIndex * -1) - 2));
+        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((listBox_ExtendedRangeTunings.SelectedIndex * -1) - 2));
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
-            NewKeybindTxtBox.Text = "";
+            textBox_NewKeyAssignment.Text = "";
 
             foreach (KeyValuePair<int, string> currentMod in KeybindingsIndexToINISetting)
             {
-                if (currentMod.Key == ModList.SelectedIndex)
+                if (currentMod.Key == listBox_Modlist.SelectedIndex)
                 {
                     SaveChanges(currentMod.Value, "");
                     break;
@@ -1426,31 +1426,31 @@ namespace RSMods
 
         private void ShowCurrentKeybindingValues()
         {
-            ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
-            AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
-            DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
-            SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
-            ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
-            RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
-            RemoveLyricsKeyLabel.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+            label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+            label_AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+            label_DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            label_SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+            label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+            label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+            label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (RemoveLyricsCheckbox.Checked)
+            if (checkBox_RemoveLyrics.Checked)
             {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "on");
-                ToggleLyricsRadio.Visible = true;
-                ToggleLyricsManualRadio.Visible = true;
-                HowToToggleLyrics.Visible = true;
+                radio_LyricsAlwaysOff.Visible = true;
+                radio_LyricsOffHotkey.Visible = true;
+                groupBox_ToggleLyricsOffWhen.Visible = true;
             }
 
             else
             {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "off");
-                ToggleLyricsRadio.Visible = false;
-                ToggleLyricsManualRadio.Visible = false;
-                HowToToggleLyrics.Visible = false;
+                radio_LyricsAlwaysOff.Visible = false;
+                radio_LyricsOffHotkey.Visible = false;
+                groupBox_ToggleLyricsOffWhen.Visible = false;
             }
         }
 
@@ -1464,72 +1464,72 @@ namespace RSMods
 
             // INI Edits
             // Checkboxes
-            TooltipDictionary.Add(ToggleLoftCheckbox, "Disables the game background, amps and noise reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\nPlayer just sees an all black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press.");
+            TooltipDictionary.Add(checkBox_ToggleLoft, "Disables the game background, amps and noise reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\nPlayer just sees an all black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press.");
             //TooltipDictionary.Add(AddVolumeCheckbox, "Experimental"); // Changed to "VolumeControlsCheckbox"
             //TooltipDictionary.Add(DecreaseVolumeCheckbox, "Experimental"); // Changed to "VolumeControlsCheckbox"
-            TooltipDictionary.Add(SongTimerCheckbox, "Experimental.\nIntent is to show a box with your timestamp position through the song.");
-            TooltipDictionary.Add(ExtendedRangeEnabled, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
-            TooltipDictionary.Add(ForceEnumerationCheckbox, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder.\nNot necesary to enable if you're already using Rocksniffer to do the same thing.");
-            TooltipDictionary.Add(HeadstockCheckbox, "Stops the Headstock of the guitar being drawn.\n“Headless” guitar mode. Just cleans up some more of the UI.");
-            TooltipDictionary.Add(RemoveSkylineCheckbox, "Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press.");
-            TooltipDictionary.Add(GreenScreenWallCheckbox, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience.\nInvalidated by \"No Loft\".");
-            TooltipDictionary.Add(AutoLoadProfileCheckbox, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.");
-            TooltipDictionary.Add(FretlessModeCheckbox, "Removes the Fret Wire from the neck, making your instrument appear to be fretless.");
-            TooltipDictionary.Add(RemoveInlaysCheckbox, "Disables the guitar neck inlay display entirely.\nNote: This only works with the standard dot inlays.");
-            TooltipDictionary.Add(VolumeControlsCheckbox, "Allows you to control how loud the song is using the in-game mixer without needing to open it.");
-            TooltipDictionary.Add(GuitarSpeakEnableCheckbox, "Use your guitar to control the menus!");
-            TooltipDictionary.Add(RemoveLyricsCheckbox, "Disables the display of song lyrics while in Learn-A-Song mode.");
-            TooltipDictionary.Add(RainbowStringsEnabled, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
-            TooltipDictionary.Add(CustomColorsCheckbox, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
-            TooltipDictionary.Add(RemoveLineMarkersCheckBox, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
+            TooltipDictionary.Add(checkBox_SongTimer, "Experimental.\nIntent is to show a box with your timestamp position through the song.");
+            TooltipDictionary.Add(checkBox_ExtendedRange, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
+            TooltipDictionary.Add(checkBox_ForceEnumeration, "Game will automatically start an Enumeration sequence when a new psarc (CDLC) file is detected as having been added to the dlc folder.\nNot necesary to enable if you're already using Rocksniffer to do the same thing.");
+            TooltipDictionary.Add(checkBox_RemoveHeadstock, "Stops the Headstock of the guitar being drawn.\n“Headless” guitar mode. Just cleans up some more of the UI.");
+            TooltipDictionary.Add(checkBox_RemoveSkyline, "Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press.");
+            TooltipDictionary.Add(checkBox_GreenScreen, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience.\nInvalidated by \"No Loft\".");
+            TooltipDictionary.Add(checkBox_AutoLoadProfile, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.");
+            TooltipDictionary.Add(checkBox_Fretless, "Removes the Fret Wire from the neck, making your instrument appear to be fretless.");
+            TooltipDictionary.Add(checkBox_RemoveInlays, "Disables the guitar neck inlay display entirely.\nNote: This only works with the standard dot inlays.");
+            TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the song is using the in-game mixer without needing to open it.");
+            TooltipDictionary.Add(checkBox_GuitarSpeak, "Use your guitar to control the menus!");
+            TooltipDictionary.Add(checkBox_RemoveLyrics, "Disables the display of song lyrics while in Learn-A-Song mode.");
+            TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
+            TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
+            TooltipDictionary.Add(checkBox_RemoveLineMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
 
             // Mods
-            TooltipDictionary.Add(HowToEnumerateBox, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
-            TooltipDictionary.Add(ExtendedRangeTuningBox, "Mod is enabled when the lowest string is tuned to the note defined here.\nSee the Custom Colors - Color Blind mode for the colors that will be used while in ER mode.");
-            TooltipDictionary.Add(ToggleLoftOffWhenBox, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
-            TooltipDictionary.Add(ColorBlindStringColorsRadio, "When ER mode is enabled, these are the colors that the strings will be changed to.");
-            TooltipDictionary.Add(ToggleSkylineBox, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
-            TooltipDictionary.Add(HowToToggleLyrics, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
-            TooltipDictionary.Add(ToggleLyricsRadio, "Lyrics display will always be disabled in Learn-A-Song game mode.");
-            TooltipDictionary.Add(ToggleLyricsManualRadio, "Lyrics can be toggled on or off by a defined hotkey.");
-            TooltipDictionary.Add(GuitarSpeakWhileTuningBox, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
+            TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
+            TooltipDictionary.Add(groupBox_ExtendedRangeWhen, "Mod is enabled when the lowest string is tuned to the note defined here.\nSee the Custom Colors - Color Blind mode for the colors that will be used while in ER mode.");
+            TooltipDictionary.Add(groupBox_LoftOffWhen, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
+            TooltipDictionary.Add(radio_colorBlindERColors, "When ER mode is enabled, these are the colors that the strings will be changed to.");
+            TooltipDictionary.Add(groupBox_ToggleSkylineWhen, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
+            TooltipDictionary.Add(groupBox_ToggleLyricsOffWhen, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
+            TooltipDictionary.Add(radio_LyricsAlwaysOff, "Lyrics display will always be disabled in Learn-A-Song game mode.");
+            TooltipDictionary.Add(radio_LyricsOffHotkey, "Lyrics can be toggled on or off by a defined hotkey.");
+            TooltipDictionary.Add(checkbox_GuitarSpeakWhileTuning, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
 
             // Misc
-            TooltipDictionary.Add(SongListBox, "Custom names for the 6 \"SONG LISTS\" shown in game.");
-            TooltipDictionary.Add(KeybindingsBox, "Set key binds for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting teh key for it to be saved.");
-            TooltipDictionary.Add(ResetToDefaultButton, "Resets all RSMods values to defaults");
+            TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
+            TooltipDictionary.Add(groupBox_Keybindings, "Set key binds for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting teh key for it to be saved.");
+            TooltipDictionary.Add(button_ResetModsToDefault, "Resets all RSMods values to defaults");
 
             // Set & Forget Mods (Cache.psarc Modifications)
             // Tones
-            TooltipDictionary.Add(ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass.\nYou need to have the tone you want to set saved in your profile first,\nthen you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
-            TooltipDictionary.Add(BtnLoadTonesFromProfiles, "Step 1.\nClick this to load the tones that are saved in your profile.");
-            TooltipDictionary.Add(ListProfileTones, "Step2.\n Highlight a tone name.");
-            TooltipDictionary.Add(RbTone0, "Set Highlighted Tone As New Default Rhythm Tone.");
-            TooltipDictionary.Add(RbTone1, "Set Highlighted Tone As New Default Lead Tone.");
-            TooltipDictionary.Add(RbTone2, "Set Highlighted Tone As New Default Bass Tone.");
-            TooltipDictionary.Add(BtnSetDefaultTones, "Assign the currently highlighted tone to the chosen path.");
+            TooltipDictionary.Add(label_ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass.\nYou need to have the tone you want to set saved in your profile first,\nthen you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
+            TooltipDictionary.Add(button_LoadTones, "Step 1.\nClick this to load the tones that are saved in your profile.");
+            TooltipDictionary.Add(listBox_ProfileTones, "Step2.\n Highlight a tone name.");
+            TooltipDictionary.Add(radio_DefaultRhythmTone, "Set Highlighted Tone As New Default Rhythm Tone.");
+            TooltipDictionary.Add(radio_DefaultLeadTone, "Set Highlighted Tone As New Default Lead Tone.");
+            TooltipDictionary.Add(radio_DefaultBassTone, "Set Highlighted Tone As New Default Bass Tone.");
+            TooltipDictionary.Add(button_AssignNewDefaultTone, "Assign the currently highlighted tone to the chosen path.");
 
             // Custom Tuning
-            TooltipDictionary.Add(ListTunings, "Shows the list of tuning definitions currently in Rocksmith.");
-            TooltipDictionary.Add(BtnAddTuning, "Adds the tuning as defined above.");
-            TooltipDictionary.Add(BtnRemoveTuning, "Removes the highlighted tuning.");
-            TooltipDictionary.Add(NupString0, "Set the offset for the low-E string.");
-            TooltipDictionary.Add(NupString1, "Set the offset for the A string.");
-            TooltipDictionary.Add(NupString2, "Set the offset for the D string.");
-            TooltipDictionary.Add(NupString3, "Set the offset for the G string.");
-            TooltipDictionary.Add(NupString4, "Set the offset for the B string.");
-            TooltipDictionary.Add(NupString5, "Set the offset for the high-E string.");
-            TooltipDictionary.Add(BtnSaveTuningChanges, "Saves the tuning list to Rocksmith.");
+            TooltipDictionary.Add(listBox_Tunings, "Shows the list of tuning definitions currently in Rocksmith.");
+            TooltipDictionary.Add(button_AddTuning, "Adds the tuning as defined above.");
+            TooltipDictionary.Add(button_RemoveTuning, "Removes the highlighted tuning.");
+            TooltipDictionary.Add(nUpDown_String0, "Set the offset for the low-E string.");
+            TooltipDictionary.Add(nUpDown_String1, "Set the offset for the A string.");
+            TooltipDictionary.Add(nUpDown_String2, "Set the offset for the D string.");
+            TooltipDictionary.Add(nUpDown_String3, "Set the offset for the G string.");
+            TooltipDictionary.Add(nUpDown_String4, "Set the offset for the B string.");
+            TooltipDictionary.Add(nUpDown_String5, "Set the offset for the high-E string.");
+            TooltipDictionary.Add(button_SaveTuningChanges, "Saves the tuning list to Rocksmith.");
 
             // One Click Mods
-            TooltipDictionary.Add(BtnAddCustomMenu, "Adds the Direct Connect mode - microphone mode with tone simulations.\nAlso replaces UPLAY on the main menu with an EXIT GAME option.");
-            TooltipDictionary.Add(BtnAddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
-            TooltipDictionary.Add(BtnAddFastLoadMod, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
+            TooltipDictionary.Add(button_AddDCExitGame, "Adds the Direct Connect mode - microphone mode with tone simulations.\nAlso replaces UPLAY on the main menu with an EXIT GAME option.");
+            TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
+            TooltipDictionary.Add(button_AddFastLoad, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
             
             // Misc
-            TooltipDictionary.Add(BtnRemoveTempFolders, "Removes the temporary files used by RSMods.");
-            TooltipDictionary.Add(BtnRestoreDefaults, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
-            TooltipDictionary.Add(BtnUnpackCacheAgain, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
+            TooltipDictionary.Add(button_RemoveTemp, "Removes the temporary files used by RSMods.");
+            TooltipDictionary.Add(button_RestoreCacheBackup, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
+            TooltipDictionary.Add(button_CleanUpUnpackedCache, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
         }
 
         private void HideToolTips(object sender, EventArgs e)
@@ -1571,54 +1571,54 @@ namespace RSMods
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Songlist.SelectedIndex >= 0)
-                NewSongListNameTxtbox.Text = Songlist.SelectedItem.ToString();
+            if (listBox_Songlist.SelectedIndex >= 0)
+                textBox_NewSonglistName.Text = listBox_Songlist.SelectedItem.ToString();
         }
 
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleLyricsRadio.Checked)
+            if (radio_LyricsAlwaysOff.Checked)
                 SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "startup");
         }
 
         private void ToggleLyricsManualRadio_CheckedChanged(object sender, EventArgs e)
         {
-            if (ToggleLyricsManualRadio.Checked)
+            if (radio_LyricsOffHotkey.Checked)
                 SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
         }
 
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
-            if (GuitarSpeakNote.SelectedIndex >= 0 && GuitarSpeakOctave.SelectedIndex >= 0 && GuitarSpeakKeypress.SelectedIndex >= 0)
+            if (listBox_GuitarSpeakNote.SelectedIndex >= 0 && listBox_GuitarSpeakOctave.SelectedIndex >= 0 && listBox_GuitarSpeakKeypress.SelectedIndex >= 0)
             {
-                int inputNote = GuitarSpeakNote.SelectedIndex + 36; // We skip the first 3 octaves to give an accurate representation of the notes being played
-                int inputOctave = GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
+                int inputNote = listBox_GuitarSpeakNote.SelectedIndex + 36; // We skip the first 3 octaves to give an accurate representation of the notes being played
+                int inputOctave = listBox_GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
                 int outputNoteOctave = inputNote + (inputOctave * 12);
-                MessageBox.Show(GuitarSpeakNote.SelectedItem.ToString() + GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(listBox_GuitarSpeakNote.SelectedItem.ToString() + listBox_GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + listBox_GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 foreach (KeyValuePair<string, string> entry in GuitarSpeakKeyPressDictionary)
                 {
-                    if (GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
+                    if (listBox_GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
                     {
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
-                        GuitarSpeakPresetsBox.ClearSelected();
+                        listBox_GuitarSpeakPresets.ClearSelected();
 
-                        foreach (string guitarSpeakItem in GuitarSpeakPresetsBox.Items)
+                        foreach (string guitarSpeakItem in listBox_GuitarSpeakPresets.Items)
                         {
-                            if (guitarSpeakItem.Contains(GuitarSpeakKeypress.SelectedItem.ToString()))
+                            if (guitarSpeakItem.Contains(listBox_GuitarSpeakKeypress.SelectedItem.ToString()))
                             {
-                                GuitarSpeakPresetsBox.Items.Remove(guitarSpeakItem);
+                                listBox_GuitarSpeakPresets.Items.Remove(guitarSpeakItem);
                                 break;
                             }
                         }
-                        GuitarSpeakPresetsBox.Items.Add(GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                        listBox_GuitarSpeakPresets.Items.Add(listBox_GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
                         RefreshGuitarSpeakPresets();
                     }
                 }
 
-                GuitarSpeakNote.ClearSelected();
-                GuitarSpeakOctave.ClearSelected();
-                GuitarSpeakKeypress.ClearSelected();
+                listBox_GuitarSpeakNote.ClearSelected();
+                listBox_GuitarSpeakOctave.ClearSelected();
+                listBox_GuitarSpeakKeypress.ClearSelected();
             }
             else
                 MessageBox.Show("One of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1644,18 +1644,18 @@ namespace RSMods
 
         private void GuitarSpeakEnableCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (GuitarSpeakEnableCheckbox.Checked)
+            if (checkBox_GuitarSpeak.Checked)
             {
-                GuitarSpeakEnableCheckbox.Checked = true;
-                GuitarSpeakBox.Visible = true;
-                GuitarSpeakWhileTuningBox.Visible = true;
+                checkBox_GuitarSpeak.Checked = true;
+                groupBox_GuitarSpeak.Visible = true;
+                checkbox_GuitarSpeakWhileTuning.Visible = true;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "on");
             }
             else
             {
-                GuitarSpeakEnableCheckbox.Checked = false;
-                GuitarSpeakBox.Visible = false;
-                GuitarSpeakWhileTuningBox.Visible = false;
+                checkBox_GuitarSpeak.Checked = false;
+                groupBox_GuitarSpeak.Visible = false;
+                checkbox_GuitarSpeakWhileTuning.Visible = false;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
@@ -1668,27 +1668,27 @@ namespace RSMods
             {
                 case 0:
                     offset = 28; // Offset from (24 - 1) + 5
-                    CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(NupString0.Value) + offset);
+                    label_CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
                     break;
                 case 1:
                     offset = 33; // Offset from (24 - 1) + 10
-                    CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(NupString1.Value) + offset);
+                    label_CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String1.Value) + offset);
                     break;
                 case 2:
                     offset = 26; // Offset from (24 - 1) + 3
-                    CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(NupString2.Value) + offset);
+                    label_CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String2.Value) + offset);
                     break;
                 case 3:
                     offset = 31;// Offset from (24 - 1) + 8
-                    CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(NupString3.Value) + offset);
+                    label_CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String3.Value) + offset);
                     break;
                 case 4:
                     offset = 35; // Offset from (24 - 1) + 12
-                    CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(NupString4.Value) + offset);
+                    label_CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String4.Value) + offset);
                     break;
                 case 5:
                     offset = 28; // Offset from (24 - 1) + 5
-                    CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(NupString5.Value) + offset);
+                    label_CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset);
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
@@ -1698,7 +1698,7 @@ namespace RSMods
 
         private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (VolumeControlsCheckbox.Checked)
+            if (checkBox_ControlVolume.Checked)
             {
                 SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "on");
                 SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "on");
@@ -1712,7 +1712,7 @@ namespace RSMods
 
         private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (GuitarSpeakWhileTuningBox.Checked)
+            if (checkbox_GuitarSpeakWhileTuning.Checked)
                 SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "on");
             else
                 SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "off");
@@ -1738,21 +1738,21 @@ namespace RSMods
         private void GuitarSpeakHelpButton_Click(object sender, EventArgs e) => System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
         private void HeadStockAlwaysOffButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (HeadStockAlwaysOffButton.Checked)
+            if (radio_HeadstockAlwaysOff.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "startup");
         }
 
         private void HeadstockOffInSongOnlyButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (HeadstockOffInSongOnlyButton.Checked)
+            if (radio_HeadstockOffInSong.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
         }
 
         private void RefreshGuitarSpeakPresets()
         {
-            GuitarSpeakPresetsBox.Items.Clear();
+            listBox_GuitarSpeakPresets.Items.Clear();
 
-            GuitarSpeakPresetsBox.Items.AddRange(new object[]
+            listBox_GuitarSpeakPresets.Items.AddRange(new object[]
             {
                 "Delete: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)),
                 "Space: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)),
@@ -1781,7 +1781,7 @@ namespace RSMods
 
         private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (DarkModeCheckbox.Checked)
+            if (checkBox_DarkMode.Checked)
             {
                 SaveChanges(ReadSettings.DarkModeIdentifier, "on");
                 ChangeTheme(WriteSettings.darkModeBackgroundColor, WriteSettings.darkModeTextColor);
