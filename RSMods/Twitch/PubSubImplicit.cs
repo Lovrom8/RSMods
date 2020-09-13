@@ -45,7 +45,7 @@ namespace RSMods.Twitch
 
             try
             {
-                WebServer ws = new WebServer(this.SendResponse, twitchRedirectUri + "/");
+                WebServer ws = new WebServer(SendResponse, twitchRedirectUri + "/");
                 ws.Run();
             }
             catch (Exception ex)

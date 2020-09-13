@@ -53,10 +53,10 @@ namespace RSMods
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
 
             InitializeComponent();
-            this.Text = $"{this.Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
+            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
 
             // Fill Songlist List
-            this.Songlist.Items.AddRange(new object[] {
+            Songlist.Items.AddRange(new object[] {
                     ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier), // Song List 1
                     ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier), // Song List 2
                     ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier), // Song List 3
@@ -66,7 +66,7 @@ namespace RSMods
                 });
 
             // Fill Modlist List
-            this.ModList.Items.AddRange(new object[] {
+            ModList.Items.AddRange(new object[] {
                 "Toggle Loft",
                 "Add Volume",
                 "Decrease Volume",
@@ -85,130 +85,130 @@ namespace RSMods
             {
                 if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
                 {
-                    this.ToggleLoftCheckbox.Checked = true;
-                    this.ToggleLoftWhenStartupRadio.Visible = true;
-                    this.ToggleLoftWhenManualRadio.Visible = true;
-                    this.ToggleLoftWhenSongRadio.Visible = true;
-                    this.ToggleLoftOffWhenBox.Visible = true;
+                    ToggleLoftCheckbox.Checked = true;
+                    ToggleLoftWhenStartupRadio.Visible = true;
+                    ToggleLoftWhenManualRadio.Visible = true;
+                    ToggleLoftWhenSongRadio.Visible = true;
+                    ToggleLoftOffWhenBox.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "startup")
-                        this.ToggleLoftWhenStartupRadio.Checked = true;
+                        ToggleLoftWhenStartupRadio.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "manual")
-                        this.ToggleLoftWhenManualRadio.Checked = true;
+                        ToggleLoftWhenManualRadio.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "song")
-                        this.ToggleLoftWhenSongRadio.Checked = true;
+                        ToggleLoftWhenSongRadio.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
-                    this.VolumeControlsCheckbox.Checked = true;
+                    VolumeControlsCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
-                    this.VolumeControlsCheckbox.Checked = true;
+                    VolumeControlsCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
-                    this.SongTimerCheckbox.Checked = true;
+                    SongTimerCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
                 {
-                    this.ForceEnumerationCheckbox.Checked = true;
-                    this.ForceEnumerationAutomaticRadio.Visible = true;
-                    this.ForceEnumerationManualRadio.Visible = true;
-                    this.HowToEnumerateBox.Visible = true;
+                    ForceEnumerationCheckbox.Checked = true;
+                    ForceEnumerationAutomaticRadio.Visible = true;
+                    ForceEnumerationManualRadio.Visible = true;
+                    HowToEnumerateBox.Visible = true;
                     if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) == "automatic")
-                        this.ForceEnumerationAutomaticRadio.Checked = true;
+                        ForceEnumerationAutomaticRadio.Checked = true;
                     else
-                        this.ForceEnumerationManualRadio.Checked = true;
+                        ForceEnumerationManualRadio.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
-                    this.RainbowStringsEnabled.Checked = true;
+                    RainbowStringsEnabled.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
                 {
-                    this.ExtendedRangeEnabled.Checked = true;
-                    this.ExtendedRangeTuningBox.Visible = true;
-                    this.ExtendedRangeTunings.Visible = true;
+                    ExtendedRangeEnabled.Checked = true;
+                    ExtendedRangeTuningBox.Visible = true;
+                    ExtendedRangeTunings.Visible = true;
                 }
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
                 {
-                    this.CustomColorsCheckbox.Checked = true;
-                    this.ChangeStringColorsBox.Visible = true;
+                    CustomColorsCheckbox.Checked = true;
+                    ChangeStringColorsBox.Visible = true;
                 }
 
                 /* Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
 
                  if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
-                    this.DiscoModeCheckbox.Checked = true;
+                    DiscoModeCheckbox.Checked = true;
                  */
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
                 {
-                    this.HeadstockCheckbox.Checked = true;
-                    this.ToggleHeadstockWhenBox.Visible = true;
+                    HeadstockCheckbox.Checked = true;
+                    ToggleHeadstockWhenBox.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "startup")
-                        this.HeadStockAlwaysOffButton.Checked = true;
+                        HeadStockAlwaysOffButton.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "song")
-                        this.HeadstockOffInSongOnlyButton.Checked = true;
+                        HeadstockOffInSongOnlyButton.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
                 {
-                    this.RemoveSkylineCheckbox.Checked = true;
-                    this.ToggleSkylineBox.Visible = true;
+                    RemoveSkylineCheckbox.Checked = true;
+                    ToggleSkylineBox.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "song") // Remove Skyline on Song Load
-                        this.ToggleSkylineSongRadio.Checked = true;
+                        ToggleSkylineSongRadio.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "startup") // Remove Skyline on Game Startup 
-                        this.ToggleSkylineStartupRadio.Checked = true;
+                        ToggleSkylineStartupRadio.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
-                    this.GreenScreenWallCheckbox.Checked = true;
+                    GreenScreenWallCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
-                    this.AutoLoadProfileCheckbox.Checked = true;
+                    AutoLoadProfileCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
-                    this.FretlessModeCheckbox.Checked = true;
+                    FretlessModeCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on") // Remove Inlay Markers Enabled / Disabled
-                    this.RemoveInlaysCheckbox.Checked = true;
+                    RemoveInlaysCheckbox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
-                    this.RemoveLineMarkersCheckBox.Checked = true;
+                    RemoveLineMarkersCheckBox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
                 {
-                    this.RemoveLyricsCheckbox.Checked = true;
-                    this.HowToToggleLyrics.Visible = true;
+                    RemoveLyricsCheckbox.Checked = true;
+                    HowToToggleLyrics.Visible = true;
 
                     if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
-                        this.ToggleLyricsRadio.Checked = true;
+                        ToggleLyricsRadio.Checked = true;
                     else if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "manual") // Remove Lyrics When ...
-                        this.ToggleLyricsManualRadio.Checked = true;
+                        ToggleLyricsManualRadio.Checked = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
                 {
-                    this.GuitarSpeakEnableCheckbox.Checked = true;
-                    this.GuitarSpeakBox.Visible = true;
-                    this.GuitarSpeakWhileTuningBox.Visible = true;
+                    GuitarSpeakEnableCheckbox.Checked = true;
+                    GuitarSpeakBox.Visible = true;
+                    GuitarSpeakWhileTuningBox.Visible = true;
                 }
 
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
-                    this.GuitarSpeakWhileTuningBox.Checked = true;
+                    GuitarSpeakWhileTuningBox.Checked = true;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
-                    this.DarkModeCheckbox.Checked = true;
+                    DarkModeCheckbox.Checked = true;
             }
 
             // Initialize Default String Colors
             LoadDefaultStringColors();
 
             // Mod Settings
-            this.EnumerateEveryXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
-            this.ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2;
+            EnumerateEveryXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
+            ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2;
 
             // Set And Forget Mods
             LoadSetAndForgetMods();
@@ -216,31 +216,31 @@ namespace RSMods
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (this.ModList.SelectedIndex) {
+            switch (ModList.SelectedIndex) {
                 case 0:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
                     break;
                 case 1:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
                     break;
                 case 2:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
                     break;
                 case 3:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
                     break;
                 case 4:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
                     break;
                 case 5:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
                     break;
                 case 6:
-                    this.NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+                    NewKeybindTxtBox.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
                     break;
 
                 default:
-                    this.NewKeybindTxtBox.Text = String.Empty;
+                    NewKeybindTxtBox.Text = String.Empty;
                     break;
             }
         }
@@ -328,7 +328,7 @@ namespace RSMods
                 Save_Songlists_Keybindings(sender, e);
             }
 
-            else if (sender == this.NewKeybindTxtBox)
+            else if (sender == NewKeybindTxtBox)
             {
                 e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
 
@@ -371,9 +371,9 @@ namespace RSMods
 
         private void RefreshForm()
         {
-            this.Hide();
+            Hide();
             var newForm = new MainForm();
-            newForm.Closed += (s, args) => this.Close();
+            newForm.Closed += (s, args) => Close();
             newForm.Show();
         }
 
@@ -1131,22 +1131,22 @@ namespace RSMods
 
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
-            string currentTab = this.TabController.SelectedTab.Text.ToString();
+            string currentTab = TabController.SelectedTab.Text.ToString();
 
             if (currentTab == "Song Lists")
             {
                 foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting)
                 {
-                    if (this.NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
+                    if (NewSongListNameTxtbox.Text.Trim() == "") // The game UI will break with a blank name.
                     {
                         MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
 
-                    else if (currentSongList.Key == this.Songlist.SelectedIndex)
+                    else if (currentSongList.Key == Songlist.SelectedIndex)
                     {
-                        SaveChanges(currentSongList.Value, this.NewSongListNameTxtbox.Text);
-                        this.Songlist.Items[currentSongList.Key] = this.NewSongListNameTxtbox.Text;
+                        SaveChanges(currentSongList.Value, NewSongListNameTxtbox.Text);
+                        Songlist.Items[currentSongList.Key] = NewSongListNameTxtbox.Text;
                         break;
                     };
                 }
@@ -1156,49 +1156,49 @@ namespace RSMods
             {
                 foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
                 {
-                    if (this.NewKeybindTxtBox.Text == "")
+                    if (NewKeybindTxtBox.Text == "")
                     {
                         MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
 
-                    else if (currentKeybinding.Key == this.ModList.SelectedIndex)
+                    else if (currentKeybinding.Key == ModList.SelectedIndex)
                     {
-                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(this.NewKeybindTxtBox.Text));
+                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(NewKeybindTxtBox.Text));
                         break;
                     }
                 }
 
-                this.NewKeybindTxtBox.Text = String.Empty;
+                NewKeybindTxtBox.Text = String.Empty;
             }
             ShowCurrentKeybindingValues();
         }
 
         private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
         {
-            if (this.ToggleLoftCheckbox.Checked)
+            if (ToggleLoftCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "true");
-                this.ToggleLoftCheckbox.Checked = true;
-                this.ToggleLoftWhenStartupRadio.Visible = true;
-                this.ToggleLoftWhenManualRadio.Visible = true;
-                this.ToggleLoftWhenSongRadio.Visible = true;
-                this.ToggleLoftOffWhenBox.Visible = true;
+                ToggleLoftCheckbox.Checked = true;
+                ToggleLoftWhenStartupRadio.Visible = true;
+                ToggleLoftWhenManualRadio.Visible = true;
+                ToggleLoftWhenSongRadio.Visible = true;
+                ToggleLoftOffWhenBox.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.ToggleLoftEnabledIdentifier, "false");
-                this.ToggleLoftCheckbox.Checked = false;
-                this.ToggleLoftWhenStartupRadio.Visible = false;
-                this.ToggleLoftWhenManualRadio.Visible = false;
-                this.ToggleLoftWhenSongRadio.Visible = false;
-                this.ToggleLoftOffWhenBox.Visible = false;
+                ToggleLoftCheckbox.Checked = false;
+                ToggleLoftWhenStartupRadio.Visible = false;
+                ToggleLoftWhenManualRadio.Visible = false;
+                ToggleLoftWhenSongRadio.Visible = false;
+                ToggleLoftOffWhenBox.Visible = false;
             }
         }
 
         private void AddVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.AddVolumeCheckbox.Checked)
+            if (AddVolumeCheckbox.Checked)
                 SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "false");
@@ -1206,7 +1206,7 @@ namespace RSMods
 
         private void DecreaseVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.DecreaseVolumeCheckbox.Checked)
+            if (DecreaseVolumeCheckbox.Checked)
                 SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "false");
@@ -1214,7 +1214,7 @@ namespace RSMods
 
         private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.SongTimerCheckbox.Checked)
+            if (SongTimerCheckbox.Checked)
                 SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "true");
             else
                 SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "false");
@@ -1225,34 +1225,34 @@ namespace RSMods
             if (ForceEnumerationCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
-                this.ForceEnumerationCheckbox.Checked = true;
-                this.ForceEnumerationAutomaticRadio.Visible = true;
-                this.ForceEnumerationManualRadio.Visible = true;
-                this.HowToEnumerateBox.Visible = true;
+                ForceEnumerationCheckbox.Checked = true;
+                ForceEnumerationAutomaticRadio.Visible = true;
+                ForceEnumerationManualRadio.Visible = true;
+                HowToEnumerateBox.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "false");
-                this.ForceEnumerationCheckbox.Checked = false;
-                this.ForceEnumerationAutomaticRadio.Visible = false;
-                this.ForceEnumerationManualRadio.Visible = false;
-                this.HowToEnumerateBox.Visible = false;
+                ForceEnumerationCheckbox.Checked = false;
+                ForceEnumerationAutomaticRadio.Visible = false;
+                ForceEnumerationManualRadio.Visible = false;
+                HowToEnumerateBox.Visible = false;
             }
         }
 
-        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (this.EnumerateEveryXMS.Value * 1000).ToString());
+        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (EnumerateEveryXMS.Value * 1000).ToString());
 
         private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
         {
-            this.CheckEveryXmsText.Visible = true;
-            this.EnumerateEveryXMS.Visible = true;
+            CheckEveryXmsText.Visible = true;
+            EnumerateEveryXMS.Visible = true;
             SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "automatic");
         }
 
         private void ForceEnumerationManualRadio_CheckedChanged(object sender, EventArgs e)
         {
-            this.CheckEveryXmsText.Visible = false;
-            this.EnumerateEveryXMS.Visible = false;
+            CheckEveryXmsText.Visible = false;
+            EnumerateEveryXMS.Visible = false;
             SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
         }
 
@@ -1268,15 +1268,15 @@ namespace RSMods
         {
             if (ExtendedRangeEnabled.Checked)
             {
-                this.ExtendedRangeTuningBox.Visible = true;
-                this.ExtendedRangeTunings.Visible = true;
+                ExtendedRangeTuningBox.Visible = true;
+                ExtendedRangeTunings.Visible = true;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "true");
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
             }
             else
             {
-                this.ExtendedRangeTuningBox.Visible = false;
-                this.ExtendedRangeTunings.Visible = false;
+                ExtendedRangeTuningBox.Visible = false;
+                ExtendedRangeTunings.Visible = false;
                 SaveChanges(ReadSettings.ExtendedRangeEnabledIdentifier, "false");
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
             }
@@ -1287,14 +1287,14 @@ namespace RSMods
             if (CustomColorsCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2");
-                this.CustomColorsCheckbox.Checked = true;
-                this.ChangeStringColorsBox.Visible = true;
+                CustomColorsCheckbox.Checked = true;
+                ChangeStringColorsBox.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "0");
-                this.CustomColorsCheckbox.Checked = false;
-                this.ChangeStringColorsBox.Visible = false;
+                CustomColorsCheckbox.Checked = false;
+                ChangeStringColorsBox.Visible = false;
             }
         }
         /*
@@ -1312,13 +1312,13 @@ namespace RSMods
             if (HeadstockCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "true");
-                this.ToggleHeadstockWhenBox.Visible = true;
+                ToggleHeadstockWhenBox.Visible = true;
             }
 
             else
             {
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
-                this.ToggleHeadstockWhenBox.Visible = false;
+                ToggleHeadstockWhenBox.Visible = false;
             }
 
         }
@@ -1328,12 +1328,12 @@ namespace RSMods
             if (RemoveSkylineCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.RemoveSkylineIdentifier, "true");
-                this.ToggleSkylineBox.Visible = true;
+                ToggleSkylineBox.Visible = true;
             }
             else
             {
                 SaveChanges(ReadSettings.RemoveSkylineIdentifier, "false");
-                this.ToggleSkylineBox.Visible = false;
+                ToggleSkylineBox.Visible = false;
             }
         }
 
@@ -1407,15 +1407,15 @@ namespace RSMods
                 SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "startup");
         }
 
-        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((this.ExtendedRangeTunings.SelectedIndex * -1) - 2));
+        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((ExtendedRangeTunings.SelectedIndex * -1) - 2));
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
-            this.NewKeybindTxtBox.Text = "";
+            NewKeybindTxtBox.Text = "";
 
             foreach (KeyValuePair<int, string> currentMod in KeybindingsIndexToINISetting)
             {
-                if (currentMod.Key == this.ModList.SelectedIndex)
+                if (currentMod.Key == ModList.SelectedIndex)
                 {
                     SaveChanges(currentMod.Value, "");
                     break;
@@ -1426,13 +1426,13 @@ namespace RSMods
 
         private void ShowCurrentKeybindingValues()
         {
-            this.ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
-            this.AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
-            this.DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
-            this.SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
-            this.ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
-            this.RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
-            this.RemoveLyricsKeyLabel.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+            ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+            AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+            DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+            ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+            RainbowStringsAssignment.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+            RemoveLyricsKeyLabel.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1440,17 +1440,17 @@ namespace RSMods
             if (RemoveLyricsCheckbox.Checked)
             {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "on");
-                this.ToggleLyricsRadio.Visible = true;
-                this.ToggleLyricsManualRadio.Visible = true;
-                this.HowToToggleLyrics.Visible = true;
+                ToggleLyricsRadio.Visible = true;
+                ToggleLyricsManualRadio.Visible = true;
+                HowToToggleLyrics.Visible = true;
             }
 
             else
             {
                 SaveChanges(ReadSettings.RemoveLyricsIdentifier, "off");
-                this.ToggleLyricsRadio.Visible = false;
-                this.ToggleLyricsManualRadio.Visible = false;
-                this.HowToToggleLyrics.Visible = false;
+                ToggleLyricsRadio.Visible = false;
+                ToggleLyricsManualRadio.Visible = false;
+                HowToToggleLyrics.Visible = false;
             }
         }
 
@@ -1571,8 +1571,8 @@ namespace RSMods
 
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.Songlist.SelectedIndex >= 0)
-                this.NewSongListNameTxtbox.Text = this.Songlist.SelectedItem.ToString();
+            if (Songlist.SelectedIndex >= 0)
+                NewSongListNameTxtbox.Text = Songlist.SelectedItem.ToString();
         }
 
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
@@ -1646,16 +1646,16 @@ namespace RSMods
         {
             if (GuitarSpeakEnableCheckbox.Checked)
             {
-                this.GuitarSpeakEnableCheckbox.Checked = true;
-                this.GuitarSpeakBox.Visible = true;
-                this.GuitarSpeakWhileTuningBox.Visible = true;
+                GuitarSpeakEnableCheckbox.Checked = true;
+                GuitarSpeakBox.Visible = true;
+                GuitarSpeakWhileTuningBox.Visible = true;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "on");
             }
             else
             {
-                this.GuitarSpeakEnableCheckbox.Checked = false;
-                this.GuitarSpeakBox.Visible = false;
-                this.GuitarSpeakWhileTuningBox.Visible = false;
+                GuitarSpeakEnableCheckbox.Checked = false;
+                GuitarSpeakBox.Visible = false;
+                GuitarSpeakWhileTuningBox.Visible = false;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
@@ -1750,9 +1750,9 @@ namespace RSMods
 
         private void RefreshGuitarSpeakPresets()
         {
-            this.GuitarSpeakPresetsBox.Items.Clear();
+            GuitarSpeakPresetsBox.Items.Clear();
 
-            this.GuitarSpeakPresetsBox.Items.AddRange(new object[]
+            GuitarSpeakPresetsBox.Items.AddRange(new object[]
             {
                 "Delete: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)),
                 "Space: " + GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)),
