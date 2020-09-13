@@ -247,11 +247,10 @@ namespace RSMods
 
 
         public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>(){}; // Can't be filled by default, so we run a function to fill it.
-        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
+        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() {}; // Can't be filled by default, so we run a function to fill it.
 
         private void FillThemeDictionary()
         {
-
             // We don't want duplicate values, so let's clear the dictionaries just to make sure.
             themeDictionaryBackColor.Clear();
             themeDictionaryForeColor.Clear();
@@ -580,15 +579,9 @@ namespace RSMods
            
         }
 
-        private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e)
-        {
-            LoadDefaultStringColors();
-        }
+        private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors();
 
-        private void ColorBlindStringColorsRadio_CheckedChanged(object sender, EventArgs e)
-        {
-            LoadDefaultStringColors(true);
-        }
+        private void ColorBlindStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors(true);
 
         private static TuningDefinitionList tuningsCollection;
 
@@ -1178,7 +1171,6 @@ namespace RSMods
 
                 this.NewKeybindTxtBox.Text = String.Empty;
             }
-
             ShowCurrentKeybindingValues();
         }
 
@@ -1562,9 +1554,7 @@ namespace RSMods
             currentTooltip.Active = true;
 
             if (!HasToolTipDictionaryBeenCreatedYet) // Have we filled the tooltip dictionary? If so, skip this, if not, fill the dictionary.
-            {
                 FillToolTipDictionary();
-            }
 
             foreach (Control ControlHoveredOver in TooltipDictionary.Keys)
             {
@@ -1582,9 +1572,7 @@ namespace RSMods
         private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.Songlist.SelectedIndex >= 0)
-            {
                 this.NewSongListNameTxtbox.Text = this.Songlist.SelectedItem.ToString();
-            }
         }
 
         private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
