@@ -167,8 +167,10 @@
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\TuningDefinition.cs" />
     <Compile Include="GuitarSpeakFretboard.cs" />
-    <Compile Include="Twitch\PubSubImplicit.cs" />
-    <Compile Include="Twitch\TwitchAuthResponse.cs" />
+    <Compile Include="Twitch\PubSub.cs" />
+    <Compile Include="Twitch\ImplicitAuth.cs" />
+    <Compile Include="Twitch\TwitchData.cs" />
+    <Compile Include="Twitch\TwitchSettings.cs" />
     <Compile Include="Twitch\WebServer.cs" />
     <Compile Include="UI.cs">
       <SubType>Form</SubType>

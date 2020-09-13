@@ -1,35 +1,23 @@
-﻿using RSMods.Data;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using RSMods.Data;
+using RSMods.Twitch;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TwitchLib.Client;
-using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using System.Globalization;
 
 namespace RSMods.Util
 {
-    class RSModderBot
+    class RSModderBot // Effectively just a chatbot with questionable usefulness
     {
-        TwitchClient client;
-
-        private static string twitchUsername { get; set; }
-        private static string twitchAccessToken { get; set; }
-        private static string twitchRefreshToken { get; set; }
-        private static string tokenRefreshedDate { get; set; }
-
-        private const string dateFormat = "yyyy-MM-dd";
-        private const short tokenExpiry = 50; // It's actually 60 days, but doesn't matter too much
+        private TwitchClient client;
 
         /* 
          * As per Koko's suggestion, we will be parsing the chat instead of using PubSub, since it requires even more things to setup and would likely require us to 
@@ -37,50 +25,28 @@ namespace RSMods.Util
          * hence I would like to avoid it for now
          */
 
-        public RSModderBot() // TODO: give it some GUI parts to work with - we need to ask users to auth with this settings https://twitchtokengenerator.com/quick/rN48qv1A3v, then they copy Access Token & Refresh Token and put in here 
+        public RSModderBot() 
         {
             if (File.Exists(Constants.SettingsPath))
             {
-                twitchUsername = GenUtil.GetSettingsEntry("Username");
-                twitchAccessToken = GenUtil.GetSettingsEntry("AccessToken");
-                twitchRefreshToken = GenUtil.GetSettingsEntry("RefreshToken");
-                tokenRefreshedDate = GenUtil.GetSettingsEntry("TokenSaved");
+                TwitchSettings.LoadSettings();
 
                 Auth();
             }
-            else
-                SaveCreds();
-        }
-
-        public static void SaveCreds()
-        {
-            var configLines = new List<string>();
-            configLines.Add($"$RSPath = {Constants.RSFolder}");
-            configLines.Add($"Username = {twitchUsername}");
-            configLines.Add($"AccessToken = {twitchAccessToken}");
-            configLines.Add($"RefreshToken = {twitchRefreshToken}");
-            configLines.Add($"TokenSaved = {DateTime.Now.ToString(dateFormat)}");
-
-            try
-            {
-                File.WriteAllLines(Constants.SettingsPath, configLines);
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error: {ioex.Message}", "Error");
-            }
+            else // If it doesn't exist, write in defaults
+                TwitchSettings.SaveSettings(true);
         }
 
         private static bool RefreshToken()
         {
             using (var wc = new WebClient())
             {
-                string jsonResponse = wc.DownloadString($"https://twitchtokengenerator.com/api/refresh/{twitchRefreshToken}");
+                string jsonResponse = wc.DownloadString($"https://twitchtokengenerator.com/api/refresh/{TwitchSettings.ChatbotRefreshToken}");
                 JToken jsonToken = JObject.Parse(jsonResponse);
                 string resp = (string)jsonToken.SelectToken("success");
 
                 if (resp.ToLower() == "true")
-                    twitchAccessToken = (string)jsonToken.SelectToken("token");
+                    TwitchSettings.ChatbotAccessToken = (string)jsonToken.SelectToken("token");
                 else
                 {
                     MessageBox.Show("Error: we were unable to refresh your token, please generate it manually again!");
@@ -96,11 +62,11 @@ namespace RSMods.Util
             try
             {
                 string dateRefreshedStr = GenUtil.GetSettingsEntry("TokenSaved");
-                DateTime tokenRefreshedDate = DateTime.ParseExact(dateRefreshedStr, dateFormat, CultureInfo.InvariantCulture);
+                DateTime tokenRefreshedDate = DateTime.ParseExact(dateRefreshedStr, TwitchSettings.DateFormat, CultureInfo.InvariantCulture);
 
                 int dayDiff = (DateTime.Now - tokenRefreshedDate).Days;
 
-                if (dayDiff >= tokenExpiry)
+                if (dayDiff >= TwitchSettings.TokenExpiry)
                     return RefreshToken();
 
                 return true;
@@ -114,11 +80,11 @@ namespace RSMods.Util
 
         public static void SetCreds(string username, string accessToken, string refreshToken)
         {
-            twitchUsername = username;
-            twitchAccessToken = accessToken;
-            twitchRefreshToken = refreshToken;
+            TwitchSettings.ChatbotUsername = username;
+            TwitchSettings.ChatbotAccessToken = accessToken;
+            TwitchSettings.ChatbotRefreshToken = refreshToken;
 
-            SaveCreds();
+            TwitchSettings.SaveSettings(true);
         }
 
         public void Auth()
@@ -126,7 +92,7 @@ namespace RSMods.Util
             if (!IsTokenValid())
                 RefreshToken();
 
-            ConnectionCredentials credentials = new ConnectionCredentials(twitchUsername, twitchAccessToken);
+            ConnectionCredentials credentials = new ConnectionCredentials(TwitchSettings.Username, TwitchSettings.AccessToken);
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750,
@@ -137,7 +103,6 @@ namespace RSMods.Util
             client.Initialize(credentials, "channel");
 
             client.OnMessageReceived += Client_OnMessageReceived;
-            client.OnNewSubscriber += Client_OnNewSubscriber;
             client.OnConnected += Client_OnConnected;
 
             client.Connect();
@@ -152,14 +117,8 @@ namespace RSMods.Util
         {
             string currMsg = e.ChatMessage.Message.ToLower();
 
-            if (currMsg.Contains("bits")) //TODO: actually determine what happens when certain events occur (bits, subs, etc.)
+            if (currMsg.Contains("bits")) // It's likely better to use PubSub for bits, but we may find a use for this as well
                 WinMsgUtil.SendMsgToRS("go rainbow");
-        }
-
-        private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
-        {
-            //if (e.Subscriber.SubscriptionPlan == SubscriptionPlan.Prime)
-            //etc.
         }
     }
 }

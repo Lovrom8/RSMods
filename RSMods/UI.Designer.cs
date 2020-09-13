@@ -159,6 +159,10 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.tab_Twitch = new System.Windows.Forms.TabPage();
+            this.label_AuthorizedAs = new System.Windows.Forms.Label();
+            this.label_TwitchAuthorized = new System.Windows.Forms.Label();
+            this.btn_ReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
             this.checkBox_DarkMode = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
@@ -187,6 +191,7 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.tab_Twitch.SuspendLayout();
             this.tab_GUISettings.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -1800,12 +1805,14 @@
             this.TabController.Controls.Add(this.tab_ModToggles);
             this.TabController.Controls.Add(this.tab_SetAndForget);
             this.TabController.Controls.Add(this.tab_ModSettings);
+            this.TabController.Controls.Add(this.tab_Twitch);
             this.TabController.Controls.Add(this.tab_GUISettings);
             this.TabController.Location = new System.Drawing.Point(9, 7);
             this.TabController.Name = "TabController";
             this.TabController.SelectedIndex = 0;
             this.TabController.Size = new System.Drawing.Size(1152, 423);
             this.TabController.TabIndex = 100001;
+            this.TabController.SelectedIndexChanged += new System.EventHandler(this.TabController_SelectedIndexChanged);
             // 
             // tab_Songlists
             // 
@@ -1869,6 +1876,46 @@
             this.tab_ModSettings.Size = new System.Drawing.Size(1144, 397);
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
+            // 
+            // tab_Twitch
+            // 
+            this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.label_AuthorizedAs);
+            this.tab_Twitch.Controls.Add(this.label_TwitchAuthorized);
+            this.tab_Twitch.Controls.Add(this.btn_ReAuthorize);
+            this.tab_Twitch.Location = new System.Drawing.Point(4, 22);
+            this.tab_Twitch.Name = "tab_Twitch";
+            this.tab_Twitch.Padding = new System.Windows.Forms.Padding(3);
+            this.tab_Twitch.Size = new System.Drawing.Size(1144, 397);
+            this.tab_Twitch.TabIndex = 6;
+            this.tab_Twitch.Text = "Twitch Bot";
+            // 
+            // label_AuthorizedAs
+            // 
+            this.label_AuthorizedAs.AutoSize = true;
+            this.label_AuthorizedAs.Location = new System.Drawing.Point(435, 26);
+            this.label_AuthorizedAs.Name = "label_AuthorizedAs";
+            this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
+            this.label_AuthorizedAs.TabIndex = 2;
+            // 
+            // label_TwitchAuthorized
+            // 
+            this.label_TwitchAuthorized.AutoSize = true;
+            this.label_TwitchAuthorized.Location = new System.Drawing.Point(273, 25);
+            this.label_TwitchAuthorized.Name = "label_TwitchAuthorized";
+            this.label_TwitchAuthorized.Size = new System.Drawing.Size(156, 13);
+            this.label_TwitchAuthorized.TabIndex = 1;
+            this.label_TwitchAuthorized.Text = "You are currently authorized as:";
+            // 
+            // btn_ReAuthorize
+            // 
+            this.btn_ReAuthorize.Location = new System.Drawing.Point(31, 25);
+            this.btn_ReAuthorize.Name = "btn_ReAuthorize";
+            this.btn_ReAuthorize.Size = new System.Drawing.Size(219, 78);
+            this.btn_ReAuthorize.TabIndex = 0;
+            this.btn_ReAuthorize.Text = "(Re)authorize";
+            this.btn_ReAuthorize.UseVisualStyleBackColor = true;
+            this.btn_ReAuthorize.Click += new System.EventHandler(this.btn_ReAuthorize_Click);
             // 
             // tab_GUISettings
             // 
@@ -1944,6 +1991,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.tab_Twitch.ResumeLayout(false);
+            this.tab_Twitch.PerformLayout();
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
             this.ResumeLayout(false);
@@ -2086,6 +2135,10 @@
         private System.Windows.Forms.CheckBox checkBox_DarkMode;
         private System.Windows.Forms.Label label_HorizontalRuleSetAndForget;
         private System.Windows.Forms.Button button_CleanUpUnpackedCache;
+        private System.Windows.Forms.TabPage tab_Twitch;
+        private System.Windows.Forms.Button btn_ReAuthorize;
+        private System.Windows.Forms.Label label_TwitchAuthorized;
+        private System.Windows.Forms.Label label_AuthorizedAs;
     }
 }
 

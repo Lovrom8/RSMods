@@ -149,10 +149,40 @@ namespace RSMods.Util
             new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
         };
 
-        public static string GetSettingsEntry(string entryName)
+        public static List<string> GetSettingsLines()
         {
-            var settingsLines = File.ReadAllLines(Constants.SettingsPath);
-            return settingsLines.FirstOrDefault(line => line.Contains(entryName)).Split('=')[1].Trim();
+            return File.ReadAllLines(Constants.SettingsPath).ToList();
+        }
+
+        private static Dictionary<string, string> settingsDict = null;
+        public static Dictionary<string, string> GetSettingsPairs(List<string> settingsLines)
+        {
+            var dictRet = new Dictionary<string, string>();
+
+            settingsLines.ForEach(line => {
+                string entry = line.Split('=')[0].Trim();
+                string value = line.Split('=')[1].Trim();
+
+                dictRet.Add(entry, value); 
+              }
+            );
+
+            settingsDict = dictRet;
+
+            return dictRet;
+        }
+
+        public static string GetSettingsEntry(string entryName, Dictionary<string, string> settingsPairs = default) // If you want to reread the settings, don't include the second arg
+        {
+            if (settingsPairs == null)
+                settingsDict = GetSettingsPairs(GetSettingsLines());
+
+            //  return settingsLines.FirstOrDefault(line => line.Contains(entryName)).Split('=')[1].Trim();
+
+            if (settingsDict.ContainsKey(entryName))
+                return settingsDict[entryName];
+            else
+                return String.Empty;
         }
 
         public static string GetRSDirectory()
@@ -190,8 +220,8 @@ namespace RSMods.Util
                                 break;
                             }
                         }
-                        
-                        
+
+
 
                         rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
 
@@ -203,13 +233,14 @@ namespace RSMods.Util
                     }
                     else // RS-Folder does exist
                     {
-                        if (!File.Exists(Path.Combine(rs2RootDir, "cache.psarc"))) { // If cache.psarc doesn't exist (old install / steam left-overs)
+                        if (!File.Exists(Path.Combine(rs2RootDir, "cache.psarc")))
+                        { // If cache.psarc doesn't exist (old install / steam left-overs)
                             if (AskUserForRSFolder() == String.Empty)
                             {
                                 MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, and you didn't give us a valid RS Folder.", "Closing Application");
                                 Application.Exit();
                             }
-                                
+
                         }
                     }
                 }

@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using System.Management;
 using RocksmithToolkitLib.Extensions;
+using RSMods.Twitch;
 
 
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
@@ -51,6 +52,8 @@ namespace RSMods
 
             if (!File.Exists(Constants.SettingsPath))
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
+
+            TwitchSettings.LoadSettings();
 
             InitializeComponent();
             Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
@@ -216,7 +219,8 @@ namespace RSMods
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (listBox_Modlist.SelectedIndex) {
+            switch (listBox_Modlist.SelectedIndex)
+            {
                 case 0:
                     textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
                     break;
@@ -246,8 +250,8 @@ namespace RSMods
         }
 
 
-        public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>(){}; // Can't be filled by default, so we run a function to fill it.
-        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() {}; // Can't be filled by default, so we run a function to fill it.
+        public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
+        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
 
         private void FillThemeDictionary()
         {
@@ -317,7 +321,7 @@ namespace RSMods
             foreach (KeyValuePair<Control, bool> backColorToChange in themeDictionaryBackColor)
                 backColorToChange.Key.BackColor = backgroundColor;
             foreach (KeyValuePair<Control, bool> foreColorToChange in themeDictionaryForeColor)
-                foreColorToChange.Key.ForeColor = textColor; 
+                foreColorToChange.Key.ForeColor = textColor;
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
@@ -511,7 +515,7 @@ namespace RSMods
             }}
         };
 
-        public static Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>() {}; // Can't put variables into it until after we create it.
+        public static Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>() { }; // Can't put variables into it until after we create it.
 
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
@@ -533,7 +537,7 @@ namespace RSMods
                 }
                 stringNumber++;
             }
-            
+
             colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(stringColorButtonIdentifier));
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -576,7 +580,7 @@ namespace RSMods
                 textBox_String4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
                 textBox_String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
             }
-           
+
         }
 
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors();
@@ -1099,7 +1103,7 @@ namespace RSMods
 
         private void BtnImportExistingSettings_Click(object sender, EventArgs e)
         {
-            if(!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
+            if (!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
                 UnpackCachePsarc();
 
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
@@ -1151,7 +1155,7 @@ namespace RSMods
                     };
                 }
             }
-           
+
             if (currentTab == "Keybindings")
             {
                 foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
@@ -1455,7 +1459,7 @@ namespace RSMods
         }
 
 
-        public static Dictionary<Control, string> TooltipDictionary = new Dictionary<Control, string>() {}; // I really wish I could make this full of stuff, but `this.` and `MainForm.` don't work, so I need to call a different function `FillToolTipDictionary()` do it for me. :(
+        public static Dictionary<Control, string> TooltipDictionary = new Dictionary<Control, string>() { }; // I really wish I could make this full of stuff, but `this.` and `MainForm.` don't work, so I need to call a different function `FillToolTipDictionary()` do it for me. :(
 
 
         private void FillToolTipDictionary()
@@ -1525,7 +1529,7 @@ namespace RSMods
             TooltipDictionary.Add(button_AddDCExitGame, "Adds the Direct Connect mode - microphone mode with tone simulations.\nAlso replaces UPLAY on the main menu with an EXIT GAME option.");
             TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
             TooltipDictionary.Add(button_AddFastLoad, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
-            
+
             // Misc
             TooltipDictionary.Add(button_RemoveTemp, "Removes the temporary files used by RSMods.");
             TooltipDictionary.Add(button_RestoreCacheBackup, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
@@ -1790,6 +1794,23 @@ namespace RSMods
             {
                 SaveChanges(ReadSettings.DarkModeIdentifier, "off");
                 ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
+            }
+        }
+
+        private void btn_ReAuthorize_Click(object sender, EventArgs e)
+        {
+            ImplicitAuth auth = new ImplicitAuth();
+            auth.MakeAuthRequest();
+        }
+
+        private void TabController_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(TabController.SelectedTab.Name == "tab_Twitch") // I would prefer not to call
+            {
+                if (TwitchSettings.Authorized)
+                {
+                    label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
+                }
             }
         }
     }
