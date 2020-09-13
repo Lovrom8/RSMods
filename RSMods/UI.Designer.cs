@@ -94,6 +94,7 @@
             this.ColorBlindStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.DefaultStringColorsRadio = new System.Windows.Forms.RadioButton();
             this.GroupSetAndForget = new System.Windows.Forms.GroupBox();
+            this.ChangeTonesHeader = new System.Windows.Forms.Label();
             this.HorizontalRule_SetAndForget = new System.Windows.Forms.Label();
             this.BtnImportExistingSettings = new System.Windows.Forms.Button();
             this.CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
@@ -107,7 +108,6 @@
             this.RbTone0 = new System.Windows.Forms.RadioButton();
             this.BtnLoadTonesFromProfiles = new System.Windows.Forms.Button();
             this.ListProfileTones = new System.Windows.Forms.ListBox();
-            this.ChangeTonesHeader = new System.Windows.Forms.Label();
             this.BtnSetDefaultTones = new System.Windows.Forms.Button();
             this.BtnRemoveTempFolders = new System.Windows.Forms.Button();
             this.BtnAddCustomMenu = new System.Windows.Forms.Button();
@@ -1020,6 +1020,16 @@
             this.GroupSetAndForget.TabStop = false;
             this.GroupSetAndForget.Text = "Set-and-forget mods";
             // 
+            // ChangeTonesHeader
+            // 
+            this.ChangeTonesHeader.Location = new System.Drawing.Point(5, 158);
+            this.ChangeTonesHeader.Name = "ChangeTonesHeader";
+            this.ChangeTonesHeader.Size = new System.Drawing.Size(1132, 19);
+            this.ChangeTonesHeader.TabIndex = 97;
+            this.ChangeTonesHeader.Text = "Change Default Tones";
+            this.ChangeTonesHeader.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.ChangeTonesHeader.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
             // HorizontalRule_SetAndForget
             // 
             this.HorizontalRule_SetAndForget.AutoSize = true;
@@ -1159,16 +1169,6 @@
             this.ListProfileTones.TabIndex = 98;
             this.ListProfileTones.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.ListProfileTones.MouseHover += new System.EventHandler(this.RunToolTips);
-            // 
-            // ChangeTonesHeader
-            // 
-            this.ChangeTonesHeader.Location = new System.Drawing.Point(5, 158);
-            this.ChangeTonesHeader.Name = "ChangeTonesHeader";
-            this.ChangeTonesHeader.Size = new System.Drawing.Size(1132, 19);
-            this.ChangeTonesHeader.TabIndex = 97;
-            this.ChangeTonesHeader.Text = "Change Default Tones";
-            this.ChangeTonesHeader.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.ChangeTonesHeader.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // BtnSetDefaultTones
             // 
@@ -1609,14 +1609,14 @@
             // 
             // GuitarSpeakHelpButton
             // 
-            this.GuitarSpeakHelpButton.BackColor = System.Drawing.Color.DeepSkyBlue;
+            this.GuitarSpeakHelpButton.BackColor = System.Drawing.Color.Azure;
             this.GuitarSpeakHelpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GuitarSpeakHelpButton.Location = new System.Drawing.Point(262, 7);
             this.GuitarSpeakHelpButton.Name = "GuitarSpeakHelpButton";
             this.GuitarSpeakHelpButton.Size = new System.Drawing.Size(24, 23);
             this.GuitarSpeakHelpButton.TabIndex = 12;
             this.GuitarSpeakHelpButton.Text = "?";
-            this.GuitarSpeakHelpButton.UseVisualStyleBackColor = false;
+            this.GuitarSpeakHelpButton.UseVisualStyleBackColor = true;
             this.GuitarSpeakHelpButton.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
             // 
             // GuitarSpeakPresetsLabel

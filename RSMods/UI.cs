@@ -247,12 +247,14 @@ namespace RSMods
 
         private void ChangeTheme(Color backgroundColor, Color textColor)
         {
+
+            // Make adding things easier... Make this a Dictionary<bool, WinFormElement> where bool is BackColor or ForeColor, and WinFormElement is the thing we need to change.
+
             // Form Background
             BackColor = backgroundColor;
             ForeColor = textColor;
-            
 
-            // Tabs
+            // Tabs (Only needs BackColor)
             Tab_SongLists.BackColor = backgroundColor;
             Tab_Keybindings.BackColor = backgroundColor;
             Tab_ModToggles.BackColor = backgroundColor;
@@ -260,7 +262,7 @@ namespace RSMods
             Tab_SetAndForget.BackColor = backgroundColor;
             Tab_GUISettings.BackColor = backgroundColor;
 
-            // Group Boxes
+            // Group Boxes (Only needs ForeColor {Except GroupSetAndForget})
             EnabledModsBox.ForeColor = textColor;
             ExtendedRangeTuningBox.ForeColor = textColor;
             GuitarSpeakBox.ForeColor = textColor;
@@ -274,6 +276,26 @@ namespace RSMods
             HowToToggleLyrics.ForeColor = textColor;
             GroupSetAndForget.BackColor = backgroundColor;
             GroupSetAndForget.ForeColor = textColor;
+
+            // List Boxes (BackColor & ForeColor)
+            Songlist.BackColor = backgroundColor;
+            Songlist.ForeColor = textColor;
+            ModList.BackColor = backgroundColor;
+            ModList.ForeColor = textColor;
+            ListTunings.BackColor = backgroundColor;
+            ListTunings.ForeColor = textColor;
+            ListProfileTones.BackColor = backgroundColor;
+            ListProfileTones.ForeColor = textColor;
+            ExtendedRangeTunings.BackColor = backgroundColor;
+            ExtendedRangeTunings.ForeColor = textColor;
+            GuitarSpeakKeypress.BackColor = backgroundColor;
+            GuitarSpeakKeypress.ForeColor = textColor;
+            GuitarSpeakOctave.BackColor = backgroundColor;
+            GuitarSpeakOctave.ForeColor = textColor;
+            GuitarSpeakNote.BackColor = backgroundColor;
+            GuitarSpeakNote.ForeColor = textColor;
+            GuitarSpeakPresetsBox.BackColor = backgroundColor;
+            GuitarSpeakPresetsBox.ForeColor = textColor;
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
