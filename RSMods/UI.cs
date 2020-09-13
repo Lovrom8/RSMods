@@ -17,7 +17,6 @@ using System.Management;
 using RocksmithToolkitLib.Extensions;
 using RSMods.Twitch;
 
-
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
 #pragma warning disable IDE0044 // "This should be readonly" .... No. No it shouldn't.
 #pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
@@ -252,7 +251,6 @@ namespace RSMods
                     break;
             }
         }
-
 
         public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
         public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
@@ -525,13 +523,12 @@ namespace RSMods
 
         public static Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>() { }; // Can't put variables into it until after we create it.
 
-
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
-            bool isNormalStrings = radio_DefaultStringColors.Checked.ToString().ToLower() == "true"; // True = Normal, False = Colorblind
+            bool isNormalStrings = radio_DefaultStringColors.Checked; // True = Normal, False = Colorblind
             string stringColorButtonIdentifier = String.Empty;
             int stringNumber = 0;
             FillStringNumberToColorDictionary();
@@ -1479,9 +1476,7 @@ namespace RSMods
             }
         }
 
-
         public static Dictionary<Control, string> TooltipDictionary = new Dictionary<Control, string>() { }; // I really wish I could make this full of stuff, but `this.` and `MainForm.` don't work, so I need to call a different function `FillToolTipDictionary()` do it for me. :(
-
 
         private void FillToolTipDictionary()
         {
@@ -1756,7 +1751,6 @@ namespace RSMods
             return IntToNote(inputInt) + octave.ToString();
         }
 
-
         private string IntToNote(int intToConvert) => noteArray[intToConvert % 12];
 
         private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
@@ -1832,9 +1826,7 @@ namespace RSMods
             if(TabController.SelectedTab.Name == "tab_Twitch") // I would prefer not to call
             {
                 if (TwitchSettings.Authorized)
-                {
                     label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
-                }
             }
         }
 
