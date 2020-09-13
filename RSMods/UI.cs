@@ -203,12 +203,15 @@ namespace RSMods
                 if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
                     checkbox_GuitarSpeakWhileTuning.Checked = true;
 
-                if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
-                    checkBox_DarkMode.Checked = true;
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
+                    checkBox_ChangeTheme.Checked = true;
             }
 
             // Initialize Default String Colors
             LoadDefaultStringColors();
+
+            // Load Colors Saved as Theme Colors.
+            LoadCustomThemeColors();
 
             // Mod Settings
             nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
@@ -466,8 +469,11 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) },
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },
             }},
-            {"[GUI Settings]", new Dictionary<string, string> {
-                {ReadSettings.DarkModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) },
+            {"[GUI Settings]", new Dictionary<string, string>
+            {
+                { ReadSettings.CustomGUIThemeIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) },
+                { ReadSettings.CustomGUIBackgroundColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) },
+                { ReadSettings.CustomGUITextColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) },
             }}
         };
 
@@ -582,6 +588,20 @@ namespace RSMods
                 textBox_String5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
             }
 
+        }
+
+        private void LoadCustomThemeColors()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty && ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+            {
+                textBox_ChangeBackgroundColor.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
+                textBox_ChangeTextColor.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+            }
+            else
+            {
+                textBox_ChangeBackgroundColor.BackColor = WriteSettings.normalBackgroundColor;
+                textBox_ChangeTextColor.BackColor = WriteSettings.normalTextColor;
+            }
         }
 
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors();
@@ -1325,7 +1345,6 @@ namespace RSMods
                 SaveChanges(ReadSettings.RemoveHeadstockIdentifier, "false");
                 groupBox_ToggleHeadstockOffWhen.Visible = false;
             }
-
         }
 
         private void RemoveSkylineCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1778,22 +1797,24 @@ namespace RSMods
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (ReadSettings.ProcessSettings(ReadSettings.DarkModeIdentifier) == "on")
-                ChangeTheme(WriteSettings.darkModeBackgroundColor, WriteSettings.darkModeTextColor);
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on" && ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty && ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
+                ChangeTheme(ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier)), ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier)));
             else
                 ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
         }
 
         private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_DarkMode.Checked)
+            if (checkBox_ChangeTheme.Checked) // We turn ChangeTheme on.
             {
-                SaveChanges(ReadSettings.DarkModeIdentifier, "on");
-                ChangeTheme(WriteSettings.darkModeBackgroundColor, WriteSettings.darkModeTextColor);
+                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "on");
+                groupBox_ChangeTheme.Visible = true;
+                
             }
-            else
+            else // We turn ChangeTheme off.
             {
-                SaveChanges(ReadSettings.DarkModeIdentifier, "off");
+                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
+                groupBox_ChangeTheme.Visible = false;
                 ChangeTheme(WriteSettings.normalBackgroundColor, WriteSettings.normalTextColor);
             }
         }
@@ -1814,5 +1835,35 @@ namespace RSMods
                 }
             }
         }
+
+        private void button_ChangeBackgroundColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            colorDialog.AllowFullOpen = true;
+            colorDialog.ShowHelp = false;
+            colorDialog.Color = WriteSettings.normalBackgroundColor;
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUIBackgroundColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeBackgroundColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void button_ChangeTextColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            colorDialog.AllowFullOpen = true;
+            colorDialog.ShowHelp = false;
+            colorDialog.Color = WriteSettings.normalTextColor;
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUITextColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeTextColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
     }
 }

@@ -13,7 +13,7 @@ namespace RSMods
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
-                             DarkMode,
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
 
                 // Song List Identifiers
                 Songlist1Identifier = "SongListTitle_1 = ",
@@ -24,39 +24,39 @@ namespace RSMods
                 Songlist6Identifier = "SongListTitle_6 = ",
 
                 // Toggle On Key Identifiers
-                ToggleLoftIdentifier         = "ToggleLoftKey = ",
-                AddVolumeIdentifier          = "AddVolumeKey = ",
-                DecreaseVolumeIdentifier     = "DecreaseVolumeKey = ",
-                ShowSongTimerIdentifier      = "ShowSongTimerKey = ",
+                ToggleLoftIdentifier = "ToggleLoftKey = ",
+                AddVolumeIdentifier = "AddVolumeKey = ",
+                DecreaseVolumeIdentifier = "DecreaseVolumeKey = ",
+                ShowSongTimerIdentifier = "ShowSongTimerKey = ",
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
-                RainbowStringsIdentifier     = "RainbowStringsKey = ",
-                RemoveLyricsKeyIdentifier    = "RemoveLyricsKey = ",
+                RainbowStringsIdentifier = "RainbowStringsKey = ",
+                RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
 
                 // Toggle Effects (Change Names to easier naming scheme before public launch)
-                ToggleLoftEnabledIdentifier         = "ToggleLoft = ",
-                AddVolumeEnabledIdentifier          = "AddVolume = ",
-                DecreaseVolumeEnabledIdentifier     = "DecreaseVolume = ",
-                ShowSongTimerEnabledIdentifier      = "ShowSongTimer = ",
+                ToggleLoftEnabledIdentifier = "ToggleLoft = ",
+                AddVolumeEnabledIdentifier = "AddVolume = ",
+                DecreaseVolumeEnabledIdentifier = "DecreaseVolume = ",
+                ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
-                RainbowStringsEnabledIdentifier     = "RainbowStrings = ",
-                ExtendedRangeEnabledIdentifier      = "ExtendedRange = ",
-                CustomStringColorNumberIndetifier   = "CustomStringColors = ",
-                DiscoModeIdentifier                 = "DiscoMode = ",
-                RemoveHeadstockIdentifier           = "Headstock = ",
-                RemoveSkylineIdentifier             = "Skyline = ",
-                GreenScreenWallIdentifier           = "GreenScreenWall = ",
-                ForceProfileEnabledIdentifier       = "ForceProfileLoad = ",
-                FretlessModeEnabledIdentifier       = "Fretless = ",
-                RemoveInlaysIdentifier              = "Inlays = ",
-                ToggleLoftWhenIdentifier            = "ToggleLoftWhen = ",
-                ToggleSkylineWhenIdentifier         = "ToggleSkylineWhen = ",
-                RemoveLaneMarkersIdentifier         = "LaneMarkers = ",
-                RemoveLyricsIdentifier              = "Lyrics = ",
-                RemoveLyricsWhenIdentifier          = "RemoveLyricsWhen = ",
-                GuitarSpeakIdentifier               = "GuitarSpeak = ",
-                RemoveHeadstockWhenIdentifier       = "RemoveHeadstockWhen = ",
+                RainbowStringsEnabledIdentifier = "RainbowStrings = ",
+                ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
+                CustomStringColorNumberIndetifier = "CustomStringColors = ",
+                DiscoModeIdentifier = "DiscoMode = ",
+                RemoveHeadstockIdentifier = "Headstock = ",
+                RemoveSkylineIdentifier = "Skyline = ",
+                GreenScreenWallIdentifier = "GreenScreenWall = ",
+                ForceProfileEnabledIdentifier = "ForceProfileLoad = ",
+                FretlessModeEnabledIdentifier = "Fretless = ",
+                RemoveInlaysIdentifier = "Inlays = ",
+                ToggleLoftWhenIdentifier = "ToggleLoftWhen = ",
+                ToggleSkylineWhenIdentifier = "ToggleSkylineWhen = ",
+                RemoveLaneMarkersIdentifier = "LaneMarkers = ",
+                RemoveLyricsIdentifier = "Lyrics = ",
+                RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
+                GuitarSpeakIdentifier = "GuitarSpeak = ",
+                RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
 
-                // String Colors (Normal {N} & Colorblind {CB})
+                    // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
                     String0Color_N_Identifier = "string0_N = ",
                     String1Color_N_Identifier = "string1_N = ",
@@ -73,29 +73,31 @@ namespace RSMods
                     String5Color_CB_Identifier = "string5_CB = ",
 
                 // Mod Settings
-                ExtendedRangeTuningIdentifier     = "ExtendedRangeModeAt = ",
+                ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
 
                 // Guitar Speak
-                GuitarSpeakDeleteIdentifier   = "GuitarSpeakDeleteWhen = ",
-                GuitarSpeakSpaceIdentifier    = "GuitarSpeakSpaceWhen = ",
-                GuitarSpeakEnterIdentifier    = "GuitarSpeakEnterWhen = ",
-                GuitarSpeakTabIdentifier      = "GuitarSpeakTabWhen = ",
-                GuitarSpeakPGUPIdentifier     = "GuitarSpeakPGUPWhen = ",
-                GuitarSpeakPGDNIdentifier     = "GuitarSpeakPGDNWhen = ",
-                GuitarSpeakUPIdentifier       = "GuitarSpeakUPWhen = ",
-                GuitarSpeakDNIdentifier       = "GuitarSpeanDNWhen = ",
-                GuitarSpeakESCIdentifier      = "GuitarSpeakESCWhen = ",
-                GuitarSpeakCloseIdentifier    = "GuitarSpeakCloseWhen = ",
+                GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
+                GuitarSpeakSpaceIdentifier = "GuitarSpeakSpaceWhen = ",
+                GuitarSpeakEnterIdentifier = "GuitarSpeakEnterWhen = ",
+                GuitarSpeakTabIdentifier = "GuitarSpeakTabWhen = ",
+                GuitarSpeakPGUPIdentifier = "GuitarSpeakPGUPWhen = ",
+                GuitarSpeakPGDNIdentifier = "GuitarSpeakPGDNWhen = ",
+                GuitarSpeakUPIdentifier = "GuitarSpeakUPWhen = ",
+                GuitarSpeakDNIdentifier = "GuitarSpeanDNWhen = ",
+                GuitarSpeakESCIdentifier = "GuitarSpeakESCWhen = ",
+                GuitarSpeakCloseIdentifier = "GuitarSpeakCloseWhen = ",
                 GuitarSpeakOBracketIdentifier = "GuitarSpeakOBracketWhen = ",
                 GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
-                GuitarSpeakTildeaIdentifier   = "GuitarSpeakTildeaWhen = ",
+                GuitarSpeakTildeaIdentifier = "GuitarSpeakTildeaWhen = ",
                 GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
-                GuitarSpeakTuningIdentifier   = "GuitarSpeakWhileTuning = ",
+                GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ",
 
 
                 // GUI Settings
-                DarkModeIdentifier = "DarkMode =";
+                CustomGUIThemeIdentifier = "CustomTheme = ",
+                CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
+                CustomGUITextColorIdentifier = "ThemeTextColor = ";
 
         public static string ProcessSettings(string identifierToGrab)
         {
@@ -650,15 +652,29 @@ namespace RSMods
                     }
 
                     // GUI Settings
-                    if (currentLine.Contains(DarkModeIdentifier))
+                    if (currentLine.Contains(CustomGUIThemeIdentifier))
                     {
-                        if (currentLine.Substring(DarkModeIdentifier.Length, (currentLine.Length - DarkModeIdentifier.Length)) == "on")
-                            DarkMode = "on";
+                        if (currentLine.Substring(CustomGUIThemeIdentifier.Length, (currentLine.Length - CustomGUIThemeIdentifier.Length)) == "on")
+                            CustomGUITheme = "on";
                         else
-                            DarkMode = "off";
+                            CustomGUITheme = "off";
 
-                        if (identifierToGrab == DarkModeIdentifier)
-                            return DarkMode;
+                        if (identifierToGrab == CustomGUIThemeIdentifier)
+                            return CustomGUITheme;
+                    }
+                    if (currentLine.Contains(CustomGUIBackgroundColorIdentifier))
+                    {
+                        CustomGUIBackgroundColor = currentLine.Substring(CustomGUIBackgroundColorIdentifier.Length, (currentLine.Length - CustomGUIBackgroundColorIdentifier.Length));
+
+                        if (identifierToGrab == CustomGUIBackgroundColorIdentifier)
+                            return CustomGUIBackgroundColor;
+                    }
+                    if (currentLine.Contains(CustomGUITextColorIdentifier))
+                    {
+                        CustomGUITextColor = currentLine.Substring(CustomGUITextColorIdentifier.Length, (currentLine.Length - CustomGUITextColorIdentifier.Length));
+
+                        if (identifierToGrab == CustomGUITextColorIdentifier)
+                            return CustomGUITextColor;
                     }
                 }
                 return ""; // Yeah, we don't know what you're looking for...

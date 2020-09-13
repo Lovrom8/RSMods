@@ -24,6 +24,7 @@ namespace RSMods
         {
             // Section                           mod   default
             {"[SongListTitles]", new Dictionary<string, string> {
+
                 { ReadSettings.Songlist1Identifier, "Define Song List 1 Here" }, // Songlist 1
                 { ReadSettings.Songlist2Identifier, "Define Song List 2 Here" }, // Songlist 2
                 { ReadSettings.Songlist3Identifier, "Define Song List 3 Here" }, // Songlist 3
@@ -107,7 +108,9 @@ namespace RSMods
             }},
             {"[GUI Settings]", new Dictionary<string, string>
             {
-                { ReadSettings.DarkModeIdentifier, "off"},
+                { ReadSettings.CustomGUIThemeIdentifier, "off"},
+                { ReadSettings.CustomGUIBackgroundColorIdentifier, "F0FFFF" },
+                { ReadSettings.CustomGUITextColorIdentifier, "000000" },
             }},
         };
 

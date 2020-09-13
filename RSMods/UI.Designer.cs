@@ -164,7 +164,13 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
-            this.checkBox_DarkMode = new System.Windows.Forms.CheckBox();
+            this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
+            this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
+            this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
+            this.button_ChangeTextColor = new System.Windows.Forms.Button();
+            this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
+            this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
+            this.button_SaveThemeColors = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -193,6 +199,7 @@
             this.tab_ModSettings.SuspendLayout();
             this.tab_Twitch.SuspendLayout();
             this.tab_GUISettings.SuspendLayout();
+            this.groupBox_ChangeTheme.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -1920,7 +1927,8 @@
             // tab_GUISettings
             // 
             this.tab_GUISettings.BackColor = System.Drawing.Color.Azure;
-            this.tab_GUISettings.Controls.Add(this.checkBox_DarkMode);
+            this.tab_GUISettings.Controls.Add(this.groupBox_ChangeTheme);
+            this.tab_GUISettings.Controls.Add(this.checkBox_ChangeTheme);
             this.tab_GUISettings.Controls.Add(this.label_Credits);
             this.tab_GUISettings.Location = new System.Drawing.Point(4, 22);
             this.tab_GUISettings.Name = "tab_GUISettings";
@@ -1929,16 +1937,79 @@
             this.tab_GUISettings.TabIndex = 5;
             this.tab_GUISettings.Text = "GUI Settings";
             // 
-            // checkBox_DarkMode
+            // checkBox_ChangeTheme
             // 
-            this.checkBox_DarkMode.AutoSize = true;
-            this.checkBox_DarkMode.Location = new System.Drawing.Point(19, 18);
-            this.checkBox_DarkMode.Name = "checkBox_DarkMode";
-            this.checkBox_DarkMode.Size = new System.Drawing.Size(79, 17);
-            this.checkBox_DarkMode.TabIndex = 73;
-            this.checkBox_DarkMode.Text = "Dark Mode";
-            this.checkBox_DarkMode.UseVisualStyleBackColor = true;
-            this.checkBox_DarkMode.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
+            this.checkBox_ChangeTheme.AutoSize = true;
+            this.checkBox_ChangeTheme.Location = new System.Drawing.Point(19, 18);
+            this.checkBox_ChangeTheme.Name = "checkBox_ChangeTheme";
+            this.checkBox_ChangeTheme.Size = new System.Drawing.Size(99, 17);
+            this.checkBox_ChangeTheme.TabIndex = 73;
+            this.checkBox_ChangeTheme.Text = "Change Theme";
+            this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
+            this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
+            // 
+            // groupBox_ChangeTheme
+            // 
+            this.groupBox_ChangeTheme.Controls.Add(this.button_SaveThemeColors);
+            this.groupBox_ChangeTheme.Controls.Add(this.textBox_ChangeTextColor);
+            this.groupBox_ChangeTheme.Controls.Add(this.textBox_ChangeBackgroundColor);
+            this.groupBox_ChangeTheme.Controls.Add(this.button_ChangeTextColor);
+            this.groupBox_ChangeTheme.Controls.Add(this.button_ChangeBackgroundColor);
+            this.groupBox_ChangeTheme.Location = new System.Drawing.Point(284, 18);
+            this.groupBox_ChangeTheme.Name = "groupBox_ChangeTheme";
+            this.groupBox_ChangeTheme.Size = new System.Drawing.Size(271, 155);
+            this.groupBox_ChangeTheme.TabIndex = 74;
+            this.groupBox_ChangeTheme.TabStop = false;
+            this.groupBox_ChangeTheme.Text = "Change Theme Colors";
+            this.groupBox_ChangeTheme.Visible = false;
+            // 
+            // button_ChangeBackgroundColor
+            // 
+            this.button_ChangeBackgroundColor.Location = new System.Drawing.Point(6, 33);
+            this.button_ChangeBackgroundColor.Name = "button_ChangeBackgroundColor";
+            this.button_ChangeBackgroundColor.Size = new System.Drawing.Size(145, 23);
+            this.button_ChangeBackgroundColor.TabIndex = 0;
+            this.button_ChangeBackgroundColor.Text = "Change Background Color";
+            this.button_ChangeBackgroundColor.UseVisualStyleBackColor = true;
+            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.button_ChangeBackgroundColor_Click);
+            // 
+            // button_ChangeTextColor
+            // 
+            this.button_ChangeTextColor.Location = new System.Drawing.Point(6, 79);
+            this.button_ChangeTextColor.Name = "button_ChangeTextColor";
+            this.button_ChangeTextColor.Size = new System.Drawing.Size(145, 23);
+            this.button_ChangeTextColor.TabIndex = 1;
+            this.button_ChangeTextColor.Text = "Change Text Color";
+            this.button_ChangeTextColor.UseVisualStyleBackColor = true;
+            this.button_ChangeTextColor.Click += new System.EventHandler(this.button_ChangeTextColor_Click);
+            // 
+            // textBox_ChangeBackgroundColor
+            // 
+            this.textBox_ChangeBackgroundColor.Enabled = false;
+            this.textBox_ChangeBackgroundColor.Location = new System.Drawing.Point(172, 37);
+            this.textBox_ChangeBackgroundColor.Name = "textBox_ChangeBackgroundColor";
+            this.textBox_ChangeBackgroundColor.ReadOnly = true;
+            this.textBox_ChangeBackgroundColor.Size = new System.Drawing.Size(74, 20);
+            this.textBox_ChangeBackgroundColor.TabIndex = 2;
+            // 
+            // textBox_ChangeTextColor
+            // 
+            this.textBox_ChangeTextColor.Enabled = false;
+            this.textBox_ChangeTextColor.Location = new System.Drawing.Point(172, 79);
+            this.textBox_ChangeTextColor.Name = "textBox_ChangeTextColor";
+            this.textBox_ChangeTextColor.ReadOnly = true;
+            this.textBox_ChangeTextColor.Size = new System.Drawing.Size(74, 20);
+            this.textBox_ChangeTextColor.TabIndex = 3;
+            // 
+            // button_SaveThemeColors
+            // 
+            this.button_SaveThemeColors.Location = new System.Drawing.Point(60, 126);
+            this.button_SaveThemeColors.Name = "button_SaveThemeColors";
+            this.button_SaveThemeColors.Size = new System.Drawing.Size(133, 23);
+            this.button_SaveThemeColors.TabIndex = 4;
+            this.button_SaveThemeColors.Text = "Save Theme Colors";
+            this.button_SaveThemeColors.UseVisualStyleBackColor = true;
+            this.button_SaveThemeColors.Click += new System.EventHandler(this.button_SaveThemeColors_Click);
             // 
             // MainForm
             // 
@@ -1995,6 +2066,8 @@
             this.tab_Twitch.PerformLayout();
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
+            this.groupBox_ChangeTheme.ResumeLayout(false);
+            this.groupBox_ChangeTheme.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2132,13 +2205,19 @@
         private System.Windows.Forms.TabPage tab_ModSettings;
         private System.Windows.Forms.TabPage tab_GUISettings;
         public System.Windows.Forms.TabControl TabController;
-        private System.Windows.Forms.CheckBox checkBox_DarkMode;
+        private System.Windows.Forms.CheckBox checkBox_ChangeTheme;
         private System.Windows.Forms.Label label_HorizontalRuleSetAndForget;
         private System.Windows.Forms.Button button_CleanUpUnpackedCache;
         private System.Windows.Forms.TabPage tab_Twitch;
         private System.Windows.Forms.Button button_TwitchReAuthorize;
         private System.Windows.Forms.Label label_TwitchAuthorized;
         private System.Windows.Forms.Label label_AuthorizedAs;
+        private System.Windows.Forms.GroupBox groupBox_ChangeTheme;
+        private System.Windows.Forms.TextBox textBox_ChangeTextColor;
+        private System.Windows.Forms.TextBox textBox_ChangeBackgroundColor;
+        private System.Windows.Forms.Button button_ChangeTextColor;
+        private System.Windows.Forms.Button button_ChangeBackgroundColor;
+        private System.Windows.Forms.Button button_SaveThemeColors;
     }
 }
 
