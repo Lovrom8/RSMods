@@ -1642,7 +1642,7 @@ namespace RSMods
                 listBox_GuitarSpeakKeypress.ClearSelected();
             }
             else
-                MessageBox.Show("One of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("One, or more, of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private Dictionary<string, string> GuitarSpeakKeyPressDictionary = new Dictionary<string, string>()
