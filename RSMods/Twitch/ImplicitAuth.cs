@@ -22,6 +22,7 @@ namespace RSMods.Twitch
         private static readonly string twitchScope = "chat:read bits:read channel:read:hype_train channel:read:subscriptions channel:read:redemptions";
         private static readonly string responseForwardContent = "<HTML><BODY> <script> location.href = window.location.href.replace(\"#\", \"/\");  </script></BODY></HTML>";
         private static readonly string responseFinalPageContent = "<HTML><BODY><h1>thanks for the token xd</h1><br><h6><i>This response was totally not suggested by Koko</i></h6></BODY></HTML>";
+        private static readonly string responseToldToFOff = "<HTML><BODY><h1>You decided to say no, so we say no back</h1><br><h6>We didn't think you'd press \"Cancel\" since why would you press the button, and not trust us?</h6></BODY></HTML>";
         private static readonly string url = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={twitchClientId}&redirect_uri=http://localhost:1069/twitch_login&scope={twitchScope}";
         private WebServer webServer = null;
 
@@ -64,7 +65,13 @@ namespace RSMods.Twitch
 
             string currUrl = request.Url.ToString();
             if (!currUrl.Contains("access_token"))
-                return responseForwardContent;
+            {
+                if (currUrl.Contains("denied"))
+                    return responseToldToFOff;
+                else
+                    return responseForwardContent;
+            }
+                
             else
             {
                 TwitchSettings.AccessToken = currUrl.Split(new string[] { "access_token=", "&" }, StringSplitOptions.None)[1];
