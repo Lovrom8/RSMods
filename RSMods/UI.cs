@@ -264,6 +264,7 @@ namespace RSMods
             }
         }
 
+        // Not taken from here :O https://stackoverflow.com/a/3419209
         List<Control> ControlList = new List<Control>();
         private void GetAllControls(Control container)
         {
