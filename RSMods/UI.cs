@@ -220,7 +220,10 @@ namespace RSMods
             LoadSetAndForgetMods();
 
             // Load Twitch Authorization Details
-            label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
+            if (TwitchSettings.Username != String.Empty) // We use Username since it is the last value we recieve.
+                label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
+            else
+                label_AuthorizedAs.Text = "You are not logged into your Twitch account.";
 
         }
 

@@ -164,13 +164,13 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
-            this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
-            this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
-            this.button_ChangeTextColor = new System.Windows.Forms.Button();
-            this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
-            this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
             this.button_SaveThemeColors = new System.Windows.Forms.Button();
+            this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
+            this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
+            this.button_ChangeTextColor = new System.Windows.Forms.Button();
+            this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
+            this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1899,7 +1899,7 @@
             // label_AuthorizedAs
             // 
             this.label_AuthorizedAs.AutoSize = true;
-            this.label_AuthorizedAs.Location = new System.Drawing.Point(435, 26);
+            this.label_AuthorizedAs.Location = new System.Drawing.Point(426, 25);
             this.label_AuthorizedAs.Name = "label_AuthorizedAs";
             this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
             this.label_AuthorizedAs.TabIndex = 2;
@@ -1936,18 +1936,6 @@
             this.tab_GUISettings.TabIndex = 5;
             this.tab_GUISettings.Text = "GUI Settings";
             // 
-            // checkBox_ChangeTheme
-            // 
-            this.checkBox_ChangeTheme.AutoSize = true;
-            this.checkBox_ChangeTheme.Location = new System.Drawing.Point(19, 18);
-            this.checkBox_ChangeTheme.Name = "checkBox_ChangeTheme";
-            this.checkBox_ChangeTheme.Size = new System.Drawing.Size(99, 17);
-            this.checkBox_ChangeTheme.TabIndex = 73;
-            this.checkBox_ChangeTheme.Text = "Change Theme";
-            this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
-            this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
-            this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
-            // 
             // groupBox_ChangeTheme
             // 
             this.groupBox_ChangeTheme.Controls.Add(this.button_SaveThemeColors);
@@ -1963,15 +1951,33 @@
             this.groupBox_ChangeTheme.Text = "Change Theme Colors";
             this.groupBox_ChangeTheme.Visible = false;
             // 
-            // button_ChangeBackgroundColor
+            // button_SaveThemeColors
             // 
-            this.button_ChangeBackgroundColor.Location = new System.Drawing.Point(6, 33);
-            this.button_ChangeBackgroundColor.Name = "button_ChangeBackgroundColor";
-            this.button_ChangeBackgroundColor.Size = new System.Drawing.Size(145, 23);
-            this.button_ChangeBackgroundColor.TabIndex = 0;
-            this.button_ChangeBackgroundColor.Text = "Change Background Color";
-            this.button_ChangeBackgroundColor.UseVisualStyleBackColor = true;
-            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.button_ChangeBackgroundColor_Click);
+            this.button_SaveThemeColors.Location = new System.Drawing.Point(60, 126);
+            this.button_SaveThemeColors.Name = "button_SaveThemeColors";
+            this.button_SaveThemeColors.Size = new System.Drawing.Size(133, 23);
+            this.button_SaveThemeColors.TabIndex = 4;
+            this.button_SaveThemeColors.Text = "Save Theme Colors";
+            this.button_SaveThemeColors.UseVisualStyleBackColor = true;
+            this.button_SaveThemeColors.Click += new System.EventHandler(this.button_SaveThemeColors_Click);
+            // 
+            // textBox_ChangeTextColor
+            // 
+            this.textBox_ChangeTextColor.Enabled = false;
+            this.textBox_ChangeTextColor.Location = new System.Drawing.Point(172, 79);
+            this.textBox_ChangeTextColor.Name = "textBox_ChangeTextColor";
+            this.textBox_ChangeTextColor.ReadOnly = true;
+            this.textBox_ChangeTextColor.Size = new System.Drawing.Size(74, 20);
+            this.textBox_ChangeTextColor.TabIndex = 3;
+            // 
+            // textBox_ChangeBackgroundColor
+            // 
+            this.textBox_ChangeBackgroundColor.Enabled = false;
+            this.textBox_ChangeBackgroundColor.Location = new System.Drawing.Point(172, 37);
+            this.textBox_ChangeBackgroundColor.Name = "textBox_ChangeBackgroundColor";
+            this.textBox_ChangeBackgroundColor.ReadOnly = true;
+            this.textBox_ChangeBackgroundColor.Size = new System.Drawing.Size(74, 20);
+            this.textBox_ChangeBackgroundColor.TabIndex = 2;
             // 
             // button_ChangeTextColor
             // 
@@ -1983,33 +1989,27 @@
             this.button_ChangeTextColor.UseVisualStyleBackColor = true;
             this.button_ChangeTextColor.Click += new System.EventHandler(this.button_ChangeTextColor_Click);
             // 
-            // textBox_ChangeBackgroundColor
+            // button_ChangeBackgroundColor
             // 
-            this.textBox_ChangeBackgroundColor.Enabled = false;
-            this.textBox_ChangeBackgroundColor.Location = new System.Drawing.Point(172, 37);
-            this.textBox_ChangeBackgroundColor.Name = "textBox_ChangeBackgroundColor";
-            this.textBox_ChangeBackgroundColor.ReadOnly = true;
-            this.textBox_ChangeBackgroundColor.Size = new System.Drawing.Size(74, 20);
-            this.textBox_ChangeBackgroundColor.TabIndex = 2;
+            this.button_ChangeBackgroundColor.Location = new System.Drawing.Point(6, 33);
+            this.button_ChangeBackgroundColor.Name = "button_ChangeBackgroundColor";
+            this.button_ChangeBackgroundColor.Size = new System.Drawing.Size(145, 23);
+            this.button_ChangeBackgroundColor.TabIndex = 0;
+            this.button_ChangeBackgroundColor.Text = "Change Background Color";
+            this.button_ChangeBackgroundColor.UseVisualStyleBackColor = true;
+            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.button_ChangeBackgroundColor_Click);
             // 
-            // textBox_ChangeTextColor
+            // checkBox_ChangeTheme
             // 
-            this.textBox_ChangeTextColor.Enabled = false;
-            this.textBox_ChangeTextColor.Location = new System.Drawing.Point(172, 79);
-            this.textBox_ChangeTextColor.Name = "textBox_ChangeTextColor";
-            this.textBox_ChangeTextColor.ReadOnly = true;
-            this.textBox_ChangeTextColor.Size = new System.Drawing.Size(74, 20);
-            this.textBox_ChangeTextColor.TabIndex = 3;
-            // 
-            // button_SaveThemeColors
-            // 
-            this.button_SaveThemeColors.Location = new System.Drawing.Point(60, 126);
-            this.button_SaveThemeColors.Name = "button_SaveThemeColors";
-            this.button_SaveThemeColors.Size = new System.Drawing.Size(133, 23);
-            this.button_SaveThemeColors.TabIndex = 4;
-            this.button_SaveThemeColors.Text = "Save Theme Colors";
-            this.button_SaveThemeColors.UseVisualStyleBackColor = true;
-            this.button_SaveThemeColors.Click += new System.EventHandler(this.button_SaveThemeColors_Click);
+            this.checkBox_ChangeTheme.AutoSize = true;
+            this.checkBox_ChangeTheme.Location = new System.Drawing.Point(19, 18);
+            this.checkBox_ChangeTheme.Name = "checkBox_ChangeTheme";
+            this.checkBox_ChangeTheme.Size = new System.Drawing.Size(99, 17);
+            this.checkBox_ChangeTheme.TabIndex = 73;
+            this.checkBox_ChangeTheme.Text = "Change Theme";
+            this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
+            this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
+            this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // MainForm
             // 
