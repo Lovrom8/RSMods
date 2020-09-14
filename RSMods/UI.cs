@@ -603,16 +603,19 @@ namespace RSMods
 
         private void LoadCustomThemeColors()
         {
-            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty && ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
+
+            if(ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
             {
-                textBox_ChangeBackgroundColor.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
-                textBox_ChangeTextColor.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
+
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
+                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
             }
-            else
-            {
-                textBox_ChangeBackgroundColor.BackColor = WriteSettings.defaultBackgroundColor;
-                textBox_ChangeTextColor.BackColor = WriteSettings.defaultTextColor;
-            }
+
+            textBox_ChangeBackgroundColor.BackColor = backColor;
+            textBox_ChangeTextColor.BackColor = foreColor;
         }
 
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors();
@@ -1806,10 +1809,18 @@ namespace RSMods
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on" && ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty && ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
-                ChangeTheme(ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier)), ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier)));
-            else
-                ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
+            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // User wants to use a custom theme
+            {
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
+
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
+                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+            }
+            
+            ChangeTheme(backColor, foreColor);
         }
 
         private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
