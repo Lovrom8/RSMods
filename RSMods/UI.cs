@@ -264,75 +264,25 @@ namespace RSMods
             }
         }
 
-        public static List<Control> themeListBackColor = new List<Control>() { }; // Can't be filled by default, so we run a function to fill it.
-        public static List<Control> themeListForeColor = new List<Control>() { }; // Can't be filled by default, so we run a function to fill it.
-
-        private void FillThemeLists()
+        List<Control> ControlList = new List<Control>();
+        private void GetAllControls(Control container)
         {
-            // We don't want duplicate values, so let's clear the dictionaries just to make sure.
-            themeListBackColor.Clear();
-            themeListForeColor.Clear();
-
-            // Tabs
-            themeListBackColor.Add(tab_Songlists);
-            themeListBackColor.Add(tab_Keybindings);
-            themeListBackColor.Add(tab_ModToggles);
-            themeListBackColor.Add(tab_ModSettings);
-            themeListBackColor.Add(tab_SetAndForget);
-            themeListBackColor.Add(tab_Twitch);
-            themeListBackColor.Add(tab_GUISettings);
-
-            // Group Boxes
-            themeListBackColor.Add(groupBox_SetAndForget);
-
-            // List Boxes
-            themeListBackColor.Add(listBox_Songlist);
-            themeListBackColor.Add(listBox_Modlist);
-            themeListBackColor.Add(listBox_Tunings);
-            themeListBackColor.Add(listBox_ProfileTones);
-            themeListBackColor.Add(listBox_ExtendedRangeTunings);
-            themeListBackColor.Add(listBox_GuitarSpeakKeypress);
-            themeListBackColor.Add(listBox_GuitarSpeakOctave);
-            themeListBackColor.Add(listBox_GuitarSpeakNote);
-            themeListBackColor.Add(listBox_GuitarSpeakPresets);
-
-            // Now let's fill the ForeColors.
-
-            // Group Boxes
-            themeListForeColor.Add(groupBox_ExtendedRangeWhen);
-            themeListForeColor.Add(groupBox_GuitarSpeak);
-            themeListForeColor.Add(groupBox_Keybindings);
-            themeListForeColor.Add(groupBox_Songlist);
-            themeListForeColor.Add(groupBox_ToggleHeadstockOffWhen);
-            themeListForeColor.Add(groupBox_HowToEnumerate);
-            themeListForeColor.Add(groupBox_LoftOffWhen);
-            themeListForeColor.Add(groupBox_ToggleSkylineWhen);
-            themeListForeColor.Add(groupBox_StringColors);
-            themeListForeColor.Add(groupBox_ToggleLyricsOffWhen);
-            themeListForeColor.Add(groupBox_SetAndForget);
-
-            // List Boxes
-            themeListForeColor.Add(listBox_Songlist);
-            themeListForeColor.Add(listBox_Modlist);
-            themeListForeColor.Add(listBox_Tunings);
-            themeListForeColor.Add(listBox_ProfileTones);
-            themeListForeColor.Add(listBox_ExtendedRangeTunings);
-            themeListForeColor.Add(listBox_GuitarSpeakKeypress);
-            themeListForeColor.Add(listBox_GuitarSpeakOctave);
-            themeListForeColor.Add(listBox_GuitarSpeakNote);
-            themeListForeColor.Add(listBox_GuitarSpeakPresets);
+            foreach (Control c in container.Controls)
+            {
+                GetAllControls(c);
+                if (c is ListBox || c is GroupBox || c is TabPage) ControlList.Add(c);
+            }
         }
 
         private void ChangeTheme(Color backgroundColor, Color textColor)
         {
-            FillThemeLists(); // We need to fill the dictionary since it doesn't like filling itself with form elements.
-
+            GetAllControls(TabController);
             BackColor = backgroundColor; // MainForm BackColor
             ForeColor = textColor; // MainForm ForeColor
 
-            foreach (Control backColorToChange in themeListBackColor)
+            foreach (Control backColorToChange in ControlList)
                 backColorToChange.BackColor = backgroundColor;
-            foreach (Control foreColorToChange in themeListForeColor)
+            foreach (Control foreColorToChange in ControlList)
                 foreColorToChange.ForeColor = textColor;
         }
 
