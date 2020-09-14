@@ -27,7 +27,7 @@ namespace RSMods.Twitch
         private WebServer webServer = null;
 
         public void MakeAuthRequest() => Process.Start(url); // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
-
+        
         public async void RunServer()
         {
             var ttask = Task.Run(() => DoWork());
@@ -71,15 +71,13 @@ namespace RSMods.Twitch
                 else
                     return responseForwardContent;
             }
-                
             else
             {
-                TwitchSettings.AccessToken = currUrl.Split(new string[] { "access_token=", "&" }, StringSplitOptions.None)[1];
-                TwitchSettings.Authorized = true;
+                TwitchSettings.Get.AccessToken = currUrl.Split(new string[] { "access_token=", "&" }, StringSplitOptions.None)[1];
+                TwitchSettings.Get.Authorized = true;
 
                 Task.Run(async () => await RequestChannelID()).Wait();
-
-                TwitchSettings.SaveSettings();
+                TwitchSettings.Get.SaveSettings();
 
                 return responseFinalPageContent;
             }
@@ -94,7 +92,7 @@ namespace RSMods.Twitch
                 Headers =
                 {
                     { "Client-ID", twitchClientId },
-                    { "Authorization", $"Bearer {TwitchSettings.AccessToken}"}
+                    { "Authorization", $"Bearer {TwitchSettings.Get.AccessToken}"}
                 }
             };
 
@@ -103,8 +101,8 @@ namespace RSMods.Twitch
 
             var userResponse = JsonConvert.DeserializeObject<TwitchUserResponse>(responseDataJson);
 
-            TwitchSettings.ChannelID = userResponse.data[0].id;
-            TwitchSettings.Username = userResponse.data[0].login;
+            TwitchSettings.Get.ChannelID = userResponse.data[0].id;
+            TwitchSettings.Get.Username = userResponse.data[0].login;
         }
     }
 }

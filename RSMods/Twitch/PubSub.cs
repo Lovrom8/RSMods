@@ -17,7 +17,7 @@ namespace RSMods.Twitch
             pubSub = new TwitchPubSub();
             pubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
 
-            pubSub.ListenToVideoPlayback(TwitchSettings.Username);
+            pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
             pubSub.Connect();
         }
 
@@ -25,10 +25,10 @@ namespace RSMods.Twitch
         {
             Debug.WriteLine("PubSubServiceConnected!");
 
-            pubSub.ListenToBitsEvents(TwitchSettings.ChannelID);
+            pubSub.ListenToBitsEvents(TwitchSettings.Get.ChannelID);
             pubSub.OnBitsReceived += OnBitsReceived;
 
-            pubSub.SendTopics(TwitchSettings.AccessToken);
+            pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
         private void OnBitsReceived(object sender, TwitchLib.PubSub.Events.OnBitsReceivedArgs e)

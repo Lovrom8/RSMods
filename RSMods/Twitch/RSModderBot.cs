@@ -29,24 +29,24 @@ namespace RSMods.Util
         {
             if (File.Exists(Constants.SettingsPath))
             {
-                TwitchSettings.LoadSettings();
+                TwitchSettings.Get.LoadSettings();
 
                 Auth();
             }
             else // If it doesn't exist, write in defaults
-                TwitchSettings.SaveSettings(true);
+                TwitchSettings.Get.SaveSettings(true);
         }
 
         private static bool RefreshToken()
         {
             using (var wc = new WebClient())
             {
-                string jsonResponse = wc.DownloadString($"https://twitchtokengenerator.com/api/refresh/{TwitchSettings.ChatbotRefreshToken}");
+                string jsonResponse = wc.DownloadString($"https://twitchtokengenerator.com/api/refresh/{TwitchSettings.Get.ChatbotRefreshToken}");
                 JToken jsonToken = JObject.Parse(jsonResponse);
                 string resp = (string)jsonToken.SelectToken("success");
 
                 if (resp.ToLower() == "true")
-                    TwitchSettings.ChatbotAccessToken = (string)jsonToken.SelectToken("token");
+                    TwitchSettings.Get.ChatbotAccessToken = (string)jsonToken.SelectToken("token");
                 else
                 {
                     MessageBox.Show("Error: we were unable to refresh your token, please generate it manually again!");
@@ -80,11 +80,11 @@ namespace RSMods.Util
 
         public static void SetCreds(string username, string accessToken, string refreshToken)
         {
-            TwitchSettings.ChatbotUsername = username;
-            TwitchSettings.ChatbotAccessToken = accessToken;
-            TwitchSettings.ChatbotRefreshToken = refreshToken;
+            TwitchSettings.Get.ChatbotUsername = username;
+            TwitchSettings.Get.ChatbotAccessToken = accessToken;
+            TwitchSettings.Get.ChatbotRefreshToken = refreshToken;
 
-            TwitchSettings.SaveSettings(true);
+            TwitchSettings.Get.SaveSettings(true);
         }
 
         public void Auth()
@@ -92,7 +92,7 @@ namespace RSMods.Util
             if (!IsTokenValid())
                 RefreshToken();
 
-            ConnectionCredentials credentials = new ConnectionCredentials(TwitchSettings.Username, TwitchSettings.AccessToken);
+            ConnectionCredentials credentials = new ConnectionCredentials(TwitchSettings.Get.Username, TwitchSettings.Get.AccessToken);
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750,

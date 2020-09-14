@@ -16,6 +16,7 @@ using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using System.Management;
 using RocksmithToolkitLib.Extensions;
 using RSMods.Twitch;
+using System.Threading;
 
 #pragma warning disable IDE0017 // ... Warning about how code can be simplified... Yeah I know it isn't perfect.
 #pragma warning disable IDE0044 // "This should be readonly" .... No. No it shouldn't.
@@ -53,10 +54,15 @@ namespace RSMods
             if (!File.Exists(Constants.SettingsPath))
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
 
-            TwitchSettings.LoadSettings();
+            TwitchSettings.Get._context = SynchronizationContext.Current;
+            TwitchSettings.Get.LoadSettings();
 
             InitializeComponent();
             Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
+
+            label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
 
             // Fill Songlist List
             listBox_Songlist.Items.AddRange(new object[] {
@@ -220,11 +226,10 @@ namespace RSMods
             LoadSetAndForgetMods();
 
             // Load Twitch Authorization Details
-            if (TwitchSettings.Username != String.Empty) // We use Username since it is the last value we recieve.
-                label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
-            else
-                label_AuthorizedAs.Text = "You are not logged into your Twitch account.";
-
+            //if (TwitchSettings.Get.Username != String.Empty) // We use Username since it is the last value we recieve.
+            //     label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
+            //else
+            //     label_AuthorizedAs.Text = "You are not logged into your Twitch account.";
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -1823,16 +1828,15 @@ namespace RSMods
         }
 
         private void button_TwitchReAuthorize_Click(object sender, EventArgs e)
-        {
-            
+        {   
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
 
-            string authToken = TwitchSettings.AccessToken;
+          //  string authToken = TwitchSettings.Get.AccessToken;
 
-            while (TwitchSettings.AccessToken == authToken || TwitchSettings.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
+          //  while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
 
-            label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
+         //   label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
         }
 
         private void button_ChangeBackgroundColor_Click(object sender, EventArgs e)

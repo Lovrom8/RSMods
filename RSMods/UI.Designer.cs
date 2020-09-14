@@ -160,7 +160,6 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
-            this.label_AuthorizedAs = new System.Windows.Forms.Label();
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
@@ -171,6 +170,13 @@
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
+            this.label_TwitchUsername = new System.Windows.Forms.Label();
+            this.label_TwitchChannelID = new System.Windows.Forms.Label();
+            this.label_TwitchAccessToken = new System.Windows.Forms.Label();
+            this.label_TwitchUsernameVal = new System.Windows.Forms.Label();
+            this.label_TwitchChannelIDVal = new System.Windows.Forms.Label();
+            this.label_TwitchAccessTokenVal = new System.Windows.Forms.Label();
+            this.label_AuthorizedAs = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1886,6 +1892,12 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.label_TwitchAccessTokenVal);
+            this.tab_Twitch.Controls.Add(this.label_TwitchChannelIDVal);
+            this.tab_Twitch.Controls.Add(this.label_TwitchUsernameVal);
+            this.tab_Twitch.Controls.Add(this.label_TwitchAccessToken);
+            this.tab_Twitch.Controls.Add(this.label_TwitchChannelID);
+            this.tab_Twitch.Controls.Add(this.label_TwitchUsername);
             this.tab_Twitch.Controls.Add(this.label_AuthorizedAs);
             this.tab_Twitch.Controls.Add(this.label_TwitchAuthorized);
             this.tab_Twitch.Controls.Add(this.button_TwitchReAuthorize);
@@ -1895,14 +1907,6 @@
             this.tab_Twitch.Size = new System.Drawing.Size(1144, 397);
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot";
-            // 
-            // label_AuthorizedAs
-            // 
-            this.label_AuthorizedAs.AutoSize = true;
-            this.label_AuthorizedAs.Location = new System.Drawing.Point(426, 25);
-            this.label_AuthorizedAs.Name = "label_AuthorizedAs";
-            this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
-            this.label_AuthorizedAs.TabIndex = 2;
             // 
             // label_TwitchAuthorized
             // 
@@ -1917,7 +1921,7 @@
             // 
             this.button_TwitchReAuthorize.Location = new System.Drawing.Point(31, 25);
             this.button_TwitchReAuthorize.Name = "button_TwitchReAuthorize";
-            this.button_TwitchReAuthorize.Size = new System.Drawing.Size(219, 78);
+            this.button_TwitchReAuthorize.Size = new System.Drawing.Size(219, 88);
             this.button_TwitchReAuthorize.TabIndex = 0;
             this.button_TwitchReAuthorize.Text = "(Re)authorize";
             this.button_TwitchReAuthorize.UseVisualStyleBackColor = true;
@@ -2010,6 +2014,65 @@
             this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // label_TwitchUsername
+            // 
+            this.label_TwitchUsername.AutoSize = true;
+            this.label_TwitchUsername.Location = new System.Drawing.Point(284, 50);
+            this.label_TwitchUsername.Name = "label_TwitchUsername";
+            this.label_TwitchUsername.Size = new System.Drawing.Size(58, 13);
+            this.label_TwitchUsername.TabIndex = 3;
+            this.label_TwitchUsername.Text = "Username:";
+            // 
+            // label_TwitchChannelID
+            // 
+            this.label_TwitchChannelID.AutoSize = true;
+            this.label_TwitchChannelID.Location = new System.Drawing.Point(284, 75);
+            this.label_TwitchChannelID.Name = "label_TwitchChannelID";
+            this.label_TwitchChannelID.Size = new System.Drawing.Size(63, 13);
+            this.label_TwitchChannelID.TabIndex = 4;
+            this.label_TwitchChannelID.Text = "Channel ID:";
+            // 
+            // label_TwitchAccessToken
+            // 
+            this.label_TwitchAccessToken.AutoSize = true;
+            this.label_TwitchAccessToken.Location = new System.Drawing.Point(284, 100);
+            this.label_TwitchAccessToken.Name = "label_TwitchAccessToken";
+            this.label_TwitchAccessToken.Size = new System.Drawing.Size(62, 13);
+            this.label_TwitchAccessToken.TabIndex = 5;
+            this.label_TwitchAccessToken.Text = "Auth token:";
+            // 
+            // label_TwitchUsernameVal
+            // 
+            this.label_TwitchUsernameVal.AutoSize = true;
+            this.label_TwitchUsernameVal.Location = new System.Drawing.Point(362, 50);
+            this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
+            this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchUsernameVal.TabIndex = 6;
+            // 
+            // label_TwitchChannelIDVal
+            // 
+            this.label_TwitchChannelIDVal.AutoSize = true;
+            this.label_TwitchChannelIDVal.Location = new System.Drawing.Point(362, 75);
+            this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
+            this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchChannelIDVal.TabIndex = 7;
+            // 
+            // label_TwitchAccessTokenVal
+            // 
+            this.label_TwitchAccessTokenVal.AutoSize = true;
+            this.label_TwitchAccessTokenVal.Location = new System.Drawing.Point(362, 100);
+            this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
+            this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchAccessTokenVal.TabIndex = 8;
+            // 
+            // label_AuthorizedAs
+            // 
+            this.label_AuthorizedAs.AutoSize = true;
+            this.label_AuthorizedAs.Location = new System.Drawing.Point(426, 25);
+            this.label_AuthorizedAs.Name = "label_AuthorizedAs";
+            this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
+            this.label_AuthorizedAs.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -2211,13 +2274,19 @@
         private System.Windows.Forms.TabPage tab_Twitch;
         private System.Windows.Forms.Button button_TwitchReAuthorize;
         private System.Windows.Forms.Label label_TwitchAuthorized;
-        private System.Windows.Forms.Label label_AuthorizedAs;
         private System.Windows.Forms.GroupBox groupBox_ChangeTheme;
         private System.Windows.Forms.TextBox textBox_ChangeTextColor;
         private System.Windows.Forms.TextBox textBox_ChangeBackgroundColor;
         private System.Windows.Forms.Button button_ChangeTextColor;
         private System.Windows.Forms.Button button_ChangeBackgroundColor;
         private System.Windows.Forms.Button button_SaveThemeColors;
+        private System.Windows.Forms.Label label_TwitchUsername;
+        private System.Windows.Forms.Label label_TwitchAccessToken;
+        private System.Windows.Forms.Label label_TwitchChannelID;
+        private System.Windows.Forms.Label label_TwitchAccessTokenVal;
+        private System.Windows.Forms.Label label_TwitchChannelIDVal;
+        private System.Windows.Forms.Label label_TwitchUsernameVal;
+        private System.Windows.Forms.Label label_AuthorizedAs;
     }
 }
 
