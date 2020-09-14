@@ -264,78 +264,79 @@ namespace RSMods
             }
         }
 
-        public static Dictionary<Control, bool> themeDictionaryBackColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
-        public static Dictionary<Control, bool> themeDictionaryForeColor = new Dictionary<Control, bool>() { }; // Can't be filled by default, so we run a function to fill it.
+        public static List<Control> themeListBackColor = new List<Control>() { }; // Can't be filled by default, so we run a function to fill it.
+        public static List<Control> themeListForeColor = new List<Control>() { }; // Can't be filled by default, so we run a function to fill it.
 
-        private void FillThemeDictionary()
+        private void FillThemeLists()
         {
+
             // We don't want duplicate values, so let's clear the dictionaries just to make sure.
-            themeDictionaryBackColor.Clear();
-            themeDictionaryForeColor.Clear();
+            themeListBackColor.Clear();
+            themeListBackColor.Clear();
 
             // Lets start with the Back Colors
 
             // Tabs
-            themeDictionaryBackColor.Add(tab_Songlists, true);
-            themeDictionaryBackColor.Add(tab_Keybindings, true);
-            themeDictionaryBackColor.Add(tab_ModToggles, true);
-            themeDictionaryBackColor.Add(tab_ModSettings, true);
-            themeDictionaryBackColor.Add(tab_SetAndForget, true);
-            themeDictionaryBackColor.Add(tab_Twitch, true);
-            themeDictionaryBackColor.Add(tab_GUISettings, true);
+            themeListBackColor.Add(tab_Songlists);
+            themeListBackColor.Add(tab_Keybindings);
+            themeListBackColor.Add(tab_ModToggles);
+            themeListBackColor.Add(tab_ModSettings);
+            themeListBackColor.Add(tab_SetAndForget);
+            themeListBackColor.Add(tab_Twitch);
+            themeListBackColor.Add(tab_GUISettings);
 
             // Group Boxes
-            themeDictionaryBackColor.Add(groupBox_SetAndForget, true);
+            themeListBackColor.Add(groupBox_SetAndForget);
 
             // List Boxes
-            themeDictionaryBackColor.Add(listBox_Songlist, true);
-            themeDictionaryBackColor.Add(listBox_Modlist, true);
-            themeDictionaryBackColor.Add(listBox_Tunings, true);
-            themeDictionaryBackColor.Add(listBox_ProfileTones, true);
-            themeDictionaryBackColor.Add(listBox_ExtendedRangeTunings, true);
-            themeDictionaryBackColor.Add(listBox_GuitarSpeakKeypress, true);
-            themeDictionaryBackColor.Add(listBox_GuitarSpeakOctave, true);
-            themeDictionaryBackColor.Add(listBox_GuitarSpeakNote, true);
-            themeDictionaryBackColor.Add(listBox_GuitarSpeakPresets, true);
+            themeListBackColor.Add(listBox_Songlist);
+            themeListBackColor.Add(listBox_Modlist);
+            themeListBackColor.Add(listBox_Tunings);
+            themeListBackColor.Add(listBox_ProfileTones);
+            themeListBackColor.Add(listBox_ExtendedRangeTunings);
+            themeListBackColor.Add(listBox_GuitarSpeakKeypress);
+            themeListBackColor.Add(listBox_GuitarSpeakOctave);
+            themeListBackColor.Add(listBox_GuitarSpeakNote);
+            themeListBackColor.Add(listBox_GuitarSpeakPresets);
 
             // Now let's fill the ForeColors.
 
             // Group Boxes
-            themeDictionaryForeColor.Add(groupBox_ExtendedRangeWhen, false);
-            themeDictionaryForeColor.Add(groupBox_GuitarSpeak, false);
-            themeDictionaryForeColor.Add(groupBox_Keybindings, false);
-            themeDictionaryForeColor.Add(groupBox_Songlist, false);
-            themeDictionaryForeColor.Add(groupBox_ToggleHeadstockOffWhen, false);
-            themeDictionaryForeColor.Add(groupBox_HowToEnumerate, false);
-            themeDictionaryForeColor.Add(groupBox_LoftOffWhen, false);
-            themeDictionaryForeColor.Add(groupBox_ToggleSkylineWhen, false);
-            themeDictionaryForeColor.Add(groupBox_StringColors, false);
-            themeDictionaryForeColor.Add(groupBox_ToggleLyricsOffWhen, false);
-            themeDictionaryForeColor.Add(groupBox_SetAndForget, false);
+            themeListForeColor.Add(groupBox_ExtendedRangeWhen);
+            themeListForeColor.Add(groupBox_GuitarSpeak);
+            themeListForeColor.Add(groupBox_Keybindings);
+            themeListForeColor.Add(groupBox_Songlist);
+            themeListForeColor.Add(groupBox_ToggleHeadstockOffWhen);
+            themeListForeColor.Add(groupBox_HowToEnumerate);
+            themeListForeColor.Add(groupBox_LoftOffWhen);
+            themeListForeColor.Add(groupBox_ToggleSkylineWhen);
+            themeListForeColor.Add(groupBox_StringColors);
+            themeListForeColor.Add(groupBox_ToggleLyricsOffWhen);
+            themeListForeColor.Add(groupBox_SetAndForget);
 
             // List Boxes
-            themeDictionaryForeColor.Add(listBox_Songlist, false);
-            themeDictionaryForeColor.Add(listBox_Modlist, false);
-            themeDictionaryForeColor.Add(listBox_Tunings, false);
-            themeDictionaryForeColor.Add(listBox_ProfileTones, false);
-            themeDictionaryForeColor.Add(listBox_ExtendedRangeTunings, false);
-            themeDictionaryForeColor.Add(listBox_GuitarSpeakKeypress, false);
-            themeDictionaryForeColor.Add(listBox_GuitarSpeakOctave, false);
-            themeDictionaryForeColor.Add(listBox_GuitarSpeakNote, false);
-            themeDictionaryForeColor.Add(listBox_GuitarSpeakPresets, false);
+            themeListForeColor.Add(listBox_Songlist);
+            themeListForeColor.Add(listBox_Modlist);
+            themeListForeColor.Add(listBox_Tunings);
+            themeListForeColor.Add(listBox_ProfileTones);
+            themeListForeColor.Add(listBox_ExtendedRangeTunings);
+            themeListForeColor.Add(listBox_GuitarSpeakKeypress);
+            themeListForeColor.Add(listBox_GuitarSpeakOctave);
+            themeListForeColor.Add(listBox_GuitarSpeakNote);
+            themeListForeColor.Add(listBox_GuitarSpeakPresets);
         }
 
         private void ChangeTheme(Color backgroundColor, Color textColor)
         {
-            FillThemeDictionary(); // We need to fill the dictionary since it doesn't like filling itself with form elements.
+            FillThemeLists(); // We need to fill the dictionary since it doesn't like filling itself with form elements.
 
             BackColor = backgroundColor; // MainForm BackColor
             ForeColor = textColor; // MainForm ForeColor
 
-            foreach (KeyValuePair<Control, bool> backColorToChange in themeDictionaryBackColor)
-                backColorToChange.Key.BackColor = backgroundColor;
-            foreach (KeyValuePair<Control, bool> foreColorToChange in themeDictionaryForeColor)
-                foreColorToChange.Key.ForeColor = textColor;
+            foreach (Control backColorToChange in themeListBackColor)
+                backColorToChange.BackColor = backgroundColor;
+            foreach (Control foreColorToChange in themeListForeColor)
+                foreColorToChange.ForeColor = textColor;
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
