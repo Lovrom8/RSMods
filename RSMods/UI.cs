@@ -1827,9 +1827,7 @@ namespace RSMods
 
             string authToken = TwitchSettings.AccessToken;
 
-            while (TwitchSettings.AccessToken == authToken) {} // We want to get the new value so we are waiting until this breaks
-            while (TwitchSettings.ChannelID == String.Empty) {} // We want to get the new value so we are waiting until this breaks
-            while (TwitchSettings.Username == String.Empty) {} //  We want to get the new value so we are waiting until this breaks
+            while (TwitchSettings.AccessToken == authToken || TwitchSettings.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
 
             label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
         }
