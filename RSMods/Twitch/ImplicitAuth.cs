@@ -27,10 +27,7 @@ namespace RSMods.Twitch
         private static string url = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={twitchClientId}&redirect_uri=http://localhost:1069/twitch_login&scope={twitchScope}";
         WebServer webServer = null;
 
-        public void MakeAuthRequest()
-        {
-            Process.Start(url); // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us 
-        }
+        public void MakeAuthRequest() => Process.Start(url); // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
 
         public async void RunServer()
         {
@@ -46,7 +43,7 @@ namespace RSMods.Twitch
             try
             {
                 if (webServer != null) { // To avoid the user from spamming the button and crashing the program.
-                    webServer.Stop();
+                    webServer.Stop();   
                     webServer = null;
                 }
                 webServer = new WebServer(SendResponse, twitchRedirectUri + "/");
