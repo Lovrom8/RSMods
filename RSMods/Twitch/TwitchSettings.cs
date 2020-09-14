@@ -66,20 +66,20 @@ namespace RSMods.Twitch
 
         public static void SaveSettings(bool refreshDate = false)
         {
-            var configLines = new List<string>();
-            configLines.Add($"RSPath = {Constants.RSFolder}");
+            var configLines = new List<string>
+            {
+                $"RSPath = {Constants.RSFolder}",
 
-            configLines.Add($"Chatbot_Username = {ChatbotUsername}");
-            configLines.Add($"Chatbot_AccessToken = {ChatbotAccessToken}");
-            configLines.Add($"Chatbot_RefreshToken = {ChatbotRefreshToken}");
-            if (refreshDate)
-                ChatbotTokenSaved = DateTime.Now.ToString(DateFormat);
-            configLines.Add($"Chatbot_TokenSaved = {ChatbotTokenSaved}");
+                $"Chatbot_Username = {ChatbotUsername}",
+                $"Chatbot_AccessToken = {ChatbotAccessToken}",
+                $"Chatbot_RefreshToken = {ChatbotRefreshToken}",
+                $"Chatbot_TokenSaved = {(refreshDate ? ChatbotTokenSaved = DateTime.Now.ToString(DateFormat) : ChatbotTokenSaved )}",
 
-            configLines.Add($"AccessToken = {AccessToken}");
-            configLines.Add($"Username = {Username}");
-            configLines.Add($"ChannelID = {ChannelID}");
-            
+                $"AccessToken = {AccessToken}",
+                $"Username = {Username}",
+                $"ChannelID = {ChannelID}"
+            };
+
             try
             {
                 File.WriteAllLines(Constants.SettingsPath, configLines);
@@ -89,6 +89,5 @@ namespace RSMods.Twitch
                 MessageBox.Show($"Error: {ioex.Message}", "Error");
             }
         }
-
     }
 }
