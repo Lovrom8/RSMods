@@ -269,12 +269,9 @@ namespace RSMods
 
         private void FillThemeLists()
         {
-
             // We don't want duplicate values, so let's clear the dictionaries just to make sure.
             themeListBackColor.Clear();
-            themeListBackColor.Clear();
-
-            // Lets start with the Back Colors
+            themeListForeColor.Clear();
 
             // Tabs
             themeListBackColor.Add(tab_Songlists);
