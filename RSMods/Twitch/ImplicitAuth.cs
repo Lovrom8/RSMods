@@ -25,6 +25,7 @@ namespace RSMods.Twitch
         private static string responseForwardContent = "<HTML><BODY> <script> location.href = window.location.href.replace(\"#\", \"/\");  </script></BODY></HTML>";
         private static string responseFinalPageContent = "<HTML><BODY><h1>thanks for the token xd</h1><br><h6><i>This response was totally not suggested by Koko</i></h6></BODY></HTML>";
         private static string url = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={twitchClientId}&redirect_uri=http://localhost:1069/twitch_login&scope={twitchScope}";
+        WebServer webServer = null;
 
         public void MakeAuthRequest()
         {
@@ -41,16 +42,20 @@ namespace RSMods.Twitch
         {
             //Start the webserver to listen for the Twitch auth callback
             //Make sure the URL ends in a /
-
+            
             try
             {
-                WebServer ws = new WebServer(SendResponse, twitchRedirectUri + "/");
-                ws.Run();
+                if (webServer != null) { // To avoid the user from spamming the button and crashing the program.
+                    webServer.Stop();
+                    webServer = null;
+                }
+                webServer = new WebServer(SendResponse, twitchRedirectUri + "/");
+                webServer.Run();
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                if ((HttpListenerException)ex != ex)
+                    throw ex;
             }
         }
 
