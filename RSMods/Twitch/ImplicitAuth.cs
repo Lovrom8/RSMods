@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
+#pragma warning disable IDE0044 // Make variables readonly.... Why?
+
 namespace RSMods.Twitch
 {
     class ImplicitAuth
