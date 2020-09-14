@@ -218,6 +218,10 @@ namespace RSMods
 
             // Set And Forget Mods
             LoadSetAndForgetMods();
+
+            // Load Twitch Authorization Details
+            label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
+
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e)
@@ -1817,17 +1821,14 @@ namespace RSMods
 
         private void button_TwitchReAuthorize_Click(object sender, EventArgs e)
         {
+            
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
-        }
 
-        private void TabController_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(TabController.SelectedTab.Name == "tab_Twitch") // I would prefer not to call
-            {
-                if (TwitchSettings.Authorized)
-                    label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
-            }
+            string authToken = TwitchSettings.AccessToken;
+
+            while (TwitchSettings.AccessToken == authToken) {} // We want to get the new value so we are waiting until this breaks
+            label_AuthorizedAs.Text = $"{TwitchSettings.Username} with channel ID: {TwitchSettings.ChannelID} and access token: {TwitchSettings.AccessToken}";
         }
 
         private void button_ChangeBackgroundColor_Click(object sender, EventArgs e)

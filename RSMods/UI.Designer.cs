@@ -1819,7 +1819,6 @@
             this.TabController.SelectedIndex = 0;
             this.TabController.Size = new System.Drawing.Size(1152, 423);
             this.TabController.TabIndex = 100001;
-            this.TabController.SelectedIndexChanged += new System.EventHandler(this.TabController_SelectedIndexChanged);
             // 
             // tab_Songlists
             // 
