@@ -201,8 +201,8 @@ namespace RSMods
             /* Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
 
                 if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
-                DiscoModeCheckbox.Checked = true;
-                */
+                    DiscoModeCheckbox.Checked = true;
+            */
 
             if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
             {
