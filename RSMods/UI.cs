@@ -90,126 +90,7 @@ namespace RSMods
             RefreshGuitarSpeakPresets();
 
             // Load Checkbox Values From RSMods.ini
-            {
-                if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
-                {
-                    checkBox_ToggleLoft.Checked = true;
-                    radio_LoftAlwaysOff.Visible = true;
-                    radio_LoftOffHotkey.Visible = true;
-                    radio_LoftOffInSong.Visible = true;
-                    groupBox_LoftOffWhen.Visible = true;
-
-                    if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "startup")
-                        radio_LoftAlwaysOff.Checked = true;
-                    else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "manual")
-                        radio_LoftOffHotkey.Checked = true;
-                    else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "song")
-                        radio_LoftOffInSong.Checked = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
-                    checkBox_ControlVolume.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
-                    checkBox_ControlVolume.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
-                    checkBox_SongTimer.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
-                {
-                    checkBox_ForceEnumeration.Checked = true;
-                    radio_ForceEnumerationAutomatic.Visible = true;
-                    radio_ForceEnumerationManual.Visible = true;
-                    groupBox_HowToEnumerate.Visible = true;
-                    if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) == "automatic")
-                        radio_ForceEnumerationAutomatic.Checked = true;
-                    else
-                        radio_ForceEnumerationManual.Checked = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
-                    checkBox_RainbowStrings.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
-                {
-                    checkBox_ExtendedRange.Checked = true;
-                    groupBox_ExtendedRangeWhen.Visible = true;
-                    listBox_ExtendedRangeTunings.Visible = true;
-                }
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
-                {
-                    checkBox_CustomColors.Checked = true;
-                    groupBox_StringColors.Visible = true;
-                }
-
-                /* Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
-
-                 if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
-                    DiscoModeCheckbox.Checked = true;
-                 */
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
-                {
-                    checkBox_RemoveHeadstock.Checked = true;
-                    groupBox_ToggleHeadstockOffWhen.Visible = true;
-
-                    if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "startup")
-                        radio_HeadstockAlwaysOff.Checked = true;
-                    else if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "song")
-                        radio_HeadstockOffInSong.Checked = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
-                {
-                    checkBox_RemoveSkyline.Checked = true;
-                    groupBox_ToggleSkylineWhen.Visible = true;
-
-                    if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "song") // Remove Skyline on Song Load
-                        radio_SkylineOffInSong.Checked = true;
-                    else if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "startup") // Remove Skyline on Game Startup 
-                        radio_SkylineAlwaysOff.Checked = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
-                    checkBox_GreenScreen.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
-                    checkBox_AutoLoadProfile.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
-                    checkBox_Fretless.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on") // Remove Inlay Markers Enabled / Disabled
-                    checkBox_RemoveInlays.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
-                    checkBox_RemoveLineMarkers.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
-                {
-                    checkBox_RemoveLyrics.Checked = true;
-                    groupBox_ToggleLyricsOffWhen.Visible = true;
-
-                    if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
-                        radio_LyricsAlwaysOff.Checked = true;
-                    else if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "manual") // Remove Lyrics When ...
-                        radio_LyricsOffHotkey.Checked = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
-                {
-                    checkBox_GuitarSpeak.Checked = true;
-                    groupBox_GuitarSpeak.Visible = true;
-                    checkbox_GuitarSpeakWhileTuning.Visible = true;
-                }
-
-                if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
-                    checkbox_GuitarSpeakWhileTuning.Checked = true;
-
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
-                    checkBox_ChangeTheme.Checked = true;
-            }
+            RefreshModsSelections();
 
             // Initialize Default String Colors
             LoadDefaultStringColors();
@@ -261,6 +142,128 @@ namespace RSMods
                     textBox_NewKeyAssignment.Text = String.Empty;
                     break;
             }
+        }
+
+        private void RefreshModsSelections()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
+            {
+                checkBox_ToggleLoft.Checked = true;
+                radio_LoftAlwaysOff.Visible = true;
+                radio_LoftOffHotkey.Visible = true;
+                radio_LoftOffInSong.Visible = true;
+                groupBox_LoftOffWhen.Visible = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "startup")
+                    radio_LoftAlwaysOff.Checked = true;
+                else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "manual")
+                    radio_LoftOffHotkey.Checked = true;
+                else if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftWhenIdentifier) == "song")
+                    radio_LoftOffInSong.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
+                checkBox_ControlVolume.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
+                checkBox_ControlVolume.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
+                checkBox_SongTimer.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
+            {
+                checkBox_ForceEnumeration.Checked = true;
+                radio_ForceEnumerationAutomatic.Visible = true;
+                radio_ForceEnumerationManual.Visible = true;
+                groupBox_HowToEnumerate.Visible = true;
+                if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) == "automatic")
+                    radio_ForceEnumerationAutomatic.Checked = true;
+                else
+                    radio_ForceEnumerationManual.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
+                checkBox_RainbowStrings.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
+            {
+                checkBox_ExtendedRange.Checked = true;
+                groupBox_ExtendedRangeWhen.Visible = true;
+                listBox_ExtendedRangeTunings.Visible = true;
+            }
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
+            {
+                checkBox_CustomColors.Checked = true;
+                groupBox_StringColors.Visible = true;
+            }
+
+            /* Disco Mode: Deprecated, as of now, because you can't toggle it off easily.
+
+                if (ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) == "on") // Disco Mode Enabled / Disabled
+                DiscoModeCheckbox.Checked = true;
+                */
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) == "on") // Remove Headstock Enabled / Disabled
+            {
+                checkBox_RemoveHeadstock.Checked = true;
+                groupBox_ToggleHeadstockOffWhen.Visible = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "startup")
+                    radio_HeadstockAlwaysOff.Checked = true;
+                else if (ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) == "song")
+                    radio_HeadstockOffInSong.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RemoveSkylineIdentifier) == "on") // Remove Skyline Enabled / Disabled
+            {
+                checkBox_RemoveSkyline.Checked = true;
+                groupBox_ToggleSkylineWhen.Visible = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "song") // Remove Skyline on Song Load
+                    radio_SkylineOffInSong.Checked = true;
+                else if (ReadSettings.ProcessSettings(ReadSettings.ToggleSkylineWhenIdentifier) == "startup") // Remove Skyline on Game Startup 
+                    radio_SkylineAlwaysOff.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
+                checkBox_GreenScreen.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
+                checkBox_AutoLoadProfile.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
+                checkBox_Fretless.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on") // Remove Inlay Markers Enabled / Disabled
+                checkBox_RemoveInlays.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
+                checkBox_RemoveLineMarkers.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
+            {
+                checkBox_RemoveLyrics.Checked = true;
+                groupBox_ToggleLyricsOffWhen.Visible = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "startup") // Remove Lyrics When ...
+                    radio_LyricsAlwaysOff.Checked = true;
+                else if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) == "manual") // Remove Lyrics When ...
+                    radio_LyricsOffHotkey.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
+            {
+                checkBox_GuitarSpeak.Checked = true;
+                groupBox_GuitarSpeak.Visible = true;
+                checkbox_GuitarSpeakWhileTuning.Visible = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
+                checkbox_GuitarSpeakWhileTuning.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
+                checkBox_ChangeTheme.Checked = true;
         }
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
