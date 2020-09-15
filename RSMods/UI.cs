@@ -31,7 +31,6 @@ namespace RSMods
     public partial class MainForm : Form
     {
         // Global Vars
-        bool HasToolTipDictionaryBeenCreatedYet = false;
         bool CreatedToolTipYet = false;
 
         public MainForm()
@@ -1445,8 +1444,6 @@ namespace RSMods
 
         private void FillToolTipDictionary()
         {
-            HasToolTipDictionaryBeenCreatedYet = true;
-
             // INI Edits
             // Checkboxes
             TooltipDictionary.Add(checkBox_ToggleLoft, "Disables the game background, amps and noise reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\nPlayer just sees an all black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press.");
@@ -1539,8 +1536,8 @@ namespace RSMods
 
             currentTooltip.Active = true;
 
-            if (!HasToolTipDictionaryBeenCreatedYet) // Have we filled the tooltip dictionary? If so, skip this, if not, fill the dictionary.
-                FillToolTipDictionary();
+            TooltipDictionary.Clear();
+            FillToolTipDictionary();
 
             foreach (Control ControlHoveredOver in TooltipDictionary.Keys)
             {
