@@ -1183,29 +1183,11 @@ namespace RSMods
             }
         }
 
-        private void AddVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (AddVolumeCheckbox.Checked)
-                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "false");
-        }
+        private void AddVolumeCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, AddVolumeCheckbox.Checked.ToString().ToLower());
 
-        private void DecreaseVolumeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (DecreaseVolumeCheckbox.Checked)
-                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "false");
-        }
+        private void DecreaseVolumeCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, DecreaseVolumeCheckbox.Checked.ToString().ToLower());
 
-        private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_SongTimer.Checked)
-                SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, "false");
-        }
+        private void SongTimerCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, checkBox_SongTimer.Checked.ToString().ToLower());
 
         private void ForceEnumerationCheckbox_CheckedChanged(object sender, EventArgs e)
         {
@@ -1243,13 +1225,7 @@ namespace RSMods
             SaveChanges(ReadSettings.ForceReEnumerationEnabledIdentifier, "manual");
         }
 
-        private void RainbowStringsEnabled_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_RainbowStrings.Checked)
-                SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, "false");
-        }
+        private void RainbowStringsEnabled_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, checkBox_RainbowStrings.Checked.ToString().ToLower());
 
         private void ExtendedRangeEnabled_CheckedChanged(object sender, EventArgs e)
         {
@@ -1284,15 +1260,7 @@ namespace RSMods
                 groupBox_StringColors.Visible = false;
             }
         }
-        /*
-        private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (DiscoModeCheckbox.Checked)
-                SaveChanges(ReadSettings.DiscoModeIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.DiscoModeIdentifier, "false");
-        }
-        */
+        // private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.DiscoModeIdentifier, DiscoModeCheckbox.Checked.ToString().ToLower());
 
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
         {
@@ -1323,37 +1291,13 @@ namespace RSMods
             }
         }
 
-        private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_GreenScreen.Checked)
-                SaveChanges(ReadSettings.GreenScreenWallIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.GreenScreenWallIdentifier, "false");
-        }
+        private void GreenScreenWallCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GreenScreenWallIdentifier, checkBox_GreenScreen.Checked.ToString().ToLower());
 
-        private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_AutoLoadProfile.Checked)
-                SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, "false");
-        }
+        private void AutoLoadProfileCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, checkBox_AutoLoadProfile.Checked.ToString().ToLower());
 
-        private void FretlessModeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_Fretless.Checked)
-                SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, "false");
-        }
+        private void FretlessModeCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, checkBox_Fretless.Checked.ToString().ToLower());
 
-        private void RemoveInlaysCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_RemoveInlays.Checked)
-                SaveChanges(ReadSettings.RemoveInlaysIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.RemoveInlaysIdentifier, "false");
-        }
+        private void RemoveInlaysCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RemoveInlaysIdentifier, checkBox_RemoveInlays.Checked.ToString().ToLower());
 
         private void ToggleLoftWhenManualRadio_CheckedChanged(object sender, EventArgs e)
         {
@@ -1373,14 +1317,7 @@ namespace RSMods
                 SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "startup");
         }
 
-        private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_RemoveLineMarkers.Checked)
-                SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "true");
-            else
-                SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, "false");
-        }
-
+        private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, checkBox_RemoveLineMarkers.Checked.ToString().ToLower());
         private void ToggleSkylineSongRadio_CheckedChanged(object sender, EventArgs e)
         {
             if (radio_SkylineOffInSong.Checked)
@@ -1693,13 +1630,7 @@ namespace RSMods
             }
         }
 
-        private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkbox_GuitarSpeakWhileTuning.Checked)
-                SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "on");
-            else
-                SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, "off");
-        }
+        private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkbox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
 
         private string GuitarSpeakNoteOctaveMath(string inputString)
         {
@@ -1775,7 +1706,6 @@ namespace RSMods
             {
                 SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "on");
                 groupBox_ChangeTheme.Visible = true;
-                
             }
             else // We turn ChangeTheme off.
             {
@@ -1790,11 +1720,9 @@ namespace RSMods
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
 
-          //  string authToken = TwitchSettings.Get.AccessToken;
-
-          //  while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
-
-         //   label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
+          // string authToken = TwitchSettings.Get.AccessToken;
+          // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
+          // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
         }
 
         private void button_ChangeBackgroundColor_Click(object sender, EventArgs e)
