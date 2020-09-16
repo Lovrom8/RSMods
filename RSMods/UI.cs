@@ -32,6 +32,7 @@ namespace RSMods
     {
         // Global Vars
         bool CreatedToolTipYet = false;
+        bool ManualChangeOfModSettingValues = false;
 
         public MainForm()
         {
@@ -103,8 +104,7 @@ namespace RSMods
             LoadCustomThemeColors();
 
             // Mod Settings
-            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
-            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2;
+            LoadModSettings();
 
             // Set And Forget Mods
             LoadSetAndForgetMods();
@@ -146,6 +146,14 @@ namespace RSMods
                     textBox_NewKeyAssignment.Text = String.Empty;
                     break;
             }
+        }
+
+        private void LoadModSettings()
+        {
+            ManualChangeOfModSettingValues = true;
+            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
+            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
+            ManualChangeOfModSettingValues = false;
         }
 
         private void RefreshModsSelections()
@@ -1127,7 +1135,11 @@ namespace RSMods
             }
         }
 
-        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (nUpDown_ForceEnumerationXMS.Value * 1000).ToString());
+        private void EnumerateEveryXMS_ValueChanged(object sender, EventArgs e)
+        {
+            if(!ManualChangeOfModSettingValues)
+                SaveChanges(ReadSettings.CheckForNewSongIntervalIdentifier, (nUpDown_ForceEnumerationXMS.Value * 1000).ToString());
+        }
 
         private void ForceEnumerationAutomaticRadio_CheckedChanged(object sender, EventArgs e)
         {
@@ -1248,7 +1260,11 @@ namespace RSMods
                 SaveChanges(ReadSettings.ToggleSkylineWhenIdentifier, "startup");
         }
 
-        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((listBox_ExtendedRangeTunings.SelectedIndex * -1) - 2));
+        private void ExtendedRangeTunings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!ManualChangeOfModSettingValues)
+                SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((listBox_ExtendedRangeTunings.SelectedIndex * -1) - 2));
+        }
 
         private void DeleteKeyBind_Click(object sender, EventArgs e)
         {
