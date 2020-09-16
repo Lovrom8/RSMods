@@ -21,8 +21,9 @@ namespace MemHelpers {
 	bool IsExtendedRangeSong();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
-	void DX9DrawText(std::string textToDraw, int textColorHex, int fontWidth, int fontHeight, int fontWeight, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, int hookReset = 0);
-
+	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, int hookReset = 0);
+	void createFontOneTime(LPDIRECT3DDEVICE9 pDevice);
+	
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
 
@@ -30,4 +31,7 @@ namespace MemHelpers {
 
 	inline static std::string lastMenu = "";
 	inline static bool canGetRealMenu = false;
+
+	inline HRESULT CustomDX9Font = NULL;
+	inline ID3DXFont* DX9FontEncapsulation = NULL;
 };

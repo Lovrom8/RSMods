@@ -16,7 +16,7 @@ namespace ERMode {
 	void ToggleRainbowMode();
 	bool IsRainbowEnabled();
 	void ResetString(int strIndex);
-	void SetCustomColors(int strIdx, std::map<std::string, RSColor> customColorMap);
+	void SetCustomColors(int strIdx, ColorMap customColorMap);
 	void Initialize();
 	void InitStrings(std::vector<uintptr_t>& strings, int state);
 	void SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors);

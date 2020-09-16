@@ -451,11 +451,11 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
 		int fontWidth = (MemHelpers::GetWindowSize()[0] / 96), fontHeight = (MemHelpers::GetWindowSize()[1] / 72); // Consistent Fonts: Width = (MemHelpers::GetWindowSize()[0] / 96), Height = (MemHelpers::GetWindowSize()[1] / 72)
 		
-		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on"){ // If the user wants us to show the volume (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
+		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, songModes)){ // If the user wants us to show the volume )
 			float volume = MixerVolume::SongVolume();
 
-			//MemHelpers::DX9DrawText(MixerVolume::drawTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, fontWidth, fontHeight, FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
-			MemHelpers::DX9DrawText(MixerVolume::drawTextName[0] + std::to_string((int)volume) + "%", whiteText, fontWidth, fontHeight, FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			//MemHelpers::DX9DrawText(MixerVolume::drawTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(MixerVolume::drawTextName[0] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -475,7 +475,7 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds), whiteText, fontWidth, fontHeight, FW_NORMAL, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds), whiteText, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 	}
 
@@ -486,13 +486,13 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 HRESULT APIENTRY Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
-	MemHelpers::DX9DrawText("ERROR: Resetting Text (Lost)", 0xFF000000, 20, 15, FW_HEAVY, 0, 150, 300, 450, pDevice, 1);
+	MemHelpers::DX9DrawText("ERROR: Resetting Text (Lost)", 0xFF000000, 0, 150, 300, 450, pDevice, 1);
 
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
 
 	ImGui_ImplDX9_CreateDeviceObjects();
 
-	MemHelpers::DX9DrawText("ERROR: Resetting Text (Reset)", 0xFF000000, 20, 15, FW_HEAVY, 0, 150, 300, 450, pDevice, 2);
+	MemHelpers::DX9DrawText("ERROR: Resetting Text (Reset)", 0xFF000000, 0, 150, 300, 450, pDevice, 2);
 
 	return ResetReturn;
 }
