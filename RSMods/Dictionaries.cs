@@ -1,22 +1,5 @@
-﻿using System;
-using System.Windows.Forms;
-using System.IO;
-using System.Linq;
-using System.Drawing;
-using RSMods.Data;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using RSMods.Util;
-using System.Reflection;
-using SevenZip;
-using RocksmithToolkitLib.DLCPackage;
+﻿using System.Windows.Forms;
 using System.Collections.Generic;
-using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
-using System.Management;
-using RocksmithToolkitLib.Extensions;
-using RSMods.Twitch;
-using System.Threading;
 
 
 namespace RSMods
@@ -137,6 +120,6 @@ namespace RSMods
             KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)),
             KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier))
         };
-        
+
     }
 }
