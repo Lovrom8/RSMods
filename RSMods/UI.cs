@@ -1462,7 +1462,7 @@ namespace RSMods
                                 break;
                             }
                         }
-                        listBox_GuitarSpeakPresets.Items.Add(listBox_GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                        listBox_GuitarSpeakPresets.Items.Add(listBox_GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeak.GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
                         RefreshGuitarSpeakPresets();
                     }
                 }
@@ -1501,27 +1501,27 @@ namespace RSMods
             {
                 case 0:
                     offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningLowEStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
+                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
                     break;
                 case 1:
                     offset = 33; // Offset from (24 - 1) + 10
-                    label_CustomTuningAStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String1.Value) + offset);
+                    label_CustomTuningAStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String1.Value) + offset);
                     break;
                 case 2:
                     offset = 26; // Offset from (24 - 1) + 3
-                    label_CustomTuningDStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String2.Value) + offset);
+                    label_CustomTuningDStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String2.Value) + offset);
                     break;
                 case 3:
                     offset = 31;// Offset from (24 - 1) + 8
-                    label_CustomTuningGStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String3.Value) + offset);
+                    label_CustomTuningGStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String3.Value) + offset);
                     break;
                 case 4:
                     offset = 35; // Offset from (24 - 1) + 12
-                    label_CustomTuningBStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String4.Value) + offset);
+                    label_CustomTuningBStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String4.Value) + offset);
                     break;
                 case 5:
                     offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningHighEStringLetter.Text = IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset);
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset);
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
@@ -1545,22 +1545,6 @@ namespace RSMods
 
         private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkbox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
 
-        private string GuitarSpeakNoteOctaveMath(string inputString)
-        {
-            if (inputString == "")
-                return "";
-
-            int inputInt = Int32.Parse(inputString);
-
-            int octave = (inputInt / 12) - 1; // We support the -1st octave, so we need to minus 1 from our octave.
-
-            return IntToNote(inputInt) + octave.ToString();
-        }
-
-        private string IntToNote(int intToConvert) => noteArray[intToConvert % 12];
-
-        private string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
-
         private void GuitarSpeakHelpButton_Click(object sender, EventArgs e) => System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
         private void HeadStockAlwaysOffButton_CheckedChanged(object sender, EventArgs e)
         {
@@ -1578,10 +1562,10 @@ namespace RSMods
         {
             listBox_GuitarSpeakPresets.Items.Clear();
 
-            listBox_GuitarSpeakPresets.Items.AddRange(new object[]
-            {
+            //listBox_GuitarSpeakPresets.Items.AddRange(new object[]
+            //{
                 
-            });
+            //});
         }
 
         private void MainForm_Load(object sender, EventArgs e)
