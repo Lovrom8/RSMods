@@ -703,76 +703,77 @@ namespace RSMods
 
         private Tuple<string, bool> GetDriveType(char driveLetter) // This may not work on Win7, MSDN says its for >= Win8
         {
-            try
+            if ((Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor >= 2) || Environment.OSVersion.Version.Major == 10) // OS Chart here: https://stackoverflow.com/a/2819962
             {
-                uint driveNumber = 0;
-
-                ManagementScope scope = new ManagementScope(@"\\.\root\microsoft\windows\storage");
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
+                try
                 {
-                    scope.Connect();
-                    searcher.Scope = scope;
+                    uint driveNumber = 0;
 
-                    foreach (ManagementObject queryObj in searcher.Get())
+                    ManagementScope scope = new ManagementScope(@"\\.\root\microsoft\windows\storage");
+                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
                     {
-                        char letter = (char)queryObj["DriveLetter"];
+                        scope.Connect();
+                        searcher.Scope = scope;
 
-                        if (letter == driveLetter)
+                        foreach (ManagementObject queryObj in searcher.Get())
                         {
-                            driveNumber = (uint)queryObj["DiskNumber"];
-                            break;
+                            char letter = (char)queryObj["DriveLetter"];
+
+                            if (letter == driveLetter)
+                            {
+                                driveNumber = (uint)queryObj["DiskNumber"];
+                                break;
+                            }
+                        }
+                    }
+
+                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_PhysicalDisk"))
+                    {
+                        string type = "";
+                        bool isNVMe = false;
+                        scope.Connect();
+                        searcher.Scope = scope;
+
+                        foreach (ManagementObject queryObj in searcher.Get())
+                        {
+                            string devID = queryObj["DeviceId"].ToString();
+
+                            if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
+                                continue;
+
+                            switch (Convert.ToInt16(queryObj["MediaType"]))
+                            {
+                                case 1:
+                                    type = "Unspecified";
+                                    break;
+
+                                case 3:
+                                    type = "HDD";
+                                    break;
+
+                                case 4:
+                                    type = "SSD";
+                                    break;
+
+                                case 5:
+                                    type = "SCM";
+                                    break;
+
+                                default:
+                                    type = "Unspecified";
+                                    break;
+                            }
+
+                            if (Convert.ToInt16(queryObj["BusType"]) == 17)
+                                isNVMe = true;
+
+                            return new Tuple<string, bool>(type, isNVMe);
                         }
                     }
                 }
-
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_PhysicalDisk"))
-                {
-                    string type = "";
-                    bool isNVMe = false;
-                    scope.Connect();
-                    searcher.Scope = scope;
-
-                    foreach (ManagementObject queryObj in searcher.Get())
-                    {
-                        string devID = queryObj["DeviceId"].ToString();
-
-                        if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
-                            continue;
-
-                        switch (Convert.ToInt16(queryObj["MediaType"]))
-                        {
-                            case 1:
-                                type = "Unspecified";
-                                break;
-
-                            case 3:
-                                type = "HDD";
-                                break;
-
-                            case 4:
-                                type = "SSD";
-                                break;
-
-                            case 5:
-                                type = "SCM";
-                                break;
-
-                            default:
-                                type = "Unspecified";
-                                break;
-                        }
-
-                        if (Convert.ToInt16(queryObj["BusType"]) == 17)
-                            isNVMe = true;
-
-                        return new Tuple<string, bool>(type, isNVMe);
-                    }
-                }
+                catch (ManagementException ex) //Not much we can do in this case and it's not really important that we inform the user
+                {}
             }
-            catch (ManagementException ex) //Not much we can do in this case and it's not really important that we inform the user
-            {
-            }
-
             return new Tuple<string, bool>("Unspecified", false);
         }
 
