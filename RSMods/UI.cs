@@ -1387,9 +1387,9 @@ namespace RSMods
 
         private void HideToolTips(object sender, EventArgs e)
         {
-            if (MainForm.ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
+            if (ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
             {
-                ToolTip.Hide(MainForm.ActiveForm);
+                ToolTip.Hide(ActiveForm);
                 ToolTip.Active = false;
             };
         }
