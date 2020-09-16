@@ -6,14 +6,11 @@ using System.Drawing;
 using RSMods.Data;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using RSMods.Util;
 using System.Reflection;
 using SevenZip;
-using RocksmithToolkitLib.DLCPackage;
 using System.Collections.Generic;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
-using System.Management;
 using RocksmithToolkitLib.Extensions;
 using RSMods.Twitch;
 using System.Threading;
@@ -25,6 +22,7 @@ using System.Threading;
 #pragma warning disable CS0168 // Variable Declared But Not Used
 #pragma warning disable IDE0018 // Variable Declaration can be inlined, but it can't or it will shoot an error.
 #pragma warning disable IDE1006 // Naming Rule Violation... We can name our functions whatever we want.... Plus it was an auto-generated one made by YOU so stop complaining.
+#pragma warning disable IDE0049 // Name can be shortened. 
 
 namespace RSMods
 {
@@ -502,105 +500,13 @@ namespace RSMods
 
         private void ColorBlindStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors(true);
 
-        private static TuningDefinitionList tuningsCollection;
-
-        private TuningDefinitionList LoadTuningsCollection()
-        {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            var tuningsList = tuningsJson["Static"]["TuningDefinitions"];
-
-            return JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
-        }
-
-        private void SaveTuningsJSON()
-        {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            tuningsJson["Static"]["TuningDefinitions"] = JObject.FromObject(tuningsCollection);
-
-            try
-            {
-                File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show("Error: " + ioex.ToString(), "Error");
-            }
-        }
-
-        private Tuple<string, string> SplitTuningUIName(string uiName)
-        {
-            string index, name = uiName;
-
-            Regex rxIndexExists = new Regex(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
-            Regex rxGetIndex = new Regex(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
-            Regex rxGrabAfterBracket = new Regex(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
-            if (rxIndexExists.IsMatch(uiName))
-            {
-                index = rxGetIndex.Matches(uiName)[0].Groups[1].Value;
-                name = rxGrabAfterBracket.Matches(uiName)[0].Groups[1].Value;
-            }
-            else
-                index = "0";
-
-            return new Tuple<string, string>(index, name);
-        }
-
-        private void AddLocalizationForTuningEntries()
-        {
-            try
-            {
-                string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
-                int newIndex = 37500;
-
-                using (StreamWriter sw = new StreamWriter(Constants.LocalizationCSV_CustomPath, true))
-                {
-                    foreach (var tuningDefinition in tuningsCollection)
-                    {
-                        currentUIName = tuningDefinition.Value.UIName;
-                        var tuning = SplitTuningUIName(currentUIName);
-                        string index = tuning.Item1;
-                        string onlyName = tuning.Item2;
-
-                        if (index == "0") // I.e. if it does not contain an index, give it one
-                        {
-                            while (csvContents.Contains(newIndex.ToString())) // Efficient ? Nope, but does the job
-                                newIndex++;
-
-                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", newIndex, onlyName); // Append its index in front
-                            index = newIndex.ToString();
-                        }
-
-                        if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
-                        {
-                            sw.Write(index);
-                            for (int i = 0; i < 7; i++)
-                            {
-                                sw.Write(',');
-                                sw.Write(tuning.Item2);
-                            }
-
-                            sw.Write(sw.NewLine);
-                        }
-                    }
-                }
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show("Error: " + ioex.Message.ToString(), "Error");
-            }
-
-            SaveTuningsJSON();
-        }
-
         private void FillUI()
         {
             listBox_Tunings.Items.Clear();
-            tuningsCollection = LoadTuningsCollection();
+            SetAndForgetMods.tuningsCollection = SetAndForgetMods.LoadTuningsCollection();
 
             listBox_Tunings.Items.Add("<New>");
-            foreach (var key in tuningsCollection.Keys)
+            foreach (var key in SetAndForgetMods.tuningsCollection.Keys)
                 listBox_Tunings.Items.Add(key);
         }
 
@@ -616,39 +522,6 @@ namespace RSMods
             tuningDefinition.UIName = String.Format("$[{0}]{1}", nUpDown_UIIndex.Value.ToString(), textBox_UIName.Text);
 
             return tuningDefinition;
-        }
-
-        private void UnpackCachePsarc()
-        {
-            if (!Directory.Exists(Constants.WorkFolder))
-                Directory.CreateDirectory(Constants.WorkFolder);
-
-            if (!File.Exists(Constants.CacheBackupPath))
-                File.Copy(Constants.CachePsarcPath, Constants.CacheBackupPath);
-
-            Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
-        }
-
-        private void RepackCachePsarc()
-        {
-            try
-            {
-                if (!Directory.Exists(Constants.CachePcPath))
-                {
-                    MessageBox.Show("Unpacked cache gone...");
-                    return;
-                }
-
-                if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
-                    GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "sltsv1_aggregategraph.nt" }); //NOTE: when adding resources, change Build Action to Embeded Resource  
-
-                Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
-                MessageBox.Show("cache.psarc repackaged successfully", "Success");
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show("Unable to repack cache.psarc" + Environment.NewLine + "Error: " + ex.Message.ToString(), "Repacking error", MessageBoxButtons.OK);
-            }
         }
 
         private void BtnRestoreDefaults_Click(object sender, EventArgs e)
@@ -678,185 +551,16 @@ namespace RSMods
             }
         }
 
-        private void BtnUnpackCacheAgain_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(Constants.CachePcPath))
-                return;
+        private void BtnUnpackCacheAgain_Click(object sender, EventArgs e) => SetAndForgetMods.UnpackCacheAgain();
 
-            ZipUtilities.DeleteDirectory(Constants.CachePcPath, true);
+        private void BtnAddCustomTunings_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomTunings();
 
-            UnpackCachePsarc();
-        }
-
-        private void BtnAddCustomTunings_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath)) // Don't replace existing unpacked cache, in case the user wants to add more mods together
-                UnpackCachePsarc();
-
-            AddLocalizationForTuningEntries();
-
-            ZipUtilities.InjectFile(Constants.TuningJSON_CustomPath, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-            ZipUtilities.InjectFile(Constants.LocalizationCSV_CustomPath, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-        }
-
-        private Tuple<string, bool> GetDriveType(char driveLetter) // This may not work on Win7, MSDN says its for >= Win8
-        {
-            if ((Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor >= 2) || Environment.OSVersion.Version.Major == 10) // OS Chart here: https://stackoverflow.com/a/2819962
-            {
-                try
-                {
-                    uint driveNumber = 0;
-
-                    ManagementScope scope = new ManagementScope(@"\\.\root\microsoft\windows\storage");
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
-                    {
-                        scope.Connect();
-                        searcher.Scope = scope;
-
-                        foreach (ManagementObject queryObj in searcher.Get())
-                        {
-                            char letter = (char)queryObj["DriveLetter"];
-
-                            if (letter == driveLetter)
-                            {
-                                driveNumber = (uint)queryObj["DiskNumber"];
-                                break;
-                            }
-                        }
-                    }
-
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_PhysicalDisk"))
-                    {
-                        string type = "";
-                        bool isNVMe = false;
-                        scope.Connect();
-                        searcher.Scope = scope;
-
-                        foreach (ManagementObject queryObj in searcher.Get())
-                        {
-                            string devID = queryObj["DeviceId"].ToString();
-
-                            if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
-                                continue;
-
-                            switch (Convert.ToInt16(queryObj["MediaType"]))
-                            {
-                                case 1:
-                                    type = "Unspecified";
-                                    break;
-
-                                case 3:
-                                    type = "HDD";
-                                    break;
-
-                                case 4:
-                                    type = "SSD";
-                                    break;
-
-                                case 5:
-                                    type = "SCM";
-                                    break;
-
-                                default:
-                                    type = "Unspecified";
-                                    break;
-                            }
-
-                            if (Convert.ToInt16(queryObj["BusType"]) == 17)
-                                isNVMe = true;
-
-                            return new Tuple<string, bool>(type, isNVMe);
-                        }
-                    }
-                }
-                catch (ManagementException ex) //Not much we can do in this case and it's not really important that we inform the user
-                {}
-            }
-            return new Tuple<string, bool>("Unspecified", false);
-        }
-
-        private void AddFastLoadMod(bool NVMe)
-        {
-            if (NVMe)
-                File.Copy(Constants.IntroGFX_MaxPath, Constants.IntroGFX_CustomPath, true);
-            else
-                File.Copy(Constants.IntroGFX_MidPath, Constants.IntroGFX_CustomPath, true);
-        }
-
-        private void BtnAddFastLoadMod_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
-            try
-            {
-                char driveLetter = Constants.RSFolder.ToUpper()[0];
-                var driveType = GetDriveType(driveLetter);
-
-                if (driveType.Item1 == "HDD")
-                {
-                    if (MessageBox.Show(@"It appears as though Rocksmith installed on a hard disk drive. HDDs are normally too slow to support fast load mod and will likely result in a crash. \n Do you wish to proceed?", "Drive too slow for fast load", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        return;
-
-                    AddFastLoadMod(false);
-                }
-                else if (driveType.Item1 == "SSD")
-                {
-                    if (driveType.Item2) // If is NVMe
-                    {
-                        if (MessageBox.Show("Can you confirm Rocksmith is installed on a NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on a NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                            AddFastLoadMod(true);
-                        else
-                            AddFastLoadMod(false);
-                    }
-                    else
-                        AddFastLoadMod(false);
-                }
-                else
-                {
-                    if (MessageBox.Show(@"We were unable to detect the drive type on which Rocksmith is installed. \n Is it on a NVMe drive? (if it's not, fastest loading option is likely to crash your game!)", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        AddFastLoadMod(true);
-                    else
-                        AddFastLoadMod(false);
-                }
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Unable to copy required files. Error: {ioex.Message.ToString()}");
-            }
-
-            ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-        }
-
-        private void LoadDefaultFiles()
-        {
-            if (!File.Exists(Path.Combine(Constants.TuningJSON_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
-
-            if (!File.Exists(Path.Combine(Constants.IntroGFX_MidPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_mid.gfx" });
-
-            if (!File.Exists(Path.Combine(Constants.IntroGFX_MaxPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_max.gfx" });
-
-            if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
-
-            if (!File.Exists(Path.Combine(Constants.ExtendedMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_mission.database.json" });
-
-            if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_main.database.json" });
-        }
+        private void BtnAddFastLoadMod_Click(object sender, EventArgs e) => SetAndForgetMods.AddFastLoadMod();
 
         private void LoadSetAndForgetMods()
         {
             Constants.RSFolder = GenUtil.GetRSDirectory(); //TODO: utilize stuff from GenUtil to make it even more fullproof
-            LoadDefaultFiles();
+            SetAndForgetMods.LoadDefaultFiles();
             FillUI();
         }
 
@@ -875,8 +579,8 @@ namespace RSMods
                 return;
             }
 
-            var selectedTuning = tuningsCollection[selectedItem];
-            var uiName = SplitTuningUIName(selectedTuning.UIName);
+            var selectedTuning = SetAndForgetMods.tuningsCollection[selectedItem];
+            var uiName = SetAndForgetMods.SplitTuningUIName(selectedTuning.UIName);
 
             textBox_InternalTuningName.Text = selectedItem;
             nUpDown_UIIndex.Value = Convert.ToInt32(uiName.Item1);
@@ -893,10 +597,10 @@ namespace RSMods
                 string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
                 if (selectedItem != "<New>")
-                    tuningsCollection[selectedItem] = GetCurrentTuningInfo();
+                    SetAndForgetMods.tuningsCollection[selectedItem] = GetCurrentTuningInfo();
             }
 
-            SaveTuningsJSON();
+            SetAndForgetMods.SaveTuningsJSON();
 
             MessageBox.Show("Saved current tuning, don't forget to press \"Add Custom Tunings\" button when you are done!", "Success");
         }
@@ -911,7 +615,7 @@ namespace RSMods
             if (selectedItem == "<New>")
                 return;
 
-            tuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
+            SetAndForgetMods.tuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
             listBox_Tunings.Items.Remove(selectedItem);
         }
 
@@ -923,29 +627,16 @@ namespace RSMods
             var currTuning = GetCurrentTuningInfo();
             string internalName = textBox_InternalTuningName.Text;
 
-            if (!tuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
+            if (!SetAndForgetMods.tuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
             {
-                tuningsCollection.Add(internalName, currTuning);
+                SetAndForgetMods.tuningsCollection.Add(internalName, currTuning);
                 listBox_Tunings.Items.Add(internalName);
             }
         }
 
-        private void BtnAddCustomMenu_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
+        private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomMenuAndDCMode();
 
-            ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-            ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-        }
-
-        private void BtnRemoveTempFolders_Click(object sender, EventArgs e)
-        {
-            ZipUtilities.DeleteDirectory(Constants.WorkFolder);
-            ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
-        }
+        private void BtnRemoveTempFolders_Click(object sender, EventArgs e) => SetAndForgetMods.RemoveTempFolders();
 
         private static Dictionary<string, Tone2014> TonesFromAllProfiles = new Dictionary<string, Tone2014>();
 
@@ -981,7 +672,7 @@ namespace RSMods
 
             ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
-            RepackCachePsarc();
+            SetAndForgetMods.RepackCachePsarc();
 
             MessageBox.Show("Successfully changed default tones!", "Success");
         }
@@ -1020,7 +711,7 @@ namespace RSMods
         private void BtnImportExistingSettings_Click(object sender, EventArgs e)
         {
             if (!File.Exists(Constants.Cache4_7zPath) || !File.Exists(Constants.Cache7_7zPath))
-                UnpackCachePsarc();
+                SetAndForgetMods.UnpackCachePsarc();
 
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.TuningsJSON_InternalPath);
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache4_7zPath, Constants.LocalizationCSV_InternalPath);
@@ -1387,9 +1078,9 @@ namespace RSMods
 
         private void HideToolTips(object sender, EventArgs e)
         {
-            if (MainForm.ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
+            if (ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
             {
-                ToolTip.Hide(MainForm.ActiveForm);
+                ToolTip.Hide(ActiveForm);
                 ToolTip.Active = false;
             };
         }
