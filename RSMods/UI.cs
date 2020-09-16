@@ -62,24 +62,12 @@ namespace RSMods
                 SaveChanges(ReadSettings.Songlist1Identifier, "Define Song List 1 Here");
 
             // Fill Songlist List
-            listBox_Songlist.Items.AddRange(new object[] {
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier), // Song List 1
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier), // Song List 2
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier), // Song List 3
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier), // Song List 4
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier), // Song List 5
-                    ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier)  // Song List 6 
-                });
+            foreach (string songlist in Dictionaries.songlists)
+                listBox_Songlist.Items.Add(songlist);
 
             // Fill Modlist List
-            listBox_Modlist.Items.AddRange(new object[] {
-                "Toggle Loft",
-                "Add Volume",
-                "Decrease Volume",
-                "Show Song Timer",
-                "Force ReEnumeration",
-                "Rainbow Strings",
-                "Remove Lyrics"});
+            foreach (string mod in Dictionaries.currentModKeypressList)
+                listBox_Modlist.Items.Add(mod);
 
             // Load Keybinding Values
             ShowCurrentKeybindingValues();
@@ -103,37 +91,7 @@ namespace RSMods
             LoadSetAndForgetMods();
         }
 
-        private void ModList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            switch (listBox_Modlist.SelectedIndex)
-            {
-                case 0:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
-                    break;
-                case 1:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
-                    break;
-                case 2:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
-                    break;
-                case 3:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
-                    break;
-                case 4:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
-                    break;
-                case 5:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
-                    break;
-                case 6:
-                    textBox_NewKeyAssignment.Text = KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
-                    break;
-
-                default:
-                    textBox_NewKeyAssignment.Text = String.Empty;
-                    break;
-            }
-        }
+        private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.savedKeysForModToggles[listBox_Modlist.SelectedIndex];
 
         private void LoadModSettings()
         {
@@ -375,31 +333,6 @@ namespace RSMods
             WriteSettings.WriteINI(WriteSettings.saveSettings);
         }
 
-        public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
-        {
-            { true, new Dictionary<string, string> { // Normal Colors
-            
-                {"E String", ReadSettings.String0Color_N_Identifier},
-                {"A String", ReadSettings.String1Color_N_Identifier},
-                {"D String", ReadSettings.String2Color_N_Identifier},
-                {"G String", ReadSettings.String3Color_N_Identifier},
-                {"B String", ReadSettings.String4Color_N_Identifier},
-                {"e String", ReadSettings.String5Color_N_Identifier}
-            }},
-
-            { false,  new Dictionary<string, string> { // Colorblind Colors
-            
-                {"E String", ReadSettings.String0Color_CB_Identifier},
-                {"A String", ReadSettings.String1Color_CB_Identifier},
-                {"D String", ReadSettings.String2Color_CB_Identifier},
-                {"G String", ReadSettings.String3Color_CB_Identifier},
-                {"B String", ReadSettings.String4Color_CB_Identifier},
-                {"e String", ReadSettings.String5Color_CB_Identifier}
-            }}
-        };
-
-        public static Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>() { }; // Can't put variables into it until after we create it.
-
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
@@ -410,7 +343,7 @@ namespace RSMods
             int stringNumber = 0;
             FillStringNumberToColorDictionary();
 
-            foreach (KeyValuePair<string, string> stringColorButton in stringColorButtonsToSettingIdentifiers[isNormalStrings])
+            foreach (KeyValuePair<string, string> stringColorButton in Dictionaries.stringColorButtonsToSettingIdentifiers[isNormalStrings])
             {
                 if (sender.ToString().Contains(stringColorButton.Key.ToString()))
                 {
@@ -426,20 +359,20 @@ namespace RSMods
             {
                 SaveChanges(ReadSettings.CustomStringColorNumberIndetifier, "2"); // Tell the game to use custom colors
                 SaveChanges(stringColorButtonIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                stringNumberToColorTextBox[stringNumber].BackColor = colorDialog.Color;
+                Dictionaries.stringNumberToColorTextBox[stringNumber].BackColor = colorDialog.Color;
             }
         }
 
         private void FillStringNumberToColorDictionary()
         {
-            stringNumberToColorTextBox.Clear();
+            Dictionaries.stringNumberToColorTextBox.Clear();
 
-            stringNumberToColorTextBox.Add(0, textBox_String0Color);
-            stringNumberToColorTextBox.Add(1, textBox_String1Color);
-            stringNumberToColorTextBox.Add(2, textBox_String2Color);
-            stringNumberToColorTextBox.Add(3, textBox_String3Color);
-            stringNumberToColorTextBox.Add(4, textBox_String4Color);
-            stringNumberToColorTextBox.Add(5, textBox_String5Color);
+            Dictionaries.stringNumberToColorTextBox.Add(0, textBox_String0Color);
+            Dictionaries.stringNumberToColorTextBox.Add(1, textBox_String1Color);
+            Dictionaries.stringNumberToColorTextBox.Add(2, textBox_String2Color);
+            Dictionaries.stringNumberToColorTextBox.Add(3, textBox_String3Color);
+            Dictionaries.stringNumberToColorTextBox.Add(4, textBox_String4Color);
+            Dictionaries.stringNumberToColorTextBox.Add(5, textBox_String5Color);
         }
 
         private void LoadDefaultStringColors(bool colorBlind = false)
@@ -644,34 +577,13 @@ namespace RSMods
                 FillUI();
         }
 
-        public static Dictionary<int, string> SongListIndexToINISetting = new Dictionary<int, string>()
-        {
-            {0, ReadSettings.Songlist1Identifier},
-            {1, ReadSettings.Songlist2Identifier},
-            {2, ReadSettings.Songlist3Identifier},
-            {3, ReadSettings.Songlist4Identifier},
-            {4, ReadSettings.Songlist5Identifier},
-            {5, ReadSettings.Songlist6Identifier}
-        };
-
-        public static Dictionary<int, string> KeybindingsIndexToINISetting = new Dictionary<int, string>()
-        {
-            {0, ReadSettings.ToggleLoftIdentifier},
-            {1, ReadSettings.AddVolumeIdentifier},
-            {2, ReadSettings.DecreaseVolumeIdentifier},
-            {3, ReadSettings.ShowSongTimerIdentifier},
-            {4, ReadSettings.ForceReEnumerationIdentifier},
-            {5, ReadSettings.RainbowStringsIdentifier},
-            {6, ReadSettings.RemoveLyricsKeyIdentifier}
-        };
-
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
             string currentTab = TabController.SelectedTab.Text.ToString();
 
             if (currentTab == "Song Lists")
             {
-                foreach (KeyValuePair<int, string> currentSongList in SongListIndexToINISetting)
+                foreach (KeyValuePair<int, string> currentSongList in Dictionaries.SongListIndexToINISetting)
                 {
                     if (textBox_NewSonglistName.Text.Trim() == "") // The game UI will break with a blank name.
                     {
@@ -690,7 +602,7 @@ namespace RSMods
 
             if (currentTab == "Keybindings")
             {
-                foreach (KeyValuePair<int, string> currentKeybinding in KeybindingsIndexToINISetting)
+                foreach (KeyValuePair<int, string> currentKeybinding in Dictionaries.KeybindingsIndexToINISetting)
                 {
                     if (textBox_NewKeyAssignment.Text == "")
                     {
@@ -885,7 +797,7 @@ namespace RSMods
         {
             textBox_NewKeyAssignment.Text = "";
 
-            foreach (KeyValuePair<int, string> currentMod in KeybindingsIndexToINISetting)
+            foreach (KeyValuePair<int, string> currentMod in Dictionaries.KeybindingsIndexToINISetting)
             {
                 if (currentMod.Key == listBox_Modlist.SelectedIndex)
                 {
@@ -1179,10 +1091,8 @@ namespace RSMods
         {
             listBox_GuitarSpeakPresets.Items.Clear();
 
-            //listBox_GuitarSpeakPresets.Items.AddRange(new object[]
-            //{
-                
-            //});
+            foreach (KeyValuePair<string, string> guitarSpeakKeypress in Dictionaries.GuitarSpeakPresetDictionary)
+                listBox_GuitarSpeakPresets.Items.Add(guitarSpeakKeypress.Key + guitarSpeakKeypress.Value);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
