@@ -72,23 +72,37 @@ float MixerVolume::SFXVolume() { // Returns SFX Volume
 	return *(float*)volumeAddr;
 }
 
-float MixerVolume::SelectVolume(int volumeNumberToSelect) { // Does whatever cycle it needs to, to find the volume it needs. Use this for external functions.... I know this is inefficient, but the other ways I tried didn't work.
-	if (volumeNumberToSelect == 0)
-		return SongVolume();
-	else if (volumeNumberToSelect == 1)
-		return PlayerOneGuitarVolume();
-	else if (volumeNumberToSelect == 2)
-		return PlayerOneBassVolume();
-	else if (volumeNumberToSelect == 3)
-		return PlayerTwoGuitarVolume();
-	else if (volumeNumberToSelect == 4)
-		return PlayerTwoBassVolume();
-	else if (volumeNumberToSelect == 5)
-		return MicrophoneVolume();
-	else if (volumeNumberToSelect == 6)
-		return VoiceOverVolume();
-	else if (volumeNumberToSelect == 7)
-		return SFXVolume();
-	
-	return 0.0f;
+float MixerVolume::SelectVolume(std::string volumeToSelect) { // Does whatever cycle it needs to, to find the volume it needs. Use this for external functions.... I know this is inefficient, but the other ways I tried didn't work.
+	switch (GetIndex(mixerInternalNames, volumeToSelect)) {
+		case 0:
+			return SongVolume();
+		case 1:
+			return PlayerOneGuitarVolume();
+		case 2:
+			return PlayerOneBassVolume();
+		case 3:
+			return PlayerTwoGuitarVolume();
+		case 4:
+			return PlayerTwoBassVolume();
+		case 5:
+			return MicrophoneVolume();
+		case 6:
+			return VoiceOverVolume();
+		case 7:
+			return SFXVolume();
+		default:
+			return 0.0f;
+	}
+}
+
+// Courtesy of https://www.geeksforgeeks.org/how-to-find-index-of-a-given-element-in-a-vector-in-cpp/
+int MixerVolume::GetIndex(std::vector<std::string> vector, std::string string)
+{
+	auto subString = std::find(vector.begin(),
+		vector.end(), string);
+
+	if (subString != vector.end())
+		return std::distance(vector.begin(), subString);
+	else
+		return -1; // If the element is not present in the vector
 }
