@@ -91,22 +91,22 @@ namespace RSMods
             // Load Keybinding Values
             ShowCurrentKeybindingValues();
 
-            // Guitar Speak Preset Values
+            // Load Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
 
             // Load Checkbox Values From RSMods.ini
             RefreshModsSelections();
 
-            // Initialize Default String Colors
+            // Load Default String Colors
             LoadDefaultStringColors();
 
             // Load Colors Saved as Theme Colors.
             LoadCustomThemeColors();
 
-            // Mod Settings
+            // Load Mod Settings
             LoadModSettings();
 
-            // Set And Forget Mods
+            // Load Set And Forget Mods
             LoadSetAndForgetMods();
 
             // Load Twitch Authorization Details
