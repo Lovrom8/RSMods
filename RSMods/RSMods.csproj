@@ -167,7 +167,6 @@
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\TuningDefinition.cs" />
     <Compile Include="GuitarSpeakFretboard.cs" />
-    <Compile Include="SetAndForgetMods.cs" />
     <Compile Include="Twitch\PubSub.cs" />
     <Compile Include="Twitch\ImplicitAuth.cs" />
     <Compile Include="Twitch\TwitchData.cs" />
