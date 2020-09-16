@@ -204,6 +204,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="Lib\ddc\ddc_default.cfg" />
     <None Include="Lib\ddc\ddc_keep_all_levels.cfg" />
     <None Include="Lib\ddc\ddc_merge_all_levels.cfg" />

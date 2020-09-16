@@ -1925,7 +1925,7 @@
             this.button_TwitchReAuthorize.TabIndex = 0;
             this.button_TwitchReAuthorize.Text = "(Re)authorize";
             this.button_TwitchReAuthorize.UseVisualStyleBackColor = true;
-            this.button_TwitchReAuthorize.Click += new System.EventHandler(this.button_TwitchReAuthorize_Click);
+            this.button_TwitchReAuthorize.Click += new System.EventHandler(this.Button_TwitchReAuthorize_Click);
             // 
             // tab_GUISettings
             // 
@@ -1963,7 +1963,7 @@
             this.button_SaveThemeColors.TabIndex = 4;
             this.button_SaveThemeColors.Text = "Save Theme Colors";
             this.button_SaveThemeColors.UseVisualStyleBackColor = true;
-            this.button_SaveThemeColors.Click += new System.EventHandler(this.button_SaveThemeColors_Click);
+            this.button_SaveThemeColors.Click += new System.EventHandler(this.Button_SaveThemeColors_Click);
             // 
             // textBox_ChangeTextColor
             // 
@@ -1991,7 +1991,7 @@
             this.button_ChangeTextColor.TabIndex = 1;
             this.button_ChangeTextColor.Text = "Change Text Color";
             this.button_ChangeTextColor.UseVisualStyleBackColor = true;
-            this.button_ChangeTextColor.Click += new System.EventHandler(this.button_ChangeTextColor_Click);
+            this.button_ChangeTextColor.Click += new System.EventHandler(this.Button_ChangeTextColor_Click);
             // 
             // button_ChangeBackgroundColor
             // 
@@ -2001,7 +2001,7 @@
             this.button_ChangeBackgroundColor.TabIndex = 0;
             this.button_ChangeBackgroundColor.Text = "Change Background Color";
             this.button_ChangeBackgroundColor.UseVisualStyleBackColor = true;
-            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.button_ChangeBackgroundColor_Click);
+            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.Button_ChangeBackgroundColor_Click);
             // 
             // checkBox_ChangeTheme
             // 

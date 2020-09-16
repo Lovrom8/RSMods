@@ -262,8 +262,8 @@ namespace RSMods
 
             string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
             var tonesJson = JObject.Parse(toneManagerFileContent);
-            var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
-            var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
+            //var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
+            //var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
 
             var selectedTone = tonesFromAllProfiles[selectedToneName];
 
@@ -392,8 +392,8 @@ namespace RSMods
                         }
                     }
                 }
-                catch (ManagementException ex) //Not much we can do in this case and it's not really important that we inform the user
-                { }
+                catch (ManagementException) //Not much we can do in this case and it's not really important that we inform the user
+                {}
             }
             return new Tuple<string, bool>("Unspecified", false);
         }
@@ -446,7 +446,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show($"Unable to copy required files. Error: {ioex.Message.ToString()}");
+                MessageBox.Show($"Unable to copy required files. Error: {ioex.Message}");
             }
 
             ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);

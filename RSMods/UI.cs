@@ -43,7 +43,7 @@ namespace RSMods
             TwitchSettings.Get.LoadSettings();
 
             InitializeComponent();
-            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
+            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}";
 
             label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
@@ -223,7 +223,7 @@ namespace RSMods
         }
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
-        List<Control> ControlList = new List<Control>();
+        private List<Control> ControlList = new List<Control>(); // Don't make this readonly
         private void GetAllControls(Control container)
         {
             foreach (Control c in container.Controls)
@@ -327,9 +327,11 @@ namespace RSMods
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false
+            };
             bool isNormalStrings = radio_DefaultStringColors.Checked; // True = Normal, False = Colorblind
             string stringColorButtonIdentifier = String.Empty;
             int stringNumber = 0;
@@ -931,8 +933,7 @@ namespace RSMods
             {
                 if (ControlHoveredOver == sender)
                 {
-                    string toolTipString; // Do not inline this as it will break the statement || Needs to be null as it will be written over
-                    Dictionaries.TooltipDictionary.TryGetValue(ControlHoveredOver, out toolTipString);
+                    Dictionaries.TooltipDictionary.TryGetValue(ControlHoveredOver, out string toolTipString);
                     currentTooltip.Show(toolTipString, ControlHoveredOver, 5000000); // Don't change the duration number, even if it's higher. It works as it is, and changing it to even Int32.MaxValue causes it to go back to the 5-second max.
                     CreatedToolTipYet = true;
                     break; // We found what we needed, now GTFO of here.
@@ -1017,11 +1018,10 @@ namespace RSMods
         {
             string nupName = ((NumericUpDown)sender).Name;
             int stringNumber = Int32.Parse(nupName[nupName.Length-1].ToString()); // Returns the current sender's name.
-            int offset = 0;
             switch (stringNumber)
             {
                 case 0:
-                    offset = 28; // Offset from (24 - 1) + 5
+                    int offset = 28; // Offset from (24 - 1) + 5
                     label_CustomTuningLowEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
                     break;
                 case 1:
@@ -1118,7 +1118,7 @@ namespace RSMods
             }
         }
 
-        private void button_TwitchReAuthorize_Click(object sender, EventArgs e)
+        private void Button_TwitchReAuthorize_Click(object sender, EventArgs e)
         {   
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
@@ -1128,12 +1128,14 @@ namespace RSMods
           // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
         }
 
-        private void button_ChangeBackgroundColor_Click(object sender, EventArgs e)
+        private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            colorDialog.Color = WriteSettings.defaultBackgroundColor;
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultBackgroundColor
+            };
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1142,12 +1144,14 @@ namespace RSMods
             }
         }
 
-        private void button_ChangeTextColor_Click(object sender, EventArgs e)
+        private void Button_ChangeTextColor_Click(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog();
-            colorDialog.AllowFullOpen = true;
-            colorDialog.ShowHelp = false;
-            colorDialog.Color = WriteSettings.defaultTextColor;
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultTextColor
+            };
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1156,6 +1160,6 @@ namespace RSMods
             }
         }
 
-        private void button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+        private void Button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
     }
 }
