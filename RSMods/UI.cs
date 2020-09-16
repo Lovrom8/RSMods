@@ -150,16 +150,16 @@ namespace RSMods
         private void LoadModSettings()
         {
             // Disable changes while we change them. This prevents us from saving a value we already know.
-            listBox_ExtendedRangeTunings.SelectedIndexChanged -= new System.EventHandler(this.ExtendedRangeTunings_SelectedIndexChanged);
-            nUpDown_ForceEnumerationXMS.ValueChanged -= new System.EventHandler(this.EnumerateEveryXMS_ValueChanged);
+            listBox_ExtendedRangeTunings.SelectedIndexChanged -= new System.EventHandler(ExtendedRangeTunings_SelectedIndexChanged);
+            nUpDown_ForceEnumerationXMS.ValueChanged -= new System.EventHandler(EnumerateEveryXMS_ValueChanged);
 
             // Now we can change things without saving.
             nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
             listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
 
             // Re-enable the saving of the values now that we've done our work.
-            listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(this.ExtendedRangeTunings_SelectedIndexChanged);
-            nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(this.EnumerateEveryXMS_ValueChanged);
+            listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(ExtendedRangeTunings_SelectedIndexChanged);
+            nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(EnumerateEveryXMS_ValueChanged);
         }
 
         private void RefreshModsSelections()
