@@ -824,6 +824,7 @@ void InitEngineFunctions() {
 	SetRTPCValue = (tSetRTPCValue)Offsets::func_SetRTPCValue;
 	GetRTPCValue = (tGetRTPCValue)Offsets::func_GetRTPCValue;
 	ClearBanks = (tClearBanks)Offsets::func_ClearBanks;
+	UnloadBank = (tUnloadBank)Offsets::func_UnloadBank;
 }
 
 void AutoEnterGame() {	//very big brain || "Fork in the toaster"

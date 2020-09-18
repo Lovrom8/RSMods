@@ -26,6 +26,7 @@ namespace Offsets {
 	uintptr_t func_SetRTPCValue = 0x1F58A91; // Set Volume
 	uintptr_t func_GetRTPCValue = 0x1F5634A; // Get Volume
 	uintptr_t func_ClearBanks   = 0x1F58ECC; // Close All Sound Objects & Stops Noteway
+	uintptr_t func_UnloadBank   = 0x1B57D6B; // Unload Bank
 
 	// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 
 	// If you don't need the old values, you can always just use SetRTPCValue them to whatever and they will stay in floats pointed to by these pointers 

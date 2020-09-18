@@ -25,6 +25,7 @@ namespace Offsets {
 	extern uintptr_t func_SetRTPCValue;
 	extern uintptr_t func_GetRTPCValue;
 	extern uintptr_t func_ClearBanks;
+	extern uintptr_t func_UnloadBank;
 
 	// Mixer Volumes
 	extern uintptr_t ptr_songVolume;

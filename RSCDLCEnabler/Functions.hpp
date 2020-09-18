@@ -28,6 +28,9 @@ tGetRTPCValue GetRTPCValue;
 typedef AKRESULT(__cdecl* tClearBanks)(void); // Turns off all sound in game, and causes noteway to stop
 tClearBanks ClearBanks;
 
+typedef AKRESULT(__cdecl* tUnloadBank)(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);
+tUnloadBank UnloadBank;
+
 
 /*--------------------------- D3D ---------------------------------*/
 
