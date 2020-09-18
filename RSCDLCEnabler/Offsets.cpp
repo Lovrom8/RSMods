@@ -26,17 +26,21 @@ namespace Offsets {
 	uintptr_t func_SetRTPCValue = 0x1F58A91;
 	uintptr_t func_GetRTPCValue = 0x1F5634A;
 
-	// Mixer Volumes
+	// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 
+	// If you don't need the old values, you can always just use SetRTPCValue them to whatever and they will stay in floats pointed to by these pointers 
 	uintptr_t ptr_songVolume = 0x00F4E91C;
 	std::vector<unsigned int> ptr_songVolumeOffsets{ 0x28, 0x7C0, 0x214, 0x7F4, 0xDC };
-	uintptr_t ptr_mixerVolumeBase = 0x00F5C5AC;
-	std::vector<unsigned int> ptr_playerOneGuitarOffsets = { 0x1C, 0x28, 0x3C, 0x0, 0x64, 0x28, 0x88 };
-	std::vector<unsigned int> ptr_playerOneBassOffsets = { 0x1C, 0x28, 0x3C, 0x0, 0x68, 0x28, 0x88 };
-	std::vector<unsigned int> ptr_playerTwoGuitarOffsets = { 0x1C, 0x28, 0x3C, 0x0, 0x28, 0x38, 0x88 };
-	std::vector<unsigned int> ptr_playerTwoBassOffsets = { 0x18, 0x18, 0x14, 0x68, 0xC, 0x28, 0x88 };
-	std::vector<unsigned int> ptr_micOffsets = { 0x18, 0x18, 0x14, 0x64, 0xC, 0x28, 0x88 };
-	std::vector<unsigned int> ptr_voOffsets = { 0x1C, 0x28, 0x3C, 0x0, 0x6C, 0x28, 0x88 };
-	std::vector<unsigned int> ptr_sfxOffsets = { 0x18, 0x18, 0x14, 0x6C, 0x4, 0x28, 0x88 };
+	uintptr_t ptr_mixerVolumeBase = 0x00F4E71C;
+	std::vector<unsigned int> ptr_voOffsets = { 0xF50, 0xB44, 0x75C, 0xA5C, 0x74 };
+	std::vector<unsigned int> ptr_sfxOffsets = { 0xE6C, 0x234, 0xEDC, 0x0, 0x0, 0x74 };
+
+	uintptr_t ptr_playerVolumeBase = 0x00F4E738;
+	std::vector<unsigned int> ptr_playerOneGuitarOffsets = { 0xA4, 0x30, 0x4, 0x4, 0x68, 0x54 }; // Not set to the correct value in mic mode!
+	std::vector<unsigned int> ptr_playerOneBassOffsets = { 0x1C, 0x28, 0x3C, 0x0, 0x68, 0x28, 0x88 }; // Not updated - not sure how these work since there's same object for Player1/Player2 guitar and bass - maybe it even uses the same variable when you are in bass mode 
+	std::vector<unsigned int> ptr_playerTwoGuitarOffsets = { 0xBC, 0xB4, 0x4, 0x4, 0xBC, 0x8 }; // Will only have the correct value if you are in MP mode, otherwise 
+	std::vector<unsigned int> ptr_playerTwoBassOffsets = { 0x18, 0x18, 0x14, 0x68, 0xC, 0x28, 0x88 }; // Not updated
+
+	std::vector<unsigned int> ptr_micOffsets = { 0x18, 0x18, 0x14, 0x64, 0xC, 0x28, 0x88 }; // Not updated - this one is an oddball 
 
 	// Force Enumeration
 	uintptr_t hookBackAddr_ForceEnumeration, hookBackAddr_Enumeration;

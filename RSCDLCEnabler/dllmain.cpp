@@ -124,6 +124,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (currentVolumeIndex > 7)
 					currentVolumeIndex = 0;
 			}
+			
+			char* object = "Mixer_Mic";
+			if (keyPressed == VK_F6) { // TODO: remove when done
+				volume += 10.0f;
+				SetRTPCValue(object, (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(object, (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+			}
+			else if (keyPressed == VK_F5){
+				volume -= 10.0f;
+				SetRTPCValue(object, (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				SetRTPCValue(object, (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+			}
 		}
 
 		if (debug) {

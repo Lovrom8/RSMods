@@ -80,5 +80,5 @@ bool GameClosing = false; // Inform the threads that their work is done just bef
 
 // Dev Functions
 bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
-
+float volume = 75.0f;
 /// End DLL Main Variables
