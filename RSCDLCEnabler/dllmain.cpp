@@ -452,7 +452,8 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 			RTPCValue_type type = RTPCValue_GameObject;
 			GetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
-			MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);		}
+			MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+		}
 
 		if (showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
 			std::string currentSongTimeString = MemHelpers::ShowSongTimer();
