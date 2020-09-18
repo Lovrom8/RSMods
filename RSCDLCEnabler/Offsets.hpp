@@ -24,6 +24,7 @@ namespace Offsets {
 	// Wwise Audio Volume
 	extern uintptr_t func_SetRTPCValue;
 	extern uintptr_t func_GetRTPCValue;
+	extern uintptr_t func_ClearBanks;
 
 	// Mixer Volumes
 	extern uintptr_t ptr_songVolume;

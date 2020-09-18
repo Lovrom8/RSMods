@@ -23,8 +23,9 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
 	// Wwise Audio Volume
-	uintptr_t func_SetRTPCValue = 0x1F58A91;
-	uintptr_t func_GetRTPCValue = 0x1F5634A;
+	uintptr_t func_SetRTPCValue = 0x1F58A91; // Set Volume
+	uintptr_t func_GetRTPCValue = 0x1F5634A; // Get Volume
+	uintptr_t func_ClearBanks   = 0x1F58ECC; // Close All Sound Objects & Stops Noteway
 
 	// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 
 	// If you don't need the old values, you can always just use SetRTPCValue them to whatever and they will stay in floats pointed to by these pointers 

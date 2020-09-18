@@ -83,7 +83,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				SetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 				SetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 
-				
+
 				//RTPCValue_type type;
 				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
 				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
@@ -115,12 +115,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				}
 			}*/
 
+
+			/* TODO: Reassign this to a key the user defines in the GUI / INI
 			else if (keyPressed == VK_F9) {
 				currentVolumeIndex++;
 
 				if (currentVolumeIndex > (mixerInternalNames.size() -1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
-			}
+			}*/
+
+			// else if (keyPressed == VK_F9)
+				// ClearBanks(); // Purposefully kills Wwise (has potential to fix tone bug)
+			
 		}
 
 		if (debug) {
@@ -817,6 +823,7 @@ void GUI() {
 void InitEngineFunctions() {
 	SetRTPCValue = (tSetRTPCValue)Offsets::func_SetRTPCValue;
 	GetRTPCValue = (tGetRTPCValue)Offsets::func_GetRTPCValue;
+	ClearBanks = (tClearBanks)Offsets::func_ClearBanks;
 }
 
 void AutoEnterGame() {	//very big brain || "Fork in the toaster"
