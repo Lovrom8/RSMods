@@ -85,21 +85,22 @@ float volume = 75.0f;
 int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
 
 inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
-		{"Mixer_Music"}, // SongVolume();
-		{"Mixer_Player1"}, // PlayerOneGuitarVolume()
-		{"Mixer_Player2"}, // PlayerTwoGuitarVolume();
-		{"Mixer_Mic"}, // MicrophoneVolume();
-		{"Mixer_VO"}, // VoiceOverVolume();
-		{"Mixer_SFX"} // SFXVolume();
-		// There is a mention of "Master_Volume". Maybe this can be changed to have Rocksmith fit into the same standard as all modern games (some people say RS is quieter than other games even at the same volume, assumed to be a console issue / reason).
+		{"Master_Volume"}, // Master Volume
+		{"Mixer_Music"}, // Song Volume
+		{"Mixer_Player1"}, // Player 1 Guitar & Bass (both are handled with this singular name)
+		{"Mixer_Player2"}, // Player 2 Guitar & Bass (both are handled with this singular name)
+		{"Mixer_Mic"}, // My Microphone Volume
+		{"Mixer_VO"}, // Rocksmith Dad Voice Over
+		{"Mixer_SFX"}, // Menu SFX Volume
 };
 
 inline std::vector<std::string> drawMixerTextName = {
+	{"Master Volume: "},
 	{"Song Volume: "},
 	{"Player 1 Volume: "},
 	{"Player 2 Volume: "},
 	{"Microphone Volume: "},
 	{"Voice-Over Volume: "},
-	{"SFX Volume: "}
+	{"SFX Volume: "},
 };
 /// End DLL Main Variables

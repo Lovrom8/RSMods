@@ -118,7 +118,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == VK_F9) {
 				currentVolumeIndex++;
 
-				if (currentVolumeIndex > 5) // There are only 5 values that we know we can edit.
+				if (currentVolumeIndex > (mixerInternalNames.size() -1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
 			}
 		}
