@@ -69,9 +69,6 @@
     <ClCompile Include="MemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\MixerVolume.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
@@ -132,9 +129,6 @@
       <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Mods\CustomSongTitles.hpp">
-      <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\MixerVolume.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9.h">

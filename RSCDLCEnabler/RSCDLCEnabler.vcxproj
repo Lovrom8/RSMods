@@ -34,7 +34,6 @@
     <ClCompile Include="Lib\ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="Lib\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp" />
-    <ClCompile Include="Mods\MixerVolume.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="MemHelpers.cpp" />
     <ClCompile Include="Scrapped.hpp" />
@@ -52,7 +51,7 @@
     <ClInclude Include="Lib\DirectX\d3dx9shape.h" />
     <ClInclude Include="Lib\DirectX\d3dx9tex.h" />
     <ClInclude Include="Lib\DirectX\d3dx9xof.h" />
-	<ClInclude Include="Lib\DirectX\d3d9types.h" />
+    <ClInclude Include="Lib\DirectX\d3d9types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D.hpp" />
@@ -69,7 +68,6 @@
     <ClInclude Include="Lib\ImGUI\imstb_truetype.h" />
     <ClInclude Include="Main.hpp" />
     <ClInclude Include="MemUtil.hpp" />
-    <ClInclude Include="Mods\MixerVolume.hpp" />
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="MemHelpers.hpp" />
     <ClInclude Include="Settings.hpp" />

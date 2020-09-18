@@ -25,7 +25,6 @@
 #include "Mods/CollectColors.hpp"
 #include "Mods/GuitarSkeletons.hpp"
 #include "Mods/GuitarSpeak.hpp"
-#include "Mods/MixerVolume.hpp"
 
 // ImGUI
 #include "Lib/ImGUI/imgui.h"
@@ -66,7 +65,7 @@ bool RemoveHeadstockInThisMenu = false; // If true, the headstock of the guitar 
 bool showSongTimerOnScreen = false; // If true, the current song timer will be shown in the top-right of the screen. This will only work when inside a song. (True - Show, False - Hide)
 bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
 inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
-int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
+
 
 // Menus
 std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
@@ -81,4 +80,26 @@ bool GameClosing = false; // Inform the threads that their work is done just bef
 // Dev Functions
 bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
 float volume = 75.0f;
+
+// Mixer Values
+int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
+
+inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
+		{"Mixer_Music"}, // SongVolume();
+		{"Mixer_Player1"}, // PlayerOneGuitarVolume()
+		{"Mixer_Player2"}, // PlayerTwoGuitarVolume();
+		{"Mixer_Mic"}, // MicrophoneVolume();
+		{"Mixer_VO"}, // VoiceOverVolume();
+		{"Mixer_SFX"} // SFXVolume();
+		// There is a mention of "Master_Volume". Maybe this can be changed to have Rocksmith fit into the same standard as all modern games (some people say RS is quieter than other games even at the same volume, assumed to be a console issue / reason).
+};
+
+inline std::vector<std::string> drawMixerTextName = {
+	{"Song Volume: "},
+	{"Player 1 Volume: "},
+	{"Player 2 Volume: "},
+	{"Microphone Volume: "},
+	{"Voice-Over Volume: "},
+	{"SFX Volume: "}
+};
 /// End DLL Main Variables
