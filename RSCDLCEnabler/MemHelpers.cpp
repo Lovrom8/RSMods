@@ -142,9 +142,26 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 	return false;
 }
 
-// textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF.
+// textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF (or 255 in hex).
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, int hookReset)
 {
+	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
+	if (WindowSizeX != (MemHelpers::GetWindowSize()[0] / 96) || WindowSizeY != (MemHelpers::GetWindowSize()[1] / 72 || CustomDX9Font == NULL)) {
+		WindowSizeX = (MemHelpers::GetWindowSize()[0] / 96);
+		WindowSizeY = (MemHelpers::GetWindowSize()[1] / 72);
+
+		CustomDX9Font = D3DXCreateFontA(pDevice, WindowSizeX, WindowSizeY, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &DX9FontEncapsulation); // Create a new font
+	}
+
+	// Create Area To Draw Text
+	RECT TextRectangle;
+	TextRectangle.left = topLeftX, TextRectangle.top = topLeftY, TextRectangle.right = bottomRightX, TextRectangle.bottom = bottomRightY;
+
+	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
+	HRESULT preloadFont = DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length());
+	int fontHeightD3D = DX9FontEncapsulation->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
+
+	// Do not move these above or the value will be null.
 	if (hookReset == 1) {
 		DX9FontEncapsulation->OnLostDevice();
 		return;
@@ -154,21 +171,9 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 		return;
 	}
 
-	RECT TextRectangle;
-
-	TextRectangle.left = topLeftX;
-	TextRectangle.top = topLeftY;
-	TextRectangle.right = bottomRightX;
-	TextRectangle.bottom = bottomRightY;
-
-	if (CustomDX9Font == NULL)
-		CustomDX9Font = D3DXCreateFontA(pDevice, (MemHelpers::GetWindowSize()[0] / 96), (MemHelpers::GetWindowSize()[1] / 72), FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &DX9FontEncapsulation);
-
-	HRESULT preloadFont = DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length()); // Supposed to reduce the performance hit (but it's D3D/DX9 but still good practice)
-	int fontHeightD3D = DX9FontEncapsulation->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
-
-	if (DX9FontEncapsulation) { // Let's clean up our junk, since font's don't do it automatically.
+	// Let's clean up our junk, since fonts don't do it automatically.
+	if (DX9FontEncapsulation) {
 		DX9FontEncapsulation->Release();
 		DX9FontEncapsulation = NULL;
-	}
+	}	
 }

@@ -449,7 +449,6 @@ HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* pDevice) {
 	int whiteText = 0xFFFFFFFF;
 
 	if (GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
-		int fontWidth = (MemHelpers::GetWindowSize()[0] / 96), fontHeight = (MemHelpers::GetWindowSize()[1] / 72); // Consistent Fonts: Width = (MemHelpers::GetWindowSize()[0] / 96), Height = (MemHelpers::GetWindowSize()[1] / 72)
 		
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, songModes)){ // If the user wants us to show the volume )
 			float volume = MixerVolume::SongVolume();
