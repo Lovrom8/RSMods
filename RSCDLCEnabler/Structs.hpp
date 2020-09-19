@@ -292,6 +292,87 @@ enum RTPCValue_type
 	RTPCValue_Unavailable   ///< The value is not available for the RTPC specified.
 };
 
+enum AkCallbackType
+{
+	AK_EndOfEvent = 0x0001,
+	AK_EndOfDynamicSequenceItem = 0x0002,
+	AK_Marker = 0x0004,
+	AK_Duration = 0x0008,
+
+	AK_SpeakerVolumeMatrix = 0x0010,
+
+	AK_Starvation = 0x0020,
+
+	AK_MusicPlaylistSelect = 0x0040,
+	AK_MusicPlayStarted = 0x0080,
+
+	AK_MusicSyncBeat = 0x0100,
+	AK_MusicSyncBar = 0x0200,
+	AK_MusicSyncEntry = 0x0400,
+	AK_MusicSyncExit = 0x0800,
+	AK_MusicSyncGrid = 0x1000,
+	AK_MusicSyncUserCue = 0x2000,
+	AK_MusicSyncPoint = 0x4000,
+	AK_MusicSyncAll = 0x7f00,
+
+	AK_MidiEvent = 0x10000,
+
+	AK_CallbackBits = 0xfffff,
+
+	// Not callback types, but need to be part of same bitfield for AK::SoundEngine::PostEvent().
+	AK_EnableGetSourcePlayPosition = 0x100000,
+	AK_EnableGetMusicPlayPosition = 0x200000,
+	AK_EnableGetSourceStreamBuffering = 0x400000
+};
+struct AkCallbackInfo
+{
+	void* pCookie;
+	AkGameObjectID  gameObjID;
+};
+
+enum DynamicSequenceType
+{
+	DynamicSequenceType_SampleAccurate,
+	DynamicSequenceType_NormalTransition
+};
+
+typedef void(*AkCallbackFunc)(AkCallbackType in_eType, AkCallbackInfo* in_pCallbackInfo);
+
+enum AkActionOnEventType
+{
+	AkActionOnEventType_Stop = 0,
+	AkActionOnEventType_Pause = 1,
+	AkActionOnEventType_Resume = 2,
+	AkActionOnEventType_Break = 3,
+	AkActionOnEventType_ReleaseEnvelope = 4
+};
+
+struct AkCommSettings
+	{
+	AkCommSettings()
+		{
+			szAppNetworkName[0] = 0;
+		}
+	AkUInt32    uPoolSize;
+		struct Ports
+		{
+			Ports()
+				: uDiscoveryBroadcast(24024)
+				, uCommand(0)
+				, uNotification(0)
+			{
+			}
+			AkUInt16 uDiscoveryBroadcast;
+			AkUInt16 uCommand;
+			AkUInt16 uNotification;
+		};
+		Ports ports;
+		bool bInitSystemLib;
+		char szAppNetworkName[64];
+	};
+
+
+typedef void(*AkBankCallbackFunc)(AkUInt32 in_bankID, const void* in_pInMemoryBankPtr, AKRESULT in_eLoadResult, AkMemPoolId in_memPoolId, void* in_pCookie);
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo
