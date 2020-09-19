@@ -373,6 +373,80 @@ struct AkCommSettings
 
 
 typedef void(*AkBankCallbackFunc)(AkUInt32 in_bankID, const void* in_pInMemoryBankPtr, AKRESULT in_eLoadResult, AkMemPoolId in_memPoolId, void* in_pCookie);
+typedef wchar_t AkOSChar;
+
+struct AkExternalSourceInfo
+{
+	AkUInt32 iExternalSrcCookie;
+	AkCodecID idCodec;
+	AkOSChar* szFile;
+	void* pInMemory;
+	AkUInt32 uiMemorySize;
+	AkFileID idFile;
+
+		AkExternalSourceInfo()
+		: iExternalSrcCookie(0)
+		, idCodec(0)
+		, szFile(0)
+		, pInMemory(0)
+		, uiMemorySize(0)
+		, idFile(0) {}
+
+		AkExternalSourceInfo(
+			void* in_pInMemory,
+			AkUInt32 in_uiMemorySize,
+			AkUInt32 in_iExternalSrcCookie,
+			AkCodecID in_idCodec
+			)
+		: iExternalSrcCookie(in_iExternalSrcCookie)
+		, idCodec(in_idCodec)
+		, szFile(0)
+		, pInMemory(in_pInMemory)
+		, uiMemorySize(in_uiMemorySize)
+		, idFile(0) {}
+
+		AkExternalSourceInfo(
+			AkOSChar* in_pszFileName,
+			AkUInt32 in_iExternalSrcCookie,
+			AkCodecID in_idCodec
+			)
+		: iExternalSrcCookie(in_iExternalSrcCookie)
+		, idCodec(in_idCodec)
+		, szFile(in_pszFileName)
+		, pInMemory(0)
+		, uiMemorySize(0)
+		, idFile(0) {}
+
+		AkExternalSourceInfo(
+			AkFileID in_idFile,
+			AkUInt32 in_iExternalSrcCookie,
+			AkCodecID in_idCodec
+			)
+		: iExternalSrcCookie(in_iExternalSrcCookie)
+		, idCodec(in_idCodec)
+		, szFile(0)
+		, pInMemory(0)
+		, uiMemorySize(0)
+		, idFile(in_idFile) {}
+};
+
+enum PreparationType
+{
+	Preparation_Load,
+	Preparation_Unload
+};
+
+enum AkBankContent
+{
+	AkBankContent_StructureOnly,
+	AkBankContent_All
+};
+
+enum AkGroupType // should stay set as Switch = 0 and State = 1
+{
+	AkGroupType_Switch = 0,
+	AkGroupType_State = 1
+};
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo
