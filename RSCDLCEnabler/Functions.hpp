@@ -24,6 +24,9 @@ void __fastcall tForceEnumeration(byte* rs_dlc_service_flags) {
 // IAKStreamMgr
 // Only has a single pointer, and is protected https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=class_a_k_1_1_i_ak_stream_mgr_a85c6043c1a45f13b7df2f05729248b1f.html
 // End IAKStreamMgr
+typedef bool(__cdecl* IsRestoreSinkRequested)(void);
+typedef bool(__cdecl* IsUsingDummySink)(void);
+
 // MemoryMgr
 typedef AKRESULT(__cdecl* tMemory_CheckPoolId)(AkMemPoolId in_poolId);
 typedef AKRESULT(__cdecl* tMemory_CreatePool)(void* in_pMemAddress, AkUInt32 in_uMemSize, AkUInt32 in_uBlockSize, AkUInt32 in_eAttributes, AkUInt32 in_uBlockAlign);
@@ -186,6 +189,7 @@ typedef AKRESULT(__cdecl* tUnregisterGlobalCallback)(AkGlobalCallbackFunc in_pCa
 // StreamMgr
 // This Section has way too many dependancies for us to really use it.
 // End StreamMgr
+
 // TODO: Double Check All Functions Have The Same Parameters As With Ghidra
 // TODO: Add Functions that had no definition in the Wwise Documentation (may be custom funcs or stuff removed between WWise 2013 <-> Wwise 2015).
 
