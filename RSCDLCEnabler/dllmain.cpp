@@ -821,7 +821,7 @@ void GUI() {
 }
 
 void InitEngineFunctions() {
-	SetRTPCValue = (tSetRTPCValue)Offsets::func_SetRTPCValue;
+	SetRTPCValue = (tSetRTPCValue_Char)Offsets::func_SetRTPCValue;
 	GetRTPCValue = (tQuery_GetRTPCValue_Char)Offsets::func_GetRTPCValue;
 	ClearBanks = (tClearBanks)Offsets::func_ClearBanks;
 	UnloadBank = (tUnloadBank)Offsets::func_UnloadBank;

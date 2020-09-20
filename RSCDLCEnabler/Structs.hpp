@@ -373,6 +373,7 @@ struct AkCommSettings
 
 
 typedef void(*AkBankCallbackFunc)(AkUInt32 in_bankID, const void* in_pInMemoryBankPtr, AKRESULT in_eLoadResult, AkMemPoolId in_memPoolId, void* in_pCookie);
+
 typedef wchar_t AkOSChar;
 
 struct AkExternalSourceInfo
@@ -517,6 +518,133 @@ struct AkObjectInfo
 	AkUniqueID  objID;
 	AkUniqueID  parentID;
 	AkInt32     iDepth;
+};
+class IAkSoftwareCodec;
+
+typedef IAkSoftwareCodec* (AkCreateFileSourceCallback)(void* in_pCtx);
+typedef IAkSoftwareCodec* (AkCreateBankSourceCallback)(void* in_pCtx);
+typedef void(AkGlobalCallbackFunc)(bool in_bLastCall);
+
+enum AkPluginType
+{
+	AkPluginTypeNone = 0,
+	AkPluginTypeCodec = 1,
+	AkPluginTypeSource = 2,
+	AkPluginTypeEffect = 3,
+	AkPluginTypeMotionDevice = 4,
+	AkPluginTypeMotionSource = 5,
+	AkPluginTypeMixer = 6,
+	AkPluginTypeSink = 7,
+	AkPluginTypeMask = 0xf
+};
+
+struct AkPluginInfo
+{
+	AkPluginType eType;
+	bool bIsInPlace;
+	bool bIsAsynchronous;
+};
+
+class IAkPluginMemAlloc
+{
+protected:
+	virtual ~IAkPluginMemAlloc() {}
+
+public:
+		virtual void* Malloc(
+			size_t in_uSize
+		) = 0;
+
+		virtual void Free(
+			void* in_pMemAddress
+		) = 0;
+};
+
+class IAkPlugin
+{
+protected:
+	virtual ~IAkPlugin() {}
+
+public:
+	virtual AKRESULT Term(
+		IAkPluginMemAlloc* in_pAllocator
+	) = 0;
+
+		virtual AKRESULT Reset() = 0;
+
+		virtual AKRESULT GetPluginInfo(
+			AkPluginInfo & out_rPluginInfo
+		) = 0;
+
+		virtual bool SupportMediaRelocation() const {
+			return false;
+		}
+			
+
+		virtual AKRESULT RelocateMedia(
+			AkUInt8* /*in_pNewMedia*/,
+			AkUInt8* /*in_pOldMedia*/
+		)
+		{
+			return AK_NotImplemented;
+		}
+		
+};
+
+class IAkRTPCSubscriber
+{
+protected:
+	virtual ~IAkRTPCSubscriber() {}
+
+public:
+	virtual AKRESULT SetParam(
+		AkPluginParamID in_paramID,
+		const void* in_pParam,
+		AkUInt32        in_uParamSize
+	) = 0;
+};
+
+class IAkPluginParam : public IAkRTPCSubscriber
+{
+protected:
+	virtual ~IAkPluginParam() {}
+
+public:
+	virtual IAkPluginParam * Clone(
+		IAkPluginMemAlloc * in_pAllocator
+		) = 0;
+
+		virtual AKRESULT Init(
+			IAkPluginMemAlloc * in_pAllocator,
+			const void* in_pParamsBlock,
+			AkUInt32            in_uBlockSize
+		) = 0;
+
+		virtual AKRESULT Term(
+			IAkPluginMemAlloc * in_pAllocator
+		) = 0;
+
+		virtual AKRESULT SetParamsBlock(
+			const void* in_pParamsBlock,
+			AkUInt32 in_uBlockSize
+		) = 0;
+
+		virtual AKRESULT SetParam(
+			AkPluginParamID in_paramID,
+			const void* in_pValue,
+			AkUInt32 in_uParamSize
+		) = 0;
+		static const AkPluginParamID ALL_PLUGIN_DATA_ID = 0x7FFF;
+};
+
+typedef IAkPlugin* (AkCreatePluginCallback)(IAkPluginMemAlloc* in_pAllocator);
+typedef IAkPluginParam* (AkCreateParamCallback)(IAkPluginMemAlloc* in_pAllocator);
+
+enum MultiPositionType
+{
+	MultiPositionType_SingleSource,
+	MultiPositionType_MultiSources,
+	MultiPositionType_MultiDirections
 };
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
