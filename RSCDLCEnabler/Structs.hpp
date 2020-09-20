@@ -447,6 +447,77 @@ enum AkGroupType // should stay set as Switch = 0 and State = 1
 	AkGroupType_Switch = 0,
 	AkGroupType_State = 1
 };
+
+typedef AkUInt32 AkAuxBusID;
+
+struct AkAuxSendValue
+{
+	AkAuxBusID auxBusID;
+	AkReal32 fControlValue;
+};
+
+struct AkVector
+{
+	AkReal32 X;
+	AkReal32 Y;
+	AkReal32 Z;
+};
+
+struct AkListenerPosition
+{
+	AkVector OrientationFront;
+	AkVector OrientationTop;
+	AkVector Position;
+};
+
+struct AkSoundPosition
+{
+	AkVector        Position;
+	AkVector        Orientation;
+};
+
+enum AkPannerType
+{
+	Ak2D = 0,
+	Ak3D = 1
+};
+
+enum AkPositionSourceType
+{
+	AkUserDef = 0,
+	AkGameDef = 1
+};
+
+struct AkPositioningInfo
+{
+	AkReal32            fCenterPct;
+	AkPannerType        pannerType;
+	AkPositionSourceType posSourceType;
+	bool                bUpdateEachFrame;
+	bool                bUseSpatialization;
+	bool                bUseAttenuation;
+
+	bool                bUseConeAttenuation;
+	AkReal32            fInnerAngle;
+	AkReal32            fOuterAngle;
+	AkReal32            fConeMaxAttenuation;
+	AkLPFType           LPFCone;
+	AkLPFType           HPFCone;
+
+	AkReal32            fMaxDistance;
+	AkReal32            fVolDryAtMaxDist;
+	AkReal32            fVolAuxGameDefAtMaxDist;
+	AkReal32            fVolAuxUserDefAtMaxDist;
+	AkLPFType           LPFValueAtMaxDist;
+	AkLPFType           HPFValueAtMaxDist;
+};
+
+struct AkObjectInfo
+{
+	AkUniqueID  objID;
+	AkUniqueID  parentID;
+	AkInt32     iDepth;
+};
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo
