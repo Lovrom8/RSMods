@@ -28,6 +28,9 @@
     <Filter Include="Header Files\Ini">
       <UniqueIdentifier>{c07d28f0-a6a8-4144-866a-ceb7d2402a0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="D3D">
+      <UniqueIdentifier>{210476c1-0572-493c-a9ca-1205a492f02b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -87,6 +90,12 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="D3D/D3DHooks.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D/D3D.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -94,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="Mods\GuitarSpeak.hpp">
       <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Functions.hpp">
       <Filter>Header Files</Filter>
@@ -199,6 +205,15 @@
     </ClInclude>
     <ClInclude Include="Lib\Detours\detours.h">
       <Filter>Header Files\Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHelper.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHooks.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3D.hpp">
+      <Filter>D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="D3D/D3D.cpp" />
+    <ClCompile Include="D3D/D3DHooks.cpp" />
+	<ClInclude Include="D3D/D3DHelper.hpp" />
+    <ClInclude Include="D3D/D3DHooks.hpp" />
+	<ClInclude Include="D3D/D3D.hpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp" />
     <ClCompile Include="Mods\CollectColors.cpp" />
@@ -54,7 +61,6 @@
     <ClInclude Include="Lib\DirectX\d3d9types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3D.hpp" />
     <ClInclude Include="Lib\Detours\detours.h" />
     <ClInclude Include="D3DX9_42.hpp" />
     <ClInclude Include="Functions.hpp" />
