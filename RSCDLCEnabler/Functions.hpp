@@ -209,7 +209,7 @@ typedef AKRESULT(__cdecl* tResetRTPCValue_Char)(const char* in_pszRtpcName, UINT
 typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Int32)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
 typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Float)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
 typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Int32)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
-typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Flaot)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Float)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
 typedef AKRESULT(__cdecl* tSetEffectParam)(AkUInt32 param_1, short param_2, void* in_pCookie);
 typedef AKRESULT(__cdecl* tSetPositionInternal)(AkGameObjectID in_GameObjectID, AkSoundPosition* in_soundPosition);
 typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
@@ -226,6 +226,68 @@ tSetRTPCValue_Char SetRTPCValue;
 tQuery_GetRTPCValue_Char GetRTPCValue;
 tClearBanks ClearBanks;
 tUnloadBank_BankID_MemPoolID UnloadBank;
+
+
+// Root Functions
+tIsRestoreSinkRequested IsRestoreSinkRequested;
+tIsUsingDummySink IsUsingDummySink;
+
+// MemoryMgr
+tMemory_CheckPoolId Memory_CheckPoolId;
+tMemory_CreatePool Memory_CreatePool;
+tMemory_DestroyPool Memory_DestroyPool;
+tMemory_Falign Memory_Falign;
+tMemory_GetBlock Memory_GetBlock;
+tMemory_GetBlockSize Memory_GetBlockSize;
+tMemory_GetMaxPools Memory_GetMaxPools;
+tMemory_GetNumPools Memory_GetNumPools;
+tMemory_GetPoolAttributes Memory_GetPoolAttributes;
+tMemory_GetPoolMemoryUsed Memory_GetPoolMemoryUsed;
+tMemory_GetPoolName Memory_GetPoolName;
+tMemory_GetPoolStats Memory_GetPoolStats;
+tMemory_IsInitialized Memory_IsInitialized;
+tMemory_Malign Memory_Malign;
+tMemory_Malloc Memory_Malloc;
+tMemory_ReleaseBlock Memory_ReleaseBlock;
+tMemory_SetMonitoring Memory_SetMonitoring;
+tMemory_SetPoolName Memory_SetPoolName;
+tMemory_Term Memory_Term;
+
+// Monitor
+tMonitor_PostCode Monitor_PostCode;
+
+// Motion Engine
+tMotion_AddPlayerMotionDevice Motion_AddPlayerMotionDevice;
+tMotion_RegisterMotionDevice Motion_RegisterMotionDevice;
+tMotion_RemovePlayerMotionDevice Motion_RemovePlayerMotionDevice;
+tMotion_SetPlayerListener Motion_SetPlayerListener;
+tMotion_SetPlayerVolume Motion_SetPlayerVolume;
+
+// Music Engine
+tMusic_GetDefaultInitSettings Music_GetDefaultInitSettings;
+tMusic_GetPlayingSegmentInfo Music_GetPlayingSegmentInfo;
+tMusic_Init Music_Init;
+tMusic_Term Music_Term;
+
+// Sound Engine
+
+
+// Rocksmith Custom Wwise Functions
+tCloneActorMixerEffect CloneActorMixerEffect;
+tCloneBusEffect CloneBusEffect;
+tLoadBankUnique LoadBankUnique;
+tPlaySourcePlugin PlaySourcePlugin;
+tRegisterGameObj RegisterGameObj;
+tResetRTPCValue_RTPCID ResetRTPCValue_RTPCID;
+tResetRTPCValue_Char ResetRTPCValue_Char;
+tSeekOnEvent_UniqueID_Int32 SeekOnEvent_UniqueID_Int32;
+tSeekOnEvent_UniqueID_Float SeekOnEvent_UniqueID_Float;
+tSeekOnEvent_Char_Int32 SeekOnEvent_Char_Int32;
+tSeekOnEvent_Char_Float SeekOnEvent_Char_Float;
+tSetEffectParam SetEffectParam;
+tSetPositionInternal SetPositionInternal;
+tStopSourcePlugin StopSourcePlugin;
+tUnloadBankUnique UnloadBankUnique;
 /*--------------------------- D3D ---------------------------------*/
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
