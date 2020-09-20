@@ -208,7 +208,6 @@ typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2,
 typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 // End Rocksmith Custom Wwise Functions
 
-// TODO: Fill Types to Variables List
 // TODO: Add Mem Addresses to Offsets
 // TODO: Merge Function with Type-Variable in DLLMain::InitEngineFunctions()
 
