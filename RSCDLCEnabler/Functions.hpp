@@ -198,23 +198,24 @@ typedef AKRESULT(__cdecl* tUnregisterGlobalCallback)(AkGlobalCallbackFunc in_pCa
 
 // Rocksmith Custom Wwise Functions | These will use vague types since that's all I can get out of Ghidra
 // AddBehavioralExtension (Custom | Can't be added because a param requires a function)
-// CloneActorMixerEffect (Custom)
-// CloneBusEffect (Custom)
-// LoadBankUnique (Custom)
-// PlaySourcePlugin (Custom)
-// RegisterBusVolumeCallback (Custom)
-// RegisterGameObj (Custom)
-// RemoveBehavioralExtension (Custom)
-// ResetRTPCValue (Custom) (x2)
-// SeekOnEvent (Custom) (x4)
-// SetEffectParam (Custom)
-// SetPositionInternal (Custom)
-// StopSourcePlugin (Custom)
-// UnloadBankUnique (Custom)
-
+typedef AkUInt32(__cdecl* tCloneActorMixerEffect)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
+typedef AkUInt32(__cdecl* tCloneBusEffect)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
+typedef AKRESULT(__cdecl* tLoadBankUnique)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkMemPoolId in_memPoolId, AkBankID* out_bankId);
+typedef AkUInt32(__cdecl* tPlaySourcePlugin)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
+// RegisterBusVolumeCallback (Custom | Can't be added because a param requires a function)
+typedef AKRESULT(__cdecl* tRegisterGameObj)(UINT in_gameObjectID);
+typedef AKRESULT(__cdecl* tResetRTPCValue_RTPCID)(AkRtpcID in_rtpcID, UINT param_2, long param_3, AkCurveInterpolation in_curveInterpolation);
+typedef AKRESULT(__cdecl* tResetRTPCValue_Char)(const char* in_pszRtpcName, UINT param_2, long param_3, AkCurveInterpolation in_curveInterpolation);
+typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Int32)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Float)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Int32)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Flaot)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSetEffectParam)(AkUInt32 param_1, short param_2, void* in_pCookie);
+typedef AKRESULT(__cdecl* tSetPositionInternal)(AkGameObjectID in_GameObjectID, AkSoundPosition* in_soundPosition);
+typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
+typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 // End Rocksmith Custom Wwise Functions
 
-// TODO: Add Functions that had no definition in the Wwise Documentation (may be custom funcs or stuff removed between WWise 2013 <-> Wwise 2015).
 // TODO: Fill Types to Variables List
 // TODO: Add Mem Addresses to Offsets
 // TODO: Merge Function with Type-Variable in DLLMain::InitEngineFunctions()
