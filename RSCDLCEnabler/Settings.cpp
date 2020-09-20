@@ -1,4 +1,5 @@
 #include "Settings.hpp"
+#include <regex>
 #pragma warning(disable: 4996 6031) // SScanF may be unsafe. | Return value ignored 'SScanF'
 
 void Settings::Initialize()
@@ -197,8 +198,40 @@ std::string Settings::ReturnSettingValue(std::string name) {
 }
 
 
+// Misc Functions
 
-// Functions
+std::vector<std::string> SplitByWhitespace(const std::string& input) {
+	std::regex re("\\s+");
+	std::sregex_token_iterator first{ input.begin(), input.end(), re, -1 }, last;
+	return { first, last };
+}
+
+void Settings::UpdateModSetting(std::string name, std::string newValue) {
+	modSettings[name] = newValue;
+}
+
+void Settings::UpdateCustomSetting(std::string name, int newValue) {
+	customSettings[name] = newValue;
+}
+
+void Settings::ParseSettingUpdate(std::string updateMessage) {
+	auto msgParts = SplitByWhitespace(updateMessage); // Format: update (custom|mod) <entryName> <value>
+	
+	if (msgParts.size() < 4)
+		return;
+
+	std::string type = msgParts[1];
+	std::string entry = msgParts[2];
+	std::string value = msgParts[3];
+
+	if (type == "custom") {
+		int val = stoi(value);
+
+		UpdateCustomSetting(entry, val);
+	}
+	else 
+		UpdateModSetting(entry, value);
+}
 
 int Settings::GetVKCodeForString(std::string vkString) {
 	return keyMap[vkString];

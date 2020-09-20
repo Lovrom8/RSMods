@@ -26,6 +26,9 @@ namespace Settings {
 	std::vector<Color> GetCustomColors(bool CB);
 	void SetStringColors(int strIndex, Color c, bool CB);
 	void UpdateSettings();
+	void UpdateModSetting(std::string name, std::string newValue);
+	void UpdateCustomSetting(std::string name, int newValue);
+	void ParseSettingUpdate(std::string updateMessage);
 
 	// INI Setting Maps
 	inline std::map<std::string, std::string> keyBinds;
