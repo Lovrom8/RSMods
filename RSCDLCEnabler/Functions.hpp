@@ -24,12 +24,15 @@ typedef AKRESULT(__cdecl* tSetRTPCValue) (const char* in_pszRtpcName, AkRtpcValu
 
 typedef AKRESULT(__cdecl* tUnloadBank)(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);
 
-
 typedef void(__cdecl* tCancelBankCallbackCookie)(void* in_pCookie);
 typedef void(__cdecl* tCancelEventCallback)(AkPlayingID in_playingID);
 typedef void(__cdecl* tCancelEventCallbackCookie)(void* in_pCookie);
 typedef AKRESULT(__cdecl* tClearBanks)(void);
 typedef AKRESULT(__cdecl* tClearPreparedEvents)(void);
+// Dynamic Dialogue
+typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_UniqueID)(AkUniqueID in_eventID, AkArgumentValueID* in_aArgumentValues, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);
+typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_Char)(const char* in_pszEventName, const char** in_aArgumentValueNames, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);
+//End Dynamic Dialogue
 // Dynamic Sequence
 typedef AKRESULT(__cdecl* tDynamicSequence_Break)(AkPlayingID in_playingID);
 typedef AKRESULT(__cdecl* tDynamicSequence_Close)(AkPlayingID in_playingID);
