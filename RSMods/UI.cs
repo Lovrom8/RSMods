@@ -463,7 +463,7 @@ namespace RSMods
 
         private void ListTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBox_Tunings.SelectedItem == null)
+            if (sender == null || listBox_Tunings.SelectedItem == null)
                 return;
 
             string selectedItem = listBox_Tunings.SelectedItem.ToString();
