@@ -646,6 +646,162 @@ enum MultiPositionType
 	MultiPositionType_MultiSources,
 	MultiPositionType_MultiDirections
 };
+
+struct PoolMemInfo
+{
+	// Current state
+	AkUInt32 uReserved;
+	AkUInt32 uUsed;
+};
+
+struct PoolStats
+{
+	// Current state
+	AkUInt32 uReserved;
+	AkUInt32 uUsed;
+	AkUInt32 uMaxFreeBlock;
+
+	// Statistics
+	AkUInt32 uAllocs;
+	AkUInt32 uFrees;
+	AkUInt32 uPeakUsed;
+};
+
+enum ErrorLevel
+{
+	ErrorLevel_Message = (1 << 0), // used as bitfield
+	ErrorLevel_Error = (1 << 1),
+
+	ErrorLevel_All = ErrorLevel_Message | ErrorLevel_Error
+};
+
+enum ErrorCode
+{
+	ErrorCode_NoError = 0, // 0-based index into AK::Monitor::s_aszErrorCodes table 
+	ErrorCode_FileNotFound,
+	ErrorCode_CannotOpenFile,
+	ErrorCode_CannotStartStreamNoMemory,
+	ErrorCode_IODevice,
+	ErrorCode_IncompatibleIOSettings,
+
+	ErrorCode_PluginUnsupportedChannelConfiguration,
+	ErrorCode_PluginMediaUnavailable,
+	ErrorCode_PluginInitialisationFailed,
+	ErrorCode_PluginProcessingFailed,
+	ErrorCode_PluginExecutionInvalid,
+	ErrorCode_PluginAllocationFailed,
+
+	ErrorCode_VorbisRequireSeekTable,
+	ErrorCode_VorbisRequireSeekTableVirtual,
+
+	ErrorCode_VorbisDecodeError,
+	ErrorCode_AACDecodeError,
+
+	ErrorCode_xWMACreateDecoderFailed,
+
+	ErrorCode_ATRAC9CreateDecoderFailed,
+	ErrorCode_ATRAC9CreateDecoderFailedChShortage,
+	ErrorCode_ATRAC9DecodeFailed,
+	ErrorCode_ATRAC9ClearContextFailed,
+	ErrorCode_ATRAC9LoopSectionTooSmall,
+
+	ErrorCode_InvalidAudioFileHeader,
+	ErrorCode_AudioFileHeaderTooLarge,
+	ErrorCode_FileTooSmall,
+
+	ErrorCode_TransitionNotAccurateChannel,
+	ErrorCode_TransitionNotAccurateStarvation,
+	ErrorCode_NothingToPlay,
+	ErrorCode_PlayFailed,
+
+	ErrorCode_StingerCouldNotBeScheduled,
+	ErrorCode_TooLongSegmentLookAhead,
+	ErrorCode_CannotScheduleMusicSwitch,
+	ErrorCode_TooManySimultaneousMusicSegments,
+	ErrorCode_PlaylistStoppedForEditing,
+	ErrorCode_MusicClipsRescheduledAfterTrackEdit,
+
+	ErrorCode_CannotPlaySource_Create,
+	ErrorCode_CannotPlaySource_VirtualOff,
+	ErrorCode_CannotPlaySource_TimeSkip,
+	ErrorCode_CannotPlaySource_InconsistentState,
+	ErrorCode_MediaNotLoaded,
+	ErrorCode_VoiceStarving,
+	ErrorCode_StreamingSourceStarving,
+	ErrorCode_XMADecoderSourceStarving,
+	ErrorCode_XMADecodingError,
+	ErrorCode_InvalidXMAData,
+
+	ErrorCode_PluginNotRegistered,
+	ErrorCode_CodecNotRegistered,
+
+	ErrorCode_EventIDNotFound,
+
+	ErrorCode_InvalidGroupID,
+	ErrorCode_SelectedChildNotAvailable,
+	ErrorCode_SelectedNodeNotAvailable,
+	ErrorCode_SelectedMediaNotAvailable,
+	ErrorCode_NoValidSwitch,
+
+	ErrorCode_SelectedNodeNotAvailablePlay,
+
+	ErrorCode_FeedbackVoiceStarving,
+
+	ErrorCode_BankLoadFailed,
+	ErrorCode_BankUnloadFailed,
+	ErrorCode_ErrorWhileLoadingBank,
+	ErrorCode_InsufficientSpaceToLoadBank,
+
+	ErrorCode_LowerEngineCommandListFull,
+
+	ErrorCode_SeekNoMarker,
+	ErrorCode_CannotSeekContinuous,
+	ErrorCode_SeekAfterEof,
+
+	ErrorCode_UnknownGameObjectEvent,
+	ErrorCode_UnknownGameObject,
+
+	ErrorCode_ExternalSourceNotResolved,
+	ErrorCode_FileFormatMismatch,
+
+	ErrorCode_CommandQueueFull,
+	ErrorCode_CommandTooLarge,
+
+	ErrorCode_ExecuteActionOnEvent,
+	ErrorCode_StopAll,
+	ErrorCode_StopPlayingID,
+
+	ErrorCode_XMACreateDecoderLimitReached,
+	ErrorCode_XMAStreamBufferTooSmall,
+
+	ErrorCode_ModulatorScopeError_Inst,
+	ErrorCode_ModulatorScopeError_Obj,
+
+	Num_ErrorCodes // THIS STAYS AT END OF ENUM
+};
+
+struct AkMusicSettings
+{
+	AkReal32 fStreamingLookAheadRatio;
+};
+
+struct AkSegmentInfo
+{
+	AkTimeMs iCurrentPosition;
+	AkTimeMs iPreEntryDuration;
+	AkTimeMs iActiveDuration;
+	AkTimeMs iPostExitDuration;
+	AkTimeMs iRemainingLookAheadTime;
+};
+
+typedef void(*AkLanguageChangeHandler)(const AkOSChar* const in_pLanguageName, void* in_pCookie);
+
+struct AkStreamMgrSettings
+{
+	AkUInt32 uMemorySize;
+};
+
+
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo

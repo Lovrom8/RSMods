@@ -21,6 +21,45 @@ void __fastcall tForceEnumeration(byte* rs_dlc_service_flags) {
 
 // Get documentation here: https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=namespace_a_k_1_1_sound_engine.html
 
+// IAKStreamMgr
+// Only has a single pointer, and is protected https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=class_a_k_1_1_i_ak_stream_mgr_a85c6043c1a45f13b7df2f05729248b1f.html
+// End IAKStreamMgr
+// MemoryMgr
+typedef AKRESULT(__cdecl* tMemory_CheckPoolId)(AkMemPoolId in_poolId);
+typedef AKRESULT(__cdecl* tMemory_CreatePool)(void* in_pMemAddress, AkUInt32 in_uMemSize, AkUInt32 in_uBlockSize, AkUInt32 in_eAttributes, AkUInt32 in_uBlockAlign);
+typedef AKRESULT(__cdecl* tMemory_DestroyPool)(AkMemPoolId in_poolId);
+typedef AKRESULT(__cdecl* tMemory_Falign)(AkMemPoolId in_poolId, void* in_pMemAddress);
+typedef void*(__cdecl* tMemory_GetBlock)(AkMemPoolId in_poolId);
+typedef AkUInt32(__cdecl* tMemory_GetBlockSize)(AkMemPoolId in_poolId);
+typedef AkInt32(__cdecl* tMemory_GetMaxPools)(void);
+typedef AkInt32(__cdecl* tMemory_GetNumPools)(void);
+typedef void(__cdecl* tMemory_GetPoolMemoryUsed)(AkMemPoolId in_poolId, PoolMemInfo* out_memInfo);
+typedef AkOSChar*(__cdecl* tMemory_GetPoolName)(AkMemPoolId in_poolId);
+typedef AKRESULT(__cdecl* tMemory_GetPoolStats)(AkMemPoolId in_poolId, PoolStats* out_stats);
+typedef bool(__cdecl* tMemory_IsInitialized)();
+typedef void*(__cdecl* tMemory_Malign)(AkMemPoolId in_poolId, size_t in_uSize, AkUInt32 in_uAlignment);
+typedef void*(__cdecl* tMemory_Malloc)(AkMemPoolId in_poolId, size_t in_uSize);
+typedef AKRESULT(__cdecl* tMemory_ReleaseBlock)(AkMemPoolId in_poolId, void* in_pMemAddress);
+typedef AKRESULT(__cdecl* tMemory_SetMonitoring)(AkMemPoolId in_poolId, bool in_bDoMonitor);
+typedef AKRESULT(__cdecl* tMemory_SetPoolName)(AkMemPoolId in_poolId, const char* in_pszPoolName);
+typedef void(__cdecl* tMemory_Term)(void);
+// End MemoryMgr
+// Monitor
+typedef AKRESULT(__cdecl* tMonitor_PostCode)(ErrorCode in_eError, ErrorLevel in_eErrorLevel);
+// End Monitor
+// Motion Engine
+typedef AKRESULT(__cdecl* tMotion_AddPlayerMotionDevice)(AkUInt8 in_iPlayerID, AkUInt32 in_iCompanyID, AkUInt32 in_iDeviceID, void* in_pDevice);
+typedef void(__cdecl* tMotion_RegisterMotionDevice)(AkUInt32 in_ulCompanyID, AkUInt32 in_ulPluginID, AkCreatePluginCallback in_pCreateFunc);
+typedef void(__cdecl* tMotion_RemovePlayerMotionDevice)(AkUInt8 in_iPlayerID, AkUInt32 in_iCompanyID, AkUInt32 in_iDeviceID);
+typedef void(__cdecl* tMotion_SetPlayerListener)(AkUInt8 in_iPlayerID, AkUInt8 in_iListener);
+typedef void(__cdecl* tMotion_SetPlayerVolume)(AkUInt8 in_iPlayerID, AkReal32 in_fVolume);
+// End Motion Engine
+// Music Engine
+typedef void(__cdecl* tMusic_GetDefaultInitSettings)(AkMusicSettings* out_settings);
+typedef AKRESULT(__cdecl* tMusic_GetPlayingSegmentInfo)(AkPlayingID in_playingID, AkSegmentInfo* out_segmentInfo, bool in_bExtrapolate);
+typedef AKRESULT(__cdecl* tMusic_Init)(AkMusicSettings* in_pSettings);
+typedef void(__cdecl* tMusic_Term)(void);
+// End Music Engine
 // Sound Engine
 typedef void(__cdecl* tCancelBankCallbackCookie)(void* in_pCookie);
 typedef void(__cdecl* tCancelEventCallback)(AkPlayingID in_playingID);
@@ -144,7 +183,9 @@ typedef AKRESULT(__cdecl* tUnregisterAllGameObj)(void);
 typedef AKRESULT(__cdecl* tUnregisterGameObj)(AkGameObjectID in_gameObjectID);
 typedef AKRESULT(__cdecl* tUnregisterGlobalCallback)(AkGlobalCallbackFunc in_pCallback);
 // End Sound Engine
-// TODO: Finish the left overs of the AK / WWise Library (stuff outside SoundEngine).
+// StreamMgr
+// This Section has way too many dependancies for us to really use it.
+// End StreamMgr
 // TODO: Double Check All Functions Have The Same Parameters As With Ghidra
 // TODO: Add Functions that had no definition in the Wwise Documentation (may be custom funcs or stuff removed between WWise 2013 <-> Wwise 2015).
 
