@@ -35,7 +35,7 @@ typedef void*(__cdecl* tMemory_GetBlock)(AkMemPoolId in_poolId);
 typedef AkUInt32(__cdecl* tMemory_GetBlockSize)(AkMemPoolId in_poolId);
 typedef AkInt32(__cdecl* tMemory_GetMaxPools)(void);
 typedef AkInt32(__cdecl* tMemory_GetNumPools)(void);
-	// GetPoolAttributes (Unknown)
+typedef AkMemPoolAttributes(__cdecl* tMemory_GetPoolAttributes)(AkMemPoolId in_poolId);
 typedef void(__cdecl* tMemory_GetPoolMemoryUsed)(AkMemPoolId in_poolId, PoolMemInfo* out_memInfo);
 typedef AkOSChar*(__cdecl* tMemory_GetPoolName)(AkMemPoolId in_poolId);
 typedef AKRESULT(__cdecl* tMemory_GetPoolStats)(AkMemPoolId in_poolId, PoolStats* out_stats);
@@ -208,6 +208,12 @@ typedef AKRESULT(__cdecl* tUnregisterGlobalCallback)(AkGlobalCallbackFunc in_pCa
 // StreamMgr
 // This Section has way too many dependancies for us to really use it.
 // End StreamMgr
+// End WWise Documentation
+
+// Rocksmith Custom Wwise Functions
+
+
+// End Rocksmith Custom Wwise Functions
 
 // TODO: Add Functions that had no definition in the Wwise Documentation (may be custom funcs or stuff removed between WWise 2013 <-> Wwise 2015).
 // TODO: Fill Types to Variables List
