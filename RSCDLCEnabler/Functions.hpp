@@ -24,8 +24,8 @@ void __fastcall tForceEnumeration(byte* rs_dlc_service_flags) {
 // IAKStreamMgr
 // Only has a single pointer, and is protected https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=class_a_k_1_1_i_ak_stream_mgr_a85c6043c1a45f13b7df2f05729248b1f.html
 // End IAKStreamMgr
-typedef bool(__cdecl* IsRestoreSinkRequested)(void);
-typedef bool(__cdecl* IsUsingDummySink)(void);
+typedef bool(__cdecl* tIsRestoreSinkRequested)(void);
+typedef bool(__cdecl* tIsUsingDummySink)(void);
 // MemoryMgr
 typedef AKRESULT(__cdecl* tMemory_CheckPoolId)(AkMemPoolId in_poolId);
 typedef AKRESULT(__cdecl* tMemory_CreatePool)(void* in_pMemAddress, AkUInt32 in_uMemSize, AkUInt32 in_uBlockSize, AkUInt32 in_eAttributes, AkUInt32 in_uBlockAlign);
@@ -219,7 +219,9 @@ typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCal
 // TODO: Fill Types to Variables List
 // TODO: Add Mem Addresses to Offsets
 // TODO: Merge Function with Type-Variable in DLLMain::InitEngineFunctions()
+
 // Types to Variables
+
 tSetRTPCValue_Char SetRTPCValue;
 tQuery_GetRTPCValue_Char GetRTPCValue;
 tClearBanks ClearBanks;
