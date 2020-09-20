@@ -94,36 +94,28 @@ typedef AKRESULT(__cdecl* tGetSourcePlayPosition)(AkPlayingID in_PlayingID, AkTi
 typedef AkUInt32(__cdecl* tGetSpeakerConfiguration)(void);
 // Init (This is called before we can even push different settings to it)
 typedef bool(__cdecl* tIsInitialized)(void);
-// Load Banks
 typedef AKRESULT(__cdecl* tLoadBank_BankID_MemPoolID)(AkBankID in_bankID, AkMemPoolId in_memPoolId);
 typedef AKRESULT(__cdecl* tLoadBank_Void_UInt32_BankID)(const void* in_plnMemoryBankPtr, AkUInt32 in_ulnMemoryBankSize, AkBankID* out_bankID);
 typedef AKRESULT(__cdecl* tLoadBank_BankID_CallBack)(AkBankID in_BankID, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkMemPoolId in_memPoolId);
 typedef AKRESULT(__cdecl* tLoadBank_Void_UInt32_CallBack)(const void* in_plnMemoryBankPtr, AkUInt32 in_ulnMemoryBankSize, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkBankID* out_bankID);
 typedef AKRESULT(__cdecl* tLoadBank_Char_MemPoolID)(const char* in_pszString, AkMemPoolId in_memPoolId, AkBankID* out_bankID);
 typedef AKRESULT(__cdecl* tLoadBank_Char_CallBack)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkMemPoolId in_memPoolId, AkBankID* out_bankId);
-// End Load Banks
 typedef AkPlayingID(__cdecl* tPostEvent_Char)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, AkUInt32 in_cExternals, AkExternalSourceInfo* in_pExternalSources, AkPlayingID in_PlayingID);
-typedef AkPlayingID(__cdecl* tPostEven_UniqueID)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, AkUInt32 in_cExternals, AkExternalSourceInfo* in_pExternalSources, AkPlayingID in_PlayingID);
+typedef AkPlayingID(__cdecl* tPostEvent_UniqueID)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, AkUInt32 in_cExternals, AkExternalSourceInfo* in_pExternalSources, AkPlayingID in_PlayingID);
 typedef AKRESULT(__cdecl* tPostTrigger_TriggerID)(AkTriggerID in_triggerID, AkGameObjectID in_gameObjectID);
 typedef AKRESULT(__cdecl* tPostTrigger_Char)(char* in_szTriggerName, AkGameObjectID in_gameObjectID);
-// Prepare Bank
 typedef AKRESULT(__cdecl* tPrepareBank_BankID_Callback)(PreparationType in_PreparationType, AkBankID in_bankID, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkBankContent in_uFlags);
 typedef AKRESULT(__cdecl* tPrepareBank_BankID_BankContent)(PreparationType in_PreparationType, AkBankID in_bankID, AkBankContent in_uFlags);
 typedef AKRESULT(__cdecl* tPrepareBank_Char_CallBack)(PreparationType in_PreparationType, const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie, AkBankContent in_uFlags);
 typedef AKRESULT(__cdecl* tPrepareBank_Char_BankContent)(PreparationType in_PreparationType, const char* in_pszString, AkBankContent in_uFlags);
-// End Prepare Bank
-// Prepare Event
 typedef AKRESULT(__cdecl* tPrepareEvent_EventID_UInt32)(PreparationType in_PreparationType, AkUniqueID* in_pEventID, AkUInt32 in_uNumEvent);
 typedef AKRESULT(__cdecl* tPrepareEvent_EventID_UInt32_Callback_Void)(PreparationType in_PreparationType, AkUniqueID* in_pEventID, AkUInt32 in_uNumEvent, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 typedef AKRESULT(__cdecl* tPrepareEvent_Char_UInt32)(PreparationType in_PreparationType, const char** in_ppszString, AkUInt32 in_uNumEvent);
 typedef AKRESULT(__cdecl* tPrepareEvent_Char_UInt32_Callback_Void)(PreparationType in_PreparationType, const char** in_ppszString, AkUInt32 in_uNumEvent, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
-// End Prepare Event
-// Prepare Game Syncs
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, AkUInt32 in_GroupID, AkUInt32* in_paGameSyncID, AkUInt32 in_uNumGameSyncs, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_UInt32_UInt32_UInt32)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, AkUInt32 in_GroupID, AkUInt32* in_paGameSyncID, AkUInt32 in_uNumGameSyncs);
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_Char_Char_UInt32_Callback_Void)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, const char* in_pszGroupName, const char** in_ppszGameSyncName, AkUInt32 in_uNumGameSyncs, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_Char_Char_UInt32)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, const char* in_pszGroupName, const char** in_ppszGameSyncName, AkUInt32 in_uNumGameSyncs);
-// End Prepare Game Syncs
 // Query
 // GetActiveGameObjects (Dependancies & Requires AkArray)
 typedef AKRESULT(__cdecl* tQuery_GetActiveListeners)(AkGameObjectID in_GameObjectID, AkUInt32* out_ruListenerMask);
@@ -220,13 +212,7 @@ typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCal
 // TODO: Add Mem Addresses to Offsets
 // TODO: Merge Function with Type-Variable in DLLMain::InitEngineFunctions()
 
-// Types to Variables
-
-tSetRTPCValue_Char SetRTPCValue;
-tQuery_GetRTPCValue_Char GetRTPCValue;
-tClearBanks ClearBanks;
-tUnloadBank_BankID_MemPoolID UnloadBank;
-
+// Types to Variables List
 
 // Root Functions
 tIsRestoreSinkRequested IsRestoreSinkRequested;
@@ -270,7 +256,119 @@ tMusic_Init Music_Init;
 tMusic_Term Music_Term;
 
 // Sound Engine
+tCancelBankCallbackCookie CancelBankCallbackCookie;
+tCancelEventCallback CancelEventCallback;
+tCancelEventCallbackCookie CancelEventCallbackCookie;
+tClearBanks ClearBanks;
+tClearPreparedEvents ClearPreparedEvents;
 
+	// Dynamic Dialogue
+tDynamicDialogue_ResolveDialogueEvent_UniqueID DynamicDialogue_ResolveDialogueEvent_UniqueID;
+tDynamicDialogue_ResolveDialogueEvent_Char DynamicDialogue_ResolveDialogueEvent_Char;
+
+	// Dynamic Sequence
+tDynamicSequence_Break DynamicSequence_Break;
+tDynamicSequence_Close DynamicSequence_Close;
+tDynamicSequence_Open DynamicSequence_Open;
+tDynamicSequence_Pause DynamicSequence_Pause;
+tDynamicSequence_Play DynamicSequence_Play;
+tDynamicSequence_Resume DynamicSequence_Resume;
+tDynamicSequence_Stop DynamicSequence_Stop;
+	// End Dynamic Sequence
+
+tExecuteActionOnEvent_UniqueID ExecuteActionOnEvent_UniqueID;
+tExecuteActionOnEvent_Char ExecuteActionOnEvent_Char;
+tGetDefaultInitSettings GetDefaultInitSettings;
+tGetIDFromString GetIDFromString;
+tGetSourcePlayPosition GetSourcePlayPosition;
+tGetSpeakerConfiguration GetSpeakerConfiguration;
+tIsInitialized IsInitialized;
+tLoadBank_BankID_MemPoolID LoadBank_BankID_MemPoolID;
+tLoadBank_Void_UInt32_BankID LoadBank_Void_UInt32_BankID;
+tLoadBank_BankID_CallBack LoadBank_BankID_CallBack;
+tLoadBank_Void_UInt32_CallBack LoadBank_Void_UInt32_CallBack;
+tLoadBank_Char_MemPoolID LoadBank_Char_MemPoolID;
+tLoadBank_Char_CallBack LoadBank_Char_CallBack;
+tPostEvent_Char PostEvent_Char;
+tPostEvent_UniqueID PostEvent_UniqueID;
+tPostTrigger_TriggerID PostTrigger_TriggerID;
+tPostTrigger_Char PostTrigger_Char;
+tPrepareBank_BankID_Callback PrepareBank_BankID_Callback;
+tPrepareBank_BankID_BankContent PrepareBank_BankID_BankContent;
+tPrepareBank_Char_CallBack PrepareBank_Char_CallBack;
+tPrepareBank_Char_BankContent PrepareBank_Char_BankContent;
+tPrepareEvent_EventID_UInt32 PrepareEvent_EventID_UInt32;
+tPrepareEvent_EventID_UInt32_Callback_Void PrepareEvent_EventID_UInt32_Callback_Void;
+tPrepareEvent_Char_UInt32 PrepareEvent_Char_UInt32;
+tPrepareEvent_Char_UInt32_Callback_Void PrepareEvent_Char_UInt32_Callback_Void;
+tPrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void;
+tPrepareGameSyncs_UInt32_UInt32_UInt32 PrepareGameSyncs_UInt32_UInt32_UInt32;
+tPrepareGameSyncs_Char_Char_UInt32_Callback_Void PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
+tPrepareGameSyncs_Char_Char_UInt32 PrepareGameSyncs_Char_Char_UInt32;
+
+	// Query
+tQuery_GetActiveListeners Query_GetActiveListeners;
+tQuery_GetCustomPropertyValue_Int32 Query_GetCustomPropertyValue_Int32;
+tQuery_GetCustomPropertyValue_Real32 Query_GetCustomPropertyValue_Real32;
+tQuery_GetEventIDFromPlayingID Query_GetEventIDFromPlayingID;
+tQuery_GetGameObjectAuxSendValues Query_GetGameObjectAuxSendValues;
+tQuery_GetGameObjectDryLevelValue Query_GetGameObjectDryLevelValue;
+tQuery_GetGameObjectFromPlayingID Query_GetGameObjectFromPlayingID;
+tQuery_GetIsGameObjectActive Query_GetIsGameObjectActive;
+tQuery_GetListenerPosition Query_GetListenerPosition;
+tQuery_GetMaxRadius Query_GetMaxRadius;
+tQuery_GetObjectObstructionAndOcclusion Query_GetObjectObstructionAndOcclusion;
+tQuery_GetPlayingIDsFromGameObject Query_GetPlayingIDsFromGameObject;
+tQuery_GetPosition Query_GetPosition;
+tQuery_GetPositioningInfo Query_GetPositioningInfo;
+tQuery_GetRTPCValue_Char Query_GetRTPCValue_Char;
+tQuery_GetRTPCValue_RTPCID Query_GetRTPCValue_RTPCID;
+tQuery_GetState_StateGroupID Query_GetState_StateGroupID;
+tQuery_GetState_Char Query_GetState_Char;
+tQuery_GetSwitch_SwitchGroupID Query_GetSwitch_SwitchGroupID;
+tQuery_GetSwitch_Char Query_GetSwitch_Char;
+tQuery_QueryAudioObjectIDs_UniqueID Query_QueryAudioObjectIDs_UniqueID;
+tQuery_QueryAudioObjectIDs_Char Query_QueryAudioObjectIDs_Char;
+	// End Query
+
+tRegisterCodec RegisterCodec;
+tRegisterGlobalCallback RegisterGlobalCallback;
+tRegisterPlugin RegisterPlugin;
+tRenderAudio RenderAudio;
+tSetActiveListeners SetActiveListeners;
+tSetActorMixerEffect SetActorMixerEffect;
+tSetAttenuationScalingFactor SetAttenuationScalingFactor;
+tSetBankLoadIOSettings SetBankLoadIOSettings;
+tSetBusEffect_UniqueID SetBusEffect_UniqueID;
+tSetBusEffect_Char SetBusEffect_Char;
+tSetGameObjectAuxSendValues SetGameObjectAuxSendValues;
+tSetGameObjectOutputBusVolume SetGameObjectOutputBusVolume;
+tSetListenerPipeline SetListenerPipeline;
+tSetListenerPosition SetListenerPosition;
+tSetListenerScalingFactor SetListenerScalingFactor;
+tSetMaxNumVoicesLimit SetMaxNumVoicesLimit;
+tSetMultiplePositions SetMultiplePositions;
+tSetObjectObstructionAndOcclusion SetObjectObstructionAndOcclusion;
+tSetPosition SetPosition;
+tSetRTPCValue_RTPCID SetRTPCValue_RTPCID;
+tSetRTPCValue_Char SetRTPCValue_Char;
+tSetState_StateGroupID SetState_StateGroupID;
+tSetState_Char SetState_Char;
+tSetSwitch_SwitchGroupID SetSwitch_SwitchGroupID;
+tSetSwitch_Char SetSwitch_Char;
+tSetVolumeThreshold SetVolumeThreshold;
+tStartOutputCapture StartOutputCapture;
+tStopAll StopAll;
+tStopOutputCapture StopOutputCapture;
+tStopPlayingID StopPlayingID;
+tTerm Term;
+tUnloadBank_BankID_MemPoolID UnloadBank_BankID_MemPoolID;
+tUnloadBank_BankID_Callback UnloadBank_BankID_Callback;
+tUnloadBank_Char_MemPoolID UnloadBank_Char_MemPoolID;
+tUnloadBank_Char_Callback UnloadBank_Char_Callback;
+tUnregisterAllGameObj UnregisterAllGameObj;
+tUnregisterGameObj UnregisterGameObj;
+tUnregisterGlobalCallback UnregisterGlobalCallback;
 
 // Rocksmith Custom Wwise Functions
 tCloneActorMixerEffect CloneActorMixerEffect;
@@ -288,6 +386,8 @@ tSetEffectParam SetEffectParam;
 tSetPositionInternal SetPositionInternal;
 tStopSourcePlugin StopSourcePlugin;
 tUnloadBankUnique UnloadBankUnique;
+
+// End Types to Variables List
 /*--------------------------- D3D ---------------------------------*/
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
