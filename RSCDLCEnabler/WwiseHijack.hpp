@@ -7,6 +7,8 @@
 
 #include "windows.h"
 
+#pragma warning(disable: 26812 26495);
+
 /*
  Get documentation here: https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=namespace_a_k_1_1_sound_engine.html
 
