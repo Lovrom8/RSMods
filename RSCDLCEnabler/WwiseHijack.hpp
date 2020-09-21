@@ -1091,45 +1091,45 @@ typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCal
 
 namespace WwiseVariables {
 	// Root Functions
-	tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested;
-	tIsUsingDummySink Wwise_Root_IsUsingDummySink;
+	tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested = (tIsRestoreSinkRequested)func_Wwise_Root_IsRestoreSinkRequested;
+	tIsUsingDummySink Wwise_Root_IsUsingDummySink = (tIsUsingDummySink)func_Wwise_Root_IsUsingDummySink;
 
 	// MemoryMgr
-	tMemory_CheckPoolId Wwise_Memory_CheckPoolId;
-	tMemory_CreatePool Wwise_Memory_CreatePool;
-	tMemory_DestroyPool Wwise_Memory_DestroyPool;
-	tMemory_Falign Wwise_Memory_Falign;
-	tMemory_GetBlock Wwise_Memory_GetBlock;
-	tMemory_GetBlockSize Wwise_Memory_GetBlockSize;
-	tMemory_GetMaxPools Wwise_Memory_GetMaxPools;
-	tMemory_GetNumPools Wwise_Memory_GetNumPools;
-	tMemory_GetPoolAttributes Wwise_Memory_GetPoolAttributes;
-	tMemory_GetPoolMemoryUsed Wwise_Memory_GetPoolMemoryUsed;
-	tMemory_GetPoolName Wwise_Memory_GetPoolName;
-	tMemory_GetPoolStats Wwise_Memory_GetPoolStats;
-	tMemory_IsInitialized Wwise_Memory_IsInitialized;
-	tMemory_Malign Wwise_Memory_Malign;
-	tMemory_Malloc Wwise_Memory_Malloc;
-	tMemory_ReleaseBlock Wwise_Memory_ReleaseBlock;
-	tMemory_SetMonitoring Wwise_Memory_SetMonitoring;
-	tMemory_SetPoolName Wwise_Memory_SetPoolName;
-	tMemory_Term Wwise_Memory_Term;
+	tMemory_CheckPoolId Wwise_Memory_CheckPoolId = (tMemory_CheckPoolId)func_Wwise_Memory_CheckPoolId;
+	tMemory_CreatePool Wwise_Memory_CreatePool = (tMemory_CreatePool)func_Wwise_Memory_CreatePool;
+	tMemory_DestroyPool Wwise_Memory_DestroyPool = (tMemory_DestroyPool)func_Wwise_Memory_DestroyPool;
+	tMemory_Falign Wwise_Memory_Falign = (tMemory_Falign)func_Wwise_Memory_Falign;
+	tMemory_GetBlock Wwise_Memory_GetBlock = (tMemory_GetBlock)func_Wwise_Memory_GetBlock;
+	tMemory_GetBlockSize Wwise_Memory_GetBlockSize = (tMemory_GetBlockSize)func_Wwise_Memory_GetBlockSize;
+	tMemory_GetMaxPools Wwise_Memory_GetMaxPools = (tMemory_GetMaxPools)func_Wwise_Memory_GetMaxPools;
+	tMemory_GetNumPools Wwise_Memory_GetNumPools = (tMemory_GetNumPools)func_Wwise_Memory_GetNumPools;
+	tMemory_GetPoolAttributes Wwise_Memory_GetPoolAttributes = (tMemory_GetPoolAttributes)func_Wwise_Memory_GetPoolAttributes;
+	tMemory_GetPoolMemoryUsed Wwise_Memory_GetPoolMemoryUsed = (tMemory_GetPoolMemoryUsed)func_Wwise_Memory_GetPoolMemoryUsed;
+	tMemory_GetPoolName Wwise_Memory_GetPoolName = (tMemory_GetPoolName)func_Wwise_Memory_GetPoolName;
+	tMemory_GetPoolStats Wwise_Memory_GetPoolStats = (tMemory_GetPoolStats)func_Wwise_Memory_GetPoolStats;
+	tMemory_IsInitialized Wwise_Memory_IsInitialized = (tMemory_IsInitialized)func_Wwise_Memory_IsInitialized;
+	tMemory_Malign Wwise_Memory_Malign = (tMemory_Malign)func_Wwise_Memory_Malign;
+	tMemory_Malloc Wwise_Memory_Malloc = (tMemory_Malloc)func_Wwise_Memory_Malloc;
+	tMemory_ReleaseBlock Wwise_Memory_ReleaseBlock = (tMemory_ReleaseBlock)func_Wwise_Memory_ReleaseBlock;
+	tMemory_SetMonitoring Wwise_Memory_SetMonitoring = (tMemory_SetMonitoring)func_Wwise_Memory_SetMonitoring;
+	tMemory_SetPoolName Wwise_Memory_SetPoolName = (tMemory_SetPoolName)func_Wwise_Memory_SetPoolName;
+	tMemory_Term Wwise_Memory_Term = (tMemory_Term)func_Wwise_Memory_Term;
 
 	// Monitor
-	tMonitor_PostCode Wwise_Monitor_PostCode;
+	tMonitor_PostCode Wwise_Monitor_PostCode = (tMonitor_PostCode)func_Wwise_Monitor_PostCode;
 
 	// Motion Engine
-	tMotion_AddPlayerMotionDevice Wwise_Motion_AddPlayerMotionDevice;
-	tMotion_RegisterMotionDevice Wwise_Motion_RegisterMotionDevice;
-	tMotion_RemovePlayerMotionDevice Wwise_Motion_RemovePlayerMotionDevice;
-	tMotion_SetPlayerListener Wwise_Motion_SetPlayerListener;
-	tMotion_SetPlayerVolume Wwise_Motion_SetPlayerVolume;
+	tMotion_AddPlayerMotionDevice Wwise_Motion_AddPlayerMotionDevice = (tMotion_AddPlayerMotionDevice)func_Wwise_Motion_AddPlayerMotionDevice;
+	tMotion_RegisterMotionDevice Wwise_Motion_RegisterMotionDevice = (tMotion_RegisterMotionDevice)func_Wwise_Motion_RegisterMotionDevice;
+	tMotion_RemovePlayerMotionDevice Wwise_Motion_RemovePlayerMotionDevice = (tMotion_RemovePlayerMotionDevice)func_Wwise_Motion_RemovePlayerMotionDevice;
+	tMotion_SetPlayerListener Wwise_Motion_SetPlayerListener = (tMotion_SetPlayerListener)func_Wwise_Motion_SetPlayerListener;
+	tMotion_SetPlayerVolume Wwise_Motion_SetPlayerVolume = (tMotion_SetPlayerVolume)func_Wwise_Motion_SetPlayerVolume;
 
 	// Music Engine
-	tMusic_GetDefaultInitSettings Wwise_Music_GetDefaultInitSettings;
-	tMusic_GetPlayingSegmentInfo Wwise_Music_GetPlayingSegmentInfo;
-	tMusic_Init Wwise_Music_Init;
-	tMusic_Term Wwise_Music_Term;
+	tMusic_GetDefaultInitSettings Wwise_Music_GetDefaultInitSettings = (tMusic_GetDefaultInitSettings)func_Wwise_Music_GetDefaultInitSettings;
+	tMusic_GetPlayingSegmentInfo Wwise_Music_GetPlayingSegmentInfo = (tMusic_GetPlayingSegmentInfo)func_Wwise_Music_GetPlayingSegmentInfo;
+	tMusic_Init Wwise_Music_Init = (tMusic_Init)func_Wwise_Music_Init;
+	tMusic_Term Wwise_Music_Term = (tMusic_Term)func_Wwise_Music_Term;
 
 	// Sound Engine
 	tCancelBankCallbackCookie Wwise_Sound_CancelBankCallbackCookie;
@@ -1137,12 +1137,8 @@ namespace WwiseVariables {
 	tCancelEventCallbackCookie Wwise_Sound_CancelEventCallbackCookie;
 	tClearBanks Wwise_Sound_ClearBanks;
 	tClearPreparedEvents Wwise_Sound_ClearPreparedEvents;
-
-	// Dynamic Dialogue
 	tDynamicDialogue_ResolveDialogueEvent_UniqueID Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID;
 	tDynamicDialogue_ResolveDialogueEvent_Char Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char;
-
-	// Dynamic Sequence
 	tDynamicSequence_Break Wwise_Sound_DynamicSequence_Break;
 	tDynamicSequence_Close Wwise_Sound_DynamicSequence_Close;
 	tDynamicSequence_Open Wwise_Sound_DynamicSequence_Open;
@@ -1150,8 +1146,6 @@ namespace WwiseVariables {
 	tDynamicSequence_Play Wwise_Sound_DynamicSequence_Play;
 	tDynamicSequence_Resume Wwise_Sound_DynamicSequence_Resume;
 	tDynamicSequence_Stop Wwise_Sound_DynamicSequence_Stop;
-	// End Dynamic Sequence
-
 	tExecuteActionOnEvent_UniqueID Wwise_Sound_ExecuteActionOnEvent_UniqueID;
 	tExecuteActionOnEvent_Char Wwise_Sound_ExecuteActionOnEvent_Char;
 	tGetDefaultInitSettings Wwise_Sound_GetDefaultInitSettings;
@@ -1181,8 +1175,6 @@ namespace WwiseVariables {
 	tPrepareGameSyncs_UInt32_UInt32_UInt32 Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32;
 	tPrepareGameSyncs_Char_Char_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
 	tPrepareGameSyncs_Char_Char_UInt32 Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32;
-
-	// Query
 	tQuery_GetActiveListeners Wwise_Sound_Query_GetActiveListeners;
 	tQuery_GetCustomPropertyValue_Int32 Wwise_Sound_Query_GetCustomPropertyValue_Int32;
 	tQuery_GetCustomPropertyValue_Real32 Wwise_Sound_Query_GetCustomPropertyValue_Real32;
@@ -1205,8 +1197,6 @@ namespace WwiseVariables {
 	tQuery_GetSwitch_Char Wwise_Sound_Query_GetSwitch_Char;
 	tQuery_QueryAudioObjectIDs_UniqueID Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
 	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char;
-	// End Query
-
 	tRegisterCodec Wwise_Sound_RegisterCodec;
 	tRegisterGlobalCallback Wwise_Sound_RegisterGlobalCallback;
 	tRegisterPlugin Wwise_Sound_RegisterPlugin;
@@ -1246,7 +1236,7 @@ namespace WwiseVariables {
 	tUnregisterGameObj Wwise_Sound_UnregisterGameObj;
 	tUnregisterGlobalCallback Wwise_Sound_UnregisterGlobalCallback;
 
-	// Rocksmith Custom Wwise Functions
+	// Rocksmith Custom Wwise_Sound Functions
 
 	tCloneActorMixerEffect Wwise_Sound_CloneActorMixerEffect;
 	tCloneBusEffect Wwise_Sound_CloneBusEffect;
