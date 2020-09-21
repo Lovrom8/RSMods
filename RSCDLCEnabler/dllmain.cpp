@@ -71,7 +71,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
 				float volume = 0;
 				RTPCValue_type type = RTPCValue_GameObject;
-				//Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+				WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 				//std::cout << volume << std::endl;
 
@@ -82,17 +82,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
-
-
-				//RTPCValue_type type;
-				//GetRTPCValue("Mixer_Music", 0xffffffff, &volume, &type); Does not return correct value even if the effect is there
-				//GetRTPCValue("Mixer_Music", 0x00001234, &volume, &type);
-				//std::cout << volume << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
 				float volume = 0;
 				RTPCValue_type type = RTPCValue_GameObject;
-				//Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+				WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 				if (volume >= 5.0f)
 					volume -= 5.0f;
