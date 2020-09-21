@@ -1,27 +1,27 @@
 #include "ExtendedRangeMode.hpp"
 
 uintptr_t GetStringColor(uintptr_t stringnum, int state) {
-	uintptr_t edx = stringnum;
-	uintptr_t eax = 0;
-	uintptr_t magic1 = Offsets::ptr_stringColor;
+	uintptr_t currentStringNum = stringnum; // EDX
+	uintptr_t currentStringColor = 0; // EAX
+	uintptr_t stringColorPointer = Offsets::ptr_stringColor; // Magic Number
 
-	uintptr_t ecx = MemUtil::ReadPtr(magic1);
+	uintptr_t pointerValue = MemUtil::ReadPtr(stringColorPointer); // ECX
 
-	if (!ecx)
+	if (!pointerValue)
 		return NULL;
 
-	eax = MemUtil::ReadPtr(ecx + eax * 0x4 + 0x348);
+	currentStringColor = MemUtil::ReadPtr(pointerValue + currentStringColor * 0x4 + 0x348);
 
-	if (eax >= 2) {
+	if (currentStringColor >= 2) {
 		return NULL;
 	}
 
-	eax = eax * 0xA8;
-	eax += edx;
+	currentStringColor = currentStringColor * 0xA8;
+	currentStringColor += currentStringNum;
 
-	eax = MemUtil::ReadPtr(ecx + eax * 0x4 + state);
+	currentStringColor = MemUtil::ReadPtr(pointerValue + currentStringColor * 0x4 + state);
 
-	return eax;
+	return currentStringColor;
 }
 
 void ERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
