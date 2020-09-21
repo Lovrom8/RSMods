@@ -1083,6 +1083,12 @@ typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCal
 
 
 /* Types To Variables (External Use) */
+
+// TODO: Fill WwiseVariables namespace with the offset values.
+
+// Template: type Variable = (type)MemoryAddress;
+// Example: tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
+
 namespace WwiseVariables {
 	// Root Functions
 	tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested;
