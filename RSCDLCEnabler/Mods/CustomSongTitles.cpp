@@ -1,6 +1,8 @@
 #include "CustomSongTitles.hpp"
 #pragma warning(disable: 4302 4172) // Typecast truncated from const _Elem* -> char | returning address of local variable: str
 
+// TODO: Fix the dark magic of ASM in here (if possible).
+
 std::vector<std::string> songTitles(6);
 void __declspec(naked) hook_fakeTitles() {
 	//ESI = INDEX
