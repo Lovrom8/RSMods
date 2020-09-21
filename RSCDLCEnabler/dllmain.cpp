@@ -500,7 +500,6 @@ unsigned WINAPI MainThread(void*) {
 				InitEngineFunctions(); // Anti-crash or not, let's try atleast
 			}
 
-
 			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
 		}

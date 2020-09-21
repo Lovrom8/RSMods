@@ -27,17 +27,18 @@ namespace Offsets {
 	extern uintptr_t func_ClearBanks;
 	extern uintptr_t func_UnloadBank;
 
-	// Mixer Volumes
-	extern uintptr_t ptr_songVolume;
-	extern std::vector<unsigned int> ptr_songVolumeOffsets;
-	extern uintptr_t ptr_mixerVolumeBase;
-	extern std::vector<unsigned int> ptr_playerOneGuitarOffsets;
-	extern std::vector<unsigned int> ptr_playerOneBassOffsets;
-	extern std::vector<unsigned int> ptr_playerTwoGuitarOffsets;
-	extern std::vector<unsigned int> ptr_playerTwoBassOffsets;
-	extern std::vector<unsigned int> ptr_micOffsets;
-	extern std::vector<unsigned int> ptr_voOffsets;
-	extern std::vector<unsigned int> ptr_sfxOffsets;
+	// Removed do to access to Wwise calls.
+	//// Mixer Volumes
+	//extern uintptr_t ptr_songVolume;
+	//extern std::vector<unsigned int> ptr_songVolumeOffsets;
+	//extern uintptr_t ptr_mixerVolumeBase;
+	//extern std::vector<unsigned int> ptr_playerOneGuitarOffsets;
+	//extern std::vector<unsigned int> ptr_playerOneBassOffsets;
+	//extern std::vector<unsigned int> ptr_playerTwoGuitarOffsets;
+	//extern std::vector<unsigned int> ptr_playerTwoBassOffsets;
+	//extern std::vector<unsigned int> ptr_micOffsets;
+	//extern std::vector<unsigned int> ptr_voOffsets;
+	//extern std::vector<unsigned int> ptr_sfxOffsets;
 
 	// Force Enumeration
 	extern uintptr_t hookBackAddr_ForceEnumeration, hookBackAddr_Enumeration;
