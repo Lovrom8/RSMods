@@ -90,7 +90,6 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
 
 	// Wwise Hijack
-
 		// Root
 	uintptr_t func_Wwise_Root_IsRestoreSinkRequested = 0x1b5bfd3;
 	uintptr_t func_Wwise_Root_IsUsingDummySink = 0x1b5bfc3;
@@ -130,7 +129,138 @@ namespace Offsets {
 	uintptr_t func_Wwise_Music_Init = 0x1b34f8c;
 	uintptr_t func_Wwise_Music_Term = 0x1b34e38;
 		// Sound Engine
-
+	uintptr_t func_Wwise_Sound_AddBehaviorExtension = 0x1b5a741;
+	uintptr_t func_Wwise_Sound_CancelBankCallbackCookie = 0x1b57f0c;
+	uintptr_t func_Wwise_Sound_CancelEventCallback = 0x1b5760d;
+	uintptr_t func_Wwise_Sound_CancelEventCallbackCookie = 0x1b575ed;
+	uintptr_t func_Wwise_Sound_ClearBanks = 0x1b58ecc;
+	uintptr_t func_Wwise_Sound_ClearPreparedEvents = 0x1b58064;
+	uintptr_t func_Wwise_Sound_CloneActorMixerEffect = 0x1b5bd9d;
+	uintptr_t func_Wwise_Sound_CloneBusEffect = 0x1b5bd79;
+	uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID = 0x1b5b68e;
+	uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char = 0x1b5b77a;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Break = 0x1b5baba;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Close = 0x1b5bb4c;
+	uintptr_t func_Wwise_Sound_DynamicSequence_LockPlaylist = 0x1b5bbde;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Open = 0x1b57661;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Pause = 0x1b5b8ac;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Play = 0x1b5b816;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Resume = 0x1b5b93e;
+	uintptr_t func_Wwise_Sound_DynamicSequence_Stop = 0x1b5b9d4;
+	uintptr_t func_Wwise_Sound_DynamicSequence_UnlockPlaylist = 0x1b5bc1e;
+	uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_UniqueID = 0x1b5b302;
+	uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_Char = 0x1b5b3ca;
+	uintptr_t func_Wwise_Sound_g_PlayingID = 0xf4e790;
+	uintptr_t func_Wwise_Sound_GetDefaultInitSettings = 0x1b5683d;
+	uintptr_t func_Wwise_Sound_GetDefaultPlatformInitSettings = 0x1b5689d;
+	uintptr_t func_Wwise_Sound_GetIDFromString = 0x1b58956;
+	uintptr_t func_Wwise_Sound_GetPanningRule = 0x1b568fd;
+	uintptr_t func_Wwise_Sound_GetSourcePlayPosition = 0x1b57631;
+	uintptr_t func_Wwise_Sound_GetSpeakerConfiguration = 0x1b5690d;
+	uintptr_t func_Wwise_Sound_Init = 0x1b5bdbd;
+	uintptr_t func_Wwise_Sound_IsInitialized = 0x01f56829;
+	uintptr_t func_Wwise_Sound_LoadBank_BankID_MemPoolID = 0x1b57a8f;
+	uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_BankID = 0x1b57b81;
+	uintptr_t func_Wwise_Sound_LoadBank_BankID_CallBack = 0x1b57c55;
+	uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_CallBack = 0x1b57cd0;
+	uintptr_t func_Wwise_Sound_LoadBank_Char_MemPoolID = 0x1b5916c;
+	uintptr_t func_Wwise_Sound_LoadBank_Char_CallBack = 0x1b592c1;
+	uintptr_t func_Wwise_Sound_LoadBankUnique = 0x1b5933c;
+	uintptr_t func_Wwise_Sound_PlaySourcePlugin = 0x1b574d5;
+	uintptr_t func_Wwise_Sound_PostEvent_Char = 0x1b5b260;
+	uintptr_t func_Wwise_Sound_PostEvent_UniqueID = 0x1b5bf11;
+	uintptr_t func_Wwise_Sound_PostTrigger_TriggerID = 0x1b56e60;
+	uintptr_t func_Wwise_Sound_PostTrigger_Char = 0x1b58c2b;
+	uintptr_t func_Wwise_Sound_PrepareBank_BankID_Callback = 0x1b57f2c;
+	uintptr_t func_Wwise_Sound_PrepareBank_BankID_BankContent = 0x1b59588;
+	uintptr_t func_Wwise_Sound_PrepareBank_Char_CallBack = 0x1b596d4;
+	uintptr_t func_Wwise_Sound_PrepareBank_Char_BankContent = 0x1b5a651;
+	uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32 = 0x1b57fa1;
+	uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = 0x1b58034;
+	uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32 = 0x1b59915;
+	uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void = 0x1b59c73;
+	uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = 0x1b58125;
+	uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = 0x1b58155;
+	uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = 0x1b59f4d;
+	uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = 0x1b5a1c0;
+	uintptr_t func_Wwise_Sound_Query_GetActiveGameObjects = 0x1b55e5f;
+	uintptr_t func_Wwise_Sound_Query_GetActiveListeners = 0x1b56168;
+	uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Int32 = 0x1b55f95;
+	uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Real32 = 0x1b56025;
+	uintptr_t func_Wwise_Sound_Query_GetEventIDFromPlayingID = 0x1b55f25;
+	uintptr_t func_Wwise_Sound_Query_GetGameObjectAuxSendValues = 0x1b56493;
+	uintptr_t func_Wwise_Sound_Query_GetGameObjectDryLevelValue = 0x1b5658f;
+	uintptr_t func_Wwise_Sound_Query_GetGameObjectFromPlayingID = 0x1b55f45;
+	uintptr_t func_Wwise_Sound_Query_GetIsGameObjectActive = 0x1b55e8f;
+	uintptr_t func_Wwise_Sound_Query_GetListenerPosition = 0x1b55c7f;
+	uintptr_t func_Wwise_Sound_Query_GetListenerSpatialization = 0x1b55cdf;
+	uintptr_t func_Wwise_Sound_Query_GetMaxRadius_Array = 0x1b55ebf;
+	uintptr_t func_Wwise_Sound_Query_GetMaxRadius_GameObject = 0x1b55eef;
+	uintptr_t func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion = 0x1b56622;
+	uintptr_t func_Wwise_Sound_Query_GetPlayingIDsFromGameObject = 0x1b55f65;
+	uintptr_t func_Wwise_Sound_Query_GetPosition = 0x1b560b5;
+	uintptr_t func_Wwise_Sound_Query_GetPositioningInfo = 0x1b55dff;
+	uintptr_t func_Wwise_Sound_Query_GetRTPCValue_RTPCID = 0x1b561fb;
+	uintptr_t func_Wwise_Sound_Query_GetRTPCValue_Char = 0x1b5634a;
+	uintptr_t func_Wwise_Sound_Query_GetState_StateGroupID = 0x1b55d1f;
+	uintptr_t func_Wwise_Sound_Query_GetState_Char = 0x1b55daf;
+	uintptr_t func_Wwise_Sound_Query_GetSwitch_SwitchGroupID = 0x1b5638a;
+	uintptr_t func_Wwise_Sound_Query_GetSwitch_Char = 0x1b56463;
+	uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID = 0x1b566e5;
+	uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_Char = 0x1b56799;
+	uintptr_t func_Wwise_Sound_RegisterBusVolumeCallback = 0x1b57018;
+	uintptr_t func_Wwise_Sound_RegisterCodec = 0x1b5693d;
+	uintptr_t func_Wwise_Sound_RegisterGameObj = 0x1b57728;
+	uintptr_t func_Wwise_Sound_RegisterGlobalCallback = 0x1b5a814;
+	uintptr_t func_Wwise_Sound_RegisterPlugin = 0x1b5692d;
+	uintptr_t func_Wwise_Sound_RemoveBehavioralExtension = 0x1b5a7b1;
+	uintptr_t func_Wwise_Sound_RenderAudio = 0x1b5691d;
+	uintptr_t func_Wwise_Sound_ResetRTPCValue_RTPCID = 0x1b56f0e;
+	uintptr_t func_Wwise_Sound_ResetRTPCValue_Char = 0x1b58e2c;
+	uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Int32 = 0x1b5b3fa;
+	uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Int32 = 0x1b5b4af;
+	uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Float = 0x1b5b4df;
+	uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Float = 0x1b5b5f9;
+	uintptr_t func_Wwise_Sound_SetActiveListeners = 0x1b56b76;
+	uintptr_t func_Wwise_Sound_SetActorMixerEffect = 0x1b5825a;
+	uintptr_t func_Wwise_Sound_SetAttenuationScalingFactor = 0x1b56aba;
+	uintptr_t func_Wwise_Sound_SetBankLoadIOSettings = 0x1b5785a;
+	uintptr_t func_Wwise_Sound_SetBusEffect_UniqueID = 0x1b581f4;
+	uintptr_t func_Wwise_Sound_SetBusEffect_Char = 0x1b5a3b1;
+	uintptr_t func_Wwise_Sound_SetEffectParam = 0x1b582bc;
+	uintptr_t func_Wwise_Sound_SetGameObjectAuxSendValues = 0x1b56fa9;
+	uintptr_t func_Wwise_Sound_SetGameObjectOutputBusVolume = 0x1b5704c;
+	uintptr_t func_Wwise_Sound_SetListenerPipeline = 0x1b56d24;
+	uintptr_t func_Wwise_Sound_SetListenerPosition = 0x1b56bc2;
+	uintptr_t func_Wwise_Sound_SetListenerScalingFactor = 0x1b56b1a;
+	uintptr_t func_Wwise_Sound_SetListenerSpatialization = 0x1b56c90;
+	uintptr_t func_Wwise_Sound_SetMaxNumVoicesLimit = 0x1b58e8c;
+	uintptr_t func_Wwise_Sound_SetMultiplePositions = 0x1b569c8;
+	uintptr_t func_Wwise_Sound_SetObjectObstructionAndOcclusion = 0x1b57098;
+	uintptr_t func_Wwise_Sound_SetPanningRule = 0x1b5744c;
+	uintptr_t func_Wwise_Sound_SetPosition = 0x1b58a31;
+	uintptr_t func_Wwise_Sound_SetPositionInternal = 0x1b5694d;
+	uintptr_t func_Wwise_Sound_SetRTPCValue_RTPCID = 0x1b56d73;
+	uintptr_t func_Wwise_Sound_SetRTPCValue_Char = 0x1b58a91;
+	uintptr_t func_Wwise_Sound_SetState_StateGroupID = 0x1b58c8b;
+	uintptr_t func_Wwise_Sound_SetState_Char = 0x1b58d69;
+	uintptr_t func_Wwise_Sound_SetSwitch_SwitchGroupID = 0x1b56e11;
+	uintptr_t func_Wwise_Sound_SetSwitch_Char = 0x1b58b50;
+	uintptr_t func_Wwise_Sound_SetVolumeThreshold = 0x1b58e6c;
+	uintptr_t func_Wwise_Sound_StartOutputCapture = 0x1b583a4;
+	uintptr_t func_Wwise_Sound_StopAll = 0x1b58590;
+	uintptr_t func_Wwise_Sound_StopOutputCapture = 0x1b58463;
+	uintptr_t func_Wwise_Sound_StopPlayingID = 0x1b585d9;
+	uintptr_t func_Wwise_Sound_StopSourcePlugin = 0x1b5756c;
+	uintptr_t func_Wwise_Sound_Term = 0x1b5acc6;
+	uintptr_t func_Wwise_Sound_UnloadBank_BankID_MemPoolID = 0x1b57d6b;
+	uintptr_t func_Wwise_Sound_UnloadBank_BankID_Callback = 0x1b57e91;
+	uintptr_t func_Wwise_Sound_UnloadBank_Char_MemPoolID = 0x1b593e7;
+	uintptr_t func_Wwise_Sound_UnloadBank_Char_Callback = 0x1b59482;
+	uintptr_t func_Wwise_Sound_UnloadBankUnique = 0x1b594fd;
+	uintptr_t func_Wwise_Sound_UnregisterAllGameObj = 0x1b577dd;
+	uintptr_t func_Wwise_Sound_UnregisterGameObj = 0x1b57784;
+	uintptr_t func_Wwise_Sound_UnregisterGlobalCallback = 0x1b5a844;
 		// StreamMgr
 	uintptr_t func_Wwise_Stream_AddLanguageChangeObserver = 0x1bbc23a;
 	uintptr_t func_Wwise_Stream_Create = 0x1bbbf66;
@@ -146,13 +276,7 @@ namespace Offsets {
 	uintptr_t func_Wwise_Stream_SetCurrentLanguage = 0x1bbc036;
 	uintptr_t func_Wwise_Stream_SetFileLocationResolver = 0x1bbb4a3;
 
-
-
-	uintptr_t func_SetRTPCValue = 0x1F58A91; // Set Game Volume
-	uintptr_t func_GetRTPCValue = 0x1F5634A; // Get Game Volume
-	uintptr_t func_ClearBanks = 0x1F58ECC; // Close All Sound Objects & Stops Noteway
-	uintptr_t func_UnloadBank = 0x1B57D6B; // Unload Bank
-
+	// End Wwise Hijack
 
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
