@@ -341,10 +341,6 @@ void GUI() {
 	oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)D3DHooks::Hook_DP, 7);
 }
 
-void InitEngineFunctions() {
-	return;
-}
-
 void AutoEnterGame() {	//very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 	Sleep(30);
@@ -492,10 +488,8 @@ unsigned WINAPI MainThread(void*) {
 		else { // Game Hasn't Loaded Yet
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
-			if (currentMenu == "MainMenu") { // Yay We Loaded :P
+			if (currentMenu == "MainMenu") // Yay We Loaded :P
 				GameLoaded = true;
-				InitEngineFunctions(); // Anti-crash or not, let's try atleast
-			}
 
 			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
 				AutoEnterGame();
