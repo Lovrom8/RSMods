@@ -280,7 +280,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds), whiteText, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 	}
 
