@@ -160,6 +160,13 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
+            this.label_TwitchAccessTokenVal = new System.Windows.Forms.Label();
+            this.label_TwitchChannelIDVal = new System.Windows.Forms.Label();
+            this.label_TwitchUsernameVal = new System.Windows.Forms.Label();
+            this.label_TwitchAccessToken = new System.Windows.Forms.Label();
+            this.label_TwitchChannelID = new System.Windows.Forms.Label();
+            this.label_TwitchUsername = new System.Windows.Forms.Label();
+            this.label_AuthorizedAs = new System.Windows.Forms.Label();
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
@@ -170,13 +177,7 @@
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
-            this.label_TwitchUsername = new System.Windows.Forms.Label();
-            this.label_TwitchChannelID = new System.Windows.Forms.Label();
-            this.label_TwitchAccessToken = new System.Windows.Forms.Label();
-            this.label_TwitchUsernameVal = new System.Windows.Forms.Label();
-            this.label_TwitchChannelIDVal = new System.Windows.Forms.Label();
-            this.label_TwitchAccessTokenVal = new System.Windows.Forms.Label();
-            this.label_AuthorizedAs = new System.Windows.Forms.Label();
+            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -309,7 +310,7 @@
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 90);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 110);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
             this.label_SongTimerKey.Size = new System.Drawing.Size(0, 13);
             this.label_SongTimerKey.TabIndex = 17;
@@ -317,7 +318,7 @@
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 113);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 133);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
             this.label_ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
@@ -377,7 +378,7 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 135);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 155);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
             this.label_RainbowStringsKey.Size = new System.Drawing.Size(0, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
@@ -773,6 +774,7 @@
             // 
             // groupBox_Keybindings
             // 
+            this.groupBox_Keybindings.Controls.Add(this.label_ChangeSelectedVolumeKey);
             this.groupBox_Keybindings.Controls.Add(this.label_RemoveLyricsKey);
             this.groupBox_Keybindings.Controls.Add(this.button_ClearSelectedKeybind);
             this.groupBox_Keybindings.Controls.Add(this.label_NewKeyAssignment);
@@ -786,7 +788,7 @@
             this.groupBox_Keybindings.Controls.Add(this.listBox_Modlist);
             this.groupBox_Keybindings.Location = new System.Drawing.Point(15, 17);
             this.groupBox_Keybindings.Name = "groupBox_Keybindings";
-            this.groupBox_Keybindings.Size = new System.Drawing.Size(701, 176);
+            this.groupBox_Keybindings.Size = new System.Drawing.Size(701, 197);
             this.groupBox_Keybindings.TabIndex = 52;
             this.groupBox_Keybindings.TabStop = false;
             this.groupBox_Keybindings.Text = "Key Bindings";
@@ -796,7 +798,7 @@
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 156);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 176);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
             this.label_RemoveLyricsKey.Size = new System.Drawing.Size(0, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
@@ -1908,6 +1910,65 @@
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot";
             // 
+            // label_TwitchAccessTokenVal
+            // 
+            this.label_TwitchAccessTokenVal.AutoSize = true;
+            this.label_TwitchAccessTokenVal.Location = new System.Drawing.Point(362, 100);
+            this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
+            this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchAccessTokenVal.TabIndex = 8;
+            // 
+            // label_TwitchChannelIDVal
+            // 
+            this.label_TwitchChannelIDVal.AutoSize = true;
+            this.label_TwitchChannelIDVal.Location = new System.Drawing.Point(362, 75);
+            this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
+            this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchChannelIDVal.TabIndex = 7;
+            // 
+            // label_TwitchUsernameVal
+            // 
+            this.label_TwitchUsernameVal.AutoSize = true;
+            this.label_TwitchUsernameVal.Location = new System.Drawing.Point(362, 50);
+            this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
+            this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
+            this.label_TwitchUsernameVal.TabIndex = 6;
+            // 
+            // label_TwitchAccessToken
+            // 
+            this.label_TwitchAccessToken.AutoSize = true;
+            this.label_TwitchAccessToken.Location = new System.Drawing.Point(284, 100);
+            this.label_TwitchAccessToken.Name = "label_TwitchAccessToken";
+            this.label_TwitchAccessToken.Size = new System.Drawing.Size(62, 13);
+            this.label_TwitchAccessToken.TabIndex = 5;
+            this.label_TwitchAccessToken.Text = "Auth token:";
+            // 
+            // label_TwitchChannelID
+            // 
+            this.label_TwitchChannelID.AutoSize = true;
+            this.label_TwitchChannelID.Location = new System.Drawing.Point(284, 75);
+            this.label_TwitchChannelID.Name = "label_TwitchChannelID";
+            this.label_TwitchChannelID.Size = new System.Drawing.Size(63, 13);
+            this.label_TwitchChannelID.TabIndex = 4;
+            this.label_TwitchChannelID.Text = "Channel ID:";
+            // 
+            // label_TwitchUsername
+            // 
+            this.label_TwitchUsername.AutoSize = true;
+            this.label_TwitchUsername.Location = new System.Drawing.Point(284, 50);
+            this.label_TwitchUsername.Name = "label_TwitchUsername";
+            this.label_TwitchUsername.Size = new System.Drawing.Size(58, 13);
+            this.label_TwitchUsername.TabIndex = 3;
+            this.label_TwitchUsername.Text = "Username:";
+            // 
+            // label_AuthorizedAs
+            // 
+            this.label_AuthorizedAs.AutoSize = true;
+            this.label_AuthorizedAs.Location = new System.Drawing.Point(426, 25);
+            this.label_AuthorizedAs.Name = "label_AuthorizedAs";
+            this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
+            this.label_AuthorizedAs.TabIndex = 2;
+            // 
             // label_TwitchAuthorized
             // 
             this.label_TwitchAuthorized.AutoSize = true;
@@ -2015,64 +2076,13 @@
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
-            // label_TwitchUsername
+            // label_ChangeSelectedVolumeKey
             // 
-            this.label_TwitchUsername.AutoSize = true;
-            this.label_TwitchUsername.Location = new System.Drawing.Point(284, 50);
-            this.label_TwitchUsername.Name = "label_TwitchUsername";
-            this.label_TwitchUsername.Size = new System.Drawing.Size(58, 13);
-            this.label_TwitchUsername.TabIndex = 3;
-            this.label_TwitchUsername.Text = "Username:";
-            // 
-            // label_TwitchChannelID
-            // 
-            this.label_TwitchChannelID.AutoSize = true;
-            this.label_TwitchChannelID.Location = new System.Drawing.Point(284, 75);
-            this.label_TwitchChannelID.Name = "label_TwitchChannelID";
-            this.label_TwitchChannelID.Size = new System.Drawing.Size(63, 13);
-            this.label_TwitchChannelID.TabIndex = 4;
-            this.label_TwitchChannelID.Text = "Channel ID:";
-            // 
-            // label_TwitchAccessToken
-            // 
-            this.label_TwitchAccessToken.AutoSize = true;
-            this.label_TwitchAccessToken.Location = new System.Drawing.Point(284, 100);
-            this.label_TwitchAccessToken.Name = "label_TwitchAccessToken";
-            this.label_TwitchAccessToken.Size = new System.Drawing.Size(62, 13);
-            this.label_TwitchAccessToken.TabIndex = 5;
-            this.label_TwitchAccessToken.Text = "Auth token:";
-            // 
-            // label_TwitchUsernameVal
-            // 
-            this.label_TwitchUsernameVal.AutoSize = true;
-            this.label_TwitchUsernameVal.Location = new System.Drawing.Point(362, 50);
-            this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
-            this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
-            this.label_TwitchUsernameVal.TabIndex = 6;
-            // 
-            // label_TwitchChannelIDVal
-            // 
-            this.label_TwitchChannelIDVal.AutoSize = true;
-            this.label_TwitchChannelIDVal.Location = new System.Drawing.Point(362, 75);
-            this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
-            this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
-            this.label_TwitchChannelIDVal.TabIndex = 7;
-            // 
-            // label_TwitchAccessTokenVal
-            // 
-            this.label_TwitchAccessTokenVal.AutoSize = true;
-            this.label_TwitchAccessTokenVal.Location = new System.Drawing.Point(362, 100);
-            this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
-            this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
-            this.label_TwitchAccessTokenVal.TabIndex = 8;
-            // 
-            // label_AuthorizedAs
-            // 
-            this.label_AuthorizedAs.AutoSize = true;
-            this.label_AuthorizedAs.Location = new System.Drawing.Point(426, 25);
-            this.label_AuthorizedAs.Name = "label_AuthorizedAs";
-            this.label_AuthorizedAs.Size = new System.Drawing.Size(0, 13);
-            this.label_AuthorizedAs.TabIndex = 2;
+            this.label_ChangeSelectedVolumeKey.AutoSize = true;
+            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 89);
+            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
+            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(0, 13);
+            this.label_ChangeSelectedVolumeKey.TabIndex = 31;
             // 
             // MainForm
             // 
@@ -2287,6 +2297,7 @@
         private System.Windows.Forms.Label label_TwitchChannelIDVal;
         private System.Windows.Forms.Label label_TwitchUsernameVal;
         private System.Windows.Forms.Label label_AuthorizedAs;
+        private System.Windows.Forms.Label label_ChangeSelectedVolumeKey;
     }
 }
 

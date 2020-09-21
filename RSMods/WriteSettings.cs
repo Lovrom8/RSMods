@@ -32,6 +32,7 @@ namespace RSMods
                 { ReadSettings.ToggleLoftIdentifier, "" }, // Toggle Loft
                 { ReadSettings.AddVolumeIdentifier, "" }, // Add Volume
                 { ReadSettings.DecreaseVolumeIdentifier, "" }, // Decrease Volume
+                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, "" }, // Change Selected Volume
                 { ReadSettings.ShowSongTimerIdentifier, "" }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
@@ -126,6 +127,7 @@ namespace RSMods
                 { ReadSettings.ToggleLoftIdentifier, ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier) }, // Toggle Loft
                 { ReadSettings.AddVolumeIdentifier, ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier) }, // Add Volume
                 { ReadSettings.DecreaseVolumeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier) }, // Decrease Volume
+                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier) }, // Change Selected Volume
                 { ReadSettings.ShowSongTimerIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier) }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings

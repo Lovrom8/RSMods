@@ -54,7 +54,7 @@ namespace RSMods
                 SaveChanges(ReadSettings.Songlist1Identifier, "Define Song List 1 Here");
 
             // Fill Songlist List
-            foreach (string songlist in Dictionaries.songlists)
+            foreach (string songlist in Dictionaries.refreshSonglistOrSavedKeysForModTogglesLists("songlists"))
                 listBox_Songlist.Items.Add(songlist);
 
             // Fill Modlist List
@@ -83,7 +83,7 @@ namespace RSMods
             LoadSetAndForgetMods();
         }
 
-        private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.savedKeysForModToggles[listBox_Modlist.SelectedIndex];
+        private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.refreshSonglistOrSavedKeysForModTogglesLists("savedKeysForModToggles")[listBox_Modlist.SelectedIndex];
 
         private void LoadModSettings()
         {
@@ -807,6 +807,7 @@ namespace RSMods
             label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
             label_AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
             label_DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            label_ChangeSelectedVolumeKey.Text = "Change Selected Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
             label_SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
             label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));

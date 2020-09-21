@@ -6,7 +6,7 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen,
@@ -31,8 +31,9 @@ namespace RSMods
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
+                ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
 
-                // Toggle Effects (Change Names to easier naming scheme before public launch)
+                // Toggle Effects
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
                 AddVolumeEnabledIdentifier = "AddVolume = ",
                 DecreaseVolumeEnabledIdentifier = "DecreaseVolume = ",
@@ -174,6 +175,14 @@ namespace RSMods
                             DecreaseVolumeKey = KeyConversion.VirtualKey(DecreaseVolumeKey);
                         if (identifierToGrab == DecreaseVolumeIdentifier)
                             return DecreaseVolumeKey;
+                    }
+                    if (currentLine.Contains(ChangeSelectedVolumeKeyIdentifier))
+                    {
+                        ChangeSelectedVolumeKey = currentLine.Substring(ChangeSelectedVolumeKeyIdentifier.Length, (currentLine.Length - ChangeSelectedVolumeKeyIdentifier.Length));
+                        if (KeyConversion.VirtualKey(ChangeSelectedVolumeKey) != "")
+                            ChangeSelectedVolumeKey = KeyConversion.VirtualKey(ChangeSelectedVolumeKey);
+                        if (identifierToGrab == ChangeSelectedVolumeKeyIdentifier)
+                            return ChangeSelectedVolumeKey;
                     }
                     if (currentLine.Contains(ShowSongTimerIdentifier))
                     {
