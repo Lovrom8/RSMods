@@ -1084,7 +1084,7 @@ namespace RSMods
         {
             listBox_GuitarSpeakPresets.Items.Clear();
 
-            foreach (KeyValuePair<string, string> guitarSpeakKeypress in Dictionaries.GuitarSpeakPresetDictionary)
+            foreach (KeyValuePair<string, string> guitarSpeakKeypress in Dictionaries.RefreshGuitarSpeakPresets())
                 listBox_GuitarSpeakPresets.Items.Add(guitarSpeakKeypress.Key + guitarSpeakKeypress.Value);
         }
 
