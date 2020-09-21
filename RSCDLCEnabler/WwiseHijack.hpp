@@ -698,8 +698,6 @@ enum AkMemPoolAttributes
 	AkBlockMgmtMask = AkFixedSizeBlocksMode
 };
 
-// TODO: Merge Function with Type-Variable in DLLMain::InitEngineFunctions()
-
 /* Offsets For Functions */
 
 // Wwise Hijack
