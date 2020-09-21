@@ -5,8 +5,9 @@
 void Settings::Initialize()
 {
 	modSettings = {  //default values incase the INI doesn't load
-	{"VolumeUpKey",  "O"},
-	{"VolumeDownKey", "I"},
+	{"AddVolumeKey",  "O"},
+	{"DecreaseVolumeKey", "I"},
+	{"ChangedSelectedVolumeKey", "P"},
 	{"CustomSongListTitles", "K"},
 	{"ToggleLoftKey", "T"},
 	{"ShowSongTimerKey", "S"},
@@ -91,6 +92,7 @@ void Settings::ReadKeyBinds() {
 			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
 			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
 			{ "DecreaseVolumeKey",  reader.GetValue("Keybinds", "DecreaseVolumeKey", "I") },
+			{ "ChangedSelectedVolumeKey", reader.GetValue("Keybinds", "ChangedSelectedVolumeKey", "P") },
 			{ "CustomSongListTitles", reader.GetValue("Keybinds", "CustomSongListTitles", "K")},
 			{ "ShowSongTimerKey", reader.GetValue("Keybinds", "ShowSongTimerKey", "N")},
 			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},

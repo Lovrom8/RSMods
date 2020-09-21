@@ -109,14 +109,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				}
 			}*/
 
-
-			/* TODO: Reassign this to a key the user defines in the GUI / INI
-			else if (keyPressed == VK_F9) {
+			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
 				currentVolumeIndex++;
 
 				if (currentVolumeIndex > (mixerInternalNames.size() -1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
-			}*/
+			}
 
 			// else if (keyPressed == VK_F9)
 				// ClearBanks(); // Purposefully kills Wwise (has potential to fix tone bug)
