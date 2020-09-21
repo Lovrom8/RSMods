@@ -22,12 +22,6 @@ namespace Offsets {
 	uintptr_t ptr_guitarSpeak = 0x135C4FC;
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
-	// Wwise Audio Volume
-	uintptr_t func_SetRTPCValue = 0x1F58A91; // Set Volume
-	uintptr_t func_GetRTPCValue = 0x1F5634A; // Get Volume
-	uintptr_t func_ClearBanks = 0x1F58ECC; // Close All Sound Objects & Stops Noteway
-	uintptr_t func_UnloadBank = 0x1B57D6B; // Unload Bank
-
 	// Removed do to access to Wwise calls.
 	//// Mixer Volumes - the game uses 0x08 as the last offset for those mixer related things, so that could help with reducing pointerscan results - but I forgot about that, so only one of those uses 0x08 :P 
 	//// If you don't need the old values, you can always just use SetRTPCValue them to whatever and they will stay in floats pointed to by these pointers 
@@ -94,6 +88,71 @@ namespace Offsets {
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
+
+	// Wwise Hijack
+
+		// Root
+	uintptr_t func_Wwise_Root_IsRestoreSinkRequested = 0x1b5bfd3;
+	uintptr_t func_Wwise_Root_IsUsingDummySink = 0x1b5bfc3;
+		// IAkStreamMgr
+	uintptr_t func_Wwise_IAkStreamMgr_m_pStreamMgr = 0xf4f500;
+		// MemoryMgr
+	uintptr_t func_Wwise_Memory_CheckPoolId = 0x1b32828;
+	uintptr_t func_Wwise_Memory_CreatePool = 0x1b32519;
+	uintptr_t func_Wwise_Memory_DestroyPool = 0x1b326d4;
+	uintptr_t func_Wwise_Memory_Falign = 0x1b329ee;
+	uintptr_t func_Wwise_Memory_GetBlock = 0x1b32aee;
+	uintptr_t func_Wwise_Memory_GetBlockSize = 0x1b327e8;
+	uintptr_t func_Wwise_Memory_GetMaxPools = 0x1b32818;
+	uintptr_t func_Wwise_Memory_GetNumPools = 0x1b32808;
+	uintptr_t func_Wwise_Memory_GetPoolAttributes = 0x1b327c4;
+	uintptr_t func_Wwise_Memory_GetPoolMemoryUsed = 0x1b32aae;
+	uintptr_t func_Wwise_Memory_GetPoolName = 0x1c06a57;
+	uintptr_t func_Wwise_Memory_GetPoolStats = 0x1b32a3e;
+	uintptr_t func_Wwise_Memory_IsInitialized = 0x1b32784;
+	uintptr_t func_Wwise_Memory_Malign = 0x1b3298a;
+	uintptr_t func_Wwise_Memory_Malloc = 0x1b3290a;
+	uintptr_t func_Wwise_Memory_ReleaseBlock = 0x1b32b3e;
+	uintptr_t func_Wwise_Memory_SetMonitoring = 0x127e4f3;
+	uintptr_t func_Wwise_Memory_SetPoolName = 0x1b32794;
+	uintptr_t func_Wwise_Memory_Term = 0x1b32b8e;
+		// Monitor
+	uintptr_t func_Wwise_Monitor_PostCode = 0x1b587ba;
+		// Motion Engine
+	uintptr_t func_Wwise_Motion_AddPlayerMotionDevice = 0x1b58638;
+	uintptr_t func_Wwise_Motion_RegisterMotionDevice = 0x1b58712;
+	uintptr_t func_Wwise_Motion_RemovePlayerMotionDevice = 0x1b586ad;
+	uintptr_t func_Wwise_Motion_SetPlayerListener = 0x1b58722;
+	uintptr_t func_Wwise_Motion_SetPlayerVolume = 0x1b5876e;
+		// Music Engine
+	uintptr_t func_Wwise_Music_GetDefaultInitSettings = 0x1b340ef;
+	uintptr_t func_Wwise_Music_GetPlayingSegmentInfo = 0x1b3413f;
+	uintptr_t func_Wwise_Music_Init = 0x1b34f8c;
+	uintptr_t func_Wwise_Music_Term = 0x1b34e38;
+		// Sound Engine
+
+		// StreamMgr
+	uintptr_t func_Wwise_Stream_AddLanguageChangeObserver = 0x1bbc23a;
+	uintptr_t func_Wwise_Stream_Create = 0x1bbbf66;
+	uintptr_t func_Wwise_Stream_CreateDevice = 0x1bbc3dc;
+	uintptr_t func_Wwise_Stream_DestroyDevice = 0x1bbbfe6;
+	uintptr_t func_Wwise_Stream_FlushAllCaches = 0x1bbc076;
+	uintptr_t func_Wwise_Stream_GetCurrentLanguage = 0x1bbb4c3;
+	uintptr_t func_Wwise_Stream_GetDefaultDeviceSettings = 0x1bbb433;
+	uintptr_t func_Wwise_Stream_GetDefaultSettings = 0x1bbb423;
+	uintptr_t func_Wwise_Stream_GetFileLocationResolver = 0x1bbb493;
+	uintptr_t func_Wwise_Stream_GetPoolID = 0x1bbb4b3;
+	uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver = 0x1bbc056;
+	uintptr_t func_Wwise_Stream_SetCurrentLanguage = 0x1bbc036;
+	uintptr_t func_Wwise_Stream_SetFileLocationResolver = 0x1bbb4a3;
+
+
+
+	uintptr_t func_SetRTPCValue = 0x1F58A91; // Set Game Volume
+	uintptr_t func_GetRTPCValue = 0x1F5634A; // Get Game Volume
+	uintptr_t func_ClearBanks = 0x1F58ECC; // Close All Sound Objects & Stops Noteway
+	uintptr_t func_UnloadBank = 0x1B57D6B; // Unload Bank
+
 
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
