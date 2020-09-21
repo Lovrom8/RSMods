@@ -13,9 +13,10 @@
   <ItemGroup>
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
-	<ClInclude Include="D3D/D3DHelper.hpp" />
+    <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
-	<ClInclude Include="D3D/D3D.hpp" />
+    <ClInclude Include="D3D/D3D.hpp" />
+    <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemUtil.cpp" />
