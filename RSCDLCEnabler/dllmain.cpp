@@ -71,7 +71,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
 				float volume = 0;
 				RTPCValue_type type = RTPCValue_GameObject;
-				Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+				Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 				//std::cout << volume << std::endl;
 
@@ -80,8 +80,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				else
 					volume = 100.0f; // Incase the volume is 96-99 we can't throw it over 100.
 
-				SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-				SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 
 
 				//RTPCValue_type type;
@@ -92,15 +92,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
 				float volume = 0;
 				RTPCValue_type type = RTPCValue_GameObject;
-				Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+				Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 				if (volume >= 5.0f)
 					volume -= 5.0f;
 				else
 					volume = 0.0f; // Incase the volume is 1-4 we can't throw it below 0.
 
-				SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-				SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+				Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+				Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 			}
 			/*else if (keyPressed == VK_F9) { // Disco Mode
 				DiscoModeEnabled = !DiscoModeEnabled;
@@ -264,7 +264,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
-			Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+			Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 			MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
@@ -342,10 +342,9 @@ void GUI() {
 }
 
 void InitEngineFunctions() {
-	SetRTPCValue_Char = (tSetRTPCValue_Char)Offsets::func_SetRTPCValue;
-	Query_GetRTPCValue_Char = (tQuery_GetRTPCValue_Char)Offsets::func_GetRTPCValue;
-	ClearBanks = (tClearBanks)Offsets::func_ClearBanks;
-	UnloadBank_BankID_MemPoolID = (tUnloadBank_BankID_MemPoolID)Offsets::func_UnloadBank;
+	Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)Offsets::func_Wwise_Sound_SetRTPCValue_Char;
+	Wwise_Sound_Query_GetRTPCValue_Char = (tQuery_GetRTPCValue_Char)Offsets::func_Wwise_Sound_Query_GetRTPCValue_Char;
+	Wwise_Sound_ClearBanks = (tClearBanks)Offsets::func_Wwise_Sound_ClearBanks;
 }
 
 void AutoEnterGame() {	//very big brain || "Fork in the toaster"

@@ -275,7 +275,6 @@ namespace Offsets {
 	uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver = 0x1bbc056;
 	uintptr_t func_Wwise_Stream_SetCurrentLanguage = 0x1bbc036;
 	uintptr_t func_Wwise_Stream_SetFileLocationResolver = 0x1bbb4a3;
-
 	// End Wwise Hijack
 
 	// Misc Mods
