@@ -1422,9 +1422,7 @@ struct AkChannelConfig
 	/// Set channel config as either a standard or an anonymous configuration, specified with both a given channel mask (0 if anonymous) and a number of channels (which must match the channel mask if standard).
 	AkForceInline void SetStandardOrAnonymous(AkUInt32 in_uNumChannels, AkUInt32 in_uChannelMask)
 	{
-#ifdef AKASSERT
 		AKASSERT(in_uChannelMask == 0 || in_uNumChannels == AK::ChannelMaskToNumChannels(in_uChannelMask));
-#endif
 		uNumChannels = in_uNumChannels;
 		eConfigType = (in_uChannelMask) ? AK_ChannelConfigType_Standard : AK_ChannelConfigType_Anonymous;
 		uChannelMask = in_uChannelMask;
@@ -1470,15 +1468,6 @@ struct AkChannelConfig
 	AkForceInline AkChannelConfig RemoveLFE() const
 	{
 		AkChannelConfig newConfig = *this;
-#ifdef AK_LFECENTER
-		AkUInt32 uNewChannelMask = newConfig.uChannelMask & ~AK_SPEAKER_LOW_FREQUENCY;
-		AkUInt32 uNumLFEChannel = (newConfig.uChannelMask - uNewChannelMask) >> 3; // 0 or 1
-#ifdef AKASSERT
-		AKASSERT(uNumLFEChannel == 0 || uNumLFEChannel == 1);
-#endif
-		newConfig.uNumChannels -= uNumLFEChannel;
-		newConfig.uChannelMask = uNewChannelMask;
-#endif
 		return newConfig;
 	}
 
@@ -1486,15 +1475,6 @@ struct AkChannelConfig
 	AkForceInline AkChannelConfig RemoveCenter() const
 	{
 		AkChannelConfig newConfig = *this;
-#ifdef AK_LFECENTER
-		AkUInt32 uNewChannelMask = newConfig.uChannelMask & ~AK_SPEAKER_FRONT_CENTER;
-		AkUInt32 uNumCenterChannel = (newConfig.uChannelMask - uNewChannelMask) >> 2;	// 0 or 1.
-#ifdef AKASSERT
-		AKASSERT(uNumCenterChannel == 0 || uNumCenterChannel == 1);
-#endif
-		newConfig.uNumChannels -= uNumCenterChannel;
-		newConfig.uChannelMask = uNewChannelMask;
-#endif
 		return newConfig;
 	}
 
@@ -1518,44 +1498,23 @@ struct AkChannelConfig
 	/// \return The interleaved type
 	AkForceInline bool IsChannelConfigSupported() const
 	{
-#ifdef AK_71AUDIO
-		return true;
-#else
 		if (eConfigType == AK_ChannelConfigType_Standard)
 		{
 			switch (uChannelMask)
 			{
 			case AK_SPEAKER_SETUP_MONO:
 			case AK_SPEAKER_SETUP_STEREO:
-#ifdef AK_LFECENTER
-			case AK_SPEAKER_SETUP_0POINT1:
-			case AK_SPEAKER_SETUP_1POINT1:
-			case AK_SPEAKER_SETUP_2POINT1:
-			case AK_SPEAKER_SETUP_3STEREO:
-			case AK_SPEAKER_SETUP_3POINT1:
-#ifdef AK_REARCHANNELS
-			case AK_SPEAKER_SETUP_4:
-			case AK_SPEAKER_SETUP_4POINT1:
-			case AK_SPEAKER_SETUP_5:
-			case AK_SPEAKER_SETUP_5POINT1:
-#endif
-#endif
 				return true;
 			}
 		}
 		return false;
-#endif
 	}
 
 	/// Query if LFE channel is present.
 	/// \return True when LFE channel is present
 	AkForceInline bool HasLFE() const
 	{
-#ifdef AK_LFECENTER
-		return AK::HasLFE(uChannelMask);
-#else
 		return false;
-#endif
 	}
 
 	/// Query if center channel is present.
@@ -1564,11 +1523,7 @@ struct AkChannelConfig
 	/// \return True when center channel is present and configuration has more than 2 channels.
 	AkForceInline bool HasCenter() const
 	{
-#ifdef AK_LFECENTER
-		return AK::HasCenter(uChannelMask);
-#else
 		return false;
-#endif
 	}
 };
 
