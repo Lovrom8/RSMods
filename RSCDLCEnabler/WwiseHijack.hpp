@@ -700,6 +700,930 @@ enum AkMemPoolAttributes
 	AkBlockMgmtMask = AkFixedSizeBlocksMode
 };
 
+#define AKSOUNDENGINE_API
+#define AkForceInline   __forceinline
+#define AK_SIMD_ALIGNMENT   16                  ///< Platform-specific alignment requirement for SIMD data
+#define AK_ALIGN_SIMD(__Declaration__) __declspec(align(AK_SIMD_ALIGNMENT)) __Declaration__ ///< Platform-specific alignment requirement for SIMD data
+#define AK_ALIGN_DMA                            ///< Platform-specific data alignment for DMA transfers
+#define AK_ALIGN_FASTDMA                        ///< Platform-specific data alignment for faster DMA transfers
+#define AK_ALIGN_SIZE_FOR_DMA(__Size__) (__Size__) ///< Used to align sizes to next 16 byte boundary on platfroms that require it
+
+AKSOUNDENGINE_API AkMemPoolId g_DefaultPoolId;
+AKSOUNDENGINE_API AkMemPoolId g_LEngineDefaultPoolId;
+
+#define _AKARRAY_H
+
+#define AK_DEFINE_ARRAY_POOL( _name_, _poolID_ )    \
+struct _name_                                       \
+{                                                   \
+	static AkMemPoolId Get()                        \
+    {                                               \
+		return _poolID_;                            \
+	}                                               \
+};
+
+AK_DEFINE_ARRAY_POOL(_ArrayPoolDefault, g_DefaultPoolId)
+AK_DEFINE_ARRAY_POOL(_ArrayPoolLEngineDefault, g_LEngineDefaultPoolId)
+
+template <class U_POOL>
+struct AkArrayAllocatorNoAlign
+{
+	AkForceInline void TransferMem(void*& io_pDest, AkArrayAllocatorNoAlign<U_POOL> in_srcAlloc, void* in_pSrc)
+	{
+		io_pDest = in_pSrc;
+	}
+};
+
+template <class U_POOL>
+struct AkArrayAllocatorAlignedSimd
+{
+	AkForceInline void* Alloc(size_t in_uSize)
+	{
+		return AK::MemoryMgr::Malign(U_POOL::Get(), in_uSize, AK_SIMD_ALIGNMENT);
+	}
+
+	AkForceInline void Free(void* in_pAddress)
+	{
+		AK::MemoryMgr::Falign(U_POOL::Get(), in_pAddress);
+	}
+
+	AkForceInline void TransferMem(void*& io_pDest, AkArrayAllocatorAlignedSimd<U_POOL> in_srcAlloc, void* in_pSrc)
+	{
+		io_pDest = in_pSrc;
+	}
+
+};
+
+template <class T>
+struct AkAssignmentMovePolicy
+{
+	// By default the assignment operator is invoked to move elements of an array from slot to slot.  If desired,
+	//	a custom 'Move' operation can be passed into TMovePolicy to transfer ownership of resources from in_Src to in_Dest.
+	static AkForceInline void Move(T& in_Dest, T& in_Src)
+	{
+		in_Dest = in_Src;
+	}
+};
+
+// Can be used as TMovePolicy to create arrays of arrays.
+template <class T>
+struct AkTransferMovePolicy
+{
+	static AkForceInline void Move(T& in_Dest, T& in_Src)
+	{
+		in_Dest.Transfer(in_Src); //transfer ownership of resources.
+	}
+};
+
+// Common allocators:
+typedef AkArrayAllocatorNoAlign<_ArrayPoolDefault> ArrayPoolDefault;
+typedef AkArrayAllocatorNoAlign<_ArrayPoolLEngineDefault> ArrayPoolLEngineDefault;
+typedef AkArrayAllocatorAlignedSimd<_ArrayPoolLEngineDefault> ArrayPoolLEngineDefaultAlignedSimd;
+
+struct AkPlacementNewKey
+{
+	AkForceInline AkPlacementNewKey() {}
+};
+
+#define AkPlacementNew(_memory) ::new( _memory, AkPlacementNewKey() )
+
+AkForceInline void* operator new(size_t /*size*/, void* memory, const AkPlacementNewKey& /*key*/) throw()
+{
+	 return memory;
+}
+
+#define AKASSERT(Condition) ((void)0)
+
+/// Specific implementation of array
+template <class T, class ARG_T, class TAlloc = ArrayPoolDefault, unsigned long TGrowBy = 1, class TMovePolicy = AkAssignmentMovePolicy<T> > class AkArray : public TAlloc
+{
+public:
+	/// Constructor
+	AkArray()
+		: m_pItems(0)
+		, m_uLength(0)
+		, m_ulReserved(0)
+	{
+	}
+
+	/// Destructor
+	~AkArray()
+	{
+		AKASSERT(m_pItems == 0);
+		AKASSERT(m_uLength == 0);
+		AKASSERT(m_ulReserved == 0);
+	}
+
+	/// Iterator
+	struct Iterator
+	{
+		T* pItem;	///< Pointer to the item in the array.
+
+		/// ++ operator
+		Iterator& operator++()
+		{
+			AKASSERT(pItem);
+			++pItem;
+			return *this;
+		}
+
+		/// -- operator
+		Iterator& operator--()
+		{
+			AKASSERT(pItem);
+			--pItem;
+			return *this;
+		}
+
+		/// * operator
+		T& operator*()
+		{
+			AKASSERT(pItem);
+			return *pItem;
+		}
+
+		/// == operator
+		bool operator ==(const Iterator& in_rOp) const
+		{
+			return (pItem == in_rOp.pItem);
+		}
+
+		/// != operator
+		bool operator !=(const Iterator& in_rOp) const
+		{
+			return (pItem != in_rOp.pItem);
+		}
+	};
+
+	/// Returns the iterator to the first item of the array, will be End() if the array is empty.
+	Iterator Begin() const
+	{
+		Iterator returnedIt;
+		returnedIt.pItem = m_pItems;
+		return returnedIt;
+	}
+
+	/// Returns the iterator to the end of the array
+	Iterator End() const
+	{
+		Iterator returnedIt;
+		returnedIt.pItem = m_pItems + m_uLength;
+		return returnedIt;
+	}
+
+	/// Returns the iterator th the specified item, will be End() if the item is not found
+	Iterator FindEx(ARG_T in_Item) const
+	{
+		Iterator it = Begin();
+
+		for (Iterator itEnd = End(); it != itEnd; ++it)
+		{
+			if (*it == in_Item)
+				break;
+		}
+
+		return it;
+	}
+
+	/// Returns the iterator th the specified item, will be End() if the item is not found
+	/// The array must be in ascending sorted order.
+	Iterator BinarySearch(ARG_T in_Item) const
+	{
+		Iterator itResult = End();
+		if (m_pItems)
+		{
+			T* pTop = m_pItems, * pBottom = m_pItems + m_uLength;
+
+			while (pTop <= pBottom)
+			{
+				T* pThis = (pBottom - pTop) / 2 + pTop;
+				if (in_Item < *pThis)
+					pBottom = pThis - 1;
+				else if (in_Item > * pThis)
+					pTop = pThis + 1;
+				else
+				{
+					itResult.pItem = pThis;
+					break;
+				}
+			}
+		}
+
+		return itResult;
+	}
+
+	/// Erase the specified iterator from the array
+	Iterator Erase(Iterator& in_rIter)
+	{
+		AKASSERT(m_pItems != 0);
+
+		// Move items by 1
+
+		T* pItemLast = m_pItems + m_uLength - 1;
+
+		for (T* pItem = in_rIter.pItem; pItem < pItemLast; pItem++)
+			TMovePolicy::Move(pItem[0], pItem[1]);
+
+		// Destroy the last item
+
+		pItemLast->~T();
+
+		m_uLength--;
+
+		return in_rIter;
+	}
+
+	/// Erase the item at the specified index
+	void Erase(unsigned int in_uIndex)
+	{
+		AKASSERT(m_pItems != 0);
+
+		// Move items by 1
+
+		T* pItemLast = m_pItems + m_uLength - 1;
+
+		for (T* pItem = m_pItems + in_uIndex; pItem < pItemLast; pItem++)
+			TMovePolicy::Move(pItem[0], pItem[1]);
+
+		// Destroy the last item
+
+		pItemLast->~T();
+
+		m_uLength--;
+	}
+
+	/// Erase the specified iterator in the array. but it dos not guarantee the ordering in the array.
+	/// This version should be used only when the order in the array is not an issue.
+	Iterator EraseSwap(Iterator& in_rIter)
+	{
+		AKASSERT(m_pItems != 0);
+
+		if (Length() > 1)
+		{
+			// Swap last item with this one.
+			TMovePolicy::Move(*in_rIter.pItem, Last());
+		}
+
+		// Destroy.
+		AKASSERT(Length() > 0);
+		Last().~T();
+
+		m_uLength--;
+
+		return in_rIter;
+	}
+
+	/// Pre-Allocate a number of spaces in the array
+	AKRESULT Reserve(AkUInt32 in_ulReserve)
+	{
+		AKASSERT(m_pItems == 0 && m_uLength == 0);
+		AKASSERT(in_ulReserve || TGrowBy);
+
+		if (in_ulReserve)
+		{
+			m_pItems = (T*)TAlloc::Alloc(sizeof(T) * in_ulReserve);
+			if (m_pItems == 0)
+				return AK_InsufficientMemory;
+
+			m_ulReserved = in_ulReserve;
+		}
+
+		return AK_Success;
+	}
+
+	AkUInt32 Reserved() const { return m_ulReserved; }
+
+	/// Term the array. Must be called before destroying the object.
+	void Term()
+	{
+		if (m_pItems)
+		{
+			RemoveAll();
+			TAlloc::Free(m_pItems);
+			m_pItems = 0;
+			m_ulReserved = 0;
+		}
+	}
+
+	/// Returns the numbers of items in the array.
+	AkForceInline AkUInt32 Length() const
+	{
+		return m_uLength;
+	}
+
+	/// Returns true if the number items in the array is 0, false otherwise.
+	AkForceInline bool IsEmpty() const
+	{
+		return m_uLength == 0;
+	}
+
+	/// Returns a pointer to the specified item in the list if it exists, 0 if not found.
+	T* Exists(ARG_T in_Item) const
+	{
+		Iterator it = FindEx(in_Item);
+		return (it != End()) ? it.pItem : 0;
+	}
+
+	/// Add an item in the array, without filling it.
+	/// Returns a pointer to the location to be filled.
+	T* AddLast()
+	{
+		size_t cItems = Length();
+
+		if ((cItems >= m_ulReserved) && TGrowBy > 0)
+		{
+			if (!GrowArray())
+				return 0;
+		}
+
+		// have we got space for a new one ?
+		if (cItems < m_ulReserved)
+		{
+			T* pEnd = m_pItems + m_uLength++;
+			AkPlacementNew(pEnd) T;
+			return pEnd;
+		}
+
+		return 0;
+	}
+
+	/// Add an item in the array, and fills it with the provided item.
+	T* AddLast(ARG_T in_rItem)
+	{
+		T* pItem = AddLast();
+		if (pItem)
+			*pItem = in_rItem;
+		return pItem;
+	}
+
+	/// Returns a reference to the last item in the array.
+	T& Last()
+	{
+		AKASSERT(m_uLength);
+
+		return *(m_pItems + m_uLength - 1);
+	}
+
+	/// Removes the last item from the array.
+	void RemoveLast()
+	{
+		AKASSERT(m_uLength);
+		(m_pItems + m_uLength - 1)->~T();
+		m_uLength--;
+	}
+
+	/// Removes the specified item if found in the array.
+	AKRESULT Remove(ARG_T in_rItem)
+	{
+		Iterator it = FindEx(in_rItem);
+		if (it != End())
+		{
+			Erase(it);
+			return AK_Success;
+		}
+
+		return AK_Fail;
+	}
+
+	/// Fast remove of the specified item in the array.
+	/// This method do not guarantee keeping ordering of the array.
+	AKRESULT RemoveSwap(ARG_T in_rItem)
+	{
+		Iterator it = FindEx(in_rItem);
+		if (it != End())
+		{
+			EraseSwap(it);
+			return AK_Success;
+		}
+
+		return AK_Fail;
+	}
+
+	/// Removes all items in the array
+	void RemoveAll()
+	{
+		for (Iterator it = Begin(), itEnd = End(); it != itEnd; ++it)
+			(*it).~T();
+		m_uLength = 0;
+	}
+
+	/// Operator [], return a reference to the specified index.
+	AkForceInline T& operator[](unsigned int uiIndex) const
+	{
+		AKASSERT(m_pItems);
+		AKASSERT(uiIndex < Length());
+		return m_pItems[uiIndex];
+	}
+
+	/// Insert an item at the specified position without filling it.
+	/// Returns the pointer to the item to be filled.
+	T* Insert(unsigned int in_uIndex)
+	{
+		AKASSERT(in_uIndex <= Length());
+
+		size_t cItems = Length();
+
+		if ((cItems >= m_ulReserved) && TGrowBy > 0)
+		{
+			if (!GrowArray())
+				return 0;
+		}
+
+		// have we got space for a new one ?
+		if (cItems < m_ulReserved)
+		{
+			T* pItemLast = m_pItems + m_uLength++;
+			AkPlacementNew(pItemLast) T;
+
+			// Move items by 1
+
+			for (T* pItem = pItemLast; pItem > (m_pItems + in_uIndex); --pItem)
+				TMovePolicy::Move(pItem[0], pItem[-1]);
+
+			// Reinitialize item at index
+
+			(m_pItems + in_uIndex)->~T();
+			AkPlacementNew(m_pItems + in_uIndex) T;
+
+			return m_pItems + in_uIndex;
+		}
+
+		return 0;
+	}
+
+	/// Resize the array.
+	bool GrowArray(AkUInt32 in_uGrowBy = TGrowBy)
+	{
+		AKASSERT(in_uGrowBy);
+		return true;
+	}
+
+	/// Resize the array to the specified size.
+	bool Resize(AkUInt32 in_uiSize)
+	{
+		AkUInt32 cItems = Length();
+		if (in_uiSize < cItems)
+		{
+			//Destroy superfluous elements
+			for (AkUInt32 i = in_uiSize - 1; i < cItems; i++)
+			{
+				m_pItems[i].~T();
+			}
+			m_uLength = in_uiSize;
+			return true;
+		}
+
+		if (in_uiSize > m_ulReserved)
+		{
+			if (!GrowArray(in_uiSize - cItems))
+				return false;
+		}
+
+		//Create the missing items.
+		for (size_t i = cItems; i < in_uiSize; i++)
+		{
+			AkPlacementNew(m_pItems + i) T;
+		}
+
+		m_uLength = in_uiSize;
+		return true;
+	}
+
+	void Transfer(AkArray<T, ARG_T, TAlloc, TGrowBy, TMovePolicy>& in_rSource)
+	{
+		Term();
+
+		TAlloc::TransferMem((void*&)m_pItems, in_rSource, (void*)in_rSource.m_pItems);
+		m_uLength = in_rSource.m_uLength;
+		m_ulReserved = in_rSource.m_ulReserved;
+
+		in_rSource.m_pItems = NULL;
+		in_rSource.m_uLength = 0;
+		in_rSource.m_ulReserved = 0;
+	}
+
+	AKRESULT Copy(const AkArray<T, ARG_T, TAlloc, TGrowBy, TMovePolicy>& in_rSource)
+	{
+		Term();
+
+		if (Resize(in_rSource.Length()))
+		{
+			for (AkUInt32 i = 0; i < in_rSource.Length(); ++i)
+				m_pItems[i] = in_rSource.m_pItems[i];
+			return AK_Success;
+		}
+		return AK_Fail;
+	}
+
+protected:
+
+	T* m_pItems;		///< pointer to the beginning of the array.
+	AkUInt32    m_uLength;		///< number of items in the array.
+	AkUInt32	m_ulReserved;	///< how many we can have at most (currently allocated).
+};
+
+struct GameObjDst
+{
+	GameObjDst()
+		: m_gameObjID(AK_INVALID_GAME_OBJECT)
+		, m_dst(-1.0f)
+		{}
+
+		GameObjDst(AkGameObjectID in_gameObjID, AkReal32 in_dst)
+		: m_gameObjID(in_gameObjID)
+		, m_dst(in_dst)
+		{}
+
+		AkGameObjectID  m_gameObjID;
+	AkReal32 m_dst;
+};
+
+typedef AkArray<GameObjDst, const GameObjDst&, ArrayPoolDefault, 32> AkRadiusList;
+
+#define AKASSERT(Condition) ((void)0)
+
+class AkExternalSourceArray;
+
+class PlaylistItem
+{
+public:
+	PlaylistItem();
+	PlaylistItem(const PlaylistItem& in_rCopy);
+	~PlaylistItem();
+
+	PlaylistItem& operator=(const PlaylistItem& in_rCopy);
+	bool operator==(const PlaylistItem& in_rCopy)
+	{
+		AKASSERT(pExternalSrcs == NULL);
+		return audioNodeID == in_rCopy.audioNodeID && msDelay == in_rCopy.msDelay && pCustomInfo == in_rCopy.pCustomInfo;
+	};
+
+
+	AKRESULT SetExternalSources(AkUInt32 in_nExternalSrc, AkExternalSourceInfo* in_pExternalSrc);
+
+	AkExternalSourceArray* GetExternalSources() { return pExternalSrcs; }
+
+	AkUniqueID audioNodeID;
+	AkTimeMs   msDelay;
+	void* pCustomInfo;
+
+private:
+	AkExternalSourceArray* pExternalSrcs;
+};
+
+class Playlist
+	: public AkArray < PlaylistItem, const PlaylistItem&, ArrayPoolDefault, 4>
+	{
+public:
+	AkForceInline AKRESULT Enqueue(
+		AkUniqueID in_audioNodeID,
+		AkTimeMs in_msDelay = 0,
+		void* in_pCustomInfo = NULL,
+		AkUInt32 in_cExternals = 0,
+		AkExternalSourceInfo * in_pExternalSources = NULL
+		)
+	{
+		PlaylistItem* pItem = AddLast();
+		if (!pItem)
+			return AK_Fail;
+
+		pItem->audioNodeID = in_audioNodeID;
+		pItem->msDelay = in_msDelay;
+		pItem->pCustomInfo = in_pCustomInfo;
+		return pItem->SetExternalSources(in_cExternals, in_pExternalSources);
+	}
+};
+struct IXAudio2;
+
+enum AkSoundQuality
+{
+	AkSoundQuality_High,
+	AkSoundQuality_Low,
+};
+
+struct AkThreadProperties
+{
+	int                 nPriority;
+	AkUInt32            dwAffinityMask;
+	AkUInt32            uStackSize;
+};
+
+struct AkPlatformInitSettings
+{
+	// Direct sound.
+	HWND                hWnd;
+
+	// Threading model.
+	AkThreadProperties  threadLEngine;
+	AkThreadProperties  threadBankManager;
+	AkThreadProperties  threadMonitor;
+
+	// Memory.
+	AkUInt32            uLEngineDefaultPoolSize;
+	AkReal32            fLEngineDefaultPoolRatioThreshold;
+
+	// Voices.
+	AkUInt16            uNumRefillsInVoice;
+	AkSoundQuality      eAudioQuality;
+
+	bool                bGlobalFocus;
+
+	IXAudio2* pXAudio2;
+
+	AkUInt32            idAudioDevice;
+};
+
+enum AkPanningRule
+{
+	AkPanningRule_Speakers = 0,
+	AkPanningRule_Headphones = 1
+};
+
+enum AkAudioOutputType
+{
+	AkOutput_Dummy = 1 << 3,
+	AkOutput_MergeToMain = 1 << 4,
+	AkOutput_Main = 1 << 5,
+	AkOutput_Secondary = 1 << 6,
+	AkOutput_NumOutputs = 1 << 7,
+};
+
+typedef void(*AkAssertHook)(const char* in_pszExpression, const char* in_pszFileName, int in_lineNumber);
+
+typedef AKRESULT(*AkAudioSourceChangeCallbackFunc)(bool in_bOtherAudioPlaying, void* in_pCookie);
+
+enum AkChannelConfigType
+{
+	AK_ChannelConfigType_Anonymous = 0x0,  // Channel mask == 0 and channels are anonymous.
+	AK_ChannelConfigType_Standard = 0x1,  // Channels must be identified with standard defines in AkSpeakerConfigs.   
+	AK_ChannelConfigType_Ambisonic = 0x2   // Ambisonic. Channel mask == 0 and channels follow standard ambisonic order.
+};
+
+#define AK_SPEAKER_FRONT_LEFT				0x1		///< Front left speaker bit mask
+#define AK_SPEAKER_FRONT_RIGHT				0x2		///< Front right speaker bit mask
+#define AK_SPEAKER_FRONT_CENTER				0x4		///< Front center speaker bit mask
+#define AK_SPEAKER_SETUP_MONO			AK_SPEAKER_FRONT_CENTER		///< 1.0 setup channel mask
+#define AK_SPEAKER_SETUP_STEREO			(AK_SPEAKER_FRONT_LEFT		| AK_SPEAKER_FRONT_RIGHT)	///< 2.0 setup channel mask
+
+struct AkChannelConfig
+{
+	// Channel config: 
+	// - uChannelMask is a bit field, whose channel identifiers depend on AkChannelConfigType (up to 20). Channel bits are defined in AkSpeakerConfig.h.
+	// - eConfigType is a code that completes the identification of channels by uChannelMask.
+	// - uNumChannels is the number of channels, identified (deduced from channel mask) or anonymous (set directly). 
+	AkUInt32	uNumChannels : 8;	///< Number of channels.
+	AkUInt32	eConfigType : 4;	///< Channel config type (AkChannelConfigType).
+	AkUInt32	uChannelMask : 20;///< Channel mask (configuration). 
+
+	/// Constructor. Clears / sets the channel config in "invalid" state (IsValid() returns false).
+	AkForceInline AkChannelConfig()
+		: uNumChannels(0)
+		, eConfigType(0)
+		, uChannelMask(0)
+	{
+	}
+
+	/// Constructor. Sets number of channels, and config type according to whether channel mask is defined or not. If defined, it must be consistent with the number of channels.
+	AkForceInline AkChannelConfig(AkUInt32 in_uNumChannels, AkUInt32 in_uChannelMask)
+	{
+		// Input arguments should be consistent.
+		SetStandardOrAnonymous(in_uNumChannels, in_uChannelMask);
+	}
+
+	/// Operator != with a 32-bit word.
+	AkForceInline bool operator!=(AkUInt32 in_uBitField)
+	{
+		return (*((AkUInt32*)this) != in_uBitField);
+	}
+
+	/// Clear the channel config. Becomes "invalid" (IsValid() returns false).
+	AkForceInline void Clear()
+	{
+		uNumChannels = 0;
+		eConfigType = 0;
+		uChannelMask = 0;
+	}
+
+	static inline AkUInt8 ChannelMaskToNumChannels(AkChannelMask in_uChannelMask)
+	{
+		AkUInt8 num = 0;
+		while (in_uChannelMask) { ++num; in_uChannelMask &= in_uChannelMask - 1; } // iterate max once per channel.
+		return num;
+	}
+
+	/// Set channel config as a standard configuration specified with given channel mask.
+	AkForceInline void SetStandard(AkUInt32 in_uChannelMask)
+	{
+		uNumChannels = ChannelMaskToNumChannels(in_uChannelMask);
+		eConfigType = AK_ChannelConfigType_Standard;
+		uChannelMask = in_uChannelMask;
+	}
+
+	/// Set channel config as either a standard or an anonymous configuration, specified with both a given channel mask (0 if anonymous) and a number of channels (which must match the channel mask if standard).
+	AkForceInline void SetStandardOrAnonymous(AkUInt32 in_uNumChannels, AkUInt32 in_uChannelMask)
+	{
+#ifdef AKASSERT
+		AKASSERT(in_uChannelMask == 0 || in_uNumChannels == AK::ChannelMaskToNumChannels(in_uChannelMask));
+#endif
+		uNumChannels = in_uNumChannels;
+		eConfigType = (in_uChannelMask) ? AK_ChannelConfigType_Standard : AK_ChannelConfigType_Anonymous;
+		uChannelMask = in_uChannelMask;
+	}
+
+	/// Set channel config as an anonymous configuration specified with given number of channels.
+	AkForceInline void SetAnonymous(AkUInt32 in_uNumChannels)
+	{
+		uNumChannels = in_uNumChannels;
+		eConfigType = AK_ChannelConfigType_Anonymous;
+		uChannelMask = 0;
+	}
+
+	/// Set channel config as an ambisonic configuration specified with given number of channels.
+	AkForceInline void SetAmbisonic(AkUInt32 in_uNumChannels)
+	{
+		uNumChannels = in_uNumChannels;
+		eConfigType = AK_ChannelConfigType_Ambisonic;
+		uChannelMask = 0;
+	}
+
+	/// Returns true if valid, false otherwise (as when it is constructed, or invalidated using Clear()).
+	AkForceInline bool IsValid() const
+	{
+		return uNumChannels != 0;
+	}
+
+	/// Serialize channel config into a 32-bit word.
+	AkForceInline AkUInt32 Serialize() const
+	{
+		return uNumChannels | (eConfigType << 8) | (uChannelMask << 12);
+	}
+
+	/// Deserialize channel config from a 32-bit word.
+	AkForceInline void Deserialize(AkUInt32 in_uChannelConfig)
+	{
+		uNumChannels = in_uChannelConfig & 0x000000ff;
+		eConfigType = (in_uChannelConfig >> 8) & 0x0000000f;
+		uChannelMask = (in_uChannelConfig >> 12) & 0x000fffff;
+	}
+
+	/// Returns a new config based on 'this' with no LFE.
+	AkForceInline AkChannelConfig RemoveLFE() const
+	{
+		AkChannelConfig newConfig = *this;
+#ifdef AK_LFECENTER
+		AkUInt32 uNewChannelMask = newConfig.uChannelMask & ~AK_SPEAKER_LOW_FREQUENCY;
+		AkUInt32 uNumLFEChannel = (newConfig.uChannelMask - uNewChannelMask) >> 3; // 0 or 1
+#ifdef AKASSERT
+		AKASSERT(uNumLFEChannel == 0 || uNumLFEChannel == 1);
+#endif
+		newConfig.uNumChannels -= uNumLFEChannel;
+		newConfig.uChannelMask = uNewChannelMask;
+#endif
+		return newConfig;
+	}
+
+	/// Returns a new config based on 'this' with no Front Center channel.
+	AkForceInline AkChannelConfig RemoveCenter() const
+	{
+		AkChannelConfig newConfig = *this;
+#ifdef AK_LFECENTER
+		AkUInt32 uNewChannelMask = newConfig.uChannelMask & ~AK_SPEAKER_FRONT_CENTER;
+		AkUInt32 uNumCenterChannel = (newConfig.uChannelMask - uNewChannelMask) >> 2;	// 0 or 1.
+#ifdef AKASSERT
+		AKASSERT(uNumCenterChannel == 0 || uNumCenterChannel == 1);
+#endif
+		newConfig.uNumChannels -= uNumCenterChannel;
+		newConfig.uChannelMask = uNewChannelMask;
+#endif
+		return newConfig;
+	}
+
+	/// Operator ==
+	AkForceInline bool operator==(const AkChannelConfig& in_other) const
+	{
+		return uNumChannels == in_other.uNumChannels
+			&& eConfigType == in_other.eConfigType
+			&& uChannelMask == in_other.uChannelMask;
+	}
+
+	/// Operator !=
+	AkForceInline bool operator!=(const AkChannelConfig& in_other) const
+	{
+		return uNumChannels != in_other.uNumChannels
+			|| eConfigType != in_other.eConfigType
+			|| uChannelMask != in_other.uChannelMask;
+	}
+
+	/// Checks if the channel configuration is supported by the source pipeline.
+	/// \return The interleaved type
+	AkForceInline bool IsChannelConfigSupported() const
+	{
+#ifdef AK_71AUDIO
+		return true;
+#else
+		if (eConfigType == AK_ChannelConfigType_Standard)
+		{
+			switch (uChannelMask)
+			{
+			case AK_SPEAKER_SETUP_MONO:
+			case AK_SPEAKER_SETUP_STEREO:
+#ifdef AK_LFECENTER
+			case AK_SPEAKER_SETUP_0POINT1:
+			case AK_SPEAKER_SETUP_1POINT1:
+			case AK_SPEAKER_SETUP_2POINT1:
+			case AK_SPEAKER_SETUP_3STEREO:
+			case AK_SPEAKER_SETUP_3POINT1:
+#ifdef AK_REARCHANNELS
+			case AK_SPEAKER_SETUP_4:
+			case AK_SPEAKER_SETUP_4POINT1:
+			case AK_SPEAKER_SETUP_5:
+			case AK_SPEAKER_SETUP_5POINT1:
+#endif
+#endif
+				return true;
+			}
+		}
+		return false;
+#endif
+	}
+
+	/// Query if LFE channel is present.
+	/// \return True when LFE channel is present
+	AkForceInline bool HasLFE() const
+	{
+#ifdef AK_LFECENTER
+		return AK::HasLFE(uChannelMask);
+#else
+		return false;
+#endif
+	}
+
+	/// Query if center channel is present.
+	/// Note that mono configurations have one channel which is arbitrary set to AK_SPEAKER_FRONT_CENTER,
+	/// so HasCenter() returns true for mono signals.
+	/// \return True when center channel is present and configuration has more than 2 channels.
+	AkForceInline bool HasCenter() const
+	{
+#ifdef AK_LFECENTER
+		return AK::HasCenter(uChannelMask);
+#else
+		return false;
+#endif
+	}
+};
+
+
+struct AkOutputSettings
+{
+	AkPanningRule   ePanningRule;
+
+	AkChannelConfig channelConfig;
+
+	AkCreatePluginCallback pfSinkPluginFactory;
+};
+
+enum AkAudioAPI
+{
+	AkAPI_XAudio2 = 1 << 0,
+	AkAPI_DirectSound = 1 << 1,
+	AkAPI_Wasapi = 1 << 2,
+	AkAPI_Default = AkAPI_Wasapi | AkAPI_XAudio2 | AkAPI_DirectSound,
+	AkAPI_Dummy = 1 << 3,
+};
+
+struct AkInitSettings
+{
+	AkAssertHook        pfnAssertHook;
+
+	AkUInt32            uMaxNumPaths;
+	AkUInt32            uMaxNumTransitions;
+	AkUInt32            uDefaultPoolSize;
+	AkReal32            fDefaultPoolRatioThreshold;
+	AkUInt32            uCommandQueueSize;
+	AkMemPoolId         uPrepareEventMemoryPoolID;
+	bool                bEnableGameSyncPreparation;
+	AkUInt32            uContinuousPlaybackLookAhead;
+
+	AkUInt32            uNumSamplesPerFrame;
+
+	AkUInt32            uMonitorPoolSize;
+	AkUInt32            uMonitorQueuePoolSize;
+
+	AkAudioAPI          eMainOutputType;
+	AkOutputSettings    settingsMainOutput;
+	AkUInt32            uMaxHardwareTimeoutMs;
+
+	bool                bUseSoundBankMgrThread;
+	bool                bUseLEngineThread;
+
+	AkAudioSourceChangeCallbackFunc sourceChangeCallback;
+	void* sourceChangeCallbackCookie;
+};
+
+typedef AkArray<AkGameObjectID, AkGameObjectID, ArrayPoolDefault, 32> AkGameObjectsList;
+
+typedef AkReal32* VectorPtr;
+
 /* Offsets For Functions */
 
 // Wwise Hijack
@@ -807,7 +1731,7 @@ uintptr_t func_Wwise_Sound_Query_GetGameObjectFromPlayingID = 0x1f55f45;
 uintptr_t func_Wwise_Sound_Query_GetIsGameObjectActive = 0x1f55e8f;
 uintptr_t func_Wwise_Sound_Query_GetListenerPosition = 0x1f55c7f;
 uintptr_t func_Wwise_Sound_Query_GetListenerSpatialization = 0x1f55cdf;
-uintptr_t func_Wwise_Sound_Query_GetMaxRadius_Array = 0x1f55ebf;
+uintptr_t func_Wwise_Sound_Query_GetMaxRadius_RadiusList = 0x1f55ebf;
 uintptr_t func_Wwise_Sound_Query_GetMaxRadius_GameObject = 0x1f55eef;
 uintptr_t func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion = 0x1f56622;
 uintptr_t func_Wwise_Sound_Query_GetPlayingIDsFromGameObject = 0x1f55f65;
@@ -949,23 +1873,23 @@ typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_Char)(const ch
 // Dynamic Sequence
 typedef AKRESULT(__cdecl* tDynamicSequence_Break)(AkPlayingID in_playingID);
 typedef AKRESULT(__cdecl* tDynamicSequence_Close)(AkPlayingID in_playingID);
-// LockPlaylist (Dependancies)
+typedef Playlist*(__cdecl* tDynamicSequence_LockPlaylist)(AkPlayingID in_playingID);
 typedef AkPlayingID(__cdecl* tDynamicSequence_Open)(AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, DynamicSequenceType in_eDynamicSequenceType);
 typedef AKRESULT(__cdecl* tDynamicSequence_Pause)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tDynamicSequence_Play)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tDynamicSequence_Resume)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tDynamicSequence_Stop)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
-// UnlockPlaylist (Dependancies)
+typedef AKRESULT(__cdecl* tDynamicSequence_UnlockPlaylist)(AkPlayingID in_playingID);
 // End Dynamic Sequence
 typedef AKRESULT(__cdecl* tExecuteActionOnEvent_UniqueID)(AkUniqueID in_eventID, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
 typedef AKRESULT(__cdecl* tExecuteActionOnEvent_Char)(const char* in_pszEventName, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
 typedef void(__cdecl* tGetDefaultInitSettings)(AkCommSettings& out_settings);
-// GetDefaultPlatformInitSettings (We only run on Windows, so we don't need this)
+typedef void(__cdecl* tGetDefaultPlatformInitSettings)(AkPlatformInitSettings* out_platformSettings);
 typedef AkUInt32(__cdecl* tGetIDFromString)(const char* in_pszString);
-// GetPanningRule (Dependancies)
+typedef AKRESULT(__cdecl* tGetPanningRule)(AkPanningRule* out_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
 typedef AKRESULT(__cdecl* tGetSourcePlayPosition)(AkPlayingID in_PlayingID, AkTimeMs* out_puPosition, bool in_bExtrapolate);
 typedef AkUInt32(__cdecl* tGetSpeakerConfiguration)(void);
-// Init (This is called before we can even push different settings to it)
+typedef AKRESULT(__cdecl* tInit)(AkInitSettings* in_pSettings, AkPlatformInitSettings in_pPlatformSettings);
 typedef bool(__cdecl* tIsInitialized)(void);
 typedef AKRESULT(__cdecl* tLoadBank_BankID_MemPoolID)(AkBankID in_bankID, AkMemPoolId in_memPoolId);
 typedef AKRESULT(__cdecl* tLoadBank_Void_UInt32_BankID)(const void* in_plnMemoryBankPtr, AkUInt32 in_ulnMemoryBankSize, AkBankID* out_bankID);
@@ -990,7 +1914,7 @@ typedef AKRESULT(__cdecl* tPrepareGameSyncs_UInt32_UInt32_UInt32)(PreparationTyp
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_Char_Char_UInt32_Callback_Void)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, const char* in_pszGroupName, const char** in_ppszGameSyncName, AkUInt32 in_uNumGameSyncs, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 typedef AKRESULT(__cdecl* tPrepareGameSyncs_Char_Char_UInt32)(PreparationType in_PreparationType, AkGroupType in_eGameSyncType, const char* in_pszGroupName, const char** in_ppszGameSyncName, AkUInt32 in_uNumGameSyncs);
 // Query
-// GetActiveGameObjects (Dependancies & Requires AkArray)
+typedef AKRESULT(__cdecl* tQuery_GetActiveGameObjects)(AkGameObjectsList* io_GameObjectList);
 typedef AKRESULT(__cdecl* tQuery_GetActiveListeners)(AkGameObjectID in_GameObjectID, AkUInt32* out_ruListenerMask);
 typedef AKRESULT(__cdecl* tQuery_GetCustomPropertyValue_Int32)(AkUniqueID in_ObjectID, AkUInt32 in_uPropID, AkInt32* out_iValue);
 typedef AKRESULT(__cdecl* tQuery_GetCustomPropertyValue_Real32)(AkUniqueID in_ObjectID, AkUInt32 in_uPropID, AkReal32* out_fValue);
@@ -1000,8 +1924,8 @@ typedef AKRESULT(__cdecl* tQuery_GetGameObjectDryLevelValue)(AkGameObjectID in_g
 typedef AkGameObjectID(__cdecl* tQuery_GetGameObjectFromPlayingID)(AkPlayingID in_playingID);
 typedef bool(__cdecl* tQuery_GetIsGameObjectActive)(AkGameObjectID in_GameObjId);
 typedef AKRESULT(__cdecl* tQuery_GetListenerPosition)(AkUInt32 in_uIndex, AkListenerPosition* out_rPosition);
-// GetMaxRadius(AkArray) (Dependancies & Requires AkArray)
-typedef AKRESULT(__cdecl* tQuery_GetMaxRadius)(AkGameObjectID in_GameObjId);
+typedef AKRESULT(__cdecl* tQuery_GetMaxRadius_RadiusList)(AkRadiusList* io_RadiusList);
+typedef AKRESULT(__cdecl* tQuery_GetMaxRadius_GameObject)(AkGameObjectID in_GameObjId);
 typedef AKRESULT(__cdecl* tQuery_GetObjectObstructionAndOcclusion)(AkGameObjectID in_ObjectID, AkUInt32 in_uListener, AkReal32* out_rfObstructionLevel, AkReal32* out_rfOcclusionLevel);
 typedef AKRESULT(__cdecl* tQuery_GetPlayingIDsFromGameObject)(AkGameObjectID in_GameObjId, AkUInt32* io_ruNumIds, AkPlayingID* out_aPlayingIDs);
 typedef AKRESULT(__cdecl* tQuery_GetPosition)(AkGameObjectID in_GameObjectID, AkSoundPosition* out_rPosition);
@@ -1030,11 +1954,11 @@ typedef AKRESULT(__cdecl* tSetGameObjectOutputBusVolume)(AkGameObjectID in_gameO
 typedef AKRESULT(__cdecl* tSetListenerPipeline)(AkUInt32 in_uIndex, bool in_bAudio, bool in_bMotion);
 typedef AKRESULT(__cdecl* tSetListenerPosition)(const AkListenerPosition* in_rPosition, AkUInt32 in_uiIndex);
 typedef AKRESULT(__cdecl* tSetListenerScalingFactor)(AkUInt32 in_uiIndex, AkReal32 in_fAttenuationScalingFactor);
-// SetListenerSpatialization (Dependancies)
+typedef AKRESULT(__cdecl* tSetListenerSpatialization)(AkUInt32 in_uIndex, bool in_bSpatialized, AkChannelConfig in_channelConfig, VectorPtr in_pVolumeOffsets);
 typedef AKRESULT(__cdecl* tSetMaxNumVoicesLimit)(AkUInt16 in_maxNumberVoices);
 typedef AKRESULT(__cdecl* tSetMultiplePositions)(AkGameObjectID in_GameObjectID, const AkSoundPosition* in_pPositions, AkUInt16 in_NumPositions, MultiPositionType in_eMultiPositionType);
 typedef AKRESULT(__cdecl* tSetObjectObstructionAndOcclusion)(AkGameObjectID in_ObjectID, AkUInt32 in_uListener, AkReal32 in_fObstructionLevel, AkReal32 in_fOcclusionLevel);
-// SetPanningRule (Dependancies)
+typedef AKRESULT(__cdecl* tSetPanningRule)(AkPanningRule in_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
 typedef AKRESULT(__cdecl* tSetPosition)(AkGameObjectID in_GameObjectID, const AkSoundPosition* in_Position);
 typedef AKRESULT(__cdecl* tSetRTPCValue_RTPCID)(AkRtpcID in_rtpcID, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCruve, bool in_bBypassInternalValueInterpolation);
 typedef AKRESULT(__cdecl* tSetRTPCValue_Char) (const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
@@ -1139,17 +2063,22 @@ namespace WwiseVariables {
 	tDynamicDialogue_ResolveDialogueEvent_Char Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char = (tDynamicDialogue_ResolveDialogueEvent_Char)func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char;
 	tDynamicSequence_Break Wwise_Sound_DynamicSequence_Break = (tDynamicSequence_Break)func_Wwise_Sound_DynamicSequence_Break;
 	tDynamicSequence_Close Wwise_Sound_DynamicSequence_Close = (tDynamicSequence_Close)func_Wwise_Sound_DynamicSequence_Close;
+	tDynamicSequence_LockPlaylist Wwise_Sound_DynamicSequence_LockPlaylist = (tDynamicSequence_LockPlaylist)func_Wwise_Sound_DynamicSequence_LockPlaylist;
 	tDynamicSequence_Open Wwise_Sound_DynamicSequence_Open = (tDynamicSequence_Open)func_Wwise_Sound_DynamicSequence_Open;
 	tDynamicSequence_Pause Wwise_Sound_DynamicSequence_Pause = (tDynamicSequence_Pause)func_Wwise_Sound_DynamicSequence_Pause;
 	tDynamicSequence_Play Wwise_Sound_DynamicSequence_Play = (tDynamicSequence_Play)func_Wwise_Sound_DynamicSequence_Play;
 	tDynamicSequence_Resume Wwise_Sound_DynamicSequence_Resume = (tDynamicSequence_Resume)func_Wwise_Sound_DynamicSequence_Resume;
 	tDynamicSequence_Stop Wwise_Sound_DynamicSequence_Stop = (tDynamicSequence_Stop)func_Wwise_Sound_DynamicSequence_Stop;
+	tDynamicSequence_UnlockPlaylist Wwise_Sound_DynamicSequence_UnlockPlaylist = (tDynamicSequence_UnlockPlaylist)func_Wwise_Sound_DynamicSequence_UnlockPlaylist;
 	tExecuteActionOnEvent_UniqueID Wwise_Sound_ExecuteActionOnEvent_UniqueID = (tExecuteActionOnEvent_UniqueID)func_Wwise_Sound_ExecuteActionOnEvent_UniqueID;
 	tExecuteActionOnEvent_Char Wwise_Sound_ExecuteActionOnEvent_Char = (tExecuteActionOnEvent_Char)func_Wwise_Sound_ExecuteActionOnEvent_Char;
 	tGetDefaultInitSettings Wwise_Sound_GetDefaultInitSettings = (tGetDefaultInitSettings)func_Wwise_Sound_GetDefaultInitSettings;
+	tGetDefaultPlatformInitSettings Wwise_Sound_GetDefaultPlatformInitSettings = (tGetDefaultPlatformInitSettings)func_Wwise_Sound_GetDefaultPlatformInitSettings;
 	tGetIDFromString Wwise_Sound_GetIDFromString = (tGetIDFromString)func_Wwise_Sound_GetIDFromString;
+	tGetPanningRule Wwise_Sound_GetPanningRule = (tGetPanningRule)func_Wwise_Sound_GetPanningRule;
 	tGetSourcePlayPosition Wwise_Sound_GetSourcePlayPosition = (tGetSourcePlayPosition)func_Wwise_Sound_GetSourcePlayPosition;
 	tGetSpeakerConfiguration Wwise_Sound_GetSpeakerConfiguration = (tGetSpeakerConfiguration)func_Wwise_Sound_GetSpeakerConfiguration;
+	tInit Wwise_Sound_Init = (tInit)func_Wwise_Sound_Init;
 	tIsInitialized Wwise_Sound_IsInitialized = (tIsInitialized)func_Wwise_Sound_IsInitialized;
 	tLoadBank_BankID_MemPoolID Wwise_Sound_LoadBank_BankID_MemPoolID = (tLoadBank_BankID_MemPoolID)func_Wwise_Sound_LoadBank_BankID_MemPoolID;
 	tLoadBank_Void_UInt32_BankID Wwise_Sound_LoadBank_Void_UInt32_BankID = (tLoadBank_Void_UInt32_BankID)func_Wwise_Sound_LoadBank_Void_UInt32_BankID;
@@ -1173,6 +2102,7 @@ namespace WwiseVariables {
 	tPrepareGameSyncs_UInt32_UInt32_UInt32 Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = (tPrepareGameSyncs_UInt32_UInt32_UInt32)func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32;
 	tPrepareGameSyncs_Char_Char_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = (tPrepareGameSyncs_Char_Char_UInt32_Callback_Void)func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
 	tPrepareGameSyncs_Char_Char_UInt32 Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = (tPrepareGameSyncs_Char_Char_UInt32)func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32;
+	tQuery_GetActiveGameObjects Wwise_Sound_Query_GetActiveGameObjects = (tQuery_GetActiveGameObjects)func_Wwise_Sound_Query_GetActiveGameObjects;
 	tQuery_GetActiveListeners Wwise_Sound_Query_GetActiveListeners = (tQuery_GetActiveListeners)func_Wwise_Sound_Query_GetActiveListeners;
 	tQuery_GetCustomPropertyValue_Int32 Wwise_Sound_Query_GetCustomPropertyValue_Int32 = (tQuery_GetCustomPropertyValue_Int32)func_Wwise_Sound_Query_GetCustomPropertyValue_Int32;
 	tQuery_GetCustomPropertyValue_Real32 Wwise_Sound_Query_GetCustomPropertyValue_Real32 = (tQuery_GetCustomPropertyValue_Real32)func_Wwise_Sound_Query_GetCustomPropertyValue_Real32;
@@ -1182,7 +2112,8 @@ namespace WwiseVariables {
 	tQuery_GetGameObjectFromPlayingID Wwise_Sound_Query_GetGameObjectFromPlayingID = (tQuery_GetGameObjectFromPlayingID)func_Wwise_Sound_Query_GetGameObjectFromPlayingID;
 	tQuery_GetIsGameObjectActive Wwise_Sound_Query_GetIsGameObjectActive = (tQuery_GetIsGameObjectActive)func_Wwise_Sound_Query_GetIsGameObjectActive;
 	tQuery_GetListenerPosition Wwise_Sound_Query_GetListenerPosition = (tQuery_GetListenerPosition)func_Wwise_Sound_Query_GetListenerPosition;
-	tQuery_GetMaxRadius Wwise_Sound_Query_GetMaxRadius = (tQuery_GetMaxRadius)func_Wwise_Sound_Query_GetMaxRadius_GameObject;
+	tQuery_GetMaxRadius_RadiusList Wwise_Sound_Query_GetMaxRadius_RadiusList = (tQuery_GetMaxRadius_RadiusList)func_Wwise_Sound_Query_GetMaxRadius_RadiusList;
+	tQuery_GetMaxRadius_GameObject Wwise_Sound_Query_GetMaxRadius_GameObject = (tQuery_GetMaxRadius_GameObject)func_Wwise_Sound_Query_GetMaxRadius_GameObject;
 	tQuery_GetObjectObstructionAndOcclusion Wwise_Sound_Query_GetObjectObstructionAndOcclusion = (tQuery_GetObjectObstructionAndOcclusion)func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion;
 	tQuery_GetPlayingIDsFromGameObject Wwise_Sound_Query_GetPlayingIDsFromGameObject = (tQuery_GetPlayingIDsFromGameObject)func_Wwise_Sound_Query_GetPlayingIDsFromGameObject;
 	tQuery_GetPosition Wwise_Sound_Query_GetPosition = (tQuery_GetPosition)func_Wwise_Sound_Query_GetPosition;
@@ -1210,9 +2141,11 @@ namespace WwiseVariables {
 	tSetListenerPipeline Wwise_Sound_SetListenerPipeline = (tSetListenerPipeline)func_Wwise_Sound_SetListenerPipeline;
 	tSetListenerPosition Wwise_Sound_SetListenerPosition = (tSetListenerPosition)func_Wwise_Sound_SetListenerPosition;
 	tSetListenerScalingFactor Wwise_Sound_SetListenerScalingFactor = (tSetListenerScalingFactor)func_Wwise_Sound_SetListenerScalingFactor;
+	tSetListenerSpatialization Wwise_Sound_SetListenerSpatialization = (tSetListenerSpatialization)func_Wwise_Sound_SetListenerSpatialization;
 	tSetMaxNumVoicesLimit Wwise_Sound_SetMaxNumVoicesLimit = (tSetMaxNumVoicesLimit)func_Wwise_Sound_SetMaxNumVoicesLimit;
 	tSetMultiplePositions Wwise_Sound_SetMultiplePositions = (tSetMultiplePositions)func_Wwise_Sound_SetMultiplePositions;
 	tSetObjectObstructionAndOcclusion Wwise_Sound_SetObjectObstructionAndOcclusion = (tSetObjectObstructionAndOcclusion)func_Wwise_Sound_SetObjectObstructionAndOcclusion;
+	tSetPanningRule Wwise_Sound_SetPanningRule = (tSetPanningRule)func_Wwise_Sound_SetPanningRule;
 	tSetPosition Wwise_Sound_SetPosition = (tSetPosition)func_Wwise_Sound_SetPosition;
 	tSetRTPCValue_RTPCID Wwise_Sound_SetRTPCValue_RTPCID = (tSetRTPCValue_RTPCID)func_Wwise_Sound_SetRTPCValue_RTPCID;
 	tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
