@@ -36,6 +36,23 @@ namespace RSMods.Util
             }
         }
 
+        public static T Map<T, TU>(this T target, TU source) // Copy properties of base class to its derived class 
+        {
+            var tprops = target.GetType().GetProperties();
+
+            tprops.Where(x => x.CanWrite == true).ToList().ForEach(prop =>
+            {
+                var sp = source.GetType().GetProperty(prop.Name);
+                if (sp != null)
+                {
+                    var value = sp.GetValue(source, null);
+                    target.GetType().GetProperty(prop.Name).SetValue(target, value, null);
+                }
+            });
+
+            return target;
+        }
+
         private static bool IsRSFolder(this string folderPath)
         {
             if (!Directory.Exists(folderPath))

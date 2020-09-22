@@ -1155,6 +1155,12 @@ namespace RSMods
                 e.Value = (bool)e.Value ? "Listening to Twitch events" : "Not listening to twitch events";
             };
             label_IsListeningToEvents.DataBindings.Add(listeningToTwitchBinding);
+
+            foreach (var defaultReward in TwitchSettings.Get.DefaultRewards) // BindingList... yeah, not yet
+                dgv_DefaultRewards.Rows.Add(defaultReward.Name, defaultReward.Description);
+
+            foreach (var enabledReward in TwitchSettings.Get.Rewards)
+                AddToSelectedRewards(enabledReward);
         }
 
         private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)
@@ -1190,5 +1196,60 @@ namespace RSMods
         }
 
         private void Button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+
+        private void button_SaveTwitchRewards_Click(object sender, EventArgs e)
+        {
+            XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
+                {
+                    xs.Serialize(writer, TwitchSettings.Get.Rewards);
+                    File.WriteAllText("TwitchEnabledEffects.xml", sww.ToString());
+                }
+            }
+        }
+
+        private void button_AddSelectedReward_Click(object sender, EventArgs e)
+        {
+            if (dgv_DefaultRewards.SelectedRows.Count < 1)
+                return;
+
+            var selectedRow = dgv_DefaultRewards.SelectedRows[0];
+            var selectedReward = TwitchSettings.Get.DefaultRewards.FirstOrDefault(r => r.Name == selectedRow.Cells["colDefaultRewardsName"].Value.ToString());
+
+            if (selectedReward == null)
+                return;
+
+            if(MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                var reward = new BitsReward();
+                reward.Map(selectedReward);
+                
+                TwitchSettings.Get.Rewards.Add(reward);
+                AddToSelectedRewards(reward);
+            }
+            else
+            {
+                var reward = new ChannelPointsReward();
+                reward.Map(selectedReward);
+
+                TwitchSettings.Get.Rewards.Add(reward);
+                AddToSelectedRewards(reward);
+            }
+        }
+
+        private void AddToSelectedRewards(TwitchReward reward)
+        {
+            if (reward is BitsReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((BitsReward)reward).BitsAmount, "Bits");
+            else if (reward is ChannelPointsReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((ChannelPointsReward)reward).PointsAmount, "Points");
+        }
+
+        private void dgv_EnabledRewards_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            // When user finishes editing those values, save them
+        }
     }
 }

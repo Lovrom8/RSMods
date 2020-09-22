@@ -202,13 +202,13 @@ namespace RSMods.Twitch
                 new TwitchReward("Solid color notes", "Make all notes have the same color", "disable SolidNotes", "enable SolidNotes")
             });
 
-            /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
+            /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.DefaultRewards.GetType());
             using (var sww = new StringWriter())
             {
                 using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
                 {
 
-                    xs.Serialize(writer, TwitchSettings.Get.Rewards);
+                    xs.Serialize(writer, TwitchSettings.Get.DefaultRewards);
                     File.WriteAllText("TwitchDefaultEffects.xml", sww.ToString());
                 }
             }*/

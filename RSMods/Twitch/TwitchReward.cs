@@ -16,6 +16,7 @@ namespace RSMods.Twitch
         public string Description { get; set; }
         public string Name { get; set; }
         public int Length { get; set; }
+        public bool Enabled { get; set; }
 
         public TwitchReward() { }
 
