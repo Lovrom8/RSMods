@@ -73,6 +73,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings = new System.Windows.Forms.GroupBox();
+            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
             this.label_RemoveLyricsKey = new System.Windows.Forms.Label();
             this.button_ClearSelectedKeybind = new System.Windows.Forms.Button();
             this.button_ResetModsToDefault = new System.Windows.Forms.Button();
@@ -160,6 +161,7 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
+            this.Label_HorizontalLineTwitch = new System.Windows.Forms.Label();
             this.label_TwitchAccessTokenVal = new System.Windows.Forms.Label();
             this.label_TwitchChannelIDVal = new System.Windows.Forms.Label();
             this.label_TwitchUsernameVal = new System.Windows.Forms.Label();
@@ -177,7 +179,13 @@
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
-            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
+            this.dgv_Effects = new System.Windows.Forms.DataGridView();
+            this.label_IsListeningToEvents = new System.Windows.Forms.Label();
+            this.textBox_TwitchLog = new System.Windows.Forms.TextBox();
+            this.label_TwitchLog = new System.Windows.Forms.Label();
+            this.colEffectEnabled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colEffectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEffectDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -207,6 +215,7 @@
             this.tab_Twitch.SuspendLayout();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Effects)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -794,6 +803,14 @@
             this.groupBox_Keybindings.Text = "Key Bindings";
             this.groupBox_Keybindings.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.groupBox_Keybindings.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // label_ChangeSelectedVolumeKey
+            // 
+            this.label_ChangeSelectedVolumeKey.AutoSize = true;
+            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 89);
+            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
+            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(0, 13);
+            this.label_ChangeSelectedVolumeKey.TabIndex = 31;
             // 
             // label_RemoveLyricsKey
             // 
@@ -1894,6 +1911,11 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.label_TwitchLog);
+            this.tab_Twitch.Controls.Add(this.textBox_TwitchLog);
+            this.tab_Twitch.Controls.Add(this.label_IsListeningToEvents);
+            this.tab_Twitch.Controls.Add(this.dgv_Effects);
+            this.tab_Twitch.Controls.Add(this.Label_HorizontalLineTwitch);
             this.tab_Twitch.Controls.Add(this.label_TwitchAccessTokenVal);
             this.tab_Twitch.Controls.Add(this.label_TwitchChannelIDVal);
             this.tab_Twitch.Controls.Add(this.label_TwitchUsernameVal);
@@ -1910,10 +1932,19 @@
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot";
             // 
+            // Label_HorizontalLineTwitch
+            // 
+            this.Label_HorizontalLineTwitch.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.Label_HorizontalLineTwitch.Location = new System.Drawing.Point(6, 116);
+            this.Label_HorizontalLineTwitch.Name = "Label_HorizontalLineTwitch";
+            this.Label_HorizontalLineTwitch.Size = new System.Drawing.Size(844, 15);
+            this.Label_HorizontalLineTwitch.TabIndex = 111;
+            this.Label_HorizontalLineTwitch.Text = "Effects                 ";
+            // 
             // label_TwitchAccessTokenVal
             // 
             this.label_TwitchAccessTokenVal.AutoSize = true;
-            this.label_TwitchAccessTokenVal.Location = new System.Drawing.Point(362, 100);
+            this.label_TwitchAccessTokenVal.Location = new System.Drawing.Point(362, 87);
             this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
             this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchAccessTokenVal.TabIndex = 8;
@@ -1921,7 +1952,7 @@
             // label_TwitchChannelIDVal
             // 
             this.label_TwitchChannelIDVal.AutoSize = true;
-            this.label_TwitchChannelIDVal.Location = new System.Drawing.Point(362, 75);
+            this.label_TwitchChannelIDVal.Location = new System.Drawing.Point(362, 62);
             this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
             this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchChannelIDVal.TabIndex = 7;
@@ -1929,7 +1960,7 @@
             // label_TwitchUsernameVal
             // 
             this.label_TwitchUsernameVal.AutoSize = true;
-            this.label_TwitchUsernameVal.Location = new System.Drawing.Point(362, 50);
+            this.label_TwitchUsernameVal.Location = new System.Drawing.Point(362, 37);
             this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
             this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchUsernameVal.TabIndex = 6;
@@ -1937,7 +1968,7 @@
             // label_TwitchAccessToken
             // 
             this.label_TwitchAccessToken.AutoSize = true;
-            this.label_TwitchAccessToken.Location = new System.Drawing.Point(284, 100);
+            this.label_TwitchAccessToken.Location = new System.Drawing.Point(281, 87);
             this.label_TwitchAccessToken.Name = "label_TwitchAccessToken";
             this.label_TwitchAccessToken.Size = new System.Drawing.Size(62, 13);
             this.label_TwitchAccessToken.TabIndex = 5;
@@ -1946,7 +1977,7 @@
             // label_TwitchChannelID
             // 
             this.label_TwitchChannelID.AutoSize = true;
-            this.label_TwitchChannelID.Location = new System.Drawing.Point(284, 75);
+            this.label_TwitchChannelID.Location = new System.Drawing.Point(281, 62);
             this.label_TwitchChannelID.Name = "label_TwitchChannelID";
             this.label_TwitchChannelID.Size = new System.Drawing.Size(63, 13);
             this.label_TwitchChannelID.TabIndex = 4;
@@ -1955,7 +1986,7 @@
             // label_TwitchUsername
             // 
             this.label_TwitchUsername.AutoSize = true;
-            this.label_TwitchUsername.Location = new System.Drawing.Point(284, 50);
+            this.label_TwitchUsername.Location = new System.Drawing.Point(281, 37);
             this.label_TwitchUsername.Name = "label_TwitchUsername";
             this.label_TwitchUsername.Size = new System.Drawing.Size(58, 13);
             this.label_TwitchUsername.TabIndex = 3;
@@ -1972,7 +2003,7 @@
             // label_TwitchAuthorized
             // 
             this.label_TwitchAuthorized.AutoSize = true;
-            this.label_TwitchAuthorized.Location = new System.Drawing.Point(273, 25);
+            this.label_TwitchAuthorized.Location = new System.Drawing.Point(270, 12);
             this.label_TwitchAuthorized.Name = "label_TwitchAuthorized";
             this.label_TwitchAuthorized.Size = new System.Drawing.Size(156, 13);
             this.label_TwitchAuthorized.TabIndex = 1;
@@ -1980,7 +2011,7 @@
             // 
             // button_TwitchReAuthorize
             // 
-            this.button_TwitchReAuthorize.Location = new System.Drawing.Point(31, 25);
+            this.button_TwitchReAuthorize.Location = new System.Drawing.Point(33, 12);
             this.button_TwitchReAuthorize.Name = "button_TwitchReAuthorize";
             this.button_TwitchReAuthorize.Size = new System.Drawing.Size(219, 88);
             this.button_TwitchReAuthorize.TabIndex = 0;
@@ -2076,13 +2107,73 @@
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
-            // label_ChangeSelectedVolumeKey
+            // dgv_Effects
             // 
-            this.label_ChangeSelectedVolumeKey.AutoSize = true;
-            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 89);
-            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
-            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(0, 13);
-            this.label_ChangeSelectedVolumeKey.TabIndex = 31;
+            this.dgv_Effects.AllowUserToAddRows = false;
+            this.dgv_Effects.AllowUserToDeleteRows = false;
+            this.dgv_Effects.AllowUserToResizeRows = false;
+            this.dgv_Effects.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Effects.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colEffectEnabled,
+            this.colEffectName,
+            this.colEffectDescription});
+            this.dgv_Effects.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgv_Effects.Location = new System.Drawing.Point(6, 134);
+            this.dgv_Effects.MultiSelect = false;
+            this.dgv_Effects.Name = "dgv_Effects";
+            this.dgv_Effects.ReadOnly = true;
+            this.dgv_Effects.RowHeadersVisible = false;
+            this.dgv_Effects.Size = new System.Drawing.Size(844, 246);
+            this.dgv_Effects.TabIndex = 112;
+            // 
+            // label_IsListeningToEvents
+            // 
+            this.label_IsListeningToEvents.AutoSize = true;
+            this.label_IsListeningToEvents.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label_IsListeningToEvents.Location = new System.Drawing.Point(735, 46);
+            this.label_IsListeningToEvents.Name = "label_IsListeningToEvents";
+            this.label_IsListeningToEvents.Size = new System.Drawing.Size(205, 18);
+            this.label_IsListeningToEvents.TabIndex = 113;
+            this.label_IsListeningToEvents.Text = "Not listening for Twitch events";
+            // 
+            // textBox_TwitchLog
+            // 
+            this.textBox_TwitchLog.Location = new System.Drawing.Point(869, 134);
+            this.textBox_TwitchLog.Multiline = true;
+            this.textBox_TwitchLog.Name = "textBox_TwitchLog";
+            this.textBox_TwitchLog.Size = new System.Drawing.Size(256, 246);
+            this.textBox_TwitchLog.TabIndex = 114;
+            // 
+            // label_TwitchLog
+            // 
+            this.label_TwitchLog.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_TwitchLog.Location = new System.Drawing.Point(870, 116);
+            this.label_TwitchLog.Name = "label_TwitchLog";
+            this.label_TwitchLog.Size = new System.Drawing.Size(256, 15);
+            this.label_TwitchLog.TabIndex = 115;
+            this.label_TwitchLog.Text = "Log";
+            // 
+            // colEffectEnabled
+            // 
+            this.colEffectEnabled.HeaderText = "Enabled";
+            this.colEffectEnabled.Name = "colEffectEnabled";
+            this.colEffectEnabled.ReadOnly = true;
+            this.colEffectEnabled.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colEffectEnabled.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // colEffectName
+            // 
+            this.colEffectName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEffectName.HeaderText = "Name";
+            this.colEffectName.Name = "colEffectName";
+            this.colEffectName.ReadOnly = true;
+            // 
+            // colEffectDescription
+            // 
+            this.colEffectDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEffectDescription.HeaderText = "Description";
+            this.colEffectDescription.Name = "colEffectDescription";
+            this.colEffectDescription.ReadOnly = true;
             // 
             // MainForm
             // 
@@ -2141,6 +2232,7 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Effects)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2298,6 +2390,14 @@
         private System.Windows.Forms.Label label_TwitchUsernameVal;
         private System.Windows.Forms.Label label_AuthorizedAs;
         private System.Windows.Forms.Label label_ChangeSelectedVolumeKey;
+        private System.Windows.Forms.Label Label_HorizontalLineTwitch;
+        private System.Windows.Forms.DataGridView dgv_Effects;
+        private System.Windows.Forms.Label label_IsListeningToEvents;
+        private System.Windows.Forms.Label label_TwitchLog;
+        private System.Windows.Forms.TextBox textBox_TwitchLog;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colEffectEnabled;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colEffectName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colEffectDescription;
     }
 }
 

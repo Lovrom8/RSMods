@@ -11,6 +11,8 @@ using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using RocksmithToolkitLib.Extensions;
 using RSMods.Twitch;
 using System.Threading;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace RSMods
 {
@@ -39,15 +41,14 @@ namespace RSMods
             if (!File.Exists(Constants.SettingsPath))
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
 
-            TwitchSettings.Get._context = SynchronizationContext.Current;
-            TwitchSettings.Get.LoadSettings();
+            // Load saved credidentials and enable PubSub
+            LoadTwitchSettings();
 
             InitializeComponent();
             Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}";
 
-            label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
-            label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
-            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
+            // Setup bindings for Twitch events
+            SetupTwitchTab();
 
             // Fix Songlist Bug
             if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == String.Empty)
@@ -260,7 +261,7 @@ namespace RSMods
 
                 if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
                     textBox_NewKeyAssignment.Text = e.KeyCode.ToString();
-                
+
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91)) // Number or Letter was pressed (Will be overrided by text input)
                 {
                     if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
@@ -400,7 +401,7 @@ namespace RSMods
         {
             Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
 
-            if(ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
             {
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
                     backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
@@ -452,11 +453,11 @@ namespace RSMods
         private void BtnUnpackCacheAgain_Click(object sender, EventArgs e) => SetAndForgetMods.CleanUnpackedCache();
 
         private void BtnAddCustomTunings_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomTunings();
-       
-        private void BtnAddFastLoadMod_Click(object sender, EventArgs e) =>  SetAndForgetMods.AddFastLoadMod();
-       
-        private void LoadSetAndForgetMods() 
-        { 
+
+        private void BtnAddFastLoadMod_Click(object sender, EventArgs e) => SetAndForgetMods.AddFastLoadMod();
+
+        private void LoadSetAndForgetMods()
+        {
             SetAndForgetMods.LoadDefaultFiles();
             FillUI();
         }
@@ -532,9 +533,9 @@ namespace RSMods
         }
 
         private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomMenuOptions();
-        
+
         private void BtnRemoveTempFolders_Click(object sender, EventArgs e) => SetAndForgetMods.RemoveTempFolders();
-       
+
         private void BtnSetDefaultTones_Click(object sender, EventArgs e)
         {
             if (listBox_ProfileTones.SelectedItem == null)
@@ -557,7 +558,7 @@ namespace RSMods
         {
             var profileTones = SetAndForgetMods.GetSteamProfilesFolder();
 
-            if(profileTones.Count > 0)
+            if (profileTones.Count > 0)
             {
                 listBox_ProfileTones.Items.Clear();
 
@@ -567,7 +568,7 @@ namespace RSMods
 
         private void BtnImportExistingSettings_Click(object sender, EventArgs e)
         {
-            if(SetAndForgetMods.ImportExistingSettings())
+            if (SetAndForgetMods.ImportExistingSettings())
                 FillUI();
         }
 
@@ -1018,7 +1019,7 @@ namespace RSMods
         private void TuningOffsets(object sender, EventArgs e)
         {
             string nupName = ((NumericUpDown)sender).Name;
-            int stringNumber = Int32.Parse(nupName[nupName.Length-1].ToString()); // Returns the current sender's name.
+            int stringNumber = Int32.Parse(nupName[nupName.Length - 1].ToString()); // Returns the current sender's name.
             switch (stringNumber)
             {
                 case 0:
@@ -1100,7 +1101,7 @@ namespace RSMods
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
                     foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
             }
-            
+
             ChangeTheme(backColor, foreColor);
         }
 
@@ -1120,13 +1121,40 @@ namespace RSMods
         }
 
         private void Button_TwitchReAuthorize_Click(object sender, EventArgs e)
-        {   
+        {
             ImplicitAuth auth = new ImplicitAuth();
             auth.MakeAuthRequest();
 
-          // string authToken = TwitchSettings.Get.AccessToken;
-          // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
-          // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
+            // string authToken = TwitchSettings.Get.AccessToken;
+            // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
+            // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
+        }
+
+        private void LoadTwitchSettings()
+        {
+            TwitchSettings.Get._context = SynchronizationContext.Current;
+            TwitchSettings.Get.LoadSettings();
+            TwitchSettings.Get.LoadDefaultEffects();
+        }
+
+        private void SetupTwitchTab()
+        {
+            label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
+            textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
+
+            Binding listeningToTwitchBinding = new Binding("Text", TwitchSettings.Get, "Authorized");
+            listeningToTwitchBinding.Format += (s, e) =>
+            {
+                if ((bool)e.Value && TwitchSettings.Get.Reauthorized) // If we are authorized
+                {
+                    PubSub.Get.SetUp(); // Well... this is probably not the best place since it's called a lot, but wing it
+                    TwitchSettings.Get.Reauthorized = false;
+                }
+                e.Value = (bool)e.Value ? "Listening to Twitch events" : "Not listening to twitch events";
+            };
+            label_IsListeningToEvents.DataBindings.Add(listeningToTwitchBinding);
         }
 
         private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)

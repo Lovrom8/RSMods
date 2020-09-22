@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace RSMods.Twitch
 {
@@ -21,9 +23,14 @@ namespace RSMods.Twitch
 
         public static readonly HttpClient client = new HttpClient();
 
+        public List<TwitchReward> Rewards = new List<TwitchReward>(); // Choosen by the streamer
+        public List<TwitchReward> DefaultRewards = new List<TwitchReward>(); // All of which can be chosen
+
         private string _accessToken { get; set; }
         private string _username { get; set; }
         private string _channelID { get; set; }
+        private bool _authorized { get; set; }
+        private string _log { get; set; }
 
         public SynchronizationContext _context { get; set; } // Gotta send this from the main thread, so we change it in MainForm
 
@@ -55,8 +62,8 @@ namespace RSMods.Twitch
             }
         }
 
-        public string ChannelID 
-        { 
+        public string ChannelID
+        {
             get => _channelID;
             set
             {
@@ -68,9 +75,35 @@ namespace RSMods.Twitch
                 NotifyPropertyChanged();
             }
         }
-        public bool Authorized { get; set; }
+        public bool Authorized
+        {
+            get => _authorized;
+            set
+            {
+                if (_authorized == value)
+                    return;
 
-        public string Info { get => $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}"; }
+                _authorized = value;
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Log
+        {
+            get => _log;
+            set
+            {
+                if (_log == value)
+                    return;
+
+                _log = value;
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool Reauthorized { get; set; }
 
         public string ChatbotUsername { get; set; }
         public string ChatbotAccessToken { get; set; }
@@ -81,7 +114,7 @@ namespace RSMods.Twitch
 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            _context.Post(delegate 
+            _context.Post(delegate
              {
                  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
              }, null);
@@ -121,7 +154,13 @@ namespace RSMods.Twitch
             ChatbotTokenSaved = GenUtil.GetSettingsEntry("Chatbot_TokenSaved");
             ChatbotUsername = GenUtil.GetSettingsEntry("Chatbot_Username");
 
-            Authorized = await ValidateCurrentSettings();
+            if (AccessToken != "")
+            {
+                Authorized = await ValidateCurrentSettings();
+                Reauthorized = Authorized;
+            }
+            else
+                Authorized = false;
         }
 
         public void SaveSettings(bool refreshDate = false)
@@ -148,6 +187,37 @@ namespace RSMods.Twitch
             {
                 MessageBox.Show($"Error: {ioex.Message}", "Error");
             }
+        }
+
+        public void LoadDefaultEffects()
+        {
+            // We may want to load these from a file, but then again, these need to be added in both the GUI and the DLL so yeah 
+            //if (File.Exists("TwitchDefaultEffects.xml"))
+            //    return;
+
+            DefaultRewards.AddRange(new List<TwitchReward> { 
+                new TwitchReward("Rainbow Strings", "Your strings will continuously shift colors like rainbow", "disable RainbowStrings","enable RainbowStrings"),
+                new TwitchReward("Remove Notes", "Make noteheads not show at all", "disable RemoveNotes", "enable RemoveNotes"),
+                new TwitchReward("Transparent Notes", "Make noteheads transparent", "disable TransparentNotes", "enable TransparentNotes"),
+                new TwitchReward("Solid color notes", "Make all notes have the same color", "disable SolidNotes", "enable SolidNotes")
+            });
+
+            /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
+                {
+
+                    xs.Serialize(writer, TwitchSettings.Get.Rewards);
+                    File.WriteAllText("TwitchDefaultEffects.xml", sww.ToString());
+                }
+            }*/
+        }
+
+        public void AddToLog(string newEntry)
+        {
+            Log += newEntry;
+            Log += Environment.NewLine;
         }
 
         private TwitchSettings() { }

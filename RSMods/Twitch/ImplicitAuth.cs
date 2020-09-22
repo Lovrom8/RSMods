@@ -75,6 +75,7 @@ namespace RSMods.Twitch
             {
                 TwitchSettings.Get.AccessToken = currUrl.Split(new string[] { "access_token=", "&" }, StringSplitOptions.None)[1];
                 TwitchSettings.Get.Authorized = true;
+                TwitchSettings.Get.Reauthorized = true;
 
                 Task.Run(async () => await RequestChannelID()).Wait();
                 TwitchSettings.Get.SaveSettings();
