@@ -257,6 +257,38 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Microsoft_Extensions_Logging_Abstractions {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_Extensions_Logging_Abstractions", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;doc&gt;
+        ///    &lt;assembly&gt;
+        ///        &lt;name&gt;Microsoft.Extensions.Logging.Abstractions&lt;/name&gt;
+        ///    &lt;/assembly&gt;
+        ///    &lt;members&gt;
+        ///        &lt;member name=&quot;T:Microsoft.Extensions.Logging.IExternalScopeProvider&quot;&gt;
+        ///            &lt;summary&gt;
+        ///            Represents a storage of common scope data.
+        ///            &lt;/summary&gt;
+        ///        &lt;/member&gt;
+        ///        &lt;member name=&quot;M:Microsoft.Extensions.Logging.IExternalScopeProvider.ForEachScope``1(System.Action{System.Object,``0},``0)&quot;&gt;
+        ///            &lt;summary&gt;
+        ///            E [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Microsoft_Extensions_Logging_Abstractions1 {
+            get {
+                return ResourceManager.GetString("Microsoft_Extensions_Logging_Abstractions1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Microsoft_WindowsAPICodePack {
             get {
                 object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack", resourceCulture);
@@ -583,6 +615,146 @@ namespace RS2014_Mod_Installer.Properties {
         internal static byte[] topng {
             get {
                 object obj = ResourceManager.GetObject("topng", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Core {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Core", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Core_Enums {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Core_Enums", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Core_Interfaces {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Core_Interfaces", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Core_Models {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Core_Models", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Helix {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Helix", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_Helix_Models {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_Helix_Models", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_V5 {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_V5", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Api_V5_Models {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Api_V5_Models", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Client {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Client", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Client_Enums {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Client_Enums", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Client_Models {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Client_Models", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_Communication {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_Communication", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] TwitchLib_PubSub {
+            get {
+                object obj = ResourceManager.GetObject("TwitchLib_PubSub", resourceCulture);
                 return ((byte[])(obj));
             }
         }

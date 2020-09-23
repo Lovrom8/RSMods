@@ -34,6 +34,8 @@ namespace RS2014_Mod_Installer
             // Root Folder
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.dll"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions);
+                File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.xml"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions1);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.dll"), Properties.Resources.Microsoft_WindowsAPICodePack);
                 File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.xml"), Properties.Resources.Microsoft_WindowsAPICodePack2);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.dll"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell);
@@ -51,17 +53,31 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "RSMods.pdb"), Properties.Resources.RSMods1);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "SevenZipSharp.dll"), Properties.Resources.SevenZipSharp);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "SharpConfig.dll"), Properties.Resources.SharpConfig);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.dll"), Properties.Resources.TwitchLib_Api_Core);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.Enums.dll"), Properties.Resources.TwitchLib_Api_Core_Enums);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.Interfaces.dll"), Properties.Resources.TwitchLib_Api_Core_Interfaces);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.Models.dll"), Properties.Resources.TwitchLib_Api_Core_Models);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.dll"), Properties.Resources.TwitchLib_Api);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Helix.dll"), Properties.Resources.TwitchLib_Api_Helix);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Helix.Models.dll"), Properties.Resources.TwitchLib_Api_Helix_Models);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.V5.dll"), Properties.Resources.TwitchLib_Api_V5);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.V5.Models.dll"), Properties.Resources.TwitchLib_Api_V5_Models);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Client.dll"), Properties.Resources.TwitchLib_Client);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Client.Enums.dll"), Properties.Resources.TwitchLib_Client_Enums);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Client.Models.dll"), Properties.Resources.TwitchLib_Client_Models);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Communication.dll"), Properties.Resources.TwitchLib_Communication);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.PubSub.dll"), Properties.Resources.TwitchLib_PubSub);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "X360.dll"), Properties.Resources.X360);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "zlib.net.dll"), Properties.Resources.zlib_net);
             // ddc Folder
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc.exe"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_chords_protector.xml"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_chords_remover.xml"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_dd_remover.xml"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_default.cfg"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_default.xml"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_keep_all_levels.cfg"), Properties.Resources.ddc);
-                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_merge_all_levels.cfg"), Properties.Resources.ddc);
+                File.WriteAllText(Path.Combine(ddcFolder, "ddc_chords_protector.xml"), Properties.Resources.ddc_chords_protector);
+                File.WriteAllText(Path.Combine(ddcFolder, "ddc_chords_remover.xml"), Properties.Resources.ddc_chords_remover);
+                File.WriteAllText(Path.Combine(ddcFolder, "ddc_dd_remover.xml"), Properties.Resources.ddc_dd_remover);
+                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_default.cfg"), Properties.Resources.ddc_default);
+                File.WriteAllText(Path.Combine(ddcFolder, "ddc_default.xml"), Properties.Resources.ddc_default1);
+                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_keep_all_levels.cfg"), Properties.Resources.ddc_keep_all_levels);
+                File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_merge_all_levels.cfg"), Properties.Resources.ddc_merge_all_levels);
                 File.WriteAllText(Path.Combine(ddcFolder, "license.txt"), Properties.Resources.license);
                 File.WriteAllText(Path.Combine(ddcFolder, "readme.txt"), Properties.Resources.readme1);
             // tools Folder

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,204 +59,252 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-	<data name="core" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\core.jar;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="CreateToolkitShortcut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\CreateToolkitShortcut.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="D3DX9_42" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\D3DX9_42.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ddc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ddc_chords_protector" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_chords_protector.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="ddc_chords_remover" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_chords_remover.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="ddc_dd_remover" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_dd_remover.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="ddc_default" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_default.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ddc_default1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_default.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="ddc_keep_all_levels" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_keep_all_levels.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ddc_merge_all_levels" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\ddc_merge_all_levels.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ICSharpCode_SharpZipLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="license" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\license.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="LogoX256" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Assets\LogoX256.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-	</data>
-	<data name="Microsoft_WindowsAPICodePack" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="Microsoft_WindowsAPICodePack2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="Microsoft_WindowsAPICodePack_Shell" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="Microsoft_WindowsAPICodePack_Shell2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-	</data>
-	<data name="MiscUtil" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\MiscUtil.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="NDesk_Options" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\NDesk.Options.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="Newtonsoft_Json" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Newtonsoft.Json.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="NLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\NLog.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="nvdxt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\nvdxt.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="oggCut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\oggCut.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="oggdec" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\oggdec.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="oggenc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\oggenc.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="Ookii_Dialogs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\Ookii.Dialogs.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="OpenCmd" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\OpenCmd.bat;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="packed_codebooks" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\packed_codebooks.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="packed_codebooks_aoTuV_603" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\packed_codebooks_aoTuV_603.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="PSTaskDialog" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\PSTaskDialog.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="readme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\readme.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="readme1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\ddc\readme.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-	</data>
-	<data name="revorb" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\revorb.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="RocksmithToolkitLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\RocksmithToolkitLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="RocksmithToTabLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\RocksmithToTabLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="RSMods" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\RSMods.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="RSMods1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\RSMods.pdb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="RSMods_exe" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\RSMods.exe.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-	</data>
-	<data name="SevenZipSharp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\SevenZipSharp.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="SharpConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\SharpConfig.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="topng" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\topng.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="ww2ogg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\ww2ogg.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="X360" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\X360.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="zlib_net" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\zlib.net.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\7z.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
-	<data name="_7za" type="System.Resources.ResXFileRef, System.Windows.Forms">
-		<value>..\Resources\RSModsGUI\tools\7za.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</data>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="core" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\core.jar;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CreateToolkitShortcut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\CreateToolkitShortcut.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="D3DX9_42" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\D3DX9_42.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ddc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ddc_chords_protector" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_chords_protector.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ddc_chords_remover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_chords_remover.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ddc_dd_remover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_dd_remover.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ddc_default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_default.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ddc_default1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_default.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ddc_keep_all_levels" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_keep_all_levels.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ddc_merge_all_levels" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\ddc_merge_all_levels.cfg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ICSharpCode_SharpZipLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="license" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\license.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="LogoX256" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\LogoX256.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Microsoft_Extensions_Logging_Abstractions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_Extensions_Logging_Abstractions1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_Shell" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Microsoft_WindowsAPICodePack_Shell2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="MiscUtil" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\MiscUtil.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="NDesk_Options" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\NDesk.Options.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Newtonsoft_Json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Newtonsoft.Json.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="NLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\NLog.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nvdxt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\nvdxt.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="oggCut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\oggCut.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="oggdec" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\oggdec.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="oggenc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\oggenc.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Ookii_Dialogs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\Ookii.Dialogs.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="OpenCmd" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\OpenCmd.bat;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="packed_codebooks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\packed_codebooks.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="packed_codebooks_aoTuV_603" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\packed_codebooks_aoTuV_603.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="PSTaskDialog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\PSTaskDialog.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="readme" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\readme.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="readme1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\ddc\readme.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="revorb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\revorb.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="RocksmithToolkitLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\RocksmithToolkitLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="RocksmithToTabLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\RocksmithToTabLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="RSMods" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\RSMods.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="RSMods1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\RSMods.pdb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="RSMods_exe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\RSMods.exe.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="SevenZipSharp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\SevenZipSharp.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SharpConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\SharpConfig.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="topng" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\topng.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Core" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Core.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Core_Enums" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Core.Enums.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Core_Interfaces" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Core.Interfaces.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Core_Models" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Core.Models.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Helix" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Helix.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_Helix_Models" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.Helix.Models.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_V5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.V5.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Api_V5_Models" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Api.V5.Models.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Client" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Client.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Client_Enums" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Client.Enums.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Client_Models" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Client.Models.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_Communication" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.Communication.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TwitchLib_PubSub" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\TwitchLib.PubSub.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ww2ogg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\ww2ogg.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="X360" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\X360.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="zlib_net" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\zlib.net.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_7z" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\7z.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_7za" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RSModsGUI\tools\7za.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

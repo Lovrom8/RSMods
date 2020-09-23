@@ -126,6 +126,8 @@
   <ItemGroup>
     <None Include="Assets\LogoX256.ico" />
     <Content Include="LogoX256.ico" />
+    <Content Include="Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <Content Include="Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.xml" />
     <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml" />
     <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml" />
     <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll" />
@@ -162,6 +164,20 @@
     <Content Include="Resources\RSModsGUI\tools\revorb.exe" />
     <Content Include="Resources\RSModsGUI\tools\topng.exe" />
     <Content Include="Resources\RSModsGUI\tools\ww2ogg.exe" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.Enums.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.Interfaces.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.Models.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Helix.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.Helix.Models.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.V5.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Api.V5.Models.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Client.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Client.Enums.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Client.Models.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.Communication.dll" />
+    <Content Include="Resources\RSModsGUI\TwitchLib.PubSub.dll" />
     <Content Include="Resources\RSModsGUI\X360.dll" />
     <Content Include="Resources\RSModsGUI\zlib.net.dll" />
   </ItemGroup>
