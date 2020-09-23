@@ -112,13 +112,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
 				currentVolumeIndex++;
 
-				if (currentVolumeIndex > (mixerInternalNames.size() -1)) // There are only so many values we know we can edit.
+				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
 			}
 
 			// else if (keyPressed == VK_F9)
 				// ClearBanks(); // Purposefully kills Wwise (has potential to fix tone bug)
-			
+
 		}
 
 		if (debug) {
@@ -132,10 +132,20 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		{
 			std::string currMsg = (char*)pcds->lpData;
 
-			if (currMsg == "ShowMeRainbow")
-				ERMode::ToggleRainbowMode();
+			if (currMsg == "enable RainbowStrings")
+				ERMode::RainbowEnabled = true;
+			else if (currMsg == "disable RainbowStrings")
+				ERMode::RainbowEnabled = false;
 			else if (currMsg.find("update") != std::string::npos)
 				Settings::ParseSettingUpdate(currMsg);
+			else if (currMsg.find("enable") != std::string::npos || currMsg.find("disable") != std::string::npos) {
+				if (currMsg.find("SolidNotes") != std::string::npos) {
+					static std::uniform_real_distribution<> urd(0, 9);
+					currentRandomTexture = urd(rng);
+				}
+
+				Settings::ParseTwitchToggle(currMsg);
+			}
 		}
 	}
 
@@ -180,9 +190,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		/* Used before, not necessary anymore because we generate our texture
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_normal.dds", &gradientTextureNormal); //if those don't exist, note heads will be "invisible" | 6-String Model
 		D3DXCreateTextureFromFile(pDevice, L"notes_gradient_seven.dds", &gradientTextureSeven); // 7-String Note Colors
-		D3DXCreateTextureFromFile(pDevice, L"doesntexist.dds", &nonexistentTexture); // Black Notes
 		D3DXCreateTextureFromFile(pDevice, L"gradient_map_additive.dds", &additiveNoteTexture); // Note Stems
 		*/
+		D3DXCreateTextureFromFile(pDevice, L"nonexistenttexture.dds", &nonexistentTexture); // Black Notes
 
 		std::cout << "ImGUI Init" << std::endl;
 
@@ -191,7 +201,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3D::GenerateTextures(pDevice, D3D::Custom);
 		D3D::GenerateTextures(pDevice, D3D::Rainbow);
 		//GenerateTextures(pDevice, Random);
-		//GenerateTextures(pDevice, Random_Solid);
+		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
 	}
 
 	ImGui_ImplDX9_NewFrame();
@@ -260,7 +270,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 			MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
-	
+
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
 			std::string currentSongTimeString = MemHelpers::ShowSongTimer();
 			size_t stringSize;
@@ -364,7 +374,7 @@ unsigned WINAPI MainThread(void*) {
 		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
 		RSModsFileOutput.close();
 	}
-	
+
 	D3DHooks::debug = debug;
 
 	Offsets::Initialize();
@@ -384,10 +394,10 @@ unsigned WINAPI MainThread(void*) {
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
-		
+
 		if (GameLoaded) {// If Game Is Loaded (No need to run these while the game is loading.)
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.
-			
+
 			//std::cout << currentMenu << std::endl;
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson

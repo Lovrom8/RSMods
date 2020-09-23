@@ -193,9 +193,20 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
+		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
+			return D3D_OK;
+
+	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
+		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
+			pDevice->SetTexture(1, nonexistentTexture);
+
+	if (Settings::IsTwitchSettingEnabled("SolidNotes"))
+		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
+			pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
+
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
-
 
 	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))

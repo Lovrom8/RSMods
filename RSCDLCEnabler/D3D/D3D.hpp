@@ -50,7 +50,7 @@ inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexiste
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures(360.0f / rainbowSpeed);
 
-inline int currIdx = 0, selectedIdx = 0, counter = 0;
+inline int currIdx = 0, selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
 inline bool cbEnabled, generateTexture = false;
 inline const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };

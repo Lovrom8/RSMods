@@ -146,11 +146,11 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 				RSColor iniColor = GenerateRandomColor();
 
 				for (int i = 0; i < 16; i++)
-					colorSet[i] = iniColor;
+					colorSet.push_back(iniColor);
 			}
 			else {
 				for (int i = 0; i < 16; i++)
-					colorSet[i] = GenerateRandomColor();
+					colorSet.push_back(GenerateRandomColor());
 			}
 
 			GenerateTexture(pDevice, &randomTextures[textIdx], colorSet);

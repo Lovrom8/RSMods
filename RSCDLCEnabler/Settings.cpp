@@ -4,40 +4,40 @@
 
 void Settings::Initialize()
 {
-	modSettings = {  //default values incase the INI doesn't load
-	{"AddVolumeKey",  "O"},
-	{"DecreaseVolumeKey", "I"},
-	{"ChangedSelectedVolumeKey", "P"},
-	{"CustomSongListTitles", "K"},
-	{"ToggleLoftKey", "T"},
-	{"ShowSongTimerKey", "S"},
-	{"ForceReEnumerationKey", "F"},
-	{"RainbowStringsKey", "R"},
-	{"RemoveLyricsKey", "L"},
-	{"MenuToggleKey", "M"},
-	{"ForceReEnumerationEnabled", "automatic"},
-	{"ToggleLoftEnabled", "on"},
-	{"AddVolumeEnabled", "off"},
-	{"DecreaseVolumeEnabled", "off"},
-	{"ShowSongTimerEnabled", "on"},
-	{"ForceReEnumerationEnabled", "on"},
-	{"RainbowStringsEnabled", "off"},
-	{"ExtendedRangeEnabled", "on"},
-	{"DiscoModeEnabled", "off"},
-	{"RemoveHeadstockEnabled", "off"},
-	{"RemoveSkylineEnabled", "off"},
-	{"GreenScreenWallEnabled", "off"},
-	{"ForceProfileEnabled", "off"},
-	{"FretlessModeEnabled", "off"},
-	{"RemoveInlaysEnabled", "off"},
-	{"ToggleLoftWhen", "manual"},
-	{"ToggleSkylineWhen", "song"},
-	{"RemoveLaneMarkersEnabled", "off"},
-	{"RemoveLyrics", "off"},
-	{"RemoveLyricsWhen", "manual"},
-	{"GuitarSpeak", "off"},
-	{"GuitarSpeakWhileTuning", "off"},
-	{"RemoveHeadstockWhen", "song"},
+	modSettings = {  // Default values incase the INI doesn't load
+		{"AddVolumeKey",  "O"},
+		{"DecreaseVolumeKey", "I"},
+		{"ChangedSelectedVolumeKey", "P"},
+		{"CustomSongListTitles", "K"},
+		{"ToggleLoftKey", "T"},
+		{"ShowSongTimerKey", "S"},
+		{"ForceReEnumerationKey", "F"},
+		{"RainbowStringsKey", "R"},
+		{"RemoveLyricsKey", "L"},
+		{"MenuToggleKey", "M"},
+		{"ForceReEnumerationEnabled", "automatic"},
+		{"ToggleLoftEnabled", "on"},
+		{"AddVolumeEnabled", "off"},
+		{"DecreaseVolumeEnabled", "off"},
+		{"ShowSongTimerEnabled", "on"},
+		{"ForceReEnumerationEnabled", "on"},
+		{"RainbowStringsEnabled", "off"},
+		{"ExtendedRangeEnabled", "on"},
+		{"DiscoModeEnabled", "off"},
+		{"RemoveHeadstockEnabled", "off"},
+		{"RemoveSkylineEnabled", "off"},
+		{"GreenScreenWallEnabled", "off"},
+		{"ForceProfileEnabled", "off"},
+		{"FretlessModeEnabled", "off"},
+		{"RemoveInlaysEnabled", "off"},
+		{"ToggleLoftWhen", "manual"},
+		{"ToggleSkylineWhen", "song"},
+		{"RemoveLaneMarkersEnabled", "off"},
+		{"RemoveLyrics", "off"},
+		{"RemoveLyricsWhen", "manual"},
+		{"GuitarSpeak", "off"},
+		{"GuitarSpeakWhileTuning", "off"},
+		{"RemoveHeadstockWhen", "song"},
 	};
 
 	customSettings = {
@@ -58,6 +58,13 @@ void Settings::Initialize()
 		{"GuitarSpeakCBracket", 0},
 		{"GuitarSpeakTildea", 0},
 		{"GuitarSpeakForSlash", 0}
+	};
+
+	twitchSettings = {
+		{"RainbowStrings", "off"},
+		{"RemoveNotes", "off"},
+		{"TransparentNotes", "off"},
+		{"SolidNotes", "off"}
 	};
 }
 
@@ -199,6 +206,9 @@ std::string Settings::ReturnSettingValue(std::string name) {
 	return modSettings[name];
 }
 
+bool Settings::IsTwitchSettingEnabled(std::string name) {
+	return twitchSettings[name] == "on";
+}
 
 // Misc Functions
 
@@ -233,6 +243,18 @@ void Settings::ParseSettingUpdate(std::string updateMessage) {
 	}
 	else 
 		UpdateModSetting(entry, value);
+}
+
+void Settings::ParseTwitchToggle(std::string twitchMsg) {
+	auto msgParts = SplitByWhitespace(twitchMsg);
+
+	if (msgParts.size() < 2)
+		return;
+
+	std::string toggleType = msgParts[0];
+	std::string effectName = msgParts[1];
+
+	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
 }
 
 int Settings::GetVKCodeForString(std::string vkString) {

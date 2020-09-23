@@ -29,11 +29,14 @@ namespace Settings {
 	void UpdateModSetting(std::string name, std::string newValue);
 	void UpdateCustomSetting(std::string name, int newValue);
 	void ParseSettingUpdate(std::string updateMessage);
+	void ParseTwitchToggle(std::string twitchMsg);
+	bool IsTwitchSettingEnabled(std::string name);
 
 	// INI Setting Maps
 	inline std::map<std::string, std::string> keyBinds;
 	inline std::map<std::string, std::string> modSettings;
 	inline std::map<std::string, int> customSettings;
+	inline std::map<std::string, std::string> twitchSettings;
 
 	// Misc 
 	inline std::map<std::string, int> keyMap = { // Talk about taking the easy way out ;)
