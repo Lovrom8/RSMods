@@ -216,6 +216,9 @@ namespace RSMods.Twitch
 
         public void LoadEnabledEffects()
         {
+            if (!File.Exists("TwitchEnabledEffects.xml"))
+                return;
+
             using (var reader = new StreamReader("TwitchEnabledEffects.xml"))
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(List<TwitchReward>));

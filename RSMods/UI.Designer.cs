@@ -2085,6 +2085,7 @@
             this.dgv_DefaultRewards.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgv_DefaultRewards.Size = new System.Drawing.Size(372, 246);
             this.dgv_DefaultRewards.TabIndex = 112;
+            this.dgv_DefaultRewards.Visible = false;
             // 
             // colDefaultRewardsName
             // 
