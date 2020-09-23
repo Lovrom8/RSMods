@@ -214,6 +214,15 @@ namespace RSMods.Twitch
             }*/
         }
 
+        public void LoadEnabledEffects()
+        {
+            using (var reader = new StreamReader("TwitchEnabledEffects.xml"))
+            {
+                XmlSerializer deserializer = new XmlSerializer(typeof(List<TwitchReward>));
+                Rewards = (List<TwitchReward>)deserializer.Deserialize(reader);
+            }
+        }
+
         public void AddToLog(string newEntry)
         {
             Log += newEntry;

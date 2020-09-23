@@ -13,6 +13,7 @@ using RSMods.Twitch;
 using System.Threading;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Threading.Tasks;
 
 namespace RSMods
 {
@@ -1135,6 +1136,21 @@ namespace RSMods
             TwitchSettings.Get._context = SynchronizationContext.Current;
             TwitchSettings.Get.LoadSettings();
             TwitchSettings.Get.LoadDefaultEffects();
+            TwitchSettings.Get.LoadEnabledEffects();
+        }
+
+        private void EnableTwitchTab()
+        {
+            /*button_AddSelectedReward.Visible = true;
+            button_RemoveReward.Visible = true;
+            textBox_TwitchLog.Visible = true;
+            dgv_DefaultRewards.Visible = true;
+            dgv_EnabledRewards.Visible = true;
+            label_HorizontalLineTwitch.Visible = true;
+            label_TwitchLog.Visible = true;*/
+
+            foreach (Control ctrl in tab_Twitch.Controls)
+                ctrl.Visible = true;
         }
 
         private void SetupTwitchTab()
@@ -1151,7 +1167,9 @@ namespace RSMods
                 {
                     PubSub.Get.SetUp(); // Well... this is probably not the best place since it's called a lot, but wing it
                     TwitchSettings.Get.Reauthorized = false;
+                    EnableTwitchTab();
                 }
+
                 e.Value = (bool)e.Value ? "Listening to Twitch events" : "Not listening to twitch events";
             };
             label_IsListeningToEvents.DataBindings.Add(listeningToTwitchBinding);
@@ -1197,17 +1215,20 @@ namespace RSMods
 
         private void Button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
 
-        private void button_SaveTwitchRewards_Click(object sender, EventArgs e)
+        private async void SaveEnabledRewardsToFile()
         {
-            XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
-            using (var sww = new StringWriter())
+            await Task.Run(async () =>
             {
-                using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
+                XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
+                using (var sww = new StringWriter())
                 {
-                    xs.Serialize(writer, TwitchSettings.Get.Rewards);
-                    File.WriteAllText("TwitchEnabledEffects.xml", sww.ToString());
+                    using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
+                    {
+                        xs.Serialize(writer, TwitchSettings.Get.Rewards);
+                        File.WriteAllText("TwitchEnabledEffects.xml", sww.ToString());
+                    }
                 }
-            }
+            });
         }
 
         private void button_AddSelectedReward_Click(object sender, EventArgs e)
@@ -1217,15 +1238,22 @@ namespace RSMods
 
             var selectedRow = dgv_DefaultRewards.SelectedRows[0];
             var selectedReward = TwitchSettings.Get.DefaultRewards.FirstOrDefault(r => r.Name == selectedRow.Cells["colDefaultRewardsName"].Value.ToString());
+            int rewardID = -1;
 
             if (selectedReward == null)
                 return;
 
-            if(MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (dgv_EnabledRewards.Rows.Count == 0)
+                rewardID = 1;
+            else
+                rewardID = Convert.ToInt32(dgv_EnabledRewards.Rows[dgv_EnabledRewards.Rows.Count - 1].Cells["colEnabledRewardsID"].Value) + 1;
+
+            if (MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 var reward = new BitsReward();
                 reward.Map(selectedReward);
-                
+                reward.BitsID = rewardID;
+
                 TwitchSettings.Get.Rewards.Add(reward);
                 AddToSelectedRewards(reward);
             }
@@ -1233,23 +1261,63 @@ namespace RSMods
             {
                 var reward = new ChannelPointsReward();
                 reward.Map(selectedReward);
+                reward.PointsID = rewardID;
 
                 TwitchSettings.Get.Rewards.Add(reward);
                 AddToSelectedRewards(reward);
             }
         }
 
-        private void AddToSelectedRewards(TwitchReward reward)
+        private void AddToSelectedRewards(TwitchReward reward) // Just imagine this was a bound list :P
         {
             if (reward is BitsReward)
-                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((BitsReward)reward).BitsAmount, "Bits");
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((BitsReward)reward).BitsAmount, "Bits", ((BitsReward)reward).BitsID);
             else if (reward is ChannelPointsReward)
-                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((ChannelPointsReward)reward).PointsAmount, "Points");
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((ChannelPointsReward)reward).PointsAmount, "Points", ((ChannelPointsReward)reward).PointsID);
+        }
+
+        private TwitchReward GetSelectedReward(DataGridViewRow selectedRow)
+        {
+            TwitchReward selectedReward;
+
+            if (selectedRow.Cells["colEnabledRewardsType"].Value.ToString() == "Bits")
+                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is BitsReward && ((BitsReward)r).BitsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
+            else
+                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is ChannelPointsReward && ((ChannelPointsReward)r).PointsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
+
+            return selectedReward;
         }
 
         private void dgv_EnabledRewards_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            // When user finishes editing those values, save them
+            var selectedRow = dgv_EnabledRewards.SelectedRows[0];
+            var selectedReward = GetSelectedReward(selectedRow);
+
+            selectedReward.Enabled = Convert.ToBoolean(selectedRow.Cells["colEnabledRewardsEnabled"].Value);
+            selectedReward.Length = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsLength"].Value);
+
+            if (selectedReward is BitsReward)
+                ((BitsReward)selectedReward).BitsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
+            else
+                ((ChannelPointsReward)selectedReward).PointsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
+
+            SaveEnabledRewardsToFile();
+        }
+
+        private void button_RemoveReward_Click(object sender, EventArgs e)
+        {
+            if (dgv_EnabledRewards.SelectedRows.Count < 1)
+                return;
+
+            var selectedRow = dgv_EnabledRewards.SelectedRows[0];
+            var selectedReward = GetSelectedReward(selectedRow);
+
+            if (selectedReward != null)
+                TwitchSettings.Get.Rewards.Remove(selectedReward);
+
+            dgv_EnabledRewards.Rows.RemoveAt(selectedRow.Index);
+
+            SaveEnabledRewardsToFile();
         }
     }
 }
