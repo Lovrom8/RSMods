@@ -57,7 +57,7 @@ namespace RSMods.Twitch
 
         public async void HandleBitsRecieved(OnBitsReceivedArgs e)
         {
-            var reward = TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.BitsAmount == e.BitsUsed);
+            var reward = TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed);
 
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
@@ -73,7 +73,7 @@ namespace RSMods.Twitch
 
         public async void HandleChannelPointsRecieved(OnRewardRedeemedArgs e)
         {
-            var reward = TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.PointsAmount == e.RewardCost);
+            var reward = TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost);
 
             if (reward == null) 
                 return;

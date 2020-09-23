@@ -1141,14 +1141,6 @@ namespace RSMods
 
         private void EnableTwitchTab()
         {
-            /*button_AddSelectedReward.Visible = true;
-            button_RemoveReward.Visible = true;
-            textBox_TwitchLog.Visible = true;
-            dgv_DefaultRewards.Visible = true;
-            dgv_EnabledRewards.Visible = true;
-            label_HorizontalLineTwitch.Visible = true;
-            label_TwitchLog.Visible = true;*/
-
             foreach (Control ctrl in tab_Twitch.Controls)
                 ctrl.Visible = true;
         }
@@ -1319,5 +1311,29 @@ namespace RSMods
 
             SaveEnabledRewardsToFile();
         }
+        
+        /* If we need some testing 
+         
+        private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
+
+        private async void SendIt()
+        {
+            var reward = TwitchSettings.Get.Rewards[3];
+            reward.Length = 10;
+            WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+            TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
+
+            await WaitUntilRewardEnds(reward.Length);
+
+            WinMsgUtil.SendMsgToRS(reward.InternalMsgDisable);
+            TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SendIt();
+        }
+
+        */
     }
 }
