@@ -1349,14 +1349,15 @@ namespace RSMods
             textBox_SolidNoteColorPicker.Text = "Random";
             SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, "random");
         }
-
-        /* If we need some testing 
          
         private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
 
         private async void SendFakeTwitchReward()
         {
-            var reward = TwitchSettings.Get.Rewards[0];
+            if (dgv_EnabledRewards.CurrentCell == null)
+                return;
+
+            var reward = TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex];
             reward.Length = 10;
             WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
@@ -1369,6 +1370,5 @@ namespace RSMods
 
         private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();
 
-        */
     }
 }
