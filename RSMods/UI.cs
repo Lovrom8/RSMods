@@ -408,9 +408,9 @@ namespace RSMods
             else
             {
                 textBox_SolidNoteColorPicker.BackColor = Color.White;
-                textBox_SolidNoteColorPicker.Text = "Random";
+              //  textBox_SolidNoteColorPicker.Text = "Random";
             }
-                
+
         }
 
         private void LoadCustomThemeColors()
@@ -1255,6 +1255,9 @@ namespace RSMods
             else
                 rewardID = Convert.ToInt32(dgv_EnabledRewards.Rows[dgv_EnabledRewards.Rows.Count - 1].Cells["colEnabledRewardsID"].Value) + 1;
 
+            if (selectedReward.Name == "Solid color notes")
+                selectedReward.AdditionalMsg = (textBox_SolidNoteColorPicker.BackColor.ToArgb() & 0x00ffffff).ToString("X6");
+
             if (MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 var reward = new BitsReward();
@@ -1327,6 +1330,17 @@ namespace RSMods
             SaveEnabledRewardsToFile();
         }
 
+        private void SetAdditionalMessage(string msg)
+        {
+            var selectedRow = dgv_EnabledRewards.SelectedRows[0];
+            var selectedReward = GetSelectedReward(selectedRow);
+
+            if (selectedReward.Name != "Solid color notes")
+                return;
+
+            selectedReward.AdditionalMsg = msg;
+        }
+
         private void button_SolidNoteColorPicker_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog
@@ -1337,9 +1351,13 @@ namespace RSMods
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                string colorHex = (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6");
+                SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, colorHex);
                 textBox_SolidNoteColorPicker.BackColor = colorDialog.Color;
                 textBox_SolidNoteColorPicker.Text = String.Empty;
+
+                SetAdditionalMessage(colorHex);
+                SaveEnabledRewardsToFile();
             }
         }
 
@@ -1348,8 +1366,11 @@ namespace RSMods
             textBox_SolidNoteColorPicker.BackColor = Color.White;
             textBox_SolidNoteColorPicker.Text = "Random";
             SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, "random");
+
+            SetAdditionalMessage("Random");
+            SaveEnabledRewardsToFile();
         }
-         
+
         private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
 
         private async void SendFakeTwitchReward()
@@ -1359,7 +1380,12 @@ namespace RSMods
 
             var reward = TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex];
             reward.Length = 10;
-            WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+
+            if (reward.AdditionalMsg != "")
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
+            else
+                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
 
             await WaitUntilRewardEnds(reward.Length);
@@ -1370,5 +1396,21 @@ namespace RSMods
 
         private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();
 
+        private void dgv_EnabledRewards_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgv_EnabledRewards.SelectedRows.Count < 1)
+                return;
+
+            var selectedRow = dgv_EnabledRewards.SelectedRows[0];
+            var selectedReward = GetSelectedReward(selectedRow);
+
+            if (selectedReward.Name != "Solid color notes")
+                return;
+
+            if (selectedReward.AdditionalMsg == null || selectedReward.AdditionalMsg == string.Empty || selectedReward.AdditionalMsg == "Random")
+                return;
+
+            textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+        }
     }
 }

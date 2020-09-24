@@ -1964,7 +1964,7 @@
             // 
             // button_SolidNoteColorResetToRandom
             // 
-            this.button_SolidNoteColorResetToRandom.Location = new System.Drawing.Point(927, 89);
+            this.button_SolidNoteColorResetToRandom.Location = new System.Drawing.Point(926, 87);
             this.button_SolidNoteColorResetToRandom.Name = "button_SolidNoteColorResetToRandom";
             this.button_SolidNoteColorResetToRandom.Size = new System.Drawing.Size(84, 23);
             this.button_SolidNoteColorResetToRandom.TabIndex = 122;
@@ -2038,6 +2038,7 @@
             this.dgv_EnabledRewards.TabIndex = 116;
             this.dgv_EnabledRewards.Visible = false;
             this.dgv_EnabledRewards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_EnabledRewards_CellEndEdit);
+            this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.dgv_EnabledRewards_SelectionChanged);
             // 
             // colEnabledRewardsEnabled
             // 
