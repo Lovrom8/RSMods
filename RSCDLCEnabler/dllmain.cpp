@@ -140,13 +140,20 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				Settings::ParseSettingUpdate(currMsg);
 			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
 				if (Contains(currMsg, "SolidNotes")) {
-					if (!Contains(currMsg, "Random"))  // If colors are not random, set colors which the user defined for this reward
-						Settings::ParseSolidColorsMessage(currMsg);
-					else { // For Random Colors
-						static std::uniform_real_distribution<> urd(0, 9);
-						currentRandomTexture = urd(rng);
+					if (Contains(currMsg, "disable"))
+						ERMode::ResetAllStrings();
+					else {
+						if (!Contains(currMsg, "Random"))  // If colors are not random, set colors which the user defined for this reward
+							Settings::ParseSolidColorsMessage(currMsg);
+						else { // For Random Colors
+							static std::uniform_real_distribution<> urd(0, 9);
+							currentRandomTexture = urd(rng);
+
+							ERMode::customSolidColor.clear();
+							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
+						}
+						regenerateUserDefinedTexture = true;
 					}
-					regenerateUserDefinedTexture = true;
 				}
 
 				Settings::ParseTwitchToggle(currMsg);
@@ -273,7 +280,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
-			MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			if(drawMixerText)
+				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -298,8 +306,15 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
-			unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
-			D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
+			//unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
+			//D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
+
+			ColorList customColorList(6, userDefColor); // I feel like the gradient color looks a bit better
+			D3D::GenerateTexture(pDevice, &twitchUserDefinedTexture, customColorList);
+
+			ERMode::customSolidColor.clear();
+			for (int str = 0; str < 6;str++)
+				ERMode::customSolidColor.push_back(userDefColor);
 
 			regenerateUserDefinedTexture = false;
 		}

@@ -49,6 +49,7 @@ inline LPDIRECT3DTEXTURE9 pCurrTexture;
 inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures(360.0f / rainbowSpeed);
+inline std::vector<ColorList> randomTextureColors;
 
 inline int currIdx = 0, selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;

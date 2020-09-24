@@ -60,7 +60,12 @@ void ERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 
 std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 
-void ERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
+void ERMode::ResetAllStrings() {
+	for (int str = 0; str < 6;str++)
+		ResetString(str);
+}
+
+void ERMode::ResetString(int strIndex) {
 	std::vector<uintptr_t> stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsGlow, Glow);
@@ -73,7 +78,7 @@ void ERMode::ResetString(int strIndex) { //TODO:don't do all this stuff twice
 	//*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
 	*(Color*)stringsEnabled[strIndex] = oldEnabled[strIndex];
 
-	Settings::SetStringColors(strIndex, oldGlow[strIndex], false);
+	//Settings::SetStringColors(strIndex, oldGlow[strIndex], false);
 }
 
 std::vector<std::vector<Color>> defaultColors;
@@ -94,6 +99,14 @@ void ERMode::Toggle7StringMode() {
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
+	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
+		SetColors(stringsGlow, customSolidColor);
+		SetColors(stringsEnabled, customSolidColor);
+		SetColors(stringsDisabled, customSolidColor);
+		SetColors(stringsAmb, customSolidColor);
+
+		return;
+	}
 
 	if (MemHelpers::IsExtendedRangeSong()) {
 		if (Settings::GetModSetting("CustomStringColors") == 1) { //Zag's colors
