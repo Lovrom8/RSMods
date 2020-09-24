@@ -199,7 +199,8 @@ namespace RSMods.Twitch
                 new TwitchReward("Rainbow Strings", "Your strings will continuously shift colors like rainbow", "disable RainbowStrings","enable RainbowStrings"),
                 new TwitchReward("Remove Notes", "Make noteheads not show at all", "disable RemoveNotes", "enable RemoveNotes"),
                 new TwitchReward("Transparent Notes", "Make noteheads transparent", "disable TransparentNotes", "enable TransparentNotes"),
-                new TwitchReward("Solid color notes", "Make all notes have the same color", "disable SolidNotes", "enable SolidNotes")
+                new TwitchReward("Solid color notes", "Make all notes have the same color", "disable SolidNotes", "enable SolidNotes"),
+                new TwitchReward("Drunk Mode", "Have the background freak out because you're drunk", "disable DrunkMode", "enable DrunkMode"),
             });
 
             /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.DefaultRewards.GetType());
