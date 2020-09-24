@@ -208,9 +208,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			else { // They set the color they want in the GUI | TODO: Colors are changed on chord boxes
 				Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
 				unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
-
-				std::cout << "Red: " << red << " Green: " << green << " Blue: " << blue << std::endl;
-
 				D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
 				pDevice->SetTexture(1, twitchUserDefinedTexture);
 			}
