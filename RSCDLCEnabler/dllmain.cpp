@@ -134,16 +134,33 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		{
 			std::string currMsg = (char*)pcds->lpData;
 			std::cout << currMsg << std::endl;
-			if (Contains(currMsg, "enable RainbowStrings")) {
+			if (Contains(currMsg, "enable RainbowStrings"))
 				ERMode::RainbowEnabled = true;
-				std::cout << ERMode::IsRainbowEnabled();
-			}
 			else if (Contains(currMsg, "disable RainbowStrings"))
 				ERMode::RainbowEnabled = false;
 			else if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
-			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
 
+			else if (Contains(currMsg, "enable DrunkMode")) {
+				uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
+
+				if (*(float*)noLoft == 1) {
+					D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
+					MemHelpers::ToggleLoft();
+				}
+			}
+			
+			else if (Contains(currMsg, "disable DrunkMode")) {
+				*(float*)Offsets::ptr_drunkShit = 0.3333333333;
+
+				if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
+					MemHelpers::ToggleLoft();
+					D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
+				}
+			}
+				
+			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
+				
 				if (Contains(currMsg, "SolidNotes") && ERMode::ColorsSaved) { // Don't apply any effects if we haven't even been in a song yet
 					if (Contains(currMsg, "disable"))
 						ERMode::ResetAllStrings();

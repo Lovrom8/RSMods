@@ -64,7 +64,8 @@ void Settings::Initialize()
 		{"RainbowStrings", "off"},
 		{"RemoveNotes", "off"},
 		{"TransparentNotes", "off"},
-		{"SolidNotes", "off"}
+		{"SolidNotes", "off"},
+		{"DrunkMode", "off"},
 	};
 }
 

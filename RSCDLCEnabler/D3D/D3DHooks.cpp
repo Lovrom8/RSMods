@@ -217,6 +217,10 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	if (Settings::IsTwitchSettingEnabled("DrunkMode")) {
+		std::uniform_real_distribution<> keepValueWithin(-1.5, 1.5);
+		*(float*)Offsets::ptr_drunkShit = keepValueWithin(rng);
+	}
 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;
