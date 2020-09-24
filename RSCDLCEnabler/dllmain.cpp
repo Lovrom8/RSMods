@@ -144,6 +144,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					// For Random Colors
 					static std::uniform_real_distribution<> urd(0, 9);
 					currentRandomTexture = urd(rng);
+
+					regenerateUserDefinedTexture = true;
 				}
 
 				Settings::ParseTwitchToggle(currMsg);
@@ -291,6 +293,14 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			}
 
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+		}
+
+		if (regenerateUserDefinedTexture) {
+			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
+			unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
+			D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
+
+			regenerateUserDefinedTexture = false;
 		}
 	}
 
