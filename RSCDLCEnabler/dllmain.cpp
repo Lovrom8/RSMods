@@ -149,18 +149,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 						if (Contains(currMsg, "Random")) { // For Random Colors
 							static std::uniform_real_distribution<> urd(0, 9);
 							currentRandomTexture = urd(rng);
-	
-							//for(int i = 0; i < 10;i++)
-							//	std::cout << randomTextureColors[i][0].r * 255 << "," << randomTextureColors[i][0].g * 255 << ","<< randomTextureColors[i][0].b * 255 << std::endl;
-								
 
 							ERMode::customSolidColor.clear();
 							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
-						}
-						else // If colors are not random, set colors which the user defined for this reward
-							Settings::ParseSolidColorsMessage(currMsg);
 
-						regenerateUserDefinedTexture = true;
+							twitchUserDefinedTexture->Release();
+							twitchUserDefinedTexture = randomTextures[currentRandomTexture]; // TBD whether this is smart to do
+						}
+						else { // If colors are not random, set colors which the user defined for this reward
+							Settings::ParseSolidColorsMessage(currMsg);
+							regenerateUserDefinedTexture = true;
+						}
 					}
 				}
 

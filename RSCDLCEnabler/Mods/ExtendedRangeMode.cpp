@@ -174,7 +174,7 @@ void ERMode::Toggle7StringMode() {
 				oldGlow.push_back(*(Color*)stringsGlow[i]);
 				oldAmb.push_back(*(Color*)stringsAmb[i]);
 			}
-			std::cout << "saved" << std::endl;
+
 			ColorsSaved = true;
 		}
 
