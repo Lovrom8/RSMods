@@ -1174,6 +1174,7 @@ namespace RSMods
                 {
                     PubSub.Get.SetUp(); // Well... this is probably not the best place since it's called a lot, but wing it
                     TwitchSettings.Get.Reauthorized = false;
+                    timerValidateTwitch.Enabled = true;
                     EnableTwitchTab();
                 }
 
@@ -1420,6 +1421,16 @@ namespace RSMods
                 textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
                 textBox_SolidNoteColorPicker.Text = "";
             }
+        }
+
+        private async void ValidateTwitch()
+        {
+            await TwitchSettings.Get.ValidateCurrentSettings();
+        }
+
+        private void timerValidateTwitch_Tick(object sender, EventArgs e)
+        {
+            ValidateTwitch(); // Validate to keep the token alive
         }
     }
 }

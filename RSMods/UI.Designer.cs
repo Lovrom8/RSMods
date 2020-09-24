@@ -198,6 +198,7 @@
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
+            this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -2329,6 +2330,11 @@
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
+            // timerValidateTwitch
+            // 
+            this.timerValidateTwitch.Interval = 150000;
+            this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2565,6 +2571,7 @@
         private System.Windows.Forms.Button button_SolidNoteColorPicker;
         private System.Windows.Forms.Button button_SolidNoteColorResetToRandom;
         private System.Windows.Forms.Button button_TestTwitchReward;
+        private System.Windows.Forms.Timer timerValidateTwitch;
     }
 }
 

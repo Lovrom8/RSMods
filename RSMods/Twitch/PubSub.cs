@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;
@@ -18,7 +19,7 @@ namespace RSMods.Twitch
         {
             pubSub = new TwitchPubSub();
             pubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
-            
+            pubSub.OnPubSubServiceClosed += OnPubSubServiceClosed;
             pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
             pubSub.Connect();
         }
@@ -34,9 +35,19 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog("Subscribing to channel rewards");
 
             pubSub.OnBitsReceived += OnBitsReceived;
-            pubSub.OnRewardRedeemed += OnRewardRedeemed;           
-           
+            pubSub.OnRewardRedeemed += OnRewardRedeemed;
+
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
+        }
+
+        private void OnPubSubServiceClosed(object sender, System.EventArgs e)
+        {
+            TwitchSettings.Get.AddToLog("Lazy fudger disconnected :(");
+
+            Thread.Sleep(2000);
+
+            pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
+            pubSub.Connect(); // Brute force MF-ers
         }
 
         private void OnBitsReceived(object sender, OnBitsReceivedArgs e)
@@ -75,7 +86,7 @@ namespace RSMods.Twitch
         {
             var reward = TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost);
 
-            if (reward == null) 
+            if (reward == null)
                 return;
 
             WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
