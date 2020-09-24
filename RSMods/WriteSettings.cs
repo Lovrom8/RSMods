@@ -109,6 +109,10 @@ namespace RSMods
                 { ReadSettings.CustomGUIBackgroundColorIdentifier, "F0FFFF" }, // Custom Theme Background Color
                 { ReadSettings.CustomGUITextColorIdentifier, "000000" }, // Custom Theme Text Color
             }},
+            {"[Twitch Settings]", new Dictionary<string, string>
+            {
+                { ReadSettings.TwitchSolidNoteColorIdentifier, "random" }, // Twitch Solid Note Color Option
+            }},
         };
 
         public static Dictionary<string, Dictionary<string, string>> saveSettings = new Dictionary<string, Dictionary<string, string>>()
@@ -202,7 +206,11 @@ namespace RSMods
                 { ReadSettings.CustomGUIThemeIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) }, // Use a Custom GUI theme.
                 { ReadSettings.CustomGUIBackgroundColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) }, // Custom Theme Background Color
                 { ReadSettings.CustomGUITextColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) }, // Custom Theme Text Color
-            }}
+            }},
+            {"[Twitch Settings]", new Dictionary<string, string>
+            {
+                {ReadSettings.TwitchSolidNoteColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier) }, // Solid Note Color For Twitch
+            }},
         };
 
         public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)

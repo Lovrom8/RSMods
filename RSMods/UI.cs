@@ -78,6 +78,9 @@ namespace RSMods
             // Load Colors Saved as Theme Colors.
             LoadCustomThemeColors();
 
+            // Load Twitch Colors
+            LoadTwitchDefaultColors();
+
             // Load Mod Settings
             LoadModSettings();
 
@@ -396,6 +399,18 @@ namespace RSMods
             }
             else
                 WriteSettings.WriteINI(WriteSettings.Settings);
+        }
+
+        private void LoadTwitchDefaultColors()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier) != "random" && ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier) != String.Empty)
+                textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier));
+            else
+            {
+                textBox_SolidNoteColorPicker.BackColor = Color.White;
+                textBox_SolidNoteColorPicker.Text = "Random";
+            }
+                
         }
 
         private void LoadCustomThemeColors()
@@ -1311,14 +1326,37 @@ namespace RSMods
 
             SaveEnabledRewardsToFile();
         }
-        
+
+        private void button_SolidNoteColorPicker_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_SolidNoteColorPicker.BackColor = colorDialog.Color;
+                textBox_SolidNoteColorPicker.Text = String.Empty;
+            }
+        }
+
+        private void button_SolidNoteColorResetToRandom_Click(object sender, EventArgs e)
+        {
+            textBox_SolidNoteColorPicker.BackColor = Color.White;
+            textBox_SolidNoteColorPicker.Text = "Random";
+            SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, "random");
+        }
+
         /* If we need some testing 
          
         private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
 
-        private async void SendIt()
+        private async void SendFakeTwitchReward()
         {
-            var reward = TwitchSettings.Get.Rewards[3];
+            var reward = TwitchSettings.Get.Rewards[0];
             reward.Length = 10;
             WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
@@ -1329,10 +1367,7 @@ namespace RSMods
             TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            SendIt();
-        }
+        private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();
 
         */
     }

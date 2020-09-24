@@ -194,6 +194,10 @@
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
+            this.button_SolidNoteColorPicker = new System.Windows.Forms.Button();
+            this.textBox_SolidNoteColorPicker = new System.Windows.Forms.TextBox();
+            this.button_SolidNoteColorResetToRandom = new System.Windows.Forms.Button();
+            this.button_TestTwitchReward = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1920,6 +1924,10 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
+            this.tab_Twitch.Controls.Add(this.button_SolidNoteColorResetToRandom);
+            this.tab_Twitch.Controls.Add(this.textBox_SolidNoteColorPicker);
+            this.tab_Twitch.Controls.Add(this.button_SolidNoteColorPicker);
             this.tab_Twitch.Controls.Add(this.button_RemoveReward);
             this.tab_Twitch.Controls.Add(this.button_AddSelectedReward);
             this.tab_Twitch.Controls.Add(this.dgv_EnabledRewards);
@@ -1946,7 +1954,7 @@
             // 
             // button_RemoveReward
             // 
-            this.button_RemoveReward.Location = new System.Drawing.Point(781, 249);
+            this.button_RemoveReward.Location = new System.Drawing.Point(781, 236);
             this.button_RemoveReward.Name = "button_RemoveReward";
             this.button_RemoveReward.Size = new System.Drawing.Size(83, 46);
             this.button_RemoveReward.TabIndex = 119;
@@ -1957,7 +1965,7 @@
             // 
             // button_AddSelectedReward
             // 
-            this.button_AddSelectedReward.Location = new System.Drawing.Point(781, 197);
+            this.button_AddSelectedReward.Location = new System.Drawing.Point(781, 184);
             this.button_AddSelectedReward.Name = "button_AddSelectedReward";
             this.button_AddSelectedReward.Size = new System.Drawing.Size(83, 46);
             this.button_AddSelectedReward.TabIndex = 118;
@@ -2279,6 +2287,47 @@
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
+            // button_SolidNoteColorPicker
+            // 
+            this.button_SolidNoteColorPicker.Location = new System.Drawing.Point(676, 87);
+            this.button_SolidNoteColorPicker.Name = "button_SolidNoteColorPicker";
+            this.button_SolidNoteColorPicker.Size = new System.Drawing.Size(137, 23);
+            this.button_SolidNoteColorPicker.TabIndex = 120;
+            this.button_SolidNoteColorPicker.Text = "Change Solid Note Color";
+            this.button_SolidNoteColorPicker.UseVisualStyleBackColor = true;
+            this.button_SolidNoteColorPicker.Visible = false;
+            this.button_SolidNoteColorPicker.Click += new System.EventHandler(this.button_SolidNoteColorPicker_Click);
+            // 
+            // textBox_SolidNoteColorPicker
+            // 
+            this.textBox_SolidNoteColorPicker.Enabled = false;
+            this.textBox_SolidNoteColorPicker.Location = new System.Drawing.Point(820, 89);
+            this.textBox_SolidNoteColorPicker.Name = "textBox_SolidNoteColorPicker";
+            this.textBox_SolidNoteColorPicker.Size = new System.Drawing.Size(100, 20);
+            this.textBox_SolidNoteColorPicker.TabIndex = 121;
+            this.textBox_SolidNoteColorPicker.Visible = false;
+            // 
+            // button_SolidNoteColorResetToRandom
+            // 
+            this.button_SolidNoteColorResetToRandom.Location = new System.Drawing.Point(927, 89);
+            this.button_SolidNoteColorResetToRandom.Name = "button_SolidNoteColorResetToRandom";
+            this.button_SolidNoteColorResetToRandom.Size = new System.Drawing.Size(84, 23);
+            this.button_SolidNoteColorResetToRandom.TabIndex = 122;
+            this.button_SolidNoteColorResetToRandom.Text = "Random Color";
+            this.button_SolidNoteColorResetToRandom.UseVisualStyleBackColor = true;
+            this.button_SolidNoteColorResetToRandom.Visible = false;
+            this.button_SolidNoteColorResetToRandom.Click += new System.EventHandler(this.button_SolidNoteColorResetToRandom_Click);
+            // 
+            // button_TestTwitchReward
+            // 
+            //this.button_TestTwitchReward.Location = new System.Drawing.Point(781, 288);
+            //this.button_TestTwitchReward.Name = "button_TestTwitchReward";
+            //this.button_TestTwitchReward.Size = new System.Drawing.Size(83, 47);
+            //this.button_TestTwitchReward.TabIndex = 123;
+            //this.button_TestTwitchReward.Text = "Test Reward";
+            //this.button_TestTwitchReward.UseVisualStyleBackColor = true;
+            //this.button_TestTwitchReward.Click += new System.EventHandler(this.TestTwitchReward_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2511,6 +2560,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsAmount;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsType;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsID;
+        private System.Windows.Forms.TextBox textBox_SolidNoteColorPicker;
+        private System.Windows.Forms.Button button_SolidNoteColorPicker;
+        private System.Windows.Forms.Button button_SolidNoteColorResetToRandom;
+        private System.Windows.Forms.Button button_TestTwitchReward;
     }
 }
 
