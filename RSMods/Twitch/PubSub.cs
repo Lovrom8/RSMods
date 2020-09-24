@@ -24,7 +24,7 @@ namespace RSMods.Twitch
             pubSub.Connect();
         }
 
-        private void OnPubSubServiceConnected(object sender, System.EventArgs e)
+        private void OnPubSubServiceConnected(object sender, EventArgs e)
         {
             TwitchSettings.Get.AddToLog(("PubSub Service Connected!"));
 
@@ -40,7 +40,7 @@ namespace RSMods.Twitch
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
-        private void OnPubSubServiceClosed(object sender, System.EventArgs e)
+        private void OnPubSubServiceClosed(object sender, EventArgs e)
         {
             TwitchSettings.Get.AddToLog("Lazy fudger disconnected :(");
 
