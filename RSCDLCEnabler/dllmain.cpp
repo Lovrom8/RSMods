@@ -115,6 +115,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
 			}
+			else if (keyPressed == Settings::keyMap["D"] && GetAsyncKeyState(VK_CONTROL))
+				drawMixerText = !drawMixerText;
 
 			// else if (keyPressed == VK_F9)
 				// ClearBanks(); // Purposefully kills Wwise (has potential to fix tone bug)
@@ -139,23 +141,30 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
 			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
-				if (Contains(currMsg, "SolidNotes")) {
+
+				if (Contains(currMsg, "SolidNotes") && ERMode::ColorsSaved) { // Don't apply any effects if we haven't even been in a song yet
 					if (Contains(currMsg, "disable"))
 						ERMode::ResetAllStrings();
 					else {
-						if (!Contains(currMsg, "Random"))  // If colors are not random, set colors which the user defined for this reward
-							Settings::ParseSolidColorsMessage(currMsg);
-						else { // For Random Colors
+						if (Contains(currMsg, "Random")) { // For Random Colors
 							static std::uniform_real_distribution<> urd(0, 9);
 							currentRandomTexture = urd(rng);
+	
+							//for(int i = 0; i < 10;i++)
+							//	std::cout << randomTextureColors[i][0].r * 255 << "," << randomTextureColors[i][0].g * 255 << ","<< randomTextureColors[i][0].b * 255 << std::endl;
+								
 
 							ERMode::customSolidColor.clear();
 							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
 						}
+						else // If colors are not random, set colors which the user defined for this reward
+							Settings::ParseSolidColorsMessage(currMsg);
+
 						regenerateUserDefinedTexture = true;
 					}
 				}
 
+				//std::cout << currMsg << std::endl;
 				Settings::ParseTwitchToggle(currMsg);
 			}
 		}
@@ -280,7 +289,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
-			if(drawMixerText)
+			if (drawMixerText)
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
@@ -309,7 +318,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			//unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
 			//D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
 
-			ColorList customColorList(6, userDefColor); // I feel like the gradient color looks a bit better
+			ColorList customColorList(16, userDefColor); // I feel like the gradient color looks a bit better
 			D3D::GenerateTexture(pDevice, &twitchUserDefinedTexture, customColorList);
 
 			ERMode::customSolidColor.clear();

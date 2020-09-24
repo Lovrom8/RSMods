@@ -25,6 +25,7 @@ namespace ERMode {
 
 	inline bool Is7StringSong = false;
 	inline bool RainbowEnabled = false;
+	inline bool ColorsSaved = false;
 
 	inline int currentOffsetIdx = 0;
 	inline int currColor = 0;

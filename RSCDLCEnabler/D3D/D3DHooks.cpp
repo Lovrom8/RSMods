@@ -193,7 +193,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
+	/*if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
 			return D3D_OK;
 
@@ -208,7 +208,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			else // They set the color they want in the GUI | TODO: Colors are changed on chord boxes
 				pDevice->SetTexture(1, twitchUserDefinedTexture);
 		}
-	}
+	}*/
 		
 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))

@@ -61,8 +61,11 @@ void ERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 
 void ERMode::ResetAllStrings() {
-	for (int str = 0; str < 6;str++)
-		ResetString(str);
+	if (!ColorsSaved)
+		return;
+
+	//for (int str = 0; str < 6;str++)
+	//	ResetString(str);
 }
 
 void ERMode::ResetString(int strIndex) {
@@ -84,7 +87,6 @@ void ERMode::ResetString(int strIndex) {
 std::vector<std::vector<Color>> defaultColors;
 
 void ERMode::Toggle7StringMode() {
-	static bool colorsSaved = false;
 	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsGlow, Glow);
@@ -99,7 +101,7 @@ void ERMode::Toggle7StringMode() {
 	InitStrings(stringsBodyAcc, BodyAcc);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
-	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
+	if (ColorsSaved && Settings::IsTwitchSettingEnabled("SolidNotes")) {
 		SetColors(stringsGlow, customSolidColor);
 		SetColors(stringsEnabled, customSolidColor);
 		SetColors(stringsDisabled, customSolidColor);
@@ -165,14 +167,15 @@ void ERMode::Toggle7StringMode() {
 	}
 	else {
 
-		if (!colorsSaved && MemHelpers::GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
+		if (!ColorsSaved && MemHelpers::GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
 			for (int i = 0; i < 6; i++) {
 				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 				oldEnabled.push_back(*(Color*)stringsEnabled[i]);
 				oldGlow.push_back(*(Color*)stringsGlow[i]);
 				oldAmb.push_back(*(Color*)stringsAmb[i]);
 			}
-			colorsSaved = true;
+			std::cout << "saved" << std::endl;
+			ColorsSaved = true;
 		}
 
 		if (Settings::GetModSetting("CustomStringColors") == 2) { // User defined colors

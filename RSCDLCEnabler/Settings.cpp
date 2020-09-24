@@ -208,6 +208,9 @@ std::string Settings::ReturnSettingValue(std::string name) {
 }
 
 bool Settings::IsTwitchSettingEnabled(std::string name) {
+	if (twitchSettings.count(name) == 0) // JIC
+		return false;
+
 	return twitchSettings[name] == "on";
 }
 
@@ -254,7 +257,7 @@ void Settings::ParseTwitchToggle(std::string twitchMsg) {
 
 	std::string toggleType = msgParts[0];
 	std::string effectName = msgParts[1];
-
+	
 	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
 }
 
