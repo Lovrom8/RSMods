@@ -408,7 +408,7 @@ namespace RSMods
             else
             {
                 textBox_SolidNoteColorPicker.BackColor = Color.White;
-              //  textBox_SolidNoteColorPicker.Text = "Random";
+                //  textBox_SolidNoteColorPicker.Text = "Random";
             }
 
         }
@@ -1284,6 +1284,8 @@ namespace RSMods
                 dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((BitsReward)reward).BitsAmount, "Bits", ((BitsReward)reward).BitsID);
             else if (reward is ChannelPointsReward)
                 dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((ChannelPointsReward)reward).PointsAmount, "Points", ((ChannelPointsReward)reward).PointsID);
+            else if (reward is SubReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, 1, "Sub", ((SubReward)reward).SubID);
         }
 
         private TwitchReward GetSelectedReward(DataGridViewRow selectedRow)
@@ -1292,6 +1294,8 @@ namespace RSMods
 
             if (selectedRow.Cells["colEnabledRewardsType"].Value.ToString() == "Bits")
                 selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is BitsReward && ((BitsReward)r).BitsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
+            else if (selectedRow.Cells["colEnabledRewardsType"].Value.ToString() == "Sub")
+                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is SubReward && ((SubReward)r).SubID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
             else
                 selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is ChannelPointsReward && ((ChannelPointsReward)r).PointsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
 
@@ -1379,7 +1383,6 @@ namespace RSMods
                 return;
 
             var reward = TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex];
-            reward.Length = 10;
 
             if (reward.AdditionalMsg != "")
                 WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
@@ -1408,9 +1411,15 @@ namespace RSMods
                 return;
 
             if (selectedReward.AdditionalMsg == null || selectedReward.AdditionalMsg == string.Empty || selectedReward.AdditionalMsg == "Random")
-                return;
-
-            textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+            {
+                textBox_SolidNoteColorPicker.BackColor = Color.White;
+                textBox_SolidNoteColorPicker.Text = "Random";
+            }
+            else
+            {
+                textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+                textBox_SolidNoteColorPicker.Text = "";
+            }
         }
     }
 }

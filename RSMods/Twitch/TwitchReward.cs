@@ -41,4 +41,9 @@ namespace RSMods.Twitch
         public int PointsID { get; set; }
         public int PointsAmount { get; set; }
     }
+
+    public class SubReward : TwitchReward
+    {
+        public int SubID { get; set; }
+    }
 }
