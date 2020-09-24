@@ -136,15 +136,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				ERMode::RainbowEnabled = true;
 			else if (currMsg == "disable RainbowStrings")
 				ERMode::RainbowEnabled = false;
-			else if (currMsg.find("update") != std::string::npos)
+			else if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
-			else if (currMsg.find("enable") != std::string::npos || currMsg.find("disable") != std::string::npos) {
-				if (currMsg.find("SolidNotes") != std::string::npos) {
-
-					// For Random Colors
-					static std::uniform_real_distribution<> urd(0, 9);
-					currentRandomTexture = urd(rng);
-
+			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
+				if (Contains(currMsg, "SolidNotes")) {
+					if (!Contains(currMsg, "Random"))  // If colors are not random, set colors which the user defined for this reward
+						Settings::ParseSolidColorsMessage(currMsg);
+					else { // For Random Colors
+						static std::uniform_real_distribution<> urd(0, 9);
+						currentRandomTexture = urd(rng);
+					}
 					regenerateUserDefinedTexture = true;
 				}
 
@@ -349,7 +350,7 @@ void GUI() {
 	oSetStreamSource = (tSetStreamSource)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetStreamSource_Index], (PBYTE)D3DHooks::Hook_SetStreamSource, 7);
 
 	oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)D3DHooks::Hook_Reset);
-	//oReset = (tReset)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction, but... it crashes instead
+	//oReset = (tReset)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction does, but... it crashes instead
 	oEndScene = (tEndScene)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::EndScene_Index], (PBYTE)D3DHooks::Hook_EndScene, 7);
 	oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawIndexedPrimitive_Index], (PBYTE)D3DHooks::Hook_DIP, 5);
 	oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)D3DHooks::Hook_DP, 7);

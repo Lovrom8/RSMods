@@ -49,3 +49,5 @@ inline std::vector<std::string> drawMixerTextName = {
 	{"Voice-Over Volume: "},
 	{"SFX Volume: "},
 };
+
+bool Contains(std::string str, const char* key){ return str.find(key) != std::string::npos; }

@@ -30,6 +30,7 @@ namespace Settings {
 	void UpdateCustomSetting(std::string name, int newValue);
 	void ParseSettingUpdate(std::string updateMessage);
 	void ParseTwitchToggle(std::string twitchMsg);
+	void ParseSolidColorsMessage(std::string twitchMsg);
 	bool IsTwitchSettingEnabled(std::string name);
 
 	// INI Setting Maps

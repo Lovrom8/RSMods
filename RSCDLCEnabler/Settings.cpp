@@ -258,6 +258,15 @@ void Settings::ParseTwitchToggle(std::string twitchMsg) {
 	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
 }
 
+void Settings::ParseSolidColorsMessage(std::string twitchMsg) {
+	auto msgParts = SplitByWhitespace(twitchMsg);
+
+	if (msgParts.size() != 3)
+		return;
+
+	UpdateModSetting("SolidNoteColor", msgParts[2]);
+}
+
 int Settings::GetVKCodeForString(std::string vkString) {
 	return keyMap[vkString];
 }
