@@ -148,6 +148,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
 					MemHelpers::ToggleLoft();
 				}
+
+				Settings::ParseTwitchToggle(currMsg);
 			}
 			
 			else if (Contains(currMsg, "disable DrunkMode")) {
@@ -157,6 +159,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					MemHelpers::ToggleLoft();
 					D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
 				}
+
+				Settings::ParseTwitchToggle(currMsg);
 			}
 				
 			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
