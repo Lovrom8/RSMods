@@ -64,8 +64,8 @@ void ERMode::ResetAllStrings() {
 	if (!ColorsSaved)
 		return;
 
-	//for (int str = 0; str < 6;str++)
-	//	ResetString(str);
+	for (int str = 0; str < 6;str++)
+		ResetString(str);
 }
 
 void ERMode::ResetString(int strIndex) {
@@ -265,7 +265,7 @@ void ERMode::DoRainbow() {
 	float h = 0.f;
 	float speed = 2.f;
 	float stringOffset = 20.f;
-	
+
 	while (RainbowEnabled) {
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
