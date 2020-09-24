@@ -140,6 +140,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				Settings::ParseSettingUpdate(currMsg);
 			else if (currMsg.find("enable") != std::string::npos || currMsg.find("disable") != std::string::npos) {
 				if (currMsg.find("SolidNotes") != std::string::npos) {
+
+					// For Random Colors
 					static std::uniform_real_distribution<> urd(0, 9);
 					currentRandomTexture = urd(rng);
 				}
