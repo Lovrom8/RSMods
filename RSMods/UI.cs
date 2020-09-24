@@ -1430,6 +1430,7 @@ namespace RSMods
 
         private void timerValidateTwitch_Tick(object sender, EventArgs e)
         {
+            TwitchSettings.Get.AddToLog("Validating token...");
             ValidateTwitch(); // Validate to keep the token alive
         }
     }
