@@ -217,6 +217,23 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	if (Settings::IsTwitchSettingEnabled("FYourFC")) {
+		uintptr_t currentNoteStreak = 0;
+
+		if (MemHelpers::IsInStringArray(currentMenu, 0, learnASongModes))
+		{
+			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakLASOffsets);
+		}
+		else if (MemHelpers::IsInStringArray(currentMenu, 0, scoreAttackModes))
+		{
+			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakSAOffsets);
+		}
+
+		if (currentNoteStreak != 0) {
+			*(BYTE*)currentNoteStreak = 0;
+		}
+	}
+
 	if (Settings::IsTwitchSettingEnabled("DrunkMode")) {
 		std::uniform_real_distribution<> keepValueWithin(-1.5, 1.5);
 		*(float*)Offsets::ptr_drunkShit = keepValueWithin(rng);

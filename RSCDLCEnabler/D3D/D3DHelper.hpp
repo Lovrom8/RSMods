@@ -56,6 +56,18 @@ inline std::vector<std::string> songModes = { // These are all the menus where y
 	"ScoreAttack_Pause",
 };
 
+inline std::vector<std::string> learnASongModes = {
+	"LearnASong_Game",
+	"NonStopPlay_Game",
+	"LearnASong_Pause",
+	"NonStopPlay_Pause",
+};
+
+inline std::vector<std::string> scoreAttackModes = {
+	"ScoreAttack_Game",
+	"ScoreAttack_Pause",
+};
+
 inline std::vector<std::string> lessonModes = { // These are the Guided Experience / Lessons modes.
 	"GuidedExperience_Game",
 	"GuidedExperience_Pause"

@@ -84,6 +84,11 @@ namespace Offsets {
 	extern uintptr_t ptr_colorBlindMode;
 	extern std::vector<unsigned int> ptr_colorBlindModeOffsets;
 
+	// Twitch Mods
+	extern uintptr_t ptr_currentNoteStreak;
+	extern std::vector<unsigned int> ptr_currentNoteStreakLASOffsets;
+	extern std::vector<unsigned int> ptr_currentNoteStreakSAOffsets;
+
 	// Misc Mods
 	extern uintptr_t ptr_stringColor;
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static

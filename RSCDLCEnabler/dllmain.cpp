@@ -162,6 +162,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				Settings::ParseTwitchToggle(currMsg);
 			}
+
+			else if (Contains(currMsg, "enable FYourFC"))
+				Settings::ParseTwitchToggle(currMsg);
+
+			else if (Contains(currMsg, "disable FYourFC"))
+				Settings::ParseTwitchToggle(currMsg);
 				
 			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
 				

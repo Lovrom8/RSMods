@@ -66,6 +66,7 @@ void Settings::Initialize()
 		{"TransparentNotes", "off"},
 		{"SolidNotes", "off"},
 		{"DrunkMode", "off"},
+		{"FYourFC", "off"},
 	};
 }
 
