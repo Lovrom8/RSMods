@@ -133,10 +133,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (pcds->dwData == 1)
 		{
 			std::string currMsg = (char*)pcds->lpData;
-
-			if (currMsg == "enable RainbowStrings")
+			std::cout << currMsg << std::endl;
+			if (Contains(currMsg, "enable RainbowStrings")) {
 				ERMode::RainbowEnabled = true;
-			else if (currMsg == "disable RainbowStrings")
+				std::cout << ERMode::IsRainbowEnabled();
+			}
+			else if (Contains(currMsg, "disable RainbowStrings"))
 				ERMode::RainbowEnabled = false;
 			else if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
@@ -153,8 +155,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 							ERMode::customSolidColor.clear();
 							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
 
-							twitchUserDefinedTexture->Release();
-							twitchUserDefinedTexture = randomTextures[currentRandomTexture]; // TBD whether this is smart to do
+							//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
+							//	twitchUserDefinedTexture->Release();
+
+							twitchUserDefinedTexture = randomTextures[currentRandomTexture];
 						}
 						else { // If colors are not random, set colors which the user defined for this reward
 							Settings::ParseSolidColorsMessage(currMsg);

@@ -10,6 +10,13 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		pDevice->SetTexture(1, ourTexture); //For random textures, use randomTextures[currentRandTexture]
 	}
 
+	if (Settings::IsTwitchSettingEnabled("SolidNotes") && Stride == 12) {
+		if (Settings::ReturnSettingValue("SolidNoteColor") == "random")
+			pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
+		else
+			pDevice->SetTexture(1, twitchUserDefinedTexture);
+	}
+
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
 
@@ -200,7 +207,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
 			pDevice->SetTexture(1, nonexistentTexture);
-	
+
 	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) {
 			if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
@@ -209,7 +216,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				pDevice->SetTexture(1, twitchUserDefinedTexture);
 		}
 	}
-		
+
 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return D3D_OK;

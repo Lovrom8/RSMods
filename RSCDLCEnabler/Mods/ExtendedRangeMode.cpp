@@ -265,7 +265,7 @@ void ERMode::DoRainbow() {
 	float h = 0.f;
 	float speed = 2.f;
 	float stringOffset = 20.f;
-
+	
 	while (RainbowEnabled) {
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
