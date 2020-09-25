@@ -1,7 +1,6 @@
 #pragma once
-#include "CCEffect.hpp"
-#include "Settings.hpp"
-#include "Mods/ExtendedRangeMode.hpp"
+#include "../CCEffect.hpp"
+#include "../../Mods/ExtendedRangeMode.hpp"
 
 namespace CrowdControl::Effects {
 	class SolidNotesRandomEffect : public CCEffect

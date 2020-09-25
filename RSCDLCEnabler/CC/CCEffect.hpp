@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include <chrono>
+#include "../Settings.hpp"
 
 using CrowdControl::Enums::EffectResult;
 

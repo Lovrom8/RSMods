@@ -1,7 +1,4 @@
 #include "RainbowEffect.hpp"
-#include <iostream>
-#include "Mods/ExtendedRangeMode.hpp"
-#include <chrono>
 
 using namespace CrowdControl::Enums;
 

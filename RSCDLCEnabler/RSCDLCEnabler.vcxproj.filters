@@ -3,7 +3,7 @@
   <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>cpp;c;CC\CC;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
@@ -99,40 +99,40 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
-    <ClCompile Include="D3D/D3DHooks.cpp">
+    <ClCompile Include="D3D\D3DHooks.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
     <ClCompile Include="D3D/D3D.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
-    <ClCompile Include="ControlServer.cpp">
+    <ClCompile Include="CC\CCStructs.cpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
-    <ClCompile Include="RainbowEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="CCStructs.hpp">
+    <ClCompile Include="CC\ControlServer.cpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
-    <ClCompile Include="CCEnums.hpp">
+    <ClCompile Include="CC\CCEnums.hpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
-    <ClCompile Include="CCStructs.cpp">
+    <ClCompile Include="CC\CCStructs.hpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
-    <ClCompile Include="DrunkModeEffect.cpp">
+    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="FYourFCEffect.cpp">
+    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="SolidNotesEffect.cpp">
+    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="TransparentNotesEffect.cpp">
+    <ClCompile Include="CC\Effects\RainbowEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\DrunkModeEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="RemoveNotesEffect.cpp">
+    <ClCompile Include="CC\Effects\FYourFCEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
     <ClCompile Include="WwiseHijack.cpp">
@@ -356,28 +356,28 @@
     <ClInclude Include="WwiseHijack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ControlServer.hpp">
+    <ClInclude Include="CC\CCEffect.hpp">
       <Filter>CrowdControl</Filter>
     </ClInclude>
-    <ClInclude Include="CCEffect.hpp">
+    <ClInclude Include="CC\ControlServer.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="RainbowEffect.hpp">
+    <ClInclude Include="CC\Effects\FYourFCEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="DrunkModeEffect.hpp">
+    <ClInclude Include="CC\Effects\DrunkModeEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="FYourFCEffect.hpp">
+    <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="SolidNotesEffect.hpp">
+    <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
-    <ClInclude Include="TransparentNotesEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="RemoveNotesEffect.hpp">
+    <ClInclude Include="CC\Effects\RainbowEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
     <ClInclude Include="Lua\lapi.h">
@@ -466,7 +466,7 @@
     <None Include="Lib\Detours\detours.pdb">
       <Filter>Header Files\Detours</Filter>
     </None>
-    <None Include="rocksmithcrowdcontrol.cs">
+    <None Include="CC/rocksmithcrowdcontrol.cs">
       <Filter>CrowdControl</Filter>
     </None>
     <None Include="packages.config" />

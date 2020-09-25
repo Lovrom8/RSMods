@@ -1,14 +1,12 @@
 #pragma once
-#pragma once
-#pragma once
-#include "CCEffect.hpp"
-#include "Settings.hpp"
+#include "../CCEffect.hpp"
+#include "../../MemHelpers.hpp"
 
 namespace CrowdControl::Effects {
-	class RemoveNotesEffect : public CCEffect
+	class DrunkModeEffect : public CCEffect
 	{
 	public:
-		RemoveNotesEffect(unsigned int durationSeconds) {
+		DrunkModeEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -18,3 +16,4 @@ namespace CrowdControl::Effects {
 		EffectResult Stop();
 	};
 }
+

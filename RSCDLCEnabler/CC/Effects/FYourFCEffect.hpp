@@ -1,11 +1,11 @@
 #pragma once
-#include "CCEffect.hpp"
+#include "../CCEffect.hpp"
 
 namespace CrowdControl::Effects {
-	class RainbowEffect : public CCEffect
+	class FYourFCEffect : public CCEffect
 	{
 	public:
-		RainbowEffect(unsigned int durationSeconds) {
+		FYourFCEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -15,4 +15,3 @@ namespace CrowdControl::Effects {
 		EffectResult Stop();
 	};
 }
-

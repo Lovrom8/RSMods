@@ -1,23 +1,21 @@
-
-
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 
 #include "ControlServer.hpp"
-#include "D3D/D3DHooks.hpp"
+#include "../D3D/D3DHooks.hpp"
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
 #include "ControlServer.hpp"
 #include "CCEffect.hpp"
 #include <nlohmann\json.hpp>
-#include "RainbowEffect.hpp"
-#include "DrunkModeEffect.hpp"
-#include "FYourFCEffect.hpp"
-#include "SolidNotesEffect.hpp"
-#include "TransparentNotesEffect.hpp"
-#include "RemoveNotesEffect.hpp"
+#include "Effects/RainbowEffect.hpp"
+#include "Effects/DrunkModeEffect.hpp"
+#include "Effects/FYourFCEffect.hpp"
+#include "Effects/SolidNotesEffect.hpp"
+#include "Effects/TransparentNotesEffect.hpp"
+#include "Effects/RemoveNotesEffect.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")

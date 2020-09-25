@@ -11,9 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CCStructs.cpp" />
-    <ClCompile Include="ControlServer.cpp" />
+    <ClCompile Include="CC\CCStructs.cpp" />
+    <ClCompile Include="CC\ControlServer.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
+    <ClCompile Include="D3D\D3DHooks.cpp" />
+    <ClCompile Include="CC\CCEnums.hpp" />
+    <ClCompile Include="CC\CCStructs.hpp" />
+    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
+    <ClInclude Include="CC\CCEffect.hpp" />
+    <ClInclude Include="CC\ControlServer.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />
     <ClCompile Include="Lua\lapi.c" />
@@ -58,42 +66,17 @@
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
-    <ClInclude Include="DrunkModeEffect.hpp" />
-    <ClInclude Include="FYourFCEffect.hpp" />
-    <ClInclude Include="RemoveNotesEffect.hpp" />
-    <ClInclude Include="RainbowEffect.hpp" />
-    <ClInclude Include="SolidNotesEffect.hpp" />
-    <ClInclude Include="TransparentNotesEffect.hpp" />
-    <ClInclude Include="Lua\lapi.h" />
-    <ClInclude Include="Lua\lauxlib.h" />
-    <ClInclude Include="Lua\lcode.h" />
-    <ClInclude Include="Lua\ldebug.h" />
-    <ClInclude Include="Lua\ldo.h" />
-    <ClInclude Include="Lua\lfunc.h" />
-    <ClInclude Include="Lua\lgc.h" />
-    <ClInclude Include="Lua\llex.h" />
-    <ClInclude Include="Lua\llimits.h" />
-    <ClInclude Include="Lua\lmem.h" />
-    <ClInclude Include="Lua\lobject.h" />
-    <ClInclude Include="Lua\lopcodes.h" />
-    <ClInclude Include="Lua\lparser.h" />
-    <ClInclude Include="Lua\lstate.h" />
-    <ClInclude Include="Lua\lstring.h" />
-    <ClInclude Include="Lua\ltable.h" />
-    <ClInclude Include="Lua\ltm.h" />
-    <ClInclude Include="Lua\lua.h" />
-    <ClInclude Include="Lua\lua.hpp" />
-    <ClInclude Include="Lua\luaconf.h" />
-    <ClInclude Include="Lua\lualib.h" />
-    <ClInclude Include="Lua\lundump.h" />
-    <ClInclude Include="Lua\lvm.h" />
-    <ClInclude Include="Lua\lzio.h" />
-    <ClInclude Include="Mods\DisableControllers.hpp" />
+    <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
+    <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />
+    <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp" />
+    <ClInclude Include="CC\Effects\RainbowEffect.hpp" />
+    <ClInclude Include="CC\Effects\SolidNotesEffect.hpp" />
+    <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DrunkModeEffect.cpp" />
-    <ClCompile Include="FYourFCEffect.cpp" />
+    <ClCompile Include="CC\Effects\DrunkModeEffect.cpp" />
+    <ClCompile Include="CC\Effects\FYourFCEffect.cpp" />
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp" />
     <ClCompile Include="Mods\CollectColors.cpp" />
@@ -119,7 +102,7 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="MemHelpers.cpp" />
-    <ClCompile Include="RainbowEffect.cpp" />
+    <ClCompile Include="CC\Effects\RainbowEffect.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
@@ -164,7 +147,7 @@
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl" />
     <None Include="packages.config" />
-    <None Include="rocksmithcrowdcontrol.cs" />
+    <None Include="CC/rocksmithcrowdcontrol.cs" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\Detours\detours.lib" />

@@ -1,7 +1,6 @@
 #pragma once
 #pragma once
-#include "CCEffect.hpp"
-#include "Settings.hpp"
+#include "../CCEffect.hpp"
 
 namespace CrowdControl::Effects {
 	class TransparentNotesEffect : public CCEffect

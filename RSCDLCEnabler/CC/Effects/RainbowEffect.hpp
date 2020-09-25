@@ -1,13 +1,12 @@
 #pragma once
-#include "CCEffect.hpp"
-#include "DrunkModeEffect.hpp"
-#include "MemHelpers.hpp"
+#include "../CCEffect.hpp"
+#include "../../Mods/ExtendedRangeMode.hpp"
 
 namespace CrowdControl::Effects {
-	class DrunkModeEffect : public CCEffect
+	class RainbowEffect : public CCEffect
 	{
 	public:
-		DrunkModeEffect(unsigned int durationSeconds) {
+		RainbowEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 

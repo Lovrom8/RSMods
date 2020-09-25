@@ -1,12 +1,13 @@
 #pragma once
-#include "CCEffect.hpp"
-#include "Settings.hpp"
+#pragma once
+#pragma once
+#include "../CCEffect.hpp"
 
 namespace CrowdControl::Effects {
-	class FYourFCEffect : public CCEffect
+	class RemoveNotesEffect : public CCEffect
 	{
 	public:
-		FYourFCEffect(unsigned int durationSeconds) {
+		RemoveNotesEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
