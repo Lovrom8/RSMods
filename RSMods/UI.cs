@@ -921,6 +921,22 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(button_RemoveTemp, "Removes the temporary files used by RSMods.");
             Dictionaries.TooltipDictionary.Add(button_RestoreCacheBackup, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
             Dictionaries.TooltipDictionary.Add(button_CleanUpUnpackedCache, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
+
+            // Twitch Bot
+            Dictionaries.TooltipDictionary.Add(button_TwitchReAuthorize, "Click this to get the authorisation key needed to let these mods listen to your twitch alerts.\nIt is possible this button may need to be clicked to re-anable the triggers.");
+            Dictionaries.TooltipDictionary.Add(button_SolidNoteColorPicker, "Choose a color for this event trigger.");
+            Dictionaries.TooltipDictionary.Add(button_SolidNoteColorResetToRandom, "This will choose a random color for you. \nThe color does not change per activation, what you see here is how it is set for good.");
+            Dictionaries.TooltipDictionary.Add(button_AddSelectedReward, "Add the configured event trigger.");
+            Dictionaries.TooltipDictionary.Add(button_RemoveReward, "Remove the selected event trigger.");
+            Dictionaries.TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have recieved a donation.");
+            Dictionaries.TooltipDictionary.Add(dgv_DefaultRewards, "Lists the possible events you can use to set a trigger.");
+            Dictionaries.TooltipDictionary.Add(dgv_EnabledRewards, "Lists the events you have configured - how long they are activated for - and their cost.");
+            Dictionaries.TooltipDictionary.Add(textBox_TwitchLog, "Shows notifications from Twitch - and what got triggered from these tools.");
+            Dictionaries.TooltipDictionary.Add(label_TwitchAuthorized, "Please take care to make sure none of these entries are shown on your stream.");
+            Dictionaries.TooltipDictionary.Add(label_TwitchUsername, "Please take care to make sure none of these entries are shown on your stream.");
+            Dictionaries.TooltipDictionary.Add(label_TwitchChannelID, "Please take care to make sure none of these entries are shown on your stream.");
+            Dictionaries.TooltipDictionary.Add(label_TwitchAccessToken, "Please take care to make sure none of these entries are shown on your stream.");
+
         }
 
         private void HideToolTips(object sender, EventArgs e)
@@ -1432,6 +1448,11 @@ namespace RSMods
         {
             TwitchSettings.Get.AddToLog("Validating token...");
             ValidateTwitch(); // Validate to keep the token alive
+        }
+
+        private void ToolTip_Popup(object sender, PopupEventArgs e)
+        {
+
         }
     }
 }
