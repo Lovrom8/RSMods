@@ -144,7 +144,7 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 }
 
 // textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF (or 255 in hex).
-void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, int hookReset)
+void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice)
 {
 	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
 	if (WindowSizeX != (MemHelpers::GetWindowSize()[0] / 96) || WindowSizeY != (MemHelpers::GetWindowSize()[1] / 72 || CustomDX9Font == NULL)) {

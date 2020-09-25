@@ -572,7 +572,7 @@ void Initialize(void) {
 	//_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { // Do NOT remove the lpReserved parameter. We know it says it's unused, but keep it or the game won't open.
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
