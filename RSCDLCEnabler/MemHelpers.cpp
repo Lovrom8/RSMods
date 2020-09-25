@@ -158,8 +158,8 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	TextRectangle.left = topLeftX, TextRectangle.top = topLeftY, TextRectangle.right = bottomRightX, TextRectangle.bottom = bottomRightY;
 
 	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
-	DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length());
-	DX9FontEncapsulation->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
+	HRESULT preloadFont = DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length());
+	int fontHeightD3D = DX9FontEncapsulation->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
 
 	// Do not move these above or the value will be null.
 	if (hookReset == 1) {

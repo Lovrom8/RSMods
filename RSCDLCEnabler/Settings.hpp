@@ -40,7 +40,7 @@ namespace Settings {
 	inline std::map<std::string, std::string> twitchSettings;
 
 	// Misc 
-	inline std::map<std::string, unsigned int> keyMap = { // Talk about taking the easy way out ;)
+	inline std::map<std::string, int> keyMap = { // Talk about taking the easy way out ;)
 		{ "VK_LBUTTON" , 0x01 },
 		{ "VK_RBUTTON" , 0x02 },
 		{ "VK_CANCEL" , 0x03 },

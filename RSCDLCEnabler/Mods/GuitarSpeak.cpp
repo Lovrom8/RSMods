@@ -9,7 +9,7 @@ byte GuitarSpeak::GetCurrentNote() {
 	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets); // Copied & Modified from GetCurrentMenu()
 
 	if (!noteAdr)
-		return (BYTE)-1;
+		return -1;
 
 	return *(byte*)noteAdr;
 }

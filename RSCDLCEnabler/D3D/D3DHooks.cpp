@@ -27,13 +27,13 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, 
 	return oSetVertexDeclaration(pDevice, pdecl);
 }
 
-HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT i_StartRegister, const float* pConstantData, UINT Vector4fCount) {
+HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT StartRegister, const float* pConstantData, UINT Vector4fCount) {
 	if (pConstantData != NULL) {
-		StartRegister = i_StartRegister;
+		StartRegister = StartRegister;
 		VectorCount = Vector4fCount;
 	}
 
-	return oSetVertexShaderConstantF(pDevice, i_StartRegister, pConstantData, Vector4fCount);
+	return oSetVertexShaderConstantF(pDevice, StartRegister, pConstantData, Vector4fCount);
 }
 
 HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexShader9* veShader) {
@@ -54,15 +54,15 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 	return oSetPixelShader(pDevice, piShader);
 }
 
-HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT i_Stride) {
+HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
-	if (i_Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { // Remove Line Markers
+	if (Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { // Remove Line Markers
 		pStreamData->GetDesc(&desc);
 		vertexBufferSize = desc.Size;
 	}
 
-	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, i_Stride);
+	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, Stride);
 }
 
 HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up

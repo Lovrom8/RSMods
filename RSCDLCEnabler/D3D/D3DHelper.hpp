@@ -12,10 +12,9 @@ namespace D3DHelper {
 	}
 
 	inline void Log(const char* fmt, ...) {
-		if (!fmt || fmt)
-			return;
+		/*if (!fmt)	return;
 
-		/*char text[4096];
+		char text[4096];
 		va_list	ap;
 		va_start(ap, fmt);
 		vsprintf_s(text, fmt, ap);

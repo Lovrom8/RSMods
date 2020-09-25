@@ -252,63 +252,63 @@ float CollectColors::Max(float fR, float fG, float fB) {
 }
 
 // From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms - so not totally stolen :P 
-void CollectColors::RGB2HSL(float i_R, float i_G, float i_B, int& o_H, float& o_S, float& o_L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
-	float min = Min(i_R, i_G, i_B);
-	float max = Max(i_R, i_G, i_B);
+void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
+	float min = Min(R, G, B);
+	float max = Max(R, G, B);
 	float d, h;
 
-	o_L = (min + max) / 2;
+	L = (min + max) / 2;
 
 	if (max != min) {
 		d = max - min;
 
-		o_S = (o_L <= 0.5) ? (d / (min + max)) : (d / (2 - max - min));
+		S = (L <= 0.5) ? (d / (min + max)) : (d / (2 - max - min));
 
-		if (i_R == max)
-			h = (i_G - i_B) / d;
-		else if (i_G == max)
-			h = 2 + (i_B - i_R) / d;
-		else if (i_B == max)
-			h = 4 + (i_R - i_G) / d;
+		if (R == max)
+			h = (G - B) / d;
+		else if (G == max)
+			h = 2 + (B - R) / d;
+		else if (B == max)
+			h = 4 + (R - G) / d;
 		else
 			h = 0.0f;
 
-		o_H = 60 * h;
+		H = 60 * h;
 
-		if (o_H < 0)
-			o_H += 360;
+		if (H < 0)
+			H += 360;
 	}
 }
 
-void CollectColors::HSL2RGB(float i_H, float i_S, float i_L, float& i_R, float& o_G, float& o_B) {
+void CollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
 	float v, min, sv, fract, vsf, mid1, mid2;
 	int sextant;
 
-	v = (i_L <= 0.5) ? (i_L * (1.0 + i_S)) : (i_L + i_S - i_L * i_S);
+	v = (L <= 0.5) ? (L * (1.0 + S)) : (L + S - L * S);
 
 	if (v > 0) {
-		min = 2 * i_L - v;
+		min = 2 * L - v;
 		sv = (v - min) / v;
-		i_H = (i_H == 360) ? 0 : i_H / 60;
+		H = (H == 360) ? 0 : H / 60;
 
 		sextant = floor(H);
-		fract = i_H - sextant;
+		fract = H - sextant;
 		vsf = v * sv * fract;
 		mid1 = min + vsf;
 		mid2 = v - vsf;
 
 		switch (sextant)
 		{
-			case 0: i_R = v; o_G = mid1; o_B = min; break;
-			case 1: i_R = mid2; o_G = v; o_B = min; break;
-			case 2: i_R = min; o_G = v; o_B = mid1; break;
-			case 3: i_R = min; o_G = mid2; o_B = v; break;
-			case 4: i_R = mid1; o_G = min; o_B = v; break;
-			case 5: i_R = v; o_G = min; o_B = mid2; break;
+			case 0: R = v; G = mid1; B = min; break;
+			case 1: R = mid2; G = v; B = min; break;
+			case 2: R = min; G = v; B = mid1; break;
+			case 3: R = min; G = mid2; B = v; break;
+			case 4: R = mid1; G = min; B = v; break;
+			case 5: R = v; G = min; B = mid2; break;
 		}
 	}
 	else {
-		i_R = 0.0f;
+		R = 0.0f;
 		G = 0.0f;
 		B = 0.0f;
 	}

@@ -249,7 +249,7 @@ void ERMode::DoRainbow() {
 	std::vector<uintptr_t> stringsEnabled;
 	std::vector<uintptr_t> stringsHigh;
 	std::vector<uintptr_t> stringsDisabled;
-	std::vector<Color> oldEnabledColors , oldHigh, oldDisabledColors;
+	std::vector<Color> oldEnabled, oldHigh, oldDisabled;
 
 	for (int i = 0; i < 6; i++) {
 		stringsEnabled.push_back(GetStringColor(i, Enabled));
@@ -271,9 +271,9 @@ void ERMode::DoRainbow() {
 		if (h >= 360.f) { h = 0.f; }
 
 		for (int i = 0; i < 6; i++) {
-			oldEnabledColors.push_back(*(Color*)stringsEnabled[i]);
+			oldEnabled.push_back(*(Color*)stringsEnabled[i]);
 			oldHigh.push_back(*(Color*)stringsHigh[i]);
-			oldDisabledColors.push_back(*(Color*)stringsDisabled[i]);
+			oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 
 			c.setH(h + (stringOffset * i));
 
@@ -285,13 +285,13 @@ void ERMode::DoRainbow() {
 		Sleep(16);
 	}
 
-	if (oldEnabledColors.size() == 0)
+	if (oldEnabled.size() == 0)
 		return;
 
 	for (int i = 0; i < 6; i++) {
-		*(Color*)stringsEnabled[i] = oldEnabledColors[i];
+		*(Color*)stringsEnabled[i] = oldEnabled[i];
 		*(Color*)stringsHigh[i] = oldHigh[i];
-		*(Color*)stringsDisabled[i] = oldDisabledColors[i];
+		*(Color*)stringsDisabled[i] = oldDisabled[i];
 	}
 }
 

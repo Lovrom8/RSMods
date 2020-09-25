@@ -11,7 +11,7 @@
 #include "D3DHelper.hpp"
 #include <gdiplus.h>
 
-// #pragma intrinsic(_ReturnAddress) Not actually declared
+#pragma intrinsic(_ReturnAddress)
 #pragma comment (lib, "gdiplus.lib")
 #pragma once
 
@@ -51,8 +51,7 @@ inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures(360.0f / rainbowSpeed);
 inline std::vector<ColorList> randomTextureColors;
 
-inline int selectedIdx = 0, counter = 0, currentRandomTexture = 0;
-inline unsigned int currIdx = 0;
+inline int currIdx = 0, selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
 inline bool cbEnabled, generateTexture = false;
 inline const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
@@ -182,14 +181,14 @@ inline DWORD QuickCheckSum(DWORD* BufferData, size_t Size) // Yes, we are aware 
 	return Sum;
 }
 
-inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, DWORD& o_crc) {
+inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, DWORD& crc) {
 	D3DLOCKED_RECT lockedRect;
 
 	if (texture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK) {
-		o_crc = 0;
+		crc = 0;
 		DWORD* pData = (DWORD*)lockedRect.pBits;
 		if (pData != NULL) {
-			o_crc = QuickCheckSum(pData, 20);
+			crc = QuickCheckSum(pData, 20);
 
 			texture->UnlockRect(0);
 			return true;

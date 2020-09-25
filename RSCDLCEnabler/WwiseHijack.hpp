@@ -7,7 +7,7 @@
 
 #include "windows.h"
 
-#pragma warning(disable: 26812 26495)
+#pragma warning(disable: 26812 26495);
 
 /*
  Get documentation here: https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=namespace_a_k_1_1_sound_engine.html
@@ -792,8 +792,6 @@ AkForceInline void* operator new(size_t /*size*/, void* memory, const AkPlacemen
 	 return memory;
 }
 
-AkForceInline void operator delete(void*, void*, const AkPlacementNewKey&) throw() {}
-
 #define AKASSERT(Condition) ((void)0)
 
 /// Specific implementation of array
@@ -1154,8 +1152,9 @@ public:
 	}
 
 	/// Resize the array.
-	bool GrowArray()
+	bool GrowArray(AkUInt32 in_uGrowBy = TGrowBy)
 	{
+		AKASSERT(in_uGrowBy);
 		return true;
 	}
 
@@ -1215,6 +1214,7 @@ public:
 		}
 		return AK_Fail;
 	}
+
 protected:
 
 	T* m_pItems;		///< pointer to the beginning of the array.
