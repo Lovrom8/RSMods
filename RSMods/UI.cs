@@ -1458,10 +1458,7 @@ namespace RSMods
             }
             else
             {
-                TwitchSettings.Get.AddToLog("Validating token...");
-                TwitchSettings.Get.AddToLog("----------------");
-
-                ValidateTwitch(); // Validate to keep the token alive
+                PubSub.Get.Resub();
             }
         }
 

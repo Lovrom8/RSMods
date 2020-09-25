@@ -21,6 +21,7 @@ namespace RSMods.Twitch
             pubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
             pubSub.OnPubSubServiceClosed += OnPubSubServiceClosed;
             pubSub.OnPubSubServiceError += OnPubSubServiceError;
+            pubSub.OnListenResponse += OnListenResponse;
 
             pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
             pubSub.Connect();
@@ -42,12 +43,31 @@ namespace RSMods.Twitch
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
+        public void Resub()
+        {
+            pubSub.Disconnect();
+            pubSub.Connect();
+            pubSub.SendTopics(TwitchSettings.Get.AccessToken);
+        }
+
+        private void OnListenResponse(object sender, OnListenResponseArgs e)
+        {
+            if (!e.Successful)
+            {
+                if (e.Response.ToString().ToLower().Contains("auth"))
+                    TwitchSettings.Get.AddToLog($"Wrong auth cuz lovro dumb");
+            }
+            else
+                TwitchSettings.Get.AddToLog($"This may even work, poggers in chat!");
+        }
+
         private void OnPubSubServiceClosed(object sender, EventArgs e)
         {
             TwitchSettings.Get.AddToLog("Lazy fudger disconnected :(");
             Thread.Sleep(2000);
 
-            pubSub.Connect(); // Brute force MF-ers
+            // pubSub.Connect(); // Brute force MF-ers
+            Resub();
         }
 
         private void OnPubSubServiceError(object sender, EventArgs e)
@@ -55,7 +75,8 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog("Something went wrong :(");
 
             Thread.Sleep(2000);
-            pubSub.Connect(); 
+            //pubSub.Connect();
+            Resub();
         }
 
         private void OnBitsReceived(object sender, OnBitsReceivedArgs e)
