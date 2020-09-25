@@ -94,6 +94,15 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_currentNoteStreakLASOffsets{ 0xB0, 0x18, 0x4, 0x84, 0x34 };
 	std::vector<unsigned int> ptr_currentNoteStreakSAOffsets{ 0xB0, 0x18, 0x4, 0x4C, 0x3C };
 
+	// These are based on the RH Guitar values. Nothing else has been added.
+	uintptr_t ptr_stringLocation = 0x00F5C53C; // Start with 0x10, 0x10, 0x4, 0xC and ends with 0x10
+	std::vector<unsigned int> ptr_stringLocationRedOffsets{ 0x10, 0x10, 0x4, 0xC, 0x4, 0x10 };
+	std::vector<unsigned int> ptr_stringLocationYellowOffsets{ 0x10, 0x10, 0x4, 0xC, 0x8, 0x10 };
+	std::vector<unsigned int> ptr_stringLocationBlueOffsets{ 0x10, 0x10, 0x4, 0xC, 0xC, 0x10 };
+	std::vector<unsigned int> ptr_stringLocationOrangeOffsets{ 0x10, 0x10, 0x4, 0xC, 0x10, 0x10 };
+	std::vector<unsigned int> ptr_stringLocationGreenOffsets{ 0x10, 0x10, 0x4, 0xC, 0x14, 0x10 };
+	std::vector<unsigned int> ptr_stringLocationPurpleOffsets{ 0x10, 0x10, 0x4, 0xC, 0x18, 0x10 };
+
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
