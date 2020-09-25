@@ -87,17 +87,17 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 
 		Gdiplus::Color middleColor(currColor.r * 255, currColor.g * 255, currColor.b * 255);
 
-		Gdiplus::Color gradientColors[] = { Gdiplus::Color::Black, middleColor , Gdiplus::Color::White };
+		Gdiplus::Color gradientColors[] = { (unsigned)Gdiplus::Color::Black, middleColor , (unsigned)Gdiplus::Color::White };
 		LinearGradientBrush linGrBrush( // Base texture for note gradients (top / normal)
 			Point(0, 0),
 			Point(width, lineHeight),
-			Gdiplus::Color::Black,
-			Gdiplus::Color::White);
+			(unsigned)Gdiplus::Color::Black,
+			(unsigned)Gdiplus::Color::White);
 		LinearGradientBrush whiteCoverupBrush( // Coverup for some spotty gradients (top / normal)
 			Point(width - 3, lineHeight * 5),
 			Point(width, height),
-			Gdiplus::Color::White,
-			Gdiplus::Color::White);
+			(unsigned)Gdiplus::Color::White,
+			(unsigned)Gdiplus::Color::White);
 
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
 		graphics.FillRectangle(&linGrBrush, 0, i * lineHeight, width, lineHeight);
@@ -116,7 +116,10 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 
 	(*ppTexture)->LockRect(0, &lockedRect, 0, 0);
 
-	bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+	Rect tempRect = Rect(0, 0, width, height);
+
+	bmp.LockBits(&tempRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+
 	unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
 	unsigned char* pDestPixels = (unsigned char*)lockedRect.pBits;
 
