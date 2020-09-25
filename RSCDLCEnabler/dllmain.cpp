@@ -219,8 +219,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		init = true;
 
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
+		// ImGuiIO& io = ImGui::GetIO();
+		// ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
 
 		D3DDEVICE_CREATION_PARAMETERS d3dcp;
 		pDevice->GetCreationParameters(&d3dcp);

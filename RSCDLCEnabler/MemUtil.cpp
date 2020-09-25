@@ -59,7 +59,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 	uintptr_t gateJmpAddy = (uintptr_t)(src - gateway - 5);
 
 	// Add the jmp opcode to the end of the gateway
-	*(gateway + len) = (char)0xE9;
+	*(gateway + len) = (unsigned char)0xE9;
 
 	// Add the address to the jmp
 	*(uintptr_t*)(gateway + len + 1) = gateJmpAddy;
@@ -99,7 +99,6 @@ uintptr_t MemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets,
 		if (!addr)
 			return NULL;
 
-		bool safeExport = safe;
 		std::vector<unsigned int> offsetsExport = offsets;
 		addr = *(uintptr_t*)addr;
 
