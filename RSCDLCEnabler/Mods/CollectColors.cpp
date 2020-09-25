@@ -284,7 +284,7 @@ void CollectColors::HSL2RGB(float i_H, float i_S, float i_L, float& i_R, float& 
 	float v, min, sv, fract, vsf, mid1, mid2;
 	int sextant;
 
-	v = (i_L <= 0.5) ? (i_L * (1.0 + i_S)) : (i_L + i_S - i_L * i_S);
+	v = (i_L <= 0.5) ? (i_L * (1.0 + i_S)) : ((double)i_L + i_S - (double)i_L * i_S);
 
 	if (v > 0) {
 		min = 2 * i_L - v;

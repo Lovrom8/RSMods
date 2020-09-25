@@ -52,6 +52,10 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 	// Create the gateway (len + 5 for the overwritten bytes + the jmp)
 	PBYTE gateway = (PBYTE)VirtualAlloc(0, len + 5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
+	// Makes sure gateway doesn't equal null
+	if (!gateway)
+		return nullptr;
+
 	// Put the bytes that will be overwritten in the gateway
 	memcpy(gateway, src, len);
 
