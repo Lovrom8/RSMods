@@ -104,6 +104,7 @@ namespace RSMods.Twitch
         }
 
         public bool Reauthorized { get; set; }
+        public bool ForceReauth { get; set; }
 
         public string ChatbotUsername { get; set; }
         public string ChatbotAccessToken { get; set; }
@@ -149,6 +150,10 @@ namespace RSMods.Twitch
             Username = GenUtil.GetSettingsEntry("Username");
             ChannelID = GenUtil.GetSettingsEntry("ChannelID");
 
+            bool _ForceReauth;
+            Boolean.TryParse(GenUtil.GetSettingsEntry("ForceReauth"), out _ForceReauth);
+            ForceReauth = _ForceReauth;
+
             ChatbotAccessToken = GenUtil.GetSettingsEntry("Chatbot_AccessToken");
             ChatbotRefreshToken = GenUtil.GetSettingsEntry("Chatbot_RefreshToken");
             ChatbotTokenSaved = GenUtil.GetSettingsEntry("Chatbot_TokenSaved");
@@ -176,7 +181,8 @@ namespace RSMods.Twitch
 
                 $"AccessToken = {AccessToken}",
                 $"Username = {Username}",
-                $"ChannelID = {ChannelID}"
+                $"ChannelID = {ChannelID}",
+                $"ForceReauth = {ForceReauth}"
             };
 
             try
@@ -195,7 +201,7 @@ namespace RSMods.Twitch
             //if (File.Exists("TwitchDefaultEffects.xml"))
             //    return;
 
-            DefaultRewards.AddRange(new List<TwitchReward> { 
+            DefaultRewards.AddRange(new List<TwitchReward> {
                 new TwitchReward("Rainbow Strings", "Your strings will continuously shift colors like rainbow", "disable RainbowStrings","enable RainbowStrings"),
                 new TwitchReward("Remove Notes", "Make noteheads not show at all", "disable RemoveNotes", "enable RemoveNotes"),
                 new TwitchReward("Transparent Notes", "Make noteheads transparent", "disable TransparentNotes", "enable TransparentNotes"),

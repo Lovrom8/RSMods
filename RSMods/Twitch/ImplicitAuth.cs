@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using RSMods.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,8 +28,23 @@ namespace RSMods.Twitch
         private static readonly string url = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={twitchClientId}&redirect_uri=http://localhost:1069/twitch_login&scope={twitchScope}";
         private WebServer webServer = null;
 
-        public void MakeAuthRequest() => Process.Start(url); // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
-        
+        public void MakeAuthRequest(bool startMinimized = false)
+        {
+            string browser = GenUtil.GetDefaultBrowser(url);
+
+            ProcessStartInfo startInfo = new ProcessStartInfo(browser);
+
+            if (startMinimized)
+                startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+
+            if(!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
+                startInfo.Arguments = url;
+
+            Process.Start(startInfo);
+
+            // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
+        }
+
         public async void RunServer()
         {
             var ttask = Task.Run(() => DoWork());
@@ -38,11 +55,12 @@ namespace RSMods.Twitch
         {
             //Start the webserver to listen for the Twitch auth callback
             //Make sure the URL ends in a /
-            
+
             try
             {
-                if (webServer != null) { // To avoid the user from spamming the button and crashing the program.
-                    webServer.Stop();   
+                if (webServer != null)
+                { // To avoid the user from spamming the button and crashing the program.
+                    webServer.Stop();
                     webServer = null;
                 }
                 webServer = new WebServer(SendResponse, twitchRedirectUri + "/");

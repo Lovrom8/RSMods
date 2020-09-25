@@ -36,6 +36,36 @@ namespace RSMods.Util
             }
         }
 
+        public static string GetDefaultBrowser(string url)
+        {
+            string browserName = "iexplore.exe";
+            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"))
+            {
+                if (userChoiceKey != null)
+                {
+                    object progIdValue = userChoiceKey.GetValue("Progid");
+                    if (progIdValue != null)
+                    {
+                        if (progIdValue.ToString().ToLower().Contains("chrome"))
+                            browserName = "chrome.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("firefox"))
+                            browserName = "firefox.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("safari"))
+                            browserName = "safari.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("opera"))
+                            browserName = "opera.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("brave"))
+                            browserName = "brave.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("edge"))
+                            return $"microsoft-edge:{url}";
+                    }
+                }
+            }
+
+            return browserName;
+        }
+
+
         public static T Map<T, TU>(this T target, TU source) // Copy properties of base class to its derived class 
         {
             var tprops = target.GetType().GetProperties();
@@ -173,12 +203,13 @@ namespace RSMods.Util
         {
             var dictRet = new Dictionary<string, string>();
 
-            settingsLines.ForEach(line => {
+            settingsLines.ForEach(line =>
+            {
                 string entry = line.Split('=')[0].Trim();
                 string value = line.Split('=')[1].Trim();
 
-                dictRet.Add(entry, value); 
-              }
+                dictRet.Add(entry, value);
+            }
             );
 
             settingsDict = dictRet;

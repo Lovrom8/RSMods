@@ -20,6 +20,8 @@ namespace RSMods.Twitch
             pubSub = new TwitchPubSub();
             pubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
             pubSub.OnPubSubServiceClosed += OnPubSubServiceClosed;
+            pubSub.OnPubSubServiceError += OnPubSubServiceError;
+
             pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
             pubSub.Connect();
         }
@@ -43,11 +45,17 @@ namespace RSMods.Twitch
         private void OnPubSubServiceClosed(object sender, EventArgs e)
         {
             TwitchSettings.Get.AddToLog("Lazy fudger disconnected :(");
-
             Thread.Sleep(2000);
 
-            pubSub.ListenToVideoPlayback(TwitchSettings.Get.Username);
             pubSub.Connect(); // Brute force MF-ers
+        }
+
+        private void OnPubSubServiceError(object sender, EventArgs e)
+        {
+            TwitchSettings.Get.AddToLog("Something went wrong :(");
+
+            Thread.Sleep(2000);
+            pubSub.Connect(); 
         }
 
         private void OnBitsReceived(object sender, OnBitsReceivedArgs e)

@@ -1198,6 +1198,8 @@ namespace RSMods
             };
             label_IsListeningToEvents.DataBindings.Add(listeningToTwitchBinding);
 
+            checkBox_TwitchForceReauth.Checked = TwitchSettings.Get.ForceReauth;
+
             foreach (var defaultReward in TwitchSettings.Get.DefaultRewards) // BindingList... yeah, not yet
                 dgv_DefaultRewards.Rows.Add(defaultReward.Name, defaultReward.Description);
 
@@ -1446,13 +1448,31 @@ namespace RSMods
 
         private void timerValidateTwitch_Tick(object sender, EventArgs e)
         {
-            TwitchSettings.Get.AddToLog("Validating token...");
-            ValidateTwitch(); // Validate to keep the token alive
+            if (checkBox_TwitchForceReauth.Checked)
+            {
+                TwitchSettings.Get.AddToLog("Reauthorizing...");
+                TwitchSettings.Get.AddToLog("----------------");
+
+                var auth = new ImplicitAuth(); // Force the issue
+                auth.MakeAuthRequest(true); // When the request finishes, it will trigger PropertyChanged & set Reauthorized, which in turn will reset PubSub
+            }
+            else
+            {
+                TwitchSettings.Get.AddToLog("Validating token...");
+                TwitchSettings.Get.AddToLog("----------------");
+
+                ValidateTwitch(); // Validate to keep the token alive
+            }
         }
 
         private void ToolTip_Popup(object sender, PopupEventArgs e)
         {
 
+        }
+
+        private void checkBox_TwitchForceReauth_CheckedChanged(object sender, EventArgs e)
+        {
+            TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
         }
     }
 }

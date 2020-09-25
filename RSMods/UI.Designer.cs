@@ -199,6 +199,7 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
+            this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1926,6 +1927,7 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.checkBox_TwitchForceReauth);
             this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
             this.tab_Twitch.Controls.Add(this.button_SolidNoteColorResetToRandom);
             this.tab_Twitch.Controls.Add(this.textBox_SolidNoteColorPicker);
@@ -2336,6 +2338,17 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
+            // checkBox_TwitchForceReauth
+            // 
+            this.checkBox_TwitchForceReauth.AutoSize = true;
+            this.checkBox_TwitchForceReauth.Location = new System.Drawing.Point(820, 12);
+            this.checkBox_TwitchForceReauth.Name = "checkBox_TwitchForceReauth";
+            this.checkBox_TwitchForceReauth.Size = new System.Drawing.Size(86, 17);
+            this.checkBox_TwitchForceReauth.TabIndex = 124;
+            this.checkBox_TwitchForceReauth.Text = "Force reauth";
+            this.checkBox_TwitchForceReauth.UseVisualStyleBackColor = true;
+            this.checkBox_TwitchForceReauth.CheckedChanged += new System.EventHandler(this.checkBox_TwitchForceReauth_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2573,6 +2586,7 @@
         private System.Windows.Forms.Button button_SolidNoteColorResetToRandom;
         private System.Windows.Forms.Button button_TestTwitchReward;
         private System.Windows.Forms.Timer timerValidateTwitch;
+        private System.Windows.Forms.CheckBox checkBox_TwitchForceReauth;
     }
 }
 
