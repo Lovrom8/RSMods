@@ -98,10 +98,10 @@ namespace Offsets {
 	uintptr_t ptr_stringLocation = 0x00F69D6C;
 	std::vector<unsigned int> ptr_stringLocationPurpleOffsets = { 0x30, 0x84, 0x8, 0x24, 0xD8, 0xE8, 0x78 };
 
-	uintptr_t ptr_noteLocation = 0x00F5C53C; // Note these are most notes BUT are not all the notes, some notes are stubborn and change pointers after every restart of the game :(
-	std::vector<unsigned int> ptr_noteLocationPurpleOneOffsets = { 0x10, 0xC, 0x30, 0x4, 0x10, 0x558 };
-	std::vector<unsigned int> ptr_noteLocationPurpleTwoOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
-	std::vector<unsigned int> ptr_noteLocationPurpleThreeOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
+	uintptr_t ptr_noteLocation = 0x00F5C53C; // Note these are only work on the 3rd, 4th, and 5th frets... I don't know how these are the only ones that stayed constant between launches.
+	std::vector<unsigned int> ptr_noteLocationPurpleThirdOffsets = { 0x10, 0xC, 0x30, 0x4, 0x10, 0x558 };
+	std::vector<unsigned int> ptr_noteLocationPurpleFourthOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
+	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
 
 
 	// Misc Mods
