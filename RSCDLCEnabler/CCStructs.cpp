@@ -3,7 +3,6 @@
 #include <string>
 #include "CCStructs.hpp"
 #include "CCEnums.hpp"
-#include <nlohmann\json.hpp>
 
 using namespace CrowdControl::Enums;
 using nlohmann::json;
