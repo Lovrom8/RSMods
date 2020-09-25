@@ -50,12 +50,20 @@
     <ClCompile Include="WwiseHijack.cpp" />
     <ClCompile Include="CCEnums.hpp" />
     <ClCompile Include="CCStructs.hpp" />
+    <ClCompile Include="RemoveNotesEffect.cpp" />
+    <ClCompile Include="SolidNotesEffect.cpp" />
+    <ClCompile Include="TransparentNotesEffect.cpp" />
     <ClInclude Include="CCEffect.hpp" />
     <ClInclude Include="ControlServer.hpp" />
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
+    <ClInclude Include="DrunkModeEffect.hpp" />
+    <ClInclude Include="FYourFCEffect.hpp" />
+    <ClInclude Include="RemoveNotesEffect.hpp" />
     <ClInclude Include="RainbowEffect.hpp" />
+    <ClInclude Include="SolidNotesEffect.hpp" />
+    <ClInclude Include="TransparentNotesEffect.hpp" />
     <ClInclude Include="Lua\lapi.h" />
     <ClInclude Include="Lua\lauxlib.h" />
     <ClInclude Include="Lua\lcode.h" />
@@ -84,6 +92,8 @@
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DrunkModeEffect.cpp" />
+    <ClCompile Include="FYourFCEffect.cpp" />
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp" />
     <ClCompile Include="Mods\CollectColors.cpp" />

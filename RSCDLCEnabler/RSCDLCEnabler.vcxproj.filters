@@ -120,6 +120,21 @@
     <ClCompile Include="CCStructs.cpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
+    <ClCompile Include="DrunkModeEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="FYourFCEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="TransparentNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoveNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
     <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -348,6 +363,21 @@
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
     <ClInclude Include="RainbowEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="DrunkModeEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="FYourFCEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidNotesEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="TransparentNotesEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoveNotesEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
     <ClInclude Include="Lua\lapi.h">

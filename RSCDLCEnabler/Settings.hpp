@@ -28,6 +28,7 @@ namespace Settings {
 	void UpdateSettings();
 	void UpdateModSetting(std::string name, std::string newValue);
 	void UpdateCustomSetting(std::string name, int newValue);
+	void UpdateTwitchSetting(std::string name, std::string newValue);
 	void ParseSettingUpdate(std::string updateMessage);
 	void ParseTwitchToggle(std::string twitchMsg, std::string toggleType);
 	void ParseSolidColorsMessage(std::string twitchMsg);

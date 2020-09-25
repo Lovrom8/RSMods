@@ -232,6 +232,11 @@ void Settings::UpdateCustomSetting(std::string name, int newValue) {
 	customSettings[name] = newValue;
 }
 
+
+void Settings::UpdateTwitchSetting(std::string name, std::string newValue) {
+	twitchSettings[name] = newValue;
+}
+
 void Settings::ParseSettingUpdate(std::string updateMessage) {
 	auto msgParts = SplitByWhitespace(updateMessage); // Format: update (custom|mod) <entryName> <value>
 

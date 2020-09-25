@@ -42,6 +42,8 @@ namespace D3DHooks {
 	inline bool debug = false;
 #endif
 
+	inline bool regenerateUserDefinedTexture = false;
+	
 	inline HWND hThisWnd = NULL;
 	inline WNDPROC oWndProc = NULL;
 

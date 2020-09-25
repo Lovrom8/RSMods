@@ -3,6 +3,8 @@
 #include "ControlServer.hpp"
 #include "stdio.h"
 #include <chrono>
+#include <iostream>
+#include <chrono>
 
 using CrowdControl::Enums::EffectResult;
 

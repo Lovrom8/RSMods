@@ -1,15 +1,23 @@
+
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#include "ControlServer.hpp"
 #include "D3D/D3DHooks.hpp"
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
 #include "ControlServer.hpp"
 #include "CCEffect.hpp"
-#include "RainbowEffect.hpp"
 #include <nlohmann\json.hpp>
+#include "RainbowEffect.hpp"
+#include "DrunkModeEffect.hpp"
+#include "FYourFCEffect.hpp"
+#include "SolidNotesEffect.hpp"
+#include "TransparentNotesEffect.hpp"
+#include "RemoveNotesEffect.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -22,7 +30,13 @@ namespace CrowdControl {
 	int sock;
 
 	std::map<std::string, CCEffect*> AllEffects{
-		{ "rainbow60",new RainbowEffect(60) }
+		{ "rainbow60", new RainbowEffect(60) },
+		{ "drunk20", new DrunkModeEffect(20) },
+		{ "fyourfc5", new FYourFCEffect(5) },
+		{ "solidrandom10", new SolidNotesRandomEffect(10) },
+		{ "solidcustom10", new SolidNotesCustomEffect(10) },
+		{ "removenotes20", new RemoveNotesEffect(20) },
+		{ "transparentnotes20", new TransparentNotesEffect(20) }
 	};
 
 	Response RunCommand(Request request) {

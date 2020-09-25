@@ -2,6 +2,7 @@
 
 #include "CCStructs.hpp"
 
+
 using namespace CrowdControl::Structs;
 
 namespace CrowdControl {

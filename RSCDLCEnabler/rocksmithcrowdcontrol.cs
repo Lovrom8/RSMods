@@ -17,5 +17,11 @@ public class Rocksmith2014 : SimpleTCPPack
     public override List<Effect> Effects => new List<Effect>
     {
         new Effect("Rainbow strings (60 seconds)", "rainbow60"),
+        new Effect("Drunk mode (20 seconds)", "drunk20"),
+        new Effect("FYOurFC (5 seconds)", "fyourfc5"),
+        new Effect("Solid Notes (random, 10 seconds)", "solidrandom10"),
+        new Effect("Solid Notes (custom, 10 seconds)", "solidcustom10"),
+        new Effect("Transparent notes (20 seconds)", "transparentnotes20"),
+        new Effect("Remove notes (20 seconds)", "removenotes20")
     };
 }
