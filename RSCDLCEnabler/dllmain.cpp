@@ -631,6 +631,9 @@ void Initialize(void) {
 	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
 	//_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
 	_beginthreadex(NULL, 0, &HandleEffectQueueThread, NULL, 0, 0);
+
+	// Probably check ini setting before starting this thing
+	CrowdControl::StartServer();
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { // Do NOT remove the lpReserved parameter. We know it says it's unused, but keep it or the game won't open.

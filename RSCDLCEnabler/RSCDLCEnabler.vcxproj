@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCStructs.cpp" />
+    <ClCompile Include="ControlServer.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />
@@ -46,9 +48,14 @@
     <ClCompile Include="Lua\lzio.c" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
     <ClCompile Include="WwiseHijack.cpp" />
+    <ClCompile Include="CCEnums.hpp" />
+    <ClCompile Include="CCStructs.hpp" />
+    <ClInclude Include="CCEffect.hpp" />
+    <ClInclude Include="ControlServer.hpp" />
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />
+    <ClInclude Include="RainbowEffect.hpp" />
     <ClInclude Include="Lua\lapi.h" />
     <ClInclude Include="Lua\lauxlib.h" />
     <ClInclude Include="Lua\lcode.h" />
@@ -102,6 +109,7 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="MemHelpers.cpp" />
+    <ClCompile Include="RainbowEffect.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
@@ -145,6 +153,8 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl" />
+    <None Include="packages.config" />
+    <None Include="rocksmithcrowdcontrol.cs" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\Detours\detours.lib" />
@@ -246,5 +256,12 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

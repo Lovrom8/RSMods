@@ -31,6 +31,12 @@
     <Filter Include="D3D">
       <UniqueIdentifier>{210476c1-0572-493c-a9ca-1205a492f02b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CrowdControl">
+      <UniqueIdentifier>{0c9e34c2-578e-44ce-ad2d-1db8c0ddffee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CrowdControl\Effects">
+      <UniqueIdentifier>{640d2f3f-cd69-4671-b21b-d2a19d59ba27}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Lua">
       <UniqueIdentifier>{87b4263b-6681-42e9-ae65-b35737659853}</UniqueIdentifier>
     </Filter>
@@ -98,6 +104,21 @@
     </ClCompile>
     <ClCompile Include="D3D/D3D.cpp">
       <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlServer.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="RainbowEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CCStructs.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CCEnums.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CCStructs.cpp">
+      <Filter>CrowdControl</Filter>
     </ClCompile>
     <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
@@ -320,6 +341,15 @@
     <ClInclude Include="WwiseHijack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ControlServer.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CCEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="RainbowEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
     <ClInclude Include="Lua\lapi.h">
       <Filter>Lua</Filter>
     </ClInclude>
@@ -406,6 +436,10 @@
     <None Include="Lib\Detours\detours.pdb">
       <Filter>Header Files\Detours</Filter>
     </None>
+    <None Include="rocksmithcrowdcontrol.cs">
+      <Filter>CrowdControl</Filter>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\DirectX\d3d9.lib" />
