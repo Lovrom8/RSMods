@@ -1,5 +1,4 @@
 #include "Main.hpp"
-#pragma warning(disable: 4838 4018 4996 26817 6031) // Conversion Color->Color | Signed->Unsigned mismatch | freopen potentially not safe | Potentially exposed variable (mesh) | Return value ignored 'freopen'.
 
 #ifdef _DEBUG
 bool debug = true;

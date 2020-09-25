@@ -1,5 +1,5 @@
 #include "CustomSongTitles.hpp"
-#pragma warning(disable: 4302 4172) // Typecast truncated from const _Elem* -> char | returning address of local variable: str
+#pragma warning(disable: 4302) // Typecast truncated from const _Elem* -> char (Leaving this because the user shouldn't have a song list name over 255).
 
 // TODO: Fix the dark magic of ASM in here (if possible).
 

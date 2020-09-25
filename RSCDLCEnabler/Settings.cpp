@@ -1,6 +1,5 @@
 #include "Settings.hpp"
 #include <regex>
-#pragma warning(disable: 4996 6031) // SScanF may be unsafe. | Return value ignored 'SScanF'
 
 void Settings::Initialize()
 {

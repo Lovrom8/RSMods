@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning(disable: 4244 4305) // Double -> Float may lose data. | initializing truncated double -> float | uninitialized value
 #include <cmath>
 #include <map>
 #include <vector>

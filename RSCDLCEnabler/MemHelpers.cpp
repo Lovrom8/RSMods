@@ -1,5 +1,4 @@
 #include "MemHelpers.hpp"
-#pragma warning(disable: 4805 4018 4715) // Mix of byte & bool | Signed / Unsigned mismatch | Function doesn't return on all paths.
 
 byte MemHelpers::getLowestStringTuning() {
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);

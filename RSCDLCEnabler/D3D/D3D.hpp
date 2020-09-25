@@ -1,6 +1,4 @@
 #pragma once
-#pragma warning(disable: 26817) // Potential exposure variable (currentMesh).
-
 #include "windows.h"
 #include "d3d9.h"
 #include <vector>
