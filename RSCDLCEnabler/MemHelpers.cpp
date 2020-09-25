@@ -162,16 +162,6 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length());
 	DX9FontEncapsulation->DrawTextA(NULL, textToDraw.c_str(), -1, &TextRectangle, DT_LEFT | DT_NOCLIP, textColorHex);
 
-	// Do not move these above or the value will be null.
-	if (hookReset == 1) {
-		DX9FontEncapsulation->OnLostDevice();
-		return;
-	}
-	else if (hookReset == 2) {
-		DX9FontEncapsulation->OnResetDevice();
-		return;
-	}
-
 	// Let's clean up our junk, since fonts don't do it automatically.
 	if (DX9FontEncapsulation) {
 		DX9FontEncapsulation->Release();
