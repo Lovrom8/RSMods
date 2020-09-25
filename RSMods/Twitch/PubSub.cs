@@ -102,7 +102,11 @@ namespace RSMods.Twitch
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
 
-            WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+            if (reward.AdditionalMsg != "")
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
+            else
+                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
 
             await WaitUntilRewardEnds(reward.Length);
@@ -118,7 +122,11 @@ namespace RSMods.Twitch
             if (reward == null)
                 return;
 
-            WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+            if (reward.AdditionalMsg != "")
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
+            else
+                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
 
             await WaitUntilRewardEnds(reward.Length);
