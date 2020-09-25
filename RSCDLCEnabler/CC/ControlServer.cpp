@@ -7,7 +7,6 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
-#include "ControlServer.hpp"
 #include "CCEffect.hpp"
 #include <nlohmann\json.hpp>
 #include "Effects/RainbowEffect.hpp"
@@ -16,6 +15,7 @@
 #include "Effects/SolidNotesEffect.hpp"
 #include "Effects/TransparentNotesEffect.hpp"
 #include "Effects/RemoveNotesEffect.hpp"
+#include "Effects/ChangeToToneSlot.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -34,7 +34,11 @@ namespace CrowdControl {
 		{ "solidrandom10", new SolidNotesRandomEffect(10) },
 		{ "solidcustom10", new SolidNotesCustomEffect(10) },
 		{ "removenotes20", new RemoveNotesEffect(20) },
-		{ "transparentnotes20", new TransparentNotesEffect(20) }
+		{ "transparentnotes20", new TransparentNotesEffect(20) },
+		{ "changetoneslot1", new ChangeToToneSlot(1) },
+		{ "changetoneslot2", new ChangeToToneSlot(2) },
+		{ "changetoneslot3", new ChangeToToneSlot(3) },
+		{ "changetoneslot4", new ChangeToToneSlot(4) }
 	};
 
 	Response RunCommand(Request request) {

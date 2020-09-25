@@ -38,3 +38,11 @@ namespace MemHelpers {
 	inline ID3DXFont* DX9FontEncapsulation = NULL;
 	inline int WindowSizeX = NULL, WindowSizeY = NULL;
 };
+
+namespace Util { // TODO: put in a more appropriate place
+	inline void SendKey(unsigned int key) {
+		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, key, 0);
+		Sleep(30);
+		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, key, 0);
+	}
+};

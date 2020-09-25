@@ -126,13 +126,16 @@
     <ClCompile Include="CC\Effects\SolidNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\Effects\RainbowEffect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CC\Effects\DrunkModeEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
     <ClCompile Include="CC\Effects\FYourFCEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RainbowEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
     <ClCompile Include="WwiseHijack.cpp">
@@ -378,6 +381,9 @@
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\RainbowEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
     <ClInclude Include="Lua\lapi.h">

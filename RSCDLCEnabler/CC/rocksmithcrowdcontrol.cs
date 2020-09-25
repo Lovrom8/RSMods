@@ -22,6 +22,10 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Solid Notes (random, 10 seconds)", "solidrandom10"),
         new Effect("Solid Notes (custom, 10 seconds)", "solidcustom10"),
         new Effect("Transparent notes (20 seconds)", "transparentnotes20"),
-        new Effect("Remove notes (20 seconds)", "removenotes20")
+        new Effect("Remove notes (20 seconds)", "removenotes20"),
+        new Effect("Change tone to slot 1", "changetoneslot1"),
+        new Effect("Change tone to slot 2", "changetoneslot2"),
+        new Effect("Change tone to slot 3", "changetoneslot3"),
+        new Effect("Change tone to slot 4", "changetoneslot4")
     };
 }
