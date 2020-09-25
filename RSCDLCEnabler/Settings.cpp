@@ -306,9 +306,13 @@ void Settings::UpdateSettings() {
 
 Color Settings::ConvertHexToColor(std::string hexStr) {
 	int r, g, b;
-	sscanf(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b);
+	if (sscanf_s(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b) != EOF) {
+		Color c((float)r / 255, (float)g / 255, (float)b / 255);
 
-	Color c((float)r / 255, (float)g / 255, (float)b / 255);
-
-	return c;
+		return c;
+	}
+	else {
+		Color nullColor(0.0f, 0.0f, 0.0f);
+		return nullColor;
+	}
 }

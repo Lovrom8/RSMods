@@ -63,7 +63,7 @@ enum string_state {
 	*/
 };
 
-const float M_PI = 3.14159265359;
+const double M_PI = 3.14159265359;
 struct Color {
 	float r;
 	float g;
@@ -88,24 +88,24 @@ struct Color {
 	}
 
 	void setH(float H) {
-		float U = cos(H * M_PI / 180);
-		float W = sin(H * M_PI / 180);
+		double U = cos(H * M_PI / 180);
+		double W = sin(H * M_PI / 180);
 
 		float _r = 1.f;
 		float _g = 0.f;
 		float _b = 0.f;
 
-		r = (.299 + .701 * U + .168 * W) * _r
-			+ (.587 - .587 * U + .330 * W) * _g
-			+ (.114 - .114 * U - .497 * W) * _b;
+		r = (float)(.299 + .701 * U + .168 * W) * _r
+			+ (float)(.587 - .587 * U + .330 * W) * _g
+			+ (float)(.114 - .114 * U - .497 * W) * _b;
 
-		g = (.299 - .299 * U - .328 * W) * _r
-			+ (.587 + .413 * U + .035 * W) * _g
-			+ (.114 - .114 * U + .292 * W) * _b;
+		g = (float)(.299 - .299 * U - .328 * W) * _r
+			+ (float)(.587 + .413 * U + .035 * W) * _g
+			+ (float)(.114 - .114 * U + .292 * W) * _b;
 
-		b = (.299 - .3 * U + 1.25 * W) * _r
-			+ (.587 - .588 * U - 1.05 * W) * _g
-			+ (.114 + .886 * U - .203 * W) * _b;
+		b = (float)(.299 - .3 * U + 1.25 * W) * _r
+			+ (float)(.587 - .588 * U - 1.05 * W) * _g
+			+ (float)(.114 + .886 * U - .203 * W) * _b;
 	}
 };
 

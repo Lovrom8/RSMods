@@ -96,7 +96,7 @@ void MemHelpers::ToggleCB(bool enabled) {
 	if (!addrTimer)
 		return;
 
-	if (*(byte*)cbEnabled != enabled) //JIC, no need to write the same value constantly
+	if (*(byte*)cbEnabled != (byte)enabled) //JIC, no need to write the same value constantly
 		*(byte*)cbEnabled = enabled;
 }
 
@@ -122,17 +122,19 @@ int* MemHelpers::GetWindowSize() {
 
 		return dimensions;
 	}
+	else
+		return new int[2]{ 0, 0 };
 }
 
 bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
 	if (stringArray != NULL) {
-		for (int i = 0; i < stringArray->length(); i++) {
+		for (unsigned int i = 0; i < stringArray->length(); i++) {
 			if (stringToCheckIfInsideArray == stringArray[i])
 				return true;
 		}
 	}
 	else if (stringVector != std::vector<std::string>()) {
-		for (int i = 0; i < stringVector.size(); i++) {
+		for (unsigned int i = 0; i < stringVector.size(); i++) {
 			if (stringToCheckIfInsideArray == stringVector[i])
 				return true;
 		}

@@ -58,9 +58,9 @@ RSColor GenerateRandomColor() {
 	RSColor rndColor;
 
 	static std::uniform_real_distribution<> urd(0.0f, 1.0f);
-	rndColor.r = urd(rng);
-	rndColor.g = urd(rng);
-	rndColor.b = urd(rng);
+	rndColor.r = (float)urd(rng);
+	rndColor.g = (float)urd(rng);
+	rndColor.b = (float)urd(rng);
 
 	return rndColor;
 }
@@ -85,7 +85,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	for (int i = 0; i < 16;i++) {
 		currColor = colorSet[i]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 
-		Gdiplus::Color middleColor(currColor.r * 255, currColor.g * 255, currColor.b * 255);
+		Gdiplus::Color middleColor((BYTE)currColor.r * 255, (BYTE)currColor.g * 255, (BYTE)currColor.b * 255);
 
 		Gdiplus::Color gradientColors[] = { (unsigned)Gdiplus::Color::Black, middleColor , (unsigned)Gdiplus::Color::White };
 		LinearGradientBrush linGrBrush( // Base texture for note gradients (top / normal)

@@ -7,7 +7,7 @@
 
 #include "windows.h"
 
-#pragma warning(disable: 26812 26495) // I'm leaving these because I'm not f'ing with this file unless I absolutely have to...
+#pragma warning(disable: 26812) // I'm leaving these because I'm not f'ing with this file unless I absolutely have to... | Enum Type Unscoped (AkChannelConfigType)
 
 // TREAT THIS FILE LIKE AN EXTERNAL DEPENDANCY. DO NOT EDIT UNLESS ABSOLUTELY NEEDED!
 
@@ -68,7 +68,7 @@ typedef AkUInt32		AkChannelMask;				///< Channel mask (similar to WAVE_FORMAT_EX
 
 static const AkGameObjectID	AK_INVALID_GAME_OBJECT = (AkGameObjectID)-1;	///< Invalid game object (may also mean all game objects)
 
-enum AKRESULT
+enum class AKRESULT
 {
 	AK_NotImplemented = 0,	///< This feature is not implemented.
 	AK_Success = 1,	///< The operation was successful.
@@ -477,7 +477,7 @@ public:
 		AkUInt8* /*in_pOldMedia*/
 	)
 	{
-		return AK_NotImplemented;
+		return AKRESULT::AK_NotImplemented;
 	}
 
 };
@@ -1287,7 +1287,7 @@ public:
 	{
 		PlaylistItem* pItem = AddLast();
 		if (!pItem)
-			return AK_Fail;
+			return AKRESULT::AK_Fail;
 
 		pItem->audioNodeID = in_audioNodeID;
 		pItem->msDelay = in_msDelay;

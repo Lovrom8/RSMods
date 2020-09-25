@@ -23,29 +23,27 @@ void __declspec(naked) hook_fakeTitles() {
 /*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
 Quite likely, this one is better in our use case, since we want to grab titles from a file, which is done more conveniently in a regular CPP function without the ASM
 */
-char __stdcall missingLocalization(int number, char* text) {
+const char* __stdcall missingLocalization(int number, char* text) {
 	text = "";
-	const int buffer_size = 10;
-	char str[buffer_size];
-	sprintf_s(&str[0], buffer_size, "%d", number);
+	sprintf_s(&string_buffer[0], buffer_size, "%d", number);
 	//MsgBoxA(str, "Missing locale str");
 
 	switch (number)
 	{
 	case 46964: //either start from 46964 or change mov ebx, 0x33 to mov ebx, 0x2F in hook_fakeTitles to start from 0
-		return (char)songTitles[0].c_str();
+		return songTitles[0].c_str();
 	case 46965:
-		return (char)songTitles[1].c_str();
+		return songTitles[1].c_str();
 	case 46966:
-		return (char)songTitles[2].c_str();
+		return songTitles[2].c_str();
 	case 46967:
-		return (char)songTitles[3].c_str();
+		return songTitles[3].c_str();
 	case 46968:
-		return (char)songTitles[4].c_str();
+		return songTitles[4].c_str();
 	case 46969:
-		return (char)songTitles[5].c_str();
+		return songTitles[5].c_str();
 	default:
-		return (char)str;
+		return string_buffer;
 	}
 }
 

@@ -182,7 +182,7 @@ struct ThiccMesh {
 };
 
 inline bool IsExtraRemoved(std::vector<ThiccMesh> list, ThiccMesh mesh) {
-	for (auto currentMesh : list)
+	for (const auto& currentMesh : list)
 		if (currentMesh == mesh)
 			return true;
 
@@ -190,7 +190,7 @@ inline bool IsExtraRemoved(std::vector<ThiccMesh> list, ThiccMesh mesh) {
 }
 
 inline bool IsToBeRemoved(std::vector<Mesh> list, Mesh mesh) {
-	for (auto currentMesh : list)
+	for (const auto& currentMesh : list)
 		if (currentMesh == mesh)
 			return true;
 

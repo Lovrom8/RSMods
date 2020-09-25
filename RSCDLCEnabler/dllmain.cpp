@@ -152,7 +152,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}
 			
 			else if (Contains(currMsg, "disable DrunkMode")) {
-				*(float*)Offsets::ptr_drunkShit = 0.3333333333;
+				*(float*)Offsets::ptr_drunkShit = 0.33333333f;
 
 				if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
 					MemHelpers::ToggleLoft();
@@ -176,7 +176,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					else {
 						if (Contains(currMsg, "Random")) { // For Random Colors
 							static std::uniform_real_distribution<> urd(0, 9);
-							currentRandomTexture = urd(rng);
+							currentRandomTexture = (int)urd(rng);
 
 							ERMode::customSolidColor.clear();
 							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
@@ -275,9 +275,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 					previewValue = std::to_string(selectedString);
 
 					RSColor currColors = Settings::GetCustomColors(CB)[selectedString];
-					strR = currColors.r * 255;
-					strG = currColors.g * 255;
-					strB = currColors.b * 255;
+					strR = (int)currColors.r * 255;
+					strG = (int)currColors.g * 255;
+					strB = (int)currColors.b * 255;
 				}
 			}
 			ImGui::EndCombo();
@@ -319,7 +319,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 			if (drawMixerText)
-				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (MemHelpers::GetWindowSize()[0] / 54.85), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 14.22), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 54.85), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 14.22), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -339,7 +339,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (MemHelpers::GetWindowSize()[0] / 1.07), (MemHelpers::GetWindowSize()[1] / 30.85), (MemHelpers::GetWindowSize()[0] / 1.13), (MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.07), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.13), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (regenerateUserDefinedTexture) {
@@ -576,9 +576,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
+			FILE* streamRead, *streamWrite;
+			errno_t freOpenSecureRead, freOpenSecureWrite;
 			AllocConsole();
-			freopen("CONIN$", "r", stdin);
-			freopen("CONOUT$", "w", stdout);
+			freOpenSecureRead = freopen_s(&streamRead, "CONIN$", "r", stdin);
+			freOpenSecureWrite = freopen_s(&streamWrite,"CONOUT$", "w", stdout);
 		}
 		DisableThreadLibraryCalls(hModule);
 

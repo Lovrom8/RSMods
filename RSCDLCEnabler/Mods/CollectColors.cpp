@@ -21,12 +21,12 @@ Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode)
 
 Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
-		S = stringSaturation - .144;
-		L = stringLightness / 3.136;
+		S = stringSaturation - (float).144;
+		L = stringLightness / (float)3.136;
 	}
 	else {
-		S = stringSaturation - .428;
-		L = stringLightness / 2.812;
+		S = stringSaturation - (float).428;
+		L = stringLightness / (float)2.812;
 	}
 
 	H = stringHue;
@@ -58,7 +58,7 @@ Color CollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 }
 
 Color CollectColors::GetPegResetColor() {
-	H = 0.0f;
+	H = (int)0.0f;
 	S = 0.0f;
 	L = 0.0f;
 
@@ -70,7 +70,7 @@ Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 		L = 0.0f;
 	else
 		L = 1.0f;
-	H = 0.0f;
+	H = (int)0.0f;
 	S = 0.0f;
 
 	return GetColor();
@@ -89,9 +89,9 @@ Color CollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 }
 
 Color CollectColors::GetPegOutTuneColor() {
-	H = 0.0f;
-	S = 0.0f;
-	L = 1.0f;
+	H = (int)0.0f;
+	S = (int)0.0f;
+	L = (int)1.0f;
 
 	return GetColor();
 }
@@ -145,7 +145,7 @@ Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode)
 		L = 0.761f;
 	}
 	else {
-		H = 0.0f;
+		H = (int)0.0f;
 		S = 0.0f;
 		L = 1.0f;
 	}
@@ -273,7 +273,7 @@ void CollectColors::RGB2HSL(float i_R, float i_G, float i_B, int& o_H, float& o_
 		else
 			h = 0.0f;
 
-		o_H = 60 * h;
+		o_H = 60 * (int)h;
 
 		if (o_H < 0)
 			o_H += 360;
@@ -284,14 +284,14 @@ void CollectColors::HSL2RGB(float i_H, float i_S, float i_L, float& i_R, float& 
 	float v, min, sv, fract, vsf, mid1, mid2;
 	int sextant;
 
-	v = (i_L <= 0.5) ? (i_L * (1.0 + i_S)) : ((double)i_L + i_S - (double)i_L * i_S);
+	v = (float)(((double)i_L <= 0.5) ? ((double)i_L * (1.0 + (double)i_S)) : ((double)i_L + (double)i_S - (double)i_L * (double)i_S));
 
 	if (v > 0) {
 		min = 2 * i_L - v;
 		sv = (v - min) / v;
 		i_H = (i_H == 360) ? 0 : i_H / 60;
 
-		sextant = floor(H);
+		sextant = (int)floor(H);
 		fract = i_H - sextant;
 		vsf = v * sv * fract;
 		mid1 = min + vsf;
@@ -315,7 +315,7 @@ void CollectColors::HSL2RGB(float i_H, float i_S, float i_L, float& i_R, float& 
 }
 
 Color CollectColors::GetColor() {
-	HSL2RGB(H, S, L, R, G, B);
+	HSL2RGB((float)H, S, L, R, G, B);
 	return Color(R, G, B);
 }
 

@@ -13,3 +13,6 @@ namespace CustomSongTitles {
 
 	inline int len = 6;
 };
+
+inline const int buffer_size = 10;
+inline char string_buffer[buffer_size];

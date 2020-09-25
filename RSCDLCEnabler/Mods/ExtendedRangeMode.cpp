@@ -301,9 +301,9 @@ bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
 	if (strings[0] == NULL)
 		return false;
 
-	int r = std::round((*(Color*)strings[0]).r * 255); // Remember, just casting to int doesn't round up :(
-	int g = std::round((*(Color*)strings[0]).g * 255);
-	int b = std::round((*(Color*)strings[0]).b * 255);
+	int r = (int)std::round((*(Color*)strings[0]).r * 255); // Remember, just casting to int doesn't round up :(
+	int g = (int)std::round((*(Color*)strings[0]).g * 255);
+	int b = (int)std::round((*(Color*)strings[0]).b * 255);
 	if (R == 63)
 		std::cout << std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << std::endl;
 

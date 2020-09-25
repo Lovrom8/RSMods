@@ -29,7 +29,7 @@ bool regenerateUserDefinedTexture = false;
 bool drawMixerText = true;
 
 // Mixer Values
-inline int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
+inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
 
 inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
 		{"Master_Volume"}, // Master Volume
