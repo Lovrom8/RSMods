@@ -249,6 +249,11 @@ namespace RSMods
                 backColorToChange.BackColor = backgroundColor;
             foreach (Control foreColorToChange in ControlList)
                 foreColorToChange.ForeColor = textColor;
+
+            dgv_EnabledRewards.BackgroundColor = backgroundColor;
+            dgv_DefaultRewards.BackgroundColor = backgroundColor;
+            dgv_EnabledRewards.ForeColor = textColor;
+            dgv_DefaultRewards.ForeColor = textColor;
         }
 
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
