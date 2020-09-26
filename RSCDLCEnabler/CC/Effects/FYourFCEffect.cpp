@@ -1,14 +1,14 @@
 #include "FYourFCEffect.hpp"
 
 namespace CrowdControl::Effects { // Kills user's current note streak
-	EffectResult FYourFCEffect::Test()
+	EffectResult FYourFCEffect::Test(Request request)
 	{
 		std::cout << "FYourFC::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult FYourFCEffect::Start()
+	EffectResult FYourFCEffect::Start(Request request)
 	{
 		std::cout << "FYourFC::Start()" << std::endl;
 

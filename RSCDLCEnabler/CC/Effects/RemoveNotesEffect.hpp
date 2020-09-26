@@ -11,8 +11,8 @@ namespace CrowdControl::Effects {
 			duration = durationSeconds;
 		}
 
-		EffectResult Test();
-		EffectResult Start();
+		EffectResult Test(Request request);
+		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
 	};

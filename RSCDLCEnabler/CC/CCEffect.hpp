@@ -17,8 +17,8 @@ namespace CrowdControl::Effects {
 		unsigned int duration = 0;
 		std::chrono::steady_clock::time_point endTime;
 
-		virtual EffectResult Test() = 0;
-		virtual EffectResult Start() = 0;
+		virtual EffectResult Test(Request request) = 0;
+		virtual EffectResult Start(Request request) = 0;
 		virtual void Run() = 0;
 		virtual EffectResult Stop() = 0;
 	};

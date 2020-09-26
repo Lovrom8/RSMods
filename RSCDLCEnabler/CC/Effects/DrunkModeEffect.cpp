@@ -3,14 +3,14 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects { // Makes some of game's object very woobly (lyrics, backgrounds, etc.)
-	EffectResult DrunkModeEffect::Test()
+	EffectResult DrunkModeEffect::Test(Request request)
 	{
 		std::cout << "DrunkModeEffect::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult DrunkModeEffect::Start()
+	EffectResult DrunkModeEffect::Start(Request request)
 	{
 		std::cout << "DrunkModeEffect::Start()" << std::endl;
 

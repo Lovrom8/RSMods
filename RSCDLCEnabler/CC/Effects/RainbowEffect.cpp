@@ -3,14 +3,14 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-	EffectResult RainbowEffect::Test()
+	EffectResult RainbowEffect::Test(Request request)
 	{
 		std::cout << "RainbowEffect::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult RainbowEffect::Start()
+	EffectResult RainbowEffect::Start(Request request)
 	{
 		std::cout << "RainbowEffect::Start()" << std::endl;
 

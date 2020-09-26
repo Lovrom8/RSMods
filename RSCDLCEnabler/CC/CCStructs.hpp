@@ -13,6 +13,7 @@ namespace CrowdControl::Structs {
 		std::string code;
 		std::string viewer;
 		RequestType type;
+		json parameters;
 	};
 	
 	extern struct Response {

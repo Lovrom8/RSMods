@@ -3,14 +3,14 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects { // Prevents the game from drawing note head meshes
-	EffectResult RemoveNotesEffect::Test()
+	EffectResult RemoveNotesEffect::Test(Request request)
 	{
 		std::cout << "RemoveNotesEffect::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult RemoveNotesEffect::Start()
+	EffectResult RemoveNotesEffect::Start(Request request)
 	{
 		std::cout << "RemoveNotesEffect::Start()" << std::endl;
 

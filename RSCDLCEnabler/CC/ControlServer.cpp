@@ -33,6 +33,7 @@ namespace CrowdControl {
 		{ "fyourfc5", new FYourFCEffect(5) },
 		{ "solidrandom10", new SolidNotesRandomEffect(10) },
 		{ "solidcustom10", new SolidNotesCustomEffect(10) },
+		{ "solidcustomrgb10", new SolidNotesCustomRGBEffect(10) },
 		{ "removenotes20", new RemoveNotesEffect(20) },
 		{ "transparentnotes20", new TransparentNotesEffect(20) },
 		{ "changetoneslot1", new ChangeToToneSlot(1) },
@@ -57,10 +58,10 @@ namespace CrowdControl {
 			switch (request.type)
 			{
 			case Test:
-				resp.status = effect->Test();
+				resp.status = effect->Test(request);
 				break;
 			case Start:
-				resp.status = effect->Start();
+				resp.status = effect->Start(request);
 				break;
 			case Stop:
 				resp.status = effect->Stop();

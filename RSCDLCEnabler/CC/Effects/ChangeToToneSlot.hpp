@@ -12,8 +12,8 @@ namespace CrowdControl::Effects {
 			slot = _slot;
 		}
 
-		EffectResult Test();
-		EffectResult Start();
+		EffectResult Test(Request request);
+		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
 	};

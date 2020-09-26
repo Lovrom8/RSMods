@@ -3,14 +3,14 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-	EffectResult ChangeToToneSlot::Test()
+	EffectResult ChangeToToneSlot::Test(Request request)
 	{
 		std::cout << "ChangeToToneSlot1::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult ChangeToToneSlot::Start()
+	EffectResult ChangeToToneSlot::Start(Request request)
 	{
 		std::cout << "RainbowEffect::ChangeToToneSlot()" << std::endl;
 

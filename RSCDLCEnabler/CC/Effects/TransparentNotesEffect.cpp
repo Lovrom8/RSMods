@@ -3,14 +3,14 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexistent (effectively transparent) texture
-	EffectResult TransparentNotesEffect::Test()
+	EffectResult TransparentNotesEffect::Test(Request request)
 	{
 		std::cout << "TransparentNotesEffect::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult TransparentNotesEffect::Start()
+	EffectResult TransparentNotesEffect::Start(Request request)
 	{
 		std::cout << "TransparentNotesEffect::Start()" << std::endl;
 

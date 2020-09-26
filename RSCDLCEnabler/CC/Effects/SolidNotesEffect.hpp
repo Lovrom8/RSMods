@@ -10,8 +10,8 @@ namespace CrowdControl::Effects {
 			duration = durationSeconds;
 		}
 
-		EffectResult Test();
-		EffectResult Start();
+		EffectResult Test(Request request);
+		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
 	};
@@ -23,8 +23,21 @@ namespace CrowdControl::Effects {
 			duration = durationSeconds;
 		}
 
-		EffectResult Test();
-		EffectResult Start();
+		EffectResult Test(Request request);
+		EffectResult Start(Request request);
+		void Run();
+		EffectResult Stop();
+	};
+
+	class SolidNotesCustomRGBEffect : public CCEffect
+	{
+	public:
+		SolidNotesCustomRGBEffect(unsigned int durationSeconds) {
+			duration = durationSeconds;
+		}
+
+		EffectResult Test(Request request);
+		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
 	};

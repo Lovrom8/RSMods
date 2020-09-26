@@ -13,7 +13,8 @@ namespace CrowdControl::Structs {
 			{"id", p.id},
 			{"code", p.code},
 			{"viewer", p.viewer},
-			{"type", p.type}
+			{"type", p.type},
+			{"parameters", p.parameters}
 		};
 	}
 	void from_json(const json& j, Request& p) {
@@ -21,6 +22,14 @@ namespace CrowdControl::Structs {
 		j.at("code").get_to(p.code);
 		j.at("viewer").get_to(p.viewer);
 		j.at("type").get_to(p.type);
+
+		// Try to get parameters
+		try {
+			j.at("parameters").get_to(p.parameters);
+		}
+		catch (json::exception) {
+			// Ignore missing parameters
+		}
 	}
 
 	void to_json(json& j, const Response& p) {
