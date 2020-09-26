@@ -161,7 +161,6 @@ void Settings::ReadModSettings() {
 	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
 	modSettings["GuitarSpeakWhileTuning"] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 	modSettings["RemoveHeadstockWhen"] = reader.GetValue("Toggle Switches", "RemoveHeadstockWhen", "song");
-	modSettings["SolidNoteColor"] = reader.GetValue("Twitch Settings", "SolidNoteColor", "random");
 }
 
 void Settings::ReadStringColors() {
