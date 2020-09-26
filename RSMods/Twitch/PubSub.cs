@@ -45,8 +45,11 @@ namespace RSMods.Twitch
 
         public void Resub()
         {
-            pubSub.Disconnect();
-            pubSub.Connect();
+            // pubSub.Disconnect(); Disconnecting/Reconnecting may cause OnPubSubServiceError loop
+            // pubSub.Connect();
+
+            pubSub.ListenToRewards(TwitchSettings.Get.ChannelID);
+            pubSub.ListenToBitsEvents(TwitchSettings.Get.ChannelID);
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
@@ -63,7 +66,7 @@ namespace RSMods.Twitch
 
         private void OnPubSubServiceClosed(object sender, EventArgs e)
         {
-            TwitchSettings.Get.AddToLog("Lazy fudger disconnected :(");
+            TwitchSettings.Get.AddToLog("Lazy fudger disconnected :( Resubbing to events!");
             Thread.Sleep(2000);
 
             // pubSub.Connect(); // Brute force MF-ers
@@ -72,7 +75,7 @@ namespace RSMods.Twitch
 
         private void OnPubSubServiceError(object sender, EventArgs e)
         {
-            TwitchSettings.Get.AddToLog("Something went wrong :(");
+            TwitchSettings.Get.AddToLog("Something went wrong :( Resubbing to events!");
 
             Thread.Sleep(2000);
             //pubSub.Connect();
