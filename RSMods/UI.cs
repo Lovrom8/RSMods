@@ -1415,19 +1415,7 @@ namespace RSMods
             if (dgv_EnabledRewards.CurrentCell == null)
                 return;
 
-            var reward = TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex];
-
-            if (reward.AdditionalMsg != "")
-                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
-            else
-                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
-
-            TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
-
-            await WaitUntilRewardEnds(reward.Length);
-
-            WinMsgUtil.SendMsgToRS(reward.InternalMsgDisable);
-            TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
+            await PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
         }
 
         private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();

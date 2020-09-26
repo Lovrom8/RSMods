@@ -96,12 +96,10 @@ namespace RSMods.Twitch
             HandleChannelPointsRecieved(e);
         }
 
-        private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
+        private static async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
 
-        public async void HandleBitsRecieved(OnBitsReceivedArgs e)
+        public static async Task SendMessageToRocksmith(TwitchReward reward)
         {
-            var reward = TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed);
-
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
 
@@ -118,25 +116,9 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
         }
 
-        public async void HandleChannelPointsRecieved(OnRewardRedeemedArgs e)
-        {
-            var reward = TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost);
+        public async void HandleBitsRecieved(OnBitsReceivedArgs e) => await SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed));
 
-            if (reward == null)
-                return;
-
-            if (reward.AdditionalMsg != "")
-                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
-            else
-                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
-
-            TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
-
-            await WaitUntilRewardEnds(reward.Length);
-
-            WinMsgUtil.SendMsgToRS(reward.InternalMsgDisable);
-            TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
-        }
+        public async void HandleChannelPointsRecieved(OnRewardRedeemedArgs e) => await SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost));
 
         private PubSub() { }
         public static readonly PubSub Get = new PubSub();
