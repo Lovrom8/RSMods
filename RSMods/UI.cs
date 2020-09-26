@@ -1396,8 +1396,6 @@ namespace RSMods
             SaveEnabledRewardsToFile();
         }
 
-        private async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
-
         private async void SendFakeTwitchReward()
         {
             if (dgv_EnabledRewards.CurrentCell == null)
