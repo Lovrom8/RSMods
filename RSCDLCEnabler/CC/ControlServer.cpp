@@ -16,6 +16,8 @@
 #include "Effects/TransparentNotesEffect.hpp"
 #include "Effects/RemoveNotesEffect.hpp"
 #include "Effects/ChangeToToneSlot.hpp"
+#include "Effects/KillGuitarVolumeEffect.hpp"
+#include "Effects/KillMusicVolumeEffect.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -39,7 +41,9 @@ namespace CrowdControl {
 		{ "changetoneslot1", new ChangeToToneSlot(1) },
 		{ "changetoneslot2", new ChangeToToneSlot(2) },
 		{ "changetoneslot3", new ChangeToToneSlot(3) },
-		{ "changetoneslot4", new ChangeToToneSlot(4) }
+		{ "changetoneslot4", new ChangeToToneSlot(4) },
+		{ "killguitarvolume10", new KillGuitarVolumeEffect(10) },
+		{ "killmusicvolume10", new KillMusicVolumeEffect(10) }
 	};
 
 	Response RunCommand(Request request) {

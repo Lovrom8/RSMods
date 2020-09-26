@@ -21,6 +21,7 @@
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
+    <ClCompile Include="WWiseHijack.cpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
     <ClInclude Include="CC\ControlServer.hpp" />
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
@@ -74,11 +75,15 @@
     <ClInclude Include="CC\Effects\RainbowEffect.hpp" />
     <ClInclude Include="CC\Effects\SolidNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
+    <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
+    <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CC\Effects\DrunkModeEffect.cpp" />
     <ClCompile Include="CC\Effects\FYourFCEffect.cpp" />
+    <ClCompile Include="CC\Effects\KillGuitarVolumeEffect.cpp" />
+    <ClCompile Include="CC\Effects\KillMusicVolumeEffect.cpp" />
     <ClCompile Include="MemUtil.cpp" />
     <ClCompile Include="Mods\GuitarSkeletons.cpp" />
     <ClCompile Include="Mods\CollectColors.cpp" />
