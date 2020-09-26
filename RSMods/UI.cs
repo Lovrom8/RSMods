@@ -1327,9 +1327,21 @@ namespace RSMods
             var selectedReward = GetSelectedReward(selectedRow);
 
             selectedReward.Enabled = Convert.ToBoolean(selectedRow.Cells["colEnabledRewardsEnabled"].Value);
-            selectedReward.Length = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsLength"].Value);
+            if (selectedRow.Cells["colEnabledRewardsLength"].Value == null || !(Int32.TryParse(selectedRow.Cells["colEnabledRewardsLength"].Value.ToString(), out int rewardLength)))
+            {
+                selectedRow.Cells["colEnabledRewardsLength"].Value = 0;
+                MessageBox.Show("You need to put a number, not a text value.");
+                return;
+            }
 
-            //if (selectedReward.Length)
+            if (selectedRow.Cells["colEnabledRewardsAmount"].Value == null || !(Int32.TryParse(selectedRow.Cells["colEnabledRewardsAmount"].Value.ToString(), out int rewardAmount)))
+            {
+                selectedRow.Cells["colEnabledRewardsAmount"].Value = 0;
+                MessageBox.Show("You need to put a number, not a text value.");
+                return;
+            }
+
+            selectedReward.Length = rewardLength;
 
             if (selectedReward is BitsReward)
                 ((BitsReward)selectedReward).BitsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
