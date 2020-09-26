@@ -1329,6 +1329,8 @@ namespace RSMods
             selectedReward.Enabled = Convert.ToBoolean(selectedRow.Cells["colEnabledRewardsEnabled"].Value);
             selectedReward.Length = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsLength"].Value);
 
+            //if (selectedReward.Length)
+
             if (selectedReward is BitsReward)
                 ((BitsReward)selectedReward).BitsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
             else
