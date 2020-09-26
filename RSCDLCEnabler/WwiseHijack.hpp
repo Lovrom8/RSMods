@@ -7,9 +7,7 @@
 
 #include "windows.h"
 
-#pragma warning(disable: 26812) // I'm leaving these because I'm not f'ing with this file unless I absolutely have to... | Enum Type Unscoped (AkChannelConfigType)
-
-// TREAT THIS FILE LIKE AN EXTERNAL DEPENDANCY. DO NOT EDIT UNLESS ABSOLUTELY NEEDED!
+#pragma warning(disable: 26812 26495);
 
 /*
  Get documentation here: https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=namespace_a_k_1_1_sound_engine.html
@@ -68,7 +66,7 @@ typedef AkUInt32		AkChannelMask;				///< Channel mask (similar to WAVE_FORMAT_EX
 
 static const AkGameObjectID	AK_INVALID_GAME_OBJECT = (AkGameObjectID)-1;	///< Invalid game object (may also mean all game objects)
 
-enum class AKRESULT
+enum AKRESULT
 {
 	AK_NotImplemented = 0,	///< This feature is not implemented.
 	AK_Success = 1,	///< The operation was successful.
@@ -477,7 +475,7 @@ public:
 		AkUInt8* /*in_pOldMedia*/
 	)
 	{
-		return AKRESULT::AK_NotImplemented;
+		return AK_NotImplemented;
 	}
 
 };
@@ -710,8 +708,8 @@ enum AkMemPoolAttributes
 #define AK_ALIGN_FASTDMA                        ///< Platform-specific data alignment for faster DMA transfers
 #define AK_ALIGN_SIZE_FOR_DMA(__Size__) (__Size__) ///< Used to align sizes to next 16 byte boundary on platfroms that require it
 
-AKSOUNDENGINE_API AkMemPoolId g_DefaultPoolId;
-AKSOUNDENGINE_API AkMemPoolId g_LEngineDefaultPoolId;
+extern AKSOUNDENGINE_API AkMemPoolId g_DefaultPoolId;
+extern AKSOUNDENGINE_API AkMemPoolId g_LEngineDefaultPoolId;
 
 #define _AKARRAY_H
 
@@ -791,10 +789,8 @@ struct AkPlacementNewKey
 
 AkForceInline void* operator new(size_t /*size*/, void* memory, const AkPlacementNewKey& /*key*/) throw()
 {
-	 return memory;
+	return memory;
 }
-
-AkForceInline void operator delete(void*, void*, const AkPlacementNewKey&) throw() {}
 
 #define AKASSERT(Condition) ((void)0)
 
@@ -1156,8 +1152,9 @@ public:
 	}
 
 	/// Resize the array.
-	bool GrowArray()
+	bool GrowArray(AkUInt32 in_uGrowBy = TGrowBy)
 	{
+		AKASSERT(in_uGrowBy);
 		return true;
 	}
 
@@ -1217,6 +1214,7 @@ public:
 		}
 		return AK_Fail;
 	}
+
 protected:
 
 	T* m_pItems;		///< pointer to the beginning of the array.
@@ -1229,14 +1227,14 @@ struct GameObjDst
 	GameObjDst()
 		: m_gameObjID(AK_INVALID_GAME_OBJECT)
 		, m_dst(-1.0f)
-		{}
+	{}
 
-		GameObjDst(AkGameObjectID in_gameObjID, AkReal32 in_dst)
+	GameObjDst(AkGameObjectID in_gameObjID, AkReal32 in_dst)
 		: m_gameObjID(in_gameObjID)
 		, m_dst(in_dst)
-		{}
+	{}
 
-		AkGameObjectID  m_gameObjID;
+	AkGameObjectID  m_gameObjID;
 	AkReal32 m_dst;
 };
 
@@ -1275,19 +1273,19 @@ private:
 
 class Playlist
 	: public AkArray < PlaylistItem, const PlaylistItem&, ArrayPoolDefault, 4>
-	{
+{
 public:
 	AkForceInline AKRESULT Enqueue(
 		AkUniqueID in_audioNodeID,
 		AkTimeMs in_msDelay = 0,
 		void* in_pCustomInfo = NULL,
 		AkUInt32 in_cExternals = 0,
-		AkExternalSourceInfo * in_pExternalSources = NULL
-		)
+		AkExternalSourceInfo* in_pExternalSources = NULL
+	)
 	{
 		PlaylistItem* pItem = AddLast();
 		if (!pItem)
-			return AKRESULT::AK_Fail;
+			return AK_Fail;
 
 		pItem->audioNodeID = in_audioNodeID;
 		pItem->msDelay = in_msDelay;
@@ -1581,197 +1579,6 @@ typedef AkArray<AkGameObjectID, AkGameObjectID, ArrayPoolDefault, 32> AkGameObje
 
 typedef AkReal32* VectorPtr;
 
-/* Offsets For Functions */
-
-// Wwise Hijack
-		// Root
-uintptr_t func_Wwise_Root_IsRestoreSinkRequested = 0x1f5bfd3;
-uintptr_t func_Wwise_Root_IsUsingDummySink = 0x1f5bfc3;
-// IAkStreamMgr
-uintptr_t func_Wwise_IAkStreamMgr_m_pStreamMgr = 0x134f500;
-// MemoryMgr
-uintptr_t func_Wwise_Memory_CheckPoolId = 0x1f32828;
-uintptr_t func_Wwise_Memory_CreatePool = 0x1f32519;
-uintptr_t func_Wwise_Memory_DestroyPool = 0x1f326d4;
-uintptr_t func_Wwise_Memory_Falign = 0x1f329ee;
-uintptr_t func_Wwise_Memory_GetBlock = 0x1f32aee;
-uintptr_t func_Wwise_Memory_GetBlockSize = 0x1f327e8;
-uintptr_t func_Wwise_Memory_GetMaxPools = 0x1f32818;
-uintptr_t func_Wwise_Memory_GetNumPools = 0x1f32808;
-uintptr_t func_Wwise_Memory_GetPoolAttributes = 0x1f327c4;
-uintptr_t func_Wwise_Memory_GetPoolMemoryUsed = 0x1f32aae;
-uintptr_t func_Wwise_Memory_GetPoolName = 0x2006a57;
-uintptr_t func_Wwise_Memory_GetPoolStats = 0x1f32a3e;
-uintptr_t func_Wwise_Memory_IsInitialized = 0x1f32784;
-uintptr_t func_Wwise_Memory_Malign = 0x1f3298a;
-uintptr_t func_Wwise_Memory_Malloc = 0x1f3290a;
-uintptr_t func_Wwise_Memory_ReleaseBlock = 0x1f32b3e;
-uintptr_t func_Wwise_Memory_SetMonitoring = 0x167e4f8;
-uintptr_t func_Wwise_Memory_SetPoolName = 0x1f32794;
-uintptr_t func_Wwise_Memory_Term = 0x1f32b8e;
-// Monitor
-uintptr_t func_Wwise_Monitor_PostCode = 0x1f587ba;
-// Motion Engine
-uintptr_t func_Wwise_Motion_AddPlayerMotionDevice = 0x1f58638;
-uintptr_t func_Wwise_Motion_RegisterMotionDevice = 0x1f58712;
-uintptr_t func_Wwise_Motion_RemovePlayerMotionDevice = 0x1f586ad;
-uintptr_t func_Wwise_Motion_SetPlayerListener = 0x1f58722;
-uintptr_t func_Wwise_Motion_SetPlayerVolume = 0x1f5876e;
-// Music Engine
-uintptr_t func_Wwise_Music_GetDefaultInitSettings = 0x1f340ef;
-uintptr_t func_Wwise_Music_GetPlayingSegmentInfo = 0x1f3413f;
-uintptr_t func_Wwise_Music_Init = 0x1f34f8c;
-uintptr_t func_Wwise_Music_Term = 0x1f34e38;
-// Sound Engine
-uintptr_t func_Wwise_Sound_AddBehaviorExtension = 0x1f5a741;
-uintptr_t func_Wwise_Sound_CancelBankCallbackCookie = 0x1f57f0c;
-uintptr_t func_Wwise_Sound_CancelEventCallback = 0x1f5760d;
-uintptr_t func_Wwise_Sound_CancelEventCallbackCookie = 0x1f575ed;
-uintptr_t func_Wwise_Sound_ClearBanks = 0x1f58ecc;
-uintptr_t func_Wwise_Sound_ClearPreparedEvents = 0x1f58064;
-uintptr_t func_Wwise_Sound_CloneActorMixerEffect = 0x1f5bd9d;
-uintptr_t func_Wwise_Sound_CloneBusEffect = 0x1f5bd79;
-uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID = 0x1f5b68e;
-uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char = 0x1f5b77a;
-uintptr_t func_Wwise_Sound_DynamicSequence_Break = 0x1f5baba;
-uintptr_t func_Wwise_Sound_DynamicSequence_Close = 0x1f5bb4c;
-uintptr_t func_Wwise_Sound_DynamicSequence_LockPlaylist = 0x1f5bbde;
-uintptr_t func_Wwise_Sound_DynamicSequence_Open = 0x1f57661;
-uintptr_t func_Wwise_Sound_DynamicSequence_Pause = 0x1f5b8ac;
-uintptr_t func_Wwise_Sound_DynamicSequence_Play = 0x1f5b816;
-uintptr_t func_Wwise_Sound_DynamicSequence_Resume = 0x1f5b93e;
-uintptr_t func_Wwise_Sound_DynamicSequence_Stop = 0x1f5b9d4;
-uintptr_t func_Wwise_Sound_DynamicSequence_UnlockPlaylist = 0x1f5bc1e;
-uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_UniqueID = 0x1f5b302;
-uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_Char = 0x1f5b3ca;
-uintptr_t func_Wwise_Sound_g_PlayingID = 0x134e790;
-uintptr_t func_Wwise_Sound_GetDefaultInitSettings = 0x1f5683d;
-uintptr_t func_Wwise_Sound_GetDefaultPlatformInitSettings = 0x1f5689d;
-uintptr_t func_Wwise_Sound_GetIDFromString = 0x1f58956;
-uintptr_t func_Wwise_Sound_GetPanningRule = 0x1f568fd;
-uintptr_t func_Wwise_Sound_GetSourcePlayPosition = 0x1f57631;
-uintptr_t func_Wwise_Sound_GetSpeakerConfiguration = 0x1f5690d;
-uintptr_t func_Wwise_Sound_Init = 0x1f5bdbd;
-uintptr_t func_Wwise_Sound_IsInitialized = 0x01f56829;
-uintptr_t func_Wwise_Sound_LoadBank_BankID_MemPoolID = 0x1f57a8f;
-uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_BankID = 0x1f57b81;
-uintptr_t func_Wwise_Sound_LoadBank_BankID_Callback = 0x1f57c55;
-uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_Callback = 0x1f57cd0;
-uintptr_t func_Wwise_Sound_LoadBank_Char_MemPoolID = 0x1f5916c;
-uintptr_t func_Wwise_Sound_LoadBank_Char_Callback = 0x1f592c1;
-uintptr_t func_Wwise_Sound_LoadBankUnique = 0x1f5933c;
-uintptr_t func_Wwise_Sound_PlaySourcePlugin = 0x1f574d5;
-uintptr_t func_Wwise_Sound_PostEvent_Char = 0x1f5b260;
-uintptr_t func_Wwise_Sound_PostEvent_UniqueID = 0x1f5bf11;
-uintptr_t func_Wwise_Sound_PostTrigger_TriggerID = 0x1f56e60;
-uintptr_t func_Wwise_Sound_PostTrigger_Char = 0x1f58c2b;
-uintptr_t func_Wwise_Sound_PrepareBank_BankID_Callback = 0x1f57f2c;
-uintptr_t func_Wwise_Sound_PrepareBank_BankID_BankContent = 0x1f59588;
-uintptr_t func_Wwise_Sound_PrepareBank_Char_Callback = 0x1f596d4;
-uintptr_t func_Wwise_Sound_PrepareBank_Char_BankContent = 0x1f5a651;
-uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32 = 0x1f57fa1;
-uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = 0x1f58034;
-uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32 = 0x1f59915;
-uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void = 0x1f59c73;
-uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = 0x1f58125;
-uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = 0x1f58155;
-uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = 0x1f59f4d;
-uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = 0x1f5a1c0;
-uintptr_t func_Wwise_Sound_Query_GetActiveGameObjects = 0x1f55e5f;
-uintptr_t func_Wwise_Sound_Query_GetActiveListeners = 0x1f56168;
-uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Int32 = 0x1f55f95;
-uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Real32 = 0x1f56025;
-uintptr_t func_Wwise_Sound_Query_GetEventIDFromPlayingID = 0x1f55f25;
-uintptr_t func_Wwise_Sound_Query_GetGameObjectAuxSendValues = 0x1f56493;
-uintptr_t func_Wwise_Sound_Query_GetGameObjectDryLevelValue = 0x1f5658f;
-uintptr_t func_Wwise_Sound_Query_GetGameObjectFromPlayingID = 0x1f55f45;
-uintptr_t func_Wwise_Sound_Query_GetIsGameObjectActive = 0x1f55e8f;
-uintptr_t func_Wwise_Sound_Query_GetListenerPosition = 0x1f55c7f;
-uintptr_t func_Wwise_Sound_Query_GetListenerSpatialization = 0x1f55cdf;
-uintptr_t func_Wwise_Sound_Query_GetMaxRadius_RadiusList = 0x1f55ebf;
-uintptr_t func_Wwise_Sound_Query_GetMaxRadius_GameObject = 0x1f55eef;
-uintptr_t func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion = 0x1f56622;
-uintptr_t func_Wwise_Sound_Query_GetPlayingIDsFromGameObject = 0x1f55f65;
-uintptr_t func_Wwise_Sound_Query_GetPosition = 0x1f560b5;
-uintptr_t func_Wwise_Sound_Query_GetPositioningInfo = 0x1f55dff;
-uintptr_t func_Wwise_Sound_Query_GetRTPCValue_RTPCID = 0x1f561fb;
-uintptr_t func_Wwise_Sound_Query_GetRTPCValue_Char = 0x1f5634a;
-uintptr_t func_Wwise_Sound_Query_GetState_StateGroupID = 0x1f55d1f;
-uintptr_t func_Wwise_Sound_Query_GetState_Char = 0x1f55daf;
-uintptr_t func_Wwise_Sound_Query_GetSwitch_SwitchGroupID = 0x1f5638a;
-uintptr_t func_Wwise_Sound_Query_GetSwitch_Char = 0x1f56463;
-uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID = 0x1f566e5;
-uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_Char = 0x1f56799;
-uintptr_t func_Wwise_Sound_RegisterBusVolumeCallback = 0x1f57018;
-uintptr_t func_Wwise_Sound_RegisterCodec = 0x1f5693d;
-uintptr_t func_Wwise_Sound_RegisterGameObj = 0x1f57728;
-uintptr_t func_Wwise_Sound_RegisterGlobalCallback = 0x1f5a814;
-uintptr_t func_Wwise_Sound_RegisterPlugin = 0x1f5692d;
-uintptr_t func_Wwise_Sound_RemoveBehavioralExtension = 0x1f5a7b1;
-uintptr_t func_Wwise_Sound_RenderAudio = 0x1f5691d;
-uintptr_t func_Wwise_Sound_ResetRTPCValue_RTPCID = 0x1f56f0e;
-uintptr_t func_Wwise_Sound_ResetRTPCValue_Char = 0x1f58e2c;
-uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Int32 = 0x1f5b3fa;
-uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Int32 = 0x1f5b4af;
-uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Float = 0x1f5b4df;
-uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Float = 0x1f5b5f9;
-uintptr_t func_Wwise_Sound_SetActiveListeners = 0x1f56b76;
-uintptr_t func_Wwise_Sound_SetActorMixerEffect = 0x1f5825a;
-uintptr_t func_Wwise_Sound_SetAttenuationScalingFactor = 0x1f56aba;
-uintptr_t func_Wwise_Sound_SetBankLoadIOSettings = 0x1f5785a;
-uintptr_t func_Wwise_Sound_SetBusEffect_UniqueID = 0x1f581f4;
-uintptr_t func_Wwise_Sound_SetBusEffect_Char = 0x1f5a3b1;
-uintptr_t func_Wwise_Sound_SetEffectParam = 0x1f582bc;
-uintptr_t func_Wwise_Sound_SetGameObjectAuxSendValues = 0x1f56fa9;
-uintptr_t func_Wwise_Sound_SetGameObjectOutputBusVolume = 0x1f5704c;
-uintptr_t func_Wwise_Sound_SetListenerPipeline = 0x1f56d24;
-uintptr_t func_Wwise_Sound_SetListenerPosition = 0x1f56bc2;
-uintptr_t func_Wwise_Sound_SetListenerScalingFactor = 0x1f56b1a;
-uintptr_t func_Wwise_Sound_SetListenerSpatialization = 0x1f56c90;
-uintptr_t func_Wwise_Sound_SetMaxNumVoicesLimit = 0x1f58e8c;
-uintptr_t func_Wwise_Sound_SetMultiplePositions = 0x1f569c8;
-uintptr_t func_Wwise_Sound_SetObjectObstructionAndOcclusion = 0x1f57098;
-uintptr_t func_Wwise_Sound_SetPanningRule = 0x1f5744c;
-uintptr_t func_Wwise_Sound_SetPosition = 0x1f58a31;
-uintptr_t func_Wwise_Sound_SetPositionInternal = 0x1f5694d;
-uintptr_t func_Wwise_Sound_SetRTPCValue_RTPCID = 0x1f56d73;
-uintptr_t func_Wwise_Sound_SetRTPCValue_Char = 0x1f58a91;
-uintptr_t func_Wwise_Sound_SetState_StateGroupID = 0x1f58c8b;
-uintptr_t func_Wwise_Sound_SetState_Char = 0x1f58d69;
-uintptr_t func_Wwise_Sound_SetSwitch_SwitchGroupID = 0x1f56e11;
-uintptr_t func_Wwise_Sound_SetSwitch_Char = 0x1f58b50;
-uintptr_t func_Wwise_Sound_SetVolumeThreshold = 0x1f58e6c;
-uintptr_t func_Wwise_Sound_StartOutputCapture = 0x1f583a4;
-uintptr_t func_Wwise_Sound_StopAll = 0x1f58590;
-uintptr_t func_Wwise_Sound_StopOutputCapture = 0x1f58463;
-uintptr_t func_Wwise_Sound_StopPlayingID = 0x1f585d9;
-uintptr_t func_Wwise_Sound_StopSourcePlugin = 0x1f5756c;
-uintptr_t func_Wwise_Sound_Term = 0x1f5acc6;
-uintptr_t func_Wwise_Sound_UnloadBank_BankID_MemPoolID = 0x1f57d6b;
-uintptr_t func_Wwise_Sound_UnloadBank_BankID_Callback = 0x1f57e91;
-uintptr_t func_Wwise_Sound_UnloadBank_Char_MemPoolID = 0x1f593e7;
-uintptr_t func_Wwise_Sound_UnloadBank_Char_Callback = 0x1f59482;
-uintptr_t func_Wwise_Sound_UnloadBankUnique = 0x1f594fd;
-uintptr_t func_Wwise_Sound_UnregisterAllGameObj = 0x1f577dd;
-uintptr_t func_Wwise_Sound_UnregisterGameObj = 0x1f57784;
-uintptr_t func_Wwise_Sound_UnregisterGlobalCallback = 0x1f5a844;
-// StreamMgr
-uintptr_t func_Wwise_Stream_AddLanguageChangeObserver = 0x1fbc23a;
-uintptr_t func_Wwise_Stream_Create = 0x1fbbf66;
-uintptr_t func_Wwise_Stream_CreateDevice = 0x1fbc3dc;
-uintptr_t func_Wwise_Stream_DestroyDevice = 0x1fbbfe6;
-uintptr_t func_Wwise_Stream_FlushAllCaches = 0x1fbc076;
-uintptr_t func_Wwise_Stream_GetCurrentLanguage = 0x1fbb4c3;
-uintptr_t func_Wwise_Stream_GetDefaultDeviceSettings = 0x1fbb433;
-uintptr_t func_Wwise_Stream_GetDefaultSettings = 0x1fbb423;
-uintptr_t func_Wwise_Stream_GetFileLocationResolver = 0x1fbb493;
-uintptr_t func_Wwise_Stream_GetPoolID = 0x1fbb4b3;
-uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver = 0x1fbc056;
-uintptr_t func_Wwise_Stream_SetCurrentLanguage = 0x1fbc036;
-uintptr_t func_Wwise_Stream_SetFileLocationResolver = 0x1fbb4a3;
-// End Wwise Hijack
-
-
 /* Typedef Functions */
 
 	// IAKStreamMgr
@@ -1830,7 +1637,7 @@ typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_Char)(const ch
 // Dynamic Sequence
 typedef AKRESULT(__cdecl* tDynamicSequence_Break)(AkPlayingID in_playingID);
 typedef AKRESULT(__cdecl* tDynamicSequence_Close)(AkPlayingID in_playingID);
-typedef Playlist*(__cdecl* tDynamicSequence_LockPlaylist)(AkPlayingID in_playingID);
+typedef Playlist* (__cdecl* tDynamicSequence_LockPlaylist)(AkPlayingID in_playingID);
 typedef AkPlayingID(__cdecl* tDynamicSequence_Open)(AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, DynamicSequenceType in_eDynamicSequenceType);
 typedef AKRESULT(__cdecl* tDynamicSequence_Pause)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tDynamicSequence_Play)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
@@ -1962,183 +1769,372 @@ typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2,
 typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 // End Rocksmith Custom Wwise Functions
 
-
 /* Types To Variables (External Use) */
 
 // Template: type Variable = (type)MemoryAddress;
 // Example: tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
 
 namespace WwiseVariables {
-	// Root Functions
-	tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested = (tIsRestoreSinkRequested)func_Wwise_Root_IsRestoreSinkRequested;
-	tIsUsingDummySink Wwise_Root_IsUsingDummySink = (tIsUsingDummySink)func_Wwise_Root_IsUsingDummySink;
+	/* Offsets For Functions */
 
-	// MemoryMgr
-	tMemory_CheckPoolId Wwise_Memory_CheckPoolId = (tMemory_CheckPoolId)func_Wwise_Memory_CheckPoolId;
-	tMemory_CreatePool Wwise_Memory_CreatePool = (tMemory_CreatePool)func_Wwise_Memory_CreatePool;
-	tMemory_DestroyPool Wwise_Memory_DestroyPool = (tMemory_DestroyPool)func_Wwise_Memory_DestroyPool;
-	tMemory_Falign Wwise_Memory_Falign = (tMemory_Falign)func_Wwise_Memory_Falign;
-	tMemory_GetBlock Wwise_Memory_GetBlock = (tMemory_GetBlock)func_Wwise_Memory_GetBlock;
-	tMemory_GetBlockSize Wwise_Memory_GetBlockSize = (tMemory_GetBlockSize)func_Wwise_Memory_GetBlockSize;
-	tMemory_GetMaxPools Wwise_Memory_GetMaxPools = (tMemory_GetMaxPools)func_Wwise_Memory_GetMaxPools;
-	tMemory_GetNumPools Wwise_Memory_GetNumPools = (tMemory_GetNumPools)func_Wwise_Memory_GetNumPools;
-	tMemory_GetPoolAttributes Wwise_Memory_GetPoolAttributes = (tMemory_GetPoolAttributes)func_Wwise_Memory_GetPoolAttributes;
-	tMemory_GetPoolMemoryUsed Wwise_Memory_GetPoolMemoryUsed = (tMemory_GetPoolMemoryUsed)func_Wwise_Memory_GetPoolMemoryUsed;
-	tMemory_GetPoolName Wwise_Memory_GetPoolName = (tMemory_GetPoolName)func_Wwise_Memory_GetPoolName;
-	tMemory_GetPoolStats Wwise_Memory_GetPoolStats = (tMemory_GetPoolStats)func_Wwise_Memory_GetPoolStats;
-	tMemory_IsInitialized Wwise_Memory_IsInitialized = (tMemory_IsInitialized)func_Wwise_Memory_IsInitialized;
-	tMemory_Malign Wwise_Memory_Malign = (tMemory_Malign)func_Wwise_Memory_Malign;
-	tMemory_Malloc Wwise_Memory_Malloc = (tMemory_Malloc)func_Wwise_Memory_Malloc;
-	tMemory_ReleaseBlock Wwise_Memory_ReleaseBlock = (tMemory_ReleaseBlock)func_Wwise_Memory_ReleaseBlock;
-	tMemory_SetMonitoring Wwise_Memory_SetMonitoring = (tMemory_SetMonitoring)func_Wwise_Memory_SetMonitoring;
-	tMemory_SetPoolName Wwise_Memory_SetPoolName = (tMemory_SetPoolName)func_Wwise_Memory_SetPoolName;
-	tMemory_Term Wwise_Memory_Term = (tMemory_Term)func_Wwise_Memory_Term;
-
+	// Wwise Hijack
+	extern uintptr_t func_Wwise_Root_IsRestoreSinkRequested;
+	extern uintptr_t func_Wwise_Root_IsUsingDummySink;
+	// IAkStreamMgr;
+	extern uintptr_t func_Wwise_IAkStreamMgr_m_pStreamMgr;
+	// MemoryMgr;
+	extern uintptr_t func_Wwise_Memory_CheckPoolId;
+	extern uintptr_t func_Wwise_Memory_CreatePool;
+	extern uintptr_t func_Wwise_Memory_DestroyPool;
+	extern uintptr_t func_Wwise_Memory_Falign;
+	extern uintptr_t func_Wwise_Memory_GetBlock;
+	extern uintptr_t func_Wwise_Memory_GetBlockSize;
+	extern uintptr_t func_Wwise_Memory_GetMaxPools;
+	extern uintptr_t func_Wwise_Memory_GetNumPools;
+	extern uintptr_t func_Wwise_Memory_GetPoolAttributes;
+	extern uintptr_t func_Wwise_Memory_GetPoolMemoryUsed;
+	extern uintptr_t func_Wwise_Memory_GetPoolName;
+	extern uintptr_t func_Wwise_Memory_GetPoolStats;
+	extern uintptr_t func_Wwise_Memory_IsInitialized;
+	extern uintptr_t func_Wwise_Memory_Malign;
+	extern uintptr_t func_Wwise_Memory_Malloc;
+	extern uintptr_t func_Wwise_Memory_ReleaseBlock;
+	extern uintptr_t func_Wwise_Memory_SetMonitoring;
+	extern uintptr_t func_Wwise_Memory_SetPoolName;
+	extern uintptr_t func_Wwise_Memory_Term;
 	// Monitor
-	tMonitor_PostCode Wwise_Monitor_PostCode = (tMonitor_PostCode)func_Wwise_Monitor_PostCode;
+	extern uintptr_t func_Wwise_Monitor_PostCode;
+	// Motion Engine;
+	extern uintptr_t func_Wwise_Motion_AddPlayerMotionDevice;
+	extern uintptr_t func_Wwise_Motion_RegisterMotionDevice;
+	extern uintptr_t func_Wwise_Motion_RemovePlayerMotionDevice;
+	extern uintptr_t func_Wwise_Motion_SetPlayerListener;
+	extern uintptr_t func_Wwise_Motion_SetPlayerVolume;
+	// Music Engine;
+	extern uintptr_t func_Wwise_Music_GetDefaultInitSettings;
+	extern uintptr_t func_Wwise_Music_GetPlayingSegmentInfo;
+	extern uintptr_t func_Wwise_Music_Init;
+	extern uintptr_t func_Wwise_Music_Term;
+	// Sound Engine;
+	extern uintptr_t func_Wwise_Sound_AddBehaviorExtension;
+	extern uintptr_t func_Wwise_Sound_CancelBankCallbackCookie;
+	extern uintptr_t func_Wwise_Sound_CancelEventCallback;
+	extern uintptr_t func_Wwise_Sound_CancelEventCallbackCookie;
+	extern uintptr_t func_Wwise_Sound_ClearBanks;
+	extern uintptr_t func_Wwise_Sound_ClearPreparedEvents;
+	extern uintptr_t func_Wwise_Sound_CloneActorMixerEffect;
+	extern uintptr_t func_Wwise_Sound_CloneBusEffect;
+	extern uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID;
+	extern uintptr_t func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Break;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Close;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_LockPlaylist;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Open;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Pause;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Play;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Resume;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_Stop;
+	extern uintptr_t func_Wwise_Sound_DynamicSequence_UnlockPlaylist;
+	extern uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_UniqueID;
+	extern uintptr_t func_Wwise_Sound_ExecuteActionOnEvent_Char;
+	extern uintptr_t func_Wwise_Sound_g_PlayingID;
+	extern uintptr_t func_Wwise_Sound_GetDefaultInitSettings;
+	extern uintptr_t func_Wwise_Sound_GetDefaultPlatformInitSettings;
+	extern uintptr_t func_Wwise_Sound_GetIDFromString;
+	extern uintptr_t func_Wwise_Sound_GetPanningRule;
+	extern uintptr_t func_Wwise_Sound_GetSourcePlayPosition;
+	extern uintptr_t func_Wwise_Sound_GetSpeakerConfiguration;
+	extern uintptr_t func_Wwise_Sound_Init;
+	extern uintptr_t func_Wwise_Sound_IsInitialized;
+	extern uintptr_t func_Wwise_Sound_LoadBank_BankID_MemPoolID;
+	extern uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_BankID;
+	extern uintptr_t func_Wwise_Sound_LoadBank_BankID_Callback;
+	extern uintptr_t func_Wwise_Sound_LoadBank_Void_UInt32_Callback;
+	extern uintptr_t func_Wwise_Sound_LoadBank_Char_MemPoolID;
+	extern uintptr_t func_Wwise_Sound_LoadBank_Char_Callback;
+	extern uintptr_t func_Wwise_Sound_LoadBankUnique;
+	extern uintptr_t func_Wwise_Sound_PlaySourcePlugin;
+	extern uintptr_t func_Wwise_Sound_PostEvent_Char;
+	extern uintptr_t func_Wwise_Sound_PostEvent_UniqueID;
+	extern uintptr_t func_Wwise_Sound_PostTrigger_TriggerID;
+	extern uintptr_t func_Wwise_Sound_PostTrigger_Char;
+	extern uintptr_t func_Wwise_Sound_PrepareBank_BankID_Callback;
+	extern uintptr_t func_Wwise_Sound_PrepareBank_BankID_BankContent;
+	extern uintptr_t func_Wwise_Sound_PrepareBank_Char_Callback;
+	extern uintptr_t func_Wwise_Sound_PrepareBank_Char_BankContent;
+	extern uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32;
+	extern uintptr_t func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void;
+	extern uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32;
+	extern uintptr_t func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void;
+	extern uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void;
+	extern uintptr_t func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32;
+	extern uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
+	extern uintptr_t func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32;
+	extern uintptr_t func_Wwise_Sound_Query_GetActiveGameObjects;
+	extern uintptr_t func_Wwise_Sound_Query_GetActiveListeners;
+	extern uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Int32;
+	extern uintptr_t func_Wwise_Sound_Query_GetCustomPropertyValue_Real32;
+	extern uintptr_t func_Wwise_Sound_Query_GetEventIDFromPlayingID;
+	extern uintptr_t func_Wwise_Sound_Query_GetGameObjectAuxSendValues;
+	extern uintptr_t func_Wwise_Sound_Query_GetGameObjectDryLevelValue;
+	extern uintptr_t func_Wwise_Sound_Query_GetGameObjectFromPlayingID;
+	extern uintptr_t func_Wwise_Sound_Query_GetIsGameObjectActive;
+	extern uintptr_t func_Wwise_Sound_Query_GetListenerPosition;
+	extern uintptr_t func_Wwise_Sound_Query_GetListenerSpatialization;
+	extern uintptr_t func_Wwise_Sound_Query_GetMaxRadius_RadiusList;
+	extern uintptr_t func_Wwise_Sound_Query_GetMaxRadius_GameObject;
+	extern uintptr_t func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion;
+	extern uintptr_t func_Wwise_Sound_Query_GetPlayingIDsFromGameObject;
+	extern uintptr_t func_Wwise_Sound_Query_GetPosition;
+	extern uintptr_t func_Wwise_Sound_Query_GetPositioningInfo;
+	extern uintptr_t func_Wwise_Sound_Query_GetRTPCValue_RTPCID;
+	extern uintptr_t func_Wwise_Sound_Query_GetRTPCValue_Char;
+	extern uintptr_t func_Wwise_Sound_Query_GetState_StateGroupID;
+	extern uintptr_t func_Wwise_Sound_Query_GetState_Char;
+	extern uintptr_t func_Wwise_Sound_Query_GetSwitch_SwitchGroupID;
+	extern uintptr_t func_Wwise_Sound_Query_GetSwitch_Char;
+	extern uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
+	extern uintptr_t func_Wwise_Sound_Query_QueryAudioObjectIDs_Char;
+	extern uintptr_t func_Wwise_Sound_RegisterBusVolumeCallback;
+	extern uintptr_t func_Wwise_Sound_RegisterCodec;
+	extern uintptr_t func_Wwise_Sound_RegisterGameObj;
+	extern uintptr_t func_Wwise_Sound_RegisterGlobalCallback;
+	extern uintptr_t func_Wwise_Sound_RegisterPlugin;
+	extern uintptr_t func_Wwise_Sound_RemoveBehavioralExtension;
+	extern uintptr_t func_Wwise_Sound_RenderAudio;
+	extern uintptr_t func_Wwise_Sound_ResetRTPCValue_RTPCID;
+	extern uintptr_t func_Wwise_Sound_ResetRTPCValue_Char;
+	extern uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Int32;
+	extern uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Int32;
+	extern uintptr_t func_Wwise_Sound_SeekOnEvent_UniqueID_Float;
+	extern uintptr_t func_Wwise_Sound_SeekOnEvent_Char_Float;
+	extern uintptr_t func_Wwise_Sound_SetActiveListeners;
+	extern uintptr_t func_Wwise_Sound_SetActorMixerEffect;
+	extern uintptr_t func_Wwise_Sound_SetAttenuationScalingFactor;
+	extern uintptr_t func_Wwise_Sound_SetBankLoadIOSettings;
+	extern uintptr_t func_Wwise_Sound_SetBusEffect_UniqueID;
+	extern uintptr_t func_Wwise_Sound_SetBusEffect_Char;
+	extern uintptr_t func_Wwise_Sound_SetEffectParam;
+	extern uintptr_t func_Wwise_Sound_SetGameObjectAuxSendValues;
+	extern uintptr_t func_Wwise_Sound_SetGameObjectOutputBusVolume;
+	extern uintptr_t func_Wwise_Sound_SetListenerPipeline;
+	extern uintptr_t func_Wwise_Sound_SetListenerPosition;
+	extern uintptr_t func_Wwise_Sound_SetListenerScalingFactor;
+	extern uintptr_t func_Wwise_Sound_SetListenerSpatialization;
+	extern uintptr_t func_Wwise_Sound_SetMaxNumVoicesLimit;
+	extern uintptr_t func_Wwise_Sound_SetMultiplePositions;
+	extern uintptr_t func_Wwise_Sound_SetObjectObstructionAndOcclusion;
+	extern uintptr_t func_Wwise_Sound_SetPanningRule;
+	extern uintptr_t func_Wwise_Sound_SetPosition;
+	extern uintptr_t func_Wwise_Sound_SetPositionInternal;
+	extern uintptr_t func_Wwise_Sound_SetRTPCValue_RTPCID;
+	extern uintptr_t func_Wwise_Sound_SetRTPCValue_Char;
+	extern uintptr_t func_Wwise_Sound_SetState_StateGroupID;
+	extern uintptr_t func_Wwise_Sound_SetState_Char;
+	extern uintptr_t func_Wwise_Sound_SetSwitch_SwitchGroupID;
+	extern uintptr_t func_Wwise_Sound_SetSwitch_Char;
+	extern uintptr_t func_Wwise_Sound_SetVolumeThreshold;
+	extern uintptr_t func_Wwise_Sound_StartOutputCapture;
+	extern uintptr_t func_Wwise_Sound_StopAll;
+	extern uintptr_t func_Wwise_Sound_StopOutputCapture;
+	extern uintptr_t func_Wwise_Sound_StopPlayingID;
+	extern uintptr_t func_Wwise_Sound_StopSourcePlugin;
+	extern uintptr_t func_Wwise_Sound_Term;
+	extern uintptr_t func_Wwise_Sound_UnloadBank_BankID_MemPoolID;
+	extern uintptr_t func_Wwise_Sound_UnloadBank_BankID_Callback;
+	extern uintptr_t func_Wwise_Sound_UnloadBank_Char_MemPoolID;
+	extern uintptr_t func_Wwise_Sound_UnloadBank_Char_Callback;
+	extern uintptr_t func_Wwise_Sound_UnloadBankUnique;
+	extern uintptr_t func_Wwise_Sound_UnregisterAllGameObj;
+	extern uintptr_t func_Wwise_Sound_UnregisterGameObj;
+	extern uintptr_t func_Wwise_Sound_UnregisterGlobalCallback;
+	// StreamMgr;
+	extern uintptr_t func_Wwise_Stream_AddLanguageChangeObserver;
+	extern uintptr_t func_Wwise_Stream_Create;
+	extern uintptr_t func_Wwise_Stream_CreateDevice;
+	extern uintptr_t func_Wwise_Stream_DestroyDevice;
+	extern uintptr_t func_Wwise_Stream_FlushAllCaches;
+	extern uintptr_t func_Wwise_Stream_GetCurrentLanguage;
+	extern uintptr_t func_Wwise_Stream_GetDefaultDeviceSettings;
+	extern uintptr_t func_Wwise_Stream_GetDefaultSettings;
+	extern uintptr_t func_Wwise_Stream_GetFileLocationResolver;
+	extern uintptr_t func_Wwise_Stream_GetPoolID;
+	extern uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver;
+	extern uintptr_t func_Wwise_Stream_SetCurrentLanguage;
+	extern uintptr_t func_Wwise_Stream_SetFileLocationResolver;
+	// End Wwise Hijack;
 
-	// Motion Engine
-	tMotion_AddPlayerMotionDevice Wwise_Motion_AddPlayerMotionDevice = (tMotion_AddPlayerMotionDevice)func_Wwise_Motion_AddPlayerMotionDevice;
-	tMotion_RegisterMotionDevice Wwise_Motion_RegisterMotionDevice = (tMotion_RegisterMotionDevice)func_Wwise_Motion_RegisterMotionDevice;
-	tMotion_RemovePlayerMotionDevice Wwise_Motion_RemovePlayerMotionDevice = (tMotion_RemovePlayerMotionDevice)func_Wwise_Motion_RemovePlayerMotionDevice;
-	tMotion_SetPlayerListener Wwise_Motion_SetPlayerListener = (tMotion_SetPlayerListener)func_Wwise_Motion_SetPlayerListener;
-	tMotion_SetPlayerVolume Wwise_Motion_SetPlayerVolume = (tMotion_SetPlayerVolume)func_Wwise_Motion_SetPlayerVolume;
+	// Root Functions;
+	extern tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested;
+	extern 	tIsUsingDummySink Wwise_Root_IsUsingDummySink;
 
-	// Music Engine
-	tMusic_GetDefaultInitSettings Wwise_Music_GetDefaultInitSettings = (tMusic_GetDefaultInitSettings)func_Wwise_Music_GetDefaultInitSettings;
-	tMusic_GetPlayingSegmentInfo Wwise_Music_GetPlayingSegmentInfo = (tMusic_GetPlayingSegmentInfo)func_Wwise_Music_GetPlayingSegmentInfo;
-	tMusic_Init Wwise_Music_Init = (tMusic_Init)func_Wwise_Music_Init;
-	tMusic_Term Wwise_Music_Term = (tMusic_Term)func_Wwise_Music_Term;
+	// MemoryMgr;
+	extern 	tMemory_CheckPoolId Wwise_Memory_CheckPoolId;
+	extern 	tMemory_CreatePool Wwise_Memory_CreatePool;
+	extern 	tMemory_DestroyPool Wwise_Memory_DestroyPool;
+	extern 	tMemory_Falign Wwise_Memory_Falign;
+	extern 	tMemory_GetBlock Wwise_Memory_GetBlock;
+	extern 	tMemory_GetBlockSize Wwise_Memory_GetBlockSize;
+	extern 	tMemory_GetMaxPools Wwise_Memory_GetMaxPools;
+	extern 	tMemory_GetNumPools Wwise_Memory_GetNumPools;
+	extern 	tMemory_GetPoolAttributes Wwise_Memory_GetPoolAttributes;
+	extern 	tMemory_GetPoolMemoryUsed Wwise_Memory_GetPoolMemoryUsed;
+	extern 	tMemory_GetPoolName Wwise_Memory_GetPoolName;
+	extern 	tMemory_GetPoolStats Wwise_Memory_GetPoolStats;
+	extern 	tMemory_IsInitialized Wwise_Memory_IsInitialized;
+	extern 	tMemory_Malign Wwise_Memory_Malign;
+	extern 	tMemory_Malloc Wwise_Memory_Malloc;
+	extern 	tMemory_ReleaseBlock Wwise_Memory_ReleaseBlock;
+	extern 	tMemory_SetMonitoring Wwise_Memory_SetMonitoring;
+	extern 	tMemory_SetPoolName Wwise_Memory_SetPoolName;
+	extern 	tMemory_Term Wwise_Memory_Term;
 
-	// Sound Engine
-	tCancelBankCallbackCookie Wwise_Sound_CancelBankCallbackCookie = (tCancelBankCallbackCookie)func_Wwise_Sound_CancelBankCallbackCookie;
-	tCancelEventCallback Wwise_Sound_CancelEventCallback = (tCancelEventCallback)func_Wwise_Sound_CancelEventCallback;
-	tCancelEventCallbackCookie Wwise_Sound_CancelEventCallbackCookie = (tCancelEventCallbackCookie)func_Wwise_Sound_CancelEventCallbackCookie;
-	tClearBanks Wwise_Sound_ClearBanks = (tClearBanks)func_Wwise_Sound_ClearBanks;
-	tClearPreparedEvents Wwise_Sound_ClearPreparedEvents = (tClearPreparedEvents)func_Wwise_Sound_ClearPreparedEvents;
-	tDynamicDialogue_ResolveDialogueEvent_UniqueID Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID = (tDynamicDialogue_ResolveDialogueEvent_UniqueID)func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID;
-	tDynamicDialogue_ResolveDialogueEvent_Char Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char = (tDynamicDialogue_ResolveDialogueEvent_Char)func_Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char;
-	tDynamicSequence_Break Wwise_Sound_DynamicSequence_Break = (tDynamicSequence_Break)func_Wwise_Sound_DynamicSequence_Break;
-	tDynamicSequence_Close Wwise_Sound_DynamicSequence_Close = (tDynamicSequence_Close)func_Wwise_Sound_DynamicSequence_Close;
-	tDynamicSequence_LockPlaylist Wwise_Sound_DynamicSequence_LockPlaylist = (tDynamicSequence_LockPlaylist)func_Wwise_Sound_DynamicSequence_LockPlaylist;
-	tDynamicSequence_Open Wwise_Sound_DynamicSequence_Open = (tDynamicSequence_Open)func_Wwise_Sound_DynamicSequence_Open;
-	tDynamicSequence_Pause Wwise_Sound_DynamicSequence_Pause = (tDynamicSequence_Pause)func_Wwise_Sound_DynamicSequence_Pause;
-	tDynamicSequence_Play Wwise_Sound_DynamicSequence_Play = (tDynamicSequence_Play)func_Wwise_Sound_DynamicSequence_Play;
-	tDynamicSequence_Resume Wwise_Sound_DynamicSequence_Resume = (tDynamicSequence_Resume)func_Wwise_Sound_DynamicSequence_Resume;
-	tDynamicSequence_Stop Wwise_Sound_DynamicSequence_Stop = (tDynamicSequence_Stop)func_Wwise_Sound_DynamicSequence_Stop;
-	tDynamicSequence_UnlockPlaylist Wwise_Sound_DynamicSequence_UnlockPlaylist = (tDynamicSequence_UnlockPlaylist)func_Wwise_Sound_DynamicSequence_UnlockPlaylist;
-	tExecuteActionOnEvent_UniqueID Wwise_Sound_ExecuteActionOnEvent_UniqueID = (tExecuteActionOnEvent_UniqueID)func_Wwise_Sound_ExecuteActionOnEvent_UniqueID;
-	tExecuteActionOnEvent_Char Wwise_Sound_ExecuteActionOnEvent_Char = (tExecuteActionOnEvent_Char)func_Wwise_Sound_ExecuteActionOnEvent_Char;
-	tGetDefaultInitSettings Wwise_Sound_GetDefaultInitSettings = (tGetDefaultInitSettings)func_Wwise_Sound_GetDefaultInitSettings;
-	tGetDefaultPlatformInitSettings Wwise_Sound_GetDefaultPlatformInitSettings = (tGetDefaultPlatformInitSettings)func_Wwise_Sound_GetDefaultPlatformInitSettings;
-	tGetIDFromString Wwise_Sound_GetIDFromString = (tGetIDFromString)func_Wwise_Sound_GetIDFromString;
-	tGetPanningRule Wwise_Sound_GetPanningRule = (tGetPanningRule)func_Wwise_Sound_GetPanningRule;
-	tGetSourcePlayPosition Wwise_Sound_GetSourcePlayPosition = (tGetSourcePlayPosition)func_Wwise_Sound_GetSourcePlayPosition;
-	tGetSpeakerConfiguration Wwise_Sound_GetSpeakerConfiguration = (tGetSpeakerConfiguration)func_Wwise_Sound_GetSpeakerConfiguration;
-	tInit Wwise_Sound_Init = (tInit)func_Wwise_Sound_Init;
-	tIsInitialized Wwise_Sound_IsInitialized = (tIsInitialized)func_Wwise_Sound_IsInitialized;
-	tLoadBank_BankID_MemPoolID Wwise_Sound_LoadBank_BankID_MemPoolID = (tLoadBank_BankID_MemPoolID)func_Wwise_Sound_LoadBank_BankID_MemPoolID;
-	tLoadBank_Void_UInt32_BankID Wwise_Sound_LoadBank_Void_UInt32_BankID = (tLoadBank_Void_UInt32_BankID)func_Wwise_Sound_LoadBank_Void_UInt32_BankID;
-	tLoadBank_BankID_Callback Wwise_Sound_LoadBank_BankID_Callback = (tLoadBank_BankID_Callback)func_Wwise_Sound_LoadBank_BankID_Callback;
-	tLoadBank_Void_UInt32_Callback Wwise_Sound_LoadBank_Void_UInt32_Callback = (tLoadBank_Void_UInt32_Callback)func_Wwise_Sound_LoadBank_Void_UInt32_Callback;
-	tLoadBank_Char_MemPoolID Wwise_Sound_LoadBank_Char_MemPoolID = (tLoadBank_Char_MemPoolID)func_Wwise_Sound_LoadBank_Char_MemPoolID;
-	tLoadBank_Char_Callback Wwise_Sound_LoadBank_Char_Callback = (tLoadBank_Char_Callback)func_Wwise_Sound_LoadBank_Char_Callback;
-	tPostEvent_Char Wwise_Sound_PostEvent_Char = (tPostEvent_Char)func_Wwise_Sound_PostEvent_Char;
-	tPostEvent_UniqueID Wwise_Sound_PostEvent_UniqueID = (tPostEvent_UniqueID)func_Wwise_Sound_PostEvent_UniqueID;
-	tPostTrigger_TriggerID Wwise_Sound_PostTrigger_TriggerID = (tPostTrigger_TriggerID)func_Wwise_Sound_PostTrigger_TriggerID;
-	tPostTrigger_Char Wwise_Sound_PostTrigger_Char = (tPostTrigger_Char)func_Wwise_Sound_PostTrigger_Char;
-	tPrepareBank_BankID_Callback Wwise_Sound_PrepareBank_BankID_Callback = (tPrepareBank_BankID_Callback)func_Wwise_Sound_PrepareBank_BankID_Callback;
-	tPrepareBank_BankID_BankContent Wwise_Sound_PrepareBank_BankID_BankContent = (tPrepareBank_BankID_BankContent)func_Wwise_Sound_PrepareBank_BankID_BankContent;
-	tPrepareBank_Char_Callback Wwise_Sound_PrepareBank_Char_Callback = (tPrepareBank_Char_Callback)func_Wwise_Sound_PrepareBank_Char_Callback;
-	tPrepareBank_Char_BankContent Wwise_Sound_PrepareBank_Char_BankContent = (tPrepareBank_Char_BankContent)func_Wwise_Sound_PrepareBank_Char_BankContent;
-	tPrepareEvent_EventID_UInt32 Wwise_Sound_PrepareEvent_EventID_UInt32 = (tPrepareEvent_EventID_UInt32)func_Wwise_Sound_PrepareEvent_EventID_UInt32;
-	tPrepareEvent_EventID_UInt32_Callback_Void Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void = (tPrepareEvent_EventID_UInt32_Callback_Void)func_Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void;
-	tPrepareEvent_Char_UInt32 Wwise_Sound_PrepareEvent_Char_UInt32 = (tPrepareEvent_Char_UInt32)func_Wwise_Sound_PrepareEvent_Char_UInt32;
-	tPrepareEvent_Char_UInt32_Callback_Void Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void = (tPrepareEvent_Char_UInt32_Callback_Void)func_Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void;
-	tPrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void = (tPrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void)func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void;
-	tPrepareGameSyncs_UInt32_UInt32_UInt32 Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32 = (tPrepareGameSyncs_UInt32_UInt32_UInt32)func_Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32;
-	tPrepareGameSyncs_Char_Char_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void = (tPrepareGameSyncs_Char_Char_UInt32_Callback_Void)func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
-	tPrepareGameSyncs_Char_Char_UInt32 Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32 = (tPrepareGameSyncs_Char_Char_UInt32)func_Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32;
-	tQuery_GetActiveGameObjects Wwise_Sound_Query_GetActiveGameObjects = (tQuery_GetActiveGameObjects)func_Wwise_Sound_Query_GetActiveGameObjects;
-	tQuery_GetActiveListeners Wwise_Sound_Query_GetActiveListeners = (tQuery_GetActiveListeners)func_Wwise_Sound_Query_GetActiveListeners;
-	tQuery_GetCustomPropertyValue_Int32 Wwise_Sound_Query_GetCustomPropertyValue_Int32 = (tQuery_GetCustomPropertyValue_Int32)func_Wwise_Sound_Query_GetCustomPropertyValue_Int32;
-	tQuery_GetCustomPropertyValue_Real32 Wwise_Sound_Query_GetCustomPropertyValue_Real32 = (tQuery_GetCustomPropertyValue_Real32)func_Wwise_Sound_Query_GetCustomPropertyValue_Real32;
-	tQuery_GetEventIDFromPlayingID Wwise_Sound_Query_GetEventIDFromPlayingID = (tQuery_GetEventIDFromPlayingID)func_Wwise_Sound_Query_GetEventIDFromPlayingID;
-	tQuery_GetGameObjectAuxSendValues Wwise_Sound_Query_GetGameObjectAuxSendValues = (tQuery_GetGameObjectAuxSendValues)func_Wwise_Sound_Query_GetGameObjectAuxSendValues;
-	tQuery_GetGameObjectDryLevelValue Wwise_Sound_Query_GetGameObjectDryLevelValue = (tQuery_GetGameObjectDryLevelValue)func_Wwise_Sound_Query_GetGameObjectDryLevelValue;
-	tQuery_GetGameObjectFromPlayingID Wwise_Sound_Query_GetGameObjectFromPlayingID = (tQuery_GetGameObjectFromPlayingID)func_Wwise_Sound_Query_GetGameObjectFromPlayingID;
-	tQuery_GetIsGameObjectActive Wwise_Sound_Query_GetIsGameObjectActive = (tQuery_GetIsGameObjectActive)func_Wwise_Sound_Query_GetIsGameObjectActive;
-	tQuery_GetListenerPosition Wwise_Sound_Query_GetListenerPosition = (tQuery_GetListenerPosition)func_Wwise_Sound_Query_GetListenerPosition;
-	tQuery_GetMaxRadius_RadiusList Wwise_Sound_Query_GetMaxRadius_RadiusList = (tQuery_GetMaxRadius_RadiusList)func_Wwise_Sound_Query_GetMaxRadius_RadiusList;
-	tQuery_GetMaxRadius_GameObject Wwise_Sound_Query_GetMaxRadius_GameObject = (tQuery_GetMaxRadius_GameObject)func_Wwise_Sound_Query_GetMaxRadius_GameObject;
-	tQuery_GetObjectObstructionAndOcclusion Wwise_Sound_Query_GetObjectObstructionAndOcclusion = (tQuery_GetObjectObstructionAndOcclusion)func_Wwise_Sound_Query_GetObjectObstructionAndOcclusion;
-	tQuery_GetPlayingIDsFromGameObject Wwise_Sound_Query_GetPlayingIDsFromGameObject = (tQuery_GetPlayingIDsFromGameObject)func_Wwise_Sound_Query_GetPlayingIDsFromGameObject;
-	tQuery_GetPosition Wwise_Sound_Query_GetPosition = (tQuery_GetPosition)func_Wwise_Sound_Query_GetPosition;
-	tQuery_GetPositioningInfo Wwise_Sound_Query_GetPositioningInfo = (tQuery_GetPositioningInfo)func_Wwise_Sound_Query_GetPositioningInfo;
-	tQuery_GetRTPCValue_Char Wwise_Sound_Query_GetRTPCValue_Char = (tQuery_GetRTPCValue_Char)func_Wwise_Sound_Query_GetRTPCValue_Char;
-	tQuery_GetRTPCValue_RTPCID Wwise_Sound_Query_GetRTPCValue_RTPCID = (tQuery_GetRTPCValue_RTPCID)func_Wwise_Sound_Query_GetRTPCValue_RTPCID;
-	tQuery_GetState_StateGroupID Wwise_Sound_Query_GetState_StateGroupID = (tQuery_GetState_StateGroupID)func_Wwise_Sound_Query_GetState_StateGroupID;
-	tQuery_GetState_Char Wwise_Sound_Query_GetState_Char = (tQuery_GetState_Char)func_Wwise_Sound_Query_GetState_Char;
-	tQuery_GetSwitch_SwitchGroupID Wwise_Sound_Query_GetSwitch_SwitchGroupID = (tQuery_GetSwitch_SwitchGroupID)func_Wwise_Sound_Query_GetSwitch_SwitchGroupID;
-	tQuery_GetSwitch_Char Wwise_Sound_Query_GetSwitch_Char = (tQuery_GetSwitch_Char)func_Wwise_Sound_Query_GetSwitch_Char;
-	tQuery_QueryAudioObjectIDs_UniqueID Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID = (tQuery_QueryAudioObjectIDs_UniqueID)func_Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
-	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char = (tQuery_QueryAudioObjectIDs_Char)func_Wwise_Sound_Query_QueryAudioObjectIDs_Char;
-	tRegisterCodec Wwise_Sound_RegisterCodec = (tRegisterCodec)func_Wwise_Sound_RegisterCodec;
-	tRegisterGlobalCallback Wwise_Sound_RegisterGlobalCallback = (tRegisterGlobalCallback)func_Wwise_Sound_RegisterGlobalCallback;
-	tRegisterPlugin Wwise_Sound_RegisterPlugin = (tRegisterPlugin)func_Wwise_Sound_RegisterPlugin;
-	tRenderAudio Wwise_Sound_RenderAudio = (tRenderAudio)func_Wwise_Sound_RenderAudio;
-	tSetActiveListeners Wwise_Sound_SetActiveListeners = (tSetActiveListeners)func_Wwise_Sound_SetActiveListeners;
-	tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect = (tSetActorMixerEffect)func_Wwise_Sound_SetActorMixerEffect;
-	tSetAttenuationScalingFactor Wwise_Sound_SetAttenuationScalingFactor = (tSetAttenuationScalingFactor)func_Wwise_Sound_SetAttenuationScalingFactor;
-	tSetBankLoadIOSettings Wwise_Sound_SetBankLoadIOSettings = (tSetBankLoadIOSettings)func_Wwise_Sound_SetBankLoadIOSettings;
-	tSetBusEffect_UniqueID Wwise_Sound_SetBusEffect_UniqueID = (tSetBusEffect_UniqueID)func_Wwise_Sound_SetBusEffect_UniqueID;
-	tSetBusEffect_Char Wwise_Sound_SetBusEffect_Char = (tSetBusEffect_Char)func_Wwise_Sound_SetBusEffect_Char;
-	tSetGameObjectAuxSendValues Wwise_Sound_SetGameObjectAuxSendValues = (tSetGameObjectAuxSendValues)func_Wwise_Sound_SetGameObjectAuxSendValues;
-	tSetGameObjectOutputBusVolume Wwise_Sound_SetGameObjectOutputBusVolume = (tSetGameObjectOutputBusVolume)func_Wwise_Sound_SetGameObjectOutputBusVolume;
-	tSetListenerPipeline Wwise_Sound_SetListenerPipeline = (tSetListenerPipeline)func_Wwise_Sound_SetListenerPipeline;
-	tSetListenerPosition Wwise_Sound_SetListenerPosition = (tSetListenerPosition)func_Wwise_Sound_SetListenerPosition;
-	tSetListenerScalingFactor Wwise_Sound_SetListenerScalingFactor = (tSetListenerScalingFactor)func_Wwise_Sound_SetListenerScalingFactor;
-	tSetListenerSpatialization Wwise_Sound_SetListenerSpatialization = (tSetListenerSpatialization)func_Wwise_Sound_SetListenerSpatialization;
-	tSetMaxNumVoicesLimit Wwise_Sound_SetMaxNumVoicesLimit = (tSetMaxNumVoicesLimit)func_Wwise_Sound_SetMaxNumVoicesLimit;
-	tSetMultiplePositions Wwise_Sound_SetMultiplePositions = (tSetMultiplePositions)func_Wwise_Sound_SetMultiplePositions;
-	tSetObjectObstructionAndOcclusion Wwise_Sound_SetObjectObstructionAndOcclusion = (tSetObjectObstructionAndOcclusion)func_Wwise_Sound_SetObjectObstructionAndOcclusion;
-	tSetPanningRule Wwise_Sound_SetPanningRule = (tSetPanningRule)func_Wwise_Sound_SetPanningRule;
-	tSetPosition Wwise_Sound_SetPosition = (tSetPosition)func_Wwise_Sound_SetPosition;
-	tSetRTPCValue_RTPCID Wwise_Sound_SetRTPCValue_RTPCID = (tSetRTPCValue_RTPCID)func_Wwise_Sound_SetRTPCValue_RTPCID;
-	tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
-	tSetState_StateGroupID Wwise_Sound_SetState_StateGroupID = (tSetState_StateGroupID)func_Wwise_Sound_SetState_StateGroupID;
-	tSetState_Char Wwise_Sound_SetState_Char = (tSetState_Char)func_Wwise_Sound_SetState_Char;
-	tSetSwitch_SwitchGroupID Wwise_Sound_SetSwitch_SwitchGroupID = (tSetSwitch_SwitchGroupID)func_Wwise_Sound_SetSwitch_SwitchGroupID;
-	tSetSwitch_Char Wwise_Sound_SetSwitch_Char = (tSetSwitch_Char)func_Wwise_Sound_SetSwitch_Char;
-	tSetVolumeThreshold Wwise_Sound_SetVolumeThreshold = (tSetVolumeThreshold)func_Wwise_Sound_SetVolumeThreshold;
-	tStartOutputCapture Wwise_Sound_StartOutputCapture = (tStartOutputCapture)func_Wwise_Sound_StartOutputCapture;
-	tStopAll Wwise_Sound_StopAll = (tStopAll)func_Wwise_Sound_StopAll;
-	tStopOutputCapture Wwise_Sound_StopOutputCapture = (tStopOutputCapture)func_Wwise_Sound_StopOutputCapture;
-	tStopPlayingID Wwise_Sound_StopPlayingID = (tStopPlayingID)func_Wwise_Sound_StopPlayingID;
-	tTerm Wwise_Sound_Term = (tTerm)func_Wwise_Sound_Term;
-	tUnloadBank_BankID_MemPoolID Wwise_Sound_UnloadBank_BankID_MemPoolID = (tUnloadBank_BankID_MemPoolID)func_Wwise_Sound_UnloadBank_BankID_MemPoolID;
-	tUnloadBank_BankID_Callback Wwise_Sound_UnloadBank_BankID_Callback = (tUnloadBank_BankID_Callback)func_Wwise_Sound_UnloadBank_BankID_Callback;
-	tUnloadBank_Char_MemPoolID Wwise_Sound_UnloadBank_Char_MemPoolID = (tUnloadBank_Char_MemPoolID)func_Wwise_Sound_UnloadBank_Char_MemPoolID;
-	tUnloadBank_Char_Callback Wwise_Sound_UnloadBank_Char_Callback = (tUnloadBank_Char_Callback)func_Wwise_Sound_UnloadBank_Char_Callback;
-	tUnregisterAllGameObj Wwise_Sound_UnregisterAllGameObj = (tUnregisterAllGameObj)func_Wwise_Sound_UnregisterAllGameObj;
-	tUnregisterGameObj Wwise_Sound_UnregisterGameObj = (tUnregisterGameObj)func_Wwise_Sound_UnregisterGameObj;
-	tUnregisterGlobalCallback Wwise_Sound_UnregisterGlobalCallback = (tUnregisterGlobalCallback)func_Wwise_Sound_UnregisterGlobalCallback;
+	// Monitor;
+	extern 	tMonitor_PostCode Wwise_Monitor_PostCode;
 
-	// Rocksmith Custom Wwise_Sound Functions
+	// Motion Engine;
+	extern 	tMotion_AddPlayerMotionDevice Wwise_Motion_AddPlayerMotionDevice;
+	extern 	tMotion_RegisterMotionDevice Wwise_Motion_RegisterMotionDevice;
+	extern 	tMotion_RemovePlayerMotionDevice Wwise_Motion_RemovePlayerMotionDevice;
+	extern 	tMotion_SetPlayerListener Wwise_Motion_SetPlayerListener;
+	extern 	tMotion_SetPlayerVolume Wwise_Motion_SetPlayerVolume;
 
-	tCloneActorMixerEffect Wwise_Sound_CloneActorMixerEffect = (tCloneActorMixerEffect)func_Wwise_Sound_CloneActorMixerEffect;
-	tCloneBusEffect Wwise_Sound_CloneBusEffect = (tCloneBusEffect)func_Wwise_Sound_CloneBusEffect;
-	tLoadBankUnique Wwise_Sound_LoadBankUnique = (tLoadBankUnique)func_Wwise_Sound_LoadBankUnique;
-	tPlaySourcePlugin Wwise_Sound_PlaySourcePlugin = (tPlaySourcePlugin)func_Wwise_Sound_PlaySourcePlugin;
-	tRegisterGameObj Wwise_Sound_RegisterGameObj = (tRegisterGameObj)func_Wwise_Sound_RegisterGameObj;
-	tResetRTPCValue_RTPCID Wwise_Sound_ResetRTPCValue_RTPCID = (tResetRTPCValue_RTPCID)func_Wwise_Sound_ResetRTPCValue_RTPCID;
-	tResetRTPCValue_Char Wwise_Sound_ResetRTPCValue_Char = (tResetRTPCValue_Char)func_Wwise_Sound_ResetRTPCValue_Char;
-	tSeekOnEvent_UniqueID_Int32 Wwise_Sound_SeekOnEvent_UniqueID_Int32 = (tSeekOnEvent_UniqueID_Int32)func_Wwise_Sound_SeekOnEvent_UniqueID_Int32;
-	tSeekOnEvent_UniqueID_Float Wwise_Sound_SeekOnEvent_UniqueID_Float = (tSeekOnEvent_UniqueID_Float)func_Wwise_Sound_SeekOnEvent_UniqueID_Float;
-	tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32 = (tSeekOnEvent_Char_Int32)func_Wwise_Sound_SeekOnEvent_Char_Int32;
-	tSeekOnEvent_Char_Float Wwise_Sound_SeekOnEvent_Char_Float = (tSeekOnEvent_Char_Float)func_Wwise_Sound_SeekOnEvent_Char_Float;
-	tSetEffectParam Wwise_Sound_SetEffectParam = (tSetEffectParam)func_Wwise_Sound_SetEffectParam;
-	tSetPositionInternal Wwise_Sound_SetPositionInternal = (tSetPositionInternal)func_Wwise_Sound_SetPositionInternal;
-	tStopSourcePlugin Wwise_Sound_StopSourcePlugin = (tStopSourcePlugin)func_Wwise_Sound_StopSourcePlugin;
-	tUnloadBankUnique Wwise_Sound_UnloadBankUnique = (tUnloadBankUnique)func_Wwise_Sound_UnloadBankUnique;
+	// Music Engine;
+	extern 	tMusic_GetDefaultInitSettings Wwise_Music_GetDefaultInitSettings;
+	extern 	tMusic_GetPlayingSegmentInfo Wwise_Music_GetPlayingSegmentInfo;
+	extern 	tMusic_Init Wwise_Music_Init;
+	extern 	tMusic_Term Wwise_Music_Term;
+
+	// Sound Engine;
+	extern 	tCancelBankCallbackCookie Wwise_Sound_CancelBankCallbackCookie;
+	extern 	tCancelEventCallback Wwise_Sound_CancelEventCallback;
+	extern 	tCancelEventCallbackCookie Wwise_Sound_CancelEventCallbackCookie;
+	extern 	tClearBanks Wwise_Sound_ClearBanks;
+	extern 	tClearPreparedEvents Wwise_Sound_ClearPreparedEvents;
+	extern 	tDynamicDialogue_ResolveDialogueEvent_UniqueID Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_UniqueID;
+	extern 	tDynamicDialogue_ResolveDialogueEvent_Char Wwise_Sound_DynamicDialogue_ResolveDialogueEvent_Char;
+	extern 	tDynamicSequence_Break Wwise_Sound_DynamicSequence_Break;
+	extern 	tDynamicSequence_Close Wwise_Sound_DynamicSequence_Close;
+	extern 	tDynamicSequence_LockPlaylist Wwise_Sound_DynamicSequence_LockPlaylist;
+	extern 	tDynamicSequence_Open Wwise_Sound_DynamicSequence_Open;
+	extern 	tDynamicSequence_Pause Wwise_Sound_DynamicSequence_Pause;
+	extern 	tDynamicSequence_Play Wwise_Sound_DynamicSequence_Play;
+	extern 	tDynamicSequence_Resume Wwise_Sound_DynamicSequence_Resume;
+	extern 	tDynamicSequence_Stop Wwise_Sound_DynamicSequence_Stop;
+	extern 	tDynamicSequence_UnlockPlaylist Wwise_Sound_DynamicSequence_UnlockPlaylist;
+	extern 	tExecuteActionOnEvent_UniqueID Wwise_Sound_ExecuteActionOnEvent_UniqueID;
+	extern 	tExecuteActionOnEvent_Char Wwise_Sound_ExecuteActionOnEvent_Char;
+	extern 	tGetDefaultInitSettings Wwise_Sound_GetDefaultInitSettings;
+	extern 	tGetDefaultPlatformInitSettings Wwise_Sound_GetDefaultPlatformInitSettings;
+	extern 	tGetIDFromString Wwise_Sound_GetIDFromString;
+	extern 	tGetPanningRule Wwise_Sound_GetPanningRule;
+	extern 	tGetSourcePlayPosition Wwise_Sound_GetSourcePlayPosition;
+	extern 	tGetSpeakerConfiguration Wwise_Sound_GetSpeakerConfiguration;
+	extern 	tInit Wwise_Sound_Init;
+	extern 	tIsInitialized Wwise_Sound_IsInitialized;
+	extern 	tLoadBank_BankID_MemPoolID Wwise_Sound_LoadBank_BankID_MemPoolID;
+	extern 	tLoadBank_Void_UInt32_BankID Wwise_Sound_LoadBank_Void_UInt32_BankID;
+	extern 	tLoadBank_BankID_Callback Wwise_Sound_LoadBank_BankID_Callback;
+	extern 	tLoadBank_Void_UInt32_Callback Wwise_Sound_LoadBank_Void_UInt32_Callback;
+	extern 	tLoadBank_Char_MemPoolID Wwise_Sound_LoadBank_Char_MemPoolID;
+	extern 	tLoadBank_Char_Callback Wwise_Sound_LoadBank_Char_Callback;
+	extern 	tPostEvent_Char Wwise_Sound_PostEvent_Char;
+	extern 	tPostEvent_UniqueID Wwise_Sound_PostEvent_UniqueID;
+	extern 	tPostTrigger_TriggerID Wwise_Sound_PostTrigger_TriggerID;
+	extern 	tPostTrigger_Char Wwise_Sound_PostTrigger_Char;
+	extern 	tPrepareBank_BankID_Callback Wwise_Sound_PrepareBank_BankID_Callback;
+	extern 	tPrepareBank_BankID_BankContent Wwise_Sound_PrepareBank_BankID_BankContent;
+	extern 	tPrepareBank_Char_Callback Wwise_Sound_PrepareBank_Char_Callback;
+	extern 	tPrepareBank_Char_BankContent Wwise_Sound_PrepareBank_Char_BankContent;
+	extern 	tPrepareEvent_EventID_UInt32 Wwise_Sound_PrepareEvent_EventID_UInt32;
+	extern 	tPrepareEvent_EventID_UInt32_Callback_Void Wwise_Sound_PrepareEvent_EventID_UInt32_Callback_Void;
+	extern 	tPrepareEvent_Char_UInt32 Wwise_Sound_PrepareEvent_Char_UInt32;
+	extern 	tPrepareEvent_Char_UInt32_Callback_Void Wwise_Sound_PrepareEvent_Char_UInt32_Callback_Void;
+	extern 	tPrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32_Callback_Void;
+	extern 	tPrepareGameSyncs_UInt32_UInt32_UInt32 Wwise_Sound_PrepareGameSyncs_UInt32_UInt32_UInt32;
+	extern 	tPrepareGameSyncs_Char_Char_UInt32_Callback_Void Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32_Callback_Void;
+	extern 	tPrepareGameSyncs_Char_Char_UInt32 Wwise_Sound_PrepareGameSyncs_Char_Char_UInt32;
+	extern 	tQuery_GetActiveGameObjects Wwise_Sound_Query_GetActiveGameObjects;
+	extern 	tQuery_GetActiveListeners Wwise_Sound_Query_GetActiveListeners;
+	extern 	tQuery_GetCustomPropertyValue_Int32 Wwise_Sound_Query_GetCustomPropertyValue_Int32;
+	extern 	tQuery_GetCustomPropertyValue_Real32 Wwise_Sound_Query_GetCustomPropertyValue_Real32;
+	extern 	tQuery_GetEventIDFromPlayingID Wwise_Sound_Query_GetEventIDFromPlayingID;
+	extern 	tQuery_GetGameObjectAuxSendValues Wwise_Sound_Query_GetGameObjectAuxSendValues;
+	extern 	tQuery_GetGameObjectDryLevelValue Wwise_Sound_Query_GetGameObjectDryLevelValue;
+	extern 	tQuery_GetGameObjectFromPlayingID Wwise_Sound_Query_GetGameObjectFromPlayingID;
+	extern 	tQuery_GetIsGameObjectActive Wwise_Sound_Query_GetIsGameObjectActive;
+	extern 	tQuery_GetListenerPosition Wwise_Sound_Query_GetListenerPosition;
+	extern 	tQuery_GetMaxRadius_RadiusList Wwise_Sound_Query_GetMaxRadius_RadiusList;
+	extern 	tQuery_GetMaxRadius_GameObject Wwise_Sound_Query_GetMaxRadius_GameObject;
+	extern 	tQuery_GetObjectObstructionAndOcclusion Wwise_Sound_Query_GetObjectObstructionAndOcclusion;
+	extern 	tQuery_GetPlayingIDsFromGameObject Wwise_Sound_Query_GetPlayingIDsFromGameObject;
+	extern 	tQuery_GetPosition Wwise_Sound_Query_GetPosition;
+	extern 	tQuery_GetPositioningInfo Wwise_Sound_Query_GetPositioningInfo;
+	extern 	tQuery_GetRTPCValue_Char Wwise_Sound_Query_GetRTPCValue_Char;
+	extern 	tQuery_GetRTPCValue_RTPCID Wwise_Sound_Query_GetRTPCValue_RTPCID;
+	extern 	tQuery_GetState_StateGroupID Wwise_Sound_Query_GetState_StateGroupID;
+	extern 	tQuery_GetState_Char Wwise_Sound_Query_GetState_Char;
+	extern 	tQuery_GetSwitch_SwitchGroupID Wwise_Sound_Query_GetSwitch_SwitchGroupID;
+	extern 	tQuery_GetSwitch_Char Wwise_Sound_Query_GetSwitch_Char;
+	extern 	tQuery_QueryAudioObjectIDs_UniqueID Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
+	extern 	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char;
+	extern 	tRegisterCodec Wwise_Sound_RegisterCodec;
+	extern 	tRegisterGlobalCallback Wwise_Sound_RegisterGlobalCallback;
+	extern 	tRegisterPlugin Wwise_Sound_RegisterPlugin;
+	extern 	tRenderAudio Wwise_Sound_RenderAudio;
+	extern 	tSetActiveListeners Wwise_Sound_SetActiveListeners;
+	extern 	tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect;
+	extern 	tSetAttenuationScalingFactor Wwise_Sound_SetAttenuationScalingFactor;
+	extern 	tSetBankLoadIOSettings Wwise_Sound_SetBankLoadIOSettings;
+	extern 	tSetBusEffect_UniqueID Wwise_Sound_SetBusEffect_UniqueID;
+	extern 	tSetBusEffect_Char Wwise_Sound_SetBusEffect_Char;
+	extern 	tSetGameObjectAuxSendValues Wwise_Sound_SetGameObjectAuxSendValues;
+	extern 	tSetGameObjectOutputBusVolume Wwise_Sound_SetGameObjectOutputBusVolume;
+	extern 	tSetListenerPipeline Wwise_Sound_SetListenerPipeline;
+	extern 	tSetListenerPosition Wwise_Sound_SetListenerPosition;
+	extern 	tSetListenerScalingFactor Wwise_Sound_SetListenerScalingFactor;
+	extern 	tSetListenerSpatialization Wwise_Sound_SetListenerSpatialization;
+	extern 	tSetMaxNumVoicesLimit Wwise_Sound_SetMaxNumVoicesLimit;
+	extern 	tSetMultiplePositions Wwise_Sound_SetMultiplePositions;
+	extern 	tSetObjectObstructionAndOcclusion Wwise_Sound_SetObjectObstructionAndOcclusion;
+	extern 	tSetPanningRule Wwise_Sound_SetPanningRule;
+	extern 	tSetPosition Wwise_Sound_SetPosition;
+	extern 	tSetRTPCValue_RTPCID Wwise_Sound_SetRTPCValue_RTPCID;
+	extern 	tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char;
+	extern 	tSetState_StateGroupID Wwise_Sound_SetState_StateGroupID;
+	extern 	tSetState_Char Wwise_Sound_SetState_Char;
+	extern 	tSetSwitch_SwitchGroupID Wwise_Sound_SetSwitch_SwitchGroupID;
+	extern 	tSetSwitch_Char Wwise_Sound_SetSwitch_Char;
+	extern 	tSetVolumeThreshold Wwise_Sound_SetVolumeThreshold;
+	extern 	tStartOutputCapture Wwise_Sound_StartOutputCapture;
+	extern 	tStopAll Wwise_Sound_StopAll;
+	extern 	tStopOutputCapture Wwise_Sound_StopOutputCapture;
+	extern 	tStopPlayingID Wwise_Sound_StopPlayingID;
+	extern 	tTerm Wwise_Sound_Term;
+	extern 	tUnloadBank_BankID_MemPoolID Wwise_Sound_UnloadBank_BankID_MemPoolID;
+	extern 	tUnloadBank_BankID_Callback Wwise_Sound_UnloadBank_BankID_Callback;
+	extern 	tUnloadBank_Char_MemPoolID Wwise_Sound_UnloadBank_Char_MemPoolID;
+	extern 	tUnloadBank_Char_Callback Wwise_Sound_UnloadBank_Char_Callback;
+	extern 	tUnregisterAllGameObj Wwise_Sound_UnregisterAllGameObj;
+	extern 	tUnregisterGameObj Wwise_Sound_UnregisterGameObj;
+	extern 	tUnregisterGlobalCallback Wwise_Sound_UnregisterGlobalCallback;
+
+	// Rocksmith Custom Wwise_Sound Functions;
+
+	extern	tCloneActorMixerEffect Wwise_Sound_CloneActorMixerEffect;
+	extern 	tCloneBusEffect Wwise_Sound_CloneBusEffect;
+	extern 	tLoadBankUnique Wwise_Sound_LoadBankUnique;
+	extern 	tPlaySourcePlugin Wwise_Sound_PlaySourcePlugin;
+	extern 	tRegisterGameObj Wwise_Sound_RegisterGameObj;
+	extern 	tResetRTPCValue_RTPCID Wwise_Sound_ResetRTPCValue_RTPCID;
+	extern 	tResetRTPCValue_Char Wwise_Sound_ResetRTPCValue_Char;
+	extern 	tSeekOnEvent_UniqueID_Int32 Wwise_Sound_SeekOnEvent_UniqueID_Int32;
+	extern 	tSeekOnEvent_UniqueID_Float Wwise_Sound_SeekOnEvent_UniqueID_Float;
+	extern 	tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32;
+	extern 	tSeekOnEvent_Char_Float Wwise_Sound_SeekOnEvent_Char_Float;
+	extern 	tSetEffectParam Wwise_Sound_SetEffectParam;
+	extern 	tSetPositionInternal Wwise_Sound_SetPositionInternal;
+	extern 	tStopSourcePlugin Wwise_Sound_StopSourcePlugin;
+	extern 	tUnloadBankUnique Wwise_Sound_UnloadBankUnique;
+
 }
