@@ -78,9 +78,6 @@ namespace RSMods
             // Load Colors Saved as Theme Colors.
             LoadCustomThemeColors();
 
-            // Load Twitch Colors
-            LoadTwitchDefaultColors();
-
             // Load Mod Settings
             LoadModSettings();
 
@@ -404,18 +401,6 @@ namespace RSMods
             }
             else
                 WriteSettings.WriteINI(WriteSettings.Settings);
-        }
-
-        private void LoadTwitchDefaultColors()
-        {
-            if (ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier) != "random" && ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier) != String.Empty)
-                textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.TwitchSolidNoteColorIdentifier));
-            else
-            {
-                textBox_SolidNoteColorPicker.BackColor = Color.White;
-                //  textBox_SolidNoteColorPicker.Text = "Random";
-            }
-
         }
 
         private void LoadCustomThemeColors()
@@ -1394,7 +1379,6 @@ namespace RSMods
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 string colorHex = (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6");
-                SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, colorHex);
                 textBox_SolidNoteColorPicker.BackColor = colorDialog.Color;
                 textBox_SolidNoteColorPicker.Text = String.Empty;
 
@@ -1407,7 +1391,6 @@ namespace RSMods
         {
             textBox_SolidNoteColorPicker.BackColor = Color.White;
             textBox_SolidNoteColorPicker.Text = "Random";
-            SaveChanges(ReadSettings.TwitchSolidNoteColorIdentifier, "random");
 
             SetAdditionalMessage("Random");
             SaveEnabledRewardsToFile();

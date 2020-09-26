@@ -14,7 +14,6 @@ namespace RSMods
                              ExtendedRangeTuning, CheckForNewSongInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
-                             TwitchSolidNoteColor,
 
                 // Song List Identifiers
                 Songlist1Identifier = "SongListTitle_1 = ",
@@ -99,10 +98,7 @@ namespace RSMods
                 // GUI Settings
                 CustomGUIThemeIdentifier = "CustomTheme = ",
                 CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
-                CustomGUITextColorIdentifier = "ThemeTextColor = ",
-
-                // Twitch Settings
-                TwitchSolidNoteColorIdentifier = "SolidNoteColor = ";
+                CustomGUITextColorIdentifier = "ThemeTextColor = ";
 
         public static string ProcessSettings(string identifierToGrab)
         {
@@ -688,16 +684,6 @@ namespace RSMods
 
                         if (identifierToGrab == CustomGUITextColorIdentifier)
                             return CustomGUITextColor;
-                    }
-
-                    // Twitch Settings
-
-                    if (currentLine.Contains(TwitchSolidNoteColorIdentifier))
-                    {
-                        TwitchSolidNoteColor = currentLine.Substring(TwitchSolidNoteColorIdentifier.Length, (currentLine.Length - TwitchSolidNoteColorIdentifier.Length));
-
-                        if (identifierToGrab == TwitchSolidNoteColorIdentifier)
-                            return TwitchSolidNoteColor;
                     }
                 }
                 return ""; // Yeah, we don't know what you're looking for...
