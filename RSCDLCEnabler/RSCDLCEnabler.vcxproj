@@ -21,6 +21,7 @@
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
+    <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="WWiseHijack.cpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
     <ClInclude Include="CC\ControlServer.hpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
+    <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,4 @@
 #pragma once
-#pragma once
-#pragma once
 #include "../CCEffect.hpp"
 
 namespace CrowdControl::Effects {
@@ -10,6 +8,9 @@ namespace CrowdControl::Effects {
 		RemoveNotesEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
+
+		unsigned int tickIntervalMilliseconds = 1000;
+		std::chrono::steady_clock::time_point nextTickTime;
 
 		EffectResult Test(Request request);
 		EffectResult Start(Request request);

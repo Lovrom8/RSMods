@@ -44,7 +44,7 @@ namespace Offsets {
 	uintptr_t func_ForceEnumeration = 0x018D69E7;
 	uintptr_t ptr_enumerateService = 0xF71E10;
 	std::vector<unsigned int> ptr_enumerateServiceOffsets{ 0x8, 0x4 };
-	
+
 	// Custom Song Lists
 	uintptr_t hookBackAddr_FakeTitles, hookBackAddr_CustomNames, hookBackAddr_missingLocalization;
 	uintptr_t hookAddr_ModifyLocalized = 0x01529F2B;
@@ -129,6 +129,10 @@ namespace Offsets {
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
+
+	// Objects
+	uintptr_t ptr_rootObject = 0x00F5C508;
+	std::vector<unsigned int> ptr_rootObjectOffsets{ 0xAC, 0x20, 0x24, 0x24, 0x0 };
 }
 
 

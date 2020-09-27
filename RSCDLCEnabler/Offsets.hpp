@@ -114,4 +114,8 @@ namespace Offsets {
 	// Misc Mods
 	extern uintptr_t ptr_stringColor;
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
+
+	// Objects
+	extern uintptr_t ptr_rootObject;
+	extern std::vector<unsigned int> ptr_rootObjectOffsets;
 };

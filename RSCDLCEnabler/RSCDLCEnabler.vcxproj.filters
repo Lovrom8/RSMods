@@ -147,6 +147,9 @@
     <ClCompile Include="WWiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -475,6 +478,9 @@
     </ClInclude>
     <ClInclude Include="Mods\DisableControllers.hpp">
       <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

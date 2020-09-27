@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include "../Settings.hpp"
+#include "../ObjectUtil.hpp"
 
 using CrowdControl::Enums::EffectResult;
 
