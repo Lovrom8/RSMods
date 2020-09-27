@@ -61,12 +61,12 @@ namespace RSMods.Twitch
                     TwitchSettings.Get.AddToLog($"Wrong auth cuz lovro dumb");
             }
             else
-                TwitchSettings.Get.AddToLog($"This may even work, poggers in chat!");
+                TwitchSettings.Get.AddToLog($"Authorized, poggers in chat!");
         }
 
         private void OnPubSubServiceClosed(object sender, EventArgs e)
         {
-            TwitchSettings.Get.AddToLog("Lazy fudger disconnected :( Resubbing to events!");
+            TwitchSettings.Get.AddToLog("Twitch API yeeted us out. Trying to hack our way back in :P");
             Thread.Sleep(2000);
 
             // pubSub.Connect(); // Brute force MF-ers
@@ -75,7 +75,7 @@ namespace RSMods.Twitch
 
         private void OnPubSubServiceError(object sender, EventArgs e)
         {
-            TwitchSettings.Get.AddToLog("Something went wrong :( Resubbing to events!");
+            TwitchSettings.Get.AddToLog("Twitch API tried to download more RAM :O Deleting all traces of Rabies.");
 
             Thread.Sleep(2000);
             //pubSub.Connect();
