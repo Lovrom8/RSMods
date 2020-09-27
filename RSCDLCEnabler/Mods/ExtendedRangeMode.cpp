@@ -12,9 +12,8 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 
 	currentStringColor = MemUtil::ReadPtr(pointerValue + currentStringColor * 0x4 + 0x348);
 
-	if (currentStringColor >= 2) {
+	if (currentStringColor >= 2)
 		return NULL;
-	}
 
 	currentStringColor = currentStringColor * 0xA8;
 	currentStringColor += currentStringNum;
