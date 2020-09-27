@@ -1165,7 +1165,7 @@ namespace RSMods
             foreach (Control ctrl in tab_Twitch.Controls)
                 ctrl.Visible = true;
 
-            foreach(DataGridViewRow row in dgv_EnabledRewards.Rows)
+            foreach (DataGridViewRow row in dgv_EnabledRewards.Rows)
             {
                 if (row.Cells[1].Value.ToString() == "Solid color notes")
                 {
@@ -1412,12 +1412,14 @@ namespace RSMods
             dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = Color.White;
         }
 
-        private async void SendFakeTwitchReward()
+        //private async void SendFakeTwitchReward()
+        private void SendFakeTwitchReward()
         {
             if (dgv_EnabledRewards.CurrentCell == null)
                 return;
 
-            await PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
+            // await PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
+            PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
         }
 
         private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();

@@ -61,7 +61,12 @@ namespace RSMods.Twitch
                     TwitchSettings.Get.AddToLog($"Wrong auth cuz lovro dumb");
             }
             else
-                TwitchSettings.Get.AddToLog($"Authorized, poggers in chat!");
+            {
+                if (e.Topic.Contains("points"))
+                    TwitchSettings.Get.AddToLog($"Authorized channel points events, more poggers in chat!");
+                else if (e.Topic.Contains("bits"))
+                    TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
+            }
         }
 
         private void OnPubSubServiceClosed(object sender, EventArgs e)
@@ -96,29 +101,31 @@ namespace RSMods.Twitch
             HandleChannelPointsRecieved(e);
         }
 
-        private static async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
+        //private static async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
 
-        public static async Task SendMessageToRocksmith(TwitchReward reward)
+        public static void SendMessageToRocksmith(TwitchReward reward)
         {
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
 
             if (reward.AdditionalMsg != "")
-                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg}");
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.Length} {reward.AdditionalMsg}");
             else
-                WinMsgUtil.SendMsgToRS(reward.InternalMsgEnable);
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.Length}");
 
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
 
+            /* It's now handled internally 
+             
             await WaitUntilRewardEnds(reward.Length);
 
             WinMsgUtil.SendMsgToRS(reward.InternalMsgDisable);
-            TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");
+            TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");*/
         }
 
-        public async void HandleBitsRecieved(OnBitsReceivedArgs e) => await SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed));
+        public void HandleBitsRecieved(OnBitsReceivedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed));
 
-        public async void HandleChannelPointsRecieved(OnRewardRedeemedArgs e) => await SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost));
+        public void HandleChannelPointsRecieved(OnRewardRedeemedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost));
 
         private PubSub() { }
         public static readonly PubSub Get = new PubSub();
