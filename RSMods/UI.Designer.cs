@@ -1557,7 +1557,6 @@
             this.ToolTip.Active = false;
             this.ToolTip.AutomaticDelay = 0;
             this.ToolTip.ToolTipTitle = "ToolTip";
-            this.ToolTip.Popup += new System.Windows.Forms.PopupEventHandler(this.ToolTip_Popup);
             // 
             // groupBox_ToggleSkylineWhen
             // 

@@ -1164,6 +1164,17 @@ namespace RSMods
         {
             foreach (Control ctrl in tab_Twitch.Controls)
                 ctrl.Visible = true;
+
+            foreach(DataGridViewRow row in dgv_EnabledRewards.Rows)
+            {
+                if (row.Cells[1].Value.ToString() == "Solid color notes")
+                {
+                    var selectedReward = GetSelectedReward(row);
+
+                    if (selectedReward.AdditionalMsg != null && selectedReward.AdditionalMsg != string.Empty && selectedReward.AdditionalMsg != "Random")
+                        row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+                }
+            }
         }
 
         private void SetupTwitchTab()
@@ -1263,9 +1274,6 @@ namespace RSMods
                 rewardID = 1;
             else
                 rewardID = Convert.ToInt32(dgv_EnabledRewards.Rows[dgv_EnabledRewards.Rows.Count - 1].Cells["colEnabledRewardsID"].Value) + 1;
-
-            if (selectedReward.Name == "Solid color notes")
-                selectedReward.AdditionalMsg = (textBox_SolidNoteColorPicker.BackColor.ToArgb() & 0x00ffffff).ToString("X6");
 
             if (MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
@@ -1381,6 +1389,7 @@ namespace RSMods
                 string colorHex = (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6");
                 textBox_SolidNoteColorPicker.BackColor = colorDialog.Color;
                 textBox_SolidNoteColorPicker.Text = String.Empty;
+                dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = colorDialog.Color;
 
                 SetAdditionalMessage(colorHex);
                 SaveEnabledRewardsToFile();
@@ -1394,6 +1403,8 @@ namespace RSMods
 
             SetAdditionalMessage("Random");
             SaveEnabledRewardsToFile();
+
+            dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = Color.White;
         }
 
         private async void SendFakeTwitchReward()
@@ -1406,6 +1417,13 @@ namespace RSMods
 
         private void TestTwitchReward_Click(object sender, EventArgs e) => SendFakeTwitchReward();
 
+        private void ShowSolidNoteColorRelatedStuff(bool showStuff)
+        {
+            button_SolidNoteColorPicker.Visible = showStuff;
+            textBox_SolidNoteColorPicker.Visible = showStuff;
+            button_SolidNoteColorResetToRandom.Visible = showStuff;
+        }
+
         private void dgv_EnabledRewards_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_EnabledRewards.SelectedRows.Count < 1)
@@ -1413,6 +1431,7 @@ namespace RSMods
 
             var selectedRow = dgv_EnabledRewards.SelectedRows[0];
             var selectedReward = GetSelectedReward(selectedRow);
+            ShowSolidNoteColorRelatedStuff(false);
 
             if (selectedReward.Name != "Solid color notes")
                 return;
@@ -1421,18 +1440,19 @@ namespace RSMods
             {
                 textBox_SolidNoteColorPicker.BackColor = Color.White;
                 textBox_SolidNoteColorPicker.Text = "Random";
+                dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = Color.White;
             }
             else
             {
                 textBox_SolidNoteColorPicker.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
                 textBox_SolidNoteColorPicker.Text = "";
+                dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
             }
+
+            ShowSolidNoteColorRelatedStuff(true);
         }
 
-        private async void ValidateTwitch()
-        {
-            await TwitchSettings.Get.ValidateCurrentSettings();
-        }
+        private async void ValidateTwitch() => await TwitchSettings.Get.ValidateCurrentSettings();
 
         private void timerValidateTwitch_Tick(object sender, EventArgs e)
         {
@@ -1445,19 +1465,9 @@ namespace RSMods
                 auth.MakeAuthRequest(true); // When the request finishes, it will trigger PropertyChanged & set Reauthorized, which in turn will reset PubSub
             }
             else
-            {
                 PubSub.Get.Resub();
-            }
         }
 
-        private void ToolTip_Popup(object sender, PopupEventArgs e)
-        {
-
-        }
-
-        private void checkBox_TwitchForceReauth_CheckedChanged(object sender, EventArgs e)
-        {
-            TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
-        }
+        private void checkBox_TwitchForceReauth_CheckedChanged(object sender, EventArgs e) => TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
     }
 }
