@@ -1246,7 +1246,7 @@ namespace RSMods
 
         private async void SaveEnabledRewardsToFile()
         {
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
                 using (var sww = new StringWriter())
