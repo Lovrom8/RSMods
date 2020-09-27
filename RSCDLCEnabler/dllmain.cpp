@@ -117,9 +117,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::keyMap["D"] && GetAsyncKeyState(VK_CONTROL))
 				drawMixerText = !drawMixerText;
 
-			// else if (keyPressed == VK_F9)
-				// ClearBanks(); // Purposefully kills Wwise (has potential to fix tone bug)
+			//else if (keyPressed == VK_F9) {
+			//	typedef int(__cdecl* luaOpen_t)(int unknownInt);
+			//	luaOpen_t testVariable = (luaOpen_t)Offsets::ptr_luaopen_AlphaGame;
 
+			//	std::cout << testVariable(0x011caca0) << std::endl; // Seems to do input address + 0x8 until a  certain point, then it does some sort of multiplication / exponential
+			//}
 		}
 
 		if (debug) {

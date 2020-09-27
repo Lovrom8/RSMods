@@ -89,6 +89,25 @@ namespace Offsets {
 	extern std::vector<unsigned int> ptr_currentNoteStreakLASOffsets;
 	extern std::vector<unsigned int> ptr_currentNoteStreakSAOffsets;
 
+	// Lua Hijack
+		// Gamebryo Game Engine
+	extern uintptr_t ptr_luaopen_BehaviorAPI;
+	extern uintptr_t ptr_luaopen_ecr;
+	extern uintptr_t ptr_luaopen_ecrInput;
+	extern uintptr_t ptr_luaopen_egmAnimation;
+		// Rocksmith
+	extern uintptr_t ptr_luaopen_AlphaGame;
+	extern uintptr_t ptr_luaopen_DetectionBindings;
+	extern uintptr_t ptr_luaopen_GameBindings;
+	extern uintptr_t ptr_luaopen_GuitarBindings;
+	extern uintptr_t ptr_luaopen_Guitarcade;
+	extern uintptr_t ptr_luaopen_RSAudioBindings;
+	extern uintptr_t ptr_luaopen_UIBindings;
+	extern uintptr_t ptr_luaopen_VenueBindings;
+		// Misc
+	extern uintptr_t ptr_luaopen_epgmGFx;
+	extern uintptr_t ptr_luaopen_epgmWwise;
+
 	// Misc Mods
 	extern uintptr_t ptr_stringColor;
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
