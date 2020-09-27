@@ -1,4 +1,5 @@
 #include "Main.hpp"
+#include <thread>
 
 #ifdef _DEBUG
 bool debug = true;
@@ -31,47 +32,6 @@ unsigned WINAPI EnumerationThread(void*) {
 	return 0;
 }
 
-bool HandleMessage(std::string currMsg, std::string type) {
-	if (Contains(currMsg, "RainbowStrings")) {
-		std::cout << "enabling rainbow" << type << std::endl;
-		if (type == "enable")
-			ERMode::RainbowEnabled = true;
-		else
-			ERMode::RainbowEnabled = false;
-	}
-	else if (Contains(currMsg, "DrunkMode")) {
-		MemHelpers::ToggleDrunkMode(type == "enable");
-		Settings::ParseTwitchToggle(currMsg);
-	}
-	else if (Contains(currMsg, "SolidNotes")) {
-		if (!ERMode::ColorsSaved) // Don't apply any effects if we haven't even been in a song yet
-			return false;
-
-		if (type == "enable") {
-			if (Contains(currMsg, "Random")) { // For Random Colors
-				static std::uniform_real_distribution<> urd(0, 9);
-				currentRandomTexture = (int)urd(rng);
-
-				ERMode::customSolidColor.clear();
-				ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
-
-				//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
-				//	twitchUserDefinedTexture->Release();
-
-				twitchUserDefinedTexture = randomTextures[currentRandomTexture];
-			}
-			else { // If colors are not random, set colors which the user defined for this reward
-				Settings::ParseSolidColorsMessage(currMsg);
-				regenerateUserDefinedTexture = true;
-			}
-		}
-		else
-			ERMode::ResetAllStrings();
-	}
-
-	Settings::ParseTwitchToggle(currMsg);
-	return true;
-}
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
@@ -362,19 +322,82 @@ unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but
 	return 0;
 }
 
-unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, but if we make it in time, improve synchronization of this (cond_variables, etc.)
+bool HandleMessage(std::string currMsg, std::string type) {
+	if (Contains(currMsg, "RainbowStrings")) {
+		if (type == "enable")
+			ERMode::RainbowEnabled = true;
+		else
+			ERMode::RainbowEnabled = false;
+	}
+	else if (Contains(currMsg, "DrunkMode")) {
+		MemHelpers::ToggleDrunkMode(type == "enable");
+		Settings::ParseTwitchToggle(currMsg, type);
+	}
+	else if (Contains(currMsg, "SolidNotes")) {
+		if (!ERMode::ColorsSaved) // Don't apply any effects if we haven't even been in a song yet
+			return false;
+		
+		if (type == "enable") {
+			if (Contains(currMsg, "Random")) { // For Random Colors
+				static std::uniform_real_distribution<> urd(0, 9);
+				currentRandomTexture = (int)urd(rng);
+
+				ERMode::customSolidColor.clear();
+				ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
+
+				//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
+				//	twitchUserDefinedTexture->Release();
+
+				twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+			}
+			else { // If colors are not random, set colors which the user defined for this reward
+				Settings::ParseSolidColorsMessage(currMsg);
+				regenerateUserDefinedTexture = true;
+			}
+		}
+		else
+			ERMode::ResetAllStrings();
+	}
+
+	Settings::ParseTwitchToggle(currMsg, type);
+	return true;
+}
+
+
+void HandleEffect(std::string currEffectMsg) {
+	auto msgParts = Settings::SplitByWhitespace(currEffectMsg);
+	std::string effectName = msgParts[1];
+
+	std::cout << "Entering the thread for: " << currEffectMsg << std::endl;
+
+	while (MemHelpers::IsInStringArray(effectName, 0, enabledEffects) && !MemHelpers::IsInSong())  // Wait until the current effect is not present any more
+		Sleep(150);
+
+	std::cout << "Enabling " << effectName << std::endl;
+	if (HandleMessage(currEffectMsg, "enable")) {
+		enabledEffects.push_back(effectName); // Just save the effect name
+
+		Sleep(std::stoi(msgParts.back()) * 1000); // Last part of the (new) message is duration
+
+		HandleMessage(currEffectMsg, "disable");
+
+		if (MemHelpers::IsInStringArray(effectName, 0, enabledEffects)) // JIC
+			enabledEffects.erase(std::find(enabledEffects.begin(), enabledEffects.end(), effectName));
+	}
+}
+
+unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
 	while (!D3DHooks::GameClosing) {
 		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
 			std::string currEffectMsg = effectQueue[0];
-			auto msgParts = Settings::SplitByWhitespace(currEffectMsg);
 
-			if (HandleMessage(currEffectMsg, "enable")) {
-				effectQueue.erase(effectQueue.begin());
+			std::cout << "Making a thread for: " << currEffectMsg << std::endl; // Okay this is getting sketchy, but otherwise one effect would block other effects from running
+			//std::thread([](std::string currEffectMsg) { HandleEffect(currEffectMsg); }).detach(); 
+			
+			std::thread effectThrd(HandleEffect, currEffectMsg);
+			effectThrd.detach();
 
-				Sleep(stoi(msgParts.back()) * 1000); // Last part of the (new) message is duration
-
-				HandleMessage(currEffectMsg, "disable");
-			}
+			effectQueue.erase(effectQueue.begin());
 		}
 
 		Sleep(250);

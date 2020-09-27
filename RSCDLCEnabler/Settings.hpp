@@ -29,7 +29,7 @@ namespace Settings {
 	void UpdateModSetting(std::string name, std::string newValue);
 	void UpdateCustomSetting(std::string name, int newValue);
 	void ParseSettingUpdate(std::string updateMessage);
-	void ParseTwitchToggle(std::string twitchMsg);
+	void ParseTwitchToggle(std::string twitchMsg, std::string toggleType);
 	void ParseSolidColorsMessage(std::string twitchMsg);
 	bool IsTwitchSettingEnabled(std::string name);
 	std::vector<std::string> SplitByWhitespace(const std::string& input);

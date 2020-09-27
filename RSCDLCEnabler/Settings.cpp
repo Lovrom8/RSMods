@@ -167,7 +167,7 @@ void Settings::ReadStringColors() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return;
-	
+
 	customStringColorsNormal.clear();
 	customStringColorsCB.clear();
 
@@ -232,7 +232,7 @@ void Settings::UpdateCustomSetting(std::string name, int newValue) {
 
 void Settings::ParseSettingUpdate(std::string updateMessage) {
 	auto msgParts = SplitByWhitespace(updateMessage); // Format: update (custom|mod) <entryName> <value>
-	
+
 	if (msgParts.size() < 4)
 		return;
 
@@ -245,26 +245,25 @@ void Settings::ParseSettingUpdate(std::string updateMessage) {
 
 		UpdateCustomSetting(entry, val);
 	}
-	else 
+	else
 		UpdateModSetting(entry, value);
 }
 
-void Settings::ParseTwitchToggle(std::string twitchMsg) {
+void Settings::ParseTwitchToggle(std::string twitchMsg, std::string toggleType) {
 	auto msgParts = SplitByWhitespace(twitchMsg);
 
 	if (msgParts.size() < 2)
 		return;
 
-	std::string toggleType = msgParts[0];
 	std::string effectName = msgParts[1];
-	
+
 	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
 }
 
 void Settings::ParseSolidColorsMessage(std::string twitchMsg) {
 	auto msgParts = SplitByWhitespace(twitchMsg);
 
-	if (msgParts.size() != 3)
+	if (msgParts.size() < 3)
 		return;
 
 	UpdateModSetting("SolidNoteColor", msgParts[2]);
