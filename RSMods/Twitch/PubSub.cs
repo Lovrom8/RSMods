@@ -109,7 +109,7 @@ namespace RSMods.Twitch
                 return;
 
             if (reward.AdditionalMsg != "")
-                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.Length} {reward.AdditionalMsg}");
+                WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg} {reward.Length}");
             else
                 WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.Length}");
 
