@@ -23,8 +23,8 @@ namespace CrowdControl::Effects {
 		RTPCValue_type type = RTPCValue_GameObject; // Save old volume
 		WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char("Mixer_Player1", 0xffffffff, &oldVolume, &type);
 
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", 0.0f, 0xffffffff, 0, AkCurveInterpolation_Linear);
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", 0.0f, 0x00001234, 0, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", 0.0f, 0xffffffff, 2000, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", 0.0f, 0x00001234, 2000, AkCurveInterpolation_Linear);
 
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
@@ -48,8 +48,8 @@ namespace CrowdControl::Effects {
 
 		running = false;
 
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", oldVolume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", oldVolume, 0x00001234, 0, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", oldVolume, 0xffffffff, 2000, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Player1", oldVolume, 0x00001234, 2000, AkCurveInterpolation_Linear);
 
 		return EffectResult::Success;
 	}

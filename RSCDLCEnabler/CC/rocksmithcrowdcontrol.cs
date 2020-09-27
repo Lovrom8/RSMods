@@ -40,8 +40,8 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Change tone to slot 3", "changetoneslot3", "changetone"),
         new Effect("Change tone to slot 4", "changetoneslot4", "changetone"),
 
-        new Effect("Kill guitar volume", "killguitarvolume10"),
-        new Effect("Kill music volume", "killmusicvolume10")
+        new Effect("Kill guitar volume (10 seconds)", "killguitarvolume10"),
+        new Effect("Kill music volume (10 seconds)", "killmusicvolume10")
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]
