@@ -13,7 +13,7 @@
   <ItemGroup>
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
-    <ClCompile Include="WwiseHijackcpp.cpp" />
+    <ClCompile Include="WwiseHijack.cpp" />
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />

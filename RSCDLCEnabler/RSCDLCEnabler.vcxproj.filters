@@ -96,7 +96,7 @@
     <ClCompile Include="D3D/D3D.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
-    <ClCompile Include="WwiseHijackcpp.cpp">
+    <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

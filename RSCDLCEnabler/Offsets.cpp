@@ -103,6 +103,24 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_noteLocationPurpleFourthOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
 	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
 
+	// Lua Hijack
+		// Gamebryo Game Engine
+	uintptr_t ptr_luaopen_BehaviorAPI = 0x019a4664; // https://cdn.discordapp.com/attachments/711634485388771439/759602588588179486/screencapture-file-C-Emergent-Gamebryo-LightSpeed-3-2-Source-Documentation-HTML-documentation-htm-20.png
+	uintptr_t ptr_luaopen_ecr = 0x01c5ffb5; // https://cdn.discordapp.com/attachments/711634485388771439/759602220294602852/unknown.png
+	uintptr_t ptr_luaopen_ecrInput = 0x019d7f58; // https://cdn.discordapp.com/attachments/711634485388771439/759602433490944000/screencapture-file-C-Emergent-Gamebryo-LightSpeed-3-2-Source-Documentation-HTML-documentation-htm-20.png
+	uintptr_t ptr_luaopen_egmAnimation = 0x01c6d459; // https://cdn.discordapp.com/attachments/711634485388771439/759602087557726248/unknown.png
+		// Rocksmith
+	uintptr_t ptr_luaopen_AlphaGame = 0x0178e7c7;
+	uintptr_t ptr_luaopen_DetectionBindings = 0x0176be6f;
+	uintptr_t ptr_luaopen_GameBindings = 0x0176d7fb;
+	uintptr_t ptr_luaopen_GuitarBindings = 0x0176eaef;
+	uintptr_t ptr_luaopen_Guitarcade = 0x01779cbf;
+	uintptr_t ptr_luaopen_RSAudioBindings = 0x0178261b;
+	uintptr_t ptr_luaopen_UIBindings = 0x018c2595;
+	uintptr_t ptr_luaopen_VenueBindings = 0x018c3d08;
+		// Misc
+	uintptr_t ptr_luaopen_epgmGFx = 0x01c75fcc; // Scaleform x Flash
+	uintptr_t ptr_luaopen_epgmWwise = 0x01cb197d; // Wwise (Not really needed since we have access to all the raw functions, but better safe than sorry)
 
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
