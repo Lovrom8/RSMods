@@ -1175,6 +1175,8 @@ namespace RSMods
                         row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
                 }
             }
+
+            ShowSolidNoteColorRelatedStuff(false);
         }
 
         private void SetupTwitchTab()
@@ -1356,6 +1358,9 @@ namespace RSMods
 
             var selectedRow = dgv_EnabledRewards.SelectedRows[0];
             var selectedReward = GetSelectedReward(selectedRow);
+
+            if (selectedReward.Name == "Solid color notes")
+                ShowSolidNoteColorRelatedStuff(false);
 
             if (selectedReward != null)
                 TwitchSettings.Get.Rewards.Remove(selectedReward);
