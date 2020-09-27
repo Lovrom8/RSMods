@@ -7,6 +7,7 @@
 #include <fstream>
 #include "Lib/DirectX/d3dx9.h"
 #include "Lib/DirectX/d3d9types.h"
+#include "D3D/D3DHooks.hpp"
 
 #include "MemUtil.hpp"
 #include "Offsets.hpp"
@@ -22,7 +23,9 @@ namespace MemHelpers {
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);
-	
+	void ToggleDrunkMode(bool enable);
+	bool IsInSong();
+
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
 

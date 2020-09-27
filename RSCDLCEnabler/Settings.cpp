@@ -216,7 +216,7 @@ bool Settings::IsTwitchSettingEnabled(std::string name) {
 
 // Misc Functions
 
-std::vector<std::string> SplitByWhitespace(const std::string& input) {
+std::vector<std::string> Settings::SplitByWhitespace(const std::string& input) {
 	std::regex re("\\s+");
 	std::sregex_token_iterator first{ input.begin(), input.end(), re, -1 }, last;
 	return { first, last };

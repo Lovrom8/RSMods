@@ -32,6 +32,7 @@ namespace Settings {
 	void ParseTwitchToggle(std::string twitchMsg);
 	void ParseSolidColorsMessage(std::string twitchMsg);
 	bool IsTwitchSettingEnabled(std::string name);
+	std::vector<std::string> SplitByWhitespace(const std::string& input);
 
 	// INI Setting Maps
 	inline std::map<std::string, std::string> keyBinds;

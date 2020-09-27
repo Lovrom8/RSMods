@@ -31,6 +31,48 @@ unsigned WINAPI EnumerationThread(void*) {
 	return 0;
 }
 
+bool HandleMessage(std::string currMsg, std::string type) {
+	if (Contains(currMsg, "RainbowStrings")) {
+		std::cout << "enabling rainbow" << type << std::endl;
+		if (type == "enable")
+			ERMode::RainbowEnabled = true;
+		else
+			ERMode::RainbowEnabled = false;
+	}
+	else if (Contains(currMsg, "DrunkMode")) {
+		MemHelpers::ToggleDrunkMode(type == "enable");
+		Settings::ParseTwitchToggle(currMsg);
+	}
+	else if (Contains(currMsg, "SolidNotes")) {
+		if (!ERMode::ColorsSaved) // Don't apply any effects if we haven't even been in a song yet
+			return false;
+
+		if (type == "enable") {
+			if (Contains(currMsg, "Random")) { // For Random Colors
+				static std::uniform_real_distribution<> urd(0, 9);
+				currentRandomTexture = (int)urd(rng);
+
+				ERMode::customSolidColor.clear();
+				ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
+
+				//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
+				//	twitchUserDefinedTexture->Release();
+
+				twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+			}
+			else { // If colors are not random, set colors which the user defined for this reward
+				Settings::ParseSolidColorsMessage(currMsg);
+				regenerateUserDefinedTexture = true;
+			}
+		}
+		else
+			ERMode::ResetAllStrings();
+	}
+
+	Settings::ParseTwitchToggle(currMsg);
+	return true;
+}
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
 		return true;
@@ -138,69 +180,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		{
 			std::string currMsg = (char*)pcds->lpData;
 			std::cout << currMsg << std::endl;
-			if (Contains(currMsg, "enable RainbowStrings"))
-				ERMode::RainbowEnabled = true;
-			else if (Contains(currMsg, "disable RainbowStrings"))
-				ERMode::RainbowEnabled = false;
-			else if (Contains(currMsg, "update"))
+
+			if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
-
-			else if (Contains(currMsg, "enable DrunkMode")) {
-				uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
-
-				if (*(float*)noLoft == 1) {
-					D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
-					MemHelpers::ToggleLoft();
-				}
-
-				Settings::ParseTwitchToggle(currMsg);
-			}
-			
-			else if (Contains(currMsg, "disable DrunkMode")) {
-				*(float*)Offsets::ptr_drunkShit = 0.33333333f;
-
-				if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
-					MemHelpers::ToggleLoft();
-					D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
-				}
-
-				Settings::ParseTwitchToggle(currMsg);
-			}
-
-			else if (Contains(currMsg, "enable FYourFC"))
-				Settings::ParseTwitchToggle(currMsg);
-
-			else if (Contains(currMsg, "disable FYourFC"))
-				Settings::ParseTwitchToggle(currMsg);
-				
-			else if (Contains(currMsg, "enable") || Contains(currMsg, "disable")) { // Pls gib C++ extension methods :(
-				
-				if (Contains(currMsg, "SolidNotes") && ERMode::ColorsSaved) { // Don't apply any effects if we haven't even been in a song yet
-					if (Contains(currMsg, "disable"))
-						ERMode::ResetAllStrings();
-					else {
-						if (Contains(currMsg, "Random")) { // For Random Colors
-							static std::uniform_real_distribution<> urd(0, 9);
-							currentRandomTexture = (int)urd(rng);
-
-							ERMode::customSolidColor.clear();
-							ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
-
-							//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
-							//	twitchUserDefinedTexture->Release();
-
-							twitchUserDefinedTexture = randomTextures[currentRandomTexture];
-						}
-						else { // If colors are not random, set colors which the user defined for this reward
-							Settings::ParseSolidColorsMessage(currMsg);
-							regenerateUserDefinedTexture = true;
-						}
-					}
-				}
-
-				//std::cout << currMsg << std::endl;
-				Settings::ParseTwitchToggle(currMsg);
-			}
+			else if (Contains(currMsg, "enable"))
+				effectQueue.push_back(currMsg);
 		}
 	}
 
@@ -375,6 +359,26 @@ unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but
 		Sleep(StringChangeInterval);
 	}
 
+	return 0;
+}
+
+unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, but if we make it in time, improve synchronization of this (cond_variables, etc.)
+	while (!D3DHooks::GameClosing) {
+		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
+			std::string currEffectMsg = effectQueue[0];
+			auto msgParts = Settings::SplitByWhitespace(currEffectMsg);
+
+			if (HandleMessage(currEffectMsg, "enable")) {
+				effectQueue.erase(effectQueue.begin());
+
+				Sleep(stoi(msgParts.back()) * 1000); // Last part of the (new) message is duration
+
+				HandleMessage(currEffectMsg, "disable");
+			}
+		}
+
+		Sleep(250);
+	}
 	return 0;
 }
 
@@ -575,17 +579,18 @@ void Initialize(void) {
 	_beginthreadex(NULL, 0, &MainThread, NULL, 0, 0);
 	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
 	//_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
+	_beginthreadex(NULL, 0, &HandleEffectQueueThread, NULL, 0, 0);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { // Do NOT remove the lpReserved parameter. We know it says it's unused, but keep it or the game won't open.
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
-			FILE* streamRead, *streamWrite;
+			FILE* streamRead, * streamWrite;
 			errno_t freOpenSecureRead, freOpenSecureWrite;
 			AllocConsole();
 			freOpenSecureRead = freopen_s(&streamRead, "CONIN$", "r", stdin);
-			freOpenSecureWrite = freopen_s(&streamWrite,"CONOUT$", "w", stdout);
+			freOpenSecureWrite = freopen_s(&streamWrite, "CONOUT$", "w", stdout);
 		}
 		DisableThreadLibraryCalls(hModule);
 

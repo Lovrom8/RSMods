@@ -168,3 +168,26 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 		DX9FontEncapsulation = NULL;
 	}	
 }
+
+void MemHelpers::ToggleDrunkMode(bool enable) {
+	uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
+
+	if (enable) {
+		if (*(float*)noLoft == 1) {
+			D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
+			MemHelpers::ToggleLoft();
+		}
+	}
+	else {
+		*(float*)Offsets::ptr_drunkShit = 0.3333333333;
+
+		if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
+			MemHelpers::ToggleLoft();
+			D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
+		}
+	}
+}
+
+bool MemHelpers::IsInSong() {
+	return IsInStringArray(GetCurrentMenu(), 0, songModes);
+}

@@ -28,6 +28,8 @@
 #include "Mods/GuitarSkeletons.hpp"
 #include "Mods/GuitarSpeak.hpp"
 
+std::vector<std::string> effectQueue;
+
 bool regenerateUserDefinedTexture = false;
 bool drawMixerText = true;
 
