@@ -118,10 +118,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				drawMixerText = !drawMixerText;
 
 			//else if (keyPressed == VK_F9) {
-			//	typedef int(__cdecl* luaOpen_t)(int unknownInt);
-			//	luaOpen_t testVariable = (luaOpen_t)Offsets::ptr_luaopen_AlphaGame;
+			//		lua_State* luaState = lua_open();
+			//		luaL_openlibs(luaState);
 
-			//	std::cout << testVariable(0x011caca0) << std::endl; // Seems to do input address + 0x8 until a  certain point, then it does some sort of multiplication / exponential
+			//		DumpLuaStateToConsole(*(luaStateClass*)Offsets::ptr_luaopen_ecr);
+
+			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
 			//}
 		}
 

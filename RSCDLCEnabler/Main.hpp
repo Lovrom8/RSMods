@@ -13,6 +13,9 @@
 #include "D3D/D3DHooks.hpp"
 #include "WwiseHijack.hpp"
 
+// Lua
+#include "Lua/lua.hpp"
+
 // Windows Libraries
 #include <process.h>
 #include <iostream>
