@@ -1457,7 +1457,7 @@ namespace RSMods
             ShowSolidNoteColorRelatedStuff(true);
         }
 
-        private async void ValidateTwitch() => await TwitchSettings.Get.ValidateCurrentSettings();
+        // private async void ValidateTwitch() => await TwitchSettings.Get.ValidateCurrentSettings();
 
         private void timerValidateTwitch_Tick(object sender, EventArgs e)
         {
