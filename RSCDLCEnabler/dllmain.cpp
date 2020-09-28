@@ -336,7 +336,7 @@ bool HandleMessage(std::string currMsg, std::string type) {
 	else if (Contains(currMsg, "SolidNotes")) {
 		if (!ERMode::ColorsSaved) // Don't apply any effects if we haven't even been in a song yet
 			return false;
-		
+
 		if (type == "enable") {
 			if (Contains(currMsg, "Random")) { // For Random Colors
 				static std::uniform_real_distribution<> urd(0, 9);
@@ -373,14 +373,15 @@ void HandleEffect(std::string currEffectMsg) {
 	while (MemHelpers::IsInStringArray(effectName, 0, enabledEffects) && !MemHelpers::IsInSong())  // Wait until the current effect is not present any more
 		Sleep(150);
 
+	std::cout << enabledEffects.size() << std::endl;
+
 	std::cout << "Enabling " << effectName << std::endl;
 	if (HandleMessage(currEffectMsg, "enable")) {
-		enabledEffects.push_back(effectName); // Just save the effect name
-
 		Sleep(std::stoi(msgParts.back()) * 1000); // Last part of the (new) message is duration
 
 		HandleMessage(currEffectMsg, "disable");
 
+		std::cout << "Disabling " << effectName << std::endl;
 		if (MemHelpers::IsInStringArray(effectName, 0, enabledEffects)) // JIC
 			enabledEffects.erase(std::find(enabledEffects.begin(), enabledEffects.end(), effectName));
 	}
@@ -389,15 +390,22 @@ void HandleEffect(std::string currEffectMsg) {
 unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
 	while (!D3DHooks::GameClosing) {
 		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
-			std::string currEffectMsg = effectQueue[0];
+			// Okay this is getting sketchy, but otherwise one effect would block other effects from running
 
-			std::cout << "Making a thread for: " << currEffectMsg << std::endl; // Okay this is getting sketchy, but otherwise one effect would block other effects from running
-			//std::thread([](std::string currEffectMsg) { HandleEffect(currEffectMsg); }).detach(); 
-			
-			std::thread effectThrd(HandleEffect, currEffectMsg);
-			effectThrd.detach();
+			for (auto it = effectQueue.begin(); it != effectQueue.end();) {
+				std::string effectName = Settings::SplitByWhitespace(*it)[1];
 
-			effectQueue.erase(effectQueue.begin());
+				if (!MemHelpers::IsInStringArray(effectName, 0, enabledEffects)) { // Check whether there's an empty place for our new effect
+					enabledEffects.push_back(effectName);
+
+					std::thread effectThrd(HandleEffect, *it); // Send full effect message to the thread
+					effectThrd.detach();
+
+					it = effectQueue.erase(it);
+				}
+				else
+					++it;
+			}
 		}
 
 		Sleep(250);
