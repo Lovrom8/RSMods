@@ -21,7 +21,7 @@ namespace RSMods.Twitch
 
         private static readonly string twitchClientId = "8uq8vhme1zmy4gsjnzuq5qaca9i804"; // ClientID for our application
         private static readonly string twitchRedirectUri = "http://localhost:1069/twitch_login";
-        private static readonly string twitchScope = "chat:read%20bits:read%20channel:read:hype_train%20channel:read:subscriptions%20channel:read:redemptions"; // When you send spaces to a command prompt without qoutation marks, stuff can go wrong very quickly
+        private static readonly string twitchScope = "chat:read%20bits:read%20channel:read:hype_train%20channel_subscriptions%20channel:read:redemptions"; // When you send spaces to a command prompt without qoutation marks, stuff can go wrong very quickly
         private static readonly string responseForwardContent = "<HTML><BODY> <script> location.href = window.location.href.replace(\"#\", \"/\");  </script></BODY></HTML>";
         private static readonly string responseFinalPageContent = "<HTML><BODY><h1>thanks for the token xd</h1><br><h6><i>This response was totally not suggested by Koko</i></h6></BODY></HTML>";
         private static readonly string responseToldToFOff = "<HTML><BODY><h1>You decided to say no, so we say no back</h1><br><h6>We didn't think you'd press \"Cancel\" since why would you press the button, and not trust us?</h6></BODY></HTML>";

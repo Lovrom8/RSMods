@@ -37,9 +37,12 @@ namespace RSMods.Twitch
             pubSub.ListenToRewards(TwitchSettings.Get.ChannelID);
             TwitchSettings.Get.AddToLog("Subscribing to channel rewards");
 
+            pubSub.ListenToSubscriptions(TwitchSettings.Get.ChannelID);
+            TwitchSettings.Get.AddToLog("Subscribing to subs");
+
             pubSub.OnBitsReceived += OnBitsReceived;
             pubSub.OnRewardRedeemed += OnRewardRedeemed;
-
+            pubSub.OnChannelSubscription += OnSubscriptionRecieved;
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
@@ -50,6 +53,7 @@ namespace RSMods.Twitch
 
             pubSub.ListenToRewards(TwitchSettings.Get.ChannelID);
             pubSub.ListenToBitsEvents(TwitchSettings.Get.ChannelID);
+            pubSub.ListenToSubscriptions(TwitchSettings.Get.ChannelID);
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
         }
 
@@ -58,13 +62,15 @@ namespace RSMods.Twitch
             if (!e.Successful)
             {
                 if (e.Response.ToString().ToLower().Contains("auth"))
-                    TwitchSettings.Get.AddToLog($"Wrong auth cuz lovro dumb");
+                    TwitchSettings.Get.AddToLog($"Wrong auth :(");
             }
             else
             {
                 if (e.Topic.Contains("points"))
-                    TwitchSettings.Get.AddToLog($"Authorized channel points events, more poggers in chat!");
+                    TwitchSettings.Get.AddToLog($"Authorized channel points events, poggers in chat!");
                 else if (e.Topic.Contains("bits"))
+                    TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
+                else if (e.Topic.Contains("sub"))
                     TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
             }
         }
@@ -83,7 +89,6 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog("Twitch API tried to download more RAM :O Deleting all traces of Rabies.");
 
             Thread.Sleep(2000);
-            //pubSub.Connect();
             Resub();
         }
 
@@ -99,6 +104,18 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog($"A viewer redeemed {e.RewardCost} points");
 
             HandleChannelPointsRecieved(e);
+        }
+
+        private void OnSubscriptionRecieved(object sender, OnChannelSubscriptionArgs e) 
+        {
+            var subInfo = e.Subscription;
+
+            if (subInfo.IsGift.HasValue && subInfo.IsGift.Value)
+                TwitchSettings.Get.AddToLog($"{subInfo.RecipientDisplayName} recieved a subgift from {subInfo.DisplayName}");
+            else
+                TwitchSettings.Get.AddToLog($"{subInfo.DisplayName} subscribed to the channel!");
+
+            HandleSubRecieved(e);
         }
 
         //private static async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
@@ -126,6 +143,8 @@ namespace RSMods.Twitch
         public void HandleBitsRecieved(OnBitsReceivedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed));
 
         public void HandleChannelPointsRecieved(OnRewardRedeemedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost));
+
+        public void HandleSubRecieved(OnChannelSubscriptionArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<SubReward>().FirstOrDefault(rew => rew.Enabled));
 
         private PubSub() { }
         public static readonly PubSub Get = new PubSub();

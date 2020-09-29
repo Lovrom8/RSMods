@@ -192,6 +192,7 @@
     <Compile Include="ReadSettings.cs" />
     <Compile Include="Util\GenUtil.cs" />
     <Compile Include="Twitch\RSModderBot.cs" />
+    <Compile Include="Util\MessageBoxManager.cs" />
     <Compile Include="Util\WinMsgUtil.cs" />
     <Compile Include="Util\ZipUtils.cs" />
     <Compile Include="WriteSettings.cs" />

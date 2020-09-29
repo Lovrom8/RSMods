@@ -9,6 +9,7 @@ namespace RSMods.Twitch
 {
     [XmlInclude(typeof(BitsReward))]
     [XmlInclude(typeof(ChannelPointsReward))]
+    [XmlInclude(typeof(SubReward))]
     public class TwitchReward
     {
         public string InternalMsgEnable { get; set; }

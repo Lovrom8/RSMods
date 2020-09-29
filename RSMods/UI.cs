@@ -1277,7 +1277,22 @@ namespace RSMods
             else
                 rewardID = Convert.ToInt32(dgv_EnabledRewards.Rows[dgv_EnabledRewards.Rows.Count - 1].Cells["colEnabledRewardsID"].Value) + 1;
 
-            if (MessageBox.Show("Do you wish to add selected reward for bits or channel points? (bits = Yes, points = No)", "Bits or Channel points?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            MessageBoxManager.Yes = "Subs";
+            MessageBoxManager.No = "Bits";
+            MessageBoxManager.Cancel = "Channel Points";
+            MessageBoxManager.Register();
+
+            var dialogResult = MessageBox.Show("Do you wish to add selected reward for subs, bits, channel points?" + Environment.NewLine + "NOTE: changing the amount of subs won't have an effect, as sub \"bombs\" are sent separately!", "Subs or Bits or Channel points?", MessageBoxButtons.YesNoCancel);
+            if (dialogResult == DialogResult.Yes)
+            {
+                var reward = new SubReward();
+                reward.Map(selectedReward);
+                reward.SubID = rewardID;
+
+                TwitchSettings.Get.Rewards.Add(reward);
+                AddToSelectedRewards(reward);
+            }
+            else if (dialogResult == DialogResult.No)
             {
                 var reward = new BitsReward();
                 reward.Map(selectedReward);
@@ -1295,6 +1310,9 @@ namespace RSMods
                 TwitchSettings.Get.Rewards.Add(reward);
                 AddToSelectedRewards(reward);
             }
+
+            MessageBoxManager.Unregister(); // Just making sure our custom msg buttons don't stay enabled
+            SaveEnabledRewardsToFile();
         }
 
         private void AddToSelectedRewards(TwitchReward reward) // Just imagine this was a bound list :P
@@ -1326,6 +1344,9 @@ namespace RSMods
             var selectedRow = dgv_EnabledRewards.SelectedRows[0];
             var selectedReward = GetSelectedReward(selectedRow);
 
+            if (selectedReward == null)
+                return;
+
             selectedReward.Enabled = Convert.ToBoolean(selectedRow.Cells["colEnabledRewardsEnabled"].Value);
             if (selectedRow.Cells["colEnabledRewardsLength"].Value == null || !(Int32.TryParse(selectedRow.Cells["colEnabledRewardsLength"].Value.ToString(), out int rewardLength)))
             {
@@ -1345,7 +1366,7 @@ namespace RSMods
 
             if (selectedReward is BitsReward)
                 ((BitsReward)selectedReward).BitsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
-            else
+            else if (selectedReward is ChannelPointsReward)
                 ((ChannelPointsReward)selectedReward).PointsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
 
             SaveEnabledRewardsToFile();
@@ -1412,13 +1433,11 @@ namespace RSMods
             dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = Color.White;
         }
 
-        //private async void SendFakeTwitchReward()
         private void SendFakeTwitchReward()
         {
             if (dgv_EnabledRewards.CurrentCell == null)
                 return;
 
-            // await PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
             PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
         }
 
@@ -1459,8 +1478,6 @@ namespace RSMods
             ShowSolidNoteColorRelatedStuff(true);
         }
 
-        // private async void ValidateTwitch() => await TwitchSettings.Get.ValidateCurrentSettings();
-
         private void timerValidateTwitch_Tick(object sender, EventArgs e)
         {
             if (checkBox_TwitchForceReauth.Checked)
@@ -1476,5 +1493,18 @@ namespace RSMods
         }
 
         private void checkBox_TwitchForceReauth_CheckedChanged(object sender, EventArgs e) => TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
+
+        /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))
+                return;
+
+            dgv_EnabledRewards.BeginEdit(false);
+            var ec = dgv_EnabledRewards.EditingControl as DataGridViewComboBoxEditingControl;
+            if (ec != null && ec.Width - e.X < SystemInformation.VerticalScrollBarWidth)
+                ec.DroppedDown = true;
+
+            SaveEnabledRewardsToFile();
+        }*/
     }
 }
