@@ -32,12 +32,12 @@ std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;
 
 bool regenerateUserDefinedTexture = false;
-bool drawMixerText = true;
 
 // Mixer Values
-inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Song, 1 - P1Guitar, 2 - P1Bass, 3 - P2Guitar, 4 - P2Bass, 5 - Mic, 6 - VO, 7 - SFX
+inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Disabled, 1 - Master, 2 - Song, 3 - P1, 4 - P2, 5 - Mic, 6 - VO, 7 - SFX
 
 inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
+		{""}, // Disabled (Don't show the user any values)
 		{"Master_Volume"}, // Master Volume
 		{"Mixer_Music"}, // Song Volume
 		{"Mixer_Player1"}, // Player 1 Guitar & Bass (both are handled with this singular name)
@@ -48,6 +48,7 @@ inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as t
 };
 
 inline std::vector<std::string> drawMixerTextName = {
+	{""},
 	{"Master Volume: "},
 	{"Song Volume: "},
 	{"Player 1 Volume: "},

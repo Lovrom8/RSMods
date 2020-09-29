@@ -116,8 +116,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit.
 					currentVolumeIndex = 0;
 			}
-			else if (keyPressed == Settings::keyMap["D"] && GetAsyncKeyState(VK_CONTROL))
-				drawMixerText = !drawMixerText;
 
 			//else if (keyPressed == VK_F9) {
 			//		lua_State* luaState = lua_open();
@@ -267,7 +265,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
-			if (drawMixerText)
+			if (currentVolumeIndex != 0)
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 54.85), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 14.22), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
