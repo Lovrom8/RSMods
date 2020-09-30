@@ -180,7 +180,7 @@ void ERMode::Toggle7StringMode() {
 		if (Settings::GetModSetting("CustomStringColors") == 2) { // User defined colors
 			SetColors(stringsEnabled, "Enabled_N");
 			SetColors(stringsGlow, "Glow_N");
-			//SetColors(stringsDisabled, "Disabled_N");
+			SetColors(stringsDisabled, "Disabled_N");
 			SetColors(stringsText, "TextIndicator_N");
 			SetColors(stringsPegInTune, "PegInTune_N");
 			SetColors(stringsPegNotInTune, "PegOutTune_N");
