@@ -155,7 +155,7 @@ void ERMode::Toggle7StringMode() {
 		else if (Settings::GetModSetting("CustomStringColors") == 2) { // CB user-defined colors
 			SetColors(stringsEnabled, "Enabled_CB");
 			SetColors(stringsGlow, "Glow_CB");
-			//SetColors(stringsDisabled, "Disabled_CB");
+			SetColors(stringsDisabled, "Disabled_CB");
 			SetColors(stringsText, "TextIndicator_CB");
 			SetColors(stringsPegInTune, "PegInTune_CB");
 			SetColors(stringsPegNotInTune, "PegOutTune_CB");
