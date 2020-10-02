@@ -1,20 +1,20 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../WwiseHijack.hpp"
 
 namespace CrowdControl::Effects {
-	class KillMusicVolumeEffect : public CCEffect
+	class BigNoteheadEffect : public CCEffect
 	{
 	public:
-		KillMusicVolumeEffect(unsigned int durationSeconds) {
+		BigNoteheadEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
+
+		unsigned int tickIntervalMilliseconds = 1000;
+		std::chrono::steady_clock::time_point nextTickTime;
 
 		EffectResult Test(Request request);
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
-
-		float oldVolume = 100.0f;
 	};
 }

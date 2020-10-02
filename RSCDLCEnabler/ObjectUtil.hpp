@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <vector>
 #include "Offsets.hpp"
+#include <string>
 
 namespace ObjectUtil {
 	struct Object {
@@ -74,4 +75,5 @@ namespace ObjectUtil {
 
 	extern Object* GetRootObject();
 	extern std::vector<Object*> GetChildrenOfObject(Object* parent);
+	extern std::vector<std::string> NoteHeadParts;
 }

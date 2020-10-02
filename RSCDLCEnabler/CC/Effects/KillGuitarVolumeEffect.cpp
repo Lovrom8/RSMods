@@ -14,9 +14,8 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "KillGuitarVolumeEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong()) {
+		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
-		}
 
 		running = true;
 

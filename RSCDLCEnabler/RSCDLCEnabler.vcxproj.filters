@@ -63,9 +63,6 @@
     <ClCompile Include="Mods\Enumeration.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\ExtendedRangeMode.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="Mods\GuitarSkeletons.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -249,6 +246,27 @@
     <ClCompile Include="Mods\DisableControllers.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\BigNoteheadEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ExtendedRangeMode.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -282,9 +300,6 @@
       <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Mods\GuitarSkeletons.hpp">
-      <Filter>Mods</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
       <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Mods\CustomSongTitles.hpp">
@@ -404,6 +419,21 @@
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
     <ClInclude Include="Lua\lapi.h">
       <Filter>Lua</Filter>
     </ClInclude>
@@ -481,6 +511,12 @@
     </ClInclude>
     <ClInclude Include="ObjectUtil.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

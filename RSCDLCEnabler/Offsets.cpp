@@ -129,6 +129,8 @@ namespace Offsets {
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
+	//uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40; // Thank mr. Koko, it's static
+	uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF44;
 
 	// Objects
 	uintptr_t ptr_rootObject = 0x00F5C508;

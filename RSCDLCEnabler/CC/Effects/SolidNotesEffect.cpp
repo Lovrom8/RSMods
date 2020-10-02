@@ -25,10 +25,8 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomEffect::Start()" << std::endl;
 
-
-		if (!ERMode::ColorsSaved) {
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
-		}
 
 		running = true;
 
@@ -82,9 +80,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesRandomEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved) {
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
-		}
+		
 
 		std::cout << "SolidNotesRandomEffect - Colors Saved" << std::endl;
 
@@ -139,10 +137,8 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Start()" << std::endl;
 
-
-		if (!ERMode::ColorsSaved) {
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
-		}
 
 		running = true;
 

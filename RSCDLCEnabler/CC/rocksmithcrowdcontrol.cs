@@ -39,9 +39,17 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Change tone to slot 2", "changetoneslot2", "changetone"),
         new Effect("Change tone to slot 3", "changetoneslot3", "changetone"),
         new Effect("Change tone to slot 4", "changetoneslot4", "changetone"),
+        new Effect("Shuffle tones every 2 seconds (20 seconds)", "shuffletones20"),
 
         new Effect("Kill guitar volume (10 seconds)", "killguitarvolume10"),
-        new Effect("Kill music volume (10 seconds)", "killmusicvolume10")
+        new Effect("Kill music volume (10 seconds)", "killmusicvolume10"),
+
+        new Effect("Big note heads (10 seconds)", "bignoteheads10"),
+        new Effect("Small note heads (10 seconds)", "smallnoteheads10"),
+        new Effect("Inverted strings (20 seconds)", "invertedstrings20"),
+
+        new Effect("Half song speed (30 seconds)", "halfsongspeed30"),
+        new Effect("Double song speed (30 seconds)", "doublesongspeed30")
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]

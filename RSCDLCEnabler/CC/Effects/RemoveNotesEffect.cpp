@@ -14,6 +14,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		std::cout << "RemoveNotesEffect::Start()" << std::endl;
 
+		if (!MemHelpers::IsInSong())
+			return EffectResult::Retry;
+
 		running = true;
 		//Settings::UpdateTwitchSetting("RemoveNotes", "on");
 
@@ -83,21 +86,22 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 
 	void RemoveNotesEffect::Run()
 	{
-		// Due to rocksmith reusing models, this effect needs to tick constantly to fully remove the effect
-		auto now = std::chrono::steady_clock::now();
-		std::chrono::duration<double> duration = (nextTickTime - now);
-
-		if (duration.count() <= 0) {
-			nextTickTime = now + std::chrono::milliseconds(tickIntervalMilliseconds);
-
-			//TODO: if other note scaling effects are running, dont do anything
-			if (true) {
-				ScaleNotes(running ? 0 : 1);
-			}
-		}
-
 		// Stop automatically after duration has elapsed
 		if (running) {
+			std::cout << "RemoveNotesEffect::Run()" << std::endl;
+
+			// Due to rocksmith reusing models, this effect needs to tick constantly to fully remove the effect
+			auto now = std::chrono::steady_clock::now();
+			std::chrono::duration<double> duration = (nextTickTime - now);
+
+			if (duration.count() <= 0) {
+				nextTickTime = now + std::chrono::milliseconds(tickIntervalMilliseconds);
+
+				//TODO: if other note scaling effects are running, dont do anything
+				if (true) {
+					ScaleNotes(running ? 0 : 1);
+				}
+			}
 
 			duration = (endTime - now);
 

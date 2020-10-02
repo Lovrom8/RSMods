@@ -1,31 +1,31 @@
-#include "RainbowEffect.hpp"
+#include "HalfSpeedEffect.hpp"
 
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-	EffectResult RainbowEffect::Test(Request request)
+	EffectResult HalfSpeedEffect::Test(Request request)
 	{
-		std::cout << "RainbowEffect::Test()" << std::endl;
+		std::cout << "HalfSpeedEffect::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult RainbowEffect::Start(Request request)
+	EffectResult HalfSpeedEffect::Start(Request request)
 	{
-		std::cout << "RainbowEffect::Start()" << std::endl;
+		std::cout << "HalfSpeedEffect::Start()" << std::endl;
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
-		running = true;
-		ERMode::ToggleRainbowMode();
+		*(float*)Offsets::ptr_scrollSpeedMultiplier = 1.0f;
 
+		running = true;
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
 	}
 
-	void RainbowEffect::Run()
+	void HalfSpeedEffect::Run() 
 	{
 		// Stop automatically after duration has elapsed
 		if (running) {
@@ -36,12 +36,11 @@ namespace CrowdControl::Effects {
 		}
 	}
 
-	EffectResult RainbowEffect::Stop()
+	EffectResult HalfSpeedEffect::Stop()
 	{
-		std::cout << "RainbowEffect::Stop()" << std::endl;
+		std::cout << "HalfSpeedEffect::Stop()" << std::endl;
 
-		running = false;
-		ERMode::ToggleRainbowMode();
+		*(float*)Offsets::ptr_scrollSpeedMultiplier = 2.315f;
 
 		return EffectResult::Success;
 	}

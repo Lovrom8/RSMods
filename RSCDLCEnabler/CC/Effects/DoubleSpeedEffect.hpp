@@ -1,12 +1,11 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../WwiseHijack.hpp"
 
 namespace CrowdControl::Effects {
-	class KillMusicVolumeEffect : public CCEffect
+	class DoubleSpeedEffect : public CCEffect
 	{
 	public:
-		KillMusicVolumeEffect(unsigned int durationSeconds) {
+		DoubleSpeedEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -14,7 +13,6 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
-
-		float oldVolume = 100.0f;
 	};
 }
+

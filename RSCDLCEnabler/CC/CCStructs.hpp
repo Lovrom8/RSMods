@@ -15,7 +15,7 @@ namespace CrowdControl::Structs {
 		RequestType type;
 		json parameters;
 	};
-	
+
 	extern struct Response {
 		unsigned int id;
 		EffectResult status;

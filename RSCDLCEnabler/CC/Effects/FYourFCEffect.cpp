@@ -12,6 +12,9 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		std::cout << "FYourFC::Start()" << std::endl;
 
+		if (!MemHelpers::IsInSong())
+			return EffectResult::Retry;
+
 		running = true;
 		Settings::UpdateTwitchSetting("FYourFC", "on");
 

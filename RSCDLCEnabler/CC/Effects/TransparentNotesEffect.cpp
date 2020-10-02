@@ -14,6 +14,9 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		std::cout << "TransparentNotesEffect::Start()" << std::endl;
 
+		if (!MemHelpers::IsInSong())
+			return EffectResult::Retry;
+
 		running = true;
 		Settings::UpdateTwitchSetting("TransparentNotes", "on");
 

@@ -18,6 +18,12 @@
 #include "Effects/ChangeToToneSlot.hpp"
 #include "Effects/KillGuitarVolumeEffect.hpp"
 #include "Effects/KillMusicVolumeEffect.hpp"
+#include "Effects/ShuffleTonesEffect.hpp"
+#include "Effects/BigNoteheadEffect.hpp"
+#include "Effects/SmallNoteheadEffect.hpp"
+#include "Effects/InvertedStringsEffect.hpp"
+#include "Effects/HalfSpeedEffect.hpp"
+#include "Effects/DoubleSpeedEffect.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -42,8 +48,14 @@ namespace CrowdControl {
 		{ "changetoneslot2", new ChangeToToneSlot(2) },
 		{ "changetoneslot3", new ChangeToToneSlot(3) },
 		{ "changetoneslot4", new ChangeToToneSlot(4) },
+		{ "shuffletones20", new ShuffleTonesEffect(20) },
 		{ "killguitarvolume10", new KillGuitarVolumeEffect(10) },
-		{ "killmusicvolume10", new KillMusicVolumeEffect(10) }
+		{ "killmusicvolume10", new KillMusicVolumeEffect(10) },
+		{ "bignoteheads10", new BigNoteheadEffect(10) },
+		{ "smallnoteheads10", new SmallNoteheadEffect(10) },
+		{ "invertedstrings20", new InvertedStringsEffect(20) },
+		{ "halfsongspeed30", new HalfSpeedEffect(30) },
+		{ "doublesongspeed30", new DoubleSpeedEffect(30) }
 	};
 
 	Response RunCommand(Request request) {

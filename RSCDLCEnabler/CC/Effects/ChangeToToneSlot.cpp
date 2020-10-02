@@ -5,18 +5,17 @@ using namespace CrowdControl::Enums;
 namespace CrowdControl::Effects {
 	EffectResult ChangeToToneSlot::Test(Request request)
 	{
-		std::cout << "ChangeToToneSlot1::Test()" << std::endl;
+		std::cout << "ChangeToToneSlot::Test()" << std::endl;
 
 		return EffectResult::Success;
 	}
 
 	EffectResult ChangeToToneSlot::Start(Request request)
 	{
-		std::cout << "RainbowEffect::ChangeToToneSlot()" << std::endl;
+		std::cout << "ChangeToToneSlot::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong()) {
+		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
-		}
 
 		Util::SendKey(Settings::GetVKCodeForString(std::to_string(ChangeToToneSlot::slot)));
 	

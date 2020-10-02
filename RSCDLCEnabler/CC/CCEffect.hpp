@@ -7,6 +7,8 @@
 #include <chrono>
 #include "../Settings.hpp"
 #include "../ObjectUtil.hpp"
+#include "../Offsets.hpp"
+#include "../MemHelpers.hpp"
 
 using CrowdControl::Enums::EffectResult;
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../MemHelpers.hpp"
 
 namespace CrowdControl::Effects {
 	class ChangeToToneSlot : public CCEffect

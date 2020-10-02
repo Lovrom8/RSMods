@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CC\Effects\BigNoteheadEffect.cpp" />
     <ClCompile Include="CC\CCStructs.cpp" />
     <ClCompile Include="CC\ControlServer.cpp" />
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
+    <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D\D3DHooks.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
@@ -21,11 +23,17 @@
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
+    <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
+    <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
+    <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
     <ClCompile Include="WWiseHijack.cpp" />
+    <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
     <ClInclude Include="CC\ControlServer.hpp" />
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
+    <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />
     <ClCompile Include="Lua\lapi.c" />
@@ -78,7 +86,11 @@
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
+    <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp" />
+    <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />
+    <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
+    <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp" />
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>

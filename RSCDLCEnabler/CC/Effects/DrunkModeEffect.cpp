@@ -14,6 +14,9 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		std::cout << "DrunkModeEffect::Start()" << std::endl;
 
+		if (!MemHelpers::IsInSong())
+			return EffectResult::Retry;
+
 		running = true;
 		Settings::UpdateTwitchSetting("DrunkMode", "on");
 		MemHelpers::ToggleDrunkMode(true);
