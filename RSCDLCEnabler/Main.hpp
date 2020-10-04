@@ -20,6 +20,7 @@
 #include <process.h>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 // Mods
 #include "Mods/Enumeration.hpp"

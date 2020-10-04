@@ -1,5 +1,4 @@
 #include "Main.hpp"
-#include <thread>
 
 #ifdef _DEBUG
 bool debug = true;
