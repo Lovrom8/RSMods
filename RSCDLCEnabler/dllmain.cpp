@@ -124,6 +124,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
 			//}
+
+			//else if (keyPressed == VK_F9) { // XInput Killswitch
+			//	// 0x01c5970e function to remove XInput1_3 devices.
+			//	*(HMODULE*)0x0135de18 = 0x0; // XInput Library (Tell the game XInput doesn't need to be loaded anymore)
+			//	*(FARPROC*)0x0135de28 = 0x0; // XInput Enable (to false)
+			//}
 		}
 
 		if (debug) {
