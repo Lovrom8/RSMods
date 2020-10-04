@@ -195,6 +195,9 @@
     <ClCompile Include="Lua\lzio.c">
       <Filter>Lua</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\DisableControllers.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -388,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="Lua\lua.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DisableControllers.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

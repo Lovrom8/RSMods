@@ -28,6 +28,7 @@
 #include "Mods/CollectColors.hpp"
 #include "Mods/GuitarSkeletons.hpp"
 #include "Mods/GuitarSpeak.hpp"
+#include "Mods/DisableControllers.hpp"
 
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;

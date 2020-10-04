@@ -54,6 +54,10 @@ namespace Offsets {
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
 
+	// Disable Controllers
+	uintptr_t hookAddr_DirectInput8 = 0x01c5961a;
+	uintptr_t hookBackAddr_DirectInput8 = 0x01c5961f;
+
 	// D3D Stuff
 	const char* d3dDevice_Pattern = "\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86";
 	uint32_t d3dDevice_SearchLen = 0x128000;

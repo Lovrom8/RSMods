@@ -44,6 +44,7 @@
     <ClCompile Include="Lua\lundump.c" />
     <ClCompile Include="Lua\lvm.c" />
     <ClCompile Include="Lua\lzio.c" />
+    <ClCompile Include="Mods\DisableControllers.cpp" />
     <ClCompile Include="WwiseHijack.cpp" />
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
@@ -72,6 +73,7 @@
     <ClInclude Include="Lua\lundump.h" />
     <ClInclude Include="Lua\lvm.h" />
     <ClInclude Include="Lua\lzio.h" />
+    <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="WwiseHijack.hpp" />
   </ItemGroup>
   <ItemGroup>

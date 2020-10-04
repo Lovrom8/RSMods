@@ -49,6 +49,9 @@ namespace Offsets {
 	extern uintptr_t func_getLocalizedString;
 	extern uintptr_t func_appendString; //for reference purposes
 
+	// Disable Controllers
+	extern uintptr_t hookAddr_DirectInput8, hookBackAddr_DirectInput8;
+
 	//D3D Stuff
 	extern const char* d3dDevice_Pattern;
 	extern uint32_t d3dDevice_SearchLen;
