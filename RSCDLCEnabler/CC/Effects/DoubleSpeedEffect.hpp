@@ -1,5 +1,6 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class DoubleSpeedEffect : public CCEffect
@@ -13,6 +14,10 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
+
+	private:
+		std::vector<std::string> incompatibleEffects =
+			{ "halfsongspeed" };
 	};
 }
 

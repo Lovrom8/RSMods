@@ -14,7 +14,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "DoubleSpeedEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		DWORD oldProtect;

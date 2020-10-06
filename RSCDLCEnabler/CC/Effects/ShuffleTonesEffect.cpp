@@ -1,7 +1,5 @@
 #include "ShuffleTonesEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects { // Scales notes in a song to unusually small size TODO actually implement
 	EffectResult ShuffleTonesEffect::Test(Request request)
 	{

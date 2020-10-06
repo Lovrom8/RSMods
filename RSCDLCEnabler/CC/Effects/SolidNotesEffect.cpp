@@ -1,9 +1,6 @@
 #include "SolidNotesEffect.hpp"
 #include "nlohmann/json.hpp"
 
-using namespace CrowdControl::Enums;
-using nlohmann::json;
-
 namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture
 	EffectResult SolidNotesCustomEffect::Test(Request request)
 	{
@@ -25,7 +22,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;
@@ -80,7 +77,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesRandomEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 		
 
@@ -137,7 +134,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong())
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;

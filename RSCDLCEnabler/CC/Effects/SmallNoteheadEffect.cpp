@@ -1,7 +1,5 @@
 #include "SmallNoteheadEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects { // Scales notes in a song to unusually small size
 	EffectResult SmallNoteheadEffect::Test(Request request)
 	{
@@ -14,7 +12,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		std::cout << "SmallNoteheadEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;

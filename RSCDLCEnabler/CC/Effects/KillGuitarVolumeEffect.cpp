@@ -1,7 +1,5 @@
 #include "KillGuitarVolumeEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects {
 	EffectResult KillGuitarVolumeEffect::Test(Request request)
 	{

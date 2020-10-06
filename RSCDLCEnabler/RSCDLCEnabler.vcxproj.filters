@@ -37,6 +37,9 @@
     <Filter Include="CrowdControl\Effects">
       <UniqueIdentifier>{640d2f3f-cd69-4671-b21b-d2a19d59ba27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CrowdControl\Effects\EffectHeaders">
+      <UniqueIdentifier>{09c7c9a6-45da-49ba-a53a-9972ed0015c1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Lua">
       <UniqueIdentifier>{87b4263b-6681-42e9-ae65-b35737659853}</UniqueIdentifier>
     </Filter>
@@ -267,6 +270,12 @@
     <ClCompile Include="Mods\ExtendedRangeMode.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="CC\Effects\ZoomInEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCEffectList.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -392,48 +401,53 @@
     <ClInclude Include="CC\ControlServer.hpp">
       <Filter>CrowdControl</Filter>
     </ClInclude>
-    <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CC\Effects\FYourFCEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\DrunkModeEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\RainbowEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\DrunkModeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\FYourFCEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RainbowEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
+    <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     <ClInclude Include="Lua\lapi.h">
       <Filter>Lua</Filter>
     </ClInclude>
@@ -512,11 +526,14 @@
     <ClInclude Include="ObjectUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp">
-      <Filter>CrowdControl\Effects</Filter>
+    <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
-      <Filter>Mods</Filter>
+    <ClInclude Include="CC\Effects\ZoomInEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCEffectList.hpp">
+      <Filter>CrowdControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

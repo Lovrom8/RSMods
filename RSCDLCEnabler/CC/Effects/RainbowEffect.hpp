@@ -1,6 +1,7 @@
 #pragma once
 #include "../CCEffect.hpp"
 #include "../../Mods/ExtendedRangeMode.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class RainbowEffect : public CCEffect
@@ -14,6 +15,10 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
+
+	private:
+		std::vector<std::string> incompatibleEffects =
+			{ "solidrandom",  "solidcustom", "solidcustomrgb" };
 	};
 }
 

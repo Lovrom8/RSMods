@@ -7,56 +7,22 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
-#include "CCEffect.hpp"
 #include <nlohmann\json.hpp>
-#include "Effects/RainbowEffect.hpp"
-#include "Effects/DrunkModeEffect.hpp"
-#include "Effects/FYourFCEffect.hpp"
-#include "Effects/SolidNotesEffect.hpp"
-#include "Effects/TransparentNotesEffect.hpp"
-#include "Effects/RemoveNotesEffect.hpp"
-#include "Effects/ChangeToToneSlot.hpp"
-#include "Effects/KillGuitarVolumeEffect.hpp"
-#include "Effects/KillMusicVolumeEffect.hpp"
-#include "Effects/ShuffleTonesEffect.hpp"
-#include "Effects/BigNoteheadEffect.hpp"
-#include "Effects/SmallNoteheadEffect.hpp"
-#include "Effects/InvertedStringsEffect.hpp"
-#include "Effects/HalfSpeedEffect.hpp"
-#include "Effects/DoubleSpeedEffect.hpp"
+
+#include "CCEffectList.hpp"
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
 
 using namespace CrowdControl::Effects;
 using namespace CrowdControl::Structs;
+using namespace CrowdControl::EffectList;
 using nlohmann::json;
 
 namespace CrowdControl {
 	int sock;
 
-	std::map<std::string, CCEffect*> AllEffects{
-		{ "rainbow", new RainbowEffect(60) },
-		{ "drunk", new DrunkModeEffect(20) },
-		{ "fyourfc", new FYourFCEffect(5) },
-		{ "solidrandom", new SolidNotesRandomEffect(10) },
-		{ "solidcustom", new SolidNotesCustomEffect(10) },
-		{ "solidcustomrgb", new SolidNotesCustomRGBEffect(10) },
-		{ "removenotes", new RemoveNotesEffect(20) },
-		{ "transparentnotes", new TransparentNotesEffect(20) },
-		{ "changetoneslot1", new ChangeToToneSlot(1) },
-		{ "changetoneslot2", new ChangeToToneSlot(2) },
-		{ "changetoneslot3", new ChangeToToneSlot(3) },
-		{ "changetoneslot4", new ChangeToToneSlot(4) },
-		{ "shuffletones", new ShuffleTonesEffect(20) },
-		{ "killguitarvolume", new KillGuitarVolumeEffect(10) },
-		{ "killmusicvolume", new KillMusicVolumeEffect(10) },
-		{ "bignoteheads", new BigNoteheadEffect(10) },
-		{ "smallnoteheads", new SmallNoteheadEffect(10) },
-		{ "invertedstrings", new InvertedStringsEffect(20) },
-		{ "halfsongspeed", new HalfSpeedEffect(30) },
-		{ "doublesongspeed", new DoubleSpeedEffect(30) }
-	};
+
 
 	Response RunCommand(Request request) {
 		Response resp{

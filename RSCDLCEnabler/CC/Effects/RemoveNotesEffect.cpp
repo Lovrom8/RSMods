@@ -1,7 +1,5 @@
 #include "RemoveNotesEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects { // Prevents the game from drawing note head meshes
 	EffectResult RemoveNotesEffect::Test(Request request)
 	{
@@ -14,7 +12,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		std::cout << "RemoveNotesEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;

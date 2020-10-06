@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CC\CCEffectList.cpp" />
     <ClCompile Include="CC\Effects\BigNoteheadEffect.cpp" />
     <ClCompile Include="CC\CCStructs.cpp" />
     <ClCompile Include="CC\ControlServer.cpp" />
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
     <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
+    <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D\D3DHooks.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
@@ -29,11 +31,13 @@
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
     <ClCompile Include="WWiseHijack.cpp" />
+    <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
     <ClInclude Include="CC\ControlServer.hpp" />
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
+    <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />
     <ClCompile Include="Lua\lapi.c" />

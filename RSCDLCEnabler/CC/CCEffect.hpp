@@ -1,16 +1,18 @@
 #pragma once
 
-#include "ControlServer.hpp"
 #include "stdio.h"
 #include <chrono>
 #include <iostream>
 #include <chrono>
+#include "CCEnums.hpp"
+#include "CCStructs.hpp"
 #include "../Settings.hpp"
 #include "../ObjectUtil.hpp"
 #include "../Offsets.hpp"
 #include "../MemHelpers.hpp"
 
-using CrowdControl::Enums::EffectResult;
+using namespace CrowdControl::Enums;
+using namespace CrowdControl::Structs;
 
 namespace CrowdControl::Effects {
 	class CCEffect

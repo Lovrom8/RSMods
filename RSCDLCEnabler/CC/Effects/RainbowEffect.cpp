@@ -1,7 +1,5 @@
 #include "RainbowEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects {
 	EffectResult RainbowEffect::Test(Request request)
 	{
@@ -14,7 +12,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "RainbowEffect::Start()" << std::endl;
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
+		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;

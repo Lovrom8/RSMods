@@ -1,6 +1,7 @@
 #pragma once
 #include "../CCEffect.hpp"
 #include "../../Mods/ExtendedRangeMode.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class SolidNotesRandomEffect : public CCEffect
@@ -14,6 +15,10 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
+
+	private:
+		std::vector<std::string> incompatibleEffects =
+			{ "removenotes", "transparentnotes", "solidcustom", "solidcustomrgb" };
 	};
 
 	class SolidNotesCustomEffect : public CCEffect
@@ -27,6 +32,10 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
+
+	private:
+		std::vector<std::string> incompatibleEffects =
+			{ "removenotes", "transparentnotes", "solidrandom", "solidcustomrgb" };
 	};
 
 	class SolidNotesCustomRGBEffect : public CCEffect
@@ -40,5 +49,9 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
+
+	private:
+		std::vector<std::string> incompatibleEffects =
+			{ "removenotes", "transparentnotes", "solidcustom", "solidrandom" };
 	};
 }

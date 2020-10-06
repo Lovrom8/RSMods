@@ -49,7 +49,9 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Inverted strings (20 seconds)", "invertedstrings"),
 
         new Effect("Half song speed (30 seconds)", "halfsongspeed"),
-        new Effect("Double song speed (30 seconds)", "doublesongspeed")
+        new Effect("Double song speed (30 seconds)", "doublesongspeed"),
+
+        new Effect("Zoom camera in (20 seconds)", "zoomin")
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]

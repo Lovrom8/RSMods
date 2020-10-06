@@ -1,7 +1,5 @@
 #include "BigNoteheadEffect.hpp"
 
-using namespace CrowdControl::Enums;
-
 namespace CrowdControl::Effects { // Scales notes in a song to unusually big size
 	EffectResult BigNoteheadEffect::Test(Request request)
 	{
@@ -14,7 +12,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	{
 		std::cout << "BigNoteheadEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		running = true;

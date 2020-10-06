@@ -1,5 +1,6 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class RemoveNotesEffect : public CCEffect
@@ -16,5 +17,8 @@ namespace CrowdControl::Effects {
 
 	private:
 		void ScaleNotes(float scale);
+
+		std::vector<std::string> incompatibleEffects =
+			{ "transparentnotes" };
 	};
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class SmallNoteheadEffect : public CCEffect
@@ -16,5 +17,8 @@ namespace CrowdControl::Effects {
 
 	private:
 		void SetNoteHeadScale(float scale);
+
+		std::vector<std::string> incompatibleEffects =
+			{ "bignoteheads" };
 	};
 }

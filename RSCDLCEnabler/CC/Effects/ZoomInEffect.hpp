@@ -1,12 +1,11 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
-	class HalfSpeedEffect : public CCEffect
+	class ZoomInEffect : public CCEffect
 	{
 	public:
-		HalfSpeedEffect(unsigned int durationSeconds) {
+		ZoomInEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -14,11 +13,5 @@ namespace CrowdControl::Effects {
 		EffectResult Start(Request request);
 		void Run();
 		EffectResult Stop();
-
-	private:
-		std::vector<std::string> incompatibleEffects =
-			{ "doublesongspeed" };
 	};
 }
-
-#pragma once
