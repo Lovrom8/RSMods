@@ -1,5 +1,6 @@
 #include "SolidNotesEffect.hpp"
 #include "nlohmann/json.hpp"
+#include <sstream>
 
 namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture
 	EffectResult SolidNotesCustomEffect::Test(Request request)
@@ -10,12 +11,12 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	}
 
 	std::map<std::string, std::string> CustomColorMap = {
-		{"red", "#FF0000"},
-		{"yellow", "#000000"},
-		{"blue", "#000000"},
-		{"orange", "#000000"},
-		{"green", "#000000"},
-		{"red", "#000000"}
+		{"red", "FF0000"},
+		{"yellow", "FFFF00"},
+		{"blue", "0000FF"},
+		{"orange", "FFA500"},
+		{"green", "00FF00"},
+		{"purple", "800080"}
 	};
 
 	EffectResult SolidNotesCustomEffect::Start(Request request)
@@ -31,8 +32,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		auto color = request.parameters.at(0).get<std::string>();
 		auto hexColor = CustomColorMap[color];
 
-		//TODO: finish this - currMsg should contain a color in hex set by an user 
-		//Settings::ParseSolidColorsMessage(currMsg);
+		Settings::UpdateModSetting("SolidNoteColor", hexColor);
 		D3DHooks::regenerateUserDefinedTexture = true;
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
@@ -79,7 +79,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
-		
+
 
 		std::cout << "SolidNotesRandomEffect - Colors Saved" << std::endl;
 
@@ -147,8 +147,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		std::cout << "Color: " << (int)r << "," << (int)g << "," << (int)b << std::endl;
 
-		//TODO: finish this - currMsg should contain a color in hex set by an user 
-		//Settings::ParseSolidColorsMessage(currMsg);
+		std::stringstream ss; // Convert RGB to hex
+		ss << std::setw(6) << std::setfill('0') << std::hex;
+		ss << (r << 16 | g << 8 | b);
+
+		Settings::UpdateModSetting("SolidNoteColor", ss.str());
 		D3DHooks::regenerateUserDefinedTexture = true;
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
