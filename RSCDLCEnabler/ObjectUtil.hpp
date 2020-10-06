@@ -3,6 +3,7 @@
 #include <vector>
 #include "Offsets.hpp"
 #include <string>
+#include <map>
 
 namespace ObjectUtil {
 	struct Object {
@@ -73,7 +74,37 @@ namespace ObjectUtil {
 		unsigned short childCount;	// 0xDE
 	};
 
+	/// <summary>
+	/// Get the scene root object
+	/// </summary>
+	/// <returns></returns>
 	extern Object* GetRootObject();
+	/// <summary>
+	/// Get all children of an object
+	/// </summary>
+	/// <param name="parent"></param>
+	/// <returns></returns>
 	extern std::vector<Object*> GetChildrenOfObject(Object* parent);
-	extern std::vector<std::string> NoteHeadParts;
+
+	/// <summary>
+	/// Update object scales, call this periodically to keep object scales persistent
+	/// </summary>
+	extern void UpdateScales();
+
+	/// <summary>
+	/// Set object scales by class name
+	/// </summary>
+	/// <param name="scales"></param>
+	extern void SetObjectScales(std::map<std::string, float> scales);
+
+	/// <summary>
+	/// Map of classname, scale, applied every UpdateScales() call
+	/// </summary>
+	extern std::map<std::string, float> ObjectScaleMap;
+
+	/// <summary>
+	/// A list of all class names used in the notes display
+	/// Missing the white trail lines of sustain chords, that are present in the list, under unknown name
+	/// </summary>
+	extern std::vector<std::string> AllNoteParts;
 }

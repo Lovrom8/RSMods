@@ -20,25 +20,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		running = true;
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
+		SetNoteHeadScale(0.5);
+
 		return EffectResult::Success;
-	}
-
-	void MakeNotesSmall(float scale) { //TODO: move ScaleObjects to ObjectUtil
-		std::cout << "SmallNoteheadEffect::MakeNotesSmall()" << std::endl;
-
-		ObjectUtil::Object* rootObject = ObjectUtil::GetRootObject();
-		std::vector<ObjectUtil::Object*> children = ObjectUtil::GetChildrenOfObject(rootObject);
-
-		std::cout << children.size() << "/" << rootObject->childCount << std::endl;
-
-		for (auto child : children)
-		{
-			std::string className = child->className;
-			if (!MemHelpers::IsInStringArray(className, 0, ObjectUtil::NoteHeadParts))
-				continue;
-
-			child->scale = scale;
-		}
 	}
 
 	void SmallNoteheadEffect::Run()
@@ -47,18 +31,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		if (running) {
 			
 			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (nextTickTime - now);
-
-			if (duration.count() <= 0) {
-				nextTickTime = now + std::chrono::milliseconds(tickIntervalMilliseconds);
-
-				//TODO: if other note scaling effects are running, dont do anything
-				if (true) {
-					MakeNotesSmall(running ? 0.5 : 1); //TODO: when it's made compatible with other note scaling effects, put the scaling part outside if (running)
-				}
-			}
-
-			duration = (endTime - now);
+			std::chrono::duration<double> duration = (endTime - now);
 
 			if (duration.count() <= 0) Stop();
 		}
@@ -69,8 +42,17 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		std::cout << "SmallNoteheadEffect::Stop()" << std::endl;
 
 		running = false;
-		MakeNotesSmall(1);
+		SetNoteHeadScale(1);
 
 		return EffectResult::Success;
+	}
+
+	void SmallNoteheadEffect::SetNoteHeadScale(float scale) {
+		std::cout << "SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl;
+
+		ObjectUtil::SetObjectScales({
+			{"MeshNoteSingleLH", scale},
+			{"MeshNoteSingleRH", scale}
+			});
 	}
 }

@@ -36,26 +36,26 @@ namespace CrowdControl {
 	int sock;
 
 	std::map<std::string, CCEffect*> AllEffects{
-		{ "rainbow60", new RainbowEffect(60) },
-		{ "drunk20", new DrunkModeEffect(20) },
-		{ "fyourfc5", new FYourFCEffect(5) },
-		{ "solidrandom10", new SolidNotesRandomEffect(10) },
-		{ "solidcustom10", new SolidNotesCustomEffect(10) },
-		{ "solidcustomrgb10", new SolidNotesCustomRGBEffect(10) },
-		{ "removenotes20", new RemoveNotesEffect(20) },
-		{ "transparentnotes20", new TransparentNotesEffect(20) },
+		{ "rainbow", new RainbowEffect(60) },
+		{ "drunk", new DrunkModeEffect(20) },
+		{ "fyourfc", new FYourFCEffect(5) },
+		{ "solidrandom", new SolidNotesRandomEffect(10) },
+		{ "solidcustom", new SolidNotesCustomEffect(10) },
+		{ "solidcustomrgb", new SolidNotesCustomRGBEffect(10) },
+		{ "removenotes", new RemoveNotesEffect(20) },
+		{ "transparentnotes", new TransparentNotesEffect(20) },
 		{ "changetoneslot1", new ChangeToToneSlot(1) },
 		{ "changetoneslot2", new ChangeToToneSlot(2) },
 		{ "changetoneslot3", new ChangeToToneSlot(3) },
 		{ "changetoneslot4", new ChangeToToneSlot(4) },
-		{ "shuffletones20", new ShuffleTonesEffect(20) },
-		{ "killguitarvolume10", new KillGuitarVolumeEffect(10) },
-		{ "killmusicvolume10", new KillMusicVolumeEffect(10) },
-		{ "bignoteheads10", new BigNoteheadEffect(10) },
-		{ "smallnoteheads10", new SmallNoteheadEffect(10) },
-		{ "invertedstrings20", new InvertedStringsEffect(20) },
-		{ "halfsongspeed30", new HalfSpeedEffect(30) },
-		{ "doublesongspeed30", new DoubleSpeedEffect(30) }
+		{ "shuffletones", new ShuffleTonesEffect(20) },
+		{ "killguitarvolume", new KillGuitarVolumeEffect(10) },
+		{ "killmusicvolume", new KillMusicVolumeEffect(10) },
+		{ "bignoteheads", new BigNoteheadEffect(10) },
+		{ "smallnoteheads", new SmallNoteheadEffect(10) },
+		{ "invertedstrings", new InvertedStringsEffect(20) },
+		{ "halfsongspeed", new HalfSpeedEffect(30) },
+		{ "doublesongspeed", new DoubleSpeedEffect(30) }
 	};
 
 	Response RunCommand(Request request) {
@@ -215,10 +215,25 @@ namespace CrowdControl {
 		return 0;
 	}
 
+	unsigned WINAPI ObjectUtilUpdateThread(void*) {
+		while (!D3DHooks::GameLoaded) // We are in no hurry :)
+			Sleep(5000);
+
+		while (!D3DHooks::GameClosing) {
+			ObjectUtil::UpdateScales();
+
+			Sleep(1000);
+		}
+
+		return 0;
+	}
+
 	void StartServer() {
 		// Main TCP socket thread
 		_beginthreadex(NULL, 0, &CrowdControlThread, NULL, 0, 0);
 		// Effect updating thread
 		_beginthreadex(NULL, 0, &EffectRunThread, NULL, 0, 0);
+		// Object util scale updater thread
+		_beginthreadex(NULL, 0, &ObjectUtilUpdateThread, NULL, 0, 0);
 	}
 }

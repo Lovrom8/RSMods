@@ -17,8 +17,10 @@ namespace CrowdControl::Effects {
 		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
-		//*(double*)Offsets::ptr_scrollSpeedMultiplier = 5.0f;
-		*(float*)Offsets::ptr_scrollSpeedMultiplier = 5.0f;
+		DWORD oldProtect;
+		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, PAGE_READWRITE, &oldProtect);
+		Offsets::ref_scrollSpeedMultiplier = 10.0;
+		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, oldProtect, &oldProtect);
 
 		running = true;
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -41,8 +43,12 @@ namespace CrowdControl::Effects {
 	{ 
 		std::cout << "DoubleSpeedEffect::Stop()" << std::endl;
 
-		//*(double*)Offsets::ptr_scrollSpeedMultiplier = 5.0;
-		*(float*)Offsets::ptr_scrollSpeedMultiplier = 2.315;
+		DWORD oldProtect;
+		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, PAGE_READWRITE, &oldProtect);
+		Offsets::ref_scrollSpeedMultiplier = 5.0;
+		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, oldProtect, &oldProtect);
+
+		running = false;
 
 		return EffectResult::Success; 
 	}

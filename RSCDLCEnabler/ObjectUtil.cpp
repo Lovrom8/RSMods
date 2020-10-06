@@ -22,7 +22,32 @@ namespace ObjectUtil {
 		return children;
 	}
 
-	std::vector<std::string> NoteHeadParts = { "ActorChordLetter", "MeshBracketLarge", "MeshNoteBendArrow", "MeshNoteBendPanel", "MeshNoteIconFretHandMute", "MeshNoteIconHammerOn", "MeshNoteIconHarmonic", "MeshNoteIconPalmMute",
+	void UpdateScales() {
+		ObjectUtil::Object* rootObject = ObjectUtil::GetRootObject();
+		std::vector<ObjectUtil::Object*> children = ObjectUtil::GetChildrenOfObject(rootObject);
+
+		for (auto child : children)
+		{
+			std::string className = child->className;
+
+			//If object class name is in object scale map
+			if (ObjectScaleMap.find(className) == ObjectScaleMap.end()) continue;
+
+			child->scale = ObjectScaleMap[className];
+		}
+	}
+
+	void SetObjectScales(std::map<std::string, float> scales)
+	{
+		//Apply scales to map
+		for (auto pair : scales) {
+			ObjectScaleMap[pair.first] = pair.second;
+		}
+	}
+
+	std::map<std::string, float> ObjectScaleMap{};
+
+	std::vector<std::string> AllNoteParts = { "ActorChordLetter", "MeshBracketLarge", "MeshNoteBendArrow", "MeshNoteBendPanel", "MeshNoteIconFretHandMute", "MeshNoteIconHammerOn", "MeshNoteIconHarmonic", "MeshNoteIconPalmMute",
 		"MeshNoteIconPinchHarmonic", "MeshNoteIconPop", "MeshNoteIconPullOff", "MeshNoteIconSlap", "MeshNoteIconTap", "MeshNoteOpenAccent", "MeshNoteOpenArpeggio", "MeshNoteOpenLH", "MeshNoteOpenRH", "MeshNoteSingleAccent",
 		"MeshNoteSingleArpeggio", "MeshNoteSingleLH", "MeshNoteSingleRH", "MeshStemBracket", "MeshStemDoubleStop", "MeshStemNote", "MeshStemNoteOpen", "MeshStrumBracketLarge", "MeshStrumBracketSmall", "MeshStrumLarge", "MeshStrumLargeAccent",
 		"MeshStrumLargeArpeggio", "MeshStrumLargeDoubleStop", "MeshStrumLargeFretMute", "MeshStrumLargePalmMute", "MeshStrumSmall", "MeshStrumSmallAccent", "MeshStrumSmallDoubleStop", "MeshStrumSmallDoubleStopFretMute",

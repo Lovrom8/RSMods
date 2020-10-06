@@ -116,6 +116,8 @@ namespace Offsets {
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
 	extern uintptr_t ptr_scrollSpeedMultiplier;
 
+	extern volatile double& ref_scrollSpeedMultiplier;
+
 	// Objects
 	extern uintptr_t ptr_rootObject;
 	extern std::vector<unsigned int> ptr_rootObjectOffsets;
