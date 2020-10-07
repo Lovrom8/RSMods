@@ -30,7 +30,7 @@
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
-    <ClCompile Include="WWiseHijack.cpp" />
+    <ClCompile Include="WwiseHijack.cpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
