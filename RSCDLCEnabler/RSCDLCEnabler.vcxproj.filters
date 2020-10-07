@@ -144,7 +144,7 @@
     <ClCompile Include="CC\Effects\KillMusicVolumeEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="WWiseHijack.cpp">
+    <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ObjectUtil.cpp">
