@@ -65,7 +65,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "InvertedStringsEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
 
 		SaveInitialStringPos();

@@ -276,6 +276,9 @@
     <ClCompile Include="CC\CCEffectList.cpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
+    <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -534,6 +537,9 @@
     </ClInclude>
     <ClInclude Include="CC\CCEffectList.hpp">
       <Filter>CrowdControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

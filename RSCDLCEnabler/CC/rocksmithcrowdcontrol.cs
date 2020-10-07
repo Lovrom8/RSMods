@@ -32,7 +32,9 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Purple", "purple", ItemKind.Usable, "color"),
 
         new Effect("Transparent notes (20 seconds)", "transparentnotes"),
+
         new Effect("Remove notes (20 seconds)", "removenotes"),
+        new Effect("Remove instrument (20 seconds)", "removeinstrument"),
 
         new Effect("Change tone", "changetone", ItemKind.Folder),
         new Effect("Change tone to slot 1", "changetoneslot1", "changetone"),
@@ -51,7 +53,7 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Half song speed (30 seconds)", "halfsongspeed"),
         new Effect("Double song speed (30 seconds)", "doublesongspeed"),
 
-        new Effect("Zoom camera in (20 seconds)", "zoomin")
+        new Effect("Zoom camera in (20 seconds)", "zoomin"),
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]

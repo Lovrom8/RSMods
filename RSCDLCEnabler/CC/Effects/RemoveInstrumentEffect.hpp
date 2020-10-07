@@ -1,13 +1,12 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../D3D/D3D.hpp"
 #include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
-	class InvertedStringsEffect : public CCEffect
+	class RemoveInstrumentEffect : public CCEffect
 	{
 	public:
-		InvertedStringsEffect(unsigned int durationSeconds) {
+		RemoveInstrumentEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -17,7 +16,9 @@ namespace CrowdControl::Effects {
 		EffectResult Stop();
 
 	private:
+		void SetInstrumentScale(float scale);
+
 		std::vector<std::string> incompatibleEffects =
-			{ "removeinstrument" };
+			{ "invertedstrings" };
 	};
 }

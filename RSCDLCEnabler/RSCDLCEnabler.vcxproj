@@ -17,6 +17,7 @@
     <ClCompile Include="CC\ControlServer.cpp" />
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
     <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
+    <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="D3D\D3DHooks.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="CC\ControlServer.hpp" />
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
+    <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
     <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />

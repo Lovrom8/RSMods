@@ -15,6 +15,7 @@
 #include "Effects/HalfSpeedEffect.hpp"
 #include "Effects/DoubleSpeedEffect.hpp"
 #include "Effects/ZoomInEffect.hpp"
+#include "Effects/RemoveInstrumentEffect.hpp"
 
 using namespace CrowdControl::Effects;
 using namespace CrowdControl::Structs;
@@ -42,7 +43,8 @@ namespace CrowdControl::EffectList {
 		{ "invertedstrings", new InvertedStringsEffect(20) },
 		{ "halfsongspeed", new HalfSpeedEffect(30) },
 		{ "doublesongspeed", new DoubleSpeedEffect(30) },
-		{ "zoomin", new ZoomInEffect(20) }
+		{ "zoomin", new ZoomInEffect(20) },
+		{ "removeinstrument", new RemoveInstrumentEffect(20) }
 	};
 
 	bool IsEffectEnabled(std::string effectName) {
