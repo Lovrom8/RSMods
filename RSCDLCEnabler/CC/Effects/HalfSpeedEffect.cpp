@@ -7,6 +7,9 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "HalfSpeedEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -14,7 +17,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "HalfSpeedEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		DWORD oldProtect;

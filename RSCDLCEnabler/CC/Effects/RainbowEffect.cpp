@@ -5,6 +5,9 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "RainbowEffect::Test()" << std::endl;
 
+		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 

@@ -7,6 +7,9 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		std::cout << "TransparentNotesEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -14,7 +17,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		std::cout << "TransparentNotesEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;

@@ -7,6 +7,9 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "ZoomInEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -14,7 +17,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "ZoomInEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
 		auto rootObject = ObjectUtil::GetRootObject(); 

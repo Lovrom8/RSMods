@@ -5,6 +5,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		std::cout << "SmallNoteheadEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -12,7 +15,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		std::cout << "SmallNoteheadEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;

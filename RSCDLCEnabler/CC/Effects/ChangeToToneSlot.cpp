@@ -7,6 +7,9 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "ChangeToToneSlot::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong())
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 

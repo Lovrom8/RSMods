@@ -5,6 +5,9 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		std::cout << "FYourFC::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -12,7 +15,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		std::cout << "FYourFC::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
 		running = true;

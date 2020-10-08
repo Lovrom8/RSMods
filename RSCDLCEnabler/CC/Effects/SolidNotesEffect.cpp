@@ -7,6 +7,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomEffect::Test()" << std::endl;
 
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -23,7 +26,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;
@@ -70,6 +73,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesRandomEffect::Test()" << std::endl;
 
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -77,7 +83,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesRandomEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 
@@ -127,6 +133,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Test()" << std::endl;
 
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -134,7 +143,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Start()" << std::endl;
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;

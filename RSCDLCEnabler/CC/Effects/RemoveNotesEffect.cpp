@@ -5,6 +5,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		std::cout << "RemoveNotesEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -12,7 +15,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		std::cout << "RemoveNotesEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;

@@ -7,6 +7,9 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		std::cout << "DrunkModeEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -14,7 +17,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		std::cout << "DrunkModeEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
 		running = true;

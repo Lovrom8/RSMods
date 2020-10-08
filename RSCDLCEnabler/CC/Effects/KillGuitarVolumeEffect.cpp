@@ -5,6 +5,9 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "KillGuitarVolumeEffect::Test()" << std::endl;
 
+		if (!MemHelpers::IsInSong() || running)
+			return EffectResult::Retry;
+
 		return EffectResult::Success;
 	}
 
@@ -12,7 +15,7 @@ namespace CrowdControl::Effects {
 	{
 		std::cout << "KillGuitarVolumeEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong())
+		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
 		running = true;
