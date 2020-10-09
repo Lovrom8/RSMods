@@ -37,6 +37,7 @@ void Settings::Initialize()
 		{"GuitarSpeak", "off"},
 		{"GuitarSpeakWhileTuning", "off"},
 		{"RemoveHeadstockWhen", "song"},
+		{"ScreenShotScores", "off"}
 	};
 
 	customSettings = {
@@ -161,6 +162,7 @@ void Settings::ReadModSettings() {
 	modSettings["GuitarSpeak"] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
 	modSettings["GuitarSpeakWhileTuning"] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 	modSettings["RemoveHeadstockWhen"] = reader.GetValue("Toggle Switches", "RemoveHeadstockWhen", "song");
+	modSettings["ScreenShotScores"] = reader.GetValue("Toggle Switches", "ScreenShotScores", "off");
 }
 
 void Settings::ReadStringColors() {

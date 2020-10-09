@@ -74,7 +74,14 @@ inline std::vector<std::string> lessonModes = { // These are the Guided Experien
 	"GuidedExperience_Pause"
 };
 
-inline std::vector<std::string> dontAutoEnter = {
+inline std::vector<std::string> scoreScreens = { // Screens for us to take score screenshots in
+	"LearnASong_SongReview",
+	"ScoreAttack_SongReview",
+	"Duet_SongReview",
+	"H2H_SongReview",
+};
+
+inline std::vector<std::string> dontAutoEnter = { // Don't use the auto load last profile mode if we are on these screens.
 	// First time Player
 	"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
 	"PlayedRS1Select", // Did you play the original Rocksmith?

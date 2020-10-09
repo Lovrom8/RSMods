@@ -456,6 +456,17 @@ void AutoEnterGame() {	//very big brain || "Fork in the toaster"
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
+void TakeScreenshot() { // Simple Screenshot function (requires F12 to be the screenshot key | F12 is default for Steam Screenshots)
+	if (!takenScreenshotOfThisScreen) {
+		takenScreenshotOfThisScreen = true;
+		Sleep(8000); // The menu title changes while the animation is running so we are giving it so time to show the actual results. (8 seconds)
+		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_F12, 0);
+		std::cout << "Took screenshot" << std::endl;
+		Sleep(30);
+		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_F12, 0);
+	}
+}
+
 void UpdateSettings() { // Live updates from the INI
 	Settings::UpdateSettings();
 	Sleep(500);
@@ -579,6 +590,11 @@ unsigned WINAPI MainThread(void*) {
 					resetHeadstockCache = true;
 			}
 
+			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
+				TakeScreenshot();
+			else
+				takenScreenshotOfThisScreen = false;
+
 			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
@@ -594,7 +610,7 @@ unsigned WINAPI MainThread(void*) {
 				ERMode::Toggle7StringMode();
 		}
 		else { // Game Hasn't Loaded Yet
-			DisableControllers::DisableControllers();
+			//DisableControllers::DisableControllers();
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
 			if (currentMenu == "MainMenu") // Yay We Loaded :P
