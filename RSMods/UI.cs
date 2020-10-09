@@ -210,6 +210,9 @@ namespace RSMods
                     radio_LyricsOffHotkey.Checked = true;
             }
 
+            if (ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) == "on")
+                checkBox_ScreenShotScores.Checked = true;
+
             if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) == "on")
             {
                 checkBox_GuitarSpeak.Checked = true;
@@ -1493,6 +1496,8 @@ namespace RSMods
         }
 
         private void checkBox_TwitchForceReauth_CheckedChanged(object sender, EventArgs e) => TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
+
+        private void checkBox_ScreenShotScores_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ScreenShotScoresIdentifier, checkBox_ScreenShotScores.Checked.ToString().ToLower());
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {

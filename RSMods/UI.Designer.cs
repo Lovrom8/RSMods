@@ -169,6 +169,12 @@
             this.button_RemoveReward = new System.Windows.Forms.Button();
             this.button_AddSelectedReward = new System.Windows.Forms.Button();
             this.dgv_EnabledRewards = new System.Windows.Forms.DataGridView();
+            this.colEnabledRewardsEnabled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colEnabledRewardsName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEnabledRewardsLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEnabledRewardsAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEnabledRewardsType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEnabledRewardsID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label_TwitchLog = new System.Windows.Forms.Label();
             this.textBox_TwitchLog = new System.Windows.Forms.TextBox();
             this.label_IsListeningToEvents = new System.Windows.Forms.Label();
@@ -194,12 +200,7 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
-            this.colEnabledRewardsEnabled = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colEnabledRewardsName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colEnabledRewardsLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colEnabledRewardsAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colEnabledRewardsType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colEnabledRewardsID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -666,6 +667,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_ScreenShotScores);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ControlVolume);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_GuitarSpeak);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveLyrics);
@@ -686,7 +688,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(15, 14);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(284, 207);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(284, 225);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -2054,6 +2056,55 @@
             this.dgv_EnabledRewards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_EnabledRewards_CellEndEdit);
             this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.dgv_EnabledRewards_SelectionChanged);
             // 
+            // colEnabledRewardsEnabled
+            // 
+            this.colEnabledRewardsEnabled.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsEnabled.FillWeight = 15F;
+            this.colEnabledRewardsEnabled.HeaderText = "Enabled";
+            this.colEnabledRewardsEnabled.Name = "colEnabledRewardsEnabled";
+            this.colEnabledRewardsEnabled.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colEnabledRewardsEnabled.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // colEnabledRewardsName
+            // 
+            this.colEnabledRewardsName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsName.FillWeight = 27F;
+            this.colEnabledRewardsName.HeaderText = "Name";
+            this.colEnabledRewardsName.Name = "colEnabledRewardsName";
+            this.colEnabledRewardsName.ReadOnly = true;
+            // 
+            // colEnabledRewardsLength
+            // 
+            this.colEnabledRewardsLength.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsLength.FillWeight = 20F;
+            this.colEnabledRewardsLength.HeaderText = "Length (s)";
+            this.colEnabledRewardsLength.Name = "colEnabledRewardsLength";
+            // 
+            // colEnabledRewardsAmount
+            // 
+            this.colEnabledRewardsAmount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsAmount.FillWeight = 13F;
+            this.colEnabledRewardsAmount.HeaderText = "Amount";
+            this.colEnabledRewardsAmount.Name = "colEnabledRewardsAmount";
+            // 
+            // colEnabledRewardsType
+            // 
+            this.colEnabledRewardsType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsType.FillWeight = 25F;
+            this.colEnabledRewardsType.HeaderText = "Reward Type";
+            this.colEnabledRewardsType.Name = "colEnabledRewardsType";
+            this.colEnabledRewardsType.ReadOnly = true;
+            this.colEnabledRewardsType.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // colEnabledRewardsID
+            // 
+            this.colEnabledRewardsID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colEnabledRewardsID.FillWeight = 1F;
+            this.colEnabledRewardsID.HeaderText = "ID";
+            this.colEnabledRewardsID.Name = "colEnabledRewardsID";
+            this.colEnabledRewardsID.ReadOnly = true;
+            this.colEnabledRewardsID.Visible = false;
+            // 
             // label_TwitchLog
             // 
             this.label_TwitchLog.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -2300,54 +2351,16 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
-            // colEnabledRewardsEnabled
+            // checkBox_ScreenShotScores
             // 
-            this.colEnabledRewardsEnabled.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsEnabled.FillWeight = 15F;
-            this.colEnabledRewardsEnabled.HeaderText = "Enabled";
-            this.colEnabledRewardsEnabled.Name = "colEnabledRewardsEnabled";
-            this.colEnabledRewardsEnabled.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colEnabledRewardsEnabled.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // colEnabledRewardsName
-            // 
-            this.colEnabledRewardsName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsName.FillWeight = 27F;
-            this.colEnabledRewardsName.HeaderText = "Name";
-            this.colEnabledRewardsName.Name = "colEnabledRewardsName";
-            this.colEnabledRewardsName.ReadOnly = true;
-            // 
-            // colEnabledRewardsLength
-            // 
-            this.colEnabledRewardsLength.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsLength.FillWeight = 20F;
-            this.colEnabledRewardsLength.HeaderText = "Length (s)";
-            this.colEnabledRewardsLength.Name = "colEnabledRewardsLength";
-            // 
-            // colEnabledRewardsAmount
-            // 
-            this.colEnabledRewardsAmount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsAmount.FillWeight = 13F;
-            this.colEnabledRewardsAmount.HeaderText = "Amount";
-            this.colEnabledRewardsAmount.Name = "colEnabledRewardsAmount";
-            // 
-            // colEnabledRewardsType
-            // 
-            this.colEnabledRewardsType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsType.FillWeight = 25F;
-            this.colEnabledRewardsType.HeaderText = "Reward Type";
-            this.colEnabledRewardsType.Name = "colEnabledRewardsType";
-            this.colEnabledRewardsType.ReadOnly = true;
-            this.colEnabledRewardsType.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
-            // colEnabledRewardsID
-            // 
-            this.colEnabledRewardsID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colEnabledRewardsID.FillWeight = 1F;
-            this.colEnabledRewardsID.HeaderText = "ID";
-            this.colEnabledRewardsID.Name = "colEnabledRewardsID";
-            this.colEnabledRewardsID.ReadOnly = true;
-            this.colEnabledRewardsID.Visible = false;
+            this.checkBox_ScreenShotScores.AutoSize = true;
+            this.checkBox_ScreenShotScores.Location = new System.Drawing.Point(11, 197);
+            this.checkBox_ScreenShotScores.Name = "checkBox_ScreenShotScores";
+            this.checkBox_ScreenShotScores.Size = new System.Drawing.Size(116, 17);
+            this.checkBox_ScreenShotScores.TabIndex = 48;
+            this.checkBox_ScreenShotScores.Text = "Screenshot Scores";
+            this.checkBox_ScreenShotScores.UseVisualStyleBackColor = true;
+            this.checkBox_ScreenShotScores.CheckedChanged += new System.EventHandler(this.checkBox_ScreenShotScores_CheckedChanged);
             // 
             // MainForm
             // 
@@ -2587,6 +2600,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsAmount;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsType;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsID;
+        private System.Windows.Forms.CheckBox checkBox_ScreenShotScores;
     }
 }
 

@@ -9,7 +9,7 @@ namespace RSMods
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
-                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen,
+                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
@@ -56,6 +56,7 @@ namespace RSMods
                 RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
                 GuitarSpeakIdentifier = "GuitarSpeak = ",
                 RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
+                ScreenShotScoresIdentifier = "ScreenShotScores = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -441,6 +442,17 @@ namespace RSMods
 
                         if (identifierToGrab == RemoveHeadstockWhenIdentifier)
                             return RemoveHeadstockWhen;
+                    }
+
+                    if (currentLine.Contains(ScreenShotScoresIdentifier))
+                    {
+                        if (currentLine.Substring(ScreenShotScoresIdentifier.Length, (currentLine.Length - ScreenShotScoresIdentifier.Length)) == "on")
+                            ScreenShotScores = "on";
+                        else
+                            ScreenShotScores = "off";
+
+                        if (identifierToGrab == ScreenShotScoresIdentifier)
+                            return ScreenShotScores;
                     }
 
                     // String Colors (Normal {N} & Colorblind {CB})

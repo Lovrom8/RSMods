@@ -61,7 +61,8 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsIdentifier, "off" }, // Remove Song Lyrics Enabled / Disabled
                 { ReadSettings.RemoveLyricsWhenIdentifier, "manual" }, // When should we remove lyrics Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
-                { ReadSettings.RemoveHeadstockWhenIdentifier, "song" } // Remove Headstock When Startup / Song
+                { ReadSettings.RemoveHeadstockWhenIdentifier, "song" }, // Remove Headstock When Startup / Song
+                { ReadSettings.ScreenShotScoresIdentifier, "off" } // Screenshot Scores When You Finish A Song
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -157,6 +158,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) }, // Remove Headstock When Startup / Song
+                { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
