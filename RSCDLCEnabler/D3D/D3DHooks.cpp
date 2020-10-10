@@ -7,7 +7,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
-		pDevice->SetTexture(1, ourTexture); //For random textures, use randomTextures[currentRandTexture]
+		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
 	if (Settings::IsTwitchSettingEnabled("SolidNotes") && Stride == 12) {
@@ -16,6 +16,9 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		else
 			pDevice->SetTexture(1, twitchUserDefinedTexture);
 	}
+
+	if (ERMode::customNoteColorH > 0 && Stride == 12) // Rainbow Notes
+		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
@@ -203,15 +206,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	if (ERMode::customNoteColorH > 0) { // Rainbow Notes
-		if (IsToBeRemoved(sevenstring, current)) {
+		if (IsToBeRemoved(sevenstring, current)) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-		}
-		else if (FRETNUM_AND_MISS_INDICATOR) { // Colors for note stems (part below the note), and note accents
-			if (CRCForTexture(pCurrTexture, crc))
-				if (crc == 0x02a50002)
-					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
-		}
 
 		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
