@@ -32,7 +32,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		running = true;
 
 		//Get color from parameters
-		auto color = request.parameters.at(0).get<std::string>();
+		auto color = request.parameters.at(1).get<std::string>();
 		auto hexColor = CustomColorMap[color];
 
 		Settings::UpdateModSetting("SolidNoteColor", hexColor);
@@ -40,6 +40,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
@@ -90,6 +91,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		std::cout << "SolidNotesRandomEffect - Colors Saved" << std::endl;
 
 		running = true;
+
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
 		static std::uniform_real_distribution<> urd(0, 9);
@@ -100,6 +102,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		twitchUserDefinedTexture = randomTextures[currentRandomTexture];
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
@@ -150,9 +153,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		//Get color from parameters
 		byte r, g, b;
-		request.parameters.at(0).get_to(r);
-		request.parameters.at(1).get_to(g);
-		request.parameters.at(2).get_to(b);
+		request.parameters.at(1).get_to(r);
+		request.parameters.at(2).get_to(g);
+		request.parameters.at(3).get_to(b);
 
 		std::cout << "Color: " << (int)r << "," << (int)g << "," << (int)b << std::endl;
 
@@ -165,6 +168,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

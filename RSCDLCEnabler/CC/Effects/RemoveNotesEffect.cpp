@@ -19,9 +19,10 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 			return EffectResult::Retry;
 
 		running = true;
-		//Settings::UpdateTwitchSetting("RemoveNotes", "on");
-		ScaleNotes(0);
 
+		ScaleNotes(0);
+	
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

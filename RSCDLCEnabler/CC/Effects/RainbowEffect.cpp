@@ -19,8 +19,10 @@ namespace CrowdControl::Effects {
 			return EffectResult::Retry;
 
 		running = true;
+
 		ERMode::ToggleRainbowMode();
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

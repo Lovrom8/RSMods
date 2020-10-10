@@ -19,8 +19,10 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 			return EffectResult::Retry;
 
 		running = true;
+
 		Settings::UpdateTwitchSetting("FYourFC", "on");
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

@@ -20,12 +20,14 @@ namespace CrowdControl::Effects {
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
+		running = true;
+
 		DWORD oldProtect;
 		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, PAGE_READWRITE, &oldProtect);
 		Offsets::ref_scrollSpeedMultiplier = 10.0;
 		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, oldProtect, &oldProtect);
 
-		running = true;
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

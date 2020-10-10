@@ -20,10 +20,12 @@ namespace CrowdControl::Effects {
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
+		running = true;
+
 		auto rootObject = ObjectUtil::GetRootObject(); 
 		rootObject->scale = 2.0f; // TODO: determine correct values
 
-		running = true;
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

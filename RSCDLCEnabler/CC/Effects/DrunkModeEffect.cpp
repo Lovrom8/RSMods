@@ -21,9 +21,11 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 			return EffectResult::Retry;
 
 		running = true;
+
 		Settings::UpdateTwitchSetting("DrunkMode", "on");
 		MemHelpers::ToggleDrunkMode(true);
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

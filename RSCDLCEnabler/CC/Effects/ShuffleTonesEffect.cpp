@@ -19,6 +19,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 			return EffectResult::Retry;
 
 		running = true;
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
@@ -37,7 +38,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		// Stop automatically after duration has elapsed
 		if (running) {
-			std::cout << "ShuffleTonesEffect::Run()" << std::endl;
+			//std::cout << "ShuffleTonesEffect::Run()" << std::endl;
 
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (nextTickTime - now);

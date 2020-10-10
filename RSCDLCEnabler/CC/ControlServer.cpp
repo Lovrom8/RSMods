@@ -22,8 +22,6 @@ using nlohmann::json;
 namespace CrowdControl {
 	int sock;
 
-
-
 	Response RunCommand(Request request) {
 		Response resp{
 			request.id,

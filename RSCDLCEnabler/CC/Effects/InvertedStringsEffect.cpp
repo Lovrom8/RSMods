@@ -25,11 +25,6 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
-	//if (className.find("String") != std::string::npos || className.find("string") != std::string::npos)
-	//else
-	//if (className == "ActorGuitarStringStandard")
-	//	child->scale = 0.1f;
-
 	void SaveInitialStringPos() {
 		ObjectUtil::Object* rootObject = ObjectUtil::GetRootObject();
 		std::vector<ObjectUtil::Object*> children = ObjectUtil::GetChildrenOfObject(rootObject);
@@ -71,10 +66,12 @@ namespace CrowdControl::Effects {
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
+		running = true;
+
 		SaveInitialStringPos();
 		InvertStringPositions();
 
-		running = true;
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

@@ -1,6 +1,6 @@
 #include "RemoveInstrumentEffect.hpp"
 
-namespace CrowdControl::Effects { // Scales notes in a song to unusually small size
+namespace CrowdControl::Effects { 
 	EffectResult RemoveInstrumentEffect::Test(Request request)
 	{
 		std::cout << "RemoveInstrumentEffect::Test()" << std::endl;
@@ -16,9 +16,11 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 			return EffectResult::Retry;
 
 		running = true;
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		SetInstrumentScale(0);
+
+		request.parameters.at(0).get_to(duration);
+		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
 	}

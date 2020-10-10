@@ -16,13 +16,13 @@ public class Rocksmith2014 : SimpleTCPPack
 
     public override List<Effect> Effects => new List<Effect>
     {
-        new Effect("Rainbow strings (60 seconds)", "rainbow"),
-        new Effect("Drunk mode (20 seconds)", "drunk"),
-        new Effect("FYOurFC (5 seconds)", "fyourfc"),
-        new Effect("Solid Notes (random, 10 seconds)", "solidrandom"),
+        new Effect("Rainbow strings", "rainbow", new[] { "timer" }),
+        new Effect("Drunk mode", "drunk", new[] { "timer" }),
+        new Effect("FYOurFC", "fyourfc", new[] { "timer" }),
+        new Effect("Solid Notes (random)", "solidrandom", new[] { "timer" }),
 
-        new Effect("Solid Notes (custom, 10 seconds)", "solidcustom", new[] {"color"}),
-        new Effect("Solid Notes (custom rgb, 10 seconds)", "solidcustomrgb", new[] {"sliderred","slidergreen","sliderblue"}),
+        new Effect("Solid Notes (custom)", "solidcustom", new[] { "timer", "color" }),
+        new Effect("Solid Notes (custom rgb)", "solidcustomrgb", new[] { "timer", "sliderred", "slidergreen", "sliderblue"}),
 
         new Effect("Red", "red", ItemKind.Usable, "color"),
         new Effect("Yellow", "yellow", ItemKind.Usable, "color"),
@@ -31,29 +31,29 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Green", "green", ItemKind.Usable, "color"),
         new Effect("Purple", "purple", ItemKind.Usable, "color"),
 
-        new Effect("Transparent notes (20 seconds)", "transparentnotes"),
+        new Effect("Transparent notes", "transparentnotes", new[] { "timer" }),
 
-        new Effect("Remove notes (20 seconds)", "removenotes"),
-        new Effect("Remove instrument (20 seconds)", "removeinstrument"),
+        new Effect("Remove notes", "removenotes", new[] { "timer" }),
+        new Effect("Remove instrument", "removeinstrument", new[] { "timer" }),
 
         new Effect("Change tone", "changetone", ItemKind.Folder),
         new Effect("Change tone to slot 1", "changetoneslot1", "changetone"),
         new Effect("Change tone to slot 2", "changetoneslot2", "changetone"),
         new Effect("Change tone to slot 3", "changetoneslot3", "changetone"),
         new Effect("Change tone to slot 4", "changetoneslot4", "changetone"),
-        new Effect("Shuffle tones every 2 seconds (20 seconds)", "shuffletones"),
+        new Effect("Shuffle tones every 2 seconds", "shuffletones", new[] { "timer" }),
 
-        new Effect("Kill guitar volume (10 seconds)", "killguitarvolume"),
-        new Effect("Kill music volume (10 seconds)", "killmusicvolume"),
+        new Effect("Kill guitar volume", "killguitarvolume", new[] { "timer" }),
+        new Effect("Kill music volume", "killmusicvolume", new[] { "timer" }),
 
-        new Effect("Big note heads (10 seconds)", "bignoteheads"),
-        new Effect("Small note heads (10 seconds)", "smallnoteheads"),
-        new Effect("Inverted strings (20 seconds)", "invertedstrings"),
+        new Effect("Big note heads", "bignoteheads", new[] { "timer" }),
+        new Effect("Small note heads", "smallnoteheads", new[] { "timer" }),
+        new Effect("Inverted strings", "invertedstrings", new[] { "timer" }),
 
-        new Effect("Half song speed (30 seconds)", "halfsongspeed"),
-        new Effect("Double song speed (30 seconds)", "doublesongspeed"),
+        new Effect("Half song speed", "halfsongspeed", new[] { "timer" }),
+        new Effect("Double song speed", "doublesongspeed", new[] { "timer" }),
 
-        new Effect("Zoom camera in (20 seconds)", "zoomin"),
+        new Effect("Zoom camera in", "zoomin", new[] { "timer" }) 
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]
@@ -61,6 +61,7 @@ public class Rocksmith2014 : SimpleTCPPack
         new ItemType("Color", "color", ItemType.Subtype.ItemList),
         new ItemType("Red", "sliderred", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}"),
         new ItemType("Green", "slidergreen", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}"),
-        new ItemType("Blue", "sliderblue", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}")
+        new ItemType("Blue", "sliderblue", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}"),
+        new ItemType("Duration (sec)", "timer", ItemType.Subtype.Slider, "{\"min\":0,\"max\":60000}")
     });
 }

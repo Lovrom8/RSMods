@@ -26,6 +26,7 @@ namespace CrowdControl::Effects {
 		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, 0xffffffff, 2000, AkCurveInterpolation_Linear);
 		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, 0x00001234, 2000, AkCurveInterpolation_Linear);
 
+		request.parameters.at(0).get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

@@ -277,7 +277,7 @@
       <Filter>CrowdControl</Filter>
     </ClCompile>
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
