@@ -34,6 +34,7 @@ namespace ERMode {
 
 	inline std::vector<ColorMap> customColors;
 	inline std::vector<Color> customSolidColor;
+	inline int customNoteColorH;
 
 	inline std::vector<Color> colorsTest = {
 		{0.382f, 0.213f, 0.435f},

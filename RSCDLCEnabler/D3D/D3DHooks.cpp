@@ -202,6 +202,23 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	if (ERMode::customNoteColorH > 0) { // Rainbow Notes
+		if (IsToBeRemoved(sevenstring, current)) {
+			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+		}
+		else if (FRETNUM_AND_MISS_INDICATOR) { // Colors for note stems (part below the note), and note accents
+			if (CRCForTexture(pCurrTexture, crc))
+				if (crc == 0x02a50002)
+					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+		}
+
+		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
+			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+	}
+
+	
+
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
 			return D3D_OK;

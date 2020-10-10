@@ -194,7 +194,7 @@ void ERMode::Toggle7StringMode() {
 	if (Settings::GetModSetting("CustomStringColors") == 3) { // If you want the color testing menu to work
 		if (saveDefaults) {
 			defaultColors.clear();
-			for (int idx = 0; idx < 17;idx++) {
+			for (int idx = 0; idx < 17; idx++) {
 				InitStrings(stringsTest, (idx * 0x18 + 0x350));
 
 				std::vector<Color> defaults;
@@ -208,7 +208,7 @@ void ERMode::Toggle7StringMode() {
 		}
 
 		if (restoreDefaults) {
-			for (int idx = 0; idx < 17;idx++) {
+			for (int idx = 0; idx < 17; idx++) {
 				InitStrings(stringsTest, (idx * 0x18 + 0x350));
 
 				for (int i = 0; i < 6; i++)
@@ -248,7 +248,7 @@ void ERMode::DoRainbow() {
 	std::vector<uintptr_t> stringsEnabled;
 	std::vector<uintptr_t> stringsHigh;
 	std::vector<uintptr_t> stringsDisabled;
-	std::vector<Color> oldEnabledColors , oldHigh, oldDisabledColors;
+	std::vector<Color> oldEnabledColors, oldHigh, oldDisabledColors;
 
 	for (int i = 0; i < 6; i++) {
 		stringsEnabled.push_back(GetStringColor(i, Enabled));
@@ -268,14 +268,17 @@ void ERMode::DoRainbow() {
 	while (RainbowEnabled) {
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
-
 		for (int i = 0; i < 6; i++) {
 			oldEnabledColors.push_back(*(Color*)stringsEnabled[i]);
 			oldHigh.push_back(*(Color*)stringsHigh[i]);
 			oldDisabledColors.push_back(*(Color*)stringsDisabled[i]);
 
-			c.setH(h + (stringOffset * i));
+			int newH = h + (stringOffset * i);
+			c.setH(newH);
 
+			if (newH > 360)
+				newH -= 360;
+			customNoteColorH = (newH / 2) - 1;
 			*(Color*)stringsEnabled[i] = c;
 			*(Color*)stringsHigh[i] = c;
 			*(Color*)stringsDisabled[i] = c;
