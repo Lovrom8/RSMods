@@ -128,10 +128,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//else if (keyPressed == VK_F9) { // Controller Killswitch
 			//	DisableControllers::DisableControllers();
 			//}
-
-			else if (keyPressed == VK_F9) {
-				ERMode::ToggleRainbowMode();
-			}
 		}
 
 		if (debug) {
