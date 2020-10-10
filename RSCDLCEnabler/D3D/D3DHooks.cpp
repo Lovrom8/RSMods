@@ -154,7 +154,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	// Mods
 
-	if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
+	//if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
 		// Need Lovro's Help With This :(
 		//if (DiscoModeInitialSetting.find(pDevice) == DiscoModeInitialSetting.end()) { // We haven't saved this pDevice's initial values yet
 		//	DWORD initialAlphaValue = (DWORD)pDevice, initialSeperateValue = (DWORD)pDevice;
@@ -176,7 +176,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		//		}
 		//	}
 		//}
-	}
+	//}
 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
