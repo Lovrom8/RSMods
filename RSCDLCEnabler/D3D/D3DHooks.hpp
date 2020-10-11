@@ -67,6 +67,7 @@ namespace D3DHooks {
 	inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
 	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
 	inline bool PrideMode = false; // If true, the background will be cycle through colors.
+	inline bool RainbowNotes = false; // If true, the notes will turn rainbow along with the stems.
 
 	// Dev Functions
 	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory

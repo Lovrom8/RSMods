@@ -134,6 +134,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (startLogging) {
 				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 					allMeshes.push_back(currentThicc);
+				std::cout << Stride << ", " << PrimCount << ", " << NumVertices << std::endl;
 				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
 				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
 				//Log("%s", currentMenu.c_str()); // Log Current Menu
@@ -158,7 +159,25 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Mods
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
+		RainbowNotes = true;
+		if (NOTE_STEMS) {
+			pDevice->GetTexture(1, &pBaseRainbowTexture);
+			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
 
+			if (!pBaseRainbowTexture)
+				return SHOW_TEXTURE;
+
+			if (CRCForTexture(pCurrRainbowTexture, crc)) {
+				if (crc == crcStemsAccents)
+					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+			}
+		}
+
+		if (PrideMode && NOTE_TAILS) // As of right now, this requires rainbow strings to be toggled on
+			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+	}
+		
 	//if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
 		// Need Lovro's Help With This :(
 		//if (DiscoModeInitialSetting.find(pDevice) == DiscoModeInitialSetting.end()) { // We haven't saved this pDevice's initial values yet
@@ -299,7 +318,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	else if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 		if (POSSIBLE_HEADSTOCKS) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
-
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
 				return SHOW_TEXTURE;
 
@@ -332,32 +350,10 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes | Needs to be at the very end of this hook, and needs to be an if NOT an else if
+	if (RainbowNotes) { // Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
 		if (IsToBeRemoved(sevenstring, current)) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-
-		else if (NOTE_STEMS) {
-			std::cout << "Don't you have to be stupid somewhere else?" << std::endl;
-			pDevice->GetTexture(1, &pBaseRainbowTexture);
-			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
-
-			if (!pBaseRainbowTexture)
-				return SHOW_TEXTURE;
-
-			if (CRCForTexture(pCurrRainbowTexture, crc)) {
-				//if (startLogging)
-				//	Log("0x%08x", crc);
-				std::cout << "Not Until 4" << std::endl;
-
-				if (crc == crcStemsAccents) { // Same checksum for stems and accents, because they use the same texture
-					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-					std::cout << "Do it again! I wasn't looking!" << std::endl;
-				}
-			}
-		}
-
-		if (PrideMode && NOTE_TAILS) // As of right now, this requires rainbow strings to be toggled on
-			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+		RainbowNotes = false;
 	}
 
 	return SHOW_TEXTURE; // KEEP THIS LINE. It means for it to display the graphics!
