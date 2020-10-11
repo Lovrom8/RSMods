@@ -155,7 +155,7 @@ inline std::vector<ThiccMesh> removedMeshes;
 #define NOTE_TAILS (Stride == 12)
 #define POSSIBLE_HEADSTOCKS (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84)
 #define POSSIBLE_SKYLINE (Stride == 16)
-
+#define SHOW_TEXTURE oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount)
 
 /*------------------------ CRC Calculation --------------------------------------- */
 inline std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers; // the guitar / bass headstock

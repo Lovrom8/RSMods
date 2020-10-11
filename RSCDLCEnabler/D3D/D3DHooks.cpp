@@ -101,7 +101,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	if (setAllToNoteGradientTexture) {
 		pDevice->SetTexture(currStride, gradientTextureSeven);
-		return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+		return SHOW_TEXTURE;
 	}
 
 	Mesh current(Stride, PrimCount, NumVertices);
@@ -193,7 +193,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
 			if (!pBaseTexture)
-				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrTexture, crc)) {
 				//if (startLogging)
@@ -203,7 +203,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 					pDevice->SetTexture(1, ourTexture);
 			}
 
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+			return SHOW_TEXTURE;
 		}
 	}
 
@@ -268,7 +268,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (toggleSkyline && POSSIBLE_SKYLINE) {
 		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
 			SkylineOff = false;
-			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+			return SHOW_TEXTURE;
 		}
 
 		// Skyline Removal
@@ -301,7 +301,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (POSSIBLE_HEADSTOCKS) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
-				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+				return SHOW_TEXTURE;
 
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
@@ -342,7 +342,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
 
 			if (!pBaseRainbowTexture)
-				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrRainbowTexture, crc)) {
 				//if (startLogging)
@@ -360,5 +360,5 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 	}
 
-	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount); // KEEP THIS LINE. It means for it to display the graphics!
+	return SHOW_TEXTURE; // KEEP THIS LINE. It means for it to display the graphics!
 }
