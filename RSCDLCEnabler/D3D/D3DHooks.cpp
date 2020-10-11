@@ -222,9 +222,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
-		if (IsToBeRemoved(sevenstring, current)) {  // Change all pieces of note head's textures
+		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
-		}
 
 		else if (NOTE_STEMS) { // Colors for note stems (part below the note), bends, slides, and accents
 			pDevice->GetTexture(1, &pBaseTexture);
