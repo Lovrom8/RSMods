@@ -36,7 +36,11 @@ namespace D3DHooks {
 	inline UINT Offset = 0;
 	inline UINT vertexBufferSize;
 
+#ifdef _DEBUG
+	inline bool debug = true;
+#else
 	inline bool debug = false;
+#endif
 
 	inline HWND hThisWnd = NULL;
 	inline WNDPROC oWndProc = NULL;

@@ -1,22 +1,25 @@
 #include "D3DHooks.hpp"
 
 
-HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) {
+HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) { // Mainly used for Note Tails
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) { //Stride 12 = tails
+	// Extended Range / Custom Colors
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) {
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
+	// Solid Notes Twitch Reward
 	if (Settings::IsTwitchSettingEnabled("SolidNotes") && NOTE_TAILS) {
 		if (Settings::ReturnSettingValue("SolidNoteColor") == "random")
 			pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
 		else
 			pDevice->SetTexture(1, twitchUserDefinedTexture);
 	}
-
+	
+	// Rainbow Notes
 	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS) // Rainbow Notes
 		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
@@ -60,7 +63,8 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT i_Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
-	if (i_Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { // Remove Line Markers
+	// Remove Line Markers
+	if (i_Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { 
 		pStreamData->GetDesc(&desc);
 		vertexBufferSize = desc.Size;
 	}
@@ -68,7 +72,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT 
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, i_Stride);
 }
 
-HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT+TAB-ing out of the game doesn't mess the whole thing up
 	// Lost Device
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
@@ -86,7 +90,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	return ResetReturn;
 }
 
-HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) {
+HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) { // Draw things on screen
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
@@ -113,8 +117,13 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (GetAsyncKeyState(VK_NEXT) & 1 && currIdx > 0) // Page down
 			currIdx--;
 
-		if (GetAsyncKeyState(VK_END) & 1) // Toggle logging
+		if (GetAsyncKeyState(VK_END) & 1) { // Toggle logging
+			std::cout << "Logging is ";
 			startLogging = !startLogging;
+			if (!startLogging)
+				std::cout << "no longer ";
+			std::cout << "armed!" << std::endl;
+		}
 
 		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
 			for (const auto& mesh : allMeshes) {
@@ -134,10 +143,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (startLogging) {
 				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 					allMeshes.push_back(currentThicc);
-				std::cout << Stride << ", " << PrimCount << ", " << NumVertices << std::endl;
-				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Log Current Texture -> Mesh
-				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // Log Current Texture -> ThiccMesh
-				//Log("%s", currentMenu.c_str()); // Log Current Menu
+				if (Stride == 32 && PrimCount == 2 && NumVertices == 4) // Criteria for search
+					std::cout << "{ " << Stride << ", " << PrimCount << ", " << NumVertices << ", " << StartIndex << ", " << StartRegister << ", " << (UINT)PrimType << ", " << (UINT)decl->Type << ", " << VectorCount << ", " << NumElements << " },"<< std::endl; // Thicc Mesh -> Console
+				//std::cout << "{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
+				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Mesh -> Log File
+				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // ThiccMesh -> Log File
 			}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -159,7 +169,13 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Mods
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
+
+	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { 
+
+		if (ERMode::customNoteColorH > 179)
+			ERMode::customNoteColorH -= 180;
+
 		RainbowNotes = true;
 		if (NOTE_STEMS) {
 			pDevice->GetTexture(1, &pBaseRainbowTexture);
@@ -169,7 +185,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrRainbowTexture, crc)) {
-				if (crc == crcStemsAccents)
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)
 					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 			}
 		}
@@ -202,12 +218,15 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		//}
 	//}
 
+	// Extended Range / Custom Colors
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
-		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
+		if (IsToBeRemoved(sevenstring, current)) {  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
-		else if (NOTE_STEMS) { // Colors for note stems (part below the note), and note accents
+		}
+
+		else if (NOTE_STEMS) { // Colors for note stems (part below the note), bends, slides, and accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -218,7 +237,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				//if (startLogging)
 				//	Log("0x%08x", crc);
 
-				if (crc == crcStemsAccents)  // Same checksum for stems and accents, because they use the same texture
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
 					pDevice->SetTexture(1, ourTexture);
 			}
 
@@ -226,6 +245,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	// Twitch Settings
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
 		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS)
 			return REMOVE_TEXTURE;
@@ -260,9 +280,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		*(float*)Offsets::ptr_drunkShit = (float)keepValueWithin(rng);
 	}
 
+	// Greenscreen Wall
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return REMOVE_TEXTURE;
 
+	// Thicc Mesh Mods
 	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return REMOVE_TEXTURE;
@@ -274,6 +296,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			return REMOVE_TEXTURE;
 	}
 
+	// Remove Headstock Artifacts
 	else if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
@@ -284,13 +307,13 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			return REMOVE_TEXTURE;
 	}
 
+	// Skyline Removal
 	if (toggleSkyline && POSSIBLE_SKYLINE) {
 		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
 			SkylineOff = false;
 			return SHOW_TEXTURE;
 		}
 
-		// Skyline Removal
 		pDevice->GetTexture(1, &pBaseTextures[1]);
 		pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
@@ -316,6 +339,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	// Headstock Removal
 	else if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
 		if (POSSIBLE_HEADSTOCKS) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
@@ -350,7 +374,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (RainbowNotes) { // Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
+	// Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
+	if (RainbowNotes) { 
 		if (IsToBeRemoved(sevenstring, current)) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 		RainbowNotes = false;

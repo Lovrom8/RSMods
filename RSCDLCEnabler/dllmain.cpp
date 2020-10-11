@@ -125,9 +125,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
 			//}
 
-			//else if (keyPressed == VK_F9) { // Controller Killswitch
+			//else if (keyPressed == VK_F9) // Controller Killswitch
 			//	DisableControllers::DisableControllers();
-			//}
+			//
+
+			/*else if (keyPressed == VK_F9)
+				ERMode::ToggleRainbowMode();*/
 		}
 
 		if (debug) {
