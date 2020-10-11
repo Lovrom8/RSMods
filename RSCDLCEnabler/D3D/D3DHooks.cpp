@@ -5,19 +5,19 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && Stride == 12) { //Stride 12 = tails
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) { //Stride 12 = tails
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
-	if (Settings::IsTwitchSettingEnabled("SolidNotes") && Stride == 12) {
+	if (Settings::IsTwitchSettingEnabled("SolidNotes") && NOTE_TAILS) {
 		if (Settings::ReturnSettingValue("SolidNoteColor") == "random")
 			pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
 		else
 			pDevice->SetTexture(1, twitchUserDefinedTexture);
 	}
 
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0 && Stride == 12) // Rainbow Notes
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS) // Rainbow Notes
 		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -69,11 +69,13 @@ HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT 
 }
 
 HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT TAB-ing out of the game doesn't mess the whole thing up
+	// Lost Device
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
 	if (MemHelpers::DX9FontEncapsulation)
 		MemHelpers::DX9FontEncapsulation->OnLostDevice();
 
+	// Reset Device
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
 
 	ImGui_ImplDX9_CreateDeviceObjects();
@@ -263,7 +265,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			return D3D_OK;
 	}
 
-	if (toggleSkyline && Stride == 16) {
+	if (toggleSkyline && POSSIBLE_SKYLINE) {
 		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
 			SkylineOff = false;
 			return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
@@ -275,7 +277,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
 			if (CRCForTexture(pCurrTextures[1], crc)) {
-				if (crc == 0x65b846aa || crc == 0xbad9e064) { // Purple rectangles + orange line beneath them
+				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { // Purple rectangles + orange line beneath them
 					SkylineOff = true;
 					return D3D_OK;
 				}
@@ -287,7 +289,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (pBaseTextures[0]) {
 			if (CRCForTexture(pCurrTextures[0], crc)) {
-				if (crc == 0xc605fbd2 || crc == 0xff1c61ff) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
 					SkylineOff = true;
 					return D3D_OK;
 				}
@@ -296,7 +298,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	else if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on") {
-		if (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
+		if (POSSIBLE_HEADSTOCKS) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
 
 			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
@@ -309,7 +311,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 					return D3D_OK;
 
 				if (CRCForTexture(pCurrTextures[1], crc)) {
-					if (crc == 0x008d5439 || crc == 0x000d4439 || crc == 0x00000000 || crc == 0xa55470f6 || crc == 0x008f4039)
+					if (crc == crcHeadstock0 || crc == crcHeadstock1 || crc == crcHeadstock2 || crc == crcHeadstock3 || crc == crcHeadstock4)
 						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
 				}
 
@@ -330,7 +332,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes | Needs to be at the very end of this hook, and needs to be an if NOT an else if
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
@@ -354,7 +356,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			}
 		}
 
-		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
+		if (PrideMode && NOTE_TAILS) // As of right now, this requires rainbow strings to be toggled on
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 	}
 

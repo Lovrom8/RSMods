@@ -39,6 +39,8 @@ inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
 
 inline unsigned long crc;
 inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002;
+inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
+inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
 
 inline float rainbowSpeed = 2.f;
 
@@ -150,7 +152,9 @@ inline std::vector<ThiccMesh> removedMeshes;
 #define CHORD_NAMES (Stride == 24 && PrimCount == 2 && NumVertices == 4)
 #define FHP (Stride == 12 && PrimCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && PrimCount == 20 && NumVertices == 16)
-
+#define NOTE_TAILS (Stride == 12)
+#define POSSIBLE_HEADSTOCKS (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84)
+#define POSSIBLE_SKYLINE (Stride == 16)
 
 
 /*------------------------ CRC Calculation --------------------------------------- */
