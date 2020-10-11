@@ -150,11 +150,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			currVectorCount = VectorCount;
 			currNumElements = NumElements;
 			//pDevice->SetTexture(1, Yellow);
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		}
 
 		if (IsExtraRemoved(removedMeshes, currentThicc))
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 	}
 
 	// Mods
@@ -209,7 +209,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
@@ -242,27 +242,27 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
-		return D3D_OK;
+		return REMOVE_TEXTURE;
 
 	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		if (Settings::ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		if (Settings::ReturnSettingValue("RemoveLaneMarkersEnabled") == "on" && IsExtraRemoved(laneMarkers, currentThicc))
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		if (RemoveLyrics && Settings::ReturnSettingValue("RemoveLyrics") == "on" && IsExtraRemoved(lyrics, currentThicc))
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 	}
 
 	else if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		if (IsExtraRemoved(tunerHighlight, currentThicc)) // This is called to remove the tuner's highlights
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 		if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
-			return D3D_OK;
+			return REMOVE_TEXTURE;
 	}
 
 	if (toggleSkyline && POSSIBLE_SKYLINE) {
@@ -279,7 +279,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (CRCForTexture(pCurrTextures[1], crc)) {
 				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { // Purple rectangles + orange line beneath them
 					SkylineOff = true;
-					return D3D_OK;
+					return REMOVE_TEXTURE;
 				}
 			}
 		}
@@ -291,7 +291,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (CRCForTexture(pCurrTextures[0], crc)) {
 				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
 					SkylineOff = true;
-					return D3D_OK;
+					return REMOVE_TEXTURE;
 				}
 			}
 		}
@@ -308,7 +308,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 			if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
 				if (!pBaseTextures[1]) //if there's no texture for Stage 1
-					return D3D_OK;
+					return REMOVE_TEXTURE;
 
 				if (CRCForTexture(pCurrTextures[1], crc)) {
 					if (crc == crcHeadstock0 || crc == crcHeadstock1 || crc == crcHeadstock2 || crc == crcHeadstock3 || crc == crcHeadstock4)
@@ -323,12 +323,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 					std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
 				}
 
-				return D3D_OK;
+				return REMOVE_TEXTURE;
 			}
 
 			if (calculatedHeadstocks)
 				if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
-					return D3D_OK;
+					return REMOVE_TEXTURE;
 		}
 	}
 
