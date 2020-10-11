@@ -35,15 +35,16 @@ inline ULONG_PTR token_;
 inline static std::random_device rd;
 inline static std::mt19937 rng(rd());
 
-inline LPDIRECT3DBASETEXTURE9 pBaseTexture;
+inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
 
 inline unsigned long crc;
+inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002;
 
 inline float rainbowSpeed = 2.f;
 
 inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-inline LPDIRECT3DTEXTURE9 pCurrTexture;
+inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture;
 inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));

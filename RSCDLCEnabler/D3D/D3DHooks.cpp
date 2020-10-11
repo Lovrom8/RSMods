@@ -193,11 +193,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (!pBaseTexture)
 				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
 
-			if (CRCForTexture(pCurrTexture, crc)) { // 0x00090000 - fretnums on noteway, 0x005a00b9 - noteway lanes, 0x00035193 -noteway bgd, 0x00004a4a-noteway lanes left and right of chord shape
+			if (CRCForTexture(pCurrTexture, crc)) {
 				//if (startLogging)
 				//	Log("0x%08x", crc);
 
-				if (crc == 0x02a50002)  // Same checksum for stems and accents, because they use the same texture
+				if (crc == crcStemsAccents)  // Same checksum for stems and accents, because they use the same texture
 					pDevice->SetTexture(1, ourTexture);
 			}
 
@@ -206,7 +206,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	if (ERMode::customNoteColorH > 0) { // Rainbow Notes
-		if (IsToBeRemoved(sevenstring, current)) // Note Heads
+		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
 		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
@@ -236,17 +236,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		uintptr_t currentNoteStreak = 0;
 
 		if (MemHelpers::IsInStringArray(currentMenu, 0, learnASongModes))
-		{
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakLASOffsets);
-		}
 		else if (MemHelpers::IsInStringArray(currentMenu, 0, scoreAttackModes))
-		{
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakSAOffsets);
-		}
 
-		if (currentNoteStreak != 0) {
+		if (currentNoteStreak != 0)
 			*(BYTE*)currentNoteStreak = 0;
-		}
 	}
 
 	if (Settings::IsTwitchSettingEnabled("DrunkMode")) {
