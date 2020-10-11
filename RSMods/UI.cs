@@ -45,8 +45,9 @@ namespace RSMods
             // Load saved credidentials and enable PubSub
             LoadTwitchSettings();
 
+            // Initialize WinForms
             InitializeComponent();
-            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}";
+            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}"; // Show version number in the title of the application.
 
             // Setup bindings for Twitch events
             SetupTwitchTab();
