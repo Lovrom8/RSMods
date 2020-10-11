@@ -188,7 +188,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
-		else if (FRETNUM_AND_MISS_INDICATOR) { // Colors for note stems (part below the note), and note accents
+		else if (NOTE_STEMS) { // Colors for note stems (part below the note), and note accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -208,15 +208,15 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
-		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
+		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS)
 			return REMOVE_TEXTURE;
 
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
-		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
+		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS)
 			pDevice->SetTexture(1, nonexistentTexture);
 
 	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
-		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) {
+		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS) {
 			if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
 				pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
 			else // They set the color they want in the GUI | TODO: Colors are changed on chord boxes
@@ -333,10 +333,10 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes | Needs to be at the very end of this hook, and needs to be an if NOT an else if
-		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) // Note Heads
+		if (IsToBeRemoved(sevenstring, current)) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
-		else if (FRETNUM_AND_MISS_INDICATOR) {
+		else if (NOTE_STEMS) {
 			std::cout << "Don't you have to be stupid somewhere else?" << std::endl;
 			pDevice->GetTexture(1, &pBaseRainbowTexture);
 			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;

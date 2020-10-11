@@ -143,7 +143,7 @@ inline std::vector<ThiccMesh> allMeshes;
 inline std::vector<ThiccMesh> removedMeshes;
 
 // Misc
-#define FRETNUM_AND_MISS_INDICATOR (Stride == 32 && PrimCount == 2 && NumVertices == 4)
+#define NOTE_STEMS (Stride == 32 && PrimCount == 2 && NumVertices == 4)
 #define CHORD_OUTLINE_THINGY (Stride == 34 && PrimCount == 48 && NumVertices == 80)
 #define CHORD_OUTLINE_CORNERS (Stride == 24 && PrimCount == 108 && NumVertices == 208)
 #define PAUSE_MENU_BGD (Stride == 16 && PrimCount == 18 && NumVertices == 16)
