@@ -17,7 +17,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 			pDevice->SetTexture(1, twitchUserDefinedTexture);
 	}
 
-	if (ERMode::customNoteColorH > 0 && Stride == 12) // Rainbow Notes
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0 && Stride == 12) // Rainbow Notes
 		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -205,16 +205,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (ERMode::customNoteColorH > 0) { // Rainbow Notes
-		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) // Note Heads
-			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-
-		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
-			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-	}
-
-	
-
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
 		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR)
 			return D3D_OK;
@@ -340,8 +330,33 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { // Rainbow Notes
+		if (IsToBeRemoved(sevenstring, current) || FRETNUM_AND_MISS_INDICATOR) // Note Heads
+			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+
+		else if (FRETNUM_AND_MISS_INDICATOR) {
+			std::cout << "Don't you have to be stupid somewhere else?" << std::endl;
+			pDevice->GetTexture(1, &pBaseRainbowTexture);
+			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
+
+			if (!pBaseRainbowTexture)
+				return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount);
+
+			if (CRCForTexture(pCurrRainbowTexture, crc)) {
+				//if (startLogging)
+				//	Log("0x%08x", crc);
+				std::cout << "Not Until 4" << std::endl;
+
+				if (crc == crcStemsAccents) { // Same checksum for stems and accents, because they use the same texture
+					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+					std::cout << "Do it again! I wasn't looking!" << std::endl;
+				}
+			}
+		}
+
+		if (PrideMode && Stride == 12) // As of right now, this requires rainbow strings to be toggled on
+			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+	}
+
 	return oDrawIndexedPrimitive(pDevice, PrimType, BaseVertexIndex, MinVertexIndex, NumVertices, StartIndex, PrimCount); // KEEP THIS LINE. It means for it to display the graphics!
 }
-
-
-
