@@ -170,11 +170,29 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 		while (h < 360.f) {
 			h += rainbowSpeed;
 
-			for (int i = 0; i < 8;i++) { // There's two extra colors per string, so we may need to think about this a bit more
+			for (int i = 0; i < 6;i++) { // There's two extra colors per string, so we may need to think about this a bit more
 				c.setH(h + (stringOffset * i));
+
+				if (c.r > 1.0f)
+					c.r = c.r - (c.r - 1.0f);
+				if (c.r < .0f)
+					c.r *= -1;
+
+				if (c.g > 1.0f)
+					c.g = c.g - (c.g - 1.0f);
+				if (c.g < .0f)
+					c.g *= -1;
+
+				if (c.b > 1.0f)
+					c.b = c.b - (c.b - 1.0f);
+				if (c.b < .0f)
+					c.b *= -1;
 
 				colorsRainbow.push_back(c);
 			}
+
+			for (int i = 0; i < 2;i++)
+				colorsRainbow.push_back(c);
 
 			colorSet.insert(colorSet.begin(), colorsRainbow.begin(), colorsRainbow.end()); // Both CB and regular colors will still look the same in rainbow mode
 			colorSet.insert(colorSet.end(), colorsRainbow.begin(), colorsRainbow.end());
@@ -185,6 +203,7 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			colorsRainbow.clear();
 
 			currTexture++;
+			//h += rainbowSpeed;
 		}
 	}
 	else if (type == Custom) {
