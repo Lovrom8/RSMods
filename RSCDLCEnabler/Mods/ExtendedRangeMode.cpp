@@ -279,7 +279,7 @@ void ERMode::DoRainbow() {
 			if (newH > 360)
 				newH -= 360;
 
-			if (newH > 3)
+			if (newH > 4)
 				customNoteColorH = (newH / 2) - 1;
 			else
 				customNoteColorH = 1;
