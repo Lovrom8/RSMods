@@ -38,12 +38,11 @@ inline static std::mt19937 rng(rd());
 inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
 
 inline unsigned long crc;
-inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
+inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
 
 inline float rainbowSpeed = 2.f;
-
 inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture;
@@ -115,48 +114,14 @@ inline std::vector<ThiccMesh> inlays{
 	{ 32, 8, 9, 0, 0, 4, 2, 12, 4 }, { 32, 16, 18, 0, 0, 4, 2, 12, 4 }, // Standard Dot (2nd for 12th/24th fret)
 };
 
-inline std::vector<ThiccMesh> noteModifiers{ // TODO: Cleanup excess | Write comments
-	{ 36, 180, 296, 0, 0, 4, 2, 4, 7 }, // Open Note Tap
-	{ 36, 27, 57, 0, 0, 4, 2, 4, 7 }, // Open Note Slap / Open Chord Pull-off / Open Chord Pop
+inline std::vector<ThiccMesh> noteModifiers{ // Note assets that need to be changed with string colors or they give a flickering effect.
+	{ 36, 180, 296, 0, 0, 4, 2, 4, 7 }, // Open Tap
+	{ 36, 27, 57, 0, 0, 4, 2, 4, 7 }, // Open Slap / Open Chord Pull-off / Open Chord Pop
 	{ 36, 40, 78, 0, 0, 4, 2, 4, 7 }, // Note Ho-Po / Note Harmonic
-
-	{ 32, 10, 16, 0, 0, 4, 2, 24, 4 },
-	{ 32, 10, 16, 0, 0, 4, 2, 4, 2 },
-	{ 32, 104, 187, 0, 0, 4, 2, 8, 3 },
-	{ 32, 12, 24, 0, 0, 4, 2, 4, 7 },
-	{ 32, 16, 18, 0, 0, 4, 2, 12, 4 },
-	{ 32, 168, 100, 0, 0, 4, 2, 18, 4 },
-	{ 32, 168, 100, 0, 0, 4, 2, 4, 2 },
-	{ 32, 17, 24, 0, 0, 4, 2, 12, 4 },
-	{ 32, 17, 27, 0, 0, 4, 2, 12, 4 },
-	{ 32, 184, 368, 0, 0, 4, 2, 22, 4 },
-	{ 32, 184, 368, 0, 0, 4, 2, 4, 2 },
-	{ 32, 2083, 1443, 0, 0, 4, 2, 22, 4 },
-	{ 32, 2083, 1443, 0, 0, 4, 2, 4, 2 },
-	{ 32, 32, 64, 0, 0, 4, 2, 9, 3 },
-	{ 32, 36, 35, 0, 0, 4, 2, 18, 4 },
-	{ 32, 36, 35, 0, 0, 4, 2, 4, 2 },
-	{ 32, 4, 6, 0, 0, 4, 2, 4, 7 },
-	{ 32, 440, 448, 0, 0, 4, 2, 18, 4 },
-	{ 32, 440, 448, 0, 0, 4, 2, 4, 2 },
-	{ 32, 48, 72, 0, 0, 4, 2, 4, 7 },
-	{ 32, 522, 1141, 0, 0, 4, 2, 29, 4 },
-	{ 32, 522, 1141, 0, 0, 4, 2, 4, 2 },
-	{ 32, 6, 8, 0, 0, 4, 2, 4, 7 },
-	{ 32, 616, 848, 0, 0, 4, 2, 29, 4 },
-	{ 32, 616, 848, 0, 0, 4, 2, 4, 2 },
-	{ 32, 8, 10, 0, 0, 4, 2, 4, 7 },
-	{ 32, 8, 10, 0, 0, 4, 2, 8, 3 },
-	{ 32, 8, 12, 0, 0, 4, 2, 8, 3 },
-	{ 32, 8, 9, 0, 0, 4, 2, 12, 4 },
-	{ 36, 100, 200, 0, 0, 4, 2, 4, 7 },
-	{ 36, 205, 313, 0, 0, 4, 2, 4, 7 },
-	{ 36, 40, 50, 0, 0, 4, 2, 4, 7 },
-	{ 36, 40, 76, 0, 0, 4, 2, 4, 7 },
-	{ 36, 44, 92, 0, 0, 4, 2, 4, 7 },
-	{ 36, 450, 482, 0, 0, 4, 2, 4, 7 },
-	{ 36, 48, 80, 0, 0, 4, 2, 9, 4 },
-	{ 36, 480, 644, 0, 0, 4, 2, 4, 7 },
+	{ 36, 44, 92, 0, 0, 4, 2, 4, 7 }, // Far Away Taps
+	{ 36, 205, 313, 0, 0, 4, 2, 4, 7 }, // Open Chord Slap
+	{ 32, 48, 72, 0, 0, 4, 2, 4, 7 }, // Open Arpeggio
+	{ 32, 12, 24, 0, 0, 4, 2, 4, 7 }, // Arpeggio
 };
 
 inline std::vector<ThiccMesh> tunerHighlight{
@@ -196,6 +161,7 @@ inline std::vector<ThiccMesh> removedMeshes;
 #define CHORD_NAMES (Stride == 24 && PrimCount == 2 && NumVertices == 4)
 #define FHP (Stride == 12 && PrimCount == 6 && NumVertices == 8)
 #define SLIDERS_AND_BUTTONS (Stride == 8 && PrimCount == 20 && NumVertices == 16)
+#define OPEN_NOTE_ACCENTS (Stride == 32 && PrimCount == 4 && NumVertices == 6)
 #define NOTE_TAILS (Stride == 12)
 #define POSSIBLE_HEADSTOCKS (Stride == 44 || Stride == 56 || Stride == 60 || Stride == 68 || Stride == 76 || Stride == 84)
 #define POSSIBLE_SKYLINE (Stride == 16)

@@ -178,7 +178,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			ERMode::customNoteColorH -= 180;
 
 		RainbowNotes = true;
-		if (NOTE_STEMS) {
+		if (NOTE_STEMS || OPEN_NOTE_ACCENTS) {
 			pDevice->GetTexture(1, &pBaseRainbowTexture);
 			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
 
@@ -226,7 +226,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
 
-		else if (NOTE_STEMS) { // Colors for note stems (part below the note), bends, slides, and accents
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
