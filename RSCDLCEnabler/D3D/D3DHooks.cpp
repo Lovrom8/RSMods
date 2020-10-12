@@ -11,6 +11,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
+
 	// Solid Notes Twitch Reward
 	if (Settings::IsTwitchSettingEnabled("SolidNotes") && NOTE_TAILS) {
 		if (Settings::ReturnSettingValue("SolidNoteColor") == "random")
@@ -143,7 +144,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (startLogging) {
 				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 					allMeshes.push_back(currentThicc);
-				if (Stride == 32 && PrimCount == 2 && NumVertices == 4) // Criteria for search
+				if (!NOTE_STEMS && (Stride == 32 || Stride == 34 || Stride == 36)) // Criteria for search
 					std::cout << "{ " << Stride << ", " << PrimCount << ", " << NumVertices << ", " << StartIndex << ", " << StartRegister << ", " << (UINT)PrimType << ", " << (UINT)decl->Type << ", " << VectorCount << ", " << NumElements << " },"<< std::endl; // Thicc Mesh -> Console
 				//std::cout << "{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
 				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Mesh -> Log File
@@ -222,7 +223,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
-		if (IsToBeRemoved(sevenstring, current))  // Change all pieces of note head's textures
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
 			pDevice->SetTexture(1, ourTexture);
 
 		else if (NOTE_STEMS) { // Colors for note stems (part below the note), bends, slides, and accents
@@ -375,7 +376,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	// Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
 	if (RainbowNotes) { 
-		if (IsToBeRemoved(sevenstring, current)) // Note Heads
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) // Note Heads
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 		RainbowNotes = false;
 	}
