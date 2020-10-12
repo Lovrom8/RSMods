@@ -278,7 +278,11 @@ void ERMode::DoRainbow() {
 
 			if (newH > 360)
 				newH -= 360;
-			customNoteColorH = (newH / 2) - 1;
+
+			if (newH > 3)
+				customNoteColorH = (newH / 2) - 1;
+			else
+				customNoteColorH = 1;
 			*(Color*)stringsEnabled[i] = c;
 			*(Color*)stringsHigh[i] = c;
 			*(Color*)stringsDisabled[i] = c;
