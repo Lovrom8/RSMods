@@ -919,7 +919,7 @@ namespace RSMods
             // Twitch Bot
             Dictionaries.TooltipDictionary.Add(button_TwitchReAuthorize, "Click this to get the authorisation key needed to let these mods listen to your twitch alerts.\nIt is possible this button may need to be clicked to re-anable the triggers.");
             Dictionaries.TooltipDictionary.Add(button_SolidNoteColorPicker, "Choose a color for this event trigger.");
-            Dictionaries.TooltipDictionary.Add(button_SolidNoteColorResetToRandom, "This will choose a random color for you. \nThe color does not change per activation, what you see here is how it is set for good.");
+            Dictionaries.TooltipDictionary.Add(button_SolidNoteColorRandom, "This will choose a random color for you. \nThe color does not change per activation, what you see here is how it is set for good.");
             Dictionaries.TooltipDictionary.Add(button_AddSelectedReward, "Add the configured event trigger.");
             Dictionaries.TooltipDictionary.Add(button_RemoveReward, "Remove the selected event trigger.");
             Dictionaries.TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have recieved a donation.");
@@ -1426,7 +1426,7 @@ namespace RSMods
             }
         }
 
-        private void button_SolidNoteColorResetToRandom_Click(object sender, EventArgs e)
+        private void button_SolidNoteColorRandom_Click(object sender, EventArgs e)
         {
             textBox_SolidNoteColorPicker.BackColor = Color.White;
             textBox_SolidNoteColorPicker.Text = "Random";
@@ -1451,7 +1451,7 @@ namespace RSMods
         {
             button_SolidNoteColorPicker.Visible = showStuff;
             textBox_SolidNoteColorPicker.Visible = showStuff;
-            button_SolidNoteColorResetToRandom.Visible = showStuff;
+            button_SolidNoteColorRandom.Visible = showStuff;
         }
 
         private void dgv_EnabledRewards_SelectionChanged(object sender, EventArgs e)
@@ -1468,6 +1468,7 @@ namespace RSMods
 
             if (selectedReward.AdditionalMsg == null || selectedReward.AdditionalMsg == string.Empty || selectedReward.AdditionalMsg == "Random")
             {
+                SetAdditionalMessage("Random");
                 textBox_SolidNoteColorPicker.BackColor = Color.White;
                 textBox_SolidNoteColorPicker.Text = "Random";
                 dgv_EnabledRewards.SelectedRows[0].DefaultCellStyle.BackColor = Color.White;

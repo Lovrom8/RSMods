@@ -64,6 +64,7 @@
             this.groupBox_LoftOffWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
             this.checkBox_ControlVolume = new System.Windows.Forms.CheckBox();
             this.checkBox_GuitarSpeak = new System.Windows.Forms.CheckBox();
             this.checkBox_RemoveLyrics = new System.Windows.Forms.CheckBox();
@@ -163,7 +164,7 @@
             this.tab_Twitch = new System.Windows.Forms.TabPage();
             this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
             this.button_TestTwitchReward = new System.Windows.Forms.Button();
-            this.button_SolidNoteColorResetToRandom = new System.Windows.Forms.Button();
+            this.button_SolidNoteColorRandom = new System.Windows.Forms.Button();
             this.textBox_SolidNoteColorPicker = new System.Windows.Forms.TextBox();
             this.button_SolidNoteColorPicker = new System.Windows.Forms.Button();
             this.button_RemoveReward = new System.Windows.Forms.Button();
@@ -200,7 +201,6 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -692,6 +692,17 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_ScreenShotScores
+            // 
+            this.checkBox_ScreenShotScores.AutoSize = true;
+            this.checkBox_ScreenShotScores.Location = new System.Drawing.Point(11, 197);
+            this.checkBox_ScreenShotScores.Name = "checkBox_ScreenShotScores";
+            this.checkBox_ScreenShotScores.Size = new System.Drawing.Size(116, 17);
+            this.checkBox_ScreenShotScores.TabIndex = 48;
+            this.checkBox_ScreenShotScores.Text = "Screenshot Scores";
+            this.checkBox_ScreenShotScores.UseVisualStyleBackColor = true;
+            this.checkBox_ScreenShotScores.CheckedChanged += new System.EventHandler(this.checkBox_ScreenShotScores_CheckedChanged);
             // 
             // checkBox_ControlVolume
             // 
@@ -1930,7 +1941,7 @@
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
             this.tab_Twitch.Controls.Add(this.checkBox_TwitchForceReauth);
             this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
-            this.tab_Twitch.Controls.Add(this.button_SolidNoteColorResetToRandom);
+            this.tab_Twitch.Controls.Add(this.button_SolidNoteColorRandom);
             this.tab_Twitch.Controls.Add(this.textBox_SolidNoteColorPicker);
             this.tab_Twitch.Controls.Add(this.button_SolidNoteColorPicker);
             this.tab_Twitch.Controls.Add(this.button_RemoveReward);
@@ -1978,16 +1989,16 @@
             this.button_TestTwitchReward.UseVisualStyleBackColor = true;
             this.button_TestTwitchReward.Click += new System.EventHandler(this.TestTwitchReward_Click);
             // 
-            // button_SolidNoteColorResetToRandom
+            // button_SolidNoteColorRandom
             // 
-            this.button_SolidNoteColorResetToRandom.Location = new System.Drawing.Point(926, 87);
-            this.button_SolidNoteColorResetToRandom.Name = "button_SolidNoteColorResetToRandom";
-            this.button_SolidNoteColorResetToRandom.Size = new System.Drawing.Size(84, 23);
-            this.button_SolidNoteColorResetToRandom.TabIndex = 122;
-            this.button_SolidNoteColorResetToRandom.Text = "Random Color";
-            this.button_SolidNoteColorResetToRandom.UseVisualStyleBackColor = true;
-            this.button_SolidNoteColorResetToRandom.Visible = false;
-            this.button_SolidNoteColorResetToRandom.Click += new System.EventHandler(this.button_SolidNoteColorResetToRandom_Click);
+            this.button_SolidNoteColorRandom.Location = new System.Drawing.Point(926, 87);
+            this.button_SolidNoteColorRandom.Name = "button_SolidNoteColorRandom";
+            this.button_SolidNoteColorRandom.Size = new System.Drawing.Size(84, 23);
+            this.button_SolidNoteColorRandom.TabIndex = 122;
+            this.button_SolidNoteColorRandom.Text = "Random Color";
+            this.button_SolidNoteColorRandom.UseVisualStyleBackColor = true;
+            this.button_SolidNoteColorRandom.Visible = false;
+            this.button_SolidNoteColorRandom.Click += new System.EventHandler(this.button_SolidNoteColorRandom_Click);
             // 
             // textBox_SolidNoteColorPicker
             // 
@@ -2351,17 +2362,6 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
-            // checkBox_ScreenShotScores
-            // 
-            this.checkBox_ScreenShotScores.AutoSize = true;
-            this.checkBox_ScreenShotScores.Location = new System.Drawing.Point(11, 197);
-            this.checkBox_ScreenShotScores.Name = "checkBox_ScreenShotScores";
-            this.checkBox_ScreenShotScores.Size = new System.Drawing.Size(116, 17);
-            this.checkBox_ScreenShotScores.TabIndex = 48;
-            this.checkBox_ScreenShotScores.Text = "Screenshot Scores";
-            this.checkBox_ScreenShotScores.UseVisualStyleBackColor = true;
-            this.checkBox_ScreenShotScores.CheckedChanged += new System.EventHandler(this.checkBox_ScreenShotScores_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2590,7 +2590,7 @@
         private System.Windows.Forms.Button button_RemoveReward;
         private System.Windows.Forms.TextBox textBox_SolidNoteColorPicker;
         private System.Windows.Forms.Button button_SolidNoteColorPicker;
-        private System.Windows.Forms.Button button_SolidNoteColorResetToRandom;
+        private System.Windows.Forms.Button button_SolidNoteColorRandom;
         private System.Windows.Forms.Button button_TestTwitchReward;
         private System.Windows.Forms.Timer timerValidateTwitch;
         private System.Windows.Forms.CheckBox checkBox_TwitchForceReauth;
