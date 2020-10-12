@@ -11,6 +11,11 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
+	if (Settings::IsTwitchSettingEnabled("RemoveNotes") && NOTE_TAILS)
+		return REMOVE_TEXTURE;
+
+	if (Settings::IsTwitchSettingEnabled("TransparentNotes") && NOTE_TAILS)
+		pDevice->SetTexture(1, nonexistentTexture);
 
 	// Solid Notes Twitch Reward
 	if (Settings::IsTwitchSettingEnabled("SolidNotes") && NOTE_TAILS) {
@@ -247,19 +252,74 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	// Twitch Settings
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
-		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS)
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))
 			return REMOVE_TEXTURE;
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+			pDevice->GetTexture(1, &pBaseTexture);
+			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
+
+			if (!pBaseTexture)
+				return REMOVE_TEXTURE;
+
+			if (CRCForTexture(pCurrTexture, crc)) {
+				//if (startLogging)
+				//	Log("0x%08x", crc);
+
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+					return REMOVE_TEXTURE;
+			}
+
+			return REMOVE_TEXTURE;
+		}
 
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
-		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS)
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc) || NOTE_STEMS || OPEN_NOTE_ACCENTS)
 			pDevice->SetTexture(1, nonexistentTexture);
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+			pDevice->GetTexture(1, &pBaseTexture);
+			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
+
+			if (!pBaseTexture)
+				return SHOW_TEXTURE;
+
+			if (CRCForTexture(pCurrTexture, crc)) {
+				//if (startLogging)
+				//	Log("0x%08x", crc);
+
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+					pDevice->SetTexture(1, nonexistentTexture);
+			}
+
+			return SHOW_TEXTURE;
+		}
 
 	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
-		if (IsToBeRemoved(sevenstring, current) || NOTE_STEMS) {
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) {
 			if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
 				pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
 			else // They set the color they want in the GUI | TODO: Colors are changed on chord boxes
 				pDevice->SetTexture(1, twitchUserDefinedTexture);
+		}
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+			pDevice->GetTexture(1, &pBaseTexture);
+			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
+
+			if (!pBaseTexture)
+				return SHOW_TEXTURE;
+
+			if (CRCForTexture(pCurrTexture, crc)) {
+				//if (startLogging)
+				//	Log("0x%08x", crc);
+
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators) {  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+					if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
+						pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
+					else
+						pDevice->SetTexture(1, twitchUserDefinedTexture);
+				}
+			}
+
+			return SHOW_TEXTURE;
 		}
 	}
 
