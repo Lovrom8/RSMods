@@ -14,6 +14,7 @@ namespace RSMods.Twitch
     public class PubSub
     {
         private TwitchPubSub pubSub;
+        private List<string> eventHashes = new List<string>();
 
         public void SetUp()
         {
@@ -94,8 +95,17 @@ namespace RSMods.Twitch
 
         private void OnBitsReceived(object sender, OnBitsReceivedArgs e)
         {
-            TwitchSettings.Get.AddToLog($"{e.Username} cheered {e.BitsUsed} bits");
+            TwitchSettings.Get.AddToLog($"{e.Username} cheered {e.BitsUsed} bits (time: {e.Time} )");
 
+            string hash = e.Time + e.Username + e.BitsUsed;
+
+            if (eventHashes.Contains(hash))
+            {
+                TwitchSettings.Get.AddToLog("Triple bit event, thou shall not pass!");
+                return;
+            }
+
+            eventHashes.Add(hash);
             HandleBitsRecieved(e);
         }
 
