@@ -22,7 +22,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 
 		SetNoteHeadScale(2.5);
 
-		request.parameters.at(0).get_to(duration);
+		if (request.parameters.contains("duration"))
+			request.parameters.at("duration").get_to(duration);
+
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
