@@ -20,7 +20,6 @@
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
-    <ClCompile Include="D3D\D3DHooks.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
     <ClCompile Include="CC\CCStructs.hpp" />
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
@@ -31,7 +30,6 @@
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
-    <ClCompile Include="WwiseHijack.cpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
@@ -74,13 +72,9 @@
     <ClCompile Include="Lua\lzio.c" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
     <ClCompile Include="WwiseHijack.cpp" />
-    <ClCompile Include="CCEnums.hpp" />
-    <ClCompile Include="CCStructs.hpp" />
-    <ClCompile Include="RemoveNotesEffect.cpp" />
-    <ClCompile Include="SolidNotesEffect.cpp" />
-    <ClCompile Include="TransparentNotesEffect.cpp" />
-    <ClInclude Include="CCEffect.hpp" />
-    <ClInclude Include="ControlServer.hpp" />
+    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
     <ClInclude Include="D3D/D3DHelper.hpp" />
     <ClInclude Include="D3D/D3DHooks.hpp" />
     <ClInclude Include="D3D/D3D.hpp" />

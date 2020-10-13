@@ -99,9 +99,6 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp">
       <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
-    <ClCompile Include="D3D\D3DHooks.cpp">
-      <Filter>D3D</Filter>
-    </ClCompile>
     <ClCompile Include="D3D/D3D.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
@@ -279,6 +276,18 @@
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="D3D/D3DHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransparentNotesEffect.cpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoveNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -451,80 +460,6 @@
     </ClInclude>
     <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    <ClInclude Include="Lua\lapi.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lauxlib.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lcode.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\ldebug.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\ldo.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lfunc.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lgc.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\llex.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\llimits.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lmem.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lobject.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lopcodes.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lparser.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lstate.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lstring.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\ltable.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\ltm.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lua.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\luaconf.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lualib.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lundump.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lvm.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lzio.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Lua\lua.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\DisableControllers.hpp">
-      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="ObjectUtil.hpp">
       <Filter>Header Files</Filter>
