@@ -131,6 +131,20 @@ typedef Color RSColor;
 typedef std::map<std::string, RSColor> ColorMap;
 typedef std::vector<RSColor> ColorList;
 
+struct Tuning {
+	byte lowE; //0x0000
+	char pad_0001[1]; //0x0001
+	byte strA; //0x0002
+	char pad_0003[1]; //0x0003
+	byte strD; //0x0004
+	char pad_0005[1]; //0x0005
+	byte strG; //0x0006
+	char pad_0007[1]; //0x0007
+	byte strB; //0x0008
+	char pad_0009[1]; //0x0009
+	byte highE; //0x000A 
+};
+
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo
