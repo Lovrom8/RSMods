@@ -23,8 +23,8 @@ using namespace CrowdControl::EffectList;
 
 namespace CrowdControl::EffectList {
 	std::map<std::string, CCEffect*> AllEffects{
-		{ "rainbow", new RainbowEffect(60) },
-		{ "drunk", new DrunkModeEffect(20) },
+		{ "rainbow", new RainbowEffect(20) },
+		{ "drunk", new DrunkModeEffect(10) },
 		{ "fyourfc", new FYourFCEffect(5) },
 		{ "solidrandom", new SolidNotesRandomEffect(10) },
 		{ "solidcustom", new SolidNotesCustomEffect(10) },
@@ -38,8 +38,8 @@ namespace CrowdControl::EffectList {
 		{ "shuffletones", new ShuffleTonesEffect(20) },
 		{ "killguitarvolume", new KillGuitarVolumeEffect(10) },
 		{ "killmusicvolume", new KillMusicVolumeEffect(10) },
-		{ "bignoteheads", new BigNoteheadEffect(10) },
-		{ "smallnoteheads", new SmallNoteheadEffect(10) },
+		{ "bignoteheads", new BigNoteheadEffect(20) },
+		{ "smallnoteheads", new SmallNoteheadEffect(20) },
 		{ "invertedstrings", new InvertedStringsEffect(20) },
 		{ "halfsongspeed", new HalfSpeedEffect(30) },
 		{ "doublesongspeed", new DoubleSpeedEffect(30) },

@@ -16,13 +16,13 @@ public class Rocksmith2014 : SimpleTCPPack
 
     public override List<Effect> Effects => new List<Effect>
     {
-        new Effect("Rainbow strings", "rainbow"),
-        new Effect("Drunk mode", "drunk"),
-        new Effect("FYOurFC", "fyourfc"),
-        new Effect("Solid Notes (random)", "solidrandom"),
+        new Effect("Rainbow strings (60 seconds)", "rainbow"),
+        new Effect("Drunk mode (20 seconds)", "drunk"),
+        new Effect("FYOurFC (reset combo)", "fyourfc"),
+        new Effect("Solid Notes (random, 10 seconds)", "solidrandom"),
 
-        new Effect("Solid Notes (custom)", "solidcustom", new[] { "color" }),
-        new Effect("Solid Notes (custom rgb)", "solidcustomrgb", new[] {  "sliderred", "slidergreen", "sliderblue"}),
+        new Effect("Solid Notes (custom, 10 seconds)", "solidcustom", new[] { "color" }),
+        new Effect("Solid Notes (custom rgb, 10 seconds)", "solidcustomrgb", new[] {  "sliderred", "slidergreen", "sliderblue"}),
 
         new Effect("Red", "red", ItemKind.Usable, "color"),
         new Effect("Yellow", "yellow", ItemKind.Usable, "color"),
@@ -31,29 +31,29 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Green", "green", ItemKind.Usable, "color"),
         new Effect("Purple", "purple", ItemKind.Usable, "color"),
 
-        new Effect("Transparent notes", "transparentnotes"),
+        new Effect("Transparent notes (20 seconds)", "transparentnotes"),
 
-        new Effect("Remove notes", "removenotes"),
-        new Effect("Remove instrument", "removeinstrument"),
+        new Effect("Remove notes (20 seconds)", "removenotes"),
+        new Effect("Remove instrument (20 seconds)", "removeinstrument"),
 
         new Effect("Change tone", "changetone", ItemKind.Folder),
         new Effect("Change tone to slot 1", "changetoneslot1", "changetone"),
         new Effect("Change tone to slot 2", "changetoneslot2", "changetone"),
         new Effect("Change tone to slot 3", "changetoneslot3", "changetone"),
         new Effect("Change tone to slot 4", "changetoneslot4", "changetone"),
-        new Effect("Shuffle tones every 2 seconds", "shuffletones"),
+        new Effect("Shuffle tones every 2 seconds (20 seconds)", "shuffletones"),
 
-        new Effect("Kill guitar volume", "killguitarvolume"),
-        new Effect("Kill music volume", "killmusicvolume"),
+        new Effect("Kill guitar volume (10 seconds)", "killguitarvolume"),
+        new Effect("Kill music volume (10 seconds)", "killmusicvolume"),
 
-        new Effect("Big note heads", "bignoteheads"),
-        new Effect("Small note heads", "smallnoteheads"),
-        new Effect("Inverted strings", "invertedstrings"),
+        new Effect("Big note heads (20 seconds)", "bignoteheads"),
+        new Effect("Small note heads (20 seconds)", "smallnoteheads"),
+        new Effect("Inverted strings (20 seconds)", "invertedstrings"),
 
-        new Effect("Half song speed", "halfsongspeed"),
-        new Effect("Double song speed", "doublesongspeed"),
+        new Effect("Half song speed (30 seconds)", "halfsongspeed"),
+        new Effect("Double song speed (30 seconds)", "doublesongspeed"),
 
-        new Effect("Zoom camera in", "zoomin") 
+        new Effect("Zoom camera in (20 seconds)", "zoomin") 
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]
