@@ -641,10 +641,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { /
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
 			FILE* streamRead, * streamWrite;
-			errno_t freOpenSecureRead, freOpenSecureWrite;
 			AllocConsole();
-			freOpenSecureRead = freopen_s(&streamRead, "CONIN$", "r", stdin);
-			freOpenSecureWrite = freopen_s(&streamWrite, "CONOUT$", "w", stdout);
+			freopen_s(&streamRead, "CONIN$", "r", stdin);
+			freopen_s(&streamWrite, "CONOUT$", "w", stdout);
 		}
 		DisableThreadLibraryCalls(hModule);
 
