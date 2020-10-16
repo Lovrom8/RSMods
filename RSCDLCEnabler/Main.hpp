@@ -34,7 +34,6 @@
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;
 
-bool regenerateUserDefinedTexture = false;
 bool takenScreenshotOfThisScreen = false; // Has the user taken a screenshot of their scores in this menu
 
 // Mixer Values

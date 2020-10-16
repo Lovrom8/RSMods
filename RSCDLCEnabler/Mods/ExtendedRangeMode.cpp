@@ -101,6 +101,9 @@ void ERMode::Toggle7StringMode() {
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
 	if (ColorsSaved && Settings::IsTwitchSettingEnabled("SolidNotes")) {
+		if (customSolidColor.size() != 6) // JIC
+			return;
+
 		SetColors(stringsGlow, customSolidColor);
 		SetColors(stringsEnabled, customSolidColor);
 		SetColors(stringsDisabled, customSolidColor);

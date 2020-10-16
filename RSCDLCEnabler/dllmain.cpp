@@ -361,7 +361,7 @@ bool HandleMessage(std::string currMsg, std::string type) {
 			}
 			else { // If colors are not random, set colors which the user defined for this reward
 				Settings::ParseSolidColorsMessage(currMsg);
-				regenerateUserDefinedTexture = true;
+				D3DHooks::regenerateUserDefinedTexture = true; //Smh... that's why namespaces are important my children
 			}
 		}
 		else
