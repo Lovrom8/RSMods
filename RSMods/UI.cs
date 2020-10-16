@@ -1501,6 +1501,19 @@ namespace RSMods
 
         private void checkBox_ScreenShotScores_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ScreenShotScoresIdentifier, checkBox_ScreenShotScores.Checked.ToString().ToLower());
 
+        private void button_SaveLogToFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                File.WriteAllText("twitchLog.txt", TwitchSettings.Get.Log);
+                MessageBox.Show("Saved log to RS folder/RSMods/twitchLog.txt!", "Saved!");
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Unable to save log, error: {ioex.Message}");
+            }
+        }
+
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))

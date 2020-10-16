@@ -162,6 +162,7 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
+            this.button_SaveLogToFile = new System.Windows.Forms.Button();
             this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
             this.button_TestTwitchReward = new System.Windows.Forms.Button();
             this.button_SolidNoteColorRandom = new System.Windows.Forms.Button();
@@ -1939,6 +1940,7 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.button_SaveLogToFile);
             this.tab_Twitch.Controls.Add(this.checkBox_TwitchForceReauth);
             this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
             this.tab_Twitch.Controls.Add(this.button_SolidNoteColorRandom);
@@ -1967,6 +1969,16 @@
             this.tab_Twitch.Size = new System.Drawing.Size(1144, 397);
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot (Beta)";
+            // 
+            // button_SaveLogToFile
+            // 
+            this.button_SaveLogToFile.Location = new System.Drawing.Point(950, 361);
+            this.button_SaveLogToFile.Name = "button_SaveLogToFile";
+            this.button_SaveLogToFile.Size = new System.Drawing.Size(95, 23);
+            this.button_SaveLogToFile.TabIndex = 125;
+            this.button_SaveLogToFile.Text = "Save log to file";
+            this.button_SaveLogToFile.UseVisualStyleBackColor = true;
+            this.button_SaveLogToFile.Click += new System.EventHandler(this.button_SaveLogToFile_Click);
             // 
             // checkBox_TwitchForceReauth
             // 
@@ -2131,7 +2143,7 @@
             this.textBox_TwitchLog.Location = new System.Drawing.Point(869, 134);
             this.textBox_TwitchLog.Multiline = true;
             this.textBox_TwitchLog.Name = "textBox_TwitchLog";
-            this.textBox_TwitchLog.Size = new System.Drawing.Size(256, 246);
+            this.textBox_TwitchLog.Size = new System.Drawing.Size(256, 221);
             this.textBox_TwitchLog.TabIndex = 114;
             this.textBox_TwitchLog.Visible = false;
             // 
@@ -2601,6 +2613,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsType;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsID;
         private System.Windows.Forms.CheckBox checkBox_ScreenShotScores;
+        private System.Windows.Forms.Button button_SaveLogToFile;
     }
 }
 

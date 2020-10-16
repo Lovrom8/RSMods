@@ -72,7 +72,7 @@ namespace RSMods.Twitch
                 else if (e.Topic.Contains("bits"))
                     TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
                 else if (e.Topic.Contains("sub"))
-                    TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
+                    TwitchSettings.Get.AddToLog($"Authorized sub events, poggers in chat!");
             }
         }
 
