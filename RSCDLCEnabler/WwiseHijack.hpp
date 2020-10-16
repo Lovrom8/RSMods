@@ -1647,13 +1647,13 @@ typedef AKRESULT(__cdecl* tDynamicSequence_UnlockPlaylist)(AkPlayingID in_playin
 // End Dynamic Sequence
 typedef AKRESULT(__cdecl* tExecuteActionOnEvent_UniqueID)(AkUniqueID in_eventID, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
 typedef AKRESULT(__cdecl* tExecuteActionOnEvent_Char)(const char* in_pszEventName, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
-typedef void(__cdecl* tGetDefaultInitSettings)(AkCommSettings& out_settings);
+typedef void(__cdecl* tGetDefaultInitSettings)(AkInitSettings* out_settings);
 typedef void(__cdecl* tGetDefaultPlatformInitSettings)(AkPlatformInitSettings* out_platformSettings);
 typedef AkUInt32(__cdecl* tGetIDFromString)(const char* in_pszString);
 typedef AKRESULT(__cdecl* tGetPanningRule)(AkPanningRule* out_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
 typedef AKRESULT(__cdecl* tGetSourcePlayPosition)(AkPlayingID in_PlayingID, AkTimeMs* out_puPosition, bool in_bExtrapolate);
 typedef AkUInt32(__cdecl* tGetSpeakerConfiguration)(void);
-typedef AKRESULT(__cdecl* tInit)(AkInitSettings* in_pSettings, AkPlatformInitSettings in_pPlatformSettings);
+typedef AKRESULT(__cdecl* tInit)(AkInitSettings* in_pSettings, AkPlatformInitSettings* in_pPlatformSettings);
 typedef bool(__cdecl* tIsInitialized)(void);
 typedef AKRESULT(__cdecl* tLoadBank_BankID_MemPoolID)(AkBankID in_bankID, AkMemPoolId in_memPoolId);
 typedef AKRESULT(__cdecl* tLoadBank_Void_UInt32_BankID)(const void* in_plnMemoryBankPtr, AkUInt32 in_ulnMemoryBankSize, AkBankID* out_bankID);
@@ -1683,7 +1683,7 @@ typedef AKRESULT(__cdecl* tQuery_GetActiveListeners)(AkGameObjectID in_GameObjec
 typedef AKRESULT(__cdecl* tQuery_GetCustomPropertyValue_Int32)(AkUniqueID in_ObjectID, AkUInt32 in_uPropID, AkInt32* out_iValue);
 typedef AKRESULT(__cdecl* tQuery_GetCustomPropertyValue_Real32)(AkUniqueID in_ObjectID, AkUInt32 in_uPropID, AkReal32* out_fValue);
 typedef AkUniqueID(__cdecl* tQuery_GetEventIDFromPlayingID)(AkPlayingID in_playingID);
-typedef AKRESULT(__cdecl* tQuery_GetGameObjectAuxSendValues)(AkGameObjectID in_gameObjectID, AkAuxSendValue* out_paAuxSendValues, AkUInt32& io_ruNumSendValues);
+typedef AKRESULT(__cdecl* tQuery_GetGameObjectAuxSendValues)(AkGameObjectID in_gameObjectID, AkAuxSendValue* out_paAuxSendValues, AkUInt32* io_ruNumSendValues);
 typedef AKRESULT(__cdecl* tQuery_GetGameObjectDryLevelValue)(AkGameObjectID in_gameObjectID, AkReal32* out_rfControlValue);
 typedef AkGameObjectID(__cdecl* tQuery_GetGameObjectFromPlayingID)(AkPlayingID in_playingID);
 typedef bool(__cdecl* tQuery_GetIsGameObjectActive)(AkGameObjectID in_GameObjId);

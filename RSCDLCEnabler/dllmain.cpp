@@ -96,6 +96,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 			}
+
 			/*else if (keyPressed == VK_F9) { // Disco Mode
 				DiscoModeEnabled = !DiscoModeEnabled;
 
@@ -116,7 +117,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
-			//else if (keyPressed == VK_F9) {
+			//else if (keyPressed == VK_F9) { // Start Lua
 			//		lua_State* luaState = lua_open();
 			//		luaL_openlibs(luaState);
 
@@ -127,10 +128,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			//else if (keyPressed == VK_F9) // Controller Killswitch
 			//	DisableControllers::DisableControllers();
-			//
 
-			/*else if (keyPressed == VK_F9)
-				ERMode::ToggleRainbowMode();*/
+			//else if (keyPressed == VK_F9) { // Kills anything that's currently playing. When in LAS it ends the song (could be used for a F your playthrough? / quick leave song)
+			//	std::cout << "Trying to restart Wwise Music Engine" << std::endl;
+			//	WwiseVariables::Wwise_Music_Term();
+			//	WwiseVariables::Wwise_Music_Init((AkMusicSettings*)0x01384964);
+			//	std::cout << "Restart Complete!" << std::endl;
+			// Wwise Sound Term / Init combo kills ALL audio and it will never restart even when using set addresses used by the executable (there is 2 pairs, and both init properly work).
+			//}
 		}
 
 		if (debug) {
