@@ -64,6 +64,7 @@ inline bool RandomTexturesEnabled = false;
 inline int currentRandTexture = 0;
 
 inline float newSongSpeed;
+inline bool useNewSongSpeed = false;
 
 //  {8, 10, 8}, //  Massive UI (Artwork, preview skylines, loading screens, etc)
 

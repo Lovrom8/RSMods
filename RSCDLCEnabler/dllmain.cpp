@@ -138,7 +138,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 
 			else if (keyPressed == VK_F9 && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongRRSpeed))) { // Song Speed (RR speed)
-				newSongSpeed = MemHelpers::RiffRepeaterSpeed(100000);
+				useNewSongSpeed = true;
+				newSongSpeed = 100000;
+				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 				std::cout << "Changed song speed. Move the speed dial and it will change the speed." << std::endl;
 			}
 		}
@@ -307,8 +309,13 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
-		if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed))
+		if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed) && useNewSongSpeed) {
+			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string(MemHelpers::RiffRepeaterSpeed()), whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+		}
+		else {
+			useNewSongSpeed = false;
+		}
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
