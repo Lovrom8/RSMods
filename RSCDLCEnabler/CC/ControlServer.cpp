@@ -184,7 +184,8 @@ namespace CrowdControl {
 			Sleep(5000);
 
 		while (!D3DHooks::GameClosing) {
-			ObjectUtil::UpdateScales();
+			if(MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) // Guitarcade games crash if UpdateScales is run. So we will just sleep.
+				ObjectUtil::UpdateScales();
 
 			Sleep(1000);
 		}
