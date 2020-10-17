@@ -89,6 +89,10 @@ namespace Offsets {
 	uintptr_t ptr_timer = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };
 
+	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
+	uintptr_t ptr_songSpeed = 0x00F5C4CC;
+	std::vector<unsigned int> ptr_songSpeedOffsets{ 0x10, 0x28, 0x38, 0x18, 0x4, 0x1C, 0x28 };
+
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };

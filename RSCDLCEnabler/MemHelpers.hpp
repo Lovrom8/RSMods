@@ -25,6 +25,7 @@ namespace MemHelpers {
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);
 	void ToggleDrunkMode(bool enable);
 	bool IsInSong();
+	float RiffRepeaterSpeed(int newSpeed = NULL);
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);

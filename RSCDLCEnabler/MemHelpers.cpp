@@ -191,3 +191,11 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 bool MemHelpers::IsInSong() {
 	return IsInStringArray(GetCurrentMenu(), 0, songModes);
 }
+
+float MemHelpers::RiffRepeaterSpeed(int newSpeed) {
+	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
+	
+	if (newSpeed != NULL) // If we aren't just trying to see the current speed.
+		*(float*)riffRepeaterSpeed = newSpeed;
+	return *(float*)riffRepeaterSpeed;
+}
