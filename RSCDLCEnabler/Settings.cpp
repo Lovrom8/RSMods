@@ -13,6 +13,7 @@ void Settings::Initialize()
 		{"ForceReEnumerationKey", "F"},
 		{"RainbowStringsKey", "R"},
 		{"RemoveLyricsKey", "L"},
+		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
 		{"ForceReEnumerationEnabled", "automatic"},
 		{"ToggleLoftEnabled", "on"},
@@ -37,12 +38,14 @@ void Settings::Initialize()
 		{"GuitarSpeak", "off"},
 		{"GuitarSpeakWhileTuning", "off"},
 		{"RemoveHeadstockWhen", "song"},
-		{"ScreenShotScores", "off"}
+		{"ScreenShotScores", "off"},
+		{"RRSpeedAboveOneHundred", "off"}
 	};
 
 	customSettings = {
 		{"ExtendedRangeMode", -5 },
 		{"CheckForNewSongsInterval", 5000},
+		{"RRSpeedInterval", 0},
 		{"CustomStringColors", 0},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -108,6 +111,7 @@ void Settings::ReadKeyBinds() {
 			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
 			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
+			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
 	};
 	//std::cout << "Read " << modSettings["ToggleLoftKey"] << std::endl;
 }
@@ -122,6 +126,7 @@ void Settings::ReadModSettings() {
 	customSettings = {
 		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
+		{"RRSpeedInterval", reader.GetLongValue("Mod Settings", "RRSpeedInterval", 0)},
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -163,6 +168,7 @@ void Settings::ReadModSettings() {
 	modSettings["GuitarSpeakWhileTuning"] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 	modSettings["RemoveHeadstockWhen"] = reader.GetValue("Toggle Switches", "RemoveHeadstockWhen", "song");
 	modSettings["ScreenShotScores"] = reader.GetValue("Toggle Switches", "ScreenShotScores", "off");
+	modSettings["RRSpeedAboveOneHundred"] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 }
 
 void Settings::ReadStringColors() {
