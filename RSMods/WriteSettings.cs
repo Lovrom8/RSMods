@@ -37,6 +37,7 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, "" }, // Remove Lyrics Key
+                { ReadSettings.RRSpeedKeyIdentifier, "" } // Riff Repeater Above 100% key.
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -62,7 +63,8 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsWhenIdentifier, "manual" }, // When should we remove lyrics Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, "song" }, // Remove Headstock When Startup / Song
-                { ReadSettings.ScreenShotScoresIdentifier, "off" } // Screenshot Scores When You Finish A Song
+                { ReadSettings.ScreenShotScoresIdentifier, "off" }, // Screenshot Scores When You Finish A Song
+                { ReadSettings.RiffRepeaterAboveHundredIdentifier, "off" } // Allow the user to go above 100% speed in LAS Riff Repeater
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -84,6 +86,7 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
+                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1" } // The rate of how much one key press should gain the Riff Repeater speed.
             }},
 
             {"[Guitar Speak]", new Dictionary<string, string>
@@ -133,6 +136,7 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier) }, // Remove Lyrics Key
+                { ReadSettings.RRSpeedKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier) } // Riff Repeater Above 100% Key
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -158,7 +162,8 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) }, // Remove Headstock When Startup / Song
-                { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }
+                { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }, // Screenshot Scores When You Finish A Song
+                { ReadSettings.RiffRepeaterAboveHundredIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) } // Allow the user to go above 100% speed in LAS Riff Repeater
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -180,6 +185,7 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier) }, // Enumerate new CDLC / ODLC every X ms
+                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier) } // The rate of how much one key press should gain the Riff Repeater speed.
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {

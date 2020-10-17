@@ -202,6 +202,10 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
+            this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
+            this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
+            this.label_RRSpeedKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -233,6 +237,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
+            this.groupBox_RRSpeed.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -312,7 +318,7 @@
             // label_ToggleLoftKey
             // 
             this.label_ToggleLoftKey.AutoSize = true;
-            this.label_ToggleLoftKey.Location = new System.Drawing.Point(464, 21);
+            this.label_ToggleLoftKey.Location = new System.Drawing.Point(464, 14);
             this.label_ToggleLoftKey.Name = "label_ToggleLoftKey";
             this.label_ToggleLoftKey.Size = new System.Drawing.Size(0, 13);
             this.label_ToggleLoftKey.TabIndex = 14;
@@ -320,7 +326,7 @@
             // label_AddVolumeKey
             // 
             this.label_AddVolumeKey.AutoSize = true;
-            this.label_AddVolumeKey.Location = new System.Drawing.Point(464, 44);
+            this.label_AddVolumeKey.Location = new System.Drawing.Point(464, 37);
             this.label_AddVolumeKey.Name = "label_AddVolumeKey";
             this.label_AddVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.label_AddVolumeKey.TabIndex = 15;
@@ -328,7 +334,7 @@
             // label_DecreaseVolumeKey
             // 
             this.label_DecreaseVolumeKey.AutoSize = true;
-            this.label_DecreaseVolumeKey.Location = new System.Drawing.Point(464, 67);
+            this.label_DecreaseVolumeKey.Location = new System.Drawing.Point(464, 60);
             this.label_DecreaseVolumeKey.Name = "label_DecreaseVolumeKey";
             this.label_DecreaseVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.label_DecreaseVolumeKey.TabIndex = 16;
@@ -336,7 +342,7 @@
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 110);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 103);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
             this.label_SongTimerKey.Size = new System.Drawing.Size(0, 13);
             this.label_SongTimerKey.TabIndex = 17;
@@ -344,7 +350,7 @@
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 133);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 126);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
             this.label_ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
@@ -404,7 +410,7 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 155);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 148);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
             this.label_RainbowStringsKey.Size = new System.Drawing.Size(0, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
@@ -668,6 +674,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_RiffRepeaterSpeedAboveOneHundred);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ScreenShotScores);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ControlVolume);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_GuitarSpeak);
@@ -689,7 +696,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(15, 14);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(284, 225);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 225);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -812,6 +819,7 @@
             // 
             // groupBox_Keybindings
             // 
+            this.groupBox_Keybindings.Controls.Add(this.label_RRSpeedKey);
             this.groupBox_Keybindings.Controls.Add(this.label_ChangeSelectedVolumeKey);
             this.groupBox_Keybindings.Controls.Add(this.label_RemoveLyricsKey);
             this.groupBox_Keybindings.Controls.Add(this.button_ClearSelectedKeybind);
@@ -826,7 +834,7 @@
             this.groupBox_Keybindings.Controls.Add(this.listBox_Modlist);
             this.groupBox_Keybindings.Location = new System.Drawing.Point(15, 17);
             this.groupBox_Keybindings.Name = "groupBox_Keybindings";
-            this.groupBox_Keybindings.Size = new System.Drawing.Size(701, 197);
+            this.groupBox_Keybindings.Size = new System.Drawing.Size(701, 222);
             this.groupBox_Keybindings.TabIndex = 52;
             this.groupBox_Keybindings.TabStop = false;
             this.groupBox_Keybindings.Text = "Key Bindings";
@@ -836,7 +844,7 @@
             // label_ChangeSelectedVolumeKey
             // 
             this.label_ChangeSelectedVolumeKey.AutoSize = true;
-            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 89);
+            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 82);
             this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
             this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(0, 13);
             this.label_ChangeSelectedVolumeKey.TabIndex = 31;
@@ -844,7 +852,7 @@
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 176);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 169);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
             this.label_RemoveLyricsKey.Size = new System.Drawing.Size(0, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
@@ -1921,6 +1929,7 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
             this.tab_ModSettings.Controls.Add(this.button_ResetModsToDefault);
             this.tab_ModSettings.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
             this.tab_ModSettings.Controls.Add(this.groupBox_ToggleHeadstockOffWhen);
@@ -2374,6 +2383,59 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
+            // checkBox_RiffRepeaterSpeedAboveOneHundred
+            // 
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.AutoSize = true;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 197);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Name = "checkBox_RiffRepeaterSpeedAboveOneHundred";
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Size = new System.Drawing.Size(159, 17);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.TabIndex = 49;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Text = "Allow RR Speed Above 100";
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.UseVisualStyleBackColor = true;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.CheckedChanged += new System.EventHandler(this.checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged);
+            // 
+            // groupBox_RRSpeed
+            // 
+            this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
+            this.groupBox_RRSpeed.Location = new System.Drawing.Point(16, 234);
+            this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
+            this.groupBox_RRSpeed.Size = new System.Drawing.Size(145, 50);
+            this.groupBox_RRSpeed.TabIndex = 100001;
+            this.groupBox_RRSpeed.TabStop = false;
+            this.groupBox_RRSpeed.Text = "Riff Repeater Speed";
+            this.groupBox_RRSpeed.Visible = false;
+            // 
+            // nUpDown_RiffRepeaterSpeed
+            // 
+            this.nUpDown_RiffRepeaterSpeed.Location = new System.Drawing.Point(7, 20);
+            this.nUpDown_RiffRepeaterSpeed.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.Name = "nUpDown_RiffRepeaterSpeed";
+            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
+            this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.ValueChanged += new System.EventHandler(this.nUpDown_RiffRepeaterSpeed_ValueChanged);
+            // 
+            // label_RRSpeedKey
+            // 
+            this.label_RRSpeedKey.AutoSize = true;
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 194);
+            this.label_RRSpeedKey.Name = "label_RRSpeedKey";
+            this.label_RRSpeedKey.Size = new System.Drawing.Size(0, 13);
+            this.label_RRSpeedKey.TabIndex = 53;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2433,6 +2495,8 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
+            this.groupBox_RRSpeed.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2614,6 +2678,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsID;
         private System.Windows.Forms.CheckBox checkBox_ScreenShotScores;
         private System.Windows.Forms.Button button_SaveLogToFile;
+        private System.Windows.Forms.CheckBox checkBox_RiffRepeaterSpeedAboveOneHundred;
+        private System.Windows.Forms.GroupBox groupBox_RRSpeed;
+        private System.Windows.Forms.NumericUpDown nUpDown_RiffRepeaterSpeed;
+        private System.Windows.Forms.Label label_RRSpeedKey;
     }
 }
 

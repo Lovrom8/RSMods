@@ -68,7 +68,8 @@ namespace RSMods
             {4, ReadSettings.ShowSongTimerIdentifier},
             {5, ReadSettings.ForceReEnumerationIdentifier},
             {6, ReadSettings.RainbowStringsIdentifier},
-            {7, ReadSettings.RemoveLyricsKeyIdentifier}
+            {7, ReadSettings.RemoveLyricsKeyIdentifier},
+            {8, ReadSettings.RRSpeedKeyIdentifier}
         };
 
         public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
@@ -103,7 +104,8 @@ namespace RSMods
             "Show Song Timer",
             "Force ReEnumeration",
             "Rainbow Strings",
-            "Remove Lyrics"
+            "Remove Lyrics",
+            "RR Speed Change"
         };
 
         public static List<string> songlists = new List<string>();
@@ -123,6 +125,7 @@ namespace RSMods
                 savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
                 savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
                 savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
+                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
                 return savedKeysForModToggles;
             }
 

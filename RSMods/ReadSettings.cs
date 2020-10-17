@@ -6,12 +6,12 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
-                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
+                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores, RiffRepeaterAboveHundred,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                             ExtendedRangeTuning, CheckForNewSongInterval,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
 
@@ -32,6 +32,7 @@ namespace RSMods
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
                 ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
+                RRSpeedKeyIdentifier =  "RRSpeedKey = ",
 
                 // Toggle Effects
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
@@ -57,6 +58,7 @@ namespace RSMods
                 GuitarSpeakIdentifier = "GuitarSpeak = ",
                 RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
                 ScreenShotScoresIdentifier = "ScreenShotScores = ",
+                RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -77,6 +79,7 @@ namespace RSMods
                 // Mod Settings
                 ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
+                RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
 
                 // Guitar Speak
                 GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -217,6 +220,15 @@ namespace RSMods
                             RemoveLyricsKey = KeyConversion.VirtualKey(RemoveLyricsKey);
                         if (identifierToGrab == RemoveLyricsKeyIdentifier)
                             return RemoveLyricsKey;
+                    }
+                    
+                    if (currentLine.Contains(RRSpeedKeyIdentifier))
+                    {
+                        RRSpeedKey = currentLine.Substring(RRSpeedKeyIdentifier.Length, (currentLine.Length - RRSpeedKeyIdentifier.Length));
+                        if (KeyConversion.VirtualKey(RRSpeedKey) != "")
+                            RRSpeedKey = KeyConversion.VirtualKey(RRSpeedKey);
+                        if (identifierToGrab == RRSpeedKeyIdentifier)
+                            return RRSpeedKey;
                     }
 
                     // Mods Enabled / Disabled
@@ -455,6 +467,17 @@ namespace RSMods
                             return ScreenShotScores;
                     }
 
+                    if (currentLine.Contains(RiffRepeaterAboveHundredIdentifier))
+                    {
+                        if (currentLine.Substring(RiffRepeaterAboveHundredIdentifier.Length, (currentLine.Length - RiffRepeaterAboveHundredIdentifier.Length)) == "on")
+                            RiffRepeaterAboveHundred = "on";
+                        else
+                            RiffRepeaterAboveHundred = "off";
+
+                        if (identifierToGrab == RiffRepeaterAboveHundredIdentifier)
+                            return RiffRepeaterAboveHundred;
+                    }
+
                     // String Colors (Normal {N} & Colorblind {CB})
 
                     // Normal Colors
@@ -553,12 +576,21 @@ namespace RSMods
                         if (identifierToGrab == ExtendedRangeTuningIdentifier)
                             return ExtendedRangeTuning;
                     }
+
                     if (currentLine.Contains(CheckForNewSongIntervalIdentifier))
                     {
                         CheckForNewSongInterval = currentLine.Substring(CheckForNewSongIntervalIdentifier.Length, (currentLine.Length - CheckForNewSongIntervalIdentifier.Length));
 
                         if (identifierToGrab == CheckForNewSongIntervalIdentifier)
                             return CheckForNewSongInterval;
+                    }
+
+                    if (currentLine.Contains(RiffRepeaterSpeedIntervalIdentifier))
+                    {
+                        RiffRepeaterSpeedInterval = currentLine.Substring(RiffRepeaterSpeedIntervalIdentifier.Length, (currentLine.Length - RiffRepeaterSpeedIntervalIdentifier.Length));
+
+                        if (identifierToGrab == RiffRepeaterSpeedIntervalIdentifier)
+                            return RiffRepeaterSpeedInterval;
                     }
 
                     // Guitar Speak

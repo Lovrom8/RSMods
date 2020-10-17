@@ -226,6 +226,13 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
                 checkBox_ChangeTheme.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) == "on")
+            {
+                checkBox_RiffRepeaterSpeedAboveOneHundred.Checked = true;
+                groupBox_RRSpeed.Visible = true;
+                nUpDown_RiffRepeaterSpeed.Value = Convert.ToDecimal(ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier));
+            }
         }
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
@@ -823,6 +830,7 @@ namespace RSMods
             label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
             label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+            label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1512,6 +1520,14 @@ namespace RSMods
             {
                 MessageBox.Show($"Unable to save log, error: {ioex.Message}");
             }
+        }
+
+        private void nUpDown_RiffRepeaterSpeed_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
+
+        private void checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.RiffRepeaterAboveHundredIdentifier, checkBox_RiffRepeaterSpeedAboveOneHundred.Checked.ToString().ToLower());
+            groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
         }
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
