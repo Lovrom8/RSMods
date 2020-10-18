@@ -313,7 +313,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed) && useNewSongSpeed) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()), whiteText, (int)(MemHelpers::GetWindowSize()[0] / 2.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 2.50), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 2.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 2.50), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 		else
 			useNewSongSpeed = false;
