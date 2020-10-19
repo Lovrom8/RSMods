@@ -150,9 +150,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
-
-			if (keyPressed == VK_F2)
-				streamerWantsRRSpeedEnabled = true;
 		}
 
 		if (debug) {
@@ -545,7 +542,7 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	//GuitarSpeak.DrawTunerInGame();
-
+	streamerWantsRRSpeedEnabled = true; // Set To True if you want the streamer to have RR open every song (for over 100% RR speed)
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
@@ -599,11 +596,13 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = false;
 				}
 
-				if (streamerWantsRRSpeedEnabled)
+				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed) && streamerWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA or NSP so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
+
 			}
 			else { // If User Is Exiting Song / In A Menu
 				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
+				newSongSpeed = 100.f;
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song") // If the user only wants to see the headstock in menus, then we need to stop removing it.
 					RemoveHeadstockInThisMenu = false;
