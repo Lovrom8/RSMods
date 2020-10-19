@@ -192,10 +192,37 @@ bool MemHelpers::IsInSong() {
 	return IsInStringArray(GetCurrentMenu(), 0, songModes);
 }
 
-float MemHelpers::RiffRepeaterSpeed(int newSpeed) {
+float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
 	
 	if (newSpeed != NULL) // If we aren't just trying to see the current speed.
 		*(float*)riffRepeaterSpeed = newSpeed;
 	return *(float*)riffRepeaterSpeed;
+}
+
+void MemHelpers::AutomatedOpenRRSpeedAbuse() {
+	Util::SendKey(VK_SPACE); // Open RR Menu
+	std::cout << "Open RR " << GetLastError() << std::endl;
+
+	Util::SendKey(VK_DOWN); // Difficulty
+	std::cout << "Difficulty " << GetLastError() << std::endl;
+	Util::SendKey(VK_DOWN); // Speed
+	std::cout << "Speed " << GetLastError() << std::endl;
+
+	RiffRepeaterSpeed(1000.f); // Allow us to change speed values
+	std::cout << "Set Speed" << std::endl;
+
+	Util::SendKey(VK_LEFT); // Trigger our new speed requirement
+	std::cout << "Trigger New Speed " << GetLastError() << std::endl;
+	Util::SendKey(VK_RIGHT); // Reset back to 100%
+	std::cout << "Reset Speed # to 100 " << GetLastError() << std::endl;
+
+	Util::SendKey(VK_DELETE); // Return to the song
+	std::cout << "Exit RR " << GetLastError() << std::endl;
+	RiffRepeaterSpeed(100.f); // Reset to 100% speed so the end user doesn't experience any speed ups / slow downs when an event isn't triggered.
+	std::cout << "Reset speed" << std::endl;
+	automatedSongSpeedInThisSong = true; // Don't run this again in the same song if we put this in a loop.
+	std::cout << "automatedSongSpeedInThisSong" << std::endl;
+	useNewSongSpeed = true; // Show RR Speed Text
+	std::cout << "useNewSongSpeed" << std::endl;
 }

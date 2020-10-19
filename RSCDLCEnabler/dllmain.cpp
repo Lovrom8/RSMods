@@ -150,9 +150,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
+
+			/*if (keyPressed == VK_F2)
+				MemHelpers::AutomatedOpenRRSpeedAbuse();*/
 		}
-
-
 
 		if (debug) {
 			if (keyPressed == VK_INSERT)
