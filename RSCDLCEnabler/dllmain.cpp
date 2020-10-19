@@ -137,12 +137,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			// Wwise Sound Term / Init combo kills ALL audio and it will never restart even when using set addresses used by the executable (there is 2 pairs, and both init properly work).
 			//}
 
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && GetAsyncKeyState(VK_SHIFT) < 0)
-				newSongSpeed = 100;
-
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongRRSpeed))) { // Song Speed (RR speed)
-				useNewSongSpeed = true;
 				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
+
+				if (GetAsyncKeyState(VK_SHIFT) < 0) {
+					useNewSongSpeed = false;
+					newSongSpeed = 100.f;
+					MemHelpers::RiffRepeaterSpeed(newSongSpeed);
+				}
+				else
+					useNewSongSpeed = true;
+
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
 		}
@@ -311,12 +316,18 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed) && useNewSongSpeed) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 2.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 2.50), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			if (useNewSongSpeed) {
+				if ((newSongSpeed - Settings::GetModSetting("RRSpeedInterval")) > 100.f)
+					MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed() - Settings::GetModSetting("RRSpeedInterval")) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 2.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 2.50), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			}
+			else
+				MemHelpers::RiffRepeaterSpeed(100.f);
 		}
 		else
 			useNewSongSpeed = false;
+			
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
