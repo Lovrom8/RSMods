@@ -137,7 +137,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			// Wwise Sound Term / Init combo kills ALL audio and it will never restart even when using set addresses used by the executable (there is 2 pairs, and both init properly work).
 			//}
 
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongRRSpeed))) { // Song Speed (RR speed)
+			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
 				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
 
 				if (GetAsyncKeyState(VK_SHIFT) < 0) {
@@ -314,7 +314,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed)) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			if (useNewSongSpeed) {
 				if ((newSongSpeed - Settings::GetModSetting("RRSpeedInterval")) > 100.f)
@@ -325,8 +325,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 		else
 			useNewSongSpeed = false;
-			
-
+		
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
 			//unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
@@ -596,7 +595,7 @@ unsigned WINAPI MainThread(void*) {
 					DrawSkylineInMenu = false;
 				}
 
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongRRSpeed) && streamerWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA or NSP so we need to exclude it.
+				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && streamerWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
 			}

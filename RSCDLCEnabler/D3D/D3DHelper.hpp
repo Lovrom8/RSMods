@@ -69,12 +69,6 @@ inline std::vector<std::string> scoreAttackModes = {
 	"ScoreAttack_Pause",
 };
 
-inline std::vector<std::string> learnASongRRSpeed = {
-	"LearnASong_Game",
-	"LearnASong_Pause",
-	"LearnASong_RiffRepeater"
-};
-
 inline std::vector<std::string> lessonModes = { // These are the Guided Experience / Lessons modes.
 	"GuidedExperience_Game",
 	"GuidedExperience_Pause"

@@ -211,7 +211,7 @@ void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 
 	Util::SendKey(VK_DOWN); // Speed
 
-	RiffRepeaterSpeed(1000.f); // Allow us to change speed values
+	RiffRepeaterSpeed(100.00001f); // Allow us to change speed values. Keep this number as close to 100 as possible to allow NSP to use this number. It doesn't like being reset to 100 at the bottom of this function.
 
 	Util::SendKey(VK_LEFT); // Trigger our new speed requirement
 
