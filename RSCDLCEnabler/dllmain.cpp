@@ -151,8 +151,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
 
-			/*if (keyPressed == VK_F2)
-				MemHelpers::AutomatedOpenRRSpeedAbuse();*/
+			if (keyPressed == VK_F2)
+				streamerWantsRRSpeedEnabled = true;
 		}
 
 		if (debug) {
@@ -598,9 +598,14 @@ unsigned WINAPI MainThread(void*) {
 						toggleSkyline = true;
 					DrawSkylineInMenu = false;
 				}
+
+				if (streamerWantsRRSpeedEnabled)
+					MemHelpers::AutomatedOpenRRSpeedAbuse();
 			}
 			else { // If User Is Exiting Song / In A Menu
-				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
+				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
+
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song") // If the user only wants to see the headstock in menus, then we need to stop removing it.
 					RemoveHeadstockInThisMenu = false;
 
 				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
@@ -628,7 +633,7 @@ unsigned WINAPI MainThread(void*) {
 					resetHeadstockCache = true;
 			}
 
-			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
+			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) // Screenshot Scores
 				TakeScreenshot();
 			else
 				takenScreenshotOfThisScreen = false;
@@ -637,12 +642,13 @@ unsigned WINAPI MainThread(void*) {
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
 			}
+
 			previousMenu = currentMenu;
 
 			if (enableColorBlindCheckboxGUI)
 				MemHelpers::ToggleCB(cbEnabled);
 
-			if (ERMode::IsRainbowEnabled())
+			if (ERMode::IsRainbowEnabled()) // Rainbow mode / ER Mode
 				ERMode::DoRainbow();
 			else
 				ERMode::Toggle7StringMode();

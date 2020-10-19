@@ -201,28 +201,42 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 }
 
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
+	streamerWantsRRSpeedEnabled = false;
+
 	Util::SendKey(VK_SPACE); // Open RR Menu
 	std::cout << "Open RR " << GetLastError() << std::endl;
 
+	Sleep(750);
+
 	Util::SendKey(VK_DOWN); // Difficulty
 	std::cout << "Difficulty " << GetLastError() << std::endl;
+	Sleep(150);
+
 	Util::SendKey(VK_DOWN); // Speed
 	std::cout << "Speed " << GetLastError() << std::endl;
+	Sleep(150);
 
 	RiffRepeaterSpeed(1000.f); // Allow us to change speed values
 	std::cout << "Set Speed" << std::endl;
 
 	Util::SendKey(VK_LEFT); // Trigger our new speed requirement
 	std::cout << "Trigger New Speed " << GetLastError() << std::endl;
+	Sleep(150);
+
 	Util::SendKey(VK_RIGHT); // Reset back to 100%
 	std::cout << "Reset Speed # to 100 " << GetLastError() << std::endl;
+	Sleep(150);
 
 	Util::SendKey(VK_DELETE); // Return to the song
 	std::cout << "Exit RR " << GetLastError() << std::endl;
+	Sleep(150);
+
 	RiffRepeaterSpeed(100.f); // Reset to 100% speed so the end user doesn't experience any speed ups / slow downs when an event isn't triggered.
 	std::cout << "Reset speed" << std::endl;
+
 	automatedSongSpeedInThisSong = true; // Don't run this again in the same song if we put this in a loop.
 	std::cout << "automatedSongSpeedInThisSong" << std::endl;
+
 	useNewSongSpeed = true; // Show RR Speed Text
 	std::cout << "useNewSongSpeed" << std::endl;
 }
