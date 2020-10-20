@@ -1579,6 +1579,281 @@ typedef AkArray<AkGameObjectID, AkGameObjectID, ArrayPoolDefault, 32> AkGameObje
 
 typedef AkReal32* VectorPtr;
 
+typedef AkReal32 AkSampleType;	///< Audio sample data type (32 bit floating point)
+
+#define AK_SPEAKER_LOW_FREQUENCY 0x8
+/// Audio buffer structure including the address of an audio buffer, the number of valid frames inside, 
+/// and the maximum number of frames the audio buffer can hold.
+/// \sa
+/// - \ref fx_audiobuffer_struct
+class AkAudioBuffer
+{
+public:
+
+	/// Constructor.
+	AkAudioBuffer()
+	{
+		Clear();
+	}
+
+	/// Clear data pointer.
+	AkForceInline void ClearData()
+	{
+		pData = NULL;
+	}
+
+	/// Clear members.
+	AkForceInline void Clear()
+	{
+		ClearData();
+		uValidFrames = 0;
+		uMaxFrames = 0;
+		eState = AK_DataNeeded;
+	}
+
+	/// \name Channel queries.
+	//@{
+	/// Get the number of channels.
+	AkForceInline AkUInt32 NumChannels() const
+	{
+		return channelConfig.uNumChannels;
+	}
+
+	/// Returns true if there is an LFE channel present.
+	AkForceInline bool HasLFE() const
+	{
+		return channelConfig.HasLFE();
+	}
+
+	AkForceInline AkChannelConfig GetChannelConfig() const { return channelConfig; }
+
+	//@}
+
+	/// \name Interleaved interface
+	//@{
+	/// Get address of data: to be used with interleaved buffers only.
+	/// \remarks Only source plugins can output interleaved data. This is determined at 
+	/// initial handshaking.
+	/// \sa 
+	/// - \ref fx_audiobuffer_struct
+	AkForceInline void* GetInterleavedData()
+	{
+		return pData;
+	}
+
+	/// Attach interleaved data. Allocation is performed outside.
+	inline void AttachInterleavedData(void* in_pData, AkUInt16 in_uMaxFrames, AkUInt16 in_uValidFrames, AkChannelConfig in_channelConfig)
+	{
+		pData = in_pData;
+		uMaxFrames = in_uMaxFrames;
+		uValidFrames = in_uValidFrames;
+		channelConfig = in_channelConfig;
+	}
+	//@}
+
+	/// \name Deinterleaved interface
+	//@{
+
+	/// Check if buffer has samples attached to it.
+	AkForceInline bool HasData() const
+	{
+		return (NULL != pData);
+	}
+
+	/// Convert a channel, identified by a single channel bit, to a buffer index used in GetChannel() below, for a given channel config.
+	/// Standard indexing follows channel bit order (see AkSpeakerConfig.h). Pipeline/buffer indexing is the same but the LFE is moved to the end.
+	static inline AkUInt32 StandardToPipelineIndex(
+		AkChannelConfig
+		, AkUInt32		in_uChannelIdx			///< Channel index in standard ordering to be converted to pipeline ordering.
+	)
+	{
+		return in_uChannelIdx;
+	}
+
+	/// Get the buffer of the ith channel. 
+	/// Access to channel data is most optimal through this method. Use whenever the
+	/// speaker configuration is known, or when an operation must be made independently
+	/// for each channel.
+	/// \remarks When using a standard configuration, use ChannelMaskToBufferIndex() to convert channel bits to buffer indices.
+	/// \return Address of the buffer of the ith channel.
+	/// \sa
+	/// - \ref fx_audiobuffer_struct
+	/// - \ref fx_audiobuffer_struct_channels
+	inline AkSampleType* GetChannel(
+		AkUInt32 in_uIndex		///< Channel index [0,NumChannels()-1]
+	)
+	{
+		AKASSERT(in_uIndex < NumChannels());
+		return (AkSampleType*)((AkUInt8*)(pData)+(in_uIndex * sizeof(AkSampleType) * MaxFrames()));
+	}
+
+	/// Get the buffer of the LFE.
+	/// \return Address of the buffer of the LFE. Null if there is no LFE channel.
+	/// \sa
+	/// - \ref fx_audiobuffer_struct_channels
+	inline AkSampleType* GetLFE()
+	{
+		if (channelConfig.uChannelMask & AK_SPEAKER_LOW_FREQUENCY)
+			return GetChannel(NumChannels() - 1);
+
+		return (AkSampleType*)0;
+	}
+
+	/// Attach deinterleaved data where channels are contiguous in memory. Allocation is performed outside.
+	AkForceInline void AttachContiguousDeinterleavedData(void* in_pData, AkUInt16 in_uMaxFrames, AkUInt16 in_uValidFrames, AkChannelConfig in_channelConfig)
+	{
+		AttachInterleavedData(in_pData, in_uMaxFrames, in_uValidFrames, in_channelConfig);
+	}
+	/// Detach deinterleaved data where channels are contiguous in memory. The address of the buffer is returned and fields are cleared.
+	AkForceInline void* DetachContiguousDeinterleavedData()
+	{
+		uMaxFrames = 0;
+		uValidFrames = 0;
+		channelConfig.Clear();
+		void* pDataOld = pData;
+		pData = NULL;
+		return pDataOld;
+	}
+
+	//@}
+
+	void RelocateMedia(AkUInt8* in_pNewMedia, AkUInt8* in_pOldMedia)
+	{
+		AkUIntPtr uMemoryOffset = (AkUIntPtr)in_pNewMedia - (AkUIntPtr)in_pOldMedia;
+		pData = (void*)(((AkUIntPtr)pData) + uMemoryOffset);
+	}
+
+protected:
+
+	void* pData;				///< Start of the audio buffer.
+
+	AkChannelConfig	channelConfig;		///< Channel config.
+public:
+	AKRESULT		eState;				///< Execution status	
+protected:
+	AkUInt16		uMaxFrames;			///< Number of sample frames the buffer can hold. Access through AkAudioBuffer::MaxFrames().
+
+public:
+	/// Access to the number of sample frames the buffer can hold.
+	/// \return Number of sample frames the buffer can hold.
+	AkForceInline AkUInt16 MaxFrames() const { return uMaxFrames; }
+
+	AkUInt16		uValidFrames;		///< Number of valid sample frames in the audio buffer
+} AK_ALIGN_DMA;
+
+struct AkAudioFormat
+{
+	AkUInt32	uSampleRate;		///< Number of samples per second
+
+	AkChannelConfig channelConfig;	///< Channel configuration.
+
+	AkUInt32	uBitsPerSample : 6; ///< Number of bits per sample.
+	AkUInt32	uBlockAlign : 10;///< Number of bytes per sample frame. (For example a 5.1 PCM 16bit should have a uBlockAlign equal to 6(5.1 channels)*2(16 bits per sample) = 12.
+	AkUInt32	uTypeID : 2; ///< Data type ID (AkDataTypeID). 
+	AkUInt32	uInterleaveID : 1; ///< Interleave ID (AkDataInterleaveID). 
+
+	/// Get the number of channels.
+	/// \return The number of channels
+	AkForceInline AkUInt32 GetNumChannels() const
+	{
+		return channelConfig.uNumChannels;
+	}
+
+	/// Query if LFE channel is present.
+	/// \return True when LFE channel is present
+	AkForceInline bool HasLFE() const
+	{
+		return channelConfig.HasLFE();
+	}
+
+	/// Query if center channel is present.
+	/// Note that mono configurations have one channel which is arbitrary set to AK_SPEAKER_FRONT_CENTER,
+	/// so HasCenter() returns true for mono signals.
+	/// \return True when center channel is present and configuration has more than 2 channels.
+	AkForceInline bool HasCenter() const
+	{
+		return channelConfig.HasCenter();
+	}
+
+	/// Get the number of bits per sample.
+	/// \return The number of bits per sample
+	AkForceInline AkUInt32 GetBitsPerSample()	const
+	{
+		return uBitsPerSample;
+	}
+
+	/// Get the block alignment.
+	/// \return The block alignment
+	AkForceInline AkUInt32 GetBlockAlign() const
+	{
+		return uBlockAlign;
+	}
+
+	/// Get the data sample format (Float or Integer).
+	/// \return The data sample format
+	AkForceInline AkUInt32 GetTypeID() const
+	{
+		return uTypeID;
+	}
+
+	/// Get the interleaved type.
+	/// \return The interleaved type
+	AkForceInline AkUInt32 GetInterleaveID() const
+	{
+		return uInterleaveID;
+	}
+
+	/// Set all parameters of the audio format structure.
+	/// Channels are specified by channel mask (standard configs).
+	void SetAll(
+		AkUInt32    in_uSampleRate,		///< Number of samples per second
+		AkChannelConfig in_channelConfig,	///< Channel configuration
+		AkUInt32    in_uBitsPerSample,	///< Number of bits per sample
+		AkUInt32    in_uBlockAlign,		///< Block alignment
+		AkUInt32    in_uTypeID,			///< Data sample format (Float or Integer)
+		AkUInt32    in_uInterleaveID	///< Interleaved type
+	)
+	{
+		uSampleRate = in_uSampleRate;
+		channelConfig = in_channelConfig;
+		uBitsPerSample = in_uBitsPerSample;
+		uBlockAlign = in_uBlockAlign;
+		uTypeID = in_uTypeID;
+		uInterleaveID = in_uInterleaveID;
+	}
+
+	/// Checks if the channel configuration is supported by the source pipeline.
+	/// \return The interleaved type
+	AkForceInline bool IsChannelConfigSupported() const
+	{
+		return channelConfig.IsChannelConfigSupported();
+	}
+
+	AkForceInline bool operator==(const AkAudioFormat& in_other) const
+	{
+		return uSampleRate == in_other.uSampleRate
+			&& channelConfig == in_other.channelConfig
+			&& uBitsPerSample == in_other.uBitsPerSample
+			&& uBlockAlign == in_other.uBlockAlign
+			&& uTypeID == in_other.uTypeID
+			&& uInterleaveID == in_other.uInterleaveID;
+	}
+
+	AkForceInline bool operator!=(const AkAudioFormat& in_other) const
+	{
+		return uSampleRate != in_other.uSampleRate
+			|| channelConfig != in_other.channelConfig
+			|| uBitsPerSample != in_other.uBitsPerSample
+			|| uBlockAlign != in_other.uBlockAlign
+			|| uTypeID != in_other.uTypeID
+			|| uInterleaveID != in_other.uInterleaveID;
+	}
+};
+
+typedef void* (AkAudioInputPluginExecuteCallbackFunc)(AkPlayingID in_playingID, AkAudioBuffer* io_pBufferOut);
+typedef AkReal32 (AkAudioInputPluginGetGainCallbackFunc)(AkPlayingID in_playingID);
+typedef void (AkAudioInputPluginGetFormatCallbackFunc)(AkPlayingID in_playingID, AkAudioFormat* io_AudioFormat);
+
 /* Typedef Functions */
 
 	// IAKStreamMgr
@@ -1769,10 +2044,14 @@ typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2,
 typedef AKRESULT(__cdecl* tUnloadBankUnique)(const char* in_pszString, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 // End Rocksmith Custom Wwise Functions
 
-/* Types To Variables (External Use) */
+// Rocksmith Function Hijack
 
-// Template: type Variable = (type)MemoryAddress;
-// Example: tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
+typedef void(__stdcall* tRegisterAllPlugins)(void);
+typedef void(__cdecl* tSetAudioInputCallbacks)(AkAudioInputPluginExecuteCallbackFunc* execute, AkAudioInputPluginGetFormatCallbackFunc* format, AkAudioInputPluginGetGainCallbackFunc* gain, int* normallyReturnsOne);
+
+// End Rocksmith Function Hijack
+
+/* Types To Variables (External Use) */
 
 namespace WwiseVariables {
 	/* Offsets For Functions */
@@ -1962,6 +2241,10 @@ namespace WwiseVariables {
 	extern uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver;
 	extern uintptr_t func_Wwise_Stream_SetCurrentLanguage;
 	extern uintptr_t func_Wwise_Stream_SetFileLocationResolver;
+
+	// Rocksmith Function Hijack
+	extern uintptr_t func_Rocksmith_RegisterAllPlugins;
+	extern uintptr_t func_Rocksmith_SetAudioInputCallbacks;
 	// End Wwise Hijack;
 
 	// Root Functions;
@@ -2136,5 +2419,10 @@ namespace WwiseVariables {
 	extern 	tSetPositionInternal Wwise_Sound_SetPositionInternal;
 	extern 	tStopSourcePlugin Wwise_Sound_StopSourcePlugin;
 	extern 	tUnloadBankUnique Wwise_Sound_UnloadBankUnique;
+
+	// Function Hijack
+
+	extern  tRegisterAllPlugins Rocksmith_RegisterAllPlugins;
+	extern	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks;
 
 }

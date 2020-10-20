@@ -186,7 +186,15 @@ namespace WwiseVariables {
 	uintptr_t func_Wwise_Stream_RemoveLanguageChangeObserver = 0x1fbc056;
 	uintptr_t func_Wwise_Stream_SetCurrentLanguage = 0x1fbc036;
 	uintptr_t func_Wwise_Stream_SetFileLocationResolver = 0x1fbb4a3;
+
+	// Rocksmith Function Hijack
+	uintptr_t func_Rocksmith_RegisterAllPlugins = 0x01ca0780;
+	uintptr_t func_Rocksmith_SetAudioInputCallbacks = 0x01f10d67;
+
 	// End Wwise Hijack
+
+	// Template: type Variable = (type)MemoryAddress;
+	// Example: tSetRTPCValue_Char Wwise_Sound_SetRTPCValue_Char = (tSetRTPCValue_Char)func_Wwise_Sound_SetRTPCValue_Char;
 
 	// Root Functions
 	tIsRestoreSinkRequested Wwise_Root_IsRestoreSinkRequested = (tIsRestoreSinkRequested)func_Wwise_Root_IsRestoreSinkRequested;
@@ -360,4 +368,9 @@ namespace WwiseVariables {
 	tSetPositionInternal Wwise_Sound_SetPositionInternal = (tSetPositionInternal)func_Wwise_Sound_SetPositionInternal;
 	tStopSourcePlugin Wwise_Sound_StopSourcePlugin = (tStopSourcePlugin)func_Wwise_Sound_StopSourcePlugin;
 	tUnloadBankUnique Wwise_Sound_UnloadBankUnique = (tUnloadBankUnique)func_Wwise_Sound_UnloadBankUnique;
+
+	// Rocksmith Function Hijack
+
+	tRegisterAllPlugins Rocksmith_RegisterAllPlugins = (tRegisterAllPlugins)func_Rocksmith_RegisterAllPlugins;
+	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks = (tSetAudioInputCallbacks)func_Rocksmith_SetAudioInputCallbacks;
 }
