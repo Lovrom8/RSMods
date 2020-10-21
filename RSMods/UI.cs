@@ -14,6 +14,7 @@ using System.Threading;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Threading.Tasks;
+using RSMods.Twitch.EffectServer;
 
 namespace RSMods
 {

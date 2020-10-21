@@ -182,12 +182,14 @@
     <Compile Include="GuitarSpeak.cs" />
     <Compile Include="GuitarSpeakFretboard.cs" />
     <Compile Include="SetAndForgetMods.cs" />
+    <Compile Include="Twitch\EffectServer\EffectMessage.cs" />
+    <Compile Include="Twitch\EffectServer\EffectServerTCP.cs" />
     <Compile Include="Twitch\PubSub.cs" />
-    <Compile Include="Twitch\ImplicitAuth.cs" />
+    <Compile Include="Twitch\Auth\ImplicitAuth.cs" />
     <Compile Include="Twitch\TwitchData.cs" />
     <Compile Include="Twitch\TwitchReward.cs" />
     <Compile Include="Twitch\TwitchSettings.cs" />
-    <Compile Include="Twitch\WebServer.cs" />
+    <Compile Include="Twitch\Auth\WebServer.cs" />
     <Compile Include="UI.cs">
       <SubType>Form</SubType>
     </Compile>

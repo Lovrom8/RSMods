@@ -1,4 +1,5 @@
-﻿using RSMods.Util;
+﻿using RSMods.Twitch.EffectServer;
+using RSMods.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,6 +15,7 @@ namespace RSMods.Twitch
     public class PubSub
     {
         private TwitchPubSub pubSub;
+        private static EffectServerTCP effectServer;
         private List<string> eventHashes = new List<string>();
 
         public void SetUp()
@@ -45,6 +47,8 @@ namespace RSMods.Twitch
             pubSub.OnRewardRedeemed += OnRewardRedeemed;
             pubSub.OnChannelSubscription += OnSubscriptionRecieved;
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
+
+            effectServer = new EffectServerTCP();
         }
 
         public void Resub()
@@ -52,6 +56,7 @@ namespace RSMods.Twitch
             // pubSub.Disconnect(); Disconnecting/Reconnecting may cause OnPubSubServiceError loop
             // pubSub.Connect();
 
+            TwitchSettings.Get.AddToLog("------------------------" + Environment.NewLine + "Resubing to Twitch events");
             pubSub.ListenToRewards(TwitchSettings.Get.ChannelID);
             pubSub.ListenToBitsEvents(TwitchSettings.Get.ChannelID);
             pubSub.ListenToSubscriptions(TwitchSettings.Get.ChannelID);
@@ -101,7 +106,7 @@ namespace RSMods.Twitch
 
             if (eventHashes.Contains(hash))
             {
-                TwitchSettings.Get.AddToLog("Triple bit event, thou shall not pass!");
+                //TwitchSettings.Get.AddToLog("Triple bit event, thou shall not pass!");
                 return;
             }
 
@@ -116,7 +121,7 @@ namespace RSMods.Twitch
             HandleChannelPointsRecieved(e);
         }
 
-        private void OnSubscriptionRecieved(object sender, OnChannelSubscriptionArgs e) 
+        private void OnSubscriptionRecieved(object sender, OnChannelSubscriptionArgs e)
         {
             var subInfo = e.Subscription;
 
@@ -135,10 +140,14 @@ namespace RSMods.Twitch
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
 
-            if (reward.AdditionalMsg != "")
+            effectServer.AddEffectToQueue(reward);
+
+            /* TCP Server instead of WM_COPYDATA, to accomodate the way CC effect server works :(
+             * if (reward.AdditionalMsg != "")
                 WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg} {reward.Length}");
             else
                 WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.Length}");
+            */
 
             TwitchSettings.Get.AddToLog($"Enabling: {reward.Name}");
 
