@@ -22,8 +22,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 
 		Settings::UpdateTwitchSetting("FYourFC", "on");
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
+		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

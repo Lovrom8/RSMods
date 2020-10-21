@@ -6,7 +6,7 @@ bool debug = true;
 bool debug = false;
 #endif
 
-unsigned WINAPI EnumerationThread(void*) {
+unsigned WINAPI EnumerationThread() {
 	while (!D3DHooks::GameLoaded) // We are in no hurry :)
 		Sleep(5000);
 
@@ -228,8 +228,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			if (Contains(currMsg, "update"))
 				Settings::ParseSettingUpdate(currMsg);
+			else if (Contains(currMsg, "TurboSpeed"))
+				streamerWantsRRSpeedEnabled = Contains(currMsg, "enable");
 			else if (Contains(currMsg, "enable"))
 				effectQueue.push_back(currMsg);
+			else if (Contains(currMsg, "Reconnect"))
+				CrowdControl::StartServerLoop();
 		}
 	}
 
@@ -387,7 +391,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 		else
 			useNewSongSpeed = false;
-		
+
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
 			//unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
@@ -406,17 +410,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 
 	return hRet;
-}
-
-unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but we don't really need it to be super precise nor thread safe, so yeah
-	while (!D3DHooks::GameClosing) {
-		currentRandTexture++;
-		currentRandTexture %= randomTextureCount;
-
-		Sleep(StringChangeInterval);
-	}
-
-	return 0;
 }
 
 bool HandleMessage(std::string currMsg, std::string type) {
@@ -484,7 +477,7 @@ void HandleEffect(std::string currEffectMsg) {
 	}
 }
 
-unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
+unsigned WINAPI HandleEffectQueueThread() { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
 	while (!D3DHooks::GameClosing) {
 		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
 			// Okay this is getting sketchy, but otherwise one effect would block other effects from running
@@ -582,7 +575,7 @@ void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6
 	}
 }
 
-unsigned WINAPI MainThread(void*) {
+unsigned WINAPI MainThread() {
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
 		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
@@ -603,7 +596,7 @@ unsigned WINAPI MainThread(void*) {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	//GuitarSpeak.DrawTunerInGame();
-	streamerWantsRRSpeedEnabled = true; // Set To True if you want the streamer to have RR open every song (for over 100% RR speed)
+	streamerWantsRRSpeedEnabled = false; // Set To True if you want the streamer to have RR open every song (for over 100% RR speed)
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
@@ -727,11 +720,10 @@ unsigned WINAPI MainThread(void*) {
 	return 0;
 }
 
-void Initialize(void) {
-	_beginthreadex(NULL, 0, &MainThread, NULL, 0, 0);
-	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
-	//_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
-	_beginthreadex(NULL, 0, &HandleEffectQueueThread, NULL, 0, 0);
+void Initialize() {
+	std::thread(MainThread).detach();
+	std::thread(EnumerationThread).detach();
+	std::thread(HandleEffectQueueThread).detach();
 
 	// Probably check ini setting before starting this thing
 	CrowdControl::StartServer();

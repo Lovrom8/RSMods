@@ -170,8 +170,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
+		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

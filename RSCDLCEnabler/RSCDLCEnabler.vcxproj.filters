@@ -279,13 +279,7 @@
     <ClCompile Include="D3D/D3DHooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TransparentNotesEffect.cpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="RemoveNotesEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="SolidNotesEffect.cpp">
+    <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -474,6 +468,9 @@
       <Filter>CrowdControl</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
   </ItemGroup>

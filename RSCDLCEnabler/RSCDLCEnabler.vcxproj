@@ -18,13 +18,11 @@
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
     <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
+    <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
     <ClCompile Include="CC\CCStructs.hpp" />
-    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
-    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
-    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
@@ -37,6 +35,7 @@
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
+    <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp" />
     <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="lua.cpp" />
