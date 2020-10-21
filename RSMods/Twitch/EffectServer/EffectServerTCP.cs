@@ -168,8 +168,8 @@ namespace RSMods.Twitch.EffectServer
             Request request = new Request()
             {
                 id = effectId,
-                //code = reward.Name.ToLower(),
-                code = "solidcustomrgb",
+                code = reward.InternalMsgEnable.ToLower(),
+                //code = "solidcustomrgb",
                 type = 1,
                 viewer = "rsmods"
             };

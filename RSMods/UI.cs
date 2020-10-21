@@ -1173,6 +1173,17 @@ namespace RSMods
             TwitchSettings.Get.LoadEnabledEffects();
         }
 
+        private void CheckForTurboSpeed(TwitchReward selectedReward)
+        {
+            if (selectedReward.Name.Contains("TurboSpeed"))
+            {
+                if (selectedReward.Enabled)
+                    WinMsgUtil.SendMsgToRS("enable TurboSpeed");
+                else
+                    WinMsgUtil.SendMsgToRS("disable TurboSpeed");
+            }
+        }
+
         private void EnableTwitchTab()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -1186,6 +1197,8 @@ namespace RSMods
 
                     if (selectedReward.AdditionalMsg != null && selectedReward.AdditionalMsg != string.Empty && selectedReward.AdditionalMsg != "Random")
                         row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+
+                    CheckForTurboSpeed(selectedReward);
                 }
             }
 
@@ -1381,6 +1394,8 @@ namespace RSMods
                 ((BitsReward)selectedReward).BitsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
             else if (selectedReward is ChannelPointsReward)
                 ((ChannelPointsReward)selectedReward).PointsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
+
+            CheckForTurboSpeed(selectedReward);
 
             SaveEnabledRewardsToFile();
         }
