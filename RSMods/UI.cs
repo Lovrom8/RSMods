@@ -550,7 +550,9 @@ namespace RSMods
             }
         }
 
-        private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomMenuOptions();
+        private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddExitGameMenuOption();
+
+        private void button_AddDCMode_Click(object sender, EventArgs e) => SetAndForgetMods.AddDirectConnectModeOption();
 
         private void BtnRemoveTempFolders_Click(object sender, EventArgs e) => SetAndForgetMods.RemoveTempFolders();
 
@@ -916,7 +918,8 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(button_SaveTuningChanges, "Saves the tuning list to Rocksmith.");
 
             // One Click Mods
-            Dictionaries.TooltipDictionary.Add(button_AddDCExitGame, "Adds the Direct Connect mode - microphone mode with tone simulations.\nAlso replaces UPLAY on the main menu with an EXIT GAME option.");
+            Dictionaries.TooltipDictionary.Add(button_AddExitGame, "Replaces UPLAY on the main menu with an EXIT GAME option.");
+            Dictionaries.TooltipDictionary.Add(button_AddDCInput, "Adds the Direct Connect mode - microphone mode with tone simulations.");
             Dictionaries.TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
             Dictionaries.TooltipDictionary.Add(button_AddFastLoad, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
 

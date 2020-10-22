@@ -64,6 +64,7 @@
             this.groupBox_LoftOffWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
             this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
             this.checkBox_ControlVolume = new System.Windows.Forms.CheckBox();
             this.checkBox_GuitarSpeak = new System.Windows.Forms.CheckBox();
@@ -74,6 +75,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings = new System.Windows.Forms.GroupBox();
+            this.label_RRSpeedKey = new System.Windows.Forms.Label();
             this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
             this.label_RemoveLyricsKey = new System.Windows.Forms.Label();
             this.button_ClearSelectedKeybind = new System.Windows.Forms.Button();
@@ -110,7 +112,7 @@
             this.listBox_ProfileTones = new System.Windows.Forms.ListBox();
             this.button_AssignNewDefaultTone = new System.Windows.Forms.Button();
             this.button_RemoveTemp = new System.Windows.Forms.Button();
-            this.button_AddDCExitGame = new System.Windows.Forms.Button();
+            this.button_AddExitGame = new System.Windows.Forms.Button();
             this.button_AddFastLoad = new System.Windows.Forms.Button();
             this.button_CleanUpUnpackedCache = new System.Windows.Forms.Button();
             this.button_RestoreCacheBackup = new System.Windows.Forms.Button();
@@ -161,6 +163,8 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
+            this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
             this.button_SaveLogToFile = new System.Windows.Forms.Button();
             this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
@@ -202,10 +206,7 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
-            this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
-            this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
-            this.label_RRSpeedKey = new System.Windows.Forms.Label();
+            this.button_AddDCInput = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -232,13 +233,13 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.groupBox_RRSpeed.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.tab_Twitch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
-            this.groupBox_RRSpeed.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -701,6 +702,17 @@
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
             // 
+            // checkBox_RiffRepeaterSpeedAboveOneHundred
+            // 
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.AutoSize = true;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 197);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Name = "checkBox_RiffRepeaterSpeedAboveOneHundred";
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Size = new System.Drawing.Size(159, 17);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.TabIndex = 49;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Text = "Allow RR Speed Above 100";
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.UseVisualStyleBackColor = true;
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.CheckedChanged += new System.EventHandler(this.checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged);
+            // 
             // checkBox_ScreenShotScores
             // 
             this.checkBox_ScreenShotScores.AutoSize = true;
@@ -840,6 +852,14 @@
             this.groupBox_Keybindings.Text = "Key Bindings";
             this.groupBox_Keybindings.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.groupBox_Keybindings.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // label_RRSpeedKey
+            // 
+            this.label_RRSpeedKey.AutoSize = true;
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 194);
+            this.label_RRSpeedKey.Name = "label_RRSpeedKey";
+            this.label_RRSpeedKey.Size = new System.Drawing.Size(0, 13);
+            this.label_RRSpeedKey.TabIndex = 53;
             // 
             // label_ChangeSelectedVolumeKey
             // 
@@ -1047,6 +1067,7 @@
             // groupBox_SetAndForget
             // 
             this.groupBox_SetAndForget.BackColor = System.Drawing.Color.Azure;
+            this.groupBox_SetAndForget.Controls.Add(this.button_AddDCInput);
             this.groupBox_SetAndForget.Controls.Add(this.label_ChangeTonesHeader);
             this.groupBox_SetAndForget.Controls.Add(this.label_HorizontalRuleSetAndForget);
             this.groupBox_SetAndForget.Controls.Add(this.button_ImportExistingSettings);
@@ -1063,7 +1084,7 @@
             this.groupBox_SetAndForget.Controls.Add(this.listBox_ProfileTones);
             this.groupBox_SetAndForget.Controls.Add(this.button_AssignNewDefaultTone);
             this.groupBox_SetAndForget.Controls.Add(this.button_RemoveTemp);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddDCExitGame);
+            this.groupBox_SetAndForget.Controls.Add(this.button_AddExitGame);
             this.groupBox_SetAndForget.Controls.Add(this.button_AddFastLoad);
             this.groupBox_SetAndForget.Controls.Add(this.button_CleanUpUnpackedCache);
             this.groupBox_SetAndForget.Controls.Add(this.button_RestoreCacheBackup);
@@ -1266,17 +1287,17 @@
             this.button_RemoveTemp.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.button_RemoveTemp.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
-            // button_AddDCExitGame
+            // button_AddExitGame
             // 
-            this.button_AddDCExitGame.Location = new System.Drawing.Point(723, 113);
-            this.button_AddDCExitGame.Name = "button_AddDCExitGame";
-            this.button_AddDCExitGame.Size = new System.Drawing.Size(187, 42);
-            this.button_AddDCExitGame.TabIndex = 93;
-            this.button_AddDCExitGame.Text = "Add EXIT GAME to Main Menu + Enable Direct Connect Mode";
-            this.button_AddDCExitGame.UseVisualStyleBackColor = true;
-            this.button_AddDCExitGame.Click += new System.EventHandler(this.BtnAddCustomMenu_Click);
-            this.button_AddDCExitGame.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AddDCExitGame.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddExitGame.Location = new System.Drawing.Point(723, 113);
+            this.button_AddExitGame.Name = "button_AddExitGame";
+            this.button_AddExitGame.Size = new System.Drawing.Size(187, 20);
+            this.button_AddExitGame.TabIndex = 93;
+            this.button_AddExitGame.Text = "Add EXIT GAME to Main Menu";
+            this.button_AddExitGame.UseVisualStyleBackColor = true;
+            this.button_AddExitGame.Click += new System.EventHandler(this.BtnAddCustomMenu_Click);
+            this.button_AddExitGame.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.button_AddExitGame.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_AddFastLoad
             // 
@@ -1946,6 +1967,40 @@
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
             // 
+            // groupBox_RRSpeed
+            // 
+            this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
+            this.groupBox_RRSpeed.Location = new System.Drawing.Point(16, 234);
+            this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
+            this.groupBox_RRSpeed.Size = new System.Drawing.Size(145, 50);
+            this.groupBox_RRSpeed.TabIndex = 100001;
+            this.groupBox_RRSpeed.TabStop = false;
+            this.groupBox_RRSpeed.Text = "Riff Repeater Speed";
+            this.groupBox_RRSpeed.Visible = false;
+            // 
+            // nUpDown_RiffRepeaterSpeed
+            // 
+            this.nUpDown_RiffRepeaterSpeed.Location = new System.Drawing.Point(7, 20);
+            this.nUpDown_RiffRepeaterSpeed.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.Name = "nUpDown_RiffRepeaterSpeed";
+            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
+            this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_RiffRepeaterSpeed.ValueChanged += new System.EventHandler(this.nUpDown_RiffRepeaterSpeed_ValueChanged);
+            // 
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
@@ -2383,58 +2438,16 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
-            // checkBox_RiffRepeaterSpeedAboveOneHundred
+            // button_AddDCInput
             // 
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.AutoSize = true;
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 197);
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Name = "checkBox_RiffRepeaterSpeedAboveOneHundred";
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Size = new System.Drawing.Size(159, 17);
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.TabIndex = 49;
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Text = "Allow RR Speed Above 100";
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.UseVisualStyleBackColor = true;
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.CheckedChanged += new System.EventHandler(this.checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged);
-            // 
-            // groupBox_RRSpeed
-            // 
-            this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
-            this.groupBox_RRSpeed.Location = new System.Drawing.Point(16, 234);
-            this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
-            this.groupBox_RRSpeed.Size = new System.Drawing.Size(145, 50);
-            this.groupBox_RRSpeed.TabIndex = 100001;
-            this.groupBox_RRSpeed.TabStop = false;
-            this.groupBox_RRSpeed.Text = "Riff Repeater Speed";
-            this.groupBox_RRSpeed.Visible = false;
-            // 
-            // nUpDown_RiffRepeaterSpeed
-            // 
-            this.nUpDown_RiffRepeaterSpeed.Location = new System.Drawing.Point(7, 20);
-            this.nUpDown_RiffRepeaterSpeed.Maximum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.nUpDown_RiffRepeaterSpeed.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nUpDown_RiffRepeaterSpeed.Name = "nUpDown_RiffRepeaterSpeed";
-            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(120, 20);
-            this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
-            this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nUpDown_RiffRepeaterSpeed.ValueChanged += new System.EventHandler(this.nUpDown_RiffRepeaterSpeed_ValueChanged);
-            // 
-            // label_RRSpeedKey
-            // 
-            this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 194);
-            this.label_RRSpeedKey.Name = "label_RRSpeedKey";
-            this.label_RRSpeedKey.Size = new System.Drawing.Size(0, 13);
-            this.label_RRSpeedKey.TabIndex = 53;
+            this.button_AddDCInput.Location = new System.Drawing.Point(723, 135);
+            this.button_AddDCInput.Name = "button_AddDCInput";
+            this.button_AddDCInput.Size = new System.Drawing.Size(187, 20);
+            this.button_AddDCInput.TabIndex = 111;
+            this.button_AddDCInput.Text = "Add Direct Connect Mode";
+            this.button_AddDCInput.UseVisualStyleBackColor = true;
+            this.button_AddDCInput.Click += new System.EventHandler(this.button_AddDCMode_Click);
+            this.button_AddDCInput.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // MainForm
             // 
@@ -2487,6 +2500,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.groupBox_RRSpeed.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.tab_Twitch.ResumeLayout(false);
             this.tab_Twitch.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).EndInit();
@@ -2495,8 +2510,6 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
-            this.groupBox_RRSpeed.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2581,7 +2594,7 @@
         private System.Windows.Forms.Button button_AddTuning;
         private System.Windows.Forms.Button button_RemoveTuning;
         private System.Windows.Forms.ListBox listBox_Tunings;
-        private System.Windows.Forms.Button button_AddDCExitGame;
+        private System.Windows.Forms.Button button_AddExitGame;
         private System.Windows.Forms.Button button_ClearSelectedKeybind;
         private System.Windows.Forms.CheckBox checkBox_RemoveLyrics;
         private System.Windows.Forms.ToolTip ToolTip;
@@ -2682,6 +2695,7 @@
         private System.Windows.Forms.GroupBox groupBox_RRSpeed;
         private System.Windows.Forms.NumericUpDown nUpDown_RiffRepeaterSpeed;
         private System.Windows.Forms.Label label_RRSpeedKey;
+        private System.Windows.Forms.Button button_AddDCInput;
     }
 }
 
