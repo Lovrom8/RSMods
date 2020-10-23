@@ -1229,10 +1229,12 @@
             // radio_DefaultLeadTone
             // 
             this.radio_DefaultLeadTone.AutoSize = true;
+            this.radio_DefaultLeadTone.Checked = true;
             this.radio_DefaultLeadTone.Location = new System.Drawing.Point(398, 179);
             this.radio_DefaultLeadTone.Name = "radio_DefaultLeadTone";
             this.radio_DefaultLeadTone.Size = new System.Drawing.Size(257, 17);
             this.radio_DefaultLeadTone.TabIndex = 101;
+            this.radio_DefaultLeadTone.TabStop = true;
             this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
             this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.HideToolTips);
@@ -1241,12 +1243,10 @@
             // radio_DefaultRhythmTone
             // 
             this.radio_DefaultRhythmTone.AutoSize = true;
-            this.radio_DefaultRhythmTone.Checked = true;
             this.radio_DefaultRhythmTone.Location = new System.Drawing.Point(398, 202);
             this.radio_DefaultRhythmTone.Name = "radio_DefaultRhythmTone";
             this.radio_DefaultRhythmTone.Size = new System.Drawing.Size(269, 17);
             this.radio_DefaultRhythmTone.TabIndex = 100;
-            this.radio_DefaultRhythmTone.TabStop = true;
             this.radio_DefaultRhythmTone.Text = "Set Highlighted Tone As New Default Rhythm Tone";
             this.radio_DefaultRhythmTone.UseVisualStyleBackColor = true;
             this.radio_DefaultRhythmTone.MouseLeave += new System.EventHandler(this.HideToolTips);
