@@ -18,6 +18,6 @@ namespace RSMods
 
         public static string IntToNote(int intToConvert) => noteArray[intToConvert % 12];
 
-        public static string[] noteArray = new string[12] { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B" };
+        public static string[] noteArray = new string[12] { "C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B" };
     }
 }

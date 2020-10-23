@@ -1061,28 +1061,28 @@ namespace RSMods
             switch (stringNumber)
             {
                 case 0:
-                    int offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
+                    int offset = 40; // E2 (Midi)
+                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String0.Value) + offset));
                     break;
                 case 1:
-                    offset = 33; // Offset from (24 - 1) + 10
-                    label_CustomTuningAStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String1.Value) + offset);
+                    offset = 45; // A2 (Midi)
+                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String1.Value) + offset));
                     break;
                 case 2:
-                    offset = 26; // Offset from (24 - 1) + 3
-                    label_CustomTuningDStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String2.Value) + offset);
+                    offset = 50; // D3 (Midi)
+                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String2.Value) + offset));
                     break;
                 case 3:
-                    offset = 31;// Offset from (24 - 1) + 8
-                    label_CustomTuningGStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String3.Value) + offset);
+                    offset = 55;// G3 (Midi)
+                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String3.Value) + offset));
                     break;
                 case 4:
-                    offset = 35; // Offset from (24 - 1) + 12
-                    label_CustomTuningBStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String4.Value) + offset);
+                    offset = 59; // B3 (Midi)
+                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String4.Value) + offset));
                     break;
                 case 5:
-                    offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset).ToLower();
+                    offset = 64; // E4 (Midi)
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String5.Value) + offset)).ToLower();
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");

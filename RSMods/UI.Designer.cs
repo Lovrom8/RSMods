@@ -1158,61 +1158,61 @@
             // 
             this.label_CustomTuningHighEStringLetter.AutoSize = true;
             this.label_CustomTuningHighEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningHighEStringLetter.Location = new System.Drawing.Point(677, 42);
+            this.label_CustomTuningHighEStringLetter.Location = new System.Drawing.Point(674, 41);
             this.label_CustomTuningHighEStringLetter.Name = "label_CustomTuningHighEStringLetter";
-            this.label_CustomTuningHighEStringLetter.Size = new System.Drawing.Size(14, 13);
+            this.label_CustomTuningHighEStringLetter.Size = new System.Drawing.Size(21, 13);
             this.label_CustomTuningHighEStringLetter.TabIndex = 108;
-            this.label_CustomTuningHighEStringLetter.Text = "e";
+            this.label_CustomTuningHighEStringLetter.Text = "e4";
             // 
             // label_CustomTuningBStringLetter
             // 
             this.label_CustomTuningBStringLetter.AutoSize = true;
             this.label_CustomTuningBStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningBStringLetter.Location = new System.Drawing.Point(632, 42);
+            this.label_CustomTuningBStringLetter.Location = new System.Drawing.Point(627, 41);
             this.label_CustomTuningBStringLetter.Name = "label_CustomTuningBStringLetter";
-            this.label_CustomTuningBStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.label_CustomTuningBStringLetter.Size = new System.Drawing.Size(22, 13);
             this.label_CustomTuningBStringLetter.TabIndex = 107;
-            this.label_CustomTuningBStringLetter.Text = "B";
+            this.label_CustomTuningBStringLetter.Text = "B3";
             // 
             // label_CustomTuningGStringLetter
             // 
             this.label_CustomTuningGStringLetter.AutoSize = true;
             this.label_CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningGStringLetter.Location = new System.Drawing.Point(586, 42);
+            this.label_CustomTuningGStringLetter.Location = new System.Drawing.Point(582, 41);
             this.label_CustomTuningGStringLetter.Name = "label_CustomTuningGStringLetter";
-            this.label_CustomTuningGStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.label_CustomTuningGStringLetter.Size = new System.Drawing.Size(23, 13);
             this.label_CustomTuningGStringLetter.TabIndex = 106;
-            this.label_CustomTuningGStringLetter.Text = "G";
+            this.label_CustomTuningGStringLetter.Text = "G3";
             // 
             // label_CustomTuningDStringLetter
             // 
             this.label_CustomTuningDStringLetter.AutoSize = true;
             this.label_CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningDStringLetter.Location = new System.Drawing.Point(541, 42);
+            this.label_CustomTuningDStringLetter.Location = new System.Drawing.Point(537, 41);
             this.label_CustomTuningDStringLetter.Name = "label_CustomTuningDStringLetter";
-            this.label_CustomTuningDStringLetter.Size = new System.Drawing.Size(16, 13);
+            this.label_CustomTuningDStringLetter.Size = new System.Drawing.Size(23, 13);
             this.label_CustomTuningDStringLetter.TabIndex = 105;
-            this.label_CustomTuningDStringLetter.Text = "D";
+            this.label_CustomTuningDStringLetter.Text = "D3";
             // 
             // label_CustomTuningAStringLetter
             // 
             this.label_CustomTuningAStringLetter.AutoSize = true;
             this.label_CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningAStringLetter.Location = new System.Drawing.Point(498, 42);
+            this.label_CustomTuningAStringLetter.Location = new System.Drawing.Point(494, 41);
             this.label_CustomTuningAStringLetter.Name = "label_CustomTuningAStringLetter";
-            this.label_CustomTuningAStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.label_CustomTuningAStringLetter.Size = new System.Drawing.Size(22, 13);
             this.label_CustomTuningAStringLetter.TabIndex = 104;
-            this.label_CustomTuningAStringLetter.Text = "A";
+            this.label_CustomTuningAStringLetter.Text = "A2";
             // 
             // label_CustomTuningLowEStringLetter
             // 
             this.label_CustomTuningLowEStringLetter.AutoSize = true;
             this.label_CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningLowEStringLetter.Location = new System.Drawing.Point(452, 41);
+            this.label_CustomTuningLowEStringLetter.Location = new System.Drawing.Point(448, 41);
             this.label_CustomTuningLowEStringLetter.Name = "label_CustomTuningLowEStringLetter";
-            this.label_CustomTuningLowEStringLetter.Size = new System.Drawing.Size(15, 13);
+            this.label_CustomTuningLowEStringLetter.Size = new System.Drawing.Size(22, 13);
             this.label_CustomTuningLowEStringLetter.TabIndex = 103;
-            this.label_CustomTuningLowEStringLetter.Text = "E";
+            this.label_CustomTuningLowEStringLetter.Text = "E2";
             // 
             // radio_DefaultBassTone
             // 
