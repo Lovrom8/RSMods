@@ -96,6 +96,7 @@
             this.radio_colorBlindERColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
+            this.button_AddDCInput = new System.Windows.Forms.Button();
             this.label_ChangeTonesHeader = new System.Windows.Forms.Label();
             this.label_HorizontalRuleSetAndForget = new System.Windows.Forms.Label();
             this.button_ImportExistingSettings = new System.Windows.Forms.Button();
@@ -206,7 +207,6 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
-            this.button_AddDCInput = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1112,6 +1112,17 @@
             this.groupBox_SetAndForget.TabIndex = 68;
             this.groupBox_SetAndForget.TabStop = false;
             this.groupBox_SetAndForget.Text = "Set-and-forget mods";
+            // 
+            // button_AddDCInput
+            // 
+            this.button_AddDCInput.Location = new System.Drawing.Point(723, 135);
+            this.button_AddDCInput.Name = "button_AddDCInput";
+            this.button_AddDCInput.Size = new System.Drawing.Size(187, 20);
+            this.button_AddDCInput.TabIndex = 111;
+            this.button_AddDCInput.Text = "Add Direct Connect Mode";
+            this.button_AddDCInput.UseVisualStyleBackColor = true;
+            this.button_AddDCInput.Click += new System.EventHandler(this.button_AddDCMode_Click);
+            this.button_AddDCInput.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // label_ChangeTonesHeader
             // 
@@ -2437,17 +2448,6 @@
             // 
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
-            // 
-            // button_AddDCInput
-            // 
-            this.button_AddDCInput.Location = new System.Drawing.Point(723, 135);
-            this.button_AddDCInput.Name = "button_AddDCInput";
-            this.button_AddDCInput.Size = new System.Drawing.Size(187, 20);
-            this.button_AddDCInput.TabIndex = 111;
-            this.button_AddDCInput.Text = "Add Direct Connect Mode";
-            this.button_AddDCInput.UseVisualStyleBackColor = true;
-            this.button_AddDCInput.Click += new System.EventHandler(this.button_AddDCMode_Click);
-            this.button_AddDCInput.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // MainForm
             // 

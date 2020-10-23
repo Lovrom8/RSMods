@@ -1082,7 +1082,7 @@ namespace RSMods
                     break;
                 case 5:
                     offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset);
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset).ToLower();
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
