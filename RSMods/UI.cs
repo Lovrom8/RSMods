@@ -341,7 +341,9 @@ namespace RSMods
                     }
                 }
             }
+
             WriteSettings.WriteINI(WriteSettings.saveSettings);
+            WinMsgUtil.SendMsgToRS("update all");
         }
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)

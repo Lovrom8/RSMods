@@ -63,29 +63,37 @@ namespace RSMods.Twitch.EffectServer
                 {
                     using (connectedTcpClient = tcpListener.AcceptTcpClient())
                     {
-                        using (NetworkStream stream = connectedTcpClient.GetStream())
+                        try
                         {
-                            int length;
-
-                            while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                            using (NetworkStream stream = connectedTcpClient.GetStream())
                             {
-                                var incomingData = new byte[length];
-                                Array.Copy(bytes, 0, incomingData, 0, length);
+                                int length;
 
-                                string clientMessage = Encoding.ASCII.GetString(incomingData);
-                                Debug.Write($"Recived message from the game: {clientMessage}");
-
-                                if (clientMessage != "\0")
+                                while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
                                 {
-                                    var response = JsonConvert.DeserializeObject<Response>(clientMessage);
+                                    var incomingData = new byte[length];
+                                    Array.Copy(bytes, 0, incomingData, 0, length);
 
-                                    if (response.status == 3 && !remainingRewards.ContainsKey(response.id)) // If retry code was returned, put it in the queue
-                                        remainingRewards.Add(response.id, usedRewards[response.id]);
+                                    string clientMessage = Encoding.ASCII.GetString(incomingData);
+                                    Debug.Write($"Recived message from the game: {clientMessage}");
 
-                                    if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
-                                        remainingRewards.Remove(response.id);
+                                    if (clientMessage != "\0")
+                                    {
+                                        var response = JsonConvert.DeserializeObject<Response>(clientMessage);
+
+                                        if (response.status == 3 && !remainingRewards.ContainsKey(response.id)) // If retry code was returned, put it in the queue
+                                            remainingRewards.Add(response.id, usedRewards[response.id]);
+
+                                        if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
+                                            remainingRewards.Remove(response.id);
+                                    }
                                 }
                             }
+                        }
+                        catch (IOException ioex) // If the game (and the connection with it) was closed
+                        {
+                            Debug.Write($"IOEx: {ioex.Message}");
+                            remainingRewards.Clear();
                         }
                     }
                 }
@@ -93,13 +101,6 @@ namespace RSMods.Twitch.EffectServer
             catch (SocketException socketException)
             {
                 Debug.Write($"SocketException: {socketException.Message}");
-            }
-            catch (IOException) // If the game (and the connection with it) was closed, restart the server
-            {
-                tcpListener.Stop();
-                connectedTcpClient.Close();
-
-                StartServer();
             }
         }
 
@@ -124,6 +125,12 @@ namespace RSMods.Twitch.EffectServer
 
             try
             {
+                if (!connectedTcpClient.Client.Connected)
+                {
+                    TwitchSettings.Get.AddToLog("Not connected :( Pleaase restart the game!");
+                    return;
+                }
+
                 NetworkStream stream = connectedTcpClient.GetStream();
                 if (!stream.CanWrite)
                     return;
@@ -144,20 +151,17 @@ namespace RSMods.Twitch.EffectServer
 
         public async void AddEffectToQueue(TwitchReward reward, bool newEffect = true)
         {
-            if (connectedTcpClient == null)
+            if (connectedTcpClient == null || !connectedTcpClient.Client.Connected)
+            {
                 WinMsgUtil.SendMsgToRS("Reconnect to CC");
-
-            await Task.Delay(2000);
+                await Task.Delay(2000);
+            }
 
             if (connectedTcpClient == null) // If we are still unable to connect, something is very wrong
             {
                 MessageBox.Show("Unable to connect to the effect server, please restart the game and RSMods!", "Error");
                 return;
             }
-
-            NetworkStream stream = connectedTcpClient.GetStream();
-            if (!stream.CanWrite)
-                StartServer();
 
             if (newEffect)
             {
@@ -168,18 +172,23 @@ namespace RSMods.Twitch.EffectServer
             Request request = new Request()
             {
                 id = effectId,
-                code = reward.InternalMsgEnable.ToLower(),
-                //code = "solidcustomrgb",
+                code = reward.InternalMsgEnable.ToLower().Replace("enable", "").Trim(),
                 type = 1,
                 viewer = "rsmods"
             };
             request.parameters = new List<object>();
 
-            if (reward.AdditionalMsg != null && reward.AdditionalMsg != "Random" && reward.AdditionalMsg.Length == 6) // If it's a solid color effect
+            if (reward.AdditionalMsg != null && reward.InternalMsgEnable.ToLower().Contains("solidnote")) // If it's a solid color effect
             {
-                request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(0, 2), 16));
-                request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(2, 2), 16));
-                request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(4, 2), 16));
+                if (reward.AdditionalMsg == "Random")
+                    request.code = "solidrandom";
+                else if ( reward.AdditionalMsg.Length == 6)
+                {
+                    request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(0, 2), 16));
+                    request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(2, 2), 16));
+                    request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(4, 2), 16));
+                    request.code = "solidcustomrgb";
+                }
             }
             request.parameters.Add(new Dictionary<string, int>() { { "duration", reward.Length } });
 
