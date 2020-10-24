@@ -226,8 +226,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::string currMsg = (char*)pcds->lpData;
 			std::cout << currMsg << std::endl;
 
-			if (Contains(currMsg, "update"))
-				Settings::ParseSettingUpdate(currMsg);
+			if (Contains(currMsg, "update")) {
+				if (Contains(currMsg, "all"))
+					Settings::UpdateSettings();
+				else
+					Settings::ParseSettingUpdate(currMsg);
+			}
 			else if (Contains(currMsg, "TurboSpeed"))
 				streamerWantsRRSpeedEnabled = Contains(currMsg, "enable");
 			else if (Contains(currMsg, "enable"))

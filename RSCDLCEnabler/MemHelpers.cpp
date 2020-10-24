@@ -6,7 +6,7 @@ byte MemHelpers::getLowestStringTuning() {
 	if (!addrTuning)
 		return NULL;
 
-	return (*(Tuning*)addrTuning).highE;
+	return (*(Tuning*)addrTuning).strA;
 }
 
 bool MemHelpers::IsExtendedRangeSong() {

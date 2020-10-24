@@ -93,10 +93,14 @@ namespace CrowdControl {
 				bytesRead = recv(sock, buffer + currentMessageLength, 1, NULL);
 
 				//If last byte was null byte, exit recv loop
-				if (buffer[currentMessageLength] == NULL) break;
+				if (bytesRead > 0)
+					if (buffer[currentMessageLength] == NULL) break;
 
 				currentMessageLength += bytesRead;
 			} while (bytesRead > 0);
+
+			if (currentMessageLength == -1) //Usually happens when the connection closes (i.e. when the server is down)
+				continue;
 
 			//Parse command
 			std::string command = std::string(&buffer[0], &buffer[currentMessageLength]);
