@@ -233,7 +233,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					Settings::ParseSettingUpdate(currMsg);
 			}
 			else if (Contains(currMsg, "TurboSpeed"))
-				streamerWantsRRSpeedEnabled = Contains(currMsg, "enable");
+				userWantsRRSpeedEnabled = Contains(currMsg, "enable");
 			else if (Contains(currMsg, "enable"))
 				effectQueue.push_back(currMsg);
 			else if (Contains(currMsg, "Reconnect"))
@@ -600,6 +600,10 @@ unsigned WINAPI MainThread() {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	//GuitarSpeak.DrawTunerInGame();
+
+	if(Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
+		userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
+
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
@@ -653,7 +657,7 @@ unsigned WINAPI MainThread() {
 					DrawSkylineInMenu = false;
 				}
 
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && streamerWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
+				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
 			}
