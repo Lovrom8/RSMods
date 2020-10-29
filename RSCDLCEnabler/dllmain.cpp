@@ -600,7 +600,6 @@ unsigned WINAPI MainThread() {
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
 	//GuitarSpeak.DrawTunerInGame();
-	streamerWantsRRSpeedEnabled = false; // Set To True if you want the streamer to have RR open every song (for over 100% RR speed)
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
