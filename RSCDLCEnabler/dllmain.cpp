@@ -97,7 +97,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 			}
 
-			/*else if (keyPressed == VK_F9) { // Disco Mode
+			/*else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
 				DiscoModeEnabled = !DiscoModeEnabled;
 
 				if (debug) {
@@ -117,7 +117,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
-			//else if (keyPressed == VK_F9) { // Start Lua
+			//else if (keyPressed == VK_F9) { // Start Lua | Current State: Dump Lua structs from in-game.
 			//		lua_State* luaState = lua_open();
 			//		luaL_openlibs(luaState);
 
@@ -126,60 +126,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
 			//}
 
-			//else if (keyPressed == VK_F9) // Controller Killswitch
+			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
 			//	DisableControllers::DisableControllers();
 
-			//else if (keyPressed == VK_F9) { // Kills anything that's currently playing. When in LAS it ends the song (could be used for a F your playthrough? / quick leave song)
+			//else if (keyPressed == VK_F9) { // Current State: Will restart the sound system, but requires the user to change input methods, and switch back. When the user encounters a tone-bug, the audio will never come back.
 			//	std::cout << "Trying to restart Wwise Music Engine" << std::endl;
 			//	WwiseVariables::Wwise_Music_Term(); // Kill all sounds
 			//	WwiseVariables::Wwise_Music_Init((AkMusicSettings*)0x01384964); // Restart the music
-
-			//	std::cout << "Company ID 0x0" << std::endl;
-
-			//	std::cout << "AkPluginTypeSource" << std::endl;
-
-			//	// I added a 1 in front of the plugin ID so it wouldn't just fail. Console should show all 1's if the plugins were made correctly.
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)2, 0, 0x164, (AkCreatePluginCallback*)0x01f55909, (AkCreateParamCallback*)0x01f5552d) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)2, 0, 0x165, (AkCreatePluginCallback*)0x01f552ed, (AkCreateParamCallback*)0x01f552cd) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)2, 0, 0x166, (AkCreatePluginCallback*)0x01fc44d7, (AkCreateParamCallback*)0x01fc3941) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)2, 0, 0x1C8, *(AkCreatePluginCallback*)0x01f11435, *(AkCreateParamCallback*)0x01f11535) << std::endl;
-			//	
-			//	std::cout << "AkPluginTypeEffect" << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x169, (AkCreatePluginCallback*)0x01f49cd6, (AkCreateParamCallback*)0x01f48f37) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x16a, (AkCreatePluginCallback*)0x01f184fa, (AkCreateParamCallback*)0x01f182f6) << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x16c, (AkCreatePluginCallback*)0x01f125a4, (AkCreateParamCallback*)0x01f117e5) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x16d, (AkCreatePluginCallback*)0x01f19c61, (AkCreateParamCallback*)0x01f18e6a) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x16e, (AkCreatePluginCallback*)0x01f4bb16, (AkCreateParamCallback*)0x01f4a006) << std::endl;
-			//	
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x173, (AkCreatePluginCallback*)0x01f32348, (AkCreateParamCallback*)0x01f2727d) << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x176, (AkCreatePluginCallback*)0x01f516ef, (AkCreateParamCallback*)0x01f4d8ff) << std::endl;
-			//	
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x17d, (AkCreatePluginCallback*)0x01f1ad5e, (AkCreateParamCallback*)0x01f1a11d) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x17e, (AkCreatePluginCallback*)0x01f1d8fe, (AkCreateParamCallback*)0x01f1d154) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x17f, (AkCreatePluginCallback*)0x01f13d1f, (AkCreateParamCallback*)0x01f12ad8) << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x181, (AkCreatePluginCallback*)0x01f33e23, (AkCreateParamCallback*)0x01f334fd) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x182, (AkCreatePluginCallback*)0x01fc35b1, (AkCreateParamCallback*)0x01fc2ce3) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x183, (AkCreatePluginCallback*)0x01fc6bc4, (AkCreateParamCallback*)0x01fc66c2) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x184, (AkCreatePluginCallback*)0x01f4c583, (AkCreateParamCallback*)0x01f4bef8) << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x187, (AkCreatePluginCallback*)0x01fba060, (AkCreateParamCallback*)0x01fb9a21) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x188, (AkCreatePluginCallback*)0x01f20d74, (AkCreateParamCallback*)0x01f2052c) << std::endl;
-
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0, 0x18a, (AkCreatePluginCallback*)0x01f232f2, (AkCreateParamCallback*)0x01f22929) << std::endl;
-
-			//	std::cout << "Company ID 0x100" << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0x100, 0x16e, (AkCreatePluginCallback*)0x01febc77, (AkCreateParamCallback*)0x01feae79) << std::endl;
-
-			//	std::cout << "Company ID 0x103" << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0x103, 0x19, (AkCreatePluginCallback*)0x01fe22ba, (AkCreateParamCallback*)0x01fe1a11) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0x103, 0x16, (AkCreatePluginCallback*)0x01fd95b0, (AkCreateParamCallback*)0x01fd8e0c) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0x103, 0x15, (AkCreatePluginCallback*)0x01fd6921, (AkCreateParamCallback*)0x01fd6501) << std::endl;
-			//	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 0x103, 0x14, (AkCreatePluginCallback*)0x01fcfa19, (AkCreateParamCallback*)0x01fcf5d1) << std::endl;
 
 			//	WwiseVariables::Rocksmith_SetAudioInputCallbacks((AkAudioInputPluginExecuteCallbackFunc*)0x01c9f415, (AkAudioInputPluginGetFormatCallbackFunc*)0x01c9f34e, (AkAudioInputPluginGetGainCallbackFunc*)0x01c9f2ae, (int*)0x01c9f31e);
 
@@ -196,7 +149,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F2, 0, NULL, NULL, 0, NULL, 0);
 
 			//	std::cout << "Restart Complete!" << std::endl;
-			//	// Wwise Sound Term / Init combo kills ALL audio and it will never restart even when using set addresses used by the executable (there is 2 pairs, and both init properly work).
 			//}
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
@@ -353,7 +305,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	int whiteText = 0xFFFFFFFF;
 
-	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
+	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of MemHelpers::GetWindowSize() X AND Y so every resolution should have the text in around the same spot.
 
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
 			float volume = 0;
