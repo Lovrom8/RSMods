@@ -635,7 +635,7 @@ unsigned WINAPI MainThread() {
 
 				if (!GuitarSpeakPresent && Settings::ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
 					GuitarSpeakPresent = true;
-					if (!GuitarSpeak::TimerTick()) // If we are in a menu where we don't want to read bad values
+					if (!GuitarSpeak::RunGuitarSpeak()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;
 				}
 

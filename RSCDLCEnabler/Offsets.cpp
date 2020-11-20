@@ -19,7 +19,7 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
-	uintptr_t ptr_guitarSpeak = 0x135C4FC;
+	uintptr_t ptr_guitarSpeak = 0x00F5C4FC;
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
 	// Removed do to access to Wwise calls.
