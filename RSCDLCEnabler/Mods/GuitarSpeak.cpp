@@ -96,7 +96,14 @@ bool GuitarSpeak::RunGuitarSpeak() {
 						std::cout << "(GS) " << keyToVKey.find(buttonToPress)->first << " was used by Guitar Speak." << std::endl;
 				}
 			}
-			
+			else { // We shouldn't be reading commands here
+				if (buttonToPress == (std::string)"CLOSE") { // In this case, we want to re-open Guitar Speak. Use-case: User already closed Guitar Speak previously, but pressed the button again which indicates they want to re-enable us.
+					sendKeystrokesToRS2014 = true;
+
+					if (verbose)
+						std::cout << "(GS) Reopening Guitar Speak. " << std::endl;
+				}
+			}
 		}
 	}
 	return false;
