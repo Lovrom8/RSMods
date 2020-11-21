@@ -16,10 +16,11 @@
 
 namespace MemHelpers {
 	byte getLowestStringTuning();
+	byte* GetCurrentTuning(bool verbose = false);
 	void ToggleLoft();
 	std::string ShowSongTimer();
-	void ShowCurrentTuning();
 	bool IsExtendedRangeSong();
+	bool NewIsExtendedRangeSong();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);

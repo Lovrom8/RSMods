@@ -9,6 +9,22 @@ byte MemHelpers::getLowestStringTuning() {
 	return (*(Tuning*)addrTuning).strA;
 }
 
+byte* MemHelpers::GetCurrentTuning(bool verbose) {
+	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
+
+	if (!addrTuning)
+		return NULL;
+
+	byte* AllTunings = new byte[6]{ (*(Tuning*)addrTuning).lowE, (*(Tuning*)addrTuning).strA, (*(Tuning*)addrTuning).strD, (*(Tuning*)addrTuning).strG, (*(Tuning*)addrTuning).strB, (*(Tuning*)addrTuning).highE};
+
+	if (verbose) {
+		for (int i = 0; i < 6; i++)
+			std::cout << "String" << i << " - " << (int)AllTunings[i] << std::endl;
+	}
+
+	return AllTunings;
+}
+
 bool MemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
@@ -19,6 +35,30 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	if (currentTuning != 0 && currentTuning <= (256 + Settings::GetModSetting("ExtendedRangeMode")))
 		return true;
+	return false;
+}
+
+bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a single string.
+	int highestTuning = 0, lowestTuning = 256;
+	byte* currentStringTuning = MemHelpers::GetCurrentTuning();
+
+	// Get Highest And Lowest Strings
+	for (int i = 0; i < 6; i++) {
+		if (highestTuning < (int)currentStringTuning[i])
+			highestTuning = (int)currentStringTuning[i];
+		else if (lowestTuning > (int)currentStringTuning[i])
+			lowestTuning = (int)currentStringTuning[i];
+	}
+
+	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb, -2 D Standard, etc).
+	if (highestTuning != 0)
+		highestTuning -= 256;
+	if (lowestTuning != 0)
+		lowestTuning -= 256;
+
+	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+		return true;
+	
 	return false;
 }
 
@@ -79,16 +119,6 @@ std::string MemHelpers::ShowSongTimer() {
 	return std::to_string(*(float*)addrTimer);
 }
 
-
-void MemHelpers::ShowCurrentTuning() {
-	byte lowestStringTuning = MemHelpers::getLowestStringTuning();
-	if (lowestStringTuning == NULL)
-		return;
-
-	std::string valStr = std::to_string(lowestStringTuning);
-	std::cout << valStr << std::endl;
-}
-
 void MemHelpers::ToggleCB(bool enabled) {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
@@ -147,7 +177,7 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice)
 {
 	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
-	if (WindowSizeX != (MemHelpers::GetWindowSize()[0] / 96) || WindowSizeY != (MemHelpers::GetWindowSize()[1] / 72 || CustomDX9Font == NULL)) {
+	if (WindowSizeX != (MemHelpers::GetWindowSize()[0] / 96) || WindowSizeY != (MemHelpers::GetWindowSize()[1] / 72) || CustomDX9Font == NULL) {
 		WindowSizeX = (MemHelpers::GetWindowSize()[0] / 96);
 		WindowSizeY = (MemHelpers::GetWindowSize()[1] / 72);
 
@@ -179,7 +209,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 		}
 	}
 	else {
-		*(float*)Offsets::ptr_drunkShit = 0.3333333333;
+		*(float*)Offsets::ptr_drunkShit = 0.3333333333f;
 
 		if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
 			MemHelpers::ToggleLoft();
@@ -191,6 +221,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 bool MemHelpers::IsInSong() {
 	return IsInStringArray(GetCurrentMenu(), 0, songModes);
 }
+
 
 float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
