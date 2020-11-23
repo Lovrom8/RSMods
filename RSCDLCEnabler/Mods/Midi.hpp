@@ -13,6 +13,7 @@ namespace Midi {
 	bool SendControlChange(char toePosition = '\000');
 	void GetMidiDeviceNames();
 
+	extern int MidiCC, MidiPC;
 	extern std::map<int, std::string> MidiDeviceNames; // All MIDI devices that currently connected
 	extern int SelectedMidiDevice; 
 	extern unsigned int NumberOfPorts;

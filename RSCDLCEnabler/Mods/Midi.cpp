@@ -3,7 +3,7 @@
 // Midi codes should follow this guide: http://fmslogo.sourceforge.net/manual/midi-table.html
 namespace Midi {
 	std::map<int, std::string> MidiDeviceNames;
-	int SelectedMidiDevice;
+	int SelectedMidiDevice = 0, MidiCC = 0, MidiPC = 0;
 	unsigned int NumberOfPorts;
 
 	void InitMidi() {
@@ -30,7 +30,7 @@ namespace Midi {
 
 		try {
 			// Open first available port.
-			midiout->openPort(0);
+			midiout->openPort(SelectedMidiDevice);
 
 			// Send MIDI message
 			message.push_back(programChangeStatus); // It's a Program Change
@@ -61,7 +61,7 @@ namespace Midi {
 
 		try {
 			// Open first available port.
-			midiout->openPort(0);
+			midiout->openPort(SelectedMidiDevice);
 
 			// Send MIDI Message
 			message.push_back(controlChangeStatus); // Say it's a Control Change

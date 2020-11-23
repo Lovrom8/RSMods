@@ -33,12 +33,9 @@ unsigned WINAPI EnumerationThread() {
 
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
-	if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
-		return false;
-
 	// Failsafe for mouse input falling through the menu
-	if (D3DHooks::menuEnabled && (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP || msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP || msg == WM_MOUSEWHEEL || msg == WM_MOUSEMOVE))
-		return false;
+	//if (D3DHooks::menuEnabled && (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP || msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP || msg == WM_MOUSEWHEEL || msg == WM_MOUSEMOVE))
+	//	return false;
 
 	if (msg == WM_KEYUP) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
@@ -198,6 +195,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 	if (msg == WM_CLOSE)
 		D3DHooks::GameClosing = true;
+	else {
+		ImGuiIO& io = ImGui::GetIO();
+
+		POINT mPos;
+		GetCursorPos(&mPos);
+		ScreenToClient(hWnd, &mPos);
+		ImGui::GetIO().MousePos.x = mPos.x;
+		ImGui::GetIO().MousePos.y = mPos.y;
+
+		if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
+			return true;
+	}
 
 	return CallWindowProc(D3DHooks::oWndProc, hWnd, msg, keyPressed, lParam);
 }
@@ -227,7 +236,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui_ImplWin32_Init(hThisWnd);
 		ImGui_ImplDX9_Init(pDevice);
 		ImGui::GetIO().ImeWindowHandle = hThisWnd;
-		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+		//ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
 		D3D::GenerateSolidTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
 		D3D::GenerateSolidTexture(pDevice, &Green, D3DCOLOR_ARGB(255, 0, 255, 0));
@@ -275,9 +285,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ImGui::EndCombo();
 		}
 
+		ImGui::SliderInt("CC", &Midi::MidiCC, 0, 127);
+		ImGui::SliderInt("PC", &Midi::MidiPC, 0, 127);
+
 		if (ImGui::Button("Send Test Message")) {
-			Midi::SendProgramChange(47);
-			Midi::SendControlChange(127);
+			Midi::SendProgramChange(Midi::MidiPC);
+			Midi::SendControlChange(Midi::MidiCC);
 		}
 
 		/* STRING COLOR TESTING
