@@ -21,6 +21,8 @@ namespace MemHelpers {
 	std::string ShowSongTimer();
 	bool IsExtendedRangeSong();
 	bool NewIsExtendedRangeSong();
+	bool IsSongInDrop();
+	bool IsSongInStandard();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);

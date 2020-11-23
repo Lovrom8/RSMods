@@ -39,26 +39,53 @@ bool MemHelpers::IsExtendedRangeSong() {
 }
 
 bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a single string.
-	int highestTuning = 0, lowestTuning = 256;
-	byte* currentStringTuning = MemHelpers::GetCurrentTuning();
+	int highestTuning = 0, lowestTuning = 256, tuningBuffer = 0;
+	byte* tuningArray = MemHelpers::GetCurrentTuning();
 
 	// Get Highest And Lowest Strings
 	for (int i = 0; i < 6; i++) {
-		if (highestTuning < (int)currentStringTuning[i])
-			highestTuning = (int)currentStringTuning[i];
-		else if (lowestTuning > (int)currentStringTuning[i])
-			lowestTuning = (int)currentStringTuning[i];
+
+		// Create a buffer so we can work on a value near 256, and not worry about the tunings at, and above, E Standard that start at 0 because the tuning number breaks the 256 limit of a unsigned char.
+		tuningBuffer = (int)tuningArray[i];
+		if (tuningBuffer <= 24) // 24 would be 2 octaves above E standard which is where RSMods cuts the tuning numbers at. Anything above maybe +3 should never be used, but for consistency we allow it.
+			tuningBuffer += 256;
+
+		// Find the highest tuned string.
+		if (highestTuning < tuningBuffer)
+			highestTuning = tuningBuffer;
+
+		// Find the lowest tuned string.
+		else if (lowestTuning > tuningBuffer)
+			lowestTuning = tuningBuffer;
 	}
 
-	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb, -2 D Standard, etc).
+	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
 	if (highestTuning != 0)
 		highestTuning -= 256;
 	if (lowestTuning != 0)
 		lowestTuning -= 256;
 
+	// Does the user's settings allow us to toggle Extended Range Mode at this tuning.
 	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 	
+	return false;
+}
+
+bool MemHelpers::IsSongInDrop() {
+	byte* tuningArray = MemHelpers::GetCurrentTuning();
+	byte NEGATE_DROP = tuningArray[0] + 2;
+
+	if (tuningArray[1] == NEGATE_DROP && tuningArray[2] == NEGATE_DROP && tuningArray[3] == NEGATE_DROP && tuningArray[4] == NEGATE_DROP && tuningArray[5] == NEGATE_DROP) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
+		return true;
+	return false;
+}
+
+bool MemHelpers::IsSongInStandard() {
+	byte* tuningArray = MemHelpers::GetCurrentTuning();
+	byte commonTuning = tuningArray[0];
+	if (tuningArray[1] == commonTuning && tuningArray[2] == commonTuning && tuningArray[3] == commonTuning && tuningArray[4] == commonTuning && tuningArray[5] == commonTuning) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
+		return true;
 	return false;
 }
 
