@@ -34,7 +34,11 @@ unsigned WINAPI EnumerationThread() {
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
-		return true;
+		return false;
+
+	// Failsafe for mouse input falling through the menu
+	if (D3DHooks::menuEnabled && (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP || msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP || msg == WM_MOUSEWHEEL || msg == WM_MOUSEMOVE))
+		return false;
 
 	if (msg == WM_KEYUP) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
@@ -117,15 +121,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
-			//else if (keyPressed == VK_F9) { // Start Lua | Current State: Dump Lua structs from in-game.
-			//		lua_State* luaState = lua_open();
-			//		luaL_openlibs(luaState);
-
-			//		DumpLuaStateToConsole(*(luaStateClass*)Offsets::ptr_luaopen_ecr);
-
-			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
-			//}
-
 			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
 			//	DisableControllers::DisableControllers();
 
@@ -174,6 +169,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (debug) {
 			if (keyPressed == VK_INSERT)
 				D3DHooks::menuEnabled = !D3DHooks::menuEnabled;
+
 		}
 	}
 	else if (msg == WM_COPYDATA) {
@@ -217,8 +213,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		init = true;
 
 		ImGui::CreateContext();
-		// ImGuiIO& io = ImGui::GetIO();
-		// ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
+		ImGuiIO& io = ImGui::GetIO();
+		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
 
 		D3DDEVICE_CREATION_PARAMETERS d3dcp;
 		pDevice->GetCreationParameters(&d3dcp);
@@ -261,6 +257,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (D3DHooks::menuEnabled) {
 		ImGui::Begin("RS Modz");
 
+		/* STRING TESTING
+
 		static bool CB = false;
 		static std::string previewValue = "Select a string";
 		if (ImGui::BeginCombo("String Colors", previewValue.c_str())) {
@@ -294,6 +292,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (ImGui::Button("Restore default colors"))
 			ERMode::ResetString(selectedString);
+
+		*/
 
 		ImGui::End();
 	}
@@ -559,7 +559,7 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	//GuitarSpeak.DrawTunerInGame();
 
-	if(Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
+	if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
 		userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
 
 	using namespace D3DHooks;
