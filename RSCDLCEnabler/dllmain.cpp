@@ -147,8 +147,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 
 			else if (keyPressed == VK_F9) {
-				Midi::SendProgramChange(47);
-				Midi::SendControlChange(127);
+				//Midi::SendProgramChange(47);
+				//Midi::SendControlChange(127);
+
+				Midi::GetMidiDeviceNames();
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
@@ -257,7 +259,28 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (D3DHooks::menuEnabled) {
 		ImGui::Begin("RS Modz");
 
-		/* STRING TESTING
+		static std::string previewValue = "Select a device";
+		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
+			for (int n = 0; n < Midi::NumberOfPorts; n++)
+			{
+				const bool is_selected = (selectedDevice == n);
+				if (ImGui::Selectable(Midi::MidiDeviceNames[n].c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+					selectedDevice = n;
+
+				if (is_selected) {
+					previewValue = Midi::MidiDeviceNames[n];
+					Midi::SelectedMidiDevice = n;
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Send Test Message")) {
+			Midi::SendProgramChange(47);
+			Midi::SendControlChange(127);
+		}
+
+		/* STRING COLOR TESTING
 
 		static bool CB = false;
 		static std::string previewValue = "Select a string";

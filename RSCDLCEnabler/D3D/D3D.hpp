@@ -56,7 +56,7 @@ inline unsigned int currIdx = 0;
 inline INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
 inline bool cbEnabled, generateTexture = false;
 inline const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
-inline static int selectedString = 0;
+inline static int selectedString = 0, selectedDevice = 0;
 inline static int strR, strG, strB;
 
 inline int StringChangeInterval = 50; // In ms
