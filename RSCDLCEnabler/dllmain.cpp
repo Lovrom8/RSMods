@@ -31,6 +31,18 @@ unsigned WINAPI EnumerationThread() {
 	return 0;
 }
 
+unsigned WINAPI MidiThread() {
+	while (!D3DHooks::GameClosing) {
+		if (Midi::sendPC)
+			Midi::SendProgramChange(Midi::dataToSend);
+		else if (Midi::sendCC)
+			Midi::SendControlChange(Midi::dataToSend);
+		Sleep(100); // Sleep for 1/10th of a second so we don't drain resources.
+	}
+	
+	return 0;
+}
+
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	// Failsafe for mouse input falling through the menu
@@ -287,12 +299,19 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		// Sliders
 		ImGui::SliderInt("Program Change", &Midi::MidiPC, 0, 127);
 		ImGui::SliderInt("Control Change", &Midi::MidiCC, 0, 127);
-		
+
 		// Submit Buttons
-		if (ImGui::Button("Send PC MIDI Message"))
-			Midi::SendProgramChange(Midi::MidiPC);
-		if (ImGui::Button("Send CC MIDI Message"))
-			Midi::SendControlChange(Midi::MidiCC);
+		if (ImGui::Button("Send PC MIDI Message")) {
+			Midi::ResetMidiVariables();
+			Midi::sendPC = true;
+			Midi::dataToSend = Midi::MidiPC;
+		}
+
+		if (ImGui::Button("Send CC MIDI Message")) {
+			Midi::ResetMidiVariables();
+			Midi::sendCC = true;
+			Midi::dataToSend = Midi::MidiCC;
+		}
 
 		/* STRING COLOR TESTING
 
@@ -730,6 +749,7 @@ void Initialize() {
 	std::thread(MainThread).detach();
 	std::thread(EnumerationThread).detach();
 	std::thread(HandleEffectQueueThread).detach();
+	std::thread(MidiThread).detach();
 
 	// Probably check ini setting before starting this thing
 	CrowdControl::StartServer();

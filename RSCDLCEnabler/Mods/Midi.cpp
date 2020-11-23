@@ -25,6 +25,7 @@ namespace Midi {
 		if (NumberOfPorts == 0) {
 			std::cout << "No MIDI ports available!" << std::endl;
 			delete midiout;
+			sendPC = false;
 			return false;
 		}
 
@@ -44,6 +45,7 @@ namespace Midi {
 
 		// Clean up
 		delete midiout;
+		sendPC = false;
 		return true;
 	}
 
@@ -56,6 +58,7 @@ namespace Midi {
 		if (NumberOfPorts == 0) {
 			std::cout << "No MIDI ports available!" << std::endl;
 			delete midiout;
+			sendCC = false;
 			return false;
 		}
 
@@ -76,6 +79,7 @@ namespace Midi {
 
 		// Clean up
 		delete midiout;
+		sendCC = false;
 		return true;
 	}
 
@@ -101,5 +105,11 @@ namespace Midi {
 		}
 
 		delete midiout;
+	}
+
+	void Midi::ResetMidiVariables() {
+		sendPC = false;
+		sendCC = false;
+		dataToSend = 0;
 	}
 }
