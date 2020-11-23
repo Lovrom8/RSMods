@@ -151,6 +151,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
 
+			else if (keyPressed == VK_F9) {
+				Midi::SendMidiMessage();
+			}
+
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
 				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
 
@@ -551,6 +555,7 @@ unsigned WINAPI MainThread() {
 
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
+	Midi::InitMidi();
 	//GuitarSpeak.DrawTunerInGame();
 
 	if(Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
