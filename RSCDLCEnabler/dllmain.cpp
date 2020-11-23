@@ -143,13 +143,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
 
-			else if (keyPressed == VK_F9) {
-				//Midi::SendProgramChange(47);
-				//Midi::SendControlChange(127);
-
-				Midi::GetMidiDeviceNames();
-			}
-
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
 				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
 
@@ -269,6 +262,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (D3DHooks::menuEnabled) {
 		ImGui::Begin("RS Modz");
 
+		// Stop mouse and keyboard in game
+		ImGui::CaptureKeyboardFromApp(true);
+		ImGui::CaptureMouseFromApp(true);
+
+		Midi::GetMidiDeviceNames();
+
 		static std::string previewValue = "Select a device";
 		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
 			for (int n = 0; n < Midi::NumberOfPorts; n++)
@@ -338,6 +337,10 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui::Render();
 
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+	// Restart mouse and keyboard in game
+	ImGui::CaptureKeyboardFromApp(false);
+	ImGui::CaptureMouseFromApp(false);
 
 	if (generateTexture) {
 		D3D::GenerateTextures(pDevice, D3D::Custom);
