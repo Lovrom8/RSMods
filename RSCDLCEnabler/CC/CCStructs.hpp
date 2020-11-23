@@ -2,7 +2,7 @@
 
 #include <string>
 #include "CCEnums.hpp"
-#include <nlohmann\json.hpp>
+#include "../Lib/Json/json.hpp"
 
 using namespace CrowdControl::Enums;
 using nlohmann::json;

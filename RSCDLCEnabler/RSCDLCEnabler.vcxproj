@@ -25,7 +25,7 @@
     <ClCompile Include="CC\CCStructs.hpp" />
     <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
-    <ClCompile Include="Midi\RtMidi.cpp" />
+    <ClCompile Include="Lib\Midi\RtMidi.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
@@ -58,7 +58,8 @@
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp" />
     <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp" />
-    <ClInclude Include="Midi\RtMidi.h" />
+    <ClInclude Include="Lib\Json\json.hpp" />
+    <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />
@@ -140,7 +141,6 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl" />
-    <None Include="packages.config" />
     <None Include="CC/rocksmithcrowdcontrol.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -250,13 +250,4 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets'))" />
-  </Target>
 </Project>

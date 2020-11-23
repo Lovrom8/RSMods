@@ -52,6 +52,9 @@
     <Filter Include="Main Headers\Midi">
       <UniqueIdentifier>{eaaab380-b419-4045-acca-4b9f28c0e3c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main Headers\Json">
+      <UniqueIdentifier>{518ead06-0e18-411b-ac85-8d3e10854984}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -192,9 +195,6 @@
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="Midi\RtMidi.cpp">
-      <Filter>Main Headers\Midi</Filter>
-    </ClCompile>
     <ClCompile Include="CC\CCEnums.hpp">
       <Filter>CrowdControl\Headers</Filter>
     </ClCompile>
@@ -203,6 +203,9 @@
     </ClCompile>
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Midi\RtMidi.cpp">
+      <Filter>Main Headers\Midi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -368,9 +371,6 @@
     <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="Midi\RtMidi.h">
-      <Filter>Main Headers\Midi</Filter>
-    </ClInclude>
     <ClInclude Include="Mods\CollectColors.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -404,6 +404,12 @@
     <ClInclude Include="Mods\Midi.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Lib\Json\json.hpp">
+      <Filter>Main Headers\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Midi\RtMidi.h">
+      <Filter>Main Headers\Midi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx9_42.def">
@@ -418,7 +424,6 @@
     <None Include="CC/rocksmithcrowdcontrol.cs">
       <Filter>CrowdControl</Filter>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\Detours\detours.lib">

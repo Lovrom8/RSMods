@@ -1,5 +1,5 @@
 #include "SolidNotesEffect.hpp"
-#include "nlohmann/json.hpp"
+#include "../../Lib/Json/json.hpp"
 #include <sstream>
 
 namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture

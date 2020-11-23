@@ -5,15 +5,16 @@
 #include <cstdlib>
 #include <map>
 
-#include "../Midi/RtMidi.h"
+#include "../Lib/Midi/RtMidi.h"
 
 namespace Midi {
 	void InitMidi();
-	bool SendMidiMessage(char programChange = NULL, char toeDown = NULL);
+	bool SendProgramChange(char programChange = '\000');
+	bool SendControlChange(char toePosition = '\000');
 };
 
 // Midi Specifications
-inline int programChangeStatus = 192, controlChangeStatus = 176, noteOnStatus = 144, noteOffStatus = 128;
+inline unsigned char programChangeStatus = 192, controlChangeStatus = 176, noteOnStatus = 144, noteOffStatus = 128;
 
 // Pedal Specific
 

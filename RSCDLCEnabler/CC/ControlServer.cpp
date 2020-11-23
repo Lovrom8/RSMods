@@ -7,7 +7,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
-#include <nlohmann\json.hpp>
+#include "../Lib/Json/json.hpp"
 
 #include "CCEffectList.hpp"
 #include <thread>
