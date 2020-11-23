@@ -152,7 +152,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 
 			else if (keyPressed == VK_F9) {
-				Midi::SendProgramChange(65);
+				Midi::SendProgramChange(47);
 				Midi::SendControlChange(127);
 			}
 
