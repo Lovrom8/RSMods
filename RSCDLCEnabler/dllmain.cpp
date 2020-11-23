@@ -284,13 +284,15 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ImGui::EndCombo();
 		}
 
-		ImGui::SliderInt("CC", &Midi::MidiCC, 0, 127);
-		ImGui::SliderInt("PC", &Midi::MidiPC, 0, 127);
-
-		if (ImGui::Button("Send Test Message")) {
+		// Sliders
+		ImGui::SliderInt("Program Change", &Midi::MidiPC, 0, 127);
+		ImGui::SliderInt("Control Change", &Midi::MidiCC, 0, 127);
+		
+		// Submit Buttons
+		if (ImGui::Button("Send PC MIDI Message"))
 			Midi::SendProgramChange(Midi::MidiPC);
+		if (ImGui::Button("Send CC MIDI Message"))
 			Midi::SendControlChange(Midi::MidiCC);
-		}
 
 		/* STRING COLOR TESTING
 

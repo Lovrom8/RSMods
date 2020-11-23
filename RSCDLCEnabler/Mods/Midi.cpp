@@ -67,7 +67,7 @@ namespace Midi {
 			message.push_back(controlChangeStatus); // Say it's a Control Change
 			message.push_back(WHAMMY_DT_CC_CHANNEL); // Control to change
 			message.push_back(toePosition); // New Control Value || 0 = off, 127 = on
-			std::cout << "Sending Midi Message: " << "PC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
+			std::cout << "Sending Midi Message: " << "CC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
