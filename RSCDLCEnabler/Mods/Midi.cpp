@@ -53,12 +53,12 @@ bool Midi::SendControlChange(char toePosition) {
     // Open first available port.
     midiout->openPort(0);
    
-    //// Send MIDI Message
-    //message[0] = controlChangeStatus; // Say it's a Control Change
-    //message[1] = WHAMMY_DT_CC_CHANNEL; // Control to change
-    //message[2] = toePosition; // New Control Value || 0 = off, 127 = on
-    //std::cout << "Sending Midi Message: " << "PC: " << (int)message[2] << std::endl;
-    //midiout->sendMessage(&message);
+    // Send MIDI Message
+    message.push_back(controlChangeStatus); // Say it's a Control Change
+    message.push_back(WHAMMY_DT_CC_CHANNEL); // Control to change
+    message.push_back(toePosition); // New Control Value || 0 = off, 127 = on
+    std::cout << "Sending Midi Message: " << "PC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
+    midiout->sendMessage(&message);
 
     // Clean up
     delete midiout;
