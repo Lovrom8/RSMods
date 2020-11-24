@@ -217,7 +217,7 @@ namespace Midi {
 			Midi::SendDataToThread_PC(59);
 		
 		switch (trueTune) {
-
+		
 		default: // We don't have this true tune documented.
 			break;
 		}
@@ -231,12 +231,10 @@ namespace Midi {
 	}
 
 	void Midi::SendDataToThread_PC(char program, bool shouldWeSendPC) {
-		ResetMidiVariables();
 		sendPC = shouldWeSendPC;
 		dataToSendPC = program;
 	}
 	void Midi::SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
-		ResetMidiVariables();
 		sendCC = shouldWeSendCC;
 		dataToSendCC = toePosition;
 	}

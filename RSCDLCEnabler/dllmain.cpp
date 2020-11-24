@@ -37,6 +37,7 @@ unsigned WINAPI MidiThread() {
 			Midi::SendProgramChange(Midi::dataToSendPC);
 		if (Midi::sendCC)
 			Midi::SendControlChange(Midi::dataToSendCC);
+		Midi::ResetMidiVariables();
 		Sleep(100); // Sleep for 1/10th of a second so we don't drain resources.
 	}
 	
