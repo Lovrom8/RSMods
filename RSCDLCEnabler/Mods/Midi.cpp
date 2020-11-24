@@ -36,7 +36,8 @@ namespace Midi {
 			// Send MIDI message
 			message.push_back(programChangeStatus); // It's a Program Change
 			message.push_back(programChange); // What program we changing?
-			std::cout << "Sending Midi Message: " << "PC: " << (int)message.back() << std::endl;
+			if (programChange != 78)
+				std::cout << "Sending Midi Message: " << "PC: " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
@@ -107,13 +108,6 @@ namespace Midi {
 		}
 
 		delete midiout;
-	}
-
-	void Midi::ResetMidiVariables() {
-		sendPC = false;
-		sendCC = false;
-		dataToSendPC = 0;
-		dataToSendCC = 0;
 	}
 
 	void Midi::AutomateDownTuning() {
@@ -208,26 +202,120 @@ namespace Midi {
 	}
 
 	void Midi::AutomateTrueTuning() {
-		int trueTune = MemHelpers::GetTrueTuning();
+		if (!alreadyAutomatedTrueTuningInThisSong) {
+			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
 
-		if (trueTune == 440 || trueTune == 220)
-			return;
+			if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+				return;
 
-		if (trueTune == 431 || trueTune == 437)
-			Midi::SendDataToThread_PC(59);
-		
-		switch (trueTune) {
-		
-		default: // We don't have this true tune documented.
-			break;
+			if (MemHelpers::GetCurrentTuning()[0] == (byte)255) {
+				Midi::SendDataToThread_PC(59);
+				lastPC_TUNING = 59;
+				Sleep(sleepFor); // Make sure we have this command done before we start messing with the PC and CC comands below.
+			}
+
+			switch (TrueTuning_Hertz) {
+
+			// Below C1 bass
+			case 220: 
+				break;
+
+			// Below A440
+			case 425: // Waiting on ZZ to get back to me on this one. Light My Fire
+				//Midi::SendDataToThread_PC(4);
+				//Midi::SendDataToThread_CC(30);
+				break;
+			case 428: // Castles Made Of Sand
+				Midi::SendDataToThread_PC(4);
+				Midi::SendDataToThread_CC(30);
+				break;
+			case 431: // Heaven's On Fire | If 6 Was 9
+				Midi::SendDataToThread_PC(4);
+				Midi::SendDataToThread_CC(20);
+				break;
+			case 434: // Cemetery Gates
+				Midi::SendDataToThread_PC(4);
+				Midi::SendDataToThread_CC(15);
+				break;
+			case 437: // Voodoo Child (Slight Return)
+				Midi::SendDataToThread_PC(4);
+				Midi::SendDataToThread_CC(5);
+				break;
+
+			// A440
+			case 440: 
+				break;
+
+			// Above A440
+			case 443: // Champagne Supernova | 20th Century Boy | Love Spreads
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(3);
+				break;
+			case 444: // Dream On | Ultra Soul
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(4);
+				break;
+			case 445: // The End of the World | People Are Strange
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(5);
+				break;
+			case 446: // Balls To The Wall | Spoonful | Rock and Roll, Hoochie Koo | Love Me Two Times
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(6);
+				break;
+			case 447: // No More Mr. Nice Guy | Machinehead | Behind Blue Eyes | Manic Depression
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(7);
+				break;
+			case 448: // UNKNOWN
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(8);
+				break;
+			case 449: // Live Forever
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(9);
+				break;
+			case 450: // Some Might Say
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(10);
+				break;
+			case 451: // Don't Look Back In Anger
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(11);
+				break;
+			case 454: // Baba O'Riley
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(14);
+				break;
+			case 455: // Black Hole Sun
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(15);
+				break;
+			case 456: // Friday I'm In Love
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(16);
+				break;
+			case 461: // You Really Got Me
+				Midi::SendDataToThread_PC(3);
+				Midi::SendDataToThread_CC(22);
+				break;
+
+			// True Tuning Not Documented. If a user wants to give us the tuning, we should be able to get it to work.
+			default:
+				break;
+			}
+			alreadyAutomatedTrueTuningInThisSong = true;
 		}
 	}
 
 	void Midi::RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
-		if (lastPC != 78) // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
+		if (lastPC != 78 || lastPC_TUNING != 0) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy" | If the song required a drop tuning & a true tuning.
 			std::cout << "Attmepting to turn off your drop pedal" << std::endl;
-			SendDataToThread_PC(WHAMMY_DT_activeBypassMap.find(lastPC)->second);
+			SendDataToThread_PC(WHAMMY_DT_activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
+			SendDataToThread_CC(0); // Reset the expression pedal
+		}
 		alreadyAutomatedTuningInThisSong = false;
+		alreadyAutomatedTrueTuningInThisSong = false;
 	}
 
 	void Midi::SendDataToThread_PC(char program, bool shouldWeSendPC) {

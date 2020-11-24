@@ -37,8 +37,7 @@ unsigned WINAPI MidiThread() {
 			Midi::SendProgramChange(Midi::dataToSendPC);
 		if (Midi::sendCC)
 			Midi::SendControlChange(Midi::dataToSendCC);
-		Midi::ResetMidiVariables();
-		Sleep(100); // Sleep for 1/10th of a second so we don't drain resources.
+		Sleep(Midi::sleepFor); // Sleep for 1/33rd of a second so we don't drain resources.
 	}
 	
 	return 0;
@@ -681,6 +680,7 @@ unsigned WINAPI MainThread() {
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
 				Midi::AutomateDownTuning();
+				Midi::AutomateTrueTuning();
 			}
 
 			/// If User Is Exiting A Song / In A Menu

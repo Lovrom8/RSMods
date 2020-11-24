@@ -95,7 +95,7 @@ int MemHelpers::GetTrueTuning() {
 	if (!trueTunePointer)
 		return 440; // Just to be sure, it's 440 most of the time.
 
-	int trueTuning = round(*(float*)trueTunePointer);
+	int trueTuning = floor(*(float*)trueTunePointer);
 
 	return trueTuning;
 }

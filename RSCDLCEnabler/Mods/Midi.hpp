@@ -13,7 +13,6 @@ namespace Midi {
 	bool SendProgramChange(char programChange = '\000');
 	bool SendControlChange(char toePosition = '\000');
 	void GetMidiDeviceNames();
-	void ResetMidiVariables();
 	void AutomateDownTuning();
 	void AutomateTrueTuning();
 	void RevertAutomatedTuning();
@@ -26,7 +25,9 @@ namespace Midi {
 	extern unsigned int NumberOfPorts;
 	inline bool sendCC = false, sendPC = false;
 	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 0;
-	inline bool alreadyAutomatedTuningInThisSong = false;
+	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
+	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false;
+	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
 };
 
 // Midi Specifications
