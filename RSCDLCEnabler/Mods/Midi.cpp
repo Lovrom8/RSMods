@@ -12,7 +12,7 @@ namespace Midi {
 			std::cout << "Starting MIDI" << std::endl;
 		}
 		catch (RtMidiError& error) {
-			std::cout << error.getMessage() << std::endl;
+			std::cout << "(MIDI) " << error.getMessage() << std::endl;
 		}
 	}
 
@@ -40,7 +40,7 @@ namespace Midi {
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
-			error.printMessage();
+			std::cout << "(MIDI) " << error.getMessage() << std::endl;
 		}
 
 		// Clean up
@@ -75,7 +75,7 @@ namespace Midi {
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
-			error.printMessage();
+			std::cout << "(MIDI) " << error.getMessage() << std::endl;
 		}
 
 		// Clean up
@@ -102,7 +102,7 @@ namespace Midi {
 				MidiDeviceNames[devId] = midiout->getPortName(devId);
 			}
 			catch (RtMidiError& error) {
-				error.printMessage();
+				std::cout << "(MIDI) " << error.getMessage() << std::endl;
 			}
 		}
 
@@ -214,12 +214,12 @@ namespace Midi {
 	}
 
 	void Midi::SendDataToThread_PC(char program, bool shouldWeSendPC) {
-		Midi::ResetMidiVariables();
+		ResetMidiVariables();
 		sendPC = shouldWeSendPC;
 		dataToSend = program;
 	}
 	void Midi::SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
-		Midi::ResetMidiVariables();
+		ResetMidiVariables();
 		sendCC = shouldWeSendCC;
 		dataToSend = toePosition;
 	}
