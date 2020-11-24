@@ -206,6 +206,19 @@ namespace Midi {
 		}
 	}
 
+	void Midi::AutomateTrueTuning() {
+		int trueTune = MemHelpers::GetTrueTuning();
+
+		if (trueTune == 440 || trueTune == 220)
+			return;
+		
+		switch (trueTune) {
+
+		default: // We don't have this true tune documented.
+			break;
+		}
+	}
+
 	void Midi::RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 		if (lastPC != 78) // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
 			std::cout << "Attmepting to turn off your drop pedal" << std::endl;

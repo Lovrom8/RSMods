@@ -15,6 +15,7 @@ namespace Midi {
 	void GetMidiDeviceNames();
 	void ResetMidiVariables();
 	void AutomateDownTuning();
+	void AutomateTrueTuning();
 	void RevertAutomatedTuning();
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
