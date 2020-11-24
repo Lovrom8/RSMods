@@ -297,7 +297,7 @@ namespace Midi {
 				break;
 			case 461: // You Really Got Me
 				Midi::SendDataToThread_PC(3);
-				Midi::SendDataToThread_CC(22);
+				Midi::SendDataToThread_CC(22); // The song is so close to 462 that tuning is easier to do with the 462 pedal settings.
 				break;
 
 			// True Tuning Not Documented. If a user wants to give us the tuning, we should be able to get it to work.
