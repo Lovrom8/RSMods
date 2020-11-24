@@ -301,17 +301,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::SliderInt("Control Change", &Midi::MidiCC, 0, 127);
 
 		// Submit Buttons
-		if (ImGui::Button("Send PC MIDI Message")) {
-			Midi::ResetMidiVariables();
-			Midi::sendPC = true;
-			Midi::dataToSend = Midi::MidiPC;
-		}
+		if (ImGui::Button("Send PC MIDI Message"))
+			Midi::SendDataToThread_PC(Midi::MidiPC);
 
-		if (ImGui::Button("Send CC MIDI Message")) {
-			Midi::ResetMidiVariables();
-			Midi::sendCC = true;
-			Midi::dataToSend = Midi::MidiCC;
-		}
+		if (ImGui::Button("Send CC MIDI Message"))
+			Midi::SendDataToThread_CC(Midi::MidiCC);
 
 		/* STRING COLOR TESTING
 
@@ -631,10 +625,14 @@ unsigned WINAPI MainThread() {
 
 			//std::cout << currentMenu << std::endl;
 
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
+			/// If User Is Entering / In Lesson Mode
+
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes))
 				LessonMode = true;
 			else
 				LessonMode = false;
+
+			/// Always on Mods (If the user specifies them to be on)
 
 			if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup")
 				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
@@ -657,7 +655,10 @@ unsigned WINAPI MainThread() {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) { // If User Is Entering Song
+
+			/// If User Is Entering Song
+
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 				GuitarSpeakPresent = false;
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
@@ -678,10 +679,17 @@ unsigned WINAPI MainThread() {
 				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
+				Midi::AutomateDownTuning();
 			}
-			else { // If User Is Exiting Song / In A Menu
+
+			/// If User Is Exiting A Song / In A Menu
+
+			else {
 				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
 				newSongSpeed = 100.f;
+
+				if (Midi::alreadyAutomatedTuningInThisSong)
+					Midi::RevertAutomatedTuning();
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song") // If the user only wants to see the headstock in menus, then we need to stop removing it.
 					RemoveHeadstockInThisMenu = false;
@@ -710,6 +718,8 @@ unsigned WINAPI MainThread() {
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
+			
+			/// "Other" menus. These will normally state what menus they need to be in.
 
 			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) // Screenshot Scores
 				TakeScreenshot();
@@ -731,7 +741,10 @@ unsigned WINAPI MainThread() {
 			else
 				ERMode::Toggle7StringMode();
 		}
-		else { // Game Hasn't Loaded Yet
+
+		/// Game Hasn't Loaded Yet
+
+		else {
 			//DisableControllers::DisableControllers();
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 

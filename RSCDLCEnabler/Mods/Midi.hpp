@@ -6,6 +6,7 @@
 #include <map>
 
 #include "../Lib/Midi/RtMidi.h"
+#include "../MemHelpers.hpp"
 
 namespace Midi {
 	void InitMidi();
@@ -13,13 +14,18 @@ namespace Midi {
 	bool SendControlChange(char toePosition = '\000');
 	void GetMidiDeviceNames();
 	void ResetMidiVariables();
+	void AutomateDownTuning();
+	void RevertAutomatedTuning();
+	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
+	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 
 	extern int MidiCC, MidiPC;
 	extern std::map<int, std::string> MidiDeviceNames; // All MIDI devices that currently connected
 	extern int SelectedMidiDevice; 
 	extern unsigned int NumberOfPorts;
 	inline bool sendCC = false, sendPC = false;
-	inline int dataToSend = 0;
+	inline int dataToSend = 0, lastCC = 0, lastPC = 0;
+	inline bool alreadyAutomatedTuningInThisSong = false;
 };
 
 // Midi Specifications
