@@ -84,4 +84,6 @@ inline unsigned char programChangeStatus = 192, controlChangeStatus = 176, noteO
 		{57, 75}, // -3
 		{58, 76}, // -2
 		{59, 77}, // -1
+
+		{78, 78} // NULL (Use for E Standard / other tunings that can't be used on the pedal)
 	};

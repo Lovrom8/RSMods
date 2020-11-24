@@ -136,8 +136,7 @@ namespace Midi {
 			}
 
 			// Change tuning number (256 = E Standard, 255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
-			if (highestTuning != 0)
-				highestTuning -= 256;
+			highestTuning -= 256;
 			
 			switch (highestTuning) { // Send target tuning to the pedal
 
@@ -169,7 +168,7 @@ namespace Midi {
 
 				// E Standard
 				case 0:
-					SendDataToThread_PC(0, false);
+					SendDataToThread_PC(78);
 					break;
 
 				// Below E Standard
@@ -200,7 +199,7 @@ namespace Midi {
 				
 				// The pedal can't handle the tuning.
 				default:
-					SendDataToThread_PC(0, false);
+					SendDataToThread_PC(78);
 					break;
 			}
 			alreadyAutomatedTuningInThisSong = true;
@@ -208,8 +207,9 @@ namespace Midi {
 	}
 
 	void Midi::RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
-		std::cout << "Attmepting to turn off your drop pedal" << std::endl;
-		SendDataToThread_PC(WHAMMY_DT_activeBypassMap.at(lastPC));
+		if (lastPC != 78) // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
+			std::cout << "Attmepting to turn off your drop pedal" << std::endl;
+			SendDataToThread_PC(WHAMMY_DT_activeBypassMap.find(lastPC)->second);
 		alreadyAutomatedTuningInThisSong = false;
 	}
 
