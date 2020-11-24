@@ -112,7 +112,8 @@ namespace Midi {
 	void Midi::ResetMidiVariables() {
 		sendPC = false;
 		sendCC = false;
-		dataToSend = 0;
+		dataToSendPC = 0;
+		dataToSendCC = 0;
 	}
 
 	void Midi::AutomateDownTuning() {
@@ -211,6 +212,9 @@ namespace Midi {
 
 		if (trueTune == 440 || trueTune == 220)
 			return;
+
+		if (trueTune == 431 || trueTune == 437)
+			Midi::SendDataToThread_PC(59);
 		
 		switch (trueTune) {
 
@@ -229,11 +233,11 @@ namespace Midi {
 	void Midi::SendDataToThread_PC(char program, bool shouldWeSendPC) {
 		ResetMidiVariables();
 		sendPC = shouldWeSendPC;
-		dataToSend = program;
+		dataToSendPC = program;
 	}
 	void Midi::SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
 		ResetMidiVariables();
 		sendCC = shouldWeSendCC;
-		dataToSend = toePosition;
+		dataToSendCC = toePosition;
 	}
 }

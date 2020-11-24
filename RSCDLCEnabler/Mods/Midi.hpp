@@ -25,7 +25,7 @@ namespace Midi {
 	extern int SelectedMidiDevice; 
 	extern unsigned int NumberOfPorts;
 	inline bool sendCC = false, sendPC = false;
-	inline int dataToSend = 0, lastCC = 0, lastPC = 0;
+	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 0;
 	inline bool alreadyAutomatedTuningInThisSong = false;
 };
 

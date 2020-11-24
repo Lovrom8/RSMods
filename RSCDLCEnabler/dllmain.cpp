@@ -34,9 +34,9 @@ unsigned WINAPI EnumerationThread() {
 unsigned WINAPI MidiThread() {
 	while (!D3DHooks::GameClosing) {
 		if (Midi::sendPC)
-			Midi::SendProgramChange(Midi::dataToSend);
-		else if (Midi::sendCC)
-			Midi::SendControlChange(Midi::dataToSend);
+			Midi::SendProgramChange(Midi::dataToSendPC);
+		if (Midi::sendCC)
+			Midi::SendControlChange(Midi::dataToSendCC);
 		Sleep(100); // Sleep for 1/10th of a second so we don't drain resources.
 	}
 	
