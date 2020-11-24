@@ -117,7 +117,7 @@ namespace Midi {
 
 	void Midi::AutomateDownTuning() {
 		if (!alreadyAutomatedTuningInThisSong) {
-			int highestTuning = 0, lowestTuning = 256, tuningBuffer = 0;
+			int highestTuning = 0, tuningBuffer = 0;
 			Sleep(1500); // The menu is called when the animation starts. The tuning isn't set at that point, so we need to wait to get the value. This doesn't seem to lag the game.
 			byte* TuningArray = MemHelpers::GetCurrentTuning();
 
@@ -133,21 +133,11 @@ namespace Midi {
 				// Find the highest tuned string.
 				if (highestTuning < tuningBuffer)
 					highestTuning = tuningBuffer;
-
-				// Find the lowest tuned string.
-				else if (lowestTuning > tuningBuffer)
-					lowestTuning = tuningBuffer;
-
-				std::cout << "String" << i << " " << tuningBuffer << std::endl;
 			}
 
-			// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
+			// Change tuning number (256 = E Standard, 255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
 			if (highestTuning != 0)
 				highestTuning -= 256;
-			if (lowestTuning != 0)
-				lowestTuning -= 256;
-
-			std::cout << "Highest Tuning: " << highestTuning << std::endl;
 			
 			switch (highestTuning) { // Send target tuning to the pedal
 
@@ -179,7 +169,7 @@ namespace Midi {
 
 				// E Standard
 				case 0:
-					SendDataToThread_PC(false, 0);
+					SendDataToThread_PC(0, false);
 					break;
 
 				// Below E Standard
@@ -210,14 +200,16 @@ namespace Midi {
 				
 				// The pedal can't handle the tuning.
 				default:
-					SendDataToThread_PC(false, 0);
+					SendDataToThread_PC(0, false);
 					break;
 			}
 			alreadyAutomatedTuningInThisSong = true;
 		}
 	}
 
-	void Midi::RevertAutomatedTuning() { // Convert lastPC (Tuning) <-> Bypass through the WHAMMY_DT_activeBypassMap map. 
+	void Midi::RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
+		std::cout << "Attmepting to turn off your drop pedal" << std::endl;
+		SendDataToThread_PC(WHAMMY_DT_activeBypassMap.at(lastPC));
 		alreadyAutomatedTuningInThisSong = false;
 	}
 
