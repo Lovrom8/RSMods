@@ -122,34 +122,33 @@ namespace Midi {
 			switch (highestTuning) { // Send target tuning to the pedal
 
 				// Above E Standard
-				case 1:
-					SendProgramChange(42); // F Standard
-					break;
-				case 2:
-					SendProgramChange(43); // F# Standard
-					break;
-				case 3:
-					SendProgramChange(44); // G Standard
-					break;
-				case 4:
-					SendProgramChange(45); // Ab Standard
-					break;
-				case 5:
-					SendProgramChange(46); // A Standard
+				case 12:
+					SendProgramChange(49); // E Standard +OCT
+					break;	
+				case 7:
+					SendProgramChange(48); // B Standard
 					break;
 				case 6:
 					SendProgramChange(47); // Bb Standard
 					break;
-				case 7:
-					SendProgramChange(48); // B Standard
+				case 5:
+					SendProgramChange(46); // A Standard
 					break;
-				case 12:
-					SendProgramChange(49); // E Standard +OCT
+				case 4:
+					SendProgramChange(45); // Ab Standard
 					break;
-
+				case 3:
+					SendProgramChange(44); // G Standard
+					break;
+				case 2:
+					SendProgramChange(43); // F# Standard
+					break;
+				case 1:
+					SendProgramChange(42); // F Standard
+					break;
+				
 				// E Standard
 				case 0:
-					SendProgramChange(78);
 					break;
 
 				// Below E Standard
@@ -180,7 +179,6 @@ namespace Midi {
 				
 				// The pedal can't handle the tuning.
 				default:
-					SendProgramChange(78);
 					break;
 			}
 			alreadyAutomatedTuningInThisSong = true;
