@@ -189,6 +189,7 @@ namespace Midi {
 
 	void AutomateTrueTuning() {
 		if (!alreadyAutomatedTrueTuningInThisSong) {
+			alreadyAutomatedTrueTuningInThisSong = true;
 			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
 
 			if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
@@ -294,7 +295,6 @@ namespace Midi {
 			default:
 				break;
 			}
-			alreadyAutomatedTrueTuningInThisSong = true;
 		}
 	}
 
@@ -304,7 +304,7 @@ namespace Midi {
 			SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
 			if (lastPC_TUNING != 0)
-				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second);
+				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second); // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 		}
 		alreadyAutomatedTuningInThisSong = false;
 		alreadyAutomatedTrueTuningInThisSong = false;
