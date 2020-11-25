@@ -21,6 +21,7 @@ namespace MemHelpers {
 	std::string ShowSongTimer();
 	bool IsExtendedRangeSong();
 	bool NewIsExtendedRangeSong();
+	int* GetHighestLowestString();
 	bool IsSongInDrop();
 	bool IsSongInStandard();
 	int GetTrueTuning();

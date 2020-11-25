@@ -39,6 +39,20 @@ bool MemHelpers::IsExtendedRangeSong() {
 }
 
 bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a single string.
+	int* highestLowestTuning = MemHelpers::GetHighestLowestString();
+
+	int highestTuning = highestLowestTuning[0];
+	int lowestTuning = highestLowestTuning[1];
+
+	// Does the user's settings allow us to toggle Extended Range Mode at this tuning.
+	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+		return true;
+	
+	return false;
+}
+
+// [0] - Highest, [1] - Lowest
+int* MemHelpers::GetHighestLowestString() {
 	int highestTuning = 0, lowestTuning = 256, tuningBuffer = 0;
 	byte* tuningArray = MemHelpers::GetCurrentTuning();
 
@@ -65,11 +79,8 @@ bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a s
 	if (lowestTuning != 0)
 		lowestTuning -= 256;
 
-	// Does the user's settings allow us to toggle Extended Range Mode at this tuning.
-	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
-		return true;
-	
-	return false;
+	int* returnValue = new int[2]{ highestTuning, lowestTuning };
+	return returnValue;
 }
 
 bool MemHelpers::IsSongInDrop() {

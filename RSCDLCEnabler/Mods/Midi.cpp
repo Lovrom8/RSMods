@@ -112,26 +112,12 @@ namespace Midi {
 
 	void AutomateDownTuning() {
 		if (!alreadyAutomatedTuningInThisSong) {
-			int highestTuning = 0, tuningBuffer = 0;
 			Sleep(1500); // The menu is called when the animation starts. The tuning isn't set at that point, so we need to wait to get the value. This doesn't seem to lag the game.
-			byte* TuningArray = MemHelpers::GetCurrentTuning();
 
+			int* highestLowestTuning = MemHelpers::GetHighestLowestString();
 
-			// Get Highest And Lowest Strings
-			for (int i = 0; i < 6; i++) {
-
-				// Create a buffer so we can work on a value near 256, and not worry about the tunings at, and above, E Standard that start at 0 because the tuning number breaks the 256 limit of a unsigned char.
-				tuningBuffer = (int)TuningArray[i];
-				if (tuningBuffer <= 24) // 24 would be 2 octaves above E standard which is where RSMods cuts the tuning numbers at. Anything above maybe +3 should never be used, but for consistency we allow it.
-					tuningBuffer += 256;
-
-				// Find the highest tuned string.
-				if (highestTuning < tuningBuffer)
-					highestTuning = tuningBuffer;
-			}
-
-			// Change tuning number (256 = E Standard, 255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
-			highestTuning -= 256;
+			int highestTuning = highestLowestTuning[0];
+			int lowestTuning = highestLowestTuning[1];
 			
 			switch (highestTuning) { // Send target tuning to the pedal
 
@@ -208,11 +194,13 @@ namespace Midi {
 			if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
 				return;
 
-			if (MemHelpers::GetCurrentTuning()[0] == (byte)255) { // Hendrix
-				SendProgramChange(59);
+			int* highestLowestTuning = MemHelpers::GetHighestLowestString();
+
+			int highestTuning = highestLowestTuning[0];
+			int lowestTuning = highestLowestTuning[1];
+
+			if (highestTuning == -1 && lowestTuning == -1) // Hendrix
 				lastPC_TUNING = 59;
-				Sleep(sleepFor); // Make sure we have this command done before we start messing with the PC and CC comands below.
-			}
 			else
 				lastPC_TUNING = 0;
 
@@ -311,10 +299,12 @@ namespace Midi {
 	}
 
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
-		if (lastPC != 78 || lastPC_TUNING != 0) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy" | If the song required a drop tuning & a true tuning.
+		if (lastPC != 78) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy" | If the song required a drop tuning & a true tuning.
 			std::cout << "Attmepting to turn off your drop pedal" << std::endl;
 			SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
+			if (lastPC_TUNING != 0)
+				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second);
 		}
 		alreadyAutomatedTuningInThisSong = false;
 		alreadyAutomatedTrueTuningInThisSong = false;
