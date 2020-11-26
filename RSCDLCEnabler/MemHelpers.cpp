@@ -234,8 +234,7 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	}
 
 	// Create Area To Draw Text
-	RECT TextRectangle;
-	TextRectangle.left = topLeftX, TextRectangle.top = topLeftY, TextRectangle.right = bottomRightX, TextRectangle.bottom = bottomRightY;
+	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
 
 	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
 	DX9FontEncapsulation->PreloadTextA(textToDraw.c_str(), textToDraw.length());
