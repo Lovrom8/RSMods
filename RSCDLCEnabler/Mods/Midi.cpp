@@ -119,6 +119,12 @@ namespace Midi {
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
 			
+			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
+
+			if (TrueTuning_Hertz < 260) { // Give some leeway for A220 and it's true tuned offsets
+				highestTuning = (highestTuning - 12);
+				std::cout << highestTuning << std::endl;
+			}
 			switch (highestTuning) { // Send target tuning to the pedal
 
 				// Above E Standard
