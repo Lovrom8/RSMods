@@ -33,7 +33,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	byte currentTuning = MemHelpers::getLowestStringTuning();
 
-	if (currentTuning != 0 && currentTuning <= (256 + Settings::GetModSetting("ExtendedRangeMode")))
+	if (currentTuning > 24 && currentTuning <= (256 + Settings::GetModSetting("ExtendedRangeMode")))
 		return true;
 	return false;
 }
