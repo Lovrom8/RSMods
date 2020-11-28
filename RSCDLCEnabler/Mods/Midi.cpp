@@ -124,57 +124,74 @@ namespace Midi {
 				// Above E Standard
 				case 12:
 					SendProgramChange(49); // E Standard +OCT
+					lastPC_TUNING = 49;
 					break;	
 				case 7:
 					SendProgramChange(48); // B Standard
+					lastPC_TUNING = 48;
 					break;
 				case 6:
 					SendProgramChange(47); // Bb Standard
+					lastPC_TUNING = 47;
 					break;
 				case 5:
 					SendProgramChange(46); // A Standard
+					lastPC_TUNING = 46;
 					break;
 				case 4:
 					SendProgramChange(45); // Ab Standard
+					lastPC_TUNING = 45;
 					break;
 				case 3:
 					SendProgramChange(44); // G Standard
+					lastPC_TUNING = 44;
 					break;
 				case 2:
 					SendProgramChange(43); // F# Standard
+					lastPC_TUNING = 43;
 					break;
 				case 1:
 					SendProgramChange(42); // F Standard
+					lastPC_TUNING = 42;
 					break;
 				
 				// E Standard
 				case 0:
+					lastPC_TUNING = 0;
 					break;
 
 				// Below E Standard
 				case -1:
 					SendProgramChange(59); // Eb Standard
+					lastPC_TUNING = 59;
 					break;
 				case -2:
 					SendProgramChange(58); // D Standard
+					lastPC_TUNING = 58;
 					break;
 				case -3:
 					SendProgramChange(57); // C# Standard
+					lastPC_TUNING = 57;
 					break;
 				case -4:
 					SendProgramChange(56); // C Standard
+					lastPC_TUNING = 56;
 					break;
 				case -5:
 					SendProgramChange(55); // B Standard
+					lastPC_TUNING = 55;
 					break;
 				case -6:
 					SendProgramChange(54); // Bb Standard
+					lastPC_TUNING = 54;
 					break;
 				case -7:
 					SendProgramChange(53); // A Standard
+					lastPC_TUNING = 53;
 					break;
 				case -12:
 					SendProgramChange(52); // E Standard -OCT
+					lastPC_TUNING = 52;
 					break;
 				
 				// The pedal can't handle the tuning.
@@ -197,11 +214,6 @@ namespace Midi {
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
-
-			if (highestTuning == -1 && lowestTuning == -1) // Hendrix
-				lastPC_TUNING = 59;
-			else
-				lastPC_TUNING = 0;
 
 			switch (TrueTuning_Hertz) {
 
@@ -298,14 +310,18 @@ namespace Midi {
 
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 		if (lastPC != 78) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy" | If the song required a drop tuning & a true tuning.
-			std::cout << "Attmepting to turn off your drop pedal" << std::endl;
-			SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
+			int cache = lastPC;
+			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC) {  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
+				std::cout << "Attmepting to turn off true tuning" << std::endl;
+				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second);
+			}
+			std::cout << "Attmepting to turn off drop tuning" << std::endl;
+			SendProgramChange(WHAMMY_DT_activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
-			if (lastPC_TUNING != 0)
-				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second); // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 		}
 		alreadyAutomatedTuningInThisSong = false;
 		alreadyAutomatedTrueTuningInThisSong = false;
+		lastPC_TUNING = 0;
 	}
 
 	void SendDataToThread_PC(char program, bool shouldWeSendPC) {
