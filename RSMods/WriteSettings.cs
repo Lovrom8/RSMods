@@ -64,7 +64,10 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, "song" }, // Remove Headstock When Startup / Song
                 { ReadSettings.ScreenShotScoresIdentifier, "off" }, // Screenshot Scores When You Finish A Song
-                { ReadSettings.RiffRepeaterAboveHundredIdentifier, "off" } // Allow the user to go above 100% speed in LAS Riff Repeater
+                { ReadSettings.RiffRepeaterAboveHundredIdentifier, "off" }, // Allow the user to go above 100% speed in LAS Riff Repeater
+                { ReadSettings.MidiAutoTuningIdentifier, "off" }, // Should we be ready to send MIDI signals to a device.
+                { ReadSettings.MidiAutoTuningDeviceIdentifier, "" }, // Device we should send MIDI signals to.
+                { ReadSettings.ChordsModeIdentifier, "off" } // Is the pedal using Chords Mode.
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -86,7 +89,8 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
-                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1" } // The rate of how much one key press should gain the Riff Repeater speed.
+                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1" }, // The rate of how much one key press should gain the Riff Repeater speed.
+                { ReadSettings.TuningPedalIdentifier, "" } // What tuning pedal does the user use?
             }},
 
             {"[Guitar Speak]", new Dictionary<string, string>
@@ -163,7 +167,10 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) }, // Remove Headstock When Startup / Song
                 { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }, // Screenshot Scores When You Finish A Song
-                { ReadSettings.RiffRepeaterAboveHundredIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) } // Allow the user to go above 100% speed in LAS Riff Repeater
+                { ReadSettings.RiffRepeaterAboveHundredIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) }, // Allow the user to go above 100% speed in LAS Riff Repeater
+                { ReadSettings.MidiAutoTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) }, // Should we be ready to send MIDI signals to a device.
+                { ReadSettings.MidiAutoTuningDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) }, // Device we should send MIDI signals to.
+                { ReadSettings.ChordsModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) }, // Is the pedal using Chords Mode.
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -185,7 +192,8 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier) }, // Enumerate new CDLC / ODLC every X ms
-                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier) } // The rate of how much one key press should gain the Riff Repeater speed.
+                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier) }, // The rate of how much one key press should gain the Riff Repeater speed.
+                { ReadSettings.TuningPedalIdentifier, ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) } // What tuning pedal does the user use?
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {

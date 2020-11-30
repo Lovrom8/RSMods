@@ -64,6 +64,7 @@
             this.groupBox_LoftOffWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_useMidiAutoTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
             this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
             this.checkBox_ControlVolume = new System.Windows.Forms.CheckBox();
@@ -164,6 +165,13 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
+            this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
+            this.radio_WhammyORBass = new System.Windows.Forms.RadioButton();
+            this.radio_WhammyDT = new System.Windows.Forms.RadioButton();
+            this.label_MidiWhatTuningPedalDoYouUse = new System.Windows.Forms.Label();
+            this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
+            this.listBox_ListMidiDevices = new System.Windows.Forms.ListBox();
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
@@ -233,6 +241,7 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.tab_Twitch.SuspendLayout();
@@ -600,7 +609,7 @@
             this.groupBox_HowToEnumerate.Controls.Add(this.nUpDown_ForceEnumerationXMS);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationAutomatic);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationManual);
-            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(583, 301);
+            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(669, 275);
             this.groupBox_HowToEnumerate.Name = "groupBox_HowToEnumerate";
             this.groupBox_HowToEnumerate.Size = new System.Drawing.Size(293, 77);
             this.groupBox_HowToEnumerate.TabIndex = 47;
@@ -675,6 +684,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_useMidiAutoTuning);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RiffRepeaterSpeedAboveOneHundred);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ScreenShotScores);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ControlVolume);
@@ -697,10 +707,21 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(15, 14);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 225);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 243);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_useMidiAutoTuning
+            // 
+            this.checkBox_useMidiAutoTuning.AutoSize = true;
+            this.checkBox_useMidiAutoTuning.Location = new System.Drawing.Point(11, 220);
+            this.checkBox_useMidiAutoTuning.Name = "checkBox_useMidiAutoTuning";
+            this.checkBox_useMidiAutoTuning.Size = new System.Drawing.Size(104, 17);
+            this.checkBox_useMidiAutoTuning.TabIndex = 50;
+            this.checkBox_useMidiAutoTuning.Text = "Auto Tune Song";
+            this.checkBox_useMidiAutoTuning.UseVisualStyleBackColor = true;
+            this.checkBox_useMidiAutoTuning.CheckedChanged += new System.EventHandler(this.checkBox_useMidiAutoTuning_CheckedChanged);
             // 
             // checkBox_RiffRepeaterSpeedAboveOneHundred
             // 
@@ -889,7 +910,7 @@
             // 
             // button_ResetModsToDefault
             // 
-            this.button_ResetModsToDefault.Location = new System.Drawing.Point(16, 356);
+            this.button_ResetModsToDefault.Location = new System.Drawing.Point(1009, 485);
             this.button_ResetModsToDefault.Name = "button_ResetModsToDefault";
             this.button_ResetModsToDefault.Size = new System.Drawing.Size(127, 22);
             this.button_ResetModsToDefault.TabIndex = 100000;
@@ -1029,7 +1050,7 @@
             this.groupBox_StringColors.Controls.Add(this.button_String1ColorButton);
             this.groupBox_StringColors.Controls.Add(this.textBox_String0Color);
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
-            this.groupBox_StringColors.Location = new System.Drawing.Point(583, 19);
+            this.groupBox_StringColors.Location = new System.Drawing.Point(680, 19);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
             this.groupBox_StringColors.Size = new System.Drawing.Size(282, 243);
             this.groupBox_StringColors.TabIndex = 65;
@@ -1703,7 +1724,7 @@
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakKeypress);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakOctave);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakNote);
-            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(243, 12);
+            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(383, 19);
             this.groupBox_GuitarSpeak.Name = "groupBox_GuitarSpeak";
             this.groupBox_GuitarSpeak.Size = new System.Drawing.Size(291, 354);
             this.groupBox_GuitarSpeak.TabIndex = 71;
@@ -1855,7 +1876,7 @@
             // 
             this.label_Credits.AutoSize = true;
             this.label_Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Credits.Location = new System.Drawing.Point(984, 338);
+            this.label_Credits.Location = new System.Drawing.Point(992, 458);
             this.label_Credits.Name = "label_Credits";
             this.label_Credits.Size = new System.Drawing.Size(152, 52);
             this.label_Credits.TabIndex = 72;
@@ -1908,10 +1929,10 @@
             this.TabController.Controls.Add(this.tab_ModSettings);
             this.TabController.Controls.Add(this.tab_Twitch);
             this.TabController.Controls.Add(this.tab_GUISettings);
-            this.TabController.Location = new System.Drawing.Point(9, 7);
+            this.TabController.Location = new System.Drawing.Point(3, 7);
             this.TabController.Name = "TabController";
             this.TabController.SelectedIndex = 0;
-            this.TabController.Size = new System.Drawing.Size(1152, 423);
+            this.TabController.Size = new System.Drawing.Size(1158, 539);
             this.TabController.TabIndex = 100001;
             // 
             // tab_Songlists
@@ -1921,7 +1942,7 @@
             this.tab_Songlists.Location = new System.Drawing.Point(4, 22);
             this.tab_Songlists.Name = "tab_Songlists";
             this.tab_Songlists.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_Songlists.Size = new System.Drawing.Size(1144, 397);
+            this.tab_Songlists.Size = new System.Drawing.Size(1150, 513);
             this.tab_Songlists.TabIndex = 0;
             this.tab_Songlists.Text = "Song Lists";
             // 
@@ -1932,7 +1953,7 @@
             this.tab_Keybindings.Location = new System.Drawing.Point(4, 22);
             this.tab_Keybindings.Name = "tab_Keybindings";
             this.tab_Keybindings.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_Keybindings.Size = new System.Drawing.Size(1144, 397);
+            this.tab_Keybindings.Size = new System.Drawing.Size(1150, 513);
             this.tab_Keybindings.TabIndex = 1;
             this.tab_Keybindings.Text = "Keybindings";
             // 
@@ -1943,7 +1964,7 @@
             this.tab_ModToggles.Location = new System.Drawing.Point(4, 22);
             this.tab_ModToggles.Name = "tab_ModToggles";
             this.tab_ModToggles.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_ModToggles.Size = new System.Drawing.Size(1144, 397);
+            this.tab_ModToggles.Size = new System.Drawing.Size(1150, 513);
             this.tab_ModToggles.TabIndex = 2;
             this.tab_ModToggles.Text = "Enable / Disable Mods";
             // 
@@ -1953,7 +1974,7 @@
             this.tab_SetAndForget.Location = new System.Drawing.Point(4, 22);
             this.tab_SetAndForget.Name = "tab_SetAndForget";
             this.tab_SetAndForget.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_SetAndForget.Size = new System.Drawing.Size(1144, 397);
+            this.tab_SetAndForget.Size = new System.Drawing.Size(1150, 513);
             this.tab_SetAndForget.TabIndex = 3;
             this.tab_SetAndForget.Text = "Set And Forget Mods";
             this.tab_SetAndForget.UseVisualStyleBackColor = true;
@@ -1961,6 +1982,7 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.tab_ModSettings.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
             this.tab_ModSettings.Controls.Add(this.button_ResetModsToDefault);
             this.tab_ModSettings.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
@@ -1974,19 +1996,99 @@
             this.tab_ModSettings.Location = new System.Drawing.Point(4, 22);
             this.tab_ModSettings.Name = "tab_ModSettings";
             this.tab_ModSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_ModSettings.Size = new System.Drawing.Size(1144, 397);
+            this.tab_ModSettings.Size = new System.Drawing.Size(1150, 513);
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
+            // 
+            // groupBox_MidiAutoTuneDevice
+            // 
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.checkBox_WhammyChordsMode);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyORBass);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyDT);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
+            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(16, 297);
+            this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
+            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 210);
+            this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
+            this.groupBox_MidiAutoTuneDevice.TabStop = false;
+            this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
+            this.groupBox_MidiAutoTuneDevice.Visible = false;
+            this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.LoadMidiDeviceNamesAsync);
+            // 
+            // checkBox_WhammyChordsMode
+            // 
+            this.checkBox_WhammyChordsMode.AutoSize = true;
+            this.checkBox_WhammyChordsMode.Location = new System.Drawing.Point(220, 172);
+            this.checkBox_WhammyChordsMode.Name = "checkBox_WhammyChordsMode";
+            this.checkBox_WhammyChordsMode.Size = new System.Drawing.Size(89, 17);
+            this.checkBox_WhammyChordsMode.TabIndex = 5;
+            this.checkBox_WhammyChordsMode.Text = "Chords Mode";
+            this.checkBox_WhammyChordsMode.UseVisualStyleBackColor = true;
+            this.checkBox_WhammyChordsMode.Visible = false;
+            this.checkBox_WhammyChordsMode.CheckedChanged += new System.EventHandler(this.checkBox_WhammyChordsMode_CheckedChanged);
+            // 
+            // radio_WhammyORBass
+            // 
+            this.radio_WhammyORBass.AutoSize = true;
+            this.radio_WhammyORBass.Location = new System.Drawing.Point(10, 171);
+            this.radio_WhammyORBass.Name = "radio_WhammyORBass";
+            this.radio_WhammyORBass.Size = new System.Drawing.Size(196, 17);
+            this.radio_WhammyORBass.TabIndex = 4;
+            this.radio_WhammyORBass.TabStop = true;
+            this.radio_WhammyORBass.Text = "Digitech Whammy or Whammy Bass";
+            this.radio_WhammyORBass.UseVisualStyleBackColor = true;
+            this.radio_WhammyORBass.CheckedChanged += new System.EventHandler(this.radio_WhammyORBass_CheckedChanged);
+            // 
+            // radio_WhammyDT
+            // 
+            this.radio_WhammyDT.AutoSize = true;
+            this.radio_WhammyDT.Location = new System.Drawing.Point(10, 148);
+            this.radio_WhammyDT.Name = "radio_WhammyDT";
+            this.radio_WhammyDT.Size = new System.Drawing.Size(129, 17);
+            this.radio_WhammyDT.TabIndex = 3;
+            this.radio_WhammyDT.TabStop = true;
+            this.radio_WhammyDT.Text = "Digitech Whammy DT";
+            this.radio_WhammyDT.UseVisualStyleBackColor = true;
+            this.radio_WhammyDT.CheckedChanged += new System.EventHandler(this.radio_WhammyDT_CheckedChanged);
+            // 
+            // label_MidiWhatTuningPedalDoYouUse
+            // 
+            this.label_MidiWhatTuningPedalDoYouUse.AutoSize = true;
+            this.label_MidiWhatTuningPedalDoYouUse.Location = new System.Drawing.Point(10, 127);
+            this.label_MidiWhatTuningPedalDoYouUse.Name = "label_MidiWhatTuningPedalDoYouUse";
+            this.label_MidiWhatTuningPedalDoYouUse.Size = new System.Drawing.Size(166, 13);
+            this.label_MidiWhatTuningPedalDoYouUse.TabIndex = 2;
+            this.label_MidiWhatTuningPedalDoYouUse.Text = "What Tuning Pedal Do You Use?";
+            // 
+            // label_SelectedMidiDevice
+            // 
+            this.label_SelectedMidiDevice.AutoSize = true;
+            this.label_SelectedMidiDevice.Location = new System.Drawing.Point(7, 96);
+            this.label_SelectedMidiDevice.Name = "label_SelectedMidiDevice";
+            this.label_SelectedMidiDevice.Size = new System.Drawing.Size(69, 13);
+            this.label_SelectedMidiDevice.TabIndex = 1;
+            this.label_SelectedMidiDevice.Text = "Midi Device: ";
+            // 
+            // listBox_ListMidiDevices
+            // 
+            this.listBox_ListMidiDevices.FormattingEnabled = true;
+            this.listBox_ListMidiDevices.Location = new System.Drawing.Point(6, 26);
+            this.listBox_ListMidiDevices.Name = "listBox_ListMidiDevices";
+            this.listBox_ListMidiDevices.Size = new System.Drawing.Size(208, 43);
+            this.listBox_ListMidiDevices.TabIndex = 0;
+            this.listBox_ListMidiDevices.SelectedIndexChanged += new System.EventHandler(this.listBox_ListMidiDevices_SelectedIndexChanged);
             // 
             // groupBox_RRSpeed
             // 
             this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
             this.groupBox_RRSpeed.Location = new System.Drawing.Point(16, 234);
             this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
-            this.groupBox_RRSpeed.Size = new System.Drawing.Size(145, 50);
+            this.groupBox_RRSpeed.Size = new System.Drawing.Size(214, 50);
             this.groupBox_RRSpeed.TabIndex = 100001;
             this.groupBox_RRSpeed.TabStop = false;
-            this.groupBox_RRSpeed.Text = "Riff Repeater Speed";
+            this.groupBox_RRSpeed.Text = "Riff Repeater Speed Increment";
             this.groupBox_RRSpeed.Visible = false;
             // 
             // nUpDown_RiffRepeaterSpeed
@@ -2003,7 +2105,7 @@
             0,
             0});
             this.nUpDown_RiffRepeaterSpeed.Name = "nUpDown_RiffRepeaterSpeed";
-            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(201, 20);
             this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
             this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
             1,
@@ -2041,7 +2143,7 @@
             this.tab_Twitch.Location = new System.Drawing.Point(4, 22);
             this.tab_Twitch.Name = "tab_Twitch";
             this.tab_Twitch.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_Twitch.Size = new System.Drawing.Size(1144, 397);
+            this.tab_Twitch.Size = new System.Drawing.Size(1150, 513);
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot (Beta)";
             // 
@@ -2365,7 +2467,7 @@
             this.tab_GUISettings.Location = new System.Drawing.Point(4, 22);
             this.tab_GUISettings.Name = "tab_GUISettings";
             this.tab_GUISettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_GUISettings.Size = new System.Drawing.Size(1144, 397);
+            this.tab_GUISettings.Size = new System.Drawing.Size(1150, 513);
             this.tab_GUISettings.TabIndex = 5;
             this.tab_GUISettings.Text = "GUI Settings";
             // 
@@ -2455,7 +2557,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1170, 433);
+            this.ClientSize = new System.Drawing.Size(1170, 558);
             this.Controls.Add(this.TabController);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.ForeColor = System.Drawing.Color.Black;
@@ -2500,6 +2602,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
+            this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.groupBox_RRSpeed.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.tab_Twitch.ResumeLayout(false);
@@ -2696,6 +2800,14 @@
         private System.Windows.Forms.NumericUpDown nUpDown_RiffRepeaterSpeed;
         private System.Windows.Forms.Label label_RRSpeedKey;
         private System.Windows.Forms.Button button_AddDCInput;
+        private System.Windows.Forms.CheckBox checkBox_useMidiAutoTuning;
+        private System.Windows.Forms.GroupBox groupBox_MidiAutoTuneDevice;
+        private System.Windows.Forms.ListBox listBox_ListMidiDevices;
+        private System.Windows.Forms.Label label_SelectedMidiDevice;
+        private System.Windows.Forms.RadioButton radio_WhammyORBass;
+        private System.Windows.Forms.RadioButton radio_WhammyDT;
+        private System.Windows.Forms.Label label_MidiWhatTuningPedalDoYouUse;
+        private System.Windows.Forms.CheckBox checkBox_WhammyChordsMode;
     }
 }
 

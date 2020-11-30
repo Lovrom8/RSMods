@@ -9,10 +9,12 @@ namespace RSMods
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
-                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores, RiffRepeaterAboveHundred,
+                             ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
+                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
-                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
+                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
+                                                GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
 
                 // Song List Identifiers
@@ -32,7 +34,7 @@ namespace RSMods
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
                 ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
-                RRSpeedKeyIdentifier =  "RRSpeedKey = ",
+                RRSpeedKeyIdentifier = "RRSpeedKey = ",
 
                 // Toggle Effects
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
@@ -59,6 +61,9 @@ namespace RSMods
                 RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
                 ScreenShotScoresIdentifier = "ScreenShotScores = ",
                 RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
+                MidiAutoTuningIdentifier = "AutoTuneForSong = ",
+                MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
+                ChordsModeIdentifier = "ChordsMode = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -80,6 +85,7 @@ namespace RSMods
                 ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
                 RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
+                TuningPedalIdentifier = "TuningPedal = ",
 
                 // Guitar Speak
                 GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -478,6 +484,36 @@ namespace RSMods
                             return RiffRepeaterAboveHundred;
                     }
 
+                    if (currentLine.Contains(MidiAutoTuningIdentifier))
+                    {
+                        if (currentLine.Substring(MidiAutoTuningIdentifier.Length, (currentLine.Length - MidiAutoTuningIdentifier.Length)) == "on")
+                            MidiAutoTuning = "on";
+                        else
+                            MidiAutoTuning = "off";
+
+                        if (identifierToGrab == MidiAutoTuningIdentifier)
+                            return MidiAutoTuning;
+                    }
+
+                    if (currentLine.Contains(MidiAutoTuningDeviceIdentifier))
+                    {
+                        MidiAutoTuningDevice = currentLine.Substring(MidiAutoTuningDeviceIdentifier.Length, (currentLine.Length - MidiAutoTuningDeviceIdentifier.Length));
+
+                        if (identifierToGrab == MidiAutoTuningDeviceIdentifier)
+                            return MidiAutoTuningDevice;
+                    }
+
+                    if (currentLine.Contains(ChordsModeIdentifier))
+                    {
+                        if (currentLine.Substring(ChordsModeIdentifier.Length, (currentLine.Length - ChordsModeIdentifier.Length)) == "on")
+                            ChordsMode = "on";
+                        else
+                            ChordsMode = "off";
+
+                        if (identifierToGrab == ChordsModeIdentifier)
+                            return ChordsMode;
+                    }
+
                     // String Colors (Normal {N} & Colorblind {CB})
 
                     // Normal Colors
@@ -591,6 +627,14 @@ namespace RSMods
 
                         if (identifierToGrab == RiffRepeaterSpeedIntervalIdentifier)
                             return RiffRepeaterSpeedInterval;
+                    }
+
+                    if (currentLine.Contains(TuningPedalIdentifier))
+                    {
+                        TuningPedal = currentLine.Substring(TuningPedalIdentifier.Length, (currentLine.Length - TuningPedalIdentifier.Length));
+
+                        if (identifierToGrab == TuningPedalIdentifier)
+                            return TuningPedal;
                     }
 
                     // Guitar Speak

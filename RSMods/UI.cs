@@ -15,6 +15,8 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Threading.Tasks;
 using RSMods.Twitch.EffectServer;
+using Windows.Devices.Enumeration;
+using Windows.Devices.Midi;
 
 namespace RSMods
 {
@@ -233,6 +235,35 @@ namespace RSMods
                 checkBox_RiffRepeaterSpeedAboveOneHundred.Checked = true;
                 groupBox_RRSpeed.Visible = true;
                 nUpDown_RiffRepeaterSpeed.Value = Convert.ToDecimal(ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier));
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) == "on")
+            {
+                checkBox_useMidiAutoTuning.Checked = true;
+                groupBox_MidiAutoTuneDevice.Visible = true;
+                label_SelectedMidiDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+
+                if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
+                {
+                    int tuningPedal = Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier));
+
+                    switch (tuningPedal)
+                    {
+                        case 1:
+                            radio_WhammyDT.Checked = true;
+                            break;
+                        case 2:
+                            radio_WhammyORBass.Checked = true;
+                            checkBox_WhammyChordsMode.Visible = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+
+                if (ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on")
+                    checkBox_WhammyChordsMode.Checked = true;
             }
         }
 
@@ -1550,6 +1581,53 @@ namespace RSMods
             SaveChanges(ReadSettings.RiffRepeaterAboveHundredIdentifier, checkBox_RiffRepeaterSpeedAboveOneHundred.Checked.ToString().ToLower());
             groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
         }
+
+        private void checkBox_useMidiAutoTuning_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
+            groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
+        }
+
+        private async void LoadMidiDeviceNamesAsync(object sender, EventArgs e) // https://docs.microsoft.com/en-us/windows/uwp/audio-video-camera/midi#code-try-3
+        {
+
+            // Find all output MIDI devices
+            string midiOutportQueryString = MidiOutPort.GetDeviceSelector();
+            DeviceInformationCollection midiOutputDevices = await DeviceInformation.FindAllAsync(midiOutportQueryString);
+
+            listBox_ListMidiDevices.Items.Clear();
+
+            // Return if no external devices are connected
+            if (midiOutputDevices.Count == 0)
+            {
+                this.listBox_ListMidiDevices.Items.Add("No MIDI output devices found!");
+                return;
+            }
+
+            // Else, add each connected input device to the list
+            foreach (DeviceInformation deviceInfo in midiOutputDevices)
+            {
+                this.listBox_ListMidiDevices.Items.Add(deviceInfo.Name);
+            }
+
+        }
+
+        private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e) {
+            if (listBox_ListMidiDevices.SelectedIndex != -1)
+            {
+                SaveChanges(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
+                label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
+            }
+        }
+
+        private void radio_WhammyDT_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.TuningPedalIdentifier, "1");
+
+        private void radio_WhammyORBass_CheckedChanged(object sender, EventArgs e) {
+            SaveChanges(ReadSettings.TuningPedalIdentifier, "2");
+            checkBox_WhammyChordsMode.Visible = radio_WhammyORBass.Checked;
+        }
+
+        private void checkBox_WhammyChordsMode_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
