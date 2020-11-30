@@ -278,8 +278,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::CaptureKeyboardFromApp(true);
 		ImGui::CaptureMouseFromApp(true);
 
-		Midi::GetMidiDeviceNames();
-
 		static std::string previewValue = "Select a device";
 		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
 			for (int n = 0; n < Midi::NumberOfPorts; n++)
@@ -625,6 +623,11 @@ unsigned WINAPI MainThread() {
 
 			//std::cout << currentMenu << std::endl;
 
+			if (!Midi::scannedForMidiDevices && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
+				Midi::scannedForMidiDevices = true;
+				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"));
+			}
+
 			/// If User Is Entering / In Lesson Mode
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes))
@@ -679,8 +682,10 @@ unsigned WINAPI MainThread() {
 				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
-				Midi::AutomateDownTuning();
-				Midi::AutomateTrueTuning();
+				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
+					Midi::AutomateDownTuning();
+					Midi::AutomateTrueTuning();
+				}
 			}
 
 			/// If User Is Exiting A Song / In A Menu

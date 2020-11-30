@@ -16,6 +16,55 @@ namespace Midi {
 		}
 	}
 
+	void GetMidiDeviceNames() {
+		RtMidiOut* midiout = new RtMidiOut();
+		NumberOfPorts = midiout->getPortCount();
+		if (NumberOfPorts == 0) {
+			std::cout << "No MIDI ports available!" << std::endl;
+			delete midiout;
+
+			MidiDeviceNames.clear();
+			return;
+		}
+
+		MidiDeviceNames.clear();
+		for (int devId = 0; devId < NumberOfPorts; devId++) {
+			try {
+				MidiDeviceNames[devId] = midiout->getPortName(devId);
+			}
+			catch (RtMidiError& error) {
+				std::cout << "(MIDI) " << error.getMessage() << std::endl;
+			}
+		}
+
+		delete midiout;
+	}
+
+	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice) {
+		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
+			DIGITECH_CHORDS_MODE = true;
+			std::cout << "(MIDI) Chords Mode: Enabled" << std::endl;
+		}
+
+		pedalToUse = PedalToUse; // What pedal they're using
+		std::cout << "(MIDI) Pedal To Use: " << pedalToUse << std::endl;
+
+		GetMidiDeviceNames();
+
+		//std::cout << AutoTuneForSongDevice << std::endl;
+
+		for (int currentDevice = 0; currentDevice < MidiDeviceNames.size(); currentDevice++) {
+			//std::cout << MidiDeviceNames.find(currentDevice)->second << std::endl;
+
+			if (MidiDeviceNames.find(currentDevice)->second == AutoTuneForSongDevice + " " + std::to_string(currentDevice)) {
+				std::cout << "(MIDI) Found MIDI device: " << MidiDeviceNames.find(currentDevice)->second << std::endl;
+				SelectedMidiDevice = currentDevice;
+				break;
+			}
+				
+		}
+	}
+
 	bool SendProgramChange(char programChange) {
 		RtMidiOut* midiout = new RtMidiOut();
 		std::vector<unsigned char> message;
@@ -30,7 +79,6 @@ namespace Midi {
 		}
 
 		try {
-			// Open first available port.
 			midiout->openPort(SelectedMidiDevice);
 
 			// Send MIDI message
@@ -89,30 +137,6 @@ namespace Midi {
 		sendCC = false;
 		lastCC = toePosition;
 		return true;
-	}
-
-	void GetMidiDeviceNames() {
-		RtMidiOut* midiout = new RtMidiOut();
-		NumberOfPorts = midiout->getPortCount();
-		if (NumberOfPorts == 0) {
-			std::cout << "No MIDI ports available!" << std::endl;
-			delete midiout;
-
-			MidiDeviceNames.clear();
-			return;
-		}
-
-		MidiDeviceNames.clear();
-		for (int devId = 0; devId < NumberOfPorts;devId++) {
-			try {
-				MidiDeviceNames[devId] = midiout->getPortName(devId);
-			}
-			catch (RtMidiError& error) {
-				std::cout << "(MIDI) " << error.getMessage() << std::endl;
-			}
-		}
-
-		delete midiout;
 	}
 
 	void AutomateDownTuning() {

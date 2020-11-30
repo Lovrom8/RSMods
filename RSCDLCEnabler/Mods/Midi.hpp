@@ -4,15 +4,17 @@
 #include <iostream>
 #include <cstdlib>
 #include <map>
+#include <string>
 
 #include "../Lib/Midi/RtMidi.h"
 #include "../MemHelpers.hpp"
 
 namespace Midi {
 	void InitMidi();
+	void GetMidiDeviceNames();
+	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice);
 	bool SendProgramChange(char programChange = '\000');
 	bool SendControlChange(char toePosition = '\000');
-	void GetMidiDeviceNames();
 	void AutomateDownTuning();
 	void AutomateTrueTuning();
 	void RevertAutomatedTuning();
@@ -27,6 +29,7 @@ namespace Midi {
 	void Digitech_Whammy_Auto_TrueTune(int TrueTuning_Hertz); 
 
 	extern int MidiCC, MidiPC;
+	inline bool scannedForMidiDevices = false;
 	extern std::map<int, std::string> MidiDeviceNames; // All MIDI devices that currently connected
 	extern int SelectedMidiDevice; 
 	extern unsigned int NumberOfPorts;
@@ -35,8 +38,7 @@ namespace Midi {
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
 	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false;
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
-	inline unsigned int pedalToUse = 2; // 0 = No pedal. 1 = Whammy DT. 2 = Whammy / Whammy Bass
-	inline bool DIGITECH_CHORDS_MODE = true;
+	inline unsigned int pedalToUse = 0; // 0 = No pedal. 1 = Whammy DT. 2 = Whammy / Whammy Bass
 };
 
 // Midi Specifications
@@ -45,6 +47,7 @@ inline unsigned char programChangeStatus = 192, controlChangeStatus = 176, noteO
 
 // Digitech WHAMMY DT | Bass Whammy | Whammy
 inline int DIGITECH_WHAMMY_CC_CHANNEL = 11;
+inline bool DIGITECH_CHORDS_MODE = false;
 inline std::map<char, char> DIGITECH_WHAMMY_DT_activeBypassMap = {
 
 	// Whammy
@@ -161,20 +164,20 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 // Pedal -> Functions
 
 // Pedal -> Drop Tune Capable, True Tuning Capable
-std::map<unsigned int, std::pair<bool, bool>> pedalCanUseMap = {
+inline std::map<unsigned int, std::pair<bool, bool>> pedalCanUseMap = {
 	{1, {true, true}}, // Whammy DT
 	{2, {false, true}}, // Whammy / Bass Whammy
 	{3, {false, false}} // Dummy pedal
 };
 
 // Pedal -> activeBypassMap
-std::map<unsigned int, std::map<char, char>> pedalToActiveBypassMap = {
+inline std::map<unsigned int, std::map<char, char>> pedalToActiveBypassMap = {
 	{1, DIGITECH_WHAMMY_DT_activeBypassMap},
 	{2, DIGITECH_WHAMMY_activeBypassMap}
 };
 
 // Pedal -> CC Channel
-std::map<unsigned int, unsigned int> pedalToCC_Channel = {
+inline std::map<unsigned int, unsigned int> pedalToCC_Channel = {
 	{1, DIGITECH_WHAMMY_CC_CHANNEL},
 	{2, DIGITECH_WHAMMY_CC_CHANNEL}
 };
