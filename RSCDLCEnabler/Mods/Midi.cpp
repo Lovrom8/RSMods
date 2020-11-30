@@ -322,9 +322,12 @@ namespace Midi {
 				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second);
 			}
 			std::cout << "Attmepting to turn off drop tuning" << std::endl;
-			SendProgramChange(WHAMMY_DT_activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
+			// std::cout << cache << std::endl;
+			if (WHAMMY_DT_activeBypassMap.find(cache) != WHAMMY_DT_activeBypassMap.end())
+				SendProgramChange(WHAMMY_DT_activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
 		}
+
 		alreadyAutomatedTuningInThisSong = false;
 		alreadyAutomatedTrueTuningInThisSong = false;
 		lastPC_TUNING = 0;
