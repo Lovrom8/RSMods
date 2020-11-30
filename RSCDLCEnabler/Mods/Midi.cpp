@@ -163,6 +163,7 @@ namespace Midi {
 				
 				// E Standard
 				case 0:
+					SendProgramChange(78); // E Standard. Doesn't do anything, just sets the proper lastPC.
 					lastPC_TUNING = 0;
 					break;
 
@@ -202,6 +203,7 @@ namespace Midi {
 				
 				// The pedal can't handle the tuning.
 				default:
+					SendProgramChange(78); // Doesn't do anything, just sets the proper lastPC.
 					break;
 			}
 			alreadyAutomatedTuningInThisSong = true;
@@ -322,7 +324,6 @@ namespace Midi {
 				SendProgramChange(WHAMMY_DT_activeBypassMap.find(lastPC_TUNING)->second);
 			}
 			std::cout << "Attmepting to turn off drop tuning" << std::endl;
-			// std::cout << cache << std::endl;
 			if (WHAMMY_DT_activeBypassMap.find(cache) != WHAMMY_DT_activeBypassMap.end())
 				SendProgramChange(WHAMMY_DT_activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
