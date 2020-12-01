@@ -374,7 +374,17 @@ namespace RSMods
             }
 
             WriteSettings.WriteINI(WriteSettings.saveSettings);
+            ShowSavedSettingsLabel();
             WinMsgUtil.SendMsgToRS("update all");
+        }
+
+        private void ShowSavedSettingsLabel()
+        {
+            label_SettingsSaved.Visible = true;
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 1500;
+            timer.Tick += (source, e) => { label_SettingsSaved.Visible = false; timer.Stop(); };
+            timer.Start();
         }
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
@@ -910,6 +920,8 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
             Dictionaries.TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
             Dictionaries.TooltipDictionary.Add(checkBox_RemoveLineMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
+            Dictionaries.TooltipDictionary.Add(checkBox_ScreenShotScores, "We will automatically take a steam screenshot whenever you finish a song");
+            Dictionaries.TooltipDictionary.Add(checkBox_RiffRepeaterSpeedAboveOneHundred, "Allow you to play a song faster than 100% speed in Riff Repeater");
             Dictionaries.TooltipDictionary.Add(checkBox_ChangeTheme, "Use this feature to customize the colors used in this GUI.");
             Dictionaries.TooltipDictionary.Add(checkBox_useMidiAutoTuning, "If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.");
 

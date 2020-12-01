@@ -215,6 +215,7 @@
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
+            this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -734,6 +735,7 @@
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Text = "Allow RR Speed Above 100";
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.UseVisualStyleBackColor = true;
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.CheckedChanged += new System.EventHandler(this.checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ScreenShotScores
             // 
@@ -745,6 +747,7 @@
             this.checkBox_ScreenShotScores.Text = "Screenshot Scores";
             this.checkBox_ScreenShotScores.UseVisualStyleBackColor = true;
             this.checkBox_ScreenShotScores.CheckedChanged += new System.EventHandler(this.checkBox_ScreenShotScores_CheckedChanged);
+            this.checkBox_ScreenShotScores.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ControlVolume
             // 
@@ -2554,13 +2557,25 @@
             this.timerValidateTwitch.Interval = 150000;
             this.timerValidateTwitch.Tick += new System.EventHandler(this.timerValidateTwitch_Tick);
             // 
+            // label_SettingsSaved
+            // 
+            this.label_SettingsSaved.AutoSize = true;
+            this.label_SettingsSaved.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_SettingsSaved.Location = new System.Drawing.Point(4, 549);
+            this.label_SettingsSaved.Name = "label_SettingsSaved";
+            this.label_SettingsSaved.Size = new System.Drawing.Size(120, 18);
+            this.label_SettingsSaved.TabIndex = 52;
+            this.label_SettingsSaved.Text = "Settings Saved";
+            this.label_SettingsSaved.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1170, 558);
+            this.ClientSize = new System.Drawing.Size(1170, 576);
+            this.Controls.Add(this.label_SettingsSaved);
             this.Controls.Add(this.TabController);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.ForeColor = System.Drawing.Color.Black;
@@ -2618,6 +2633,7 @@
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -2811,6 +2827,7 @@
         private System.Windows.Forms.RadioButton radio_WhammyDT;
         private System.Windows.Forms.Label label_MidiWhatTuningPedalDoYouUse;
         private System.Windows.Forms.CheckBox checkBox_WhammyChordsMode;
+        private System.Windows.Forms.Label label_SettingsSaved;
     }
 }
 
