@@ -1610,6 +1610,11 @@ namespace RSMods
                 this.listBox_ListMidiDevices.Items.Add(deviceInfo.Name);
             }
 
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
+            {
+                listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+            }
+
         }
 
         private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e) {
