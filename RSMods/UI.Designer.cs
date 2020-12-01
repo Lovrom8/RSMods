@@ -722,6 +722,7 @@
             this.checkBox_useMidiAutoTuning.Text = "Auto Tune Song";
             this.checkBox_useMidiAutoTuning.UseVisualStyleBackColor = true;
             this.checkBox_useMidiAutoTuning.CheckedChanged += new System.EventHandler(this.checkBox_useMidiAutoTuning_CheckedChanged);
+            this.checkBox_useMidiAutoTuning.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_RiffRepeaterSpeedAboveOneHundred
             // 
@@ -2016,6 +2017,7 @@
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
             this.groupBox_MidiAutoTuneDevice.Visible = false;
             this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.LoadMidiDeviceNamesAsync);
+            this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_WhammyChordsMode
             // 
@@ -2028,6 +2030,7 @@
             this.checkBox_WhammyChordsMode.UseVisualStyleBackColor = true;
             this.checkBox_WhammyChordsMode.Visible = false;
             this.checkBox_WhammyChordsMode.CheckedChanged += new System.EventHandler(this.checkBox_WhammyChordsMode_CheckedChanged);
+            this.checkBox_WhammyChordsMode.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // radio_WhammyORBass
             // 
