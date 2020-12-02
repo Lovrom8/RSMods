@@ -214,9 +214,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
       <Version>3.1.8</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.19041.1</Version>
-    </PackageReference>
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
     </PackageReference>
