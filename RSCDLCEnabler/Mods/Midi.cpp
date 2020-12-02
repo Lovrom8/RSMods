@@ -154,7 +154,7 @@ namespace Midi {
 	}
 
 	void AutomateTrueTuning() {
-		if (!alreadyAutomatedTrueTuningInThisSong) {
+		if (!alreadyAutomatedTrueTuningInThisSong && userWantsToUseAutoTuning) {
 			alreadyAutomatedTrueTuningInThisSong = true;
 
 			if (pedalToUse == 0 || !pedalCanUseMap.find(pedalToUse)->second.second) {
@@ -184,7 +184,7 @@ namespace Midi {
 
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 
-		if (pedalToUse == 0 || pedalToActiveBypassMap.find(pedalToUse) == pedalToActiveBypassMap.end())
+		if (pedalToUse == 0 || pedalToActiveBypassMap.find(pedalToUse) == pedalToActiveBypassMap.end() || !userWantsToUseAutoTuning)
 			return;
 
 		if (lastPC != 666) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"

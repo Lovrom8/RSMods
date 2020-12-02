@@ -168,6 +168,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
+
+			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
+				Midi::userWantsToUseAutoTuning = true;
 		}
 
 		if (debug) {
@@ -682,7 +685,7 @@ unsigned WINAPI MainThread() {
 				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
-				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
+				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning) {
 					Midi::AutomateDownTuning();
 					Midi::AutomateTrueTuning();
 				}
@@ -694,8 +697,10 @@ unsigned WINAPI MainThread() {
 				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
 				newSongSpeed = 100.f;
 
-				if (Midi::alreadyAutomatedTuningInThisSong)
+				if (Midi::alreadyAutomatedTuningInThisSong) {
 					Midi::RevertAutomatedTuning();
+					Midi::userWantsToUseAutoTuning = false;
+				}	
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song") // If the user only wants to see the headstock in menus, then we need to stop removing it.
 					RemoveHeadstockInThisMenu = false;

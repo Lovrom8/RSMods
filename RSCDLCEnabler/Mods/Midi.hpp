@@ -36,7 +36,7 @@ namespace Midi {
 	inline bool sendCC = false, sendPC = false;
 	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 666;
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
-	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false;
+	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false, userWantsToUseAutoTuning = false;
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
 	inline unsigned int pedalToUse = 0; // 0 = No pedal. 1 = Whammy DT. 2 = Whammy / Whammy Bass
 };
