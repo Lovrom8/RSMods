@@ -79,7 +79,12 @@ namespace Midi {
 		GetNewMidiDevices();
 
 		for (int device = 0; device < midiOutDeviceNumber; device++) {
-			std::cout << midiOutDevices.at(device).szPname << std::endl;
+			if ((std::string)midiOutDevices.at(device).szPname == AutoTuneForSongDevice) {
+				std::cout << "(MIDI) Found MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
+				SelectedMidiDevice = device;
+				break;
+			}
+			std::cout << "(MIDI) Available MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
 		}
 	}
 
