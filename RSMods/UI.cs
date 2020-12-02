@@ -15,8 +15,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Threading.Tasks;
 using RSMods.Twitch.EffectServer;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Midi;
+using System.Runtime.InteropServices;
 
 namespace RSMods
 {
@@ -1603,33 +1602,21 @@ namespace RSMods
             groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
         }
 
-        private async void LoadMidiDeviceNamesAsync(object sender, EventArgs e) // https://docs.microsoft.com/en-us/windows/uwp/audio-video-camera/midi#code-try-3
+        private void LoadMidiDeviceNames(object sender, EventArgs e)
         {
+            this.listBox_ListMidiDevices.Items.Clear();
 
-            // Find all output MIDI devices
-            string midiOutportQueryString = MidiOutPort.GetDeviceSelector();
-            DeviceInformationCollection midiOutputDevices = await DeviceInformation.FindAllAsync(midiOutportQueryString);
+            uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
 
-            listBox_ListMidiDevices.Items.Clear();
-
-            // Return if no external devices are connected
-            if (midiOutputDevices.Count == 0)
+            for(uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
             {
-                this.listBox_ListMidiDevices.Items.Add("No MIDI output devices found!");
-                return;
-            }
-
-            // Else, add each connected input device to the list
-            foreach (DeviceInformation deviceInfo in midiOutputDevices)
-            {
-                this.listBox_ListMidiDevices.Items.Add(deviceInfo.Name);
+                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS {};
+                Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
+                this.listBox_ListMidiDevices.Items.Add(temp.szPname);
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
-            {
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
-            }
-
         }
 
         private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e) {
@@ -1661,5 +1648,57 @@ namespace RSMods
 
             SaveEnabledRewardsToFile();
         }*/
+    }
+
+    public class Midi
+    {
+        public enum MMRESULT : uint
+        {
+            MMSYSERR_NOERROR = 0,
+            MMSYSERR_ERROR = 1,
+            MMSYSERR_BADDEVICEID = 2,
+            MMSYSERR_NOTENABLED = 3,
+            MMSYSERR_ALLOCATED = 4,
+            MMSYSERR_INVALHANDLE = 5,
+            MMSYSERR_NODRIVER = 6,
+            MMSYSERR_NOMEM = 7,
+            MMSYSERR_NOTSUPPORTED = 8,
+            MMSYSERR_BADERRNUM = 9,
+            MMSYSERR_INVALFLAG = 10,
+            MMSYSERR_INVALPARAM = 11,
+            MMSYSERR_HANDLEBUSY = 12,
+            MMSYSERR_INVALIDALIAS = 13,
+            MMSYSERR_BADDB = 14,
+            MMSYSERR_KEYNOTFOUND = 15,
+            MMSYSERR_READERROR = 16,
+            MMSYSERR_WRITEERROR = 17,
+            MMSYSERR_DELETEERROR = 18,
+            MMSYSERR_VALNOTFOUND = 19,
+            MMSYSERR_NODRIVERCB = 20,
+            WAVERR_BADFORMAT = 32,
+            WAVERR_STILLPLAYING = 33,
+            WAVERR_UNPREPARED = 34
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIDIOUTCAPS
+        {
+            public ushort wMid;
+            public ushort wPid;
+            public uint vDriverVersion;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string szPname;
+            public ushort wTechnology;
+            public ushort wVoices;
+            public ushort wNotes;
+            public ushort wChannelMask;
+            public uint dwSupport;
+        }
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern MMRESULT midiOutGetDevCaps(uint uDeviceID, ref MIDIOUTCAPS lpMidiOutCaps, uint cbMidiOutCaps);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiOutGetNumDevs();
     }
 }
