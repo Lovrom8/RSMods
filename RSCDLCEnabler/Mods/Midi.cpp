@@ -2,9 +2,7 @@
 
 // Midi codes should follow this guide: http://fmslogo.sourceforge.net/manual/midi-table.html
 namespace Midi {
-	std::map<int, std::string> MidiDeviceNames;
 	std::vector<MIDIOUTCAPSA> midiOutDevices;
-	unsigned int midiOutDeviceNumber;
 	int SelectedMidiDevice = 0, MidiCC = 0, MidiPC = 666;
 	unsigned int NumberOfPorts;
 
@@ -19,32 +17,8 @@ namespace Midi {
 	}
 
 	void GetMidiDeviceNames() {
-		RtMidiOut* midiout = new RtMidiOut();
-		NumberOfPorts = midiout->getPortCount();
-		if (NumberOfPorts == 0) {
-			std::cout << "No MIDI ports available!" << std::endl;
-			delete midiout;
-
-			MidiDeviceNames.clear();
-			return;
-		}
-
-		MidiDeviceNames.clear();
-		for (int devId = 0; devId < NumberOfPorts; devId++) {
-			try {
-				MidiDeviceNames[devId] = midiout->getPortName(devId);
-			}
-			catch (RtMidiError& error) {
-				std::cout << "(MIDI) " << error.getMessage() << std::endl;
-			}
-		}
-
-		delete midiout;
-	}
-
-	void GetNewMidiDevices() {
-		midiOutDeviceNumber = midiOutGetNumDevs();
-		for (int device = 0; device < midiOutDeviceNumber; device++) {
+		NumberOfPorts = midiOutGetNumDevs();
+		for (int device = 0; device < NumberOfPorts; device++) {
 			MIDIOUTCAPSA temp;
 			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
 			midiOutDevices.push_back(temp);
@@ -61,24 +35,9 @@ namespace Midi {
 		pedalToUse = PedalToUse; // What pedal they're using
 		std::cout << "(MIDI) Pedal To Use: " << pedalToUse << std::endl;
 
-		/*GetMidiDeviceNames();
+		GetMidiDeviceNames();
 
-		std::cout << "Device in INI: " << AutoTuneForSongDevice << std::endl;
-		
-		for (int currentDevice = 0; currentDevice < MidiDeviceNames.size(); currentDevice++) {
-			std::cout << "Device" << currentDevice << ": " << MidiDeviceNames.find(currentDevice)->second << std::endl;
-			
-			if (MidiDeviceNames.find(currentDevice)->second == AutoTuneForSongDevice + " " + std::to_string(currentDevice)) {
-				std::cout << "(MIDI) Found MIDI device: " << MidiDeviceNames.find(currentDevice)->second << std::endl;
-				SelectedMidiDevice = currentDevice;
-				break;
-			}
-				
-		}*/
-
-		GetNewMidiDevices();
-
-		for (int device = 0; device < midiOutDeviceNumber; device++) {
+		for (int device = 0; device < NumberOfPorts; device++) {
 			if ((std::string)midiOutDevices.at(device).szPname == AutoTuneForSongDevice) {
 				std::cout << "(MIDI) Found MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
 				SelectedMidiDevice = device;
@@ -93,7 +52,7 @@ namespace Midi {
 		std::vector<unsigned char> message;
 
 		// Check available ports.
-		NumberOfPorts = midiout->getPortCount();
+		NumberOfPorts = midiOutGetNumDevs();
 		if (NumberOfPorts == 0) {
 			std::cout << "No MIDI ports available!" << std::endl;
 			delete midiout;
@@ -132,7 +91,7 @@ namespace Midi {
 		std::vector<unsigned char> message;
 
 		// Check available ports.
-		NumberOfPorts = midiout->getPortCount();
+		NumberOfPorts = midiOutGetNumDevs();
 		if (NumberOfPorts == 0) {
 			std::cout << "No MIDI ports available!" << std::endl;
 			delete midiout;
@@ -234,10 +193,13 @@ namespace Midi {
 			std::map<char, char> activeBypassMap = pedalToActiveBypassMap.find(pedalToUse)->second;
 			
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC) {  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
-				std::cout << "Attmepting to turn off true tuning" << std::endl;
+				std::cout << "Attmepting to turn off drop tuning" << std::endl;
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
+				std::cout << "Attmepting to turn off true tuning" << std::endl;
 			}
-			std::cout << "Attmepting to turn off drop tuning" << std::endl;
+			else
+				std::cout << "Attmepting to turn off drop tuning" << std::endl;
+
 			if (activeBypassMap.find(cache) != activeBypassMap.end())
 				SendProgramChange(activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal

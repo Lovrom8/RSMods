@@ -30,9 +30,7 @@ namespace Midi {
 
 	extern int MidiCC, MidiPC;
 	inline bool scannedForMidiDevices = false;
-	extern std::map<int, std::string> MidiDeviceNames; // All MIDI devices that currently connected
-	extern std::vector<MIDIOUTCAPSA> midiOutDevices;
-	extern unsigned int midiOutDeviceNumber;
+	extern std::vector<MIDIOUTCAPSA> midiOutDevices; // All MIDI out devices currently connected
 	extern int SelectedMidiDevice; 
 	extern unsigned int NumberOfPorts;
 	inline bool sendCC = false, sendPC = false;

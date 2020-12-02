@@ -283,11 +283,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			for (int n = 0; n < Midi::NumberOfPorts; n++)
 			{
 				const bool is_selected = (selectedDevice == n);
-				if (ImGui::Selectable(Midi::MidiDeviceNames[n].c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+				if (ImGui::Selectable(Midi::midiOutDevices[n].szPname, is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
 					selectedDevice = n;
 
 				if (is_selected) {
-					previewValue = Midi::MidiDeviceNames[n];
+					previewValue = Midi::midiOutDevices[n].szPname;
 					Midi::SelectedMidiDevice = n;
 				}
 			}
