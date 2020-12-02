@@ -3,6 +3,8 @@
 // Midi codes should follow this guide: http://fmslogo.sourceforge.net/manual/midi-table.html
 namespace Midi {
 	std::map<int, std::string> MidiDeviceNames;
+	std::vector<MIDIOUTCAPSA> midiOutDevices;
+	unsigned int midiOutDeviceNumber;
 	int SelectedMidiDevice = 0, MidiCC = 0, MidiPC = 666;
 	unsigned int NumberOfPorts;
 
@@ -40,6 +42,16 @@ namespace Midi {
 		delete midiout;
 	}
 
+	void GetNewMidiDevices() {
+		midiOutDeviceNumber = midiOutGetNumDevs();
+		for (int device = 0; device < midiOutDeviceNumber; device++) {
+			MIDIOUTCAPSA temp;
+			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
+			midiOutDevices.push_back(temp);
+		}
+		
+	}
+
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice) {
 		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
 			DIGITECH_CHORDS_MODE = true;
@@ -49,19 +61,25 @@ namespace Midi {
 		pedalToUse = PedalToUse; // What pedal they're using
 		std::cout << "(MIDI) Pedal To Use: " << pedalToUse << std::endl;
 
-		GetMidiDeviceNames();
+		/*GetMidiDeviceNames();
 
-		//std::cout << AutoTuneForSongDevice << std::endl;
-
+		std::cout << "Device in INI: " << AutoTuneForSongDevice << std::endl;
+		
 		for (int currentDevice = 0; currentDevice < MidiDeviceNames.size(); currentDevice++) {
-			//std::cout << MidiDeviceNames.find(currentDevice)->second << std::endl;
-
+			std::cout << "Device" << currentDevice << ": " << MidiDeviceNames.find(currentDevice)->second << std::endl;
+			
 			if (MidiDeviceNames.find(currentDevice)->second == AutoTuneForSongDevice + " " + std::to_string(currentDevice)) {
 				std::cout << "(MIDI) Found MIDI device: " << MidiDeviceNames.find(currentDevice)->second << std::endl;
 				SelectedMidiDevice = currentDevice;
 				break;
 			}
 				
+		}*/
+
+		GetNewMidiDevices();
+
+		for (int device = 0; device < midiOutDeviceNumber; device++) {
+			std::cout << midiOutDevices.at(device).szPname << std::endl;
 		}
 	}
 
