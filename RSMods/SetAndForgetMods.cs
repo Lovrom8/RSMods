@@ -107,7 +107,6 @@ namespace RSMods
         public static void RemoveTempFolders()
         {
             ZipUtilities.DeleteDirectory(Constants.WorkFolder);
-            ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
         }
 
         public static void LoadDefaultFiles()
