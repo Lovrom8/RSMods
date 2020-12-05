@@ -221,7 +221,8 @@ namespace RSMods.Twitch
                 new TwitchReward("Half scroll speed", "Makes scroll speed half (ramp-up effect - not instant!)",  "halfsongspeed"),
                 new TwitchReward("Double scroll speed", "Makes scroll speed double (ramp-up effect)",  "doublesongspeed"),
                 new TwitchReward("Zoom camera in", "Zooms in the main camera",  "zoomin"),
-                new TwitchReward("TurboSpeed", "EXPERIMENTAL: turn up song speed, a lot",  "turbospeed")
+                // new TwitchReward("TurboSpeed", "EXPERIMENTAL: turn up song speed, a lot",  "turbospeed") 
+                // TODO: enable when the internal part is finished
             });
 
             /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.DefaultRewards.GetType());
