@@ -21,6 +21,10 @@ namespace Offsets {
 	extern uintptr_t ptr_trueTuning;
 	extern std::vector<unsigned int> ptr_trueTuningOffsets;
 
+	// Tuning - Textual Form
+	extern uintptr_t ptr_tuningText;
+	extern std::vector<unsigned int> ptr_tuningTextOffsets;
+
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
 	extern uintptr_t ptr_guitarSpeak;
 	extern std::vector<unsigned int> ptr_guitarSpeakOffets;

@@ -137,6 +137,8 @@ namespace Midi {
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
 			
+			delete[] highestLowestTuning;
+
 			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
 
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets

@@ -5,8 +5,10 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include "Lib/DirectX/d3dx9.h"
 #include "Lib/DirectX/d3d9types.h"
+#include "Lib/Json/json.hpp"
 #include "D3D/D3DHooks.hpp"
 
 #include "MemUtil.hpp"
@@ -32,6 +34,7 @@ namespace MemHelpers {
 	bool IsInSong();
 	float RiffRepeaterSpeed(float newSpeed = NULL);
 	void AutomatedOpenRRSpeedAbuse();
+	Tuning GetTuningAtTuner();
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);

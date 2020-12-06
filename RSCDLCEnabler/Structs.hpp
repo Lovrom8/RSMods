@@ -143,6 +143,24 @@ struct Tuning {
 	byte strB; //0x0008
 	char pad_0009[1]; //0x0009
 	byte highE; //0x000A 
+
+	Tuning() { // Aboslutely unrealistic default values
+		lowE = 1024;
+		strA = 1024;
+		strD = 1024;
+		strG = 1024;
+		strB = 1024;
+		highE = 1024;
+	}
+
+	Tuning(byte _lowE, byte _strA, byte _strD, byte _strG, byte _strB, byte _highE) {
+		lowE = _lowE;
+		strA = _strA;
+		strD = _strD;
+		strG = _strG;
+		strB = _strB;
+		highE = _highE;
+	}
 };
 
 /*------------------D3D | FOR REFERENCE---------------------------------*/

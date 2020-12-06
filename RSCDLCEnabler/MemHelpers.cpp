@@ -15,7 +15,7 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	if (!addrTuning)
 		return NULL;
 
-	byte* AllTunings = new byte[6]{ (*(Tuning*)addrTuning).lowE, (*(Tuning*)addrTuning).strA, (*(Tuning*)addrTuning).strD, (*(Tuning*)addrTuning).strG, (*(Tuning*)addrTuning).strB, (*(Tuning*)addrTuning).highE};
+	byte* AllTunings = new byte[6]{ (*(Tuning*)addrTuning).lowE, (*(Tuning*)addrTuning).strA, (*(Tuning*)addrTuning).strD, (*(Tuning*)addrTuning).strG, (*(Tuning*)addrTuning).strB, (*(Tuning*)addrTuning).highE };
 
 	if (verbose) {
 		for (int i = 0; i < 6; i++)
@@ -23,6 +23,42 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	}
 
 	return AllTunings;
+}
+
+// In the tuner menu only, the current tuning will be saved in the string which we can cross-reference to the JSON list of tunings 
+Tuning MemHelpers::GetTuningAtTuner() {
+	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
+
+	if (!std::filesystem::exists(pathToTuningList)) // If we can't find the list of tunings, just return a default value
+		return Tuning();
+
+	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
+
+	if (!addrTuningText)
+		return Tuning();
+
+	std::string tuningText = std::string((const char*)addrTuningText);
+	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());  // In the JSON, tunings have no whitespaces, so get rid of them
+
+	std::ifstream jsonFile(pathToTuningList);
+	nlohmann::json tuningJson;
+	jsonFile >> tuningJson;
+
+	jsonFile.close();
+	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in 
+
+	for (auto& tuning : tuningJson.items()) { // Unforunately we can't use json.contains due to difference in formatting
+		std::string jsonKeyUpper = tuning.key(), jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
+		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
+
+		if (jsonKeyUpper == tuningText) {
+			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];
+
+			return Tuning(tuningJson["string0"], tuningJson["string1"], tuningJson["string2"], tuningJson["string3"], tuningJson["string4"], tuningJson["string5"]);
+		}	
+	}
+
+	return Tuning();
 }
 
 bool MemHelpers::IsExtendedRangeSong() {
@@ -44,17 +80,19 @@ bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a s
 	int highestTuning = highestLowestTuning[0];
 	int lowestTuning = highestLowestTuning[1];
 
+	delete[] highestLowestTuning;
+
 	// Does the user's settings allow us to toggle Extended Range Mode at this tuning.
 	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
-	
+
 	return false;
 }
 
 // [0] - Highest, [1] - Lowest
 int* MemHelpers::GetHighestLowestString() {
 	int highestTuning = 0, lowestTuning = 256, tuningBuffer = 0;
-	byte* tuningArray = MemHelpers::GetCurrentTuning();
+	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 
 	// Get Highest And Lowest Strings
 	for (int i = 0; i < 6; i++) {
@@ -84,7 +122,7 @@ int* MemHelpers::GetHighestLowestString() {
 }
 
 bool MemHelpers::IsSongInDrop() {
-	byte* tuningArray = MemHelpers::GetCurrentTuning();
+	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 	byte NEGATE_DROP = tuningArray[0] + 2;
 
 	if (tuningArray[1] == NEGATE_DROP && tuningArray[2] == NEGATE_DROP && tuningArray[3] == NEGATE_DROP && tuningArray[4] == NEGATE_DROP && tuningArray[5] == NEGATE_DROP) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
@@ -93,7 +131,7 @@ bool MemHelpers::IsSongInDrop() {
 }
 
 bool MemHelpers::IsSongInStandard() {
-	byte* tuningArray = MemHelpers::GetCurrentTuning();
+	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 	byte commonTuning = tuningArray[0];
 	if (tuningArray[1] == commonTuning && tuningArray[2] == commonTuning && tuningArray[3] == commonTuning && tuningArray[4] == commonTuning && tuningArray[5] == commonTuning) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
 		return true;
@@ -225,13 +263,17 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 // textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF (or 255 in hex).
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice)
 {
+	int* WindowSize = MemHelpers::GetWindowSize();
+
 	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
-	if (WindowSizeX != (MemHelpers::GetWindowSize()[0] / 96) || WindowSizeY != (MemHelpers::GetWindowSize()[1] / 72) || CustomDX9Font == NULL) {
-		WindowSizeX = (MemHelpers::GetWindowSize()[0] / 96);
-		WindowSizeY = (MemHelpers::GetWindowSize()[1] / 72);
+	if (WindowSizeX != (WindowSize[0] / 96) || WindowSizeY != (WindowSize[1] / 72) || CustomDX9Font == NULL) {
+		WindowSizeX = (WindowSize[0] / 96);
+		WindowSizeY = (WindowSize[1] / 72);
 
 		CustomDX9Font = D3DXCreateFontA(pDevice, WindowSizeX, WindowSizeY, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &DX9FontEncapsulation); // Create a new font
 	}
+
+	delete[] WindowSize;
 
 	// Create Area To Draw Text
 	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
@@ -244,7 +286,7 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	if (DX9FontEncapsulation) {
 		DX9FontEncapsulation->Release();
 		DX9FontEncapsulation = NULL;
-	}	
+	}
 }
 
 void MemHelpers::ToggleDrunkMode(bool enable) {
@@ -273,7 +315,7 @@ bool MemHelpers::IsInSong() {
 
 float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
-	
+
 	if (newSpeed != NULL) // If we aren't just trying to see the current speed.
 		*(float*)riffRepeaterSpeed = newSpeed;
 	return *(float*)riffRepeaterSpeed;
