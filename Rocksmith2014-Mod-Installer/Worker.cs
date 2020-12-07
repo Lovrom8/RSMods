@@ -34,8 +34,6 @@ namespace RS2014_Mod_Installer
             // Root Folder
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
-                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.dll"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions);
-                File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.xml"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions1);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.dll"), Properties.Resources.Microsoft_WindowsAPICodePack);
                 File.WriteAllText(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.xml"), Properties.Resources.Microsoft_WindowsAPICodePack2);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.dll"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell);
