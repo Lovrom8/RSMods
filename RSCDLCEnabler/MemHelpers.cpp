@@ -38,6 +38,12 @@ Tuning MemHelpers::GetTuningAtTuner() {
 		return Tuning();
 
 	std::string tuningText = std::string((const char*)addrTuningText);
+	std::cout << tuningText << std::endl;
+
+	if (tuningText == (std::string)"CUSTOM TUNING")
+		return Tuning();
+		
+
 	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());  // In the JSON, tunings have no whitespaces, so get rid of them
 
 	std::ifstream jsonFile(pathToTuningList);
