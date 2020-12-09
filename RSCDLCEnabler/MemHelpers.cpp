@@ -76,23 +76,30 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (!addrTimer)
 		return false;
 
+	/*
+	Old method:
+	
 	byte currentTuning = MemHelpers::getLowestStringTuning();
 
 	if (currentTuning > 24 && currentTuning <= (256 + Settings::GetModSetting("ExtendedRangeMode")))
 		return true;
 	return false;
-}
+	
+	Below is the new method
+	*/
 
-bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a single string.
 	int* highestLowestTuning = MemHelpers::GetHighestLowestString();
 
-	int highestTuning = highestLowestTuning[0];
 	int lowestTuning = highestLowestTuning[1];
 
 	delete[] highestLowestTuning;
 
-	// Does the user's settings allow us to toggle Extended Range Mode at this tuning.
-	if (highestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
+	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+		return true;
+
+	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
+	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 
 	return false;
@@ -100,24 +107,26 @@ bool MemHelpers::NewIsExtendedRangeSong() { // Look at all strings, not just a s
 
 // [0] - Highest, [1] - Lowest
 int* MemHelpers::GetHighestLowestString() {
-	int highestTuning = 0, lowestTuning = 256, tuningBuffer = 0;
-	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
+	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
+	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 
 	// Get Highest And Lowest Strings
 	for (int i = 0; i < 6; i++) {
 
 		// Create a buffer so we can work on a value near 256, and not worry about the tunings at, and above, E Standard that start at 0 because the tuning number breaks the 256 limit of a unsigned char.
-		tuningBuffer = (int)tuningArray[i];
-		if (tuningBuffer <= 24) // 24 would be 2 octaves above E standard which is where RSMods cuts the tuning numbers at. Anything above maybe +3 should never be used, but for consistency we allow it.
-			tuningBuffer += 256;
+		currentStringTuning = (int)songTuning[i];
+
+		// 24 would be 2 octaves above E standard which is where RSMods cuts the tuning numbers at. Anything above maybe +3 should never be used, but for consistency we allow it.
+		if (currentStringTuning <= 24)
+			currentStringTuning += 256;
 
 		// Find the highest tuned string.
-		if (highestTuning < tuningBuffer)
-			highestTuning = tuningBuffer;
+		if (currentStringTuning > highestTuning)
+			highestTuning = currentStringTuning;
 
 		// Find the lowest tuned string.
-		else if (lowestTuning > tuningBuffer)
-			lowestTuning = tuningBuffer;
+		if (currentStringTuning < lowestTuning)
+			lowestTuning = currentStringTuning;
 	}
 
 	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
