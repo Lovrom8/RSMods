@@ -6,6 +6,9 @@ byte MemHelpers::getLowestStringTuning() {
 	if (!addrTuning)
 		return NULL;
 
+	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on")
+		return (*(Tuning*)addrTuning).lowE;
+
 	return (*(Tuning*)addrTuning).strA;
 }
 

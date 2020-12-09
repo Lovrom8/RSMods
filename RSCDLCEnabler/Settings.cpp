@@ -23,6 +23,7 @@ void Settings::Initialize()
 		{"ForceReEnumerationEnabled", "on"},
 		{"RainbowStringsEnabled", "off"},
 		{"ExtendedRangeEnabled", "on"},
+		{"ExtendedRangeDropTuning", "off"},
 		{"DiscoModeEnabled", "off"},
 		{"RemoveHeadstockEnabled", "off"},
 		{"RemoveSkylineEnabled", "off"},
@@ -157,6 +158,7 @@ void Settings::ReadModSettings() {
 	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
 	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
 	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "on");
+	modSettings["ExtendedRangeDropTuning"] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
 	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
 	modSettings["RemoveSkylineEnabled"] = reader.GetValue("Toggle Switches", "Skyline", "off");
