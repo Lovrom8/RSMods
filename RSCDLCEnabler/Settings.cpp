@@ -11,16 +11,18 @@ void Settings::Initialize()
 		{"ToggleLoftKey", "T"},
 		{"ShowSongTimerKey", "S"},
 		{"ForceReEnumerationKey", "F"},
-		{"RainbowStringsKey", "R"},
+		{"RainbowStringsKey", "V"},
 		{"RemoveLyricsKey", "L"},
 		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
+
 		{"ForceReEnumerationEnabled", "automatic"},
-		{"ToggleLoftEnabled", "on"},
+
+		{"ToggleLoftEnabled", "off"},
 		{"AddVolumeEnabled", "off"},
 		{"DecreaseVolumeEnabled", "off"},
 		{"ShowSongTimerEnabled", "on"},
-		{"ForceReEnumerationEnabled", "on"},
+		{"ForceReEnumerationEnabled", "off"},
 		{"RainbowStringsEnabled", "off"},
 		{"ExtendedRangeEnabled", "on"},
 		{"ExtendedRangeDropTuning", "off"},
@@ -47,7 +49,7 @@ void Settings::Initialize()
 	};
 
 	customSettings = {
-		{"ExtendedRangeMode", -5 },
+		{"ExtendedRangeMode", -5},
 		{"CheckForNewSongsInterval", 5000},
 		{"RRSpeedInterval", 0},
 		{"TuningPedal", 0},
@@ -154,10 +156,10 @@ void Settings::ReadModSettings() {
 	modSettings["ToggleLoftEnabled"] = reader.GetValue("Toggle Switches", "ToggleLoft", "on");
 	modSettings["AddVolumeEnabled"] = reader.GetValue("Toggle Switches", "AddVolume", "off");
 	modSettings["DecreaseVolumeEnabled"] = reader.GetValue("Toggle Switches", "DecreaseVolume", "off");
-	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "on");
+	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "off");
 	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
 	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
-	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "on");
+	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "off");
 	modSettings["ExtendedRangeDropTuning"] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
 	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
