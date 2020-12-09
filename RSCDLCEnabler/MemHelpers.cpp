@@ -40,7 +40,24 @@ Tuning MemHelpers::GetTuningAtTuner() {
 	if (!addrTuningText)
 		return Tuning();
 
-	std::string tuningText = std::string((const char*)addrTuningText);
+	std::string unsanitized_tuningText = std::string((const char*)addrTuningText);
+
+	while (unsanitized_tuningText.find("\xe2\x99\xaf") != std::string::npos) { // Unicode # (sharp)
+		size_t badHash = unsanitized_tuningText.find("\xe2\x99\xaf");
+		std::string partOne = unsanitized_tuningText.substr(0, badHash);
+		std::string partTwo = unsanitized_tuningText.substr(badHash + 2, unsanitized_tuningText.length() - 1);
+		unsanitized_tuningText = partOne + partTwo;
+		unsanitized_tuningText.at(badHash) = '#';
+	}
+	while (unsanitized_tuningText.find('\xe2\x99\xad') != std::string::npos) { // Unicode b (flat)
+		size_t badFlat = unsanitized_tuningText.find("\xe2\x99\xad");
+		std::string partOne = unsanitized_tuningText.substr(0, badFlat);
+		std::string partTwo = unsanitized_tuningText.substr(badFlat + 2, unsanitized_tuningText.length() - 1);
+		unsanitized_tuningText = partOne + partTwo;
+		unsanitized_tuningText.at(badFlat) = 'b';
+	}
+
+	std::string tuningText = unsanitized_tuningText;
 
 	if (tuningText == (std::string)"CUSTOM TUNING")
 		return Tuning();
@@ -107,23 +124,22 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
 	if (!addrTuningText) {
-		std::cout << "Tuning Text Not Detected" << std::endl;
+		std::cout << "Wait For Tuning Text" << std::endl;
 		return false;
 	}
+		
 
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
 	if (tuner_songTuning.lowE == 1024) {
-		std::cout << "Saved tuning not set" << std::endl;
+		std::cout << "No Tuning Found" << std::endl;
 		return false;
 	}
-
-
+		
 	int lowestTuning = tuner_songTuning.lowE;
 
-	if (lowestTuning > 24) {
+	if (lowestTuning > 24)
 		lowestTuning -= 256;
-	}
 
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
@@ -133,7 +149,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 
-	std::cout << "Tuning isn't low enough " << lowestTuning << " vs " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
+	std::cout << "Tunings: " << lowestTuning << " vs " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
 	return false;
 }
 
