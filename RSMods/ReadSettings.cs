@@ -7,7 +7,7 @@ namespace RSMods
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                                                 RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode,
@@ -44,6 +44,7 @@ namespace RSMods
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
                 RainbowStringsEnabledIdentifier = "RainbowStrings = ",
                 ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
+                ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
                 CustomStringColorNumberIndetifier = "CustomStringColors = ",
                 DiscoModeIdentifier = "DiscoMode = ",
                 RemoveHeadstockIdentifier = "Headstock = ",
@@ -309,6 +310,16 @@ namespace RSMods
 
                         if (identifierToGrab == ExtendedRangeEnabledIdentifier)
                             return ExtendedRangeEnabled;
+                    }
+                    if (currentLine.Contains(ExtendedRangeDropTuningIdentifier))
+                    {
+                        if (currentLine.Substring(ExtendedRangeDropTuningIdentifier.Length, (currentLine.Length - ExtendedRangeDropTuningIdentifier.Length)) == "on")
+                            ExtendedRangeDropTuning = "on";
+                        else
+                            ExtendedRangeDropTuning = "off";
+
+                        if (identifierToGrab == ExtendedRangeDropTuningIdentifier)
+                            return ExtendedRangeDropTuning;
                     }
                     if (currentLine.Contains(CustomStringColorNumberIndetifier))
                     {

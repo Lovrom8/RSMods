@@ -63,6 +63,7 @@
             this.nUpDown_ForceEnumerationXMS = new System.Windows.Forms.NumericUpDown();
             this.groupBox_LoftOffWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
+            this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
             this.checkBox_useMidiAutoTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
@@ -441,7 +442,7 @@
             "F#",
             "F",
             "Octave Down"});
-            this.listBox_ExtendedRangeTunings.Location = new System.Drawing.Point(66, 33);
+            this.listBox_ExtendedRangeTunings.Location = new System.Drawing.Point(60, 27);
             this.listBox_ExtendedRangeTunings.Name = "listBox_ExtendedRangeTunings";
             this.listBox_ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.listBox_ExtendedRangeTunings.TabIndex = 29;
@@ -672,16 +673,29 @@
             // 
             // groupBox_ExtendedRangeWhen
             // 
+            this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_ExtendedRangeDrop);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
             this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(16, 19);
             this.groupBox_ExtendedRangeWhen.Name = "groupBox_ExtendedRangeWhen";
-            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(214, 196);
+            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(214, 205);
             this.groupBox_ExtendedRangeWhen.TabIndex = 49;
             this.groupBox_ExtendedRangeWhen.TabStop = false;
             this.groupBox_ExtendedRangeWhen.Text = "Enable Extended Range When Low E Is";
             this.groupBox_ExtendedRangeWhen.Visible = false;
             this.groupBox_ExtendedRangeWhen.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.groupBox_ExtendedRangeWhen.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // checkBox_ExtendedRangeDrop
+            // 
+            this.checkBox_ExtendedRangeDrop.AutoSize = true;
+            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(51, 180);
+            this.checkBox_ExtendedRangeDrop.Name = "checkBox_ExtendedRangeDrop";
+            this.checkBox_ExtendedRangeDrop.Size = new System.Drawing.Size(97, 17);
+            this.checkBox_ExtendedRangeDrop.TabIndex = 30;
+            this.checkBox_ExtendedRangeDrop.Text = "In Drop Tuning";
+            this.checkBox_ExtendedRangeDrop.UseVisualStyleBackColor = true;
+            this.checkBox_ExtendedRangeDrop.CheckedChanged += new System.EventHandler(this.checkBox_ExtendedRangeDrop_CheckedChanged);
+            this.checkBox_ExtendedRangeDrop.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_EnabledMods
             // 
@@ -2589,6 +2603,7 @@
             this.groupBox_LoftOffWhen.ResumeLayout(false);
             this.groupBox_LoftOffWhen.PerformLayout();
             this.groupBox_ExtendedRangeWhen.ResumeLayout(false);
+            this.groupBox_ExtendedRangeWhen.PerformLayout();
             this.groupBox_EnabledMods.ResumeLayout(false);
             this.groupBox_EnabledMods.PerformLayout();
             this.groupBox_Songlist.ResumeLayout(false);
@@ -2828,6 +2843,7 @@
         private System.Windows.Forms.Label label_MidiWhatTuningPedalDoYouUse;
         private System.Windows.Forms.CheckBox checkBox_WhammyChordsMode;
         private System.Windows.Forms.Label label_SettingsSaved;
+        private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
     }
 }
 
