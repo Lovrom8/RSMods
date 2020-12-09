@@ -140,18 +140,18 @@ int* MemHelpers::GetHighestLowestString() {
 }
 
 bool MemHelpers::IsSongInDrop() {
-	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
-	byte NEGATE_DROP = tuningArray[0] + 2;
+	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
+	byte NEGATE_DROP = songTuning[0] + 2;
 
-	if (tuningArray[1] == NEGATE_DROP && tuningArray[2] == NEGATE_DROP && tuningArray[3] == NEGATE_DROP && tuningArray[4] == NEGATE_DROP && tuningArray[5] == NEGATE_DROP) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
+	if (songTuning[1] == NEGATE_DROP && songTuning[2] == NEGATE_DROP && songTuning[3] == NEGATE_DROP && songTuning[4] == NEGATE_DROP && songTuning[5] == NEGATE_DROP) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
 		return true;
 	return false;
 }
 
 bool MemHelpers::IsSongInStandard() {
-	std::unique_ptr<byte[]> tuningArray = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
-	byte commonTuning = tuningArray[0];
-	if (tuningArray[1] == commonTuning && tuningArray[2] == commonTuning && tuningArray[3] == commonTuning && tuningArray[4] == commonTuning && tuningArray[5] == commonTuning) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
+	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
+	byte commonTuning = songTuning[0];
+	if (songTuning[1] == commonTuning && songTuning[2] == commonTuning && songTuning[3] == commonTuning && songTuning[4] == commonTuning && songTuning[5] == commonTuning) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
 		return true;
 	return false;
 }
