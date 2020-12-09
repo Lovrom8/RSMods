@@ -54,7 +54,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 		std::string partOne = unsanitized_tuningText.substr(0, badFlat);
 		std::string partTwo = unsanitized_tuningText.substr(badFlat + 2, unsanitized_tuningText.length() - 1);
 		unsanitized_tuningText = partOne + partTwo;
-		unsanitized_tuningText.at(badFlat) = 'b';
+		unsanitized_tuningText.at(badFlat) = 'B';
 	}
 
 	std::string tuningText = unsanitized_tuningText;
@@ -79,7 +79,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];
 
 			return Tuning(tuningJson["string0"], tuningJson["string1"], tuningJson["string2"], tuningJson["string3"], tuningJson["string4"], tuningJson["string5"]);
-		}	
+		}
 	}
 
 	return Tuning();
@@ -127,8 +127,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		std::cout << "Wait For Tuning Text" << std::endl;
 		return false;
 	}
-		
-
+	
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
 	if (tuner_songTuning.lowE == 1024) {
