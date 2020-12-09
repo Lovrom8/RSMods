@@ -41,11 +41,9 @@ Tuning MemHelpers::GetTuningAtTuner() {
 		return Tuning();
 
 	std::string tuningText = std::string((const char*)addrTuningText);
-	std::cout << tuningText << std::endl;
 
 	if (tuningText == (std::string)"CUSTOM TUNING")
 		return Tuning();
-		
 
 	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());  // In the JSON, tunings have no whitespaces, so get rid of them
 
@@ -102,6 +100,40 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 
+	return false;
+}
+
+bool MemHelpers::IsExtendedRangeTuner() {
+	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
+
+	if (!addrTuningText) {
+		std::cout << "Tuning Text Not Detected" << std::endl;
+		return false;
+	}
+
+	Tuning tuner_songTuning = GetTuningAtTuner();
+
+	if (tuner_songTuning.lowE == 1024) {
+		std::cout << "Saved tuning not set" << std::endl;
+		return false;
+	}
+
+
+	int lowestTuning = tuner_songTuning.lowE;
+
+	if (lowestTuning > 24) {
+		lowestTuning -= 256;
+	}
+
+	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
+	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+		return true;
+
+	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
+	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
+		return true;
+
+	std::cout << "Tuning isn't low enough " << lowestTuning << " vs " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
 	return false;
 }
 

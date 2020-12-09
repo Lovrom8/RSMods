@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <codecvt>
 #include "Lib/DirectX/d3dx9.h"
 #include "Lib/DirectX/d3d9types.h"
 #include "Lib/Json/json.hpp"
@@ -34,6 +35,7 @@ namespace MemHelpers {
 	float RiffRepeaterSpeed(float newSpeed = NULL);
 	void AutomatedOpenRRSpeedAbuse();
 	Tuning GetTuningAtTuner();
+	bool IsExtendedRangeTuner();
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
