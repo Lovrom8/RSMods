@@ -123,7 +123,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
-	if (!addrTuningText) {
+	if (!addrTuningText || GetCurrentMenu() != "LearnASong_PreSongTuner") {
 		std::cout << "Wait For Tuning Text" << std::endl;
 		return false;
 	}
