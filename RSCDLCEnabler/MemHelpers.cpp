@@ -123,32 +123,29 @@ bool MemHelpers::IsExtendedRangeSong() {
 bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
-	if (!addrTuningText || GetCurrentMenu() != "LearnASong_PreSongTuner") {
-		std::cout << "Wait For Tuning Text" << std::endl;
+	if (!addrTuningText || GetCurrentMenu() != "LearnASong_PreSongTuner")
 		return false;
-	}
 	
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
-	if (tuner_songTuning.lowE == 1024) {
-		std::cout << "No Tuning Found" << std::endl;
+	if (tuner_songTuning.lowE == 1024)
 		return false;
-	}
 		
-	int lowestTuning = tuner_songTuning.lowE;
+	int lowestTuning = tuner_songTuning.lowE, NEGATE_DROP = lowestTuning + 2;
+
+	bool inDrop = IsSongInDrop(tuner_songTuning);
 
 	if (lowestTuning > 24)
 		lowestTuning -= 256;
 
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
-	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && inDrop && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
-	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
+	if (!inDrop && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
 
-	std::cout << "Tunings: " << lowestTuning << " vs " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
 	return false;
 }
 
@@ -186,21 +183,14 @@ int* MemHelpers::GetHighestLowestString() {
 	return returnValue;
 }
 
-bool MemHelpers::IsSongInDrop() {
-	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
-	byte NEGATE_DROP = songTuning[0] + 2;
-
-	if (songTuning[1] == NEGATE_DROP && songTuning[2] == NEGATE_DROP && songTuning[3] == NEGATE_DROP && songTuning[4] == NEGATE_DROP && songTuning[5] == NEGATE_DROP) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
-		return true;
-	return false;
+bool MemHelpers::IsSongInDrop(Tuning tuning) {
+	int NEGATE_DROP = tuning.lowE + 2;
+	return tuning.strA == NEGATE_DROP && tuning.strD == NEGATE_DROP && tuning.strG == NEGATE_DROP && tuning.strB == NEGATE_DROP && tuning.highE == NEGATE_DROP;
 }
 
-bool MemHelpers::IsSongInStandard() {
-	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
-	byte commonTuning = songTuning[0];
-	if (songTuning[1] == commonTuning && songTuning[2] == commonTuning && songTuning[3] == commonTuning && songTuning[4] == commonTuning && songTuning[5] == commonTuning) // If the tuning number is the same across the board, return true, but if one or more fail, return false.
-		return true;
-	return false;
+bool MemHelpers::IsSongInStandard(Tuning tuning) {
+	int COMMON_TUNING = tuning.lowE;
+	return tuning.strA == COMMON_TUNING && tuning.strD == COMMON_TUNING && tuning.strG == COMMON_TUNING && tuning.strB == COMMON_TUNING && tuning.highE == COMMON_TUNING;
 }
 
 int MemHelpers::GetTrueTuning() {

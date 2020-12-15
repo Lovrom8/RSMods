@@ -24,8 +24,8 @@ namespace MemHelpers {
 	std::string ShowSongTimer();
 	bool IsExtendedRangeSong();
 	int* GetHighestLowestString();
-	bool IsSongInDrop();
-	bool IsSongInStandard();
+	bool IsSongInDrop(Tuning tuning);
+	bool IsSongInStandard(Tuning tuning);
 	int GetTrueTuning();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
