@@ -101,11 +101,11 @@ bool MemHelpers::IsExtendedRangeSong() {
 	Below is the new method
 	*/
 
-	int* highestLowestTuning = MemHelpers::GetHighestLowestString();
+	int lowestTuning = MemHelpers::GetHighestLowestString()[1];
 
-	int lowestTuning = highestLowestTuning[1];
-
-	delete[] highestLowestTuning;
+	// Bass below C standard fix (A220 range)
+	if (GetTrueTuning() <= 260)
+		lowestTuning -= 12;
 
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
@@ -131,14 +131,13 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		
 	int lowestTuning = tuner_songTuning.lowE, NEGATE_DROP = lowestTuning + 2;
 
-	int TrueTuning_Hertz = GetTrueTuning();
-
 	// Bass below C standard fix (A220 range)
-	if (TrueTuning_Hertz <= 260)
+	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
 
 	bool inDrop = IsSongInDrop(tuner_songTuning);
 
+	// The games stores tunings in unsigned chars (bytes) so we need to convert it to our int Extended Range toggle.
 	if (lowestTuning > 24)
 		lowestTuning -= 256;
 
