@@ -1,6 +1,6 @@
-# Part of RSCDLCEnabler-2020Edition that nobody asked for
+# The Rocksmith Mods that nobody asked for
 
-[![Build status](https://ci.appveyor.com/api/projects/status/3ivrpj6l6ntv35gp?svg=true)](https://ci.appveyor.com/project/Lovrom8/rscdlcenabler-2020edition)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
 
 ## Branches:
 1) [Develop](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=develop)
