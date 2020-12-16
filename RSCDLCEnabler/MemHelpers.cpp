@@ -70,14 +70,12 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 	jsonFile.close();
 	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in 
-
 	for (auto& tuning : tuningJson.items()) { // Unforunately we can't use json.contains due to difference in formatting
 		std::string jsonKeyUpper = tuning.key(), jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
 		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
 
-		if (jsonKeyUpper == tuningText) {
+		if (jsonKeyOriginal == tuningText || jsonKeyUpper == tuningText) {
 			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];
-
 			return Tuning(tuningJson["string0"], tuningJson["string1"], tuningJson["string2"], tuningJson["string3"], tuningJson["string4"], tuningJson["string5"]);
 		}
 	}
@@ -128,10 +126,16 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
-	if (tuner_songTuning.lowE == 1024)
+	if (tuner_songTuning.lowE == 69) // Nice... Means empty tuning
 		return false;
 		
 	int lowestTuning = tuner_songTuning.lowE, NEGATE_DROP = lowestTuning + 2;
+
+	int TrueTuning_Hertz = GetTrueTuning();
+
+	// Bass below C standard fix (A220 range)
+	if (TrueTuning_Hertz <= 260)
+		lowestTuning -= 12;
 
 	bool inDrop = IsSongInDrop(tuner_songTuning);
 

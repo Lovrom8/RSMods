@@ -142,7 +142,7 @@ namespace Midi {
 			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
 
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
-				highestTuning = (highestTuning - 12);
+				highestTuning -= 12;
 
 			switch (pedalToUse) {
 			 
