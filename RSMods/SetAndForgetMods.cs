@@ -201,14 +201,13 @@ namespace RSMods
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
+                            sw.Write(sw.NewLine);
                             sw.Write(index);
                             for (int i = 0; i < 7; i++)
                             {
                                 sw.Write(',');
                                 sw.Write(tuning.Item2);
                             }
-
-                            sw.Write(sw.NewLine);
                         }
                     }
                 }
