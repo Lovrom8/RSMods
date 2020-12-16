@@ -106,7 +106,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
-
+	
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
 		return true;
@@ -121,7 +121,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
-	if (!addrTuningText || GetCurrentMenu() != "LearnASong_PreSongTuner")
+	if (!addrTuningText || !IsInStringArray(GetCurrentMenu(), NULL, preSongTuners))
 		return false;
 	
 	Tuning tuner_songTuning = GetTuningAtTuner();
