@@ -553,7 +553,7 @@ namespace RSMods
 
         private void BtnSaveTuningChanges_Click(object sender, EventArgs e)
         {
-            if (listBox_Tunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
+            if (listBox_Tunings.SelectedIndex != -1) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
             {
                 string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
@@ -568,7 +568,7 @@ namespace RSMods
 
         private void BtnRemoveTuning_Click(object sender, EventArgs e)
         {
-            if (listBox_Tunings.SelectedItem == null)
+            if (listBox_Tunings.SelectedIndex == -1)
                 return;
 
             string selectedItem = listBox_Tunings.SelectedItem.ToString();
@@ -582,17 +582,28 @@ namespace RSMods
 
         private void BtnAddTuning_Click(object sender, EventArgs e)
         {
+            if (listBox_Tunings.SelectedIndex == -1)
+                listBox_Tunings.SelectedIndex = 0;
+
             if (listBox_Tunings.SelectedItem.ToString() != "<New>")
                 return;
 
             var currTuning = GetCurrentTuningInfo();
             string internalName = textBox_InternalTuningName.Text;
 
+            if (internalName.Trim() == "")
+            {
+                MessageBox.Show("You cannot have a blank internal name.");
+                return;
+            }
+
             if (!SetAndForgetMods.TuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
             {
                 SetAndForgetMods.TuningsCollection.Add(internalName, currTuning);
                 listBox_Tunings.Items.Add(internalName);
             }
+            else
+                MessageBox.Show("You already have a tuning with the same internal name");
         }
 
         private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddExitGameMenuOption();
