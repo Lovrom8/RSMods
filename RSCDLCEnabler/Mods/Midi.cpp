@@ -309,95 +309,21 @@ namespace Midi {
 	}
 
 	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz) {
-		switch (TrueTuning_Hertz) {
 
-			// Below C1 bass
-		case 220:
-			break;
+		// A440 / A220
+		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+			return;
 
-			// Below A440
-		case 425: // Light My Fire
-			SendProgramChange(4);
-			SendControlChange(36);
-			break;
-		case 428: // Castles Made Of Sand
-			SendProgramChange(4);
-			SendControlChange(30);
-			break;
-		case 431: // Heaven's On Fire | If 6 Was 9
-			SendProgramChange(4);
-			SendControlChange(20);
-			break;
-		case 434: // Cemetery Gates
-			SendProgramChange(4);
-			SendControlChange(15);
-			break;
-		case 437: // Voodoo Child (Slight Return)
-			SendProgramChange(4);
-			SendControlChange(5);
-			break;
+		// Above A440
+		else if (TrueTuning_Hertz > 440) {
+			SendProgramChange(5);
+			SendControlChange((char)(TrueTuning_Hertz - 440));
+		}
 
-			// A440
-		case 440:
-			break;
-
-			// Above A440
-		case 443: // Champagne Supernova | 20th Century Boy | Love Spreads
-			SendProgramChange(3);
-			SendControlChange(3);
-			break;
-		case 444: // Dream On | Ultra Soul
-			SendProgramChange(3);
-			SendControlChange(4);
-			break;
-		case 445: // The End of the World | People Are Strange
-			SendProgramChange(3);
-			SendControlChange(5);
-			break;
-		case 446: // Balls To The Wall | Spoonful | Rock and Roll, Hoochie Koo | Love Me Two Times
-			SendProgramChange(3);
-			SendControlChange(6);
-			break;
-		case 447: // No More Mr. Nice Guy | Machinehead | Behind Blue Eyes | Manic Depression
-			SendProgramChange(3);
-			SendControlChange(7);
-			break;
-		case 448: // UNKNOWN
-			SendProgramChange(3);
-			SendControlChange(8);
-			break;
-		case 449: // Live Forever
-			SendProgramChange(3);
-			SendControlChange(9);
-			break;
-		case 450: // Some Might Say
-			SendProgramChange(3);
-			SendControlChange(10);
-			break;
-		case 451: // Don't Look Back In Anger
-			SendProgramChange(3);
-			SendControlChange(11);
-			break;
-		case 454: // Baba O'Riley
-			SendProgramChange(3);
-			SendControlChange(14);
-			break;
-		case 455: // Black Hole Sun
-			SendProgramChange(3);
-			SendControlChange(15);
-			break;
-		case 456: // Friday I'm In Love
-			SendProgramChange(3);
-			SendControlChange(16);
-			break;
-		case 461: // You Really Got Me
-			SendProgramChange(3);
-			SendControlChange(22); // The song is so close to 462 that tuning is easier to do with the 462 pedal settings.
-			break;
-
-			// True Tuning Not Documented. If a user wants to give us the tuning, we should be able to get it to work.
-		default:
-			break;
+		// Below A440
+		else {
+			SendProgramChange(4);
+			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
 		}
 	}
 
@@ -405,95 +331,21 @@ namespace Midi {
 		int offset = 0;
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
-		switch (TrueTuning_Hertz) {
+		
+		// A440 / A220
+		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+			return;
 
-			// Below C1 bass
-		case 220:
-			break;
+		// Above A440
+		else if (TrueTuning_Hertz > 440) {
+			SendProgramChange(5 + offset);
+			SendControlChange((char)(TrueTuning_Hertz - 440));
+		}
 
-			// Below A440
-		case 425: // Light My Fire
-			SendProgramChange(5 + offset);
-			SendControlChange(36);
-			break;
-		case 428: // Castles Made Of Sand
-			SendProgramChange(5 + offset);
-			SendControlChange(30);
-			break;
-		case 431: // Heaven's On Fire | If 6 Was 9
-			SendProgramChange(5 + offset);
-			SendControlChange(20);
-			break;
-		case 434: // Cemetery Gates
-			SendProgramChange(5 + offset);
-			SendControlChange(15);
-			break;
-		case 437: // Voodoo Child (Slight Return)
-			SendProgramChange(5 + offset);
-			SendControlChange(5);
-			break;
-
-			// A440
-		case 440:
-			break;
-
-			// Above A440
-		case 443: // Champagne Supernova | 20th Century Boy | Love Spreads
-			SendProgramChange(3 + offset);
-			SendControlChange(3);
-			break;
-		case 444: // Dream On | Ultra Soul
-			SendProgramChange(3 + offset);
-			SendControlChange(4);
-			break;
-		case 445: // The End of the World | People Are Strange
-			SendProgramChange(3 + offset);
-			SendControlChange(5);
-			break;
-		case 446: // Balls To The Wall | Spoonful | Rock and Roll, Hoochie Koo | Love Me Two Times
-			SendProgramChange(3 + offset);
-			SendControlChange(6);
-			break;
-		case 447: // No More Mr. Nice Guy | Machinehead | Behind Blue Eyes | Manic Depression
-			SendProgramChange(3 + offset);
-			SendControlChange(7);
-			break;
-		case 448: // UNKNOWN
-			SendProgramChange(3 + offset);
-			SendControlChange(8);
-			break;
-		case 449: // Live Forever
-			SendProgramChange(3 + offset);
-			SendControlChange(9);
-			break;
-		case 450: // Some Might Say
-			SendProgramChange(3 + offset);
-			SendControlChange(10);
-			break;
-		case 451: // Don't Look Back In Anger
-			SendProgramChange(3 + offset);
-			SendControlChange(11);
-			break;
-		case 454: // Baba O'Riley
-			SendProgramChange(3 + offset);
-			SendControlChange(14);
-			break;
-		case 455: // Black Hole Sun
-			SendProgramChange(3 + offset);
-			SendControlChange(15);
-			break;
-		case 456: // Friday I'm In Love
-			SendProgramChange(3 + offset);
-			SendControlChange(16);
-			break;
-		case 461: // You Really Got Me
-			SendProgramChange(3 + offset);
-			SendControlChange(22); // The song is so close to 462 that tuning is easier to do with the 462 pedal settings.
-			break;
-
-			// True Tuning Not Documented. If a user wants to give us the tuning, we should be able to get it to work.
-		default:
-			break;
+		// Below A440
+		else {
+			SendProgramChange(4 + offset);
+			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
 		}
 	}
 }
