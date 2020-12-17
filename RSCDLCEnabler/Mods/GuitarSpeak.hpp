@@ -15,6 +15,7 @@
 
 namespace GuitarSpeak {
 	byte GetCurrentNote();
+	std::string StringCurrentNote();
 	bool RunGuitarSpeak();
 	void FillKeyList();
 
@@ -92,5 +93,9 @@ namespace GuitarSpeak {
 	inline std::vector<std::string> lessonModes = { // These are the Guided Experience / Lessons modes.
 		"GuidedExperience_Game",
 		"GuidedExperience_Pause",
+	};
+
+	inline std::vector<std::string> noteLetters = {
+		"C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"
 	};
 };

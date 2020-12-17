@@ -16,6 +16,18 @@ byte GuitarSpeak::GetCurrentNote() {
 	return *(byte*)noteAdr;
 }
 
+std::string GuitarSpeak::StringCurrentNote() {
+	byte currentNote = GetCurrentNote();
+
+	if (currentNote == noNote || currentNote == endOfNote || currentNote >= 96)
+		return "";
+
+	int octave = (currentNote / 12) - 1; // The game starts reading at -1 instead of 0 so we need to offset by -1.
+	int note = currentNote % 12;
+
+	return noteLetters.at(note) + std::to_string(octave);
+}
+
 bool GuitarSpeak::RunGuitarSpeak() {
 	FillKeyList();
 
