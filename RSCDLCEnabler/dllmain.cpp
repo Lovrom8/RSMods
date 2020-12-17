@@ -368,8 +368,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	}
 
 	int whiteText = 0xFFFFFFFF;
+	int* WindowSize = MemHelpers::GetWindowSize();
 
-	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of MemHelpers::GetWindowSize() X AND Y so every resolution should have the text in around the same spot.
+	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
 
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
 			float volume = 0;
@@ -377,7 +378,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 			if (currentVolumeIndex != 0)
-				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 54.85), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 14.22), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize[0] / 54.85), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 14.22), (int)(WindowSize[1] / 8), pDevice);
 		}
 
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -397,14 +398,14 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize[0] / 1.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 1.45), (int)(WindowSize[1] / 8), pDevice);
 		}
 
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			if (useNewSongSpeed) {
 				if ((newSongSpeed - Settings::GetModSetting("RRSpeedInterval")) > 100.f)
-					MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed() - Settings::GetModSetting("RRSpeedInterval")) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 2.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 2.50), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
+					MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed() - Settings::GetModSetting("RRSpeedInterval")) + "%", whiteText, (int)(WindowSize[0] / 2.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 2.50), (int)(WindowSize[1] / 8), pDevice);
 			}
 			else
 				MemHelpers::RiffRepeaterSpeed(100.f);
@@ -428,7 +429,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 	}
 
-
+	delete[] WindowSize;
 	return hRet;
 }
 

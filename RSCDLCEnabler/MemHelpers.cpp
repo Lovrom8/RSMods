@@ -101,7 +101,11 @@ bool MemHelpers::IsExtendedRangeSong() {
 	Below is the new method
 	*/
 
-	int lowestTuning = MemHelpers::GetHighestLowestString()[1];
+	int* highestLowest = MemHelpers::GetHighestLowestString();
+
+	int lowestTuning = highestLowest[1];
+
+	delete[] highestLowest;
 
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
