@@ -156,7 +156,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 
 			else if (keyPressed == VK_F9)
-				std::cout << GuitarSpeak::StringCurrentNote() << std::endl;
+				std::cout << GuitarSpeak::GetCurrentNoteName() << std::endl;
 			
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)

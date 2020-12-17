@@ -15,7 +15,7 @@
 
 namespace GuitarSpeak {
 	byte GetCurrentNote();
-	std::string StringCurrentNote();
+	std::string GetCurrentNoteName();
 	bool RunGuitarSpeak();
 	void FillKeyList();
 

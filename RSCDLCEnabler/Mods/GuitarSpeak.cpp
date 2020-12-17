@@ -16,7 +16,7 @@ byte GuitarSpeak::GetCurrentNote() {
 	return *(byte*)noteAdr;
 }
 
-std::string GuitarSpeak::StringCurrentNote() {
+std::string GuitarSpeak::GetCurrentNoteName() {
 	byte currentNote = GetCurrentNote();
 
 	if (currentNote == noNote || currentNote == endOfNote || currentNote >= 96)
