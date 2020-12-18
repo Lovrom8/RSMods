@@ -10,7 +10,7 @@ namespace RSMods
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode,
+                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -65,6 +65,7 @@ namespace RSMods
                 MidiAutoTuningIdentifier = "AutoTuneForSong = ",
                 MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
                 ChordsModeIdentifier = "ChordsMode = ",
+                ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -523,6 +524,17 @@ namespace RSMods
 
                         if (identifierToGrab == ChordsModeIdentifier)
                             return ChordsMode;
+                    }
+
+                    if (currentLine.Contains(ShowCurrentNoteOnScreenIdentifier))
+                    {
+                        if (currentLine.Substring(ShowCurrentNoteOnScreenIdentifier.Length, (currentLine.Length - ShowCurrentNoteOnScreenIdentifier.Length)) == "on")
+                            ShowCurrentNoteOnScreen = "on";
+                        else
+                            ShowCurrentNoteOnScreen = "off";
+
+                        if (identifierToGrab == ShowCurrentNoteOnScreenIdentifier)
+                            return ShowCurrentNoteOnScreen;
                     }
 
                     // String Colors (Normal {N} & Colorblind {CB})

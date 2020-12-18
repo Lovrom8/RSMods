@@ -68,7 +68,8 @@ namespace RSMods
                 { ReadSettings.RiffRepeaterAboveHundredIdentifier, "off" }, // Allow the user to go above 100% speed in LAS Riff Repeater
                 { ReadSettings.MidiAutoTuningIdentifier, "off" }, // Should we be ready to send MIDI signals to a device.
                 { ReadSettings.MidiAutoTuningDeviceIdentifier, "" }, // Device we should send MIDI signals to.
-                { ReadSettings.ChordsModeIdentifier, "off" } // Is the pedal using Chords Mode.
+                { ReadSettings.ChordsModeIdentifier, "off" }, // Is the pedal using Chords Mode.
+                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off" } // Display Current Note Name
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -173,6 +174,7 @@ namespace RSMods
                 { ReadSettings.MidiAutoTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) }, // Should we be ready to send MIDI signals to a device.
                 { ReadSettings.MidiAutoTuningDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) }, // Device we should send MIDI signals to.
                 { ReadSettings.ChordsModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) }, // Is the pedal using Chords Mode.
+                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) }, // Display Current Note Name
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

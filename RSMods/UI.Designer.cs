@@ -65,6 +65,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_ShowCurrentNote = new System.Windows.Forms.CheckBox();
             this.checkBox_useMidiAutoTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
             this.checkBox_ScreenShotScores = new System.Windows.Forms.CheckBox();
@@ -699,6 +700,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_ShowCurrentNote);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_useMidiAutoTuning);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RiffRepeaterSpeedAboveOneHundred);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ScreenShotScores);
@@ -726,6 +728,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_ShowCurrentNote
+            // 
+            this.checkBox_ShowCurrentNote.AutoSize = true;
+            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(131, 220);
+            this.checkBox_ShowCurrentNote.Name = "checkBox_ShowCurrentNote";
+            this.checkBox_ShowCurrentNote.Size = new System.Drawing.Size(116, 17);
+            this.checkBox_ShowCurrentNote.TabIndex = 51;
+            this.checkBox_ShowCurrentNote.Text = "Show Current Note";
+            this.checkBox_ShowCurrentNote.UseVisualStyleBackColor = true;
+            this.checkBox_ShowCurrentNote.CheckedChanged += new System.EventHandler(this.checkBox_ShowCurrentNote_CheckedChanged);
+            this.checkBox_ShowCurrentNote.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_useMidiAutoTuning
             // 
@@ -2844,6 +2858,7 @@
         private System.Windows.Forms.CheckBox checkBox_WhammyChordsMode;
         private System.Windows.Forms.Label label_SettingsSaved;
         private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
+        private System.Windows.Forms.CheckBox checkBox_ShowCurrentNote;
     }
 }
 

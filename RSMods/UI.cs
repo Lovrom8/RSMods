@@ -267,6 +267,9 @@ namespace RSMods
                 if (ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on")
                     checkBox_WhammyChordsMode.Checked = true;
             }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on")
+                checkBox_ShowCurrentNote.Checked = true;
         }
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
@@ -937,6 +940,7 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(checkBox_RiffRepeaterSpeedAboveOneHundred, "Allow you to play a song faster than 100% speed in Riff Repeater");
             Dictionaries.TooltipDictionary.Add(checkBox_ChangeTheme, "Use this feature to customize the colors used in this GUI.");
             Dictionaries.TooltipDictionary.Add(checkBox_useMidiAutoTuning, "If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.");
+            Dictionaries.TooltipDictionary.Add(checkBox_ShowCurrentNote, "Shows the note you are currently playing on screen.");
 
             // Mods
             Dictionaries.TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
@@ -1652,6 +1656,8 @@ namespace RSMods
         private void checkBox_WhammyChordsMode_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
 
         private void checkBox_ExtendedRangeDrop_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeDropTuningIdentifier, checkBox_ExtendedRangeDrop.Checked.ToString().ToLower());
+
+        private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
