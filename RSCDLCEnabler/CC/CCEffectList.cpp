@@ -16,7 +16,6 @@
 #include "Effects/DoubleSpeedEffect.hpp"
 #include "Effects/ZoomInEffect.hpp"
 #include "Effects/RemoveInstrumentEffect.hpp"
-#include "Effects/TurboSpeedEffect.hpp"
 
 using namespace CrowdControl::Effects;
 using namespace CrowdControl::Structs;
@@ -45,8 +44,7 @@ namespace CrowdControl::EffectList {
 		{ "halfsongspeed", new HalfSpeedEffect(30) },
 		{ "doublesongspeed", new DoubleSpeedEffect(30) },
 		{ "zoomin", new ZoomInEffect(20) },
-		{ "removeinstrument", new RemoveInstrumentEffect(20) },
-		{ "turbospeed", new TurboSpeedEffect(20) }
+		{ "removeinstrument", new RemoveInstrumentEffect(20) }
 	};
 
 	bool IsEffectEnabled(std::string effectName) {

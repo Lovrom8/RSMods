@@ -14,6 +14,9 @@
 #include "WwiseHijack.hpp"
 #include "CC/ControlServer.hpp"
 
+// Lua
+#include "Lua/lua.hpp"
+
 // Windows Libraries
 #include <process.h>
 #include <iostream>
@@ -27,7 +30,6 @@
 #include "Mods/GuitarSkeletons.hpp"
 #include "Mods/GuitarSpeak.hpp"
 #include "Mods/DisableControllers.hpp"
-#include "Mods/Midi.hpp"
 
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;

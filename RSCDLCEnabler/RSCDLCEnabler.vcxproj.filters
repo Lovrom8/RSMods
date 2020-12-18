@@ -5,12 +5,28 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;CC\CC;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\DirectX">
+      <UniqueIdentifier>{9587255a-88e0-485b-9910-d3fb12662ba1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Mods">
       <UniqueIdentifier>{c3164239-7db1-4636-8512-4903a737ec2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ImGUI">
+      <UniqueIdentifier>{928903e3-aea4-4d1d-a828-c49f6c847b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Detours">
+      <UniqueIdentifier>{68a815bd-e966-4cb1-ba5e-b4ac4ceb1052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Ini">
+      <UniqueIdentifier>{c07d28f0-a6a8-4144-866a-ceb7d2402a0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="D3D">
       <UniqueIdentifier>{210476c1-0572-493c-a9ca-1205a492f02b}</UniqueIdentifier>
@@ -24,36 +40,8 @@
     <Filter Include="CrowdControl\Effects\EffectHeaders">
       <UniqueIdentifier>{09c7c9a6-45da-49ba-a53a-9972ed0015c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Mods\Headers">
-      <UniqueIdentifier>{a0fe11eb-0e53-49d5-bc06-c579ccb460fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CrowdControl\Headers">
-      <UniqueIdentifier>{6e837f50-05eb-4590-bdce-71840b2f60a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Libs">
-      <UniqueIdentifier>{6987efde-b923-4637-af53-2105f5971db0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Main Headers\DirectX">
-      <UniqueIdentifier>{9587255a-88e0-485b-9910-d3fb12662ba1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers\ImGUI">
-      <UniqueIdentifier>{928903e3-aea4-4d1d-a828-c49f6c847b28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers\Detours">
-      <UniqueIdentifier>{68a815bd-e966-4cb1-ba5e-b4ac4ceb1052}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers\Ini">
-      <UniqueIdentifier>{c07d28f0-a6a8-4144-866a-ceb7d2402a0f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers\Midi">
-      <UniqueIdentifier>{eaaab380-b419-4045-acca-4b9f28c0e3c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main Headers\Json">
-      <UniqueIdentifier>{518ead06-0e18-411b-ac85-8d3e10854984}</UniqueIdentifier>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{87b4263b-6681-42e9-ae65-b35737659853}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +58,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scrapped.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="MemHelpers.cpp">
       <Filter>Source Files</Filter>
@@ -94,22 +82,22 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_draw.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_impl_dx9.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_impl_win32.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_widgets.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="D3D/D3D.cpp">
       <Filter>D3D</Filter>
@@ -118,6 +106,12 @@
       <Filter>CrowdControl</Filter>
     </ClCompile>
     <ClCompile Include="CC\ControlServer.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCEnums.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCStructs.hpp">
       <Filter>CrowdControl</Filter>
     </ClCompile>
     <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp">
@@ -156,6 +150,99 @@
     <ClCompile Include="WwiseHijack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lua.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lapi.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lauxlib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lbaselib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lcode.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ldblib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ldebug.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ldo.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ldump.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lfunc.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lgc.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\linit.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\liolib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\llex.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lmathlib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lmem.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\loadlib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lobject.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lopcodes.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\loslib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lparser.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lstate.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lstring.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lstrlib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ltable.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ltablib.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\ltm.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lua.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lundump.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lvm.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Lua\lzio.c">
+      <Filter>Lua</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\DisableControllers.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -192,112 +279,121 @@
     <ClCompile Include="D3D/D3DHooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
+    <ClCompile Include="TransparentNotesEffect.cpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoveNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\CCEnums.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\CCStructs.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClCompile>
-    <ClCompile Include="Mods\Midi.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Midi\RtMidi.cpp">
-      <Filter>Main Headers\Midi</Filter>
+    <ClCompile Include="SolidNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSpeak.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Functions.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Main.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemHelpers.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Offsets.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Settings.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Structs.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CollectColors.hpp">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\Enumeration.hpp">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSkeletons.hpp">
+      <Filter>Mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomSongTitles.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9types.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="D3DX9_42.hpp">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9anim.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9core.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9effect.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9math.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9mesh.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9shader.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9shape.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9tex.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9xof.h">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imgui.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imgui_impl_dx9.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imgui_impl_win32.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imgui_internal.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imstb_rectpack.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imstb_textedit.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imstb_truetype.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="Lib\ImGUI\imconfig.h">
-      <Filter>Main Headers\ImGUI</Filter>
+      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="SimpleIni.h">
-      <Filter>Main Headers\Ini</Filter>
+      <Filter>Header Files\Ini</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Detours\detours.h">
-      <Filter>Main Headers\Detours</Filter>
+      <Filter>Header Files\Detours</Filter>
     </ClInclude>
     <ClInclude Include="D3D/D3DHelper.hpp">
       <Filter>D3D</Filter>
@@ -309,10 +405,19 @@
       <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="WwiseHijack.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCEffect.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\ControlServer.hpp">
+      <Filter>CrowdControl</Filter>
     </ClInclude>
     <ClInclude Include="ObjectUtil.hpp">
-      <Filter>Main Headers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
@@ -365,50 +470,11 @@
     <ClInclude Include="CC\Effects\ZoomInEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
+    <ClInclude Include="CC\CCEffectList.hpp">
+      <Filter>CrowdControl</Filter>
+    </ClInclude>
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\CollectColors.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\CustomSongTitles.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\Enumeration.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\GuitarSpeak.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\GuitarSkeletons.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\DisableControllers.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\CCEffect.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\CCEffectList.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\ControlServer.hpp">
-      <Filter>CrowdControl\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\Midi.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Json\json.hpp">
-      <Filter>Main Headers\Json</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Midi\RtMidi.h">
-      <Filter>Main Headers\Midi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -416,24 +482,21 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl">
-      <Filter>Main Headers\DirectX</Filter>
+      <Filter>Header Files\DirectX</Filter>
     </None>
     <None Include="Lib\Detours\detours.pdb">
-      <Filter>Main Headers\Detours</Filter>
+      <Filter>Header Files\Detours</Filter>
     </None>
     <None Include="CC/rocksmithcrowdcontrol.cs">
       <Filter>CrowdControl</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="Lib\DirectX\d3d9.lib" />
+    <Library Include="Lib\DirectX\d3dx9.lib" />
     <Library Include="Lib\Detours\detours.lib">
-      <Filter>Main Headers\Detours</Filter>
-    </Library>
-    <Library Include="Lib\DirectX\d3d9.lib">
-      <Filter>Libs</Filter>
-    </Library>
-    <Library Include="Lib\DirectX\d3dx9.lib">
-      <Filter>Libs</Filter>
+      <Filter>Header Files\Detours</Filter>
     </Library>
   </ItemGroup>
 </Project>

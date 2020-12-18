@@ -1,5 +1,5 @@
 #include "SolidNotesEffect.hpp"
-#include "../../Lib/Json/json.hpp"
+#include "nlohmann/json.hpp"
 #include <sstream>
 
 namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture
@@ -170,7 +170,8 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
-		SetDuration(request);
+		if (request.parameters.contains("duration"))
+			request.parameters.at("duration").get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

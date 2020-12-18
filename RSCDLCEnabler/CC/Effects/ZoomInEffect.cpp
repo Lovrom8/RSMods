@@ -25,7 +25,8 @@ namespace CrowdControl::Effects {
 		auto rootObject = ObjectUtil::GetRootObject(); 
 		rootObject->scale = 2.0f; // TODO: determine correct values
 
-		SetDuration(request);
+		if (request.parameters.contains("duration"))
+			request.parameters.at("duration").get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

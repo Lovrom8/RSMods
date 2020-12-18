@@ -5,11 +5,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <filesystem>
-#include <codecvt>
 #include "Lib/DirectX/d3dx9.h"
 #include "Lib/DirectX/d3d9types.h"
-#include "Lib/Json/json.hpp"
 #include "D3D/D3DHooks.hpp"
 
 #include "MemUtil.hpp"
@@ -19,23 +16,15 @@
 
 namespace MemHelpers {
 	byte getLowestStringTuning();
-	byte* GetCurrentTuning(bool verbose = false);
 	void ToggleLoft();
 	std::string ShowSongTimer();
+	void ShowCurrentTuning();
 	bool IsExtendedRangeSong();
-	int* GetHighestLowestString();
-	bool IsSongInDrop(Tuning tuning);
-	bool IsSongInStandard(Tuning tuning);
-	int GetTrueTuning();
 	int* GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);
 	void ToggleDrunkMode(bool enable);
 	bool IsInSong();
-	float RiffRepeaterSpeed(float newSpeed = NULL);
-	void AutomatedOpenRRSpeedAbuse();
-	Tuning GetTuningAtTuner();
-	bool IsExtendedRangeTuner();
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);

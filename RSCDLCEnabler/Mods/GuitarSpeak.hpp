@@ -15,36 +15,23 @@
 
 namespace GuitarSpeak {
 	byte GetCurrentNote();
-	std::string GetCurrentNoteName();
-	bool RunGuitarSpeak();
-	void FillKeyList();
+	bool TimerTick();
+	void DrawTunerInGame();
+	void ForceNewSettings(std::string noteName, std::string keyPress);
 
-	inline bool verbose = false;
+	inline std::string* keyPressArray = new std::string[14]{ "DELETE", "SPACE", "ENTER", "TAB", "PGUP", "PGDN", "UP", "DOWN", "ESCAPE", "CLOSE", "OBRACKET", "CBRACKET", "TILDEA", "FORSLASH" };
+	inline std::string* noteNames = new std::string[12]{ "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+	inline int* octaves = new int[8]{ -1, 0, 1, 2, 3, 4, 5, 6 };
 
 	inline int lastNote;
-	inline int lastNoteBuffer = 0xFF, currentNoteBuffer = 0xFF; // 0xFF = End Note
+	inline int lastNoteBuffer = 0xFF, currentNoteBuffer = 0xFF;
 	inline int timer = 50; // Milliseconds | Original value of 50ms
-	inline bool sendKeystrokesToRS2014 = true, newNote = false;
-	inline std::string* strKeyList = new std::string[96]; // 12 notes in an octave, 8 octaves spanned (-1 <-> 6) || Limit C-1 <-> C7
-	inline int noNote = 0x0, endOfNote = 0xFF; // Used so we can call these instead of 0xFF and 0x0 in the file.
+	inline bool sendKeystrokesToRS2014 = true;
+	inline bool newNote = false;
+	inline std::string* strKeyList = new std::string[96]; // 12 notes in an octave, 8 octaves spanned (-1 <-> 6)
+	inline std::string strSend;
 
-	inline std::map<std::string, int> keyToVKey{
-		{"DELETE", VK_DELETE},	// Delete
-		{"SPACE", VK_SPACE},	// Space
-		{"ENTER", VK_RETURN},	// Enter
-		{"TAB", VK_TAB},		// Tab
-		{"PGUP", VK_PRIOR},		// Page Up
-		{"PGDN", VK_NEXT},		// Page Down
-		{"UP", VK_UP},			// Up Arrow
-		{"DOWN", VK_DOWN},		// Down Arrow
-		{"ESCAPE", VK_ESCAPE},	// Escape
-		{"OBRACKET", VK_OEM_4}, // Open Bracket
-		{"CBRACKET", VK_OEM_6}, // Close Bracket
-		{"TILDEA", VK_OEM_3},	// Tilde/a
-		{"FORSLASH", VK_OEM_2}, // Forward Slash
-	};
-
-	inline std::vector<std::string> calibrationMenus = {
+	inline std::string calibrationMenus[8] = {
 		"Guitarcade_Calibration",
 		"Guitarcade_WRDCalibration",
 		"GECalibrationMeter",
@@ -52,10 +39,10 @@ namespace GuitarSpeak {
 		"CalibrationMeter",
 		"CalibrationMeter_MP",
 		"LearnASong_CalibrationMeter_PreGame",
+		"MixerMenu", // Not "calibration" but still a menu we shouldn't allow, as people will want to test their new volumes.
 	};
 
-	inline std::vector<std::string> tuningMenus = { // These are all the menus where you need to tune
-		"SelectionListDialog",
+	inline std::string tuningMenus[15] = { // These are all the menus where you need to tune
 		"LearnASong_PreSongTuner",
 		"LearnASong_PreSongTunerMP",
 		"NonStopPlay_PreSongTuner",
@@ -70,10 +57,10 @@ namespace GuitarSpeak {
 		"Duet_PreSongTuner",
 		"H2H_PreSongTuner",
 		"GETuner",
-		"PreGame_GETuner"
+		"PreGame_GETuner",
 	};
 
-	inline std::vector<std::string> songMenus = { // These are all the menus where you would play guitar games.
+	inline std::string songMenus[13] = { // These are all the menus where you would play guitar games.
 		"LearnASong_Game",
 		"NonStopPlay_Game",
 		"ScoreAttack_Game",
@@ -87,15 +74,10 @@ namespace GuitarSpeak {
 		"Guitarcade_Game",
 		"Guitarcade_Pause",
 		"HelpList", // Chords Menu
-		"MixerMenu",
 	};
 
-	inline std::vector<std::string> lessonModes = { // These are the Guided Experience / Lessons modes.
+	inline std::string lessonModes[2] = { // These are the Guided Experience / Lessons modes.
 		"GuidedExperience_Game",
 		"GuidedExperience_Pause",
-	};
-
-	inline std::vector<std::string> noteLetters = {
-		"C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"
 	};
 };

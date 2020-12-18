@@ -7,10 +7,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <process.h>
-#include "../Lib/Json/json.hpp"
+#include <nlohmann\json.hpp>
 
 #include "CCEffectList.hpp"
-#include <thread>
 
 //Link the winsock2 lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -22,7 +21,6 @@ using nlohmann::json;
 
 namespace CrowdControl {
 	int sock;
-	bool serverStarted = false;
 
 	Response RunCommand(Request request) {
 		Response resp{
@@ -93,14 +91,10 @@ namespace CrowdControl {
 				bytesRead = recv(sock, buffer + currentMessageLength, 1, NULL);
 
 				//If last byte was null byte, exit recv loop
-				if (bytesRead > 0)
-					if (buffer[currentMessageLength] == NULL) break;
+				if (buffer[currentMessageLength] == NULL) break;
 
 				currentMessageLength += bytesRead;
 			} while (bytesRead > 0);
-
-			if (currentMessageLength == -1) //Usually happens when the connection closes (i.e. when the server is down)
-				continue;
 
 			//Parse command
 			std::string command = std::string(&buffer[0], &buffer[currentMessageLength]);
@@ -122,7 +116,7 @@ namespace CrowdControl {
 		}
 	}
 
-	unsigned WINAPI CrowdControlThread() {
+	unsigned WINAPI CrowdControlThread(void*) {
 		while (!D3DHooks::GameLoaded) // We are in no hurry :)
 			Sleep(5000);
 
@@ -154,8 +148,6 @@ namespace CrowdControl {
 				std::cout << "Unable to connect to crowd control" << std::endl;
 				return -1;
 			}
-			else
-				serverStarted = true;
 
 			std::cout << "Connected to crowd control" << std::endl;
 
@@ -170,7 +162,7 @@ namespace CrowdControl {
 		return 0;
 	}
 
-	unsigned WINAPI EffectRunThread() {
+	unsigned WINAPI EffectRunThread(void*) {
 		while (!D3DHooks::GameLoaded) // We are in no hurry :)
 			Sleep(5000);
 
@@ -187,12 +179,12 @@ namespace CrowdControl {
 		return 0;
 	}
 
-	unsigned WINAPI ObjectUtilUpdateThread() {
+	unsigned WINAPI ObjectUtilUpdateThread(void*) {
 		while (!D3DHooks::GameLoaded) // We are in no hurry :)
 			Sleep(5000);
 
 		while (!D3DHooks::GameClosing) {
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) // Guitarcade games crash if UpdateScales is run. So we will just sleep.
+			if(MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) // Guitarcade games crash if UpdateScales is run. So we will just sleep.
 				ObjectUtil::UpdateScales();
 
 			Sleep(1000);
@@ -201,17 +193,12 @@ namespace CrowdControl {
 		return 0;
 	}
 
-	void StartServerLoop() {
-		if (!serverStarted)
-			std::thread(CrowdControlThread).detach();
-	}
-
 	void StartServer() {
 		// Main TCP socket thread
-		StartServerLoop();
+		_beginthreadex(NULL, 0, &CrowdControlThread, NULL, 0, 0);
 		// Effect updating thread
-		std::thread(EffectRunThread).detach();
+		_beginthreadex(NULL, 0, &EffectRunThread, NULL, 0, 0);
 		// Object util scale updater thread
-		std::thread(ObjectUtilUpdateThread).detach();
+		_beginthreadex(NULL, 0, &ObjectUtilUpdateThread, NULL, 0, 0);
 	}
 }

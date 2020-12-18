@@ -26,16 +26,6 @@ namespace CrowdControl::Effects {
 		virtual EffectResult Start(Request request) = 0;
 		virtual void Run() = 0;
 		virtual EffectResult Stop() = 0;
-
-		void SetDuration(Request req) {
-			for (auto& el : req.parameters.items()) {
-				if (el.value().contains("duration")) {
-					el.value().at("duration").get_to(duration);
-					std::cout << "Set duration to : " << duration << " seconds" << std::endl;
-					break;
-				}
-			}
-		}
 	};
 }
 

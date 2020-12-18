@@ -24,7 +24,8 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 
 		Settings::UpdateTwitchSetting("TransparentNotes", "on");
 		
-		SetDuration(request);
+		if (request.parameters.contains("duration"))
+			request.parameters.at("duration").get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

@@ -1,9 +1,9 @@
-# The Rocksmith Mods that nobody asked for
+# Part of RSCDLCEnabler-2020Edition that nobody asked for
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
+[![Build status](https://ci.appveyor.com/api/projects/status/3ivrpj6l6ntv35gp?svg=true)](https://ci.appveyor.com/project/Lovrom8/rscdlcenabler-2020edition)
 
 ## Branches:
-1) [Develop](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=develop)
+1) [Develop](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/DLL.zip?branch=Future)
 2) [GUI](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rscdlcenabler-2020edition/artifacts/RSMods.zip?branch=GUI)
 3) [One-Click-Installer](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/releases/latest)
 

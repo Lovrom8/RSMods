@@ -19,7 +19,8 @@ namespace CrowdControl::Effects {
 
 		SetInstrumentScale(0);
 
-		SetDuration(request);
+		if (request.parameters.contains("duration"))
+			request.parameters.at("duration").get_to(duration);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

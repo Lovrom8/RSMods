@@ -18,15 +18,15 @@
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
     <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
-    <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
     <ClCompile Include="CC\CCStructs.hpp" />
+    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
+    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
-    <ClCompile Include="Lib\Midi\RtMidi.cpp" />
-    <ClCompile Include="Mods\Midi.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
@@ -37,9 +37,39 @@
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
-    <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp" />
     <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
+    <ClCompile Include="lua.cpp" />
+    <ClCompile Include="Lua\lapi.c" />
+    <ClCompile Include="Lua\lauxlib.c" />
+    <ClCompile Include="Lua\lbaselib.c" />
+    <ClCompile Include="Lua\lcode.c" />
+    <ClCompile Include="Lua\ldblib.c" />
+    <ClCompile Include="Lua\ldebug.c" />
+    <ClCompile Include="Lua\ldo.c" />
+    <ClCompile Include="Lua\ldump.c" />
+    <ClCompile Include="Lua\lfunc.c" />
+    <ClCompile Include="Lua\lgc.c" />
+    <ClCompile Include="Lua\linit.c" />
+    <ClCompile Include="Lua\liolib.c" />
+    <ClCompile Include="Lua\llex.c" />
+    <ClCompile Include="Lua\lmathlib.c" />
+    <ClCompile Include="Lua\lmem.c" />
+    <ClCompile Include="Lua\loadlib.c" />
+    <ClCompile Include="Lua\lobject.c" />
+    <ClCompile Include="Lua\lopcodes.c" />
+    <ClCompile Include="Lua\loslib.c" />
+    <ClCompile Include="Lua\lparser.c" />
+    <ClCompile Include="Lua\lstate.c" />
+    <ClCompile Include="Lua\lstring.c" />
+    <ClCompile Include="Lua\lstrlib.c" />
+    <ClCompile Include="Lua\ltable.c" />
+    <ClCompile Include="Lua\ltablib.c" />
+    <ClCompile Include="Lua\ltm.c" />
+    <ClCompile Include="Lua\lua.c" />
+    <ClCompile Include="Lua\lundump.c" />
+    <ClCompile Include="Lua\lvm.c" />
+    <ClCompile Include="Lua\lzio.c" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
     <ClCompile Include="WwiseHijack.cpp" />
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
@@ -58,10 +88,6 @@
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp" />
     <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp" />
-    <ClInclude Include="Lib\Json\json.hpp" />
-    <ClInclude Include="Lib\Midi\RtMidi.h" />
-    <ClInclude Include="Mods\DisableControllers.hpp" />
-    <ClInclude Include="Mods\Midi.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
     <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp" />
@@ -141,6 +167,7 @@
       <FileType>Document</FileType>
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl" />
+    <None Include="packages.config" />
     <None Include="CC/rocksmithcrowdcontrol.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +221,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>
@@ -209,7 +236,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -226,7 +252,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>SDK Path\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -239,7 +265,6 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>SDK Path\Lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
@@ -250,4 +275,13 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.9.1\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

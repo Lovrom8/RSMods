@@ -6,7 +6,7 @@ bool debug = true;
 bool debug = false;
 #endif
 
-unsigned WINAPI EnumerationThread() {
+unsigned WINAPI EnumerationThread(void*) {
 	while (!D3DHooks::GameLoaded) // We are in no hurry :)
 		Sleep(5000);
 
@@ -31,23 +31,10 @@ unsigned WINAPI EnumerationThread() {
 	return 0;
 }
 
-unsigned WINAPI MidiThread() {
-	while (!D3DHooks::GameClosing) {
-		if (Midi::sendPC)
-			Midi::SendProgramChange(Midi::dataToSendPC);
-		if (Midi::sendCC)
-			Midi::SendControlChange(Midi::dataToSendCC);
-		Sleep(Midi::sleepFor); // Sleep for 1/33rd of a second so we don't drain resources.
-	}
-	
-	return 0;
-}
-
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
-	// Failsafe for mouse input falling through the menu
-	//if (D3DHooks::menuEnabled && (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP || msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP || msg == WM_MOUSEWHEEL || msg == WM_MOUSEMOVE))
-	//	return false;
+	if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
+		return true;
 
 	if (msg == WM_KEYUP) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
@@ -110,7 +97,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 			}
 
-			/*else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
+			/*else if (keyPressed == VK_F9) { // Disco Mode
 				DiscoModeEnabled = !DiscoModeEnabled;
 
 				if (debug) {
@@ -130,54 +117,30 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
-			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
+			//else if (keyPressed == VK_F9) { // Start Lua
+			//		lua_State* luaState = lua_open();
+			//		luaL_openlibs(luaState);
+
+			//		DumpLuaStateToConsole(*(luaStateClass*)Offsets::ptr_luaopen_ecr);
+
+			//		//printTostdCoutExternal(luaState, "print(_VERSION)"); // Prints our version, not the game's (but they are both the same version | 5.1.4)
+			//}
+
+			//else if (keyPressed == VK_F9) // Controller Killswitch
 			//	DisableControllers::DisableControllers();
 
-			//else if (keyPressed == VK_F9) { // Current State: Will restart the sound system, but requires the user to change input methods, and switch back. When the user encounters a tone-bug, the audio will never come back.
+			//else if (keyPressed == VK_F9) { // Kills anything that's currently playing. When in LAS it ends the song (could be used for a F your playthrough? / quick leave song)
 			//	std::cout << "Trying to restart Wwise Music Engine" << std::endl;
-			//	WwiseVariables::Wwise_Music_Term(); // Kill all sounds
-			//	WwiseVariables::Wwise_Music_Init((AkMusicSettings*)0x01384964); // Restart the music
-
-			//	WwiseVariables::Rocksmith_SetAudioInputCallbacks((AkAudioInputPluginExecuteCallbackFunc*)0x01c9f415, (AkAudioInputPluginGetFormatCallbackFunc*)0x01c9f34e, (AkAudioInputPluginGetGainCallbackFunc*)0x01c9f2ae, (int*)0x01c9f31e);
-
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3E8, 0, NULL, NULL, 0, NULL, 0); // Fix event char
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3E9, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EA, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EB, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EC, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3ED, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EE, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EF, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F0, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F1, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F2, 0, NULL, NULL, 0, NULL, 0);
-
+			//	WwiseVariables::Wwise_Music_Term();
+			//	WwiseVariables::Wwise_Music_Init((AkMusicSettings*)0x01384964);
 			//	std::cout << "Restart Complete!" << std::endl;
+			// Wwise Sound Term / Init combo kills ALL audio and it will never restart even when using set addresses used by the executable (there is 2 pairs, and both init properly work).
 			//}
-			
-
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
-				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
-
-				if (GetAsyncKeyState(VK_SHIFT) < 0) {
-					useNewSongSpeed = false;
-					newSongSpeed = 100.f;
-					MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-				}
-				else
-					useNewSongSpeed = true;
-
-				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			}
-
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
-				Midi::userWantsToUseAutoTuning = true;
 		}
 
 		if (debug) {
 			if (keyPressed == VK_INSERT)
 				D3DHooks::menuEnabled = !D3DHooks::menuEnabled;
-
 		}
 	}
 	else if (msg == WM_COPYDATA) {
@@ -187,35 +150,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::string currMsg = (char*)pcds->lpData;
 			std::cout << currMsg << std::endl;
 
-			if (Contains(currMsg, "update")) {
-				if (Contains(currMsg, "all"))
-					Settings::UpdateSettings();
-				else
-					Settings::ParseSettingUpdate(currMsg);
-			}
-			else if (Contains(currMsg, "TurboSpeed"))
-				userWantsRRSpeedEnabled = Contains(currMsg, "enable");
+			if (Contains(currMsg, "update"))
+				Settings::ParseSettingUpdate(currMsg);
 			else if (Contains(currMsg, "enable"))
 				effectQueue.push_back(currMsg);
-			else if (Contains(currMsg, "Reconnect"))
-				CrowdControl::StartServerLoop();
 		}
 	}
 
 	if (msg == WM_CLOSE)
 		D3DHooks::GameClosing = true;
-	else {
-		ImGuiIO& io = ImGui::GetIO();
-
-		POINT mPos;
-		GetCursorPos(&mPos);
-		ScreenToClient(hWnd, &mPos);
-		ImGui::GetIO().MousePos.x = mPos.x;
-		ImGui::GetIO().MousePos.y = mPos.y;
-
-		if (D3DHooks::menuEnabled && ImGui_ImplWin32_WndProcHandler(hWnd, msg, keyPressed, lParam))
-			return true;
-	}
 
 	return CallWindowProc(D3DHooks::oWndProc, hWnd, msg, keyPressed, lParam);
 }
@@ -233,8 +176,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		init = true;
 
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
+		// ImGuiIO& io = ImGui::GetIO();
+		// ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(RobotoFont_data, RobotoFont_size, 20);
 
 		D3DDEVICE_CREATION_PARAMETERS d3dcp;
 		pDevice->GetCreationParameters(&d3dcp);
@@ -245,8 +188,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui_ImplWin32_Init(hThisWnd);
 		ImGui_ImplDX9_Init(pDevice);
 		ImGui::GetIO().ImeWindowHandle = hThisWnd;
-		//ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 		D3D::GenerateSolidTexture(pDevice, &Red, D3DCOLOR_ARGB(255, 000, 255, 255));
 		D3D::GenerateSolidTexture(pDevice, &Green, D3DCOLOR_ARGB(255, 0, 255, 0));
@@ -277,39 +219,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (D3DHooks::menuEnabled) {
 		ImGui::Begin("RS Modz");
-
-		// Stop mouse and keyboard in game
-		ImGui::CaptureKeyboardFromApp(true);
-		ImGui::CaptureMouseFromApp(true);
-
-		static std::string previewValue = "Select a device";
-		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
-			for (int n = 0; n < Midi::NumberOfPorts; n++)
-			{
-				const bool is_selected = (selectedDevice == n);
-				if (ImGui::Selectable(Midi::midiOutDevices[n].szPname, is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
-					selectedDevice = n;
-
-				if (is_selected) {
-					previewValue = Midi::midiOutDevices[n].szPname;
-					Midi::SelectedMidiDevice = n;
-				}
-			}
-			ImGui::EndCombo();
-		}
-
-		// Sliders
-		ImGui::SliderInt("Program Change", &Midi::MidiPC, 0, 127);
-		ImGui::SliderInt("Control Change", &Midi::MidiCC, 0, 127);
-
-		// Submit Buttons
-		if (ImGui::Button("Send PC MIDI Message"))
-			Midi::SendDataToThread_PC(Midi::MidiPC);
-
-		if (ImGui::Button("Send CC MIDI Message"))
-			Midi::SendDataToThread_CC(Midi::MidiCC);
-
-		/* STRING COLOR TESTING
 
 		static bool CB = false;
 		static std::string previewValue = "Select a string";
@@ -345,8 +254,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (ImGui::Button("Restore default colors"))
 			ERMode::ResetString(selectedString);
 
-		*/
-
 		ImGui::End();
 	}
 
@@ -355,19 +262,14 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
-	// Restart mouse and keyboard in game
-	ImGui::CaptureKeyboardFromApp(false);
-	ImGui::CaptureMouseFromApp(false);
-
 	if (generateTexture) {
 		D3D::GenerateTextures(pDevice, D3D::Custom);
 		generateTexture = false;
 	}
 
 	int whiteText = 0xFFFFFFFF;
-	int* WindowSize = MemHelpers::GetWindowSize();
 
-	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
+	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. ALWAYS DO MemHelpers::GetWindowSize() X AND Y. THIS MEANS IT WILL SHOW IN THE SAME PLACE ON EVERY RESOLUTION!
 
 		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
 			float volume = 0;
@@ -375,7 +277,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 			if (currentVolumeIndex != 0)
-				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize[0] / 54.85), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 14.22), (int)(WindowSize[1] / 8), pDevice);
+				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 54.85), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 14.22), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
 
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -395,23 +297,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize[0] / 1.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 1.45), (int)(WindowSize[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(MemHelpers::GetWindowSize()[0] / 1.35), (int)(MemHelpers::GetWindowSize()[1] / 30.85), (int)(MemHelpers::GetWindowSize()[0] / 1.45), (int)(MemHelpers::GetWindowSize()[1] / 8), pDevice);
 		}
-
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes)) {
-			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			if (useNewSongSpeed) {
-				if ((newSongSpeed - Settings::GetModSetting("RRSpeedInterval")) > 100.f)
-					MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed() - Settings::GetModSetting("RRSpeedInterval")) + "%", whiteText, (int)(WindowSize[0] / 2.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 2.50), (int)(WindowSize[1] / 8), pDevice);
-			}
-			else
-				MemHelpers::RiffRepeaterSpeed(100.f);
-		}
-		else
-			useNewSongSpeed = false;
-
-		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"")
-			MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 3.87), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 4), (int)(WindowSize[1] / 8), pDevice);
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
@@ -429,8 +316,19 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 	}
 
-	delete[] WindowSize;
+
 	return hRet;
+}
+
+unsigned WINAPI TimerThread(void*) { // This is likely a waste of resoruces, but we don't really need it to be super precise nor thread safe, so yeah
+	while (!D3DHooks::GameClosing) {
+		currentRandTexture++;
+		currentRandTexture %= randomTextureCount;
+
+		Sleep(StringChangeInterval);
+	}
+
+	return 0;
 }
 
 bool HandleMessage(std::string currMsg, std::string type) {
@@ -498,7 +396,7 @@ void HandleEffect(std::string currEffectMsg) {
 	}
 }
 
-unsigned WINAPI HandleEffectQueueThread() { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
+unsigned WINAPI HandleEffectQueueThread(void*) { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
 	while (!D3DHooks::GameClosing) {
 		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
 			// Okay this is getting sketchy, but otherwise one effect would block other effects from running
@@ -596,7 +494,7 @@ void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6
 	}
 }
 
-unsigned WINAPI MainThread() {
+unsigned WINAPI MainThread(void*) {
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
 		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
@@ -616,11 +514,7 @@ unsigned WINAPI MainThread() {
 
 	ClearLogs(); // Delete's those stupid log files Rocksmith loves making.
 
-	Midi::InitMidi();
 	//GuitarSpeak.DrawTunerInGame();
-
-	if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
-		userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
 
 	using namespace D3DHooks;
 	while (!GameClosing) {
@@ -631,19 +525,10 @@ unsigned WINAPI MainThread() {
 
 			//std::cout << currentMenu << std::endl;
 
-			if (!Midi::scannedForMidiDevices && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
-				Midi::scannedForMidiDevices = true;
-				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"));
-			}
-
-			/// If User Is Entering / In Lesson Mode
-
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes))
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes)) // Is User In A Lesson
 				LessonMode = true;
 			else
 				LessonMode = false;
-
-			/// Always on Mods (If the user specifies them to be on)
 
 			if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup")
 				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
@@ -666,10 +551,7 @@ unsigned WINAPI MainThread() {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-
-			/// If User Is Entering Song
-
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) { // If User Is Entering Song
 				GuitarSpeakPresent = false;
 
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
@@ -686,28 +568,9 @@ unsigned WINAPI MainThread() {
 						toggleSkyline = true;
 					DrawSkylineInMenu = false;
 				}
-
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
-					MemHelpers::AutomatedOpenRRSpeedAbuse();
-
-				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning) {
-					Midi::AutomateDownTuning();
-					Midi::AutomateTrueTuning();
-				}
 			}
-
-			/// If User Is Exiting A Song / In A Menu
-
-			else {
-				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
-				newSongSpeed = 100.f;
-
-				if (Midi::alreadyAutomatedTuningInThisSong) {
-					Midi::RevertAutomatedTuning();
-					Midi::userWantsToUseAutoTuning = false;
-				}	
-
-				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song") // If the user only wants to see the headstock in menus, then we need to stop removing it.
+			else { // If User Is Exiting Song / In A Menu
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = false;
 
 				if (Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "song") { // Turn the loft back on after exiting a song
@@ -725,7 +588,7 @@ unsigned WINAPI MainThread() {
 
 				if (!GuitarSpeakPresent && Settings::ReturnSettingValue("GuitarSpeak") == "on") { // Guitar Speak
 					GuitarSpeakPresent = true;
-					if (!GuitarSpeak::RunGuitarSpeak()) // If we are in a menu where we don't want to read bad values
+					if (!GuitarSpeak::TimerTick()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;
 				}
 
@@ -734,10 +597,8 @@ unsigned WINAPI MainThread() {
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
-			
-			/// "Other" menus. These will normally state what menus they need to be in.
 
-			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) // Screenshot Scores
+			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
 				TakeScreenshot();
 			else
 				takenScreenshotOfThisScreen = false;
@@ -746,21 +607,17 @@ unsigned WINAPI MainThread() {
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
 			}
-
 			previousMenu = currentMenu;
 
 			if (enableColorBlindCheckboxGUI)
 				MemHelpers::ToggleCB(cbEnabled);
 
-			if (ERMode::IsRainbowEnabled()) // Rainbow mode / ER Mode
+			if (ERMode::IsRainbowEnabled())
 				ERMode::DoRainbow();
 			else
 				ERMode::Toggle7StringMode();
 		}
-
-		/// Game Hasn't Loaded Yet
-
-		else {
+		else { // Game Hasn't Loaded Yet
 			//DisableControllers::DisableControllers();
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
@@ -774,11 +631,11 @@ unsigned WINAPI MainThread() {
 	return 0;
 }
 
-void Initialize() {
-	std::thread(MainThread).detach();
-	std::thread(EnumerationThread).detach();
-	std::thread(HandleEffectQueueThread).detach();
-	std::thread(MidiThread).detach();
+void Initialize(void) {
+	_beginthreadex(NULL, 0, &MainThread, NULL, 0, 0);
+	_beginthreadex(NULL, 0, &EnumerationThread, NULL, 0, 0);
+	//_beginthreadex(NULL, 0, &TimerThread, NULL, 0, 0);
+	_beginthreadex(NULL, 0, &HandleEffectQueueThread, NULL, 0, 0);
 
 	// Probably check ini setting before starting this thing
 	CrowdControl::StartServer();
