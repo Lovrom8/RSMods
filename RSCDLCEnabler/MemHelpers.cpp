@@ -107,6 +107,10 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	delete[] highestLowest;
 
+	// Pointer is invalid
+	if (lowestTuning == 666)
+		return false;
+
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
