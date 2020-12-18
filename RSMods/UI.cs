@@ -14,6 +14,8 @@ using System.Threading;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Threading.Tasks;
+using RSMods.Twitch.EffectServer;
+using System.Runtime.InteropServices;
 
 namespace RSMods
 {
@@ -150,6 +152,9 @@ namespace RSMods
                 checkBox_ExtendedRange.Checked = true;
                 groupBox_ExtendedRangeWhen.Visible = true;
                 listBox_ExtendedRangeTunings.Visible = true;
+
+                if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeDropTuningIdentifier) == "on") // Extended Range on Drop Tuning
+                    checkBox_ExtendedRangeDrop.Checked = true;
             }
             if (ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) != "0") // Custom String Colors
             {
@@ -226,6 +231,45 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
                 checkBox_ChangeTheme.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) == "on")
+            {
+                checkBox_RiffRepeaterSpeedAboveOneHundred.Checked = true;
+                groupBox_RRSpeed.Visible = true;
+                nUpDown_RiffRepeaterSpeed.Value = Convert.ToDecimal(ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier));
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) == "on")
+            {
+                checkBox_useMidiAutoTuning.Checked = true;
+                groupBox_MidiAutoTuneDevice.Visible = true;
+                label_SelectedMidiDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+
+                if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
+                {
+                    int tuningPedal = Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier));
+
+                    switch (tuningPedal)
+                    {
+                        case 1:
+                            radio_WhammyDT.Checked = true;
+                            break;
+                        case 2:
+                            radio_WhammyORBass.Checked = true;
+                            checkBox_WhammyChordsMode.Visible = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+
+                if (ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on")
+                    checkBox_WhammyChordsMode.Checked = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on")
+                checkBox_ShowCurrentNote.Checked = true;
         }
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
@@ -333,7 +377,19 @@ namespace RSMods
                     }
                 }
             }
+
             WriteSettings.WriteINI(WriteSettings.saveSettings);
+            ShowSavedSettingsLabel();
+            WinMsgUtil.SendMsgToRS("update all");
+        }
+
+        private void ShowSavedSettingsLabel()
+        {
+            label_SettingsSaved.Visible = true;
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 1500;
+            timer.Tick += (source, e) => { label_SettingsSaved.Visible = false; timer.Stop(); };
+            timer.Start();
         }
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
@@ -500,7 +556,7 @@ namespace RSMods
 
         private void BtnSaveTuningChanges_Click(object sender, EventArgs e)
         {
-            if (listBox_Tunings.SelectedItem != null) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
+            if (listBox_Tunings.SelectedIndex != -1) // If we are saving a change to the currently selected tuning, perform a change in the collection, otherwise directly go to saving
             {
                 string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
@@ -515,7 +571,7 @@ namespace RSMods
 
         private void BtnRemoveTuning_Click(object sender, EventArgs e)
         {
-            if (listBox_Tunings.SelectedItem == null)
+            if (listBox_Tunings.SelectedIndex == -1)
                 return;
 
             string selectedItem = listBox_Tunings.SelectedItem.ToString();
@@ -529,20 +585,33 @@ namespace RSMods
 
         private void BtnAddTuning_Click(object sender, EventArgs e)
         {
+            if (listBox_Tunings.SelectedIndex == -1)
+                listBox_Tunings.SelectedIndex = 0;
+
             if (listBox_Tunings.SelectedItem.ToString() != "<New>")
                 return;
 
             var currTuning = GetCurrentTuningInfo();
             string internalName = textBox_InternalTuningName.Text;
 
+            if (internalName.Trim() == "")
+            {
+                MessageBox.Show("You cannot have a blank internal name.");
+                return;
+            }
+
             if (!SetAndForgetMods.TuningsCollection.ContainsKey(internalName)) // Unlikely to happen, but still... prevent users accidentaly trying to add existing stuff
             {
                 SetAndForgetMods.TuningsCollection.Add(internalName, currTuning);
                 listBox_Tunings.Items.Add(internalName);
             }
+            else
+                MessageBox.Show("You already have a tuning with the same internal name");
         }
 
-        private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomMenuOptions();
+        private void BtnAddCustomMenu_Click(object sender, EventArgs e) => SetAndForgetMods.AddExitGameMenuOption();
+
+        private void button_AddDCMode_Click(object sender, EventArgs e) => SetAndForgetMods.AddDirectConnectModeOption();
 
         private void BtnRemoveTempFolders_Click(object sender, EventArgs e) => SetAndForgetMods.RemoveTempFolders();
 
@@ -823,6 +892,7 @@ namespace RSMods
             label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
             label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+            label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
         }
 
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -866,7 +936,11 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
             Dictionaries.TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
             Dictionaries.TooltipDictionary.Add(checkBox_RemoveLineMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
+            Dictionaries.TooltipDictionary.Add(checkBox_ScreenShotScores, "We will automatically take a steam screenshot whenever you finish a song");
+            Dictionaries.TooltipDictionary.Add(checkBox_RiffRepeaterSpeedAboveOneHundred, "Allow you to play a song faster than 100% speed in Riff Repeater");
             Dictionaries.TooltipDictionary.Add(checkBox_ChangeTheme, "Use this feature to customize the colors used in this GUI.");
+            Dictionaries.TooltipDictionary.Add(checkBox_useMidiAutoTuning, "If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.");
+            Dictionaries.TooltipDictionary.Add(checkBox_ShowCurrentNote, "Shows the note you are currently playing on screen.");
 
             // Mods
             Dictionaries.TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
@@ -878,6 +952,9 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(radio_LyricsAlwaysOff, "Lyrics display will always be disabled in Learn-A-Song game mode.");
             Dictionaries.TooltipDictionary.Add(radio_LyricsOffHotkey, "Lyrics can be toggled on or off by a defined hotkey.");
             Dictionaries.TooltipDictionary.Add(checkbox_GuitarSpeakWhileTuning, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
+            Dictionaries.TooltipDictionary.Add(groupBox_MidiAutoTuneDevice, "Select the MIDI device that goes to your drop tuning pedal.\nWe will send a signal to the pedal to try to automatically tune it.");
+            Dictionaries.TooltipDictionary.Add(checkBox_WhammyChordsMode, "If you are using the Whammy or Whammy Bass.\nAre you using the pedal in Chords Mode or Classic Mode.\nClassic Mode = UnChecked, Chords Mode = Checked.");
+            Dictionaries.TooltipDictionary.Add(checkBox_ExtendedRangeDrop, "By default we require a song to be in standard to trigger Extended Range.\nTurn this on if you want drop tunings to also trigger Extended Range.\n(Ex: If you drop at B, but are playing Drop B, this checkbox will trigger Extended Range Mode)");
 
             // Misc
             Dictionaries.TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
@@ -907,7 +984,8 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(button_SaveTuningChanges, "Saves the tuning list to Rocksmith.");
 
             // One Click Mods
-            Dictionaries.TooltipDictionary.Add(button_AddDCExitGame, "Adds the Direct Connect mode - microphone mode with tone simulations.\nAlso replaces UPLAY on the main menu with an EXIT GAME option.");
+            Dictionaries.TooltipDictionary.Add(button_AddExitGame, "Replaces UPLAY on the main menu with an EXIT GAME option.");
+            Dictionaries.TooltipDictionary.Add(button_AddDCInput, "Adds the Direct Connect mode - microphone mode with tone simulations.");
             Dictionaries.TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
             Dictionaries.TooltipDictionary.Add(button_AddFastLoad, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
 
@@ -1049,28 +1127,28 @@ namespace RSMods
             switch (stringNumber)
             {
                 case 0:
-                    int offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String0.Value) + offset);
+                    int offset = 40; // E2 (Midi)
+                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String0.Value) + offset));
                     break;
                 case 1:
-                    offset = 33; // Offset from (24 - 1) + 10
-                    label_CustomTuningAStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String1.Value) + offset);
+                    offset = 45; // A2 (Midi)
+                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String1.Value) + offset));
                     break;
                 case 2:
-                    offset = 26; // Offset from (24 - 1) + 3
-                    label_CustomTuningDStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String2.Value) + offset);
+                    offset = 50; // D3 (Midi)
+                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String2.Value) + offset));
                     break;
                 case 3:
-                    offset = 31;// Offset from (24 - 1) + 8
-                    label_CustomTuningGStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String3.Value) + offset);
+                    offset = 55;// G3 (Midi)
+                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String3.Value) + offset));
                     break;
                 case 4:
-                    offset = 35; // Offset from (24 - 1) + 12
-                    label_CustomTuningBStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String4.Value) + offset);
+                    offset = 59; // B3 (Midi)
+                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String4.Value) + offset));
                     break;
                 case 5:
-                    offset = 28; // Offset from (24 - 1) + 5
-                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.IntToNote(Convert.ToInt32(nUpDown_String5.Value) + offset);
+                    offset = 64; // E4 (Midi)
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String5.Value) + offset)).ToLower();
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
@@ -1164,6 +1242,17 @@ namespace RSMods
             TwitchSettings.Get.LoadEnabledEffects();
         }
 
+        private void CheckForTurboSpeed(TwitchReward selectedReward)
+        {
+            if (selectedReward.Name.Contains("TurboSpeed"))
+            {
+                if (selectedReward.Enabled)
+                    WinMsgUtil.SendMsgToRS("enable TurboSpeed");
+                else
+                    WinMsgUtil.SendMsgToRS("disable TurboSpeed");
+            }
+        }
+
         private void EnableTwitchTab()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -1177,6 +1266,8 @@ namespace RSMods
 
                     if (selectedReward.AdditionalMsg != null && selectedReward.AdditionalMsg != string.Empty && selectedReward.AdditionalMsg != "Random")
                         row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
+
+                    CheckForTurboSpeed(selectedReward);
                 }
             }
 
@@ -1373,6 +1464,8 @@ namespace RSMods
             else if (selectedReward is ChannelPointsReward)
                 ((ChannelPointsReward)selectedReward).PointsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
 
+            CheckForTurboSpeed(selectedReward);
+
             SaveEnabledRewardsToFile();
         }
 
@@ -1514,6 +1607,58 @@ namespace RSMods
             }
         }
 
+        private void nUpDown_RiffRepeaterSpeed_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
+
+        private void checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.RiffRepeaterAboveHundredIdentifier, checkBox_RiffRepeaterSpeedAboveOneHundred.Checked.ToString().ToLower());
+            groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
+        }
+
+        private void checkBox_useMidiAutoTuning_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
+            groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
+        }
+
+        private void LoadMidiDeviceNames(object sender, EventArgs e)
+        {
+            this.listBox_ListMidiDevices.Items.Clear();
+
+            uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
+
+            for(uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
+            {
+                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS {};
+                Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
+                this.listBox_ListMidiDevices.Items.Add(temp.szPname);
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
+                listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+        }
+
+        private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e) {
+            if (listBox_ListMidiDevices.SelectedIndex != -1)
+            {
+                SaveChanges(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
+                label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
+            }
+        }
+
+        private void radio_WhammyDT_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.TuningPedalIdentifier, "1");
+
+        private void radio_WhammyORBass_CheckedChanged(object sender, EventArgs e) {
+            SaveChanges(ReadSettings.TuningPedalIdentifier, "2");
+            checkBox_WhammyChordsMode.Visible = radio_WhammyORBass.Checked;
+        }
+
+        private void checkBox_WhammyChordsMode_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
+
+        private void checkBox_ExtendedRangeDrop_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeDropTuningIdentifier, checkBox_ExtendedRangeDrop.Checked.ToString().ToLower());
+
+        private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
+
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))
@@ -1526,5 +1671,57 @@ namespace RSMods
 
             SaveEnabledRewardsToFile();
         }*/
+    }
+
+    public class Midi
+    {
+        public enum MMRESULT : uint
+        {
+            MMSYSERR_NOERROR = 0,
+            MMSYSERR_ERROR = 1,
+            MMSYSERR_BADDEVICEID = 2,
+            MMSYSERR_NOTENABLED = 3,
+            MMSYSERR_ALLOCATED = 4,
+            MMSYSERR_INVALHANDLE = 5,
+            MMSYSERR_NODRIVER = 6,
+            MMSYSERR_NOMEM = 7,
+            MMSYSERR_NOTSUPPORTED = 8,
+            MMSYSERR_BADERRNUM = 9,
+            MMSYSERR_INVALFLAG = 10,
+            MMSYSERR_INVALPARAM = 11,
+            MMSYSERR_HANDLEBUSY = 12,
+            MMSYSERR_INVALIDALIAS = 13,
+            MMSYSERR_BADDB = 14,
+            MMSYSERR_KEYNOTFOUND = 15,
+            MMSYSERR_READERROR = 16,
+            MMSYSERR_WRITEERROR = 17,
+            MMSYSERR_DELETEERROR = 18,
+            MMSYSERR_VALNOTFOUND = 19,
+            MMSYSERR_NODRIVERCB = 20,
+            WAVERR_BADFORMAT = 32,
+            WAVERR_STILLPLAYING = 33,
+            WAVERR_UNPREPARED = 34
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIDIOUTCAPS
+        {
+            public ushort wMid;
+            public ushort wPid;
+            public uint vDriverVersion;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string szPname;
+            public ushort wTechnology;
+            public ushort wVoices;
+            public ushort wNotes;
+            public ushort wChannelMask;
+            public uint dwSupport;
+        }
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern MMRESULT midiOutGetDevCaps(uint uDeviceID, ref MIDIOUTCAPS lpMidiOutCaps, uint cbMidiOutCaps);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiOutGetNumDevs();
     }
 }
