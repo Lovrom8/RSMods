@@ -35,10 +35,10 @@
             // 
             // UseModsButton
             // 
-            this.UseModsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 64F, System.Drawing.FontStyle.Bold);
+            this.UseModsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.UseModsButton.Location = new System.Drawing.Point(12, 71);
             this.UseModsButton.Name = "UseModsButton";
-            this.UseModsButton.Size = new System.Drawing.Size(911, 443);
+            this.UseModsButton.Size = new System.Drawing.Size(518, 117);
             this.UseModsButton.TabIndex = 1;
             this.UseModsButton.Text = "Click To Use Mods";
             this.UseModsButton.UseVisualStyleBackColor = true;
@@ -48,7 +48,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(206, 9);
+            this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(518, 40);
             this.label1.TabIndex = 2;
@@ -59,7 +59,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(935, 526);
+            this.ClientSize = new System.Drawing.Size(548, 205);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.UseModsButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

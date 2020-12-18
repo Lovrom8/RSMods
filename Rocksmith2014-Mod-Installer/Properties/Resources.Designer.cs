@@ -130,7 +130,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;6&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;6&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;4&quot; maxChordNotes=&quot;6&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_chords_protector {
             get {
@@ -148,7 +148,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;4&quot; maxChordNotes=&quot;1&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_chords_remover {
             get {
@@ -188,7 +188,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;2&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;2&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_default1 {
             get {
@@ -236,7 +236,8 @@ namespace RS2014_Mod_Installer.Properties {
         ///    (at your option) any later version.
         ///
         ///    This program is distributed in the hope that it will be useful,
-        ///    but WITHOUT ANY WARRANTY; without even the implied warranty  [rest of string was truncated]&quot;;.
+        ///    but WITHOUT ANY WARRANTY; without even the implied warranty of
+        ///    ME [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string license {
             get {
@@ -257,38 +258,6 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Microsoft_Extensions_Logging_Abstractions {
-            get {
-                object obj = ResourceManager.GetObject("Microsoft_Extensions_Logging_Abstractions", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;doc&gt;
-        ///    &lt;assembly&gt;
-        ///        &lt;name&gt;Microsoft.Extensions.Logging.Abstractions&lt;/name&gt;
-        ///    &lt;/assembly&gt;
-        ///    &lt;members&gt;
-        ///        &lt;member name=&quot;T:Microsoft.Extensions.Logging.IExternalScopeProvider&quot;&gt;
-        ///            &lt;summary&gt;
-        ///            Represents a storage of common scope data.
-        ///            &lt;/summary&gt;
-        ///        &lt;/member&gt;
-        ///        &lt;member name=&quot;M:Microsoft.Extensions.Logging.IExternalScopeProvider.ForEachScope``1(System.Action{System.Object,``0},``0)&quot;&gt;
-        ///            &lt;summary&gt;
-        ///            E [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Microsoft_Extensions_Logging_Abstractions1 {
-            get {
-                return ResourceManager.GetString("Microsoft_Extensions_Logging_Abstractions1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Microsoft_WindowsAPICodePack {
             get {
                 object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack", resourceCulture);
@@ -303,46 +272,6 @@ namespace RS2014_Mod_Installer.Properties {
             get {
                 object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack_Shell", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;doc&gt;
-        ///    &lt;assembly&gt;
-        ///        &lt;name&gt;Microsoft.WindowsAPICodePack.Shell&lt;/name&gt;
-        ///    &lt;/assembly&gt;
-        ///    &lt;members&gt;
-        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.Shell.EventHandlerExtensionMethods&quot;&gt;
-        ///            &lt;summary&gt;
-        ///            Provides extension methods for raising events safely.
-        ///            &lt;/summary&gt;
-        ///        &lt;/member&gt;
-        ///        &lt;member name=&quot;M:Microsoft.WindowsAPICodePack.Shell.EventHandlerExtensionMethods.SafeRaise(System.EventHandler,System.Object)&quot;&gt;
-        ///            &lt;summ [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Microsoft_WindowsAPICodePack_Shell2 {
-            get {
-                return ResourceManager.GetString("Microsoft_WindowsAPICodePack_Shell2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;doc&gt;
-        ///    &lt;assembly&gt;
-        ///        &lt;name&gt;Microsoft.WindowsAPICodePack&lt;/name&gt;
-        ///    &lt;/assembly&gt;
-        ///    &lt;members&gt;
-        ///        &lt;member name=&quot;T:Microsoft.WindowsAPICodePack.ApplicationServices.ApplicationRestartRecoveryManager&quot;&gt;
-        ///            &lt;summary&gt;
-        ///            Provides access to the Application Restart and Recovery
-        ///            features available in Windows Vista or higher. Application Restart and Recovery lets an
-        ///            application do some recovery work to save data before the process ex [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Microsoft_WindowsAPICodePack2 {
-            get {
-                return ResourceManager.GetString("Microsoft_WindowsAPICodePack2", resourceCulture);
             }
         }
         
@@ -513,7 +442,8 @@ namespace RS2014_Mod_Installer.Properties {
         ///- Open a Windows command-line interpreter
         ///- Execute the &quot;ddc.exe&quot; tool with the following parameters :
         ///
-        ///  C:\ddc_v3.6&gt;ddc.exe        /// [rest of string was truncated]&quot;;.
+        ///  C:\ddc_v3.6&gt;ddc.exe
+        ///  ------------- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string readme1 {
             get {
@@ -569,9 +499,11 @@ namespace RS2014_Mod_Installer.Properties {
         ///    &lt;/startup&gt;
         ///  &lt;runtime&gt;
         ///    &lt;assemblyBinding xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot;&gt;
-        ///    &lt;/assemblyBinding&gt;
-        ///  &lt;/runtime&gt;
-        ///&lt;/configuration&gt;.
+        ///      &lt;dependentAssembly&gt;
+        ///        &lt;assemblyIdentity name=&quot;Newtonsoft.Json&quot; publicKeyToken=&quot;30ad4fe6b2a6aeed&quot; culture=&quot;neutral&quot; /&gt;
+        ///        &lt;bindingRedirect oldVersion=&quot;0.0.0.0-12.0.0.0&quot; newVersion=&quot;12.0.0.0&quot; /&gt;
+        ///      &lt;/dependentAssembly&gt;
+        ///      &lt;dependentAssembly&gt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string RSMods_exe {
             get {

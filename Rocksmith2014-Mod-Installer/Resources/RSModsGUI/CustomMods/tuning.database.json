@@ -172,7 +172,7 @@
         }
       },
       "DDropC": {
-        "UIName": "$[36581]D Drop C ",
+        "UIName": "$[36581]D Drop C",
         "Strings": {
           "string0": -4,
           "string1": -2,
@@ -215,7 +215,7 @@
           "string5": -4
         }
       },
-      "CDropAb": {
+      "CDropBb": {
         "UIName": "$[37385]C Drop Bb",
         "Strings": {
           "string0": -6,
@@ -259,7 +259,7 @@
           "string5": -6
         }
       },
-      "Bb drop Ab": {
+      "BbDropAb": {
         "UIName": "$[37389]Bb Drop Ab",
         "Strings": {
           "string0": -8,
