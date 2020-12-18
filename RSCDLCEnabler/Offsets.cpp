@@ -17,9 +17,17 @@ namespace Offsets {
 	// Current Tuning
 	uintptr_t ptr_tuning = 0x00F5C4D8;
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
+	
+	// True Tuning
+	uintptr_t ptr_trueTuning = 0x00F5C4FC;
+	std::vector<unsigned int> ptr_trueTuningOffsets{ 0x10, 0x4, 0x418, 0xB4, 0xF18 };
+
+	// Tuning - Textual Form
+	uintptr_t ptr_tuningText = 0x00F5C5AC;
+	std::vector<unsigned int> ptr_tuningTextOffsets{ 0x28, 0x44, 0x0 };
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
-	uintptr_t ptr_guitarSpeak = 0x135C4FC;
+	uintptr_t ptr_guitarSpeak = 0x00F5C4FC;
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
 	// Removed do to access to Wwise calls.
@@ -88,6 +96,10 @@ namespace Offsets {
 	// Timer
 	uintptr_t ptr_timer = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };
+
+	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
+	uintptr_t ptr_songSpeed = 0x00F5C4CC;
+	std::vector<unsigned int> ptr_songSpeedOffsets{ 0x10, 0x28, 0x38, 0x18, 0x4, 0x1C, 0x28 };
 
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;

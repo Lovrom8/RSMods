@@ -2,7 +2,7 @@
 
 #include <string>
 #include "CCEnums.hpp"
-#include <nlohmann\json.hpp>
+#include "../Lib/Json/json.hpp"
 
 using namespace CrowdControl::Enums;
 using nlohmann::json;
@@ -22,8 +22,8 @@ namespace CrowdControl::Structs {
 		std::string message;
 	};
 
-	void to_json(json& j, const Request& p);
-	void from_json(const json& j, Request& p);
-	void to_json(json& j, const Response& p);
-	void from_json(const json& j, Response& p);
+	extern void to_json(json& j, const Request& p);
+	extern void from_json(const json& j, Request& p);
+	extern void to_json(json& j, const Response& p);
+	extern void from_json(const json& j, Response& p);
 }

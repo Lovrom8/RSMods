@@ -17,6 +17,14 @@ namespace Offsets {
 	extern uintptr_t ptr_tuning;
 	extern std::vector<unsigned int> ptr_tuningOffsets;
 
+	// True Tuning
+	extern uintptr_t ptr_trueTuning;
+	extern std::vector<unsigned int> ptr_trueTuningOffsets;
+
+	// Tuning - Textual Form
+	extern uintptr_t ptr_tuningText;
+	extern std::vector<unsigned int> ptr_tuningTextOffsets;
+
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
 	extern uintptr_t ptr_guitarSpeak;
 	extern std::vector<unsigned int> ptr_guitarSpeakOffets;
@@ -82,6 +90,10 @@ namespace Offsets {
 	// Timer
 	extern uintptr_t ptr_timer;
 	extern std::vector<unsigned int> ptr_timerOffsets;
+
+	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
+	extern uintptr_t ptr_songSpeed;
+	extern std::vector<unsigned int> ptr_songSpeedOffsets;
 
 	// Colorblind Mode
 	extern uintptr_t ptr_colorBlindMode;

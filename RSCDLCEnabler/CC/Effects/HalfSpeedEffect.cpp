@@ -27,8 +27,7 @@ namespace CrowdControl::Effects {
 		Offsets::ref_scrollSpeedMultiplier = 2.5;
 		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, oldProtect, &oldProtect);
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
+		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

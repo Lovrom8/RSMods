@@ -1,11 +1,11 @@
-#include "DrunkModeEffect.hpp"
+#include "TurboSpeedEffect.hpp"
 
 using namespace CrowdControl::Enums;
 
-namespace CrowdControl::Effects { // Makes some of game's object very woobly (lyrics, backgrounds, etc.)
-	EffectResult DrunkModeEffect::Test(Request request)
+namespace CrowdControl::Effects {
+	EffectResult TurboSpeedEffect::Test(Request request)
 	{
-		std::cout << "DrunkModeEffect::Test()" << std::endl;
+		std::cout << "TurboSpeedEffect::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -13,17 +13,17 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		return EffectResult::Success;
 	}
 
-	EffectResult DrunkModeEffect::Start(Request request)
+	EffectResult TurboSpeedEffect::Start(Request request)
 	{
-		std::cout << "DrunkModeEffect::Start()" << std::endl;
+		std::cout << "TurboSpeedEffect::Start()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
 
 		running = true;
 
-		Settings::UpdateTwitchSetting("DrunkMode", "on");
-		MemHelpers::ToggleDrunkMode(true);
+		// TODO: check if it works correctly
+		MemHelpers::RiffRepeaterSpeed(200.0001f);
 
 		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -31,7 +31,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		return EffectResult::Success;
 	}
 
-	void DrunkModeEffect::Run()
+	void TurboSpeedEffect::Run()
 	{
 		// Stop automatically after duration has elapsed
 		if (running) {
@@ -42,13 +42,14 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		}
 	}
 
-	EffectResult DrunkModeEffect::Stop()
+	EffectResult TurboSpeedEffect::Stop()
 	{
-		std::cout << "DrunkModeEffect::Stop()" << std::endl;
+		std::cout << "TurboSpeedEffect::Stop()" << std::endl;
+
+		// TODO: check if it works correctly
+		MemHelpers::RiffRepeaterSpeed(100.0001f);
 
 		running = false;
-		MemHelpers::ToggleDrunkMode(false);
-		Settings::UpdateTwitchSetting("DrunkMode", "off");
 
 		return EffectResult::Success;
 	}

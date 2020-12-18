@@ -22,8 +22,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 
 		ScaleNotes(0);
 	
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
+		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;

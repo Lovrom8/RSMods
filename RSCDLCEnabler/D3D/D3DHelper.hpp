@@ -48,6 +48,19 @@ inline std::vector<std::string> tuningMenus = { // These are all the menus where
 	"PreGame_GETuner"
 };
 
+inline std::vector<std::string> preSongTuners = { // Tuning menus where we aren't in the song
+	"LearnASong_PreSongTuner",
+	"LearnASong_PreSongTunerMP",
+	"NonStopPlay_PreSongTuner",
+	"NonStopPlay_PreSongTunerMP",
+	"ScoreAttack_PreSongTuner",
+	"SessionMode_PreSMTunerMP",
+	"SessionMode_PreSMTuner",
+	"Duet_PreSongTuner",
+	"H2H_PreSongTuner",
+	"PreGame_GETuner"
+};
+
 inline std::vector<std::string> songModes = { // These are all the menus where you would play guitar games.
 	"LearnASong_Game",
 	"NonStopPlay_Game",

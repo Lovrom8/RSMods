@@ -71,8 +71,7 @@ namespace CrowdControl::Effects {
 		SaveInitialStringPos();
 		InvertStringPositions();
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
+		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 		return EffectResult::Success;
