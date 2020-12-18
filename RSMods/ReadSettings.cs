@@ -6,15 +6,13 @@ namespace RSMods
     class ReadSettings
     {
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
+                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey,
+                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
-                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
-                                                GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
+                             ExtendedRangeTuning, CheckForNewSongInterval,
+                             GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC, GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
 
                 // Song List Identifiers
@@ -34,7 +32,6 @@ namespace RSMods
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
                 ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
-                RRSpeedKeyIdentifier = "RRSpeedKey = ",
 
                 // Toggle Effects
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
@@ -44,7 +41,6 @@ namespace RSMods
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
                 RainbowStringsEnabledIdentifier = "RainbowStrings = ",
                 ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
-                ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
                 CustomStringColorNumberIndetifier = "CustomStringColors = ",
                 DiscoModeIdentifier = "DiscoMode = ",
                 RemoveHeadstockIdentifier = "Headstock = ",
@@ -61,11 +57,6 @@ namespace RSMods
                 GuitarSpeakIdentifier = "GuitarSpeak = ",
                 RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
                 ScreenShotScoresIdentifier = "ScreenShotScores = ",
-                RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
-                MidiAutoTuningIdentifier = "AutoTuneForSong = ",
-                MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
-                ChordsModeIdentifier = "ChordsMode = ",
-                ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -86,8 +77,6 @@ namespace RSMods
                 // Mod Settings
                 ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
-                RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
-                TuningPedalIdentifier = "TuningPedal = ",
 
                 // Guitar Speak
                 GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -229,15 +218,6 @@ namespace RSMods
                         if (identifierToGrab == RemoveLyricsKeyIdentifier)
                             return RemoveLyricsKey;
                     }
-                    
-                    if (currentLine.Contains(RRSpeedKeyIdentifier))
-                    {
-                        RRSpeedKey = currentLine.Substring(RRSpeedKeyIdentifier.Length, (currentLine.Length - RRSpeedKeyIdentifier.Length));
-                        if (KeyConversion.VirtualKey(RRSpeedKey) != "")
-                            RRSpeedKey = KeyConversion.VirtualKey(RRSpeedKey);
-                        if (identifierToGrab == RRSpeedKeyIdentifier)
-                            return RRSpeedKey;
-                    }
 
                     // Mods Enabled / Disabled
                     if (currentLine.Contains(ToggleLoftEnabledIdentifier))
@@ -311,16 +291,6 @@ namespace RSMods
 
                         if (identifierToGrab == ExtendedRangeEnabledIdentifier)
                             return ExtendedRangeEnabled;
-                    }
-                    if (currentLine.Contains(ExtendedRangeDropTuningIdentifier))
-                    {
-                        if (currentLine.Substring(ExtendedRangeDropTuningIdentifier.Length, (currentLine.Length - ExtendedRangeDropTuningIdentifier.Length)) == "on")
-                            ExtendedRangeDropTuning = "on";
-                        else
-                            ExtendedRangeDropTuning = "off";
-
-                        if (identifierToGrab == ExtendedRangeDropTuningIdentifier)
-                            return ExtendedRangeDropTuning;
                     }
                     if (currentLine.Contains(CustomStringColorNumberIndetifier))
                     {
@@ -485,58 +455,6 @@ namespace RSMods
                             return ScreenShotScores;
                     }
 
-                    if (currentLine.Contains(RiffRepeaterAboveHundredIdentifier))
-                    {
-                        if (currentLine.Substring(RiffRepeaterAboveHundredIdentifier.Length, (currentLine.Length - RiffRepeaterAboveHundredIdentifier.Length)) == "on")
-                            RiffRepeaterAboveHundred = "on";
-                        else
-                            RiffRepeaterAboveHundred = "off";
-
-                        if (identifierToGrab == RiffRepeaterAboveHundredIdentifier)
-                            return RiffRepeaterAboveHundred;
-                    }
-
-                    if (currentLine.Contains(MidiAutoTuningIdentifier))
-                    {
-                        if (currentLine.Substring(MidiAutoTuningIdentifier.Length, (currentLine.Length - MidiAutoTuningIdentifier.Length)) == "on")
-                            MidiAutoTuning = "on";
-                        else
-                            MidiAutoTuning = "off";
-
-                        if (identifierToGrab == MidiAutoTuningIdentifier)
-                            return MidiAutoTuning;
-                    }
-
-                    if (currentLine.Contains(MidiAutoTuningDeviceIdentifier))
-                    {
-                        MidiAutoTuningDevice = currentLine.Substring(MidiAutoTuningDeviceIdentifier.Length, (currentLine.Length - MidiAutoTuningDeviceIdentifier.Length));
-
-                        if (identifierToGrab == MidiAutoTuningDeviceIdentifier)
-                            return MidiAutoTuningDevice;
-                    }
-
-                    if (currentLine.Contains(ChordsModeIdentifier))
-                    {
-                        if (currentLine.Substring(ChordsModeIdentifier.Length, (currentLine.Length - ChordsModeIdentifier.Length)) == "on")
-                            ChordsMode = "on";
-                        else
-                            ChordsMode = "off";
-
-                        if (identifierToGrab == ChordsModeIdentifier)
-                            return ChordsMode;
-                    }
-
-                    if (currentLine.Contains(ShowCurrentNoteOnScreenIdentifier))
-                    {
-                        if (currentLine.Substring(ShowCurrentNoteOnScreenIdentifier.Length, (currentLine.Length - ShowCurrentNoteOnScreenIdentifier.Length)) == "on")
-                            ShowCurrentNoteOnScreen = "on";
-                        else
-                            ShowCurrentNoteOnScreen = "off";
-
-                        if (identifierToGrab == ShowCurrentNoteOnScreenIdentifier)
-                            return ShowCurrentNoteOnScreen;
-                    }
-
                     // String Colors (Normal {N} & Colorblind {CB})
 
                     // Normal Colors
@@ -635,29 +553,12 @@ namespace RSMods
                         if (identifierToGrab == ExtendedRangeTuningIdentifier)
                             return ExtendedRangeTuning;
                     }
-
                     if (currentLine.Contains(CheckForNewSongIntervalIdentifier))
                     {
                         CheckForNewSongInterval = currentLine.Substring(CheckForNewSongIntervalIdentifier.Length, (currentLine.Length - CheckForNewSongIntervalIdentifier.Length));
 
                         if (identifierToGrab == CheckForNewSongIntervalIdentifier)
                             return CheckForNewSongInterval;
-                    }
-
-                    if (currentLine.Contains(RiffRepeaterSpeedIntervalIdentifier))
-                    {
-                        RiffRepeaterSpeedInterval = currentLine.Substring(RiffRepeaterSpeedIntervalIdentifier.Length, (currentLine.Length - RiffRepeaterSpeedIntervalIdentifier.Length));
-
-                        if (identifierToGrab == RiffRepeaterSpeedIntervalIdentifier)
-                            return RiffRepeaterSpeedInterval;
-                    }
-
-                    if (currentLine.Contains(TuningPedalIdentifier))
-                    {
-                        TuningPedal = currentLine.Substring(TuningPedalIdentifier.Length, (currentLine.Length - TuningPedalIdentifier.Length));
-
-                        if (identifierToGrab == TuningPedalIdentifier)
-                            return TuningPedal;
                     }
 
                     // Guitar Speak

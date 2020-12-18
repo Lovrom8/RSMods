@@ -107,6 +107,7 @@ namespace RSMods
         public static void RemoveTempFolders()
         {
             ZipUtilities.DeleteDirectory(Constants.WorkFolder);
+            ZipUtilities.DeleteDirectory(Constants.CustomModsFolder);
         }
 
         public static void LoadDefaultFiles()
@@ -201,13 +202,14 @@ namespace RSMods
 
                         if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
                         {
-                            sw.Write(sw.NewLine);
                             sw.Write(index);
                             for (int i = 0; i < 7; i++)
                             {
                                 sw.Write(',');
                                 sw.Write(tuning.Item2);
                             }
+
+                            sw.Write(sw.NewLine);
                         }
                     }
                 }
@@ -239,22 +241,13 @@ namespace RSMods
 
         // Custom Menu Options Mod & Direct Mode Mod
 
-        public static void AddExitGameMenuOption()
-        {
-            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
-                UnpackCachePsarc();
-
-            ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
-            RepackCachePsarc();
-        }
-
-        public static void AddDirectConnectModeOption()
+        public static void AddCustomMenuOptions()
         {
             if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
 
             ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+            ZipUtilities.InjectFile(Constants.MainMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.MainMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
             RepackCachePsarc();
         }

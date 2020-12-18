@@ -37,7 +37,6 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, "" }, // Remove Lyrics Key
-                { ReadSettings.RRSpeedKeyIdentifier, "" } // Riff Repeater Above 100% key.
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -48,7 +47,6 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, "off" }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, "off" }, // Rainbow String Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, "off" }, // Extended Range Enabled / Disabled
-                { ReadSettings.ExtendedRangeDropTuningIdentifier, "off" }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
                 { ReadSettings.CustomStringColorNumberIndetifier, "0" }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
                 //{ ReadSettings.DiscoModeIdentifier, "off" }, // Disco Mode Enabled / Disabled
                 { ReadSettings.RemoveHeadstockIdentifier, "off" }, // Remove Headstock Enabled / Disabled
@@ -64,12 +62,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsWhenIdentifier, "manual" }, // When should we remove lyrics Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, "off" }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, "song" }, // Remove Headstock When Startup / Song
-                { ReadSettings.ScreenShotScoresIdentifier, "off" }, // Screenshot Scores When You Finish A Song
-                { ReadSettings.RiffRepeaterAboveHundredIdentifier, "off" }, // Allow the user to go above 100% speed in LAS Riff Repeater
-                { ReadSettings.MidiAutoTuningIdentifier, "off" }, // Should we be ready to send MIDI signals to a device.
-                { ReadSettings.MidiAutoTuningDeviceIdentifier, "" }, // Device we should send MIDI signals to.
-                { ReadSettings.ChordsModeIdentifier, "off" }, // Is the pedal using Chords Mode.
-                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off" } // Display Current Note Name
+                { ReadSettings.ScreenShotScoresIdentifier, "off" } // Screenshot Scores When You Finish A Song
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -91,8 +84,6 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
-                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1" }, // The rate of how much one key press should gain the Riff Repeater speed.
-                { ReadSettings.TuningPedalIdentifier, "" } // What tuning pedal does the user use?
             }},
 
             {"[Guitar Speak]", new Dictionary<string, string>
@@ -142,7 +133,6 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier) }, // Remove Lyrics Key
-                { ReadSettings.RRSpeedKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier) } // Riff Repeater Above 100% Key
             }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
@@ -153,7 +143,6 @@ namespace RSMods
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) }, // Rainbow String Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) }, // Extended Range Enabled / Disabled
-                { ReadSettings.ExtendedRangeDropTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeDropTuningIdentifier) }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
                 { ReadSettings.CustomStringColorNumberIndetifier, ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
                 //{ ReadSettings.DiscoModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DiscoModeIdentifier) }, // Disco Mode Enabled / Disabled
                 { ReadSettings.RemoveHeadstockIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockIdentifier) }, // Remove Headstock Enabled / Disabled
@@ -169,12 +158,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsWhenIdentifier) }, // Remove Song Lyrics When Manual / Automatic
                 { ReadSettings.GuitarSpeakIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakIdentifier) }, // Guitar Speak Enabled / Disabled
                 { ReadSettings.RemoveHeadstockWhenIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveHeadstockWhenIdentifier) }, // Remove Headstock When Startup / Song
-                { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }, // Screenshot Scores When You Finish A Song
-                { ReadSettings.RiffRepeaterAboveHundredIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterAboveHundredIdentifier) }, // Allow the user to go above 100% speed in LAS Riff Repeater
-                { ReadSettings.MidiAutoTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) }, // Should we be ready to send MIDI signals to a device.
-                { ReadSettings.MidiAutoTuningDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) }, // Device we should send MIDI signals to.
-                { ReadSettings.ChordsModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) }, // Is the pedal using Chords Mode.
-                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) }, // Display Current Note Name
+                { ReadSettings.ScreenShotScoresIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) }
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -196,8 +180,6 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier) }, // Enumerate new CDLC / ODLC every X ms
-                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier) }, // The rate of how much one key press should gain the Riff Repeater speed.
-                { ReadSettings.TuningPedalIdentifier, ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) } // What tuning pedal does the user use?
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {
