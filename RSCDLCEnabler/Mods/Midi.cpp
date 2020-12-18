@@ -136,6 +136,10 @@ namespace Midi {
 
 			int highestTuning = highestLowestTuning[0];
 			int lowestTuning = highestLowestTuning[1];
+
+			// Invalid pointer check
+			if (highestTuning == 666 && lowestTuning == 666)
+				return;
 			
 			delete[] highestLowestTuning;
 

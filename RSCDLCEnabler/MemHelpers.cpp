@@ -161,6 +161,11 @@ int* MemHelpers::GetHighestLowestString() {
 	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
 	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 
+	if (!songTuning) {
+		int* fakeReturns = new int[2]{ 666, 666 };
+		return fakeReturns;
+	}
+
 	// Get Highest And Lowest Strings
 	for (int i = 0; i < 6; i++) {
 
