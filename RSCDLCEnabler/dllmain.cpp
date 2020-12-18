@@ -154,9 +154,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
-
-			else if (keyPressed == VK_F9)
-				std::cout << GuitarSpeak::GetCurrentNoteName() << std::endl;
 			
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
@@ -412,6 +409,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 		else
 			useNewSongSpeed = false;
+
+		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"")
+			MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 3.87), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 4), (int)(WindowSize[1] / 8), pDevice);
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));

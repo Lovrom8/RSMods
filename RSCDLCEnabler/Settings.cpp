@@ -46,6 +46,7 @@ void Settings::Initialize()
 		{"AutoTuneForSong", "off"},
 		{"AutoTuneForSongDevice", ""},
 		{"ChordsMode", "off"},
+		{"ShowCurrentNoteOnScreen", "off"},
 	};
 
 	customSettings = {
@@ -181,6 +182,7 @@ void Settings::ReadModSettings() {
 	modSettings["AutoTuneForSong"] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
 	modSettings["ChordsMode"] = reader.GetValue("Toggle Switches", "ChordsMode", "off");
+	modSettings["ShowCurrentNoteOnScreen"] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
 }
 
 void Settings::ReadStringColors() {
