@@ -1374,7 +1374,7 @@ namespace RSMods
 
             MessageBoxManager.Yes = "Subs";
             MessageBoxManager.No = "Bits";
-            MessageBoxManager.Cancel = "Channel Points";
+            MessageBoxManager.Cancel = "Points";
             MessageBoxManager.Register();
 
             var dialogResult = MessageBox.Show("Do you wish to add selected reward for subs, bits, channel points?" + Environment.NewLine + "NOTE: changing the amount of subs won't have an effect, as sub \"bombs\" are sent separately!", "Subs or Bits or Channel points?", MessageBoxButtons.YesNoCancel);
