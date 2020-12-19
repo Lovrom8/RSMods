@@ -1683,7 +1683,7 @@ namespace RSMods
 
         private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
 
-        private void LoadFonts()
+        private void LoadFonts() // Not modified from here: https://stackoverflow.com/a/8657854 :eyes:
         {
             InstalledFontCollection fontList = new InstalledFontCollection();
             FontFamily[] fontFamilies = fontList.Families;
