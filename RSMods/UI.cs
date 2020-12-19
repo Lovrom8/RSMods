@@ -987,7 +987,7 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(button_AddExitGame, "Replaces UPLAY on the main menu with an EXIT GAME option.");
             Dictionaries.TooltipDictionary.Add(button_AddDCInput, "Adds the Direct Connect mode - microphone mode with tone simulations.");
             Dictionaries.TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
-            Dictionaries.TooltipDictionary.Add(button_AddFastLoad, "SSD drive or faster or may cause the game to not launch properly, skips some of the intro sequences.\nCombined with Auto Load Last Profile and huzzah!");
+            Dictionaries.TooltipDictionary.Add(button_AddFastLoad, "Requires: SSD drive or faster.\nSkips some of the intro sequences.\nThis may cause the game to not launch properly.\nCombined with Auto Load Last Profile and huzzah!");
 
             // Misc
             Dictionaries.TooltipDictionary.Add(button_RemoveTemp, "Removes the temporary files used by RSMods.");
