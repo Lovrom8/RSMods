@@ -1008,6 +1008,7 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(label_TwitchUsername, "Please take care to make sure none of these entries are shown on your stream.");
             Dictionaries.TooltipDictionary.Add(label_TwitchChannelID, "Please take care to make sure none of these entries are shown on your stream.");
             Dictionaries.TooltipDictionary.Add(label_TwitchAccessToken, "Please take care to make sure none of these entries are shown on your stream.");
+            Dictionaries.TooltipDictionary.Add(checkBox_RevealTwitchAuthToken, "Only reveal this when asked by RSMods developers.\nThis is how we look to see when events happen in your stream.");
 
         }
 
@@ -1285,6 +1286,8 @@ namespace RSMods
             label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
+            
             textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
 
             Binding listeningToTwitchBinding = new Binding("Text", TwitchSettings.Get, "Authorized");
@@ -1309,6 +1312,7 @@ namespace RSMods
 
             foreach (var enabledReward in TwitchSettings.Get.Rewards)
                 AddToSelectedRewards(enabledReward);
+
         }
 
         private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)

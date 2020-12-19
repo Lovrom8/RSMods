@@ -177,6 +177,7 @@
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
+            this.checkBox_RevealTwitchAuthToken = new System.Windows.Forms.CheckBox();
             this.button_SaveLogToFile = new System.Windows.Forms.Button();
             this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
             this.button_TestTwitchReward = new System.Windows.Forms.Button();
@@ -2151,6 +2152,7 @@
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
+            this.tab_Twitch.Controls.Add(this.checkBox_RevealTwitchAuthToken);
             this.tab_Twitch.Controls.Add(this.button_SaveLogToFile);
             this.tab_Twitch.Controls.Add(this.checkBox_TwitchForceReauth);
             this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
@@ -2180,6 +2182,17 @@
             this.tab_Twitch.Size = new System.Drawing.Size(1150, 513);
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot (Beta)";
+            // 
+            // checkBox_RevealTwitchAuthToken
+            // 
+            this.checkBox_RevealTwitchAuthToken.AutoSize = true;
+            this.checkBox_RevealTwitchAuthToken.Location = new System.Drawing.Point(541, 87);
+            this.checkBox_RevealTwitchAuthToken.Name = "checkBox_RevealTwitchAuthToken";
+            this.checkBox_RevealTwitchAuthToken.Size = new System.Drawing.Size(60, 17);
+            this.checkBox_RevealTwitchAuthToken.TabIndex = 126;
+            this.checkBox_RevealTwitchAuthToken.Text = "Reveal";
+            this.checkBox_RevealTwitchAuthToken.UseVisualStyleBackColor = true;
+            this.checkBox_RevealTwitchAuthToken.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_SaveLogToFile
             // 
@@ -2290,8 +2303,8 @@
             this.dgv_EnabledRewards.TabIndex = 116;
             this.dgv_EnabledRewards.Visible = false;
             this.dgv_EnabledRewards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_EnabledRewards_CellEndEdit);
-            this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.dgv_EnabledRewards_SelectionChanged);
             this.dgv_EnabledRewards.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgv_EnabledRewards_CurrentCellDirtyStateChanged);
+            this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.dgv_EnabledRewards_SelectionChanged);
             // 
             // colEnabledRewardsEnabled
             // 
@@ -2863,6 +2876,7 @@
         private System.Windows.Forms.Label label_SettingsSaved;
         private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
         private System.Windows.Forms.CheckBox checkBox_ShowCurrentNote;
+        private System.Windows.Forms.CheckBox checkBox_RevealTwitchAuthToken;
     }
 }
 
