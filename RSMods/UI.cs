@@ -1242,6 +1242,12 @@ namespace RSMods
             TwitchSettings.Get.LoadEnabledEffects();
         }
 
+        private void scrollTwitchLog(object sender, EventArgs e)
+        {
+            textBox_TwitchLog.SelectionStart = textBox_TwitchLog.TextLength;
+            textBox_TwitchLog.ScrollToCaret();
+        }
+
         private void CheckForTurboSpeed(TwitchReward selectedReward)
         {
             if (selectedReward.Name.Contains("TurboSpeed"))

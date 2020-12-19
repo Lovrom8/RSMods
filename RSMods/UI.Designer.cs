@@ -2359,6 +2359,7 @@
             this.textBox_TwitchLog.Size = new System.Drawing.Size(256, 221);
             this.textBox_TwitchLog.TabIndex = 114;
             this.textBox_TwitchLog.Visible = false;
+            this.textBox_TwitchLog.TextChanged += new System.EventHandler(this.scrollTwitchLog);
             // 
             // label_IsListeningToEvents
             // 
