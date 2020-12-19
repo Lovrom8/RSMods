@@ -1440,6 +1440,15 @@ namespace RSMods
             return selectedReward;
         }
 
+        private void dgv_EnabledRewards_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_EnabledRewards.IsCurrentCellDirty && dgv_EnabledRewards.CurrentCell.ColumnIndex == 0 && dgv_EnabledRewards.CurrentCell.RowIndex != -1)
+            {
+                dgv_EnabledRewards.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                dgv_EnabledRewards.EndEdit();
+            }
+        }
+
         private void dgv_EnabledRewards_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             var selectedRow = dgv_EnabledRewards.SelectedRows[0];

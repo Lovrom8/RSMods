@@ -2291,6 +2291,7 @@
             this.dgv_EnabledRewards.Visible = false;
             this.dgv_EnabledRewards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_EnabledRewards_CellEndEdit);
             this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.dgv_EnabledRewards_SelectionChanged);
+            this.dgv_EnabledRewards.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgv_EnabledRewards_CurrentCellDirtyStateChanged);
             // 
             // colEnabledRewardsEnabled
             // 
