@@ -2189,6 +2189,7 @@
             this.button_SaveLogToFile.TabIndex = 125;
             this.button_SaveLogToFile.Text = "Save log to file";
             this.button_SaveLogToFile.UseVisualStyleBackColor = true;
+            this.button_SaveLogToFile.Visible = false;
             this.button_SaveLogToFile.Click += new System.EventHandler(this.button_SaveLogToFile_Click);
             // 
             // checkBox_TwitchForceReauth
@@ -2210,6 +2211,7 @@
             this.button_TestTwitchReward.TabIndex = 123;
             this.button_TestTwitchReward.Text = "Test reward";
             this.button_TestTwitchReward.UseVisualStyleBackColor = true;
+            this.button_TestTwitchReward.Visible = false;
             this.button_TestTwitchReward.Click += new System.EventHandler(this.TestTwitchReward_Click);
             // 
             // button_SolidNoteColorRandom
