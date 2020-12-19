@@ -69,7 +69,8 @@ namespace RSMods
                 { ReadSettings.MidiAutoTuningIdentifier, "off" }, // Should we be ready to send MIDI signals to a device.
                 { ReadSettings.MidiAutoTuningDeviceIdentifier, "" }, // Device we should send MIDI signals to.
                 { ReadSettings.ChordsModeIdentifier, "off" }, // Is the pedal using Chords Mode.
-                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off" } // Display Current Note Name
+                { ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off" }, // Display Current Note Name
+                { ReadSettings.OnScreenFontIdentifier, "Arial" }, // Font to use when we show text over Rocksmith
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -175,6 +176,7 @@ namespace RSMods
                 { ReadSettings.MidiAutoTuningDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) }, // Device we should send MIDI signals to.
                 { ReadSettings.ChordsModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) }, // Is the pedal using Chords Mode.
                 { ReadSettings.ShowCurrentNoteOnScreenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) }, // Display Current Note Name
+                { ReadSettings.OnScreenFontIdentifier, ReadSettings.ProcessSettings(ReadSettings.OnScreenFontIdentifier) }, // Font to use when we show text over Rocksmith
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

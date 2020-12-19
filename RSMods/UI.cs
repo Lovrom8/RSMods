@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Drawing;
+using System.Drawing.Text;
 using RSMods.Data;
 using RSMods.Util;
 using System.Reflection;
@@ -86,6 +87,9 @@ namespace RSMods
 
             // Load Set And Forget Mods
             LoadSetAndForgetMods();
+
+            // Load all System Fonts
+            LoadFonts();
         }
 
         private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.refreshSonglistOrSavedKeysForModTogglesLists("savedKeysForModToggles")[listBox_Modlist.SelectedIndex];
@@ -955,6 +959,7 @@ namespace RSMods
             Dictionaries.TooltipDictionary.Add(groupBox_MidiAutoTuneDevice, "Select the MIDI device that goes to your drop tuning pedal.\nWe will send a signal to the pedal to try to automatically tune it.");
             Dictionaries.TooltipDictionary.Add(checkBox_WhammyChordsMode, "If you are using the Whammy or Whammy Bass.\nAre you using the pedal in Chords Mode or Classic Mode.\nClassic Mode = UnChecked, Chords Mode = Checked.");
             Dictionaries.TooltipDictionary.Add(checkBox_ExtendedRangeDrop, "By default we require a song to be in standard to trigger Extended Range.\nTurn this on if you want drop tunings to also trigger Extended Range.\n(Ex: If you drop at B, but are playing Drop B, this checkbox will trigger Extended Range Mode)");
+            Dictionaries.TooltipDictionary.Add(groupBox_OnScreenFont, "If RSMods needs to show text in game, what font should we use?");
 
             // Misc
             Dictionaries.TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
@@ -1677,6 +1682,30 @@ namespace RSMods
         private void checkBox_ExtendedRangeDrop_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeDropTuningIdentifier, checkBox_ExtendedRangeDrop.Checked.ToString().ToLower());
 
         private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
+
+        private void LoadFonts()
+        {
+            InstalledFontCollection fontList = new InstalledFontCollection();
+            FontFamily[] fontFamilies = fontList.Families;
+
+            foreach (FontFamily font in fontFamilies)
+            {
+                listBox_AvailableFonts.Items.Add(font.Name);
+            }
+
+            listBox_AvailableFonts.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.OnScreenFontIdentifier);
+        }
+
+        private void ChangeOnScreenFont(object sender, EventArgs e)
+        {
+            string fontName = listBox_AvailableFonts.SelectedItem.ToString();
+            Font newFontSelected = new Font(fontName, 10.0f, Font.Style, Font.Unit);
+            label_FontTestCAPITALS.Font = newFontSelected;
+            label_FontTestlowercase.Font = newFontSelected;
+            label_FontTestNumbers.Font = newFontSelected;
+
+            SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
+        }
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {

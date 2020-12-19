@@ -10,7 +10,7 @@ namespace RSMods
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen,
+                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -66,6 +66,7 @@ namespace RSMods
                 MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
                 ChordsModeIdentifier = "ChordsMode = ",
                 ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
+                OnScreenFontIdentifier = "OnScreenFont = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -535,6 +536,14 @@ namespace RSMods
 
                         if (identifierToGrab == ShowCurrentNoteOnScreenIdentifier)
                             return ShowCurrentNoteOnScreen;
+                    }
+
+                    if (currentLine.Contains(OnScreenFontIdentifier))
+                    {
+                        OnScreenFont = currentLine.Substring(OnScreenFontIdentifier.Length, (currentLine.Length - OnScreenFontIdentifier.Length));
+
+                        if (identifierToGrab == OnScreenFontIdentifier)
+                            return OnScreenFont;
                     }
 
                     // String Colors (Normal {N} & Colorblind {CB})

@@ -167,6 +167,8 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
+            this.listBox_AvailableFonts = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
             this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
             this.radio_WhammyORBass = new System.Windows.Forms.RadioButton();
@@ -219,6 +221,9 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
+            this.label_FontTestlowercase = new System.Windows.Forms.Label();
+            this.label_FontTestNumbers = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -245,6 +250,7 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.groupBox_OnScreenFont.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
@@ -1757,7 +1763,7 @@
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakKeypress);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakOctave);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakNote);
-            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(383, 19);
+            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(341, 19);
             this.groupBox_GuitarSpeak.Name = "groupBox_GuitarSpeak";
             this.groupBox_GuitarSpeak.Size = new System.Drawing.Size(291, 354);
             this.groupBox_GuitarSpeak.TabIndex = 71;
@@ -2015,6 +2021,7 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.tab_ModSettings.Controls.Add(this.groupBox_OnScreenFont);
             this.tab_ModSettings.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
             this.tab_ModSettings.Controls.Add(this.button_ResetModsToDefault);
@@ -2032,6 +2039,29 @@
             this.tab_ModSettings.Size = new System.Drawing.Size(1150, 513);
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
+            // 
+            // groupBox_OnScreenFont
+            // 
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestNumbers);
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestlowercase);
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestCAPITALS);
+            this.groupBox_OnScreenFont.Controls.Add(this.listBox_AvailableFonts);
+            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(341, 393);
+            this.groupBox_OnScreenFont.Name = "groupBox_OnScreenFont";
+            this.groupBox_OnScreenFont.Size = new System.Drawing.Size(353, 114);
+            this.groupBox_OnScreenFont.TabIndex = 100003;
+            this.groupBox_OnScreenFont.TabStop = false;
+            this.groupBox_OnScreenFont.Text = "On Screen Font";
+            this.groupBox_OnScreenFont.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // listBox_AvailableFonts
+            // 
+            this.listBox_AvailableFonts.FormattingEnabled = true;
+            this.listBox_AvailableFonts.Location = new System.Drawing.Point(9, 20);
+            this.listBox_AvailableFonts.Name = "listBox_AvailableFonts";
+            this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
+            this.listBox_AvailableFonts.TabIndex = 0;
+            this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.ChangeOnScreenFont);
             // 
             // groupBox_MidiAutoTuneDevice
             // 
@@ -2613,6 +2643,36 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // label_FontTestCAPITALS
+            // 
+            this.label_FontTestCAPITALS.AutoSize = true;
+            this.label_FontTestCAPITALS.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestCAPITALS.Location = new System.Drawing.Point(189, 15);
+            this.label_FontTestCAPITALS.Name = "label_FontTestCAPITALS";
+            this.label_FontTestCAPITALS.Size = new System.Drawing.Size(77, 68);
+            this.label_FontTestCAPITALS.TabIndex = 1;
+            this.label_FontTestCAPITALS.Text = "ABCDEFG\r\nHIJKLMN\r\nOPQRSTU\r\nVWXYZ\r\n";
+            // 
+            // label_FontTestlowercase
+            // 
+            this.label_FontTestlowercase.AutoSize = true;
+            this.label_FontTestlowercase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestlowercase.Location = new System.Drawing.Point(268, 15);
+            this.label_FontTestlowercase.Name = "label_FontTestlowercase";
+            this.label_FontTestlowercase.Size = new System.Drawing.Size(59, 68);
+            this.label_FontTestlowercase.TabIndex = 2;
+            this.label_FontTestlowercase.Text = "abcdefg\r\nhijklmn\r\nopqrstu\r\nvwxyz";
+            // 
+            // label_FontTestNumbers
+            // 
+            this.label_FontTestNumbers.AutoSize = true;
+            this.label_FontTestNumbers.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestNumbers.Location = new System.Drawing.Point(203, 92);
+            this.label_FontTestNumbers.Name = "label_FontTestNumbers";
+            this.label_FontTestNumbers.Size = new System.Drawing.Size(88, 17);
+            this.label_FontTestNumbers.TabIndex = 3;
+            this.label_FontTestNumbers.Text = "1234567890";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2666,6 +2726,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.groupBox_OnScreenFont.ResumeLayout(false);
+            this.groupBox_OnScreenFont.PerformLayout();
             this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.groupBox_RRSpeed.ResumeLayout(false);
@@ -2877,6 +2939,11 @@
         private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
         private System.Windows.Forms.CheckBox checkBox_ShowCurrentNote;
         private System.Windows.Forms.CheckBox checkBox_RevealTwitchAuthToken;
+        private System.Windows.Forms.GroupBox groupBox_OnScreenFont;
+        private System.Windows.Forms.ListBox listBox_AvailableFonts;
+        private System.Windows.Forms.Label label_FontTestNumbers;
+        private System.Windows.Forms.Label label_FontTestlowercase;
+        private System.Windows.Forms.Label label_FontTestCAPITALS;
     }
 }
 
