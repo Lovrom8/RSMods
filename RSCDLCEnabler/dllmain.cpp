@@ -410,8 +410,13 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		else
 			useNewSongSpeed = false;
 
-		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"")
-			MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 3.87), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 4), (int)(WindowSize[1] / 8), pDevice);
+		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") {
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
+				MemHelpers::DX9DrawText(GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 5.5), (int)(WindowSize[1] / 1.75), (int)(WindowSize[0] / 5.75), (int)(WindowSize[1] / 8), pDevice);
+			else
+				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 3.87), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 4), (int)(WindowSize[1] / 8), pDevice);
+		}
+			
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
