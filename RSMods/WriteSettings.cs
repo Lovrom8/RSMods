@@ -98,20 +98,20 @@ namespace RSMods
 
             {"[Guitar Speak]", new Dictionary<string, string>
             {
-                { ReadSettings.GuitarSpeakDeleteIdentifier, "" }, // Guitar Speak Press Delete When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakSpaceIdentifier, "" }, // Guitar Speak Press Space " " When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakEnterIdentifier, "" }, // Guitar Speak Press Enter / Return When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakTabIdentifier, "" }, // Guitar Speak Press Tab When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakPGUPIdentifier, "" }, // Guitar Speak Press Page Up When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakPGDNIdentifier, "" }, // Guitar Speak Press Page Down When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakUPIdentifier, "" }, // Guitar Speak Press Up Arrow When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakDNIdentifier, "" }, // Guitar Speak Press Down Arrow When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakESCIdentifier, "" }, // Guitar Speak Press Escape When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakCloseIdentifier, "" }, // Stop using Guitar Speak when Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakOBracketIdentifier, "" }, // Guitar Speak Press Open Bracket "{" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakCBracketIdentifier, "" }, // Guitar Speak Press Close Bracket "}" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakTildeaIdentifier, "" }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakForSlashIdentifier, "" }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-2} - 96{C6})
+                { ReadSettings.GuitarSpeakDeleteIdentifier, "" }, // Guitar Speak Press Delete When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakSpaceIdentifier, "" }, // Guitar Speak Press Space " " When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakEnterIdentifier, "" }, // Guitar Speak Press Enter / Return When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakTabIdentifier, "" }, // Guitar Speak Press Tab When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakPGUPIdentifier, "" }, // Guitar Speak Press Page Up When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakPGDNIdentifier, "" }, // Guitar Speak Press Page Down When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakUPIdentifier, "" }, // Guitar Speak Press Up Arrow When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakDNIdentifier, "" }, // Guitar Speak Press Down Arrow When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakESCIdentifier, "" }, // Guitar Speak Press Escape When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakCloseIdentifier, "" }, // Stop using Guitar Speak when Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakOBracketIdentifier, "" }, // Guitar Speak Press Open Bracket "{" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakCBracketIdentifier, "" }, // Guitar Speak Press Close Bracket "}" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakTildeaIdentifier, "" }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakForSlashIdentifier, "" }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTuningIdentifier, "off" }, // Use Guitar Speak in Tuning Menus
             }},
             {"[GUI Settings]", new Dictionary<string, string>
@@ -202,20 +202,20 @@ namespace RSMods
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {
-                { ReadSettings.GuitarSpeakDeleteIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier) }, // Guitar Speak Press Delete When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakSpaceIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier) }, // Guitar Speak Press Space " " When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakEnterIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier) }, // Guitar Speak Press Enter / Return When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakTabIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier) }, // Guitar Speak Press Tab When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakPGUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier) }, // Guitar Speak Press Page Up When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakPGDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier) }, // Guitar Speak Press Page Down When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier) }, // Guitar Speak Press Up Arrow When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier) }, // Guitar Speak Press Down Arrow When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakESCIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier) }, // Guitar Speak Press Escape When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakCloseIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier) }, // Stop using Guitar Speak when Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakOBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier) }, // Guitar Speak Press Open Bracket "{" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakCBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier) }, // Guitar Speak Press Close Bracket "}" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakTildeaIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier) }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-2} - 96{C6})
-                { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-2} - 96{C6})
+                { ReadSettings.GuitarSpeakDeleteIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier) }, // Guitar Speak Press Delete When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakSpaceIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier) }, // Guitar Speak Press Space " " When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakEnterIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier) }, // Guitar Speak Press Enter / Return When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakTabIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier) }, // Guitar Speak Press Tab When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakPGUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier) }, // Guitar Speak Press Page Up When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakPGDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier) }, // Guitar Speak Press Page Down When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakUPIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier) }, // Guitar Speak Press Up Arrow When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakDNIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier) }, // Guitar Speak Press Down Arrow When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakESCIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier) }, // Guitar Speak Press Escape When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakCloseIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier) }, // Stop using Guitar Speak when Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakOBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier) }, // Guitar Speak Press Open Bracket "{" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakCBracketIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier) }, // Guitar Speak Press Close Bracket "}" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakTildeaIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier) }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },  // Use Guitar Speak in Tuning Menus
             }},
             {"[GUI Settings]", new Dictionary<string, string>

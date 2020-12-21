@@ -112,36 +112,31 @@ namespace RSMods
 
         public static List<string> savedKeysForModToggles = new List<string>();
 
-        public static List<string> refreshSonglistOrSavedKeysForModTogglesLists(string modToRefresh)
+        public static List<string> refreshKeybindingList()
         {
-            if (modToRefresh == "savedKeysForModToggles")
-            {
-                savedKeysForModToggles.Clear();
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
-                return savedKeysForModToggles;
-            }
+            savedKeysForModToggles.Clear();
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
+            return savedKeysForModToggles;
+        }
 
-            else if (modToRefresh == "songlists")
-            {
-                songlists.Clear();
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
-                return songlists;
-            }
-            List<string> emptyList = new List<string>();
-            return emptyList;
+        public static List<string> refreshSonglists()
+        {
+            songlists.Clear();
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier));
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier));
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier));
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier));
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
+            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
+            return songlists;
         }
 
     }

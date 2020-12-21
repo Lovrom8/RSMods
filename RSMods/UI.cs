@@ -27,45 +27,30 @@ namespace RSMods
 
         public MainForm()
         {
-            string RSFolder = GenUtil.GetRSDirectory();
-            if (RSFolder == String.Empty)
-            {
-                MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
-                return;
-            }
-            else
-                Constants.RSFolder = RSFolder;
+
+            // Locate Rocksmith Folder
+            LocateRocksmith(GenUtil.GetRSDirectory());
 
             // Check if the GUI settings, and DLL settings already exist
-            WriteSettings.IsVoid(GenUtil.GetRSDirectory());
-            if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
-
-            if (!File.Exists(Constants.SettingsPath))
-                File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
+            VerifyGUIInstall();
 
             // Load saved credidentials and enable PubSub
             LoadTwitchSettings();
 
             // Initialize WinForms
-            InitializeComponent();
-            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}"; // Show version number in the title of the application.
+            InitWinForms();
 
             // Setup bindings for Twitch events
             SetupTwitchTab();
 
-            // Fix Songlist Bug
-            if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == String.Empty)
-                SaveChanges(ReadSettings.Songlist1Identifier, "Define Song List 1 Here");
+            // Fix Legacy Songlist Bug
+            FixLegacySonglistBug();
 
             // Fill Songlist List
-            foreach (string songlist in Dictionaries.refreshSonglistOrSavedKeysForModTogglesLists("songlists"))
-                listBox_Songlist.Items.Add(songlist);
+            LoadSonglists();
 
-            // Fill Modlist List
-            foreach (string mod in Dictionaries.currentModKeypressList)
-                listBox_Modlist.Items.Add(mod);
+            // Fill Keybindings List (Fill list box)
+            LoadKeybindingModNames();
 
             // Load Keybinding Values
             ShowCurrentKeybindingValues();
@@ -88,11 +73,58 @@ namespace RSMods
             // Load Set And Forget Mods
             LoadSetAndForgetMods();
 
-            // Load all System Fonts
+            // Load All System Fonts
             LoadFonts();
         }
 
-        private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.refreshSonglistOrSavedKeysForModTogglesLists("savedKeysForModToggles")[listBox_Modlist.SelectedIndex];
+        private void ModList_SelectedIndexChanged(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.refreshKeybindingList()[listBox_Modlist.SelectedIndex];
+
+        #region Startup Functions
+
+        private void InitWinForms()
+        {
+            InitializeComponent();
+            Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}"; // Show version number in the title of the application.
+        }
+
+        private void FixLegacySonglistBug()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == String.Empty)
+                SaveChanges(ReadSettings.Songlist1Identifier, "Define Song List 1 Here");
+        }
+
+        private void LocateRocksmith(string RSFolder)
+        {
+            
+            if (RSFolder == String.Empty)
+            {
+                MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
+            else
+                Constants.RSFolder = RSFolder;
+        }
+        private void VerifyGUIInstall()
+        {
+            WriteSettings.IsVoid(GenUtil.GetRSDirectory());
+            if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
+                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
+
+            if (!File.Exists(Constants.SettingsPath))
+                File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
+        }
+
+        private void LoadSonglists()
+        {
+            foreach (string songlist in Dictionaries.refreshSonglists())
+                listBox_Songlist.Items.Add(songlist);
+        }
+
+        private void LoadKeybindingModNames()
+        {
+            foreach (string mod in Dictionaries.currentModKeypressList)
+                listBox_Modlist.Items.Add(mod);
+        }
 
         private void LoadModSettings()
         {
@@ -107,6 +139,19 @@ namespace RSMods
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(ExtendedRangeTunings_SelectedIndexChanged);
             nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(EnumerateEveryXMS_ValueChanged);
+        }
+
+        private void ShowCurrentKeybindingValues()
+        {
+            label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
+            label_AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
+            label_DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
+            label_ChangeSelectedVolumeKey.Text = "Change Selected Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
+            label_SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
+            label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
+            label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
+            label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
+            label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
         }
 
         private void RefreshModsSelections()
@@ -276,6 +321,9 @@ namespace RSMods
                 checkBox_ShowCurrentNote.Checked = true;
         }
 
+        #endregion
+        #region Custom Themes
+
         // Not taken from here :O https://stackoverflow.com/a/3419209
         private List<Control> ControlList = new List<Control>(); // Don't make this readonly
         private void GetAllControls(Control container)
@@ -305,6 +353,56 @@ namespace RSMods
             dgv_DefaultRewards.ForeColor = textColor;
         }
 
+        private void LoadCustomThemeColors()
+        {
+            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
+            {
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
+
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
+                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+            }
+
+            textBox_ChangeBackgroundColor.BackColor = backColor;
+            textBox_ChangeTextColor.BackColor = foreColor;
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // User wants to use a custom theme
+            {
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
+                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
+
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
+                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+            }
+
+            ChangeTheme(backColor, foreColor);
+        }
+
+        private void ChangeThemeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_ChangeTheme.Checked) // We turn ChangeTheme on.
+            {
+                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "on");
+                groupBox_ChangeTheme.Visible = true;
+            }
+            else // We turn ChangeTheme off.
+            {
+                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
+                groupBox_ChangeTheme.Visible = false;
+                ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
+            }
+        }
+
+        #endregion
+        #region Prep For Save
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
@@ -361,7 +459,8 @@ namespace RSMods
             newForm.Closed += (s, args) => Close();
             newForm.Show();
         }
-
+        #endregion
+        #region Save Settings
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
@@ -395,6 +494,53 @@ namespace RSMods
             timer.Tick += (source, e) => { label_SettingsSaved.Visible = false; timer.Stop(); };
             timer.Start();
         }
+
+        private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
+        {
+            string currentTab = TabController.SelectedTab.Text.ToString();
+
+            if (currentTab == "Song Lists")
+            {
+                foreach (KeyValuePair<int, string> currentSongList in Dictionaries.SongListIndexToINISetting)
+                {
+                    if (textBox_NewSonglistName.Text.Trim() == "") // The game UI will break with a blank name.
+                    {
+                        MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                    }
+
+                    else if (currentSongList.Key == listBox_Songlist.SelectedIndex)
+                    {
+                        SaveChanges(currentSongList.Value, textBox_NewSonglistName.Text);
+                        listBox_Songlist.Items[currentSongList.Key] = textBox_NewSonglistName.Text;
+                        break;
+                    };
+                }
+            }
+
+            if (currentTab == "Keybindings")
+            {
+                foreach (KeyValuePair<int, string> currentKeybinding in Dictionaries.KeybindingsIndexToINISetting)
+                {
+                    if (textBox_NewKeyAssignment.Text == "")
+                    {
+                        MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                    }
+
+                    else if (currentKeybinding.Key == listBox_Modlist.SelectedIndex)
+                    {
+                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(textBox_NewKeyAssignment.Text));
+                        break;
+                    }
+                }
+
+                textBox_NewKeyAssignment.Text = String.Empty;
+            }
+            ShowCurrentKeybindingValues();
+        }
+        #endregion
+        #region String Colors
 
         private void ChangeStringColorButton_Click(object sender, EventArgs e)
         {
@@ -467,27 +613,12 @@ namespace RSMods
                 WriteSettings.WriteINI(WriteSettings.Settings);
         }
 
-        private void LoadCustomThemeColors()
-        {
-            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
-
-            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
-            {
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
-                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
-
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
-                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
-            }
-
-            textBox_ChangeBackgroundColor.BackColor = backColor;
-            textBox_ChangeTextColor.BackColor = foreColor;
-        }
-
         private void DefaultStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors();
 
         private void ColorBlindStringColorsRadio_CheckedChanged(object sender, EventArgs e) => LoadDefaultStringColors(true);
 
+        #endregion
+        #region Prep Set And Forget Mods
         // SetAndForget Mods
 
         private void FillUI()
@@ -513,6 +644,13 @@ namespace RSMods
 
             return tuningDefinition;
         }
+        private void LoadSetAndForgetMods()
+        {
+            SetAndForgetMods.LoadDefaultFiles();
+            FillUI();
+        }
+        #endregion
+        #region Set And Forget UI Functions
 
         private void BtnRestoreDefaults_Click(object sender, EventArgs e)
         {
@@ -525,12 +663,6 @@ namespace RSMods
         private void BtnAddCustomTunings_Click(object sender, EventArgs e) => SetAndForgetMods.AddCustomTunings();
 
         private void BtnAddFastLoadMod_Click(object sender, EventArgs e) => SetAndForgetMods.AddFastLoadMod();
-
-        private void LoadSetAndForgetMods()
-        {
-            SetAndForgetMods.LoadDefaultFiles();
-            FillUI();
-        }
 
         private void ListTunings_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -655,50 +787,8 @@ namespace RSMods
                 FillUI();
         }
 
-        private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
-        {
-            string currentTab = TabController.SelectedTab.Text.ToString();
-
-            if (currentTab == "Song Lists")
-            {
-                foreach (KeyValuePair<int, string> currentSongList in Dictionaries.SongListIndexToINISetting)
-                {
-                    if (textBox_NewSonglistName.Text.Trim() == "") // The game UI will break with a blank name.
-                    {
-                        MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                    }
-
-                    else if (currentSongList.Key == listBox_Songlist.SelectedIndex)
-                    {
-                        SaveChanges(currentSongList.Value, textBox_NewSonglistName.Text);
-                        listBox_Songlist.Items[currentSongList.Key] = textBox_NewSonglistName.Text;
-                        break;
-                    };
-                }
-            }
-
-            if (currentTab == "Keybindings")
-            {
-                foreach (KeyValuePair<int, string> currentKeybinding in Dictionaries.KeybindingsIndexToINISetting)
-                {
-                    if (textBox_NewKeyAssignment.Text == "")
-                    {
-                        MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                    }
-
-                    else if (currentKeybinding.Key == listBox_Modlist.SelectedIndex)
-                    {
-                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(textBox_NewKeyAssignment.Text));
-                        break;
-                    }
-                }
-
-                textBox_NewKeyAssignment.Text = String.Empty;
-            }
-            ShowCurrentKeybindingValues();
-        }
+        #endregion
+        #region Enable / Disable Mods UI Functions
 
         private void ToggleLoftCheckbox_CheckedChanged(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
         {
@@ -799,6 +889,7 @@ namespace RSMods
                 groupBox_StringColors.Visible = false;
             }
         }
+
         // private void DiscoModeCheckbox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.DiscoModeIdentifier, DiscoModeCheckbox.Checked.ToString().ToLower());
 
         private void HeadstockCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -886,19 +977,6 @@ namespace RSMods
             ShowCurrentKeybindingValues();
         }
 
-        private void ShowCurrentKeybindingValues()
-        {
-            label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
-            label_AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
-            label_DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
-            label_ChangeSelectedVolumeKey.Text = "Change Selected Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
-            label_SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
-            label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
-            label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
-            label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
-            label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
-        }
-
         private void RemoveLyricsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_RemoveLyrics.Checked)
@@ -918,6 +996,116 @@ namespace RSMods
             }
         }
 
+        private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox_Songlist.SelectedIndex >= 0)
+                textBox_NewSonglistName.Text = listBox_Songlist.SelectedItem.ToString();
+        }
+
+        private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radio_LyricsAlwaysOff.Checked)
+                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "startup");
+        }
+
+        private void ToggleLyricsManualRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radio_LyricsOffHotkey.Checked)
+                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
+        }
+
+        private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_ControlVolume.Checked)
+            {
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "on");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "on");
+            }
+            else
+            {
+                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "off");
+                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "off");
+            }
+        }
+
+        private void HeadstockOffInSongOnlyButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radio_HeadstockOffInSong.Checked)
+                SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
+        }
+
+        private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultBackgroundColor
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUIBackgroundColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeBackgroundColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void Button_ChangeTextColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultTextColor
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUITextColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeTextColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void Button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+
+
+        private void nUpDown_RiffRepeaterSpeed_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
+
+        private void checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.RiffRepeaterAboveHundredIdentifier, checkBox_RiffRepeaterSpeedAboveOneHundred.Checked.ToString().ToLower());
+            groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
+        }
+
+        private void checkBox_useMidiAutoTuning_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
+            groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
+        }
+        private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox_ListMidiDevices.SelectedIndex != -1)
+            {
+                SaveChanges(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
+                label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
+            }
+        }
+
+        private void radio_WhammyDT_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.TuningPedalIdentifier, "1");
+
+        private void radio_WhammyORBass_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.TuningPedalIdentifier, "2");
+            checkBox_WhammyChordsMode.Visible = radio_WhammyORBass.Checked;
+        }
+
+        private void checkBox_WhammyChordsMode_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
+
+        private void checkBox_ExtendedRangeDrop_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeDropTuningIdentifier, checkBox_ExtendedRangeDrop.Checked.ToString().ToLower());
+
+        private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
+        #endregion
+        #region Tooltips
         private void FillToolTipDictionary()
         {
             // INI Edits
@@ -1053,24 +1241,8 @@ namespace RSMods
             }
         }
 
-        private void Songlist_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listBox_Songlist.SelectedIndex >= 0)
-                textBox_NewSonglistName.Text = listBox_Songlist.SelectedItem.ToString();
-        }
-
-        private void ToggleLyricsRadio_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radio_LyricsAlwaysOff.Checked)
-                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "startup");
-        }
-
-        private void ToggleLyricsManualRadio_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radio_LyricsOffHotkey.Checked)
-                SaveChanges(ReadSettings.RemoveLyricsWhenIdentifier, "manual");
-        }
-
+        #endregion
+        #region Guitar Speak Functions
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
             if (listBox_GuitarSpeakNote.SelectedIndex >= 0 && listBox_GuitarSpeakOctave.SelectedIndex >= 0 && listBox_GuitarSpeakKeypress.SelectedIndex >= 0)
@@ -1162,19 +1334,7 @@ namespace RSMods
             }
         }
 
-        private void VolumeControlsCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_ControlVolume.Checked)
-            {
-                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "on");
-                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "on");
-            }
-            else
-            {
-                SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, "off");
-                SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, "off");
-            }
-        }
+        
 
         private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkbox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
 
@@ -1185,12 +1345,6 @@ namespace RSMods
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "startup");
         }
 
-        private void HeadstockOffInSongOnlyButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radio_HeadstockOffInSong.Checked)
-                SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
-        }
-
         private void RefreshGuitarSpeakPresets()
         {
             listBox_GuitarSpeakPresets.Items.Clear();
@@ -1199,74 +1353,8 @@ namespace RSMods
                 listBox_GuitarSpeakPresets.Items.Add(guitarSpeakKeypress.Key + guitarSpeakKeypress.Value);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
-
-            if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // User wants to use a custom theme
-            {
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) != String.Empty)
-                    backColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier));
-
-                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
-                    foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
-            }
-
-            ChangeTheme(backColor, foreColor);
-        }
-
-        private void DarkModeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_ChangeTheme.Checked) // We turn ChangeTheme on.
-            {
-                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "on");
-                groupBox_ChangeTheme.Visible = true;
-            }
-            else // We turn ChangeTheme off.
-            {
-                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
-                groupBox_ChangeTheme.Visible = false;
-                ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
-            }
-        }
-
-        private void Button_TwitchReAuthorize_Click(object sender, EventArgs e)
-        {
-            ImplicitAuth auth = new ImplicitAuth();
-            auth.MakeAuthRequest();
-
-            // string authToken = TwitchSettings.Get.AccessToken;
-            // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
-            // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
-        }
-
-        private void Twitch_NewAccessToken(object sender, EventArgs e) => checkBox_RevealTwitchAuthToken.Checked = false;
-
-        private void LoadTwitchSettings()
-        {
-            TwitchSettings.Get._context = SynchronizationContext.Current;
-            TwitchSettings.Get.LoadSettings();
-            TwitchSettings.Get.LoadDefaultEffects();
-            TwitchSettings.Get.LoadEnabledEffects();
-        }
-
-        private void scrollTwitchLog(object sender, EventArgs e)
-        {
-            textBox_TwitchLog.SelectionStart = textBox_TwitchLog.TextLength;
-            textBox_TwitchLog.ScrollToCaret();
-        }
-
-        private void CheckForTurboSpeed(TwitchReward selectedReward)
-        {
-            if (selectedReward.Name.Contains("TurboSpeed"))
-            {
-                if (selectedReward.Enabled)
-                    WinMsgUtil.SendMsgToRS("enable TurboSpeed");
-                else
-                    WinMsgUtil.SendMsgToRS("disable TurboSpeed");
-            }
-        }
-
+        #endregion
+        #region Prep Twitch Tab
         private void EnableTwitchTab()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -1294,7 +1382,7 @@ namespace RSMods
             label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
-            
+
             textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
 
             Binding listeningToTwitchBinding = new Binding("Text", TwitchSettings.Get, "Authorized");
@@ -1321,40 +1409,44 @@ namespace RSMods
                 AddToSelectedRewards(enabledReward);
 
         }
-
-        private void Button_ChangeBackgroundColor_Click(object sender, EventArgs e)
+        
+        private void LoadTwitchSettings()
         {
-            ColorDialog colorDialog = new ColorDialog
-            {
-                AllowFullOpen = true,
-                ShowHelp = false,
-                Color = WriteSettings.defaultBackgroundColor
-            };
+            TwitchSettings.Get._context = SynchronizationContext.Current;
+            TwitchSettings.Get.LoadSettings();
+            TwitchSettings.Get.LoadDefaultEffects();
+            TwitchSettings.Get.LoadEnabledEffects();
+        }
+        #endregion
+        #region Twitch UI Functions
+        private void Button_TwitchReAuthorize_Click(object sender, EventArgs e)
+        {
+            ImplicitAuth auth = new ImplicitAuth();
+            auth.MakeAuthRequest();
 
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                SaveChanges(ReadSettings.CustomGUIBackgroundColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                textBox_ChangeBackgroundColor.BackColor = colorDialog.Color;
-            }
+            // string authToken = TwitchSettings.Get.AccessToken;
+            // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks
+            // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
         }
 
-        private void Button_ChangeTextColor_Click(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog
-            {
-                AllowFullOpen = true,
-                ShowHelp = false,
-                Color = WriteSettings.defaultTextColor
-            };
+        private void Twitch_NewAccessToken(object sender, EventArgs e) => checkBox_RevealTwitchAuthToken.Checked = false;
 
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                SaveChanges(ReadSettings.CustomGUITextColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                textBox_ChangeTextColor.BackColor = colorDialog.Color;
-            }
+        private void scrollTwitchLog(object sender, EventArgs e)
+        {
+            textBox_TwitchLog.SelectionStart = textBox_TwitchLog.TextLength;
+            textBox_TwitchLog.ScrollToCaret();
         }
 
-        private void Button_SaveThemeColors_Click(object sender, EventArgs e) => ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+        private void CheckForTurboSpeed(TwitchReward selectedReward)
+        {
+            if (selectedReward.Name.Contains("TurboSpeed"))
+            {
+                if (selectedReward.Enabled)
+                    WinMsgUtil.SendMsgToRS("enable TurboSpeed");
+                else
+                    WinMsgUtil.SendMsgToRS("disable TurboSpeed");
+            }
+        }
 
         private async void SaveEnabledRewardsToFile()
         {
@@ -1495,6 +1587,7 @@ namespace RSMods
             SaveEnabledRewardsToFile();
         }
 
+
         private void button_RemoveReward_Click(object sender, EventArgs e)
         {
             if (dgv_EnabledRewards.SelectedRows.Count < 1)
@@ -1633,58 +1726,20 @@ namespace RSMods
             }
         }
 
-        private void nUpDown_RiffRepeaterSpeed_ValueChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
+        /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+       {
+           if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))
+               return;
 
-        private void checkBox_RiffRepeaterSpeedAboveOneHundred_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveChanges(ReadSettings.RiffRepeaterAboveHundredIdentifier, checkBox_RiffRepeaterSpeedAboveOneHundred.Checked.ToString().ToLower());
-            groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
-        }
+           dgv_EnabledRewards.BeginEdit(false);
+           var ec = dgv_EnabledRewards.EditingControl as DataGridViewComboBoxEditingControl;
+           if (ec != null && ec.Width - e.X < SystemInformation.VerticalScrollBarWidth)
+               ec.DroppedDown = true;
 
-        private void checkBox_useMidiAutoTuning_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveChanges(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
-            groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
-        }
-
-        private void LoadMidiDeviceNames(object sender, EventArgs e)
-        {
-            this.listBox_ListMidiDevices.Items.Clear();
-
-            uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
-
-            for(uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
-            {
-                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS {};
-                Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
-                this.listBox_ListMidiDevices.Items.Add(temp.szPname);
-            }
-
-            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
-                listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
-        }
-
-        private void listBox_ListMidiDevices_SelectedIndexChanged(object sender, EventArgs e) {
-            if (listBox_ListMidiDevices.SelectedIndex != -1)
-            {
-                SaveChanges(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
-                label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
-            }
-        }
-
-        private void radio_WhammyDT_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.TuningPedalIdentifier, "1");
-
-        private void radio_WhammyORBass_CheckedChanged(object sender, EventArgs e) {
-            SaveChanges(ReadSettings.TuningPedalIdentifier, "2");
-            checkBox_WhammyChordsMode.Visible = radio_WhammyORBass.Checked;
-        }
-
-        private void checkBox_WhammyChordsMode_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
-
-        private void checkBox_ExtendedRangeDrop_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeDropTuningIdentifier, checkBox_ExtendedRangeDrop.Checked.ToString().ToLower());
-
-        private void checkBox_ShowCurrentNote_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowCurrentNoteOnScreenIdentifier, checkBox_ShowCurrentNote.Checked.ToString().ToLower());
-
+           SaveEnabledRewardsToFile();
+       }*/
+        #endregion
+        #region Fonts
         private void LoadFonts() // Not modified from here: https://stackoverflow.com/a/8657854 :eyes:
         {
             InstalledFontCollection fontList = new InstalledFontCollection();
@@ -1708,19 +1763,25 @@ namespace RSMods
 
             SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
         }
+        #endregion
+        #region Midi
 
-        /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void LoadMidiDeviceNames(object sender, EventArgs e)
         {
-            if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))
-                return;
+            this.listBox_ListMidiDevices.Items.Clear();
 
-            dgv_EnabledRewards.BeginEdit(false);
-            var ec = dgv_EnabledRewards.EditingControl as DataGridViewComboBoxEditingControl;
-            if (ec != null && ec.Width - e.X < SystemInformation.VerticalScrollBarWidth)
-                ec.DroppedDown = true;
+            uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
 
-            SaveEnabledRewardsToFile();
-        }*/
+            for(uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
+            {
+                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS {};
+                Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
+                this.listBox_ListMidiDevices.Items.Add(temp.szPname);
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
+                listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+        }
     }
 
     public class Midi
@@ -1774,4 +1835,5 @@ namespace RSMods
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiOutGetNumDevs();
     }
+    #endregion
 }

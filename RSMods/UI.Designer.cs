@@ -2625,7 +2625,7 @@
             this.checkBox_ChangeTheme.TabIndex = 73;
             this.checkBox_ChangeTheme.Text = "Change Theme";
             this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
-            this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.DarkModeCheckbox_CheckedChanged);
+            this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.ChangeThemeCheckbox_CheckedChanged);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // timerValidateTwitch
