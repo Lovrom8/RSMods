@@ -13,10 +13,10 @@ namespace RSMods
 
             int octave = (inputInt / 12) - 1; // We support the -1st octave, so we need to minus 1 from our octave.
 
-            return IntToNote(inputInt) + octave.ToString();
+            return MidiToNoteName(inputInt) + octave.ToString();
         }
 
-        public static string IntToNote(int intToConvert) => noteArray[intToConvert % 12];
+        public static string MidiToNoteName(int midiNoteToConvert) => noteArray[midiNoteToConvert % 12];
 
         public static string[] noteArray = new string[12] { "C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B" };
     }

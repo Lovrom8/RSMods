@@ -3,6 +3,47 @@ using static System.StringComparison;
 using System.Windows.Forms;
 namespace RSMods {
     class KeyConversion {
+
+        #region Convert VKey To UI
+        public static string VKeyToUI(string VKey)
+        {
+            string ReplacementValue = VKey;
+            if (VKey.Contains("VK_"))
+                ReplacementValue = ReplacementValue.Substring(3, ReplacementValue.Length - 3);
+            return ReplacementValue;
+        }
+        #endregion
+        #region Acceptable Keys
+        public static Keys[] KeyDownDictionary = new Keys[38] { // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://pastebin.com/raw/7f1CvkUt | https://i.imgur.com/lpNv3yG.png
+            // Standard Function Keys
+            Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F9, Keys.F10,
+            // Elgato Keys / Extended Function Keys
+            Keys.F13, Keys.F14, Keys.F15, Keys.F16, Keys.F17, Keys.F18, Keys.F19, Keys.F20, Keys.F21, Keys.F22,  Keys.F23, Keys.F24,
+            // Special Keys
+            Keys.Pause, Keys.Scroll, Keys.Insert,
+            // Symbol Keys
+            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion,
+            // Modifier Keys
+            Keys.CapsLock, Keys.Apps,
+            // Numlock Keys
+            Keys.Subtract, Keys.NumLock, Keys.Multiply, Keys.Divide, Keys.Decimal
+        };
+
+        public static Keys[] KeyUpDictionary = new Keys[6] { // Same with KeyDownDictionary, but these are all the keys that can only be read on KeyUp
+            // Print Screen
+            Keys.PrintScreen,
+            // Media Keys
+            Keys.Play, Keys.MediaNextTrack, Keys.MediaPlayPause, Keys.MediaPreviousTrack, Keys.MediaStop
+        };
+
+        public static MouseButtons[] MouseButtonDictionary = new MouseButtons[3] { // Same with KeyUpDictonary, and KeyDownDictionary but with the mouse's extra buttons.
+             // Middle Mouse Button
+             MouseButtons.Middle,
+             // Side Buttons
+             MouseButtons.XButton1, MouseButtons.XButton2
+        };
+        #endregion
+        #region C# Keys -> VKey
         public static string VirtualKey(string Key)
         {
             if(Key.StartsWith("VK_"))
@@ -452,40 +493,6 @@ namespace RSMods {
 
             return ""; // Yeah, you entered a key that we don't know
         }
-        public static string VKeyToUI(string VKey) {
-            string ReplacementValue = VKey;
-            if(VKey.Contains("VK_"))
-                ReplacementValue = ReplacementValue.Substring(3, ReplacementValue.Length - 3);
-            return ReplacementValue;
-        }
-
-        public static Keys[] KeyDownDictionary = new Keys[38] { // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://pastebin.com/raw/7f1CvkUt | https://i.imgur.com/lpNv3yG.png
-            // Standard Function Keys
-            Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F9, Keys.F10,
-            // Elgato Keys / Extended Function Keys
-            Keys.F13, Keys.F14, Keys.F15, Keys.F16, Keys.F17, Keys.F18, Keys.F19, Keys.F20, Keys.F21, Keys.F22,  Keys.F23, Keys.F24,
-            // Special Keys
-            Keys.Pause, Keys.Scroll, Keys.Insert,
-            // Symbol Keys
-            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion,
-            // Modifier Keys
-            Keys.CapsLock, Keys.Apps,
-            // Numlock Keys
-            Keys.Subtract, Keys.NumLock, Keys.Multiply, Keys.Divide, Keys.Decimal
-        };
-
-        public static Keys[] KeyUpDictionary = new Keys[6] { // Same with KeyDownDictionary, but these are all the keys that can only be read on KeyUp
-            // Print Screen
-            Keys.PrintScreen,
-            // Media Keys
-            Keys.Play, Keys.MediaNextTrack, Keys.MediaPlayPause, Keys.MediaPreviousTrack, Keys.MediaStop
-        };
-
-        public static MouseButtons[] MouseButtonDictionary = new MouseButtons[3] { // Same with KeyUpDictonary, and KeyDownDictionary but with the mouse's extra buttons.
-             // Middle Mouse Button
-             MouseButtons.Middle,
-             // Side Buttons
-             MouseButtons.XButton1, MouseButtons.XButton2
-        };
+        #endregion
     }
 }

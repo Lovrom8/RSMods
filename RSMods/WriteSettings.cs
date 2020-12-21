@@ -15,7 +15,7 @@ namespace RSMods
         public static Color defaultTextColor = Color.Black;
 
         //public static string dumpLocation = "RSMods.ini";
-
+        #region Default Settings
         public static Dictionary<string, Dictionary<string, string>> Settings = new Dictionary<string, Dictionary<string, string>>()
         {
             // Section                           mod   default
@@ -121,7 +121,8 @@ namespace RSMods
                 { ReadSettings.CustomGUITextColorIdentifier, "000000" }, // Custom Theme Text Color
             }},
         };
-
+        #endregion
+        #region Save Settings
         public static Dictionary<string, Dictionary<string, string>> saveSettings = new Dictionary<string, Dictionary<string, string>>()
         {
             // [Section]                         mod    setting
@@ -225,7 +226,8 @@ namespace RSMods
                 { ReadSettings.CustomGUITextColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) }, // Custom Theme Text Color
             }},
         };
-
+        #endregion
+        #region Write Settings
         public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)
         {
             using (StreamWriter sw = File.CreateText(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
@@ -240,7 +242,8 @@ namespace RSMods
                 }
             }
         }
-
+        #endregion
+        #region Check if RS is void
         public static void IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
         {
             if(File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")))
@@ -251,5 +254,6 @@ namespace RSMods
                 return;
             }  
         }
+        #endregion
     }
 }

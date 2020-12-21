@@ -20,6 +20,7 @@ namespace RSMods
 {
     public static class SetAndForgetMods
     {
+        #region Generic
         // General PSARC operations 
 
         public static void RepackCachePsarc()
@@ -129,7 +130,8 @@ namespace RSMods
             if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_main.database.json" });
         }
-
+        #endregion
+        #region Custom Tunings
         // Custom Tunings Mod
 
         public static TuningDefinitionList TuningsCollection;
@@ -235,8 +237,8 @@ namespace RSMods
                 MessageBox.Show("Error: " + ioex.ToString(), "Error");
             }
         }
-
-
+        #endregion
+        #region Custom Menu Options
         // Custom Menu Options Mod & Direct Mode Mod
 
         public static void AddExitGameMenuOption()
@@ -258,7 +260,8 @@ namespace RSMods
 
             RepackCachePsarc();
         }
-
+        #endregion
+        #region Default Tones
         // Custom Default Tones Mod
 
         public static Dictionary<string, Tone2014> tonesFromAllProfiles = new Dictionary<string, Tone2014>();
@@ -326,7 +329,8 @@ namespace RSMods
 
             return profileTones;
         }
-
+        #endregion
+        #region Fast Load
         // Fast Load Mod
 
         private static Tuple<string, bool> GetDriveType(char driveLetter) // This may not work on Win7, MSDN says its for >= Win8
@@ -460,5 +464,6 @@ namespace RSMods
 
             RepackCachePsarc();
         }
+        #endregion
     }
 }
