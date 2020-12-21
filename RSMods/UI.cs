@@ -394,17 +394,11 @@ namespace RSMods
 
         private void CustomTheme_ChangeTheme(object sender, EventArgs e)
         {
-            if (checkBox_ChangeTheme.Checked) // We turn ChangeTheme on.
-            {
-                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "on");
-                groupBox_ChangeTheme.Visible = true;
-            }
-            else // We turn ChangeTheme off.
-            {
-                SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
-                groupBox_ChangeTheme.Visible = false;
+            SaveChanges(ReadSettings.CustomGUIThemeIdentifier, checkBox_ChangeTheme.Checked.ToString().ToLower());
+            groupBox_ChangeTheme.Visible = checkBox_ChangeTheme.Checked;
+
+            if (!checkBox_ChangeTheme.Checked) // Turning off custom themes
                 CustomTheme_ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
-            }
         }
 
         private void CustomTheme_ChangeBackgroundColor(object sender, EventArgs e)
