@@ -1,10 +1,12 @@
 ﻿using System.IO;
 using RSMods.Util;
+using System.Windows.Forms;
 
 namespace RSMods
 {
     class ReadSettings
     {
+        #region Setup Variables
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
                              ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
@@ -112,702 +114,244 @@ namespace RSMods
                 CustomGUIThemeIdentifier = "CustomTheme = ",
                 CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
                 CustomGUITextColorIdentifier = "ThemeTextColor = ";
+        #endregion
+        #region Functions to make things look nicer
+        enum SettingType
+        {
+            ON_OFF = 0,
+            STRING = 1,
+            VKEY = 2
+        };
 
-        public static string ProcessSettings(string identifierToGrab)
+        private static string FillSettingVariable(string settingIdentifier, SettingType settingType, string currentLine, out string setting)
+        {
+            setting = "";
+            if (currentLine.Contains(settingIdentifier))
+            {
+                if(settingType == SettingType.ON_OFF)
+                {
+                    if (currentLine.Substring(settingIdentifier.Length, (currentLine.Length - settingIdentifier.Length)) == "on")
+                        setting = "on";
+                    else
+                        setting = "off";
+                }
+
+                else if (settingType == SettingType.STRING || settingType == SettingType.VKEY)
+                    setting = currentLine.Substring(settingIdentifier.Length, (currentLine.Length - settingIdentifier.Length));
+
+                if (settingType == SettingType.VKEY && KeyConversion.VirtualKey(setting) != "")
+                    setting = KeyConversion.VirtualKey(setting);
+            }
+            return setting;
+        }
+
+        private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
+
+        private static void VerifySettingsINI()
         {
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
+                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
+        }
+        #endregion
+        public static string ProcessSettings(string identifierToGrab)
+        {
+            VerifySettingsINI();
+            foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
             {
-                if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-                    WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
-                return "";
+                #region Song Lists
+                // Song Lists
+
+                if (IdentifierIsFound(currentLine, Songlist1Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist1Identifier, SettingType.STRING, currentLine, out Songlist1Name);
+                if (IdentifierIsFound(currentLine, Songlist2Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist2Identifier, SettingType.STRING, currentLine, out Songlist2Name);
+                if (IdentifierIsFound(currentLine, Songlist3Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist3Identifier, SettingType.STRING, currentLine, out Songlist3Name);
+                if (IdentifierIsFound(currentLine, Songlist4Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist4Identifier, SettingType.STRING, currentLine, out Songlist4Name);
+                if (IdentifierIsFound(currentLine, Songlist5Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist5Identifier, SettingType.STRING, currentLine, out Songlist5Name);
+                if (IdentifierIsFound(currentLine, Songlist6Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist6Identifier, SettingType.STRING, currentLine, out Songlist6Name);
+                #endregion
+                #region Keybindings
+                // Keybindings
+
+                if (IdentifierIsFound(currentLine, ToggleLoftIdentifier, identifierToGrab))
+                    return FillSettingVariable(ToggleLoftIdentifier, SettingType.VKEY, currentLine, out ToggleLoftKey);
+                if (IdentifierIsFound(currentLine, AddVolumeIdentifier, identifierToGrab))
+                    return FillSettingVariable(AddVolumeIdentifier, SettingType.VKEY, currentLine, out AddVolumeKey);
+                if(IdentifierIsFound(currentLine, DecreaseVolumeIdentifier, identifierToGrab))
+                    return FillSettingVariable(DecreaseVolumeIdentifier, SettingType.VKEY, currentLine, out DecreaseVolumeKey);
+                if (IdentifierIsFound(currentLine, ChangeSelectedVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(ChangeSelectedVolumeKeyIdentifier, SettingType.VKEY, currentLine, out ChangeSelectedVolumeKey);
+                if (IdentifierIsFound(currentLine, ShowSongTimerIdentifier, identifierToGrab))
+                    return FillSettingVariable(ShowSongTimerIdentifier, SettingType.VKEY, currentLine, out ShowSongTimerKey);
+                if (IdentifierIsFound(currentLine, ForceReEnumerationIdentifier, identifierToGrab))
+                    return FillSettingVariable(ForceReEnumerationIdentifier, SettingType.VKEY, currentLine, out ForceReEnumerationKey);
+                if (IdentifierIsFound(currentLine, RainbowStringsIdentifier, identifierToGrab))
+                    return FillSettingVariable(RainbowStringsIdentifier, SettingType.VKEY, currentLine, out RainbowStringsKey);
+                if (IdentifierIsFound(currentLine, RemoveLyricsKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveLyricsKeyIdentifier, SettingType.VKEY, currentLine, out RemoveLyricsKey);
+                if (IdentifierIsFound(currentLine, RRSpeedKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(RRSpeedKeyIdentifier, SettingType.VKEY, currentLine, out RRSpeedKey);
+
+                #endregion
+                #region Toggle Switches
+                // Toggle Switches
+
+                if (IdentifierIsFound(currentLine, ToggleLoftEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(ToggleLoftEnabledIdentifier, SettingType.ON_OFF, currentLine, out ToggleLoftEnabled);
+                if (IdentifierIsFound(currentLine, AddVolumeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(AddVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out AddVolumeEnabled);
+                if (IdentifierIsFound(currentLine, DecreaseVolumeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(DecreaseVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out DecreaseVolumeEnabled);
+                if (IdentifierIsFound(currentLine, ShowSongTimerEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(ShowSongTimerEnabledIdentifier, SettingType.ON_OFF, currentLine, out ShowSongTimerEnabled);
+                if (IdentifierIsFound(currentLine, ForceReEnumerationEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(ForceReEnumerationEnabledIdentifier, SettingType.STRING, currentLine, out ForceReEnumerationEnabled);
+                if (IdentifierIsFound(currentLine, RainbowStringsEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(RainbowStringsEnabledIdentifier, SettingType.ON_OFF, currentLine, out RainbowStringsEnabled);
+                if (IdentifierIsFound(currentLine, ExtendedRangeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(ExtendedRangeEnabledIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeEnabled);
+                if (IdentifierIsFound(currentLine, ExtendedRangeDropTuningIdentifier, identifierToGrab))
+                    return FillSettingVariable(ExtendedRangeDropTuningIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeDropTuning);
+                if (IdentifierIsFound(currentLine, CustomStringColorNumberIndetifier, identifierToGrab))
+                    return FillSettingVariable(CustomStringColorNumberIndetifier, SettingType.STRING, currentLine, out CustomStringColorsNumber);
+                if (IdentifierIsFound(currentLine, DiscoModeIdentifier, identifierToGrab))
+                    return FillSettingVariable(DiscoModeIdentifier, SettingType.ON_OFF, currentLine, out DiscoModeEnabled);
+                if (IdentifierIsFound(currentLine, RemoveHeadstockIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveHeadstockIdentifier, SettingType.ON_OFF, currentLine, out RemoveHeadstockEnabled);
+                if (IdentifierIsFound(currentLine, RemoveSkylineIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveSkylineIdentifier, SettingType.ON_OFF, currentLine, out RemoveSkylineEnabled);
+                if (IdentifierIsFound(currentLine, GreenScreenWallIdentifier, identifierToGrab))
+                    return FillSettingVariable(GreenScreenWallIdentifier, SettingType.ON_OFF, currentLine, out GreenscreenWallEnabled);
+                if (IdentifierIsFound(currentLine, ForceProfileEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(ForceProfileEnabledIdentifier, SettingType.ON_OFF, currentLine, out ForceProfileEnabled);
+                if (IdentifierIsFound(currentLine, FretlessModeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(FretlessModeEnabledIdentifier, SettingType.ON_OFF, currentLine, out FretlessEnabled);
+                if (IdentifierIsFound(currentLine, RemoveInlaysIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveInlaysIdentifier, SettingType.ON_OFF, currentLine, out RemoveInlaysEnabled);
+                if (IdentifierIsFound(currentLine, ToggleLoftWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(ToggleLoftWhenIdentifier, SettingType.STRING, currentLine, out ToggleLoftWhen);
+                if (IdentifierIsFound(currentLine, RemoveLaneMarkersIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveLaneMarkersIdentifier, SettingType.ON_OFF, currentLine, out RemoveLaneMarkersEnabled);
+                if (IdentifierIsFound(currentLine, ToggleSkylineWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(ToggleSkylineWhenIdentifier, SettingType.STRING, currentLine, out ToggleSkylineWhen);
+                if (IdentifierIsFound(currentLine, RemoveLyricsIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveLyricsIdentifier, SettingType.ON_OFF, currentLine, out RemoveLyricsEnabled);
+                if (IdentifierIsFound(currentLine, RemoveLyricsWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveLyricsWhenIdentifier, SettingType.STRING, currentLine, out RemoveLyricsWhen);
+                if (IdentifierIsFound(currentLine, GuitarSpeakIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakIdentifier, SettingType.ON_OFF, currentLine, out GuitarSpeakEnabled);
+                if (IdentifierIsFound(currentLine, RemoveHeadstockWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveHeadstockWhenIdentifier, SettingType.STRING, currentLine, out RemoveHeadstockWhen);
+                if (IdentifierIsFound(currentLine, ScreenShotScoresIdentifier, identifierToGrab))
+                    return FillSettingVariable(ScreenShotScoresIdentifier, SettingType.ON_OFF, currentLine, out ScreenShotScores);
+                if (IdentifierIsFound(currentLine, RiffRepeaterAboveHundredIdentifier, identifierToGrab))
+                    return FillSettingVariable(RiffRepeaterAboveHundredIdentifier, SettingType.ON_OFF, currentLine, out RiffRepeaterAboveHundred);
+                if (IdentifierIsFound(currentLine, MidiAutoTuningIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiAutoTuningIdentifier, SettingType.ON_OFF, currentLine, out MidiAutoTuning);
+                if (IdentifierIsFound(currentLine, MidiAutoTuningDeviceIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiAutoTuningDeviceIdentifier, SettingType.STRING, currentLine, out MidiAutoTuningDevice);
+                if (IdentifierIsFound(currentLine, ChordsModeIdentifier, identifierToGrab))
+                    return FillSettingVariable(ChordsModeIdentifier, SettingType.ON_OFF, currentLine, out ChordsMode);
+                if (IdentifierIsFound(currentLine, ShowCurrentNoteOnScreenIdentifier, identifierToGrab))
+                    return FillSettingVariable(ShowCurrentNoteOnScreenIdentifier, SettingType.ON_OFF, currentLine, out ShowCurrentNoteOnScreen);
+                if (IdentifierIsFound(currentLine, OnScreenFontIdentifier, identifierToGrab))
+                    return FillSettingVariable(OnScreenFontIdentifier, SettingType.STRING, currentLine, out OnScreenFont);
+                #endregion
+                #region String Colors
+                // String Colors (Normal {N} & Colorblind {CB})
+
+                // Normal Colors
+
+                if (IdentifierIsFound(currentLine, String0Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String0Color_N_Identifier, SettingType.STRING, currentLine, out String0Color_N);
+                if (IdentifierIsFound(currentLine, String1Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String1Color_N_Identifier, SettingType.STRING, currentLine, out String1Color_N);
+                if (IdentifierIsFound(currentLine, String2Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String2Color_N_Identifier, SettingType.STRING, currentLine, out String2Color_N);
+                if (IdentifierIsFound(currentLine, String3Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String3Color_N_Identifier, SettingType.STRING, currentLine, out String3Color_N);
+                if (IdentifierIsFound(currentLine, String4Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String4Color_N_Identifier, SettingType.STRING, currentLine, out String4Color_N);
+                if (IdentifierIsFound(currentLine, String5Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(String5Color_N_Identifier, SettingType.STRING, currentLine, out String5Color_N);
+
+                // Color Blind Colors
+                if (IdentifierIsFound(currentLine, String0Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String0Color_CB_Identifier, SettingType.STRING, currentLine, out String0Color_CB);
+                if (IdentifierIsFound(currentLine, String1Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String1Color_CB_Identifier, SettingType.STRING, currentLine, out String1Color_CB);
+                if (IdentifierIsFound(currentLine, String2Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String2Color_CB_Identifier, SettingType.STRING, currentLine, out String2Color_CB);
+                if (IdentifierIsFound(currentLine, String3Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String3Color_CB_Identifier, SettingType.STRING, currentLine, out String3Color_CB);
+                if (IdentifierIsFound(currentLine, String4Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String4Color_CB_Identifier, SettingType.STRING, currentLine, out String4Color_CB);
+                if (IdentifierIsFound(currentLine, String5Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(String5Color_CB_Identifier, SettingType.STRING, currentLine, out String5Color_CB);
+                #endregion
+                #region Mod Settings
+                // Mod Settings
+
+                if (IdentifierIsFound(currentLine, ExtendedRangeTuningIdentifier, identifierToGrab))
+                    return FillSettingVariable(ExtendedRangeTuningIdentifier, SettingType.STRING, currentLine, out ExtendedRangeTuning);
+                if (IdentifierIsFound(currentLine, CheckForNewSongIntervalIdentifier, identifierToGrab))
+                    return FillSettingVariable(CheckForNewSongIntervalIdentifier, SettingType.STRING, currentLine, out CheckForNewSongInterval);
+                if (IdentifierIsFound(currentLine, RiffRepeaterSpeedIntervalIdentifier, identifierToGrab))
+                    return FillSettingVariable(RiffRepeaterSpeedIntervalIdentifier, SettingType.STRING, currentLine, out RiffRepeaterSpeedInterval);
+                if (IdentifierIsFound(currentLine, TuningPedalIdentifier, identifierToGrab))
+                    return FillSettingVariable(TuningPedalIdentifier, SettingType.STRING, currentLine, out TuningPedal);
+                #endregion
+                #region Guitar Speak
+
+                // Guitar Speak
+
+                if (IdentifierIsFound(currentLine, GuitarSpeakDeleteIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakDeleteIdentifier, SettingType.STRING, currentLine, out GuitarSpeakDelete);
+                if (IdentifierIsFound(currentLine, GuitarSpeakSpaceIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakSpaceIdentifier, SettingType.STRING, currentLine, out GuitarSpeakSpace);
+                if (IdentifierIsFound(currentLine, GuitarSpeakEnterIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakEnterIdentifier, SettingType.STRING, currentLine, out GuitarSpeakEnter);
+                if (IdentifierIsFound(currentLine, GuitarSpeakTabIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakTabIdentifier, SettingType.STRING, currentLine, out GuitarSpeakTab);
+                if (IdentifierIsFound(currentLine, GuitarSpeakPGUPIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakPGUPIdentifier, SettingType.STRING, currentLine, out GuitarSpeakPGUP);
+                if (IdentifierIsFound(currentLine, GuitarSpeakPGDNIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakPGDNIdentifier, SettingType.STRING, currentLine, out GuitarSpeakPGDN);
+                if (IdentifierIsFound(currentLine, GuitarSpeakUPIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakUPIdentifier, SettingType.STRING, currentLine, out GuitarSpeakUP);
+                if (IdentifierIsFound(currentLine, GuitarSpeakDNIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakDNIdentifier, SettingType.STRING, currentLine, out GuitarSpeakDN);
+                if (IdentifierIsFound(currentLine, GuitarSpeakESCIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakESCIdentifier, SettingType.STRING, currentLine, out GuitarSpeakESC);
+                if (IdentifierIsFound(currentLine, GuitarSpeakCloseIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakCloseIdentifier, SettingType.STRING, currentLine, out GuitarSpeakClose);
+                if (IdentifierIsFound(currentLine, GuitarSpeakOBracketIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakOBracketIdentifier, SettingType.STRING, currentLine, out GuitarSpeakOBracket);
+                if (IdentifierIsFound(currentLine, GuitarSpeakCBracketIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakCBracketIdentifier, SettingType.STRING, currentLine, out GuitarSpeakCBracket);
+                if (IdentifierIsFound(currentLine, GuitarSpeakTildeaIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakTildeaIdentifier, SettingType.STRING, currentLine, out GuitarSpeakTildea);
+                if (IdentifierIsFound(currentLine, GuitarSpeakForSlashIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakForSlashIdentifier, SettingType.STRING, currentLine, out GuitarSpeakForSlash);
+                if (IdentifierIsFound(currentLine, GuitarSpeakTuningIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakTuningIdentifier, SettingType.ON_OFF, currentLine, out GuitarSpeakWhileTuning);
+                #endregion
+                #region GUI Settings
+                // GUI Settings
+
+                if (IdentifierIsFound(currentLine, CustomGUIThemeIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomGUIThemeIdentifier, SettingType.ON_OFF, currentLine, out CustomGUITheme);
+                if (IdentifierIsFound(currentLine, CustomGUIBackgroundColorIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomGUIBackgroundColorIdentifier, SettingType.STRING, currentLine, out CustomGUIBackgroundColor);
+                if (IdentifierIsFound(currentLine, CustomGUITextColorIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomGUITextColorIdentifier, SettingType.STRING, currentLine, out CustomGUITextColor);
+                #endregion
             }
-            else
-            {
-                foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-                {
-                    // Song Lists
-                    if (currentLine.Contains(Songlist1Identifier))
-                    {
-                        Songlist1Name = currentLine.Substring(Songlist1Identifier.Length, (currentLine.Length - Songlist1Identifier.Length));
-                        if (identifierToGrab == Songlist1Identifier)
-                            return Songlist1Name;
-                    }
-                    if (currentLine.Contains(Songlist2Identifier))
-                    {
-                        Songlist2Name = currentLine.Substring(Songlist2Identifier.Length, (currentLine.Length - Songlist2Identifier.Length));
-                        if (identifierToGrab == Songlist2Identifier)
-                            return Songlist2Name;
-                    }
-                    if (currentLine.Contains(Songlist3Identifier))
-                    {
-                        Songlist3Name = currentLine.Substring(Songlist3Identifier.Length, (currentLine.Length - Songlist3Identifier.Length));
-                        if (identifierToGrab == Songlist3Identifier)
-                            return Songlist3Name;
-                    }
-                    if (currentLine.Contains(Songlist4Identifier))
-                    {
-                        Songlist4Name = currentLine.Substring(Songlist4Identifier.Length, (currentLine.Length - Songlist4Identifier.Length));
-                        if (identifierToGrab == Songlist4Identifier)
-                            return Songlist4Name;
-                    }
-                    if (currentLine.Contains(Songlist5Identifier))
-                    {
-                        Songlist5Name = currentLine.Substring(Songlist5Identifier.Length, (currentLine.Length - Songlist5Identifier.Length));
-                        if (identifierToGrab == Songlist5Identifier)
-                            return Songlist5Name;
-                    }
-                    if (currentLine.Contains(Songlist6Identifier))
-                    {
-                        Songlist6Name = currentLine.Substring(Songlist6Identifier.Length, (currentLine.Length - Songlist6Identifier.Length));
-                        if (identifierToGrab == Songlist6Identifier)
-                            return Songlist6Name;
-                    }
-
-                    // Mods
-                    if (currentLine.Contains(ToggleLoftIdentifier))
-                    {
-                        ToggleLoftKey = currentLine.Substring(ToggleLoftIdentifier.Length, (currentLine.Length - ToggleLoftIdentifier.Length));
-                        if (KeyConversion.VirtualKey(ToggleLoftKey) != "")
-                            ToggleLoftKey = KeyConversion.VirtualKey(ToggleLoftKey);
-                        if (identifierToGrab == ToggleLoftIdentifier)
-                            return ToggleLoftKey;
-                    }
-
-                    if (currentLine.Contains(AddVolumeIdentifier))
-                    {
-                        AddVolumeKey = currentLine.Substring(AddVolumeIdentifier.Length, (currentLine.Length - AddVolumeIdentifier.Length));
-                        if (KeyConversion.VirtualKey(AddVolumeKey) != "")
-                            AddVolumeKey = KeyConversion.VirtualKey(AddVolumeKey);
-                        if (identifierToGrab == AddVolumeIdentifier)
-                            return AddVolumeKey;
-                    }
-                    if (currentLine.Contains(DecreaseVolumeIdentifier))
-                    {
-                        DecreaseVolumeKey = currentLine.Substring(DecreaseVolumeIdentifier.Length, (currentLine.Length - DecreaseVolumeIdentifier.Length));
-                        if (KeyConversion.VirtualKey(DecreaseVolumeKey) != "")
-                            DecreaseVolumeKey = KeyConversion.VirtualKey(DecreaseVolumeKey);
-                        if (identifierToGrab == DecreaseVolumeIdentifier)
-                            return DecreaseVolumeKey;
-                    }
-                    if (currentLine.Contains(ChangeSelectedVolumeKeyIdentifier))
-                    {
-                        ChangeSelectedVolumeKey = currentLine.Substring(ChangeSelectedVolumeKeyIdentifier.Length, (currentLine.Length - ChangeSelectedVolumeKeyIdentifier.Length));
-                        if (KeyConversion.VirtualKey(ChangeSelectedVolumeKey) != "")
-                            ChangeSelectedVolumeKey = KeyConversion.VirtualKey(ChangeSelectedVolumeKey);
-                        if (identifierToGrab == ChangeSelectedVolumeKeyIdentifier)
-                            return ChangeSelectedVolumeKey;
-                    }
-                    if (currentLine.Contains(ShowSongTimerIdentifier))
-                    {
-                        ShowSongTimerKey = currentLine.Substring(ShowSongTimerIdentifier.Length, (currentLine.Length - ShowSongTimerIdentifier.Length));
-                        if (KeyConversion.VirtualKey(ShowSongTimerKey) != "")
-                            ShowSongTimerKey = KeyConversion.VirtualKey(ShowSongTimerKey);
-                        if (identifierToGrab == ShowSongTimerIdentifier)
-                            return ShowSongTimerKey;
-                    }
-                    if (currentLine.Contains(ForceReEnumerationIdentifier))
-                    {
-                        ForceReEnumerationKey = currentLine.Substring(ForceReEnumerationIdentifier.Length, (currentLine.Length - ForceReEnumerationIdentifier.Length));
-                        if (KeyConversion.VirtualKey(ForceReEnumerationKey) != "")
-                            ForceReEnumerationKey = KeyConversion.VirtualKey(ForceReEnumerationKey);
-                        if (identifierToGrab == ForceReEnumerationIdentifier)
-                            return ForceReEnumerationKey;
-                    }
-                    if (currentLine.Contains(RainbowStringsIdentifier))
-                    {
-                        RainbowStringsKey = currentLine.Substring(RainbowStringsIdentifier.Length, (currentLine.Length - RainbowStringsIdentifier.Length));
-                        if (KeyConversion.VirtualKey(RainbowStringsKey) != "")
-                            RainbowStringsKey = KeyConversion.VirtualKey(RainbowStringsKey);
-                        if (identifierToGrab == RainbowStringsIdentifier)
-                            return RainbowStringsKey;
-                    }
-
-                    if (currentLine.Contains(RemoveLyricsKeyIdentifier))
-                    {
-                        RemoveLyricsKey = currentLine.Substring(RemoveLyricsKeyIdentifier.Length, (currentLine.Length - RemoveLyricsKeyIdentifier.Length));
-                        if (KeyConversion.VirtualKey(RemoveLyricsKey) != "")
-                            RemoveLyricsKey = KeyConversion.VirtualKey(RemoveLyricsKey);
-                        if (identifierToGrab == RemoveLyricsKeyIdentifier)
-                            return RemoveLyricsKey;
-                    }
-                    
-                    if (currentLine.Contains(RRSpeedKeyIdentifier))
-                    {
-                        RRSpeedKey = currentLine.Substring(RRSpeedKeyIdentifier.Length, (currentLine.Length - RRSpeedKeyIdentifier.Length));
-                        if (KeyConversion.VirtualKey(RRSpeedKey) != "")
-                            RRSpeedKey = KeyConversion.VirtualKey(RRSpeedKey);
-                        if (identifierToGrab == RRSpeedKeyIdentifier)
-                            return RRSpeedKey;
-                    }
-
-                    // Mods Enabled / Disabled
-                    if (currentLine.Contains(ToggleLoftEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(ToggleLoftEnabledIdentifier.Length, (currentLine.Length - ToggleLoftEnabledIdentifier.Length)) == "on")
-                            ToggleLoftEnabled = "on";
-                        else
-                            ToggleLoftEnabled = "off";
-
-                        if (identifierToGrab == ToggleLoftEnabledIdentifier)
-                            return ToggleLoftEnabled;
-                    }
-                    if (currentLine.Contains(AddVolumeEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(AddVolumeEnabledIdentifier.Length, (currentLine.Length - AddVolumeEnabledIdentifier.Length)) == "on")
-                            AddVolumeEnabled = "on";
-                        else
-                            AddVolumeEnabled = "off";
-
-                        if (identifierToGrab == AddVolumeEnabledIdentifier)
-                            return AddVolumeEnabled;
-                    }
-                    if (currentLine.Contains(DecreaseVolumeEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(DecreaseVolumeEnabledIdentifier.Length, (currentLine.Length - DecreaseVolumeEnabledIdentifier.Length)) == "on")
-                            DecreaseVolumeEnabled = "on";
-                        else
-                            DecreaseVolumeEnabled = "off";
-
-                        if (identifierToGrab == DecreaseVolumeEnabledIdentifier)
-                            return DecreaseVolumeEnabled;
-                    }
-                    if (currentLine.Contains(ShowSongTimerEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(ShowSongTimerEnabledIdentifier.Length, (currentLine.Length - ShowSongTimerEnabledIdentifier.Length)) == "on")
-                            ShowSongTimerEnabled = "on";
-                        else
-                            ShowSongTimerEnabled = "off";
-
-                        if (identifierToGrab == ShowSongTimerEnabledIdentifier)
-                            return ShowSongTimerEnabled;
-                    }
-                    if (currentLine.Contains(ForceReEnumerationEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(ForceReEnumerationEnabledIdentifier.Length, (currentLine.Length - ForceReEnumerationEnabledIdentifier.Length)) == "manual")
-                            ForceReEnumerationEnabled = "manual";
-                        if (currentLine.Substring(ForceReEnumerationEnabledIdentifier.Length, (currentLine.Length - ForceReEnumerationEnabledIdentifier.Length)) == "automatic")
-                            ForceReEnumerationEnabled = "automatic";
-                        if (currentLine.Substring(ForceReEnumerationEnabledIdentifier.Length, (currentLine.Length - ForceReEnumerationEnabledIdentifier.Length)) == "off")
-                            ForceReEnumerationEnabled = "off";
-
-                        if (identifierToGrab == ForceReEnumerationEnabledIdentifier)
-                            return ForceReEnumerationEnabled;
-                    }
-                    if (currentLine.Contains(RainbowStringsEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(RainbowStringsEnabledIdentifier.Length, (currentLine.Length - RainbowStringsEnabledIdentifier.Length)) == "on")
-                            RainbowStringsEnabled = "on";
-                        else
-                            RainbowStringsEnabled = "off";
-
-                        if (identifierToGrab == RainbowStringsEnabledIdentifier)
-                            return RainbowStringsEnabled;
-                    }
-                    if (currentLine.Contains(ExtendedRangeEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(ExtendedRangeEnabledIdentifier.Length, (currentLine.Length - ExtendedRangeEnabledIdentifier.Length)) == "on")
-                            ExtendedRangeEnabled = "on";
-                        else
-                            ExtendedRangeEnabled = "off";
-
-                        if (identifierToGrab == ExtendedRangeEnabledIdentifier)
-                            return ExtendedRangeEnabled;
-                    }
-                    if (currentLine.Contains(ExtendedRangeDropTuningIdentifier))
-                    {
-                        if (currentLine.Substring(ExtendedRangeDropTuningIdentifier.Length, (currentLine.Length - ExtendedRangeDropTuningIdentifier.Length)) == "on")
-                            ExtendedRangeDropTuning = "on";
-                        else
-                            ExtendedRangeDropTuning = "off";
-
-                        if (identifierToGrab == ExtendedRangeDropTuningIdentifier)
-                            return ExtendedRangeDropTuning;
-                    }
-                    if (currentLine.Contains(CustomStringColorNumberIndetifier))
-                    {
-                        CustomStringColorsNumber = currentLine.Substring(CustomStringColorNumberIndetifier.Length, (currentLine.Length - CustomStringColorNumberIndetifier.Length));
-
-                        if (identifierToGrab == CustomStringColorNumberIndetifier)
-                            return CustomStringColorsNumber;
-                    }
-                    if (currentLine.Contains(DiscoModeIdentifier))
-                    {
-                        if (currentLine.Substring(DiscoModeIdentifier.Length, (currentLine.Length - DiscoModeIdentifier.Length)) == "on")
-                            DiscoModeEnabled = "on";
-                        else
-                            DiscoModeEnabled = "off";
-
-                        if (identifierToGrab == DiscoModeIdentifier)
-                            return DiscoModeEnabled;
-                    }
-                    if (currentLine.Contains(RemoveHeadstockIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveHeadstockIdentifier.Length, (currentLine.Length - RemoveHeadstockIdentifier.Length)) == "on")
-                            RemoveHeadstockEnabled = "on";
-                        else
-                            RemoveHeadstockEnabled = "off";
-
-                        if (identifierToGrab == RemoveHeadstockIdentifier)
-                            return RemoveHeadstockEnabled;
-                    }
-                    if (currentLine.Contains(RemoveSkylineIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveSkylineIdentifier.Length, (currentLine.Length - RemoveSkylineIdentifier.Length)) == "on")
-                            RemoveSkylineEnabled = "on";
-                        else
-                            RemoveSkylineEnabled = "off";
-
-                        if (identifierToGrab == RemoveSkylineIdentifier)
-                            return RemoveSkylineEnabled;
-                    }
-                    if (currentLine.Contains(GreenScreenWallIdentifier))
-                    {
-                        if (currentLine.Substring(GreenScreenWallIdentifier.Length, (currentLine.Length - GreenScreenWallIdentifier.Length)) == "on")
-                            GreenscreenWallEnabled = "on";
-                        else
-                            GreenscreenWallEnabled = "off";
-
-                        if (identifierToGrab == GreenScreenWallIdentifier)
-                            return GreenscreenWallEnabled;
-                    }
-
-                    if (currentLine.Contains(ForceProfileEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(ForceProfileEnabledIdentifier.Length, (currentLine.Length - ForceProfileEnabledIdentifier.Length)) == "on")
-                            ForceProfileEnabled = "on";
-                        else
-                            ForceProfileEnabled = "off";
-                        if (identifierToGrab == ForceProfileEnabledIdentifier)
-                            return ForceProfileEnabled;
-                    }
-                    if (currentLine.Contains(FretlessModeEnabledIdentifier))
-                    {
-                        if (currentLine.Substring(FretlessModeEnabledIdentifier.Length, (currentLine.Length - FretlessModeEnabledIdentifier.Length)) == "on")
-                            FretlessEnabled = "on";
-                        else
-                            FretlessEnabled = "off";
-
-                        if (identifierToGrab == FretlessModeEnabledIdentifier)
-                            return FretlessEnabled;
-                    }
-                    if (currentLine.Contains(RemoveInlaysIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveInlaysIdentifier.Length, (currentLine.Length - RemoveInlaysIdentifier.Length)) == "on")
-                            RemoveInlaysEnabled = "on";
-                        else
-                            RemoveInlaysEnabled = "off";
-
-                        if (identifierToGrab == RemoveInlaysIdentifier)
-                            return RemoveInlaysEnabled;
-                    }
-                    if (currentLine.Contains(ToggleLoftWhenIdentifier))
-                    {
-                        if (currentLine.Substring(ToggleLoftWhenIdentifier.Length, (currentLine.Length - ToggleLoftWhenIdentifier.Length)) == "manual")
-                            ToggleLoftWhen = "manual";
-                        if (currentLine.Substring(ToggleLoftWhenIdentifier.Length, (currentLine.Length - ToggleLoftWhenIdentifier.Length)) == "startup")
-                            ToggleLoftWhen = "startup";
-                        if (currentLine.Substring(ToggleLoftWhenIdentifier.Length, (currentLine.Length - ToggleLoftWhenIdentifier.Length)) == "song")
-                            ToggleLoftWhen = "song";
-
-                        if (identifierToGrab == ToggleLoftWhenIdentifier)
-                            return ToggleLoftWhen;
-                    }
-                    if (currentLine.Contains(RemoveLaneMarkersIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveLaneMarkersIdentifier.Length, (currentLine.Length - RemoveLaneMarkersIdentifier.Length)) == "on")
-                            RemoveLaneMarkersEnabled = "on";
-                        else
-                            RemoveLaneMarkersEnabled = "off";
-
-                        if (identifierToGrab == RemoveLaneMarkersIdentifier)
-                            return RemoveLaneMarkersEnabled;
-                    }
-                    if (currentLine.Contains(ToggleSkylineWhenIdentifier))
-                    {
-                        if (currentLine.Substring(ToggleSkylineWhenIdentifier.Length, (currentLine.Length - ToggleSkylineWhenIdentifier.Length)) == "song")
-                            ToggleSkylineWhen = "song";
-                        if (currentLine.Substring(ToggleSkylineWhenIdentifier.Length, (currentLine.Length - ToggleSkylineWhenIdentifier.Length)) == "startup")
-                            ToggleSkylineWhen = "startup";
-
-                        if (identifierToGrab == ToggleSkylineWhenIdentifier)
-                            return ToggleSkylineWhen;
-                    }
-
-                    if (currentLine.Contains(RemoveLyricsIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveLyricsIdentifier.Length, currentLine.Length - RemoveLyricsIdentifier.Length) == "on")
-                            RemoveLyricsEnabled = "on";
-                        else
-                            RemoveLyricsEnabled = "off";
-
-                        if (identifierToGrab == RemoveLyricsIdentifier)
-                            return RemoveLyricsEnabled;
-                    }
-
-                    if(currentLine.Contains(RemoveLyricsWhenIdentifier))
-                    {
-                        if(currentLine.Substring(RemoveLyricsWhenIdentifier.Length, currentLine.Length - RemoveLyricsWhenIdentifier.Length) == "startup")
-                            RemoveLyricsWhen = "startup";
-                        else
-                            RemoveLyricsWhen = "manual";
-
-                        if(identifierToGrab == RemoveLyricsWhenIdentifier)
-                            return RemoveLyricsWhen;
-                    }
-                    if(currentLine.Contains(GuitarSpeakIdentifier))
-                    {
-                        if (currentLine.Substring(GuitarSpeakIdentifier.Length, (currentLine.Length - GuitarSpeakIdentifier.Length)) == "on")
-                            GuitarSpeakEnabled = "on";
-                        else
-                            GuitarSpeakEnabled = "off";
-
-                        if(identifierToGrab == GuitarSpeakIdentifier)
-                            return GuitarSpeakEnabled;
-                    }
-                    if (currentLine.Contains(RemoveHeadstockWhenIdentifier))
-                    {
-                        if (currentLine.Substring(RemoveHeadstockWhenIdentifier.Length, currentLine.Length - RemoveHeadstockWhenIdentifier.Length) == "startup")
-                            RemoveHeadstockWhen = "startup";
-                        else
-                            RemoveHeadstockWhen = "song";
-
-                        if (identifierToGrab == RemoveHeadstockWhenIdentifier)
-                            return RemoveHeadstockWhen;
-                    }
-
-                    if (currentLine.Contains(ScreenShotScoresIdentifier))
-                    {
-                        if (currentLine.Substring(ScreenShotScoresIdentifier.Length, (currentLine.Length - ScreenShotScoresIdentifier.Length)) == "on")
-                            ScreenShotScores = "on";
-                        else
-                            ScreenShotScores = "off";
-
-                        if (identifierToGrab == ScreenShotScoresIdentifier)
-                            return ScreenShotScores;
-                    }
-
-                    if (currentLine.Contains(RiffRepeaterAboveHundredIdentifier))
-                    {
-                        if (currentLine.Substring(RiffRepeaterAboveHundredIdentifier.Length, (currentLine.Length - RiffRepeaterAboveHundredIdentifier.Length)) == "on")
-                            RiffRepeaterAboveHundred = "on";
-                        else
-                            RiffRepeaterAboveHundred = "off";
-
-                        if (identifierToGrab == RiffRepeaterAboveHundredIdentifier)
-                            return RiffRepeaterAboveHundred;
-                    }
-
-                    if (currentLine.Contains(MidiAutoTuningIdentifier))
-                    {
-                        if (currentLine.Substring(MidiAutoTuningIdentifier.Length, (currentLine.Length - MidiAutoTuningIdentifier.Length)) == "on")
-                            MidiAutoTuning = "on";
-                        else
-                            MidiAutoTuning = "off";
-
-                        if (identifierToGrab == MidiAutoTuningIdentifier)
-                            return MidiAutoTuning;
-                    }
-
-                    if (currentLine.Contains(MidiAutoTuningDeviceIdentifier))
-                    {
-                        MidiAutoTuningDevice = currentLine.Substring(MidiAutoTuningDeviceIdentifier.Length, (currentLine.Length - MidiAutoTuningDeviceIdentifier.Length));
-
-                        if (identifierToGrab == MidiAutoTuningDeviceIdentifier)
-                            return MidiAutoTuningDevice;
-                    }
-
-                    if (currentLine.Contains(ChordsModeIdentifier))
-                    {
-                        if (currentLine.Substring(ChordsModeIdentifier.Length, (currentLine.Length - ChordsModeIdentifier.Length)) == "on")
-                            ChordsMode = "on";
-                        else
-                            ChordsMode = "off";
-
-                        if (identifierToGrab == ChordsModeIdentifier)
-                            return ChordsMode;
-                    }
-
-                    if (currentLine.Contains(ShowCurrentNoteOnScreenIdentifier))
-                    {
-                        if (currentLine.Substring(ShowCurrentNoteOnScreenIdentifier.Length, (currentLine.Length - ShowCurrentNoteOnScreenIdentifier.Length)) == "on")
-                            ShowCurrentNoteOnScreen = "on";
-                        else
-                            ShowCurrentNoteOnScreen = "off";
-
-                        if (identifierToGrab == ShowCurrentNoteOnScreenIdentifier)
-                            return ShowCurrentNoteOnScreen;
-                    }
-
-                    if (currentLine.Contains(OnScreenFontIdentifier))
-                    {
-                        OnScreenFont = currentLine.Substring(OnScreenFontIdentifier.Length, (currentLine.Length - OnScreenFontIdentifier.Length));
-
-                        if (identifierToGrab == OnScreenFontIdentifier)
-                            return OnScreenFont;
-                    }
-
-                    // String Colors (Normal {N} & Colorblind {CB})
-
-                    // Normal Colors
-                        if (currentLine.Contains(String0Color_N_Identifier))
-                        {
-                            String0Color_N = currentLine.Substring(String0Color_N_Identifier.Length, (currentLine.Length - String0Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String0Color_N_Identifier)
-                                return String0Color_N;
-                        }
-                        if (currentLine.Contains(String1Color_N_Identifier))
-                        {
-                            String1Color_N = currentLine.Substring(String1Color_N_Identifier.Length, (currentLine.Length - String1Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String1Color_N_Identifier)
-                                return String1Color_N;
-                        }
-                        if (currentLine.Contains(String2Color_N_Identifier))
-                        {
-                            String2Color_N = currentLine.Substring(String2Color_N_Identifier.Length, (currentLine.Length - String2Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String2Color_N_Identifier)
-                                return String2Color_N;
-                        }
-                        if (currentLine.Contains(String3Color_N_Identifier))
-                        {
-                            String3Color_N = currentLine.Substring(String3Color_N_Identifier.Length, (currentLine.Length - String3Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String3Color_N_Identifier)
-                                return String3Color_N;
-                        }
-                        if (currentLine.Contains(String4Color_N_Identifier))
-                        {
-                            String4Color_N = currentLine.Substring(String4Color_N_Identifier.Length, (currentLine.Length - String4Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String4Color_N_Identifier)
-                                return String4Color_N;
-                        }
-                        if (currentLine.Contains(String5Color_N_Identifier))
-                        {
-                            String5Color_N = currentLine.Substring(String5Color_N_Identifier.Length, (currentLine.Length - String5Color_N_Identifier.Length));
-
-                            if (identifierToGrab == String5Color_N_Identifier)
-                                return String5Color_N;
-                        }
-
-                    // Color Blind Colors
-                        if (currentLine.Contains(String0Color_CB_Identifier))
-                        {
-                            String0Color_CB = currentLine.Substring(String0Color_CB_Identifier.Length, (currentLine.Length - String0Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String0Color_CB_Identifier)
-                                return String0Color_CB;
-                        }
-                        if (currentLine.Contains(String1Color_CB_Identifier))
-                        {
-                            String1Color_CB = currentLine.Substring(String1Color_CB_Identifier.Length, (currentLine.Length - String1Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String1Color_CB_Identifier)
-                                return String1Color_CB;
-                        }
-                        if (currentLine.Contains(String2Color_CB_Identifier))
-                        {
-                            String2Color_CB = currentLine.Substring(String2Color_CB_Identifier.Length, (currentLine.Length - String2Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String2Color_CB_Identifier)
-                                return String2Color_CB;
-                        }
-                        if (currentLine.Contains(String3Color_CB_Identifier))
-                        {
-                            String3Color_CB = currentLine.Substring(String3Color_CB_Identifier.Length, (currentLine.Length - String3Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String3Color_CB_Identifier)
-                                return String3Color_CB;
-                        }
-                        if (currentLine.Contains(String4Color_CB_Identifier))
-                        {
-                            String4Color_CB = currentLine.Substring(String4Color_CB_Identifier.Length, (currentLine.Length - String4Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String4Color_CB_Identifier)
-                                return String4Color_CB;
-                        }
-                        if (currentLine.Contains(String5Color_CB_Identifier))
-                        {
-                            String5Color_CB = currentLine.Substring(String5Color_CB_Identifier.Length, (currentLine.Length - String5Color_CB_Identifier.Length));
-
-                            if (identifierToGrab == String5Color_CB_Identifier)
-                                return String5Color_CB;
-                        }
-
-                    // Mod Settings
-                    if (currentLine.Contains(ExtendedRangeTuningIdentifier))
-                    {
-                        ExtendedRangeTuning = currentLine.Substring(ExtendedRangeTuningIdentifier.Length, (currentLine.Length - ExtendedRangeTuningIdentifier.Length));
-
-                        if (identifierToGrab == ExtendedRangeTuningIdentifier)
-                            return ExtendedRangeTuning;
-                    }
-
-                    if (currentLine.Contains(CheckForNewSongIntervalIdentifier))
-                    {
-                        CheckForNewSongInterval = currentLine.Substring(CheckForNewSongIntervalIdentifier.Length, (currentLine.Length - CheckForNewSongIntervalIdentifier.Length));
-
-                        if (identifierToGrab == CheckForNewSongIntervalIdentifier)
-                            return CheckForNewSongInterval;
-                    }
-
-                    if (currentLine.Contains(RiffRepeaterSpeedIntervalIdentifier))
-                    {
-                        RiffRepeaterSpeedInterval = currentLine.Substring(RiffRepeaterSpeedIntervalIdentifier.Length, (currentLine.Length - RiffRepeaterSpeedIntervalIdentifier.Length));
-
-                        if (identifierToGrab == RiffRepeaterSpeedIntervalIdentifier)
-                            return RiffRepeaterSpeedInterval;
-                    }
-
-                    if (currentLine.Contains(TuningPedalIdentifier))
-                    {
-                        TuningPedal = currentLine.Substring(TuningPedalIdentifier.Length, (currentLine.Length - TuningPedalIdentifier.Length));
-
-                        if (identifierToGrab == TuningPedalIdentifier)
-                            return TuningPedal;
-                    }
-
-                    // Guitar Speak
-                    if(currentLine.Contains(GuitarSpeakDeleteIdentifier))
-                    {
-                        GuitarSpeakDelete = currentLine.Substring(GuitarSpeakDeleteIdentifier.Length, (currentLine.Length - GuitarSpeakDeleteIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakDeleteIdentifier)
-                            return GuitarSpeakDelete;
-                    }
-                    if(currentLine.Contains(GuitarSpeakSpaceIdentifier))
-                    {
-                        GuitarSpeakSpace = currentLine.Substring(GuitarSpeakSpaceIdentifier.Length, (currentLine.Length - GuitarSpeakSpaceIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakSpaceIdentifier)
-                            return GuitarSpeakSpace;
-                    }
-                    if(currentLine.Contains(GuitarSpeakEnterIdentifier))
-                    {
-                        GuitarSpeakEnter = currentLine.Substring(GuitarSpeakEnterIdentifier.Length, (currentLine.Length - GuitarSpeakEnterIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakEnterIdentifier)
-                            return GuitarSpeakEnter;
-                    }
-                    if(currentLine.Contains(GuitarSpeakTabIdentifier))
-                    {
-                        GuitarSpeakTab = currentLine.Substring(GuitarSpeakTabIdentifier.Length, (currentLine.Length - GuitarSpeakTabIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakTabIdentifier)
-                            return GuitarSpeakTab;
-                    }
-                    if(currentLine.Contains(GuitarSpeakPGUPIdentifier))
-                    {
-                        GuitarSpeakPGUP = currentLine.Substring(GuitarSpeakPGUPIdentifier.Length, (currentLine.Length - GuitarSpeakPGUPIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakPGUPIdentifier)
-                            return GuitarSpeakPGUP;
-                    }
-                    if(currentLine.Contains(GuitarSpeakPGDNIdentifier))
-                    {
-                        GuitarSpeakPGDN = currentLine.Substring(GuitarSpeakPGDNIdentifier.Length, (currentLine.Length - GuitarSpeakPGDNIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakPGDNIdentifier)
-                            return GuitarSpeakPGDN;
-                    }
-                    if(currentLine.Contains(GuitarSpeakUPIdentifier))
-                    {
-                        GuitarSpeakUP = currentLine.Substring(GuitarSpeakUPIdentifier.Length, (currentLine.Length - GuitarSpeakUPIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakUPIdentifier)
-                            return GuitarSpeakUP;
-                    }
-                    if(currentLine.Contains(GuitarSpeakDNIdentifier))
-                    {
-                        GuitarSpeakDN = currentLine.Substring(GuitarSpeakDNIdentifier.Length, (currentLine.Length - GuitarSpeakDNIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakDNIdentifier)
-                            return GuitarSpeakDN;
-                    }
-                    if(currentLine.Contains(GuitarSpeakESCIdentifier))
-                    {
-                        GuitarSpeakESC = currentLine.Substring(GuitarSpeakESCIdentifier.Length, (currentLine.Length - GuitarSpeakESCIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakESCIdentifier)
-                            return GuitarSpeakESC;
-                    }
-                    if(currentLine.Contains(GuitarSpeakCloseIdentifier))
-                    {
-                        GuitarSpeakClose = currentLine.Substring(GuitarSpeakCloseIdentifier.Length, (currentLine.Length - GuitarSpeakCloseIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakCloseIdentifier)
-                            return GuitarSpeakClose;
-                    }
-                    if (currentLine.Contains(GuitarSpeakOBracketIdentifier))
-                    {
-                        GuitarSpeakOBracket = currentLine.Substring(GuitarSpeakOBracketIdentifier.Length, (currentLine.Length - GuitarSpeakOBracketIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakOBracketIdentifier)
-                            return GuitarSpeakOBracket;
-                    }
-                    if (currentLine.Contains(GuitarSpeakCBracketIdentifier))
-                    {
-                        GuitarSpeakCBracket = currentLine.Substring(GuitarSpeakCBracketIdentifier.Length, (currentLine.Length - GuitarSpeakCBracketIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakCBracketIdentifier)
-                            return GuitarSpeakCBracket;
-                    }
-                    if (currentLine.Contains(GuitarSpeakTildeaIdentifier))
-                    {
-                        GuitarSpeakTildea = currentLine.Substring(GuitarSpeakTildeaIdentifier.Length, (currentLine.Length - GuitarSpeakTildeaIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakTildeaIdentifier)
-                            return GuitarSpeakTildea;
-                    }
-                    if (currentLine.Contains(GuitarSpeakForSlashIdentifier))
-                    {
-                        GuitarSpeakForSlash = currentLine.Substring(GuitarSpeakForSlashIdentifier.Length, (currentLine.Length - GuitarSpeakForSlashIdentifier.Length));
-
-                        if (identifierToGrab == GuitarSpeakForSlashIdentifier)
-                            return GuitarSpeakForSlash;
-                    }
-
-                    if (currentLine.Contains(GuitarSpeakTuningIdentifier))
-                    {
-                        if (currentLine.Substring(GuitarSpeakTuningIdentifier.Length, (currentLine.Length - GuitarSpeakTuningIdentifier.Length)) == "on")
-                            GuitarSpeakWhileTuning = "on";
-                        else
-                            GuitarSpeakWhileTuning = "off";
-
-                        if (identifierToGrab == GuitarSpeakTuningIdentifier)
-                            return GuitarSpeakWhileTuning;
-                    }
-
-                    // GUI Settings
-                    if (currentLine.Contains(CustomGUIThemeIdentifier))
-                    {
-                        if (currentLine.Substring(CustomGUIThemeIdentifier.Length, (currentLine.Length - CustomGUIThemeIdentifier.Length)) == "on")
-                            CustomGUITheme = "on";
-                        else
-                            CustomGUITheme = "off";
-
-                        if (identifierToGrab == CustomGUIThemeIdentifier)
-                            return CustomGUITheme;
-                    }
-                    if (currentLine.Contains(CustomGUIBackgroundColorIdentifier))
-                    {
-                        CustomGUIBackgroundColor = currentLine.Substring(CustomGUIBackgroundColorIdentifier.Length, (currentLine.Length - CustomGUIBackgroundColorIdentifier.Length));
-
-                        if (identifierToGrab == CustomGUIBackgroundColorIdentifier)
-                            return CustomGUIBackgroundColor;
-                    }
-                    if (currentLine.Contains(CustomGUITextColorIdentifier))
-                    {
-                        CustomGUITextColor = currentLine.Substring(CustomGUITextColorIdentifier.Length, (currentLine.Length - CustomGUITextColorIdentifier.Length));
-
-                        if (identifierToGrab == CustomGUITextColorIdentifier)
-                            return CustomGUITextColor;
-                    }
-                }
-                return ""; // Yeah, we don't know what you're looking for...
-            }
+            return ""; // Yeah, we don't know what you're looking for...
         }
     }
 }

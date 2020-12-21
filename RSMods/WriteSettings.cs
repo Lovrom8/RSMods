@@ -126,7 +126,6 @@ namespace RSMods
         {
             // [Section]                         mod    default
             {"[SongListTitles]", new Dictionary<string, string> {
-                { String.Empty, ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier)}, // For some reason this dictionary craps the bed on the first line, so here's a "fix" until we find a better solution.
                 { ReadSettings.Songlist1Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) }, // Songlist 1
                 { ReadSettings.Songlist2Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier) }, // Songlist 2
                 { ReadSettings.Songlist3Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier) }, // Songlist 3
