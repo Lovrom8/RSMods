@@ -252,7 +252,7 @@ namespace RSMods
                 checkBox_RemoveInlays.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on") // Remove Line Markers Enabled / Disabled
-                checkBox_RemoveLineMarkers.Checked = true;
+                checkBox_RemoveLaneMarkers.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsIdentifier) == "on") // Remove Lyrics
             {
@@ -368,6 +368,8 @@ namespace RSMods
 
             textBox_ChangeBackgroundColor.BackColor = backColor;
             textBox_ChangeTextColor.BackColor = foreColor;
+
+            CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
         }
 
         private void CustomTheme_ChangeTheme(object sender, EventArgs e)
@@ -877,7 +879,7 @@ namespace RSMods
                 SaveChanges(ReadSettings.ToggleLoftWhenIdentifier, "startup");
         }
 
-        private void RemoveLineMarkersCheckBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, checkBox_RemoveLineMarkers.Checked.ToString().ToLower());
+        private void Save_RemoveLaneMarkers(object sender, EventArgs e) => SaveChanges(ReadSettings.RemoveLaneMarkersIdentifier, checkBox_RemoveLaneMarkers.Checked.ToString().ToLower());
         private void Save_ToggleSkylineSong(object sender, EventArgs e)
         {
             if (radio_SkylineOffInSong.Checked)

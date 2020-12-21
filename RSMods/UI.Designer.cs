@@ -73,7 +73,7 @@
             this.checkBox_GuitarSpeak = new System.Windows.Forms.CheckBox();
             this.checkBox_RemoveLyrics = new System.Windows.Forms.CheckBox();
             this.checkBox_CustomColors = new System.Windows.Forms.CheckBox();
-            this.checkBox_RemoveLineMarkers = new System.Windows.Forms.CheckBox();
+            this.checkBox_RemoveLaneMarkers = new System.Windows.Forms.CheckBox();
             this.checkBox_RainbowStrings = new System.Windows.Forms.CheckBox();
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
@@ -168,6 +168,9 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
+            this.label_FontTestNumbers = new System.Windows.Forms.Label();
+            this.label_FontTestlowercase = new System.Windows.Forms.Label();
+            this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
             this.listBox_AvailableFonts = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
             this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
@@ -221,9 +224,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
-            this.label_FontTestlowercase = new System.Windows.Forms.Label();
-            this.label_FontTestNumbers = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -715,7 +715,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_GuitarSpeak);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveLyrics);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomColors);
-            this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveLineMarkers);
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveLaneMarkers);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveInlays);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SongTimer);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ToggleLoft);
@@ -836,18 +836,18 @@
             this.checkBox_CustomColors.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.checkBox_CustomColors.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
-            // checkBox_RemoveLineMarkers
+            // checkBox_RemoveLaneMarkers
             // 
-            this.checkBox_RemoveLineMarkers.AutoSize = true;
-            this.checkBox_RemoveLineMarkers.Location = new System.Drawing.Point(131, 61);
-            this.checkBox_RemoveLineMarkers.Name = "checkBox_RemoveLineMarkers";
-            this.checkBox_RemoveLineMarkers.Size = new System.Drawing.Size(130, 17);
-            this.checkBox_RemoveLineMarkers.TabIndex = 43;
-            this.checkBox_RemoveLineMarkers.Text = "Remove Line Markers";
-            this.checkBox_RemoveLineMarkers.UseVisualStyleBackColor = true;
-            this.checkBox_RemoveLineMarkers.CheckedChanged += new System.EventHandler(this.RemoveLineMarkersCheckBox_CheckedChanged);
-            this.checkBox_RemoveLineMarkers.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveLineMarkers.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveLaneMarkers.AutoSize = true;
+            this.checkBox_RemoveLaneMarkers.Location = new System.Drawing.Point(131, 61);
+            this.checkBox_RemoveLaneMarkers.Name = "checkBox_RemoveLaneMarkers";
+            this.checkBox_RemoveLaneMarkers.Size = new System.Drawing.Size(134, 17);
+            this.checkBox_RemoveLaneMarkers.TabIndex = 43;
+            this.checkBox_RemoveLaneMarkers.Text = "Remove Lane Markers";
+            this.checkBox_RemoveLaneMarkers.UseVisualStyleBackColor = true;
+            this.checkBox_RemoveLaneMarkers.CheckedChanged += new System.EventHandler(this.Save_RemoveLaneMarkers);
+            this.checkBox_RemoveLaneMarkers.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.checkBox_RemoveLaneMarkers.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_RainbowStrings
             // 
@@ -2054,6 +2054,36 @@
             this.groupBox_OnScreenFont.Text = "On Screen Font";
             this.groupBox_OnScreenFont.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
+            // label_FontTestNumbers
+            // 
+            this.label_FontTestNumbers.AutoSize = true;
+            this.label_FontTestNumbers.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestNumbers.Location = new System.Drawing.Point(203, 92);
+            this.label_FontTestNumbers.Name = "label_FontTestNumbers";
+            this.label_FontTestNumbers.Size = new System.Drawing.Size(88, 17);
+            this.label_FontTestNumbers.TabIndex = 3;
+            this.label_FontTestNumbers.Text = "1234567890";
+            // 
+            // label_FontTestlowercase
+            // 
+            this.label_FontTestlowercase.AutoSize = true;
+            this.label_FontTestlowercase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestlowercase.Location = new System.Drawing.Point(268, 15);
+            this.label_FontTestlowercase.Name = "label_FontTestlowercase";
+            this.label_FontTestlowercase.Size = new System.Drawing.Size(59, 68);
+            this.label_FontTestlowercase.TabIndex = 2;
+            this.label_FontTestlowercase.Text = "abcdefg\r\nhijklmn\r\nopqrstu\r\nvwxyz";
+            // 
+            // label_FontTestCAPITALS
+            // 
+            this.label_FontTestCAPITALS.AutoSize = true;
+            this.label_FontTestCAPITALS.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestCAPITALS.Location = new System.Drawing.Point(189, 15);
+            this.label_FontTestCAPITALS.Name = "label_FontTestCAPITALS";
+            this.label_FontTestCAPITALS.Size = new System.Drawing.Size(77, 68);
+            this.label_FontTestCAPITALS.TabIndex = 1;
+            this.label_FontTestCAPITALS.Text = "ABCDEFG\r\nHIJKLMN\r\nOPQRSTU\r\nVWXYZ\r\n";
+            // 
             // listBox_AvailableFonts
             // 
             this.listBox_AvailableFonts.FormattingEnabled = true;
@@ -2644,36 +2674,6 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // label_FontTestCAPITALS
-            // 
-            this.label_FontTestCAPITALS.AutoSize = true;
-            this.label_FontTestCAPITALS.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestCAPITALS.Location = new System.Drawing.Point(189, 15);
-            this.label_FontTestCAPITALS.Name = "label_FontTestCAPITALS";
-            this.label_FontTestCAPITALS.Size = new System.Drawing.Size(77, 68);
-            this.label_FontTestCAPITALS.TabIndex = 1;
-            this.label_FontTestCAPITALS.Text = "ABCDEFG\r\nHIJKLMN\r\nOPQRSTU\r\nVWXYZ\r\n";
-            // 
-            // label_FontTestlowercase
-            // 
-            this.label_FontTestlowercase.AutoSize = true;
-            this.label_FontTestlowercase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestlowercase.Location = new System.Drawing.Point(268, 15);
-            this.label_FontTestlowercase.Name = "label_FontTestlowercase";
-            this.label_FontTestlowercase.Size = new System.Drawing.Size(59, 68);
-            this.label_FontTestlowercase.TabIndex = 2;
-            this.label_FontTestlowercase.Text = "abcdefg\r\nhijklmn\r\nopqrstu\r\nvwxyz";
-            // 
-            // label_FontTestNumbers
-            // 
-            this.label_FontTestNumbers.AutoSize = true;
-            this.label_FontTestNumbers.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestNumbers.Location = new System.Drawing.Point(203, 92);
-            this.label_FontTestNumbers.Name = "label_FontTestNumbers";
-            this.label_FontTestNumbers.Size = new System.Drawing.Size(88, 17);
-            this.label_FontTestNumbers.TabIndex = 3;
-            this.label_FontTestNumbers.Text = "1234567890";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2782,7 +2782,7 @@
         private System.Windows.Forms.GroupBox groupBox_LoftOffWhen;
         private System.Windows.Forms.GroupBox groupBox_ExtendedRangeWhen;
         private System.Windows.Forms.GroupBox groupBox_EnabledMods;
-        private System.Windows.Forms.CheckBox checkBox_RemoveLineMarkers;
+        private System.Windows.Forms.CheckBox checkBox_RemoveLaneMarkers;
         private System.Windows.Forms.GroupBox groupBox_Songlist;
         private System.Windows.Forms.GroupBox groupBox_Keybindings;
         private System.Windows.Forms.Button button_ResetModsToDefault;
