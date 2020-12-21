@@ -1240,6 +1240,8 @@ namespace RSMods
             // label_AuthorizedAs.Text = $"{TwitchSettings.Get.Username} with channel ID: {TwitchSettings.Get.ChannelID} and access token: {TwitchSettings.Get.AccessToken}";
         }
 
+        private void Twitch_NewAccessToken(object sender, EventArgs e) => checkBox_RevealTwitchAuthToken.Checked = false;
+
         private void LoadTwitchSettings()
         {
             TwitchSettings.Get._context = SynchronizationContext.Current;

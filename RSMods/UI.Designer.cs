@@ -2468,6 +2468,7 @@
             this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
             this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchAccessTokenVal.TabIndex = 8;
+            this.label_TwitchAccessTokenVal.TextChanged += new System.EventHandler(this.Twitch_NewAccessToken);
             // 
             // label_TwitchChannelIDVal
             // 
