@@ -124,7 +124,7 @@ namespace RSMods
 
         public static Dictionary<string, Dictionary<string, string>> saveSettings = new Dictionary<string, Dictionary<string, string>>()
         {
-            // [Section]                         mod    default
+            // [Section]                         mod    setting
             {"[SongListTitles]", new Dictionary<string, string> {
                 { ReadSettings.Songlist1Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) }, // Songlist 1
                 { ReadSettings.Songlist2Identifier, ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier) }, // Songlist 2
