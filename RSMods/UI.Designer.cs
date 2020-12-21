@@ -2636,7 +2636,7 @@
             this.button_ChangeTextColor.TabIndex = 1;
             this.button_ChangeTextColor.Text = "Change Text Color";
             this.button_ChangeTextColor.UseVisualStyleBackColor = true;
-            this.button_ChangeTextColor.Click += new System.EventHandler(this.ChangeTextColor);
+            this.button_ChangeTextColor.Click += new System.EventHandler(this.CustomTheme_ChangeTextColor);
             // 
             // button_ChangeBackgroundColor
             // 
@@ -2646,7 +2646,7 @@
             this.button_ChangeBackgroundColor.TabIndex = 0;
             this.button_ChangeBackgroundColor.Text = "Change Background Color";
             this.button_ChangeBackgroundColor.UseVisualStyleBackColor = true;
-            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.ChangeBackgroundColor);
+            this.button_ChangeBackgroundColor.Click += new System.EventHandler(this.CustomTheme_ChangeBackgroundColor);
             // 
             // checkBox_ChangeTheme
             // 

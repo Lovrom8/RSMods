@@ -347,10 +347,25 @@ namespace RSMods
             foreach (Control foreColorToChange in ControlList)
                 foreColorToChange.ForeColor = textColor;
 
-            dgv_EnabledRewards.BackgroundColor = backgroundColor;
-            dgv_DefaultRewards.BackgroundColor = backgroundColor;
-            dgv_EnabledRewards.ForeColor = textColor;
-            dgv_DefaultRewards.ForeColor = textColor;
+            CustomTheme_DataGridView(dgv_DefaultRewards, backgroundColor, textColor);
+            CustomTheme_DataGridView(dgv_EnabledRewards, backgroundColor, textColor);
+        }
+
+        private void CustomTheme_DataGridView(DataGridView grid, Color backgroundColor, Color textColor)
+        {
+            grid.EnableHeadersVisualStyles = false; // Allows us to customize the color scheme
+
+            // Background Colors
+            grid.BackgroundColor = backgroundColor;
+            grid.ColumnHeadersDefaultCellStyle.BackColor = backgroundColor;
+            grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = backgroundColor;
+            grid.DefaultCellStyle.SelectionBackColor = backgroundColor;
+
+            // Foreground Colors
+            grid.ForeColor = textColor;
+            grid.DefaultCellStyle.SelectionForeColor = textColor;
+            grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = textColor;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = textColor;
         }
 
         private void CustomTheme_LoadCustomColors()
@@ -384,6 +399,38 @@ namespace RSMods
                 SaveChanges(ReadSettings.CustomGUIThemeIdentifier, "off");
                 groupBox_ChangeTheme.Visible = false;
                 CustomTheme_ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
+            }
+        }
+
+        private void CustomTheme_ChangeBackgroundColor(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultBackgroundColor
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUIBackgroundColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeBackgroundColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void CustomTheme_ChangeTextColor(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultTextColor
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(ReadSettings.CustomGUITextColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeTextColor.BackColor = colorDialog.Color;
             }
         }
 
@@ -945,38 +992,6 @@ namespace RSMods
         {
             if (radio_HeadstockOffInSong.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
-        }
-
-        private void ChangeBackgroundColor(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog
-            {
-                AllowFullOpen = true,
-                ShowHelp = false,
-                Color = WriteSettings.defaultBackgroundColor
-            };
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                SaveChanges(ReadSettings.CustomGUIBackgroundColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                textBox_ChangeBackgroundColor.BackColor = colorDialog.Color;
-            }
-        }
-
-        private void ChangeTextColor(object sender, EventArgs e)
-        {
-            ColorDialog colorDialog = new ColorDialog
-            {
-                AllowFullOpen = true,
-                ShowHelp = false,
-                Color = WriteSettings.defaultTextColor
-            };
-
-            if (colorDialog.ShowDialog() == DialogResult.OK)
-            {
-                SaveChanges(ReadSettings.CustomGUITextColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                textBox_ChangeTextColor.BackColor = colorDialog.Color;
-            }
         }
 
         private void Save_ThemeColors(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
