@@ -342,13 +342,18 @@ namespace RSMods
             BackColor = backgroundColor; // MainForm BackColor
             ForeColor = textColor; // MainForm ForeColor
 
-            foreach (Control backColorToChange in ControlList)
-                backColorToChange.BackColor = backgroundColor;
-            foreach (Control foreColorToChange in ControlList)
-                foreColorToChange.ForeColor = textColor;
+            foreach (Control controlToChange in ControlList)
+            {
+                controlToChange.ForeColor = textColor;
+                controlToChange.BackColor = backgroundColor;
+            }
 
             CustomTheme_DataGridView(dgv_DefaultRewards, backgroundColor, textColor);
             CustomTheme_DataGridView(dgv_EnabledRewards, backgroundColor, textColor);
+
+            // Twitch Log. Can't be done automatically or it will break other text boxes :(
+            textBox_TwitchLog.ForeColor = textColor;
+            textBox_TwitchLog.BackColor = backgroundColor;
         }
 
         private void CustomTheme_DataGridView(DataGridView grid, Color backgroundColor, Color textColor)
@@ -433,6 +438,8 @@ namespace RSMods
                 textBox_ChangeTextColor.BackColor = colorDialog.Color;
             }
         }
+
+        private void Apply_ThemeColors(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
 
         #endregion
         #region Check For Keypresses (Keybindings)
@@ -993,8 +1000,6 @@ namespace RSMods
             if (radio_HeadstockOffInSong.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
         }
-
-        private void Save_ThemeColors(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
 
         private void Save_RiffRepeaterSpeedInterval(object sender, EventArgs e) => SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
 

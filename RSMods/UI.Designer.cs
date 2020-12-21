@@ -216,7 +216,7 @@
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
             this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
-            this.button_SaveThemeColors = new System.Windows.Forms.Button();
+            this.button_ApplyThemeColors = new System.Windows.Forms.Button();
             this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
             this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
@@ -2587,7 +2587,7 @@
             // 
             // groupBox_ChangeTheme
             // 
-            this.groupBox_ChangeTheme.Controls.Add(this.button_SaveThemeColors);
+            this.groupBox_ChangeTheme.Controls.Add(this.button_ApplyThemeColors);
             this.groupBox_ChangeTheme.Controls.Add(this.textBox_ChangeTextColor);
             this.groupBox_ChangeTheme.Controls.Add(this.textBox_ChangeBackgroundColor);
             this.groupBox_ChangeTheme.Controls.Add(this.button_ChangeTextColor);
@@ -2600,15 +2600,15 @@
             this.groupBox_ChangeTheme.Text = "Change Theme Colors";
             this.groupBox_ChangeTheme.Visible = false;
             // 
-            // button_SaveThemeColors
+            // button_ApplyThemeColors
             // 
-            this.button_SaveThemeColors.Location = new System.Drawing.Point(60, 126);
-            this.button_SaveThemeColors.Name = "button_SaveThemeColors";
-            this.button_SaveThemeColors.Size = new System.Drawing.Size(133, 23);
-            this.button_SaveThemeColors.TabIndex = 4;
-            this.button_SaveThemeColors.Text = "Save Theme Colors";
-            this.button_SaveThemeColors.UseVisualStyleBackColor = true;
-            this.button_SaveThemeColors.Click += new System.EventHandler(this.Save_ThemeColors);
+            this.button_ApplyThemeColors.Location = new System.Drawing.Point(60, 126);
+            this.button_ApplyThemeColors.Name = "button_ApplyThemeColors";
+            this.button_ApplyThemeColors.Size = new System.Drawing.Size(133, 23);
+            this.button_ApplyThemeColors.TabIndex = 4;
+            this.button_ApplyThemeColors.Text = "Apply Theme Colors";
+            this.button_ApplyThemeColors.UseVisualStyleBackColor = true;
+            this.button_ApplyThemeColors.Click += new System.EventHandler(this.Apply_ThemeColors);
             // 
             // textBox_ChangeTextColor
             // 
@@ -2891,7 +2891,7 @@
         private System.Windows.Forms.TextBox textBox_ChangeBackgroundColor;
         private System.Windows.Forms.Button button_ChangeTextColor;
         private System.Windows.Forms.Button button_ChangeBackgroundColor;
-        private System.Windows.Forms.Button button_SaveThemeColors;
+        private System.Windows.Forms.Button button_ApplyThemeColors;
         private System.Windows.Forms.Label label_TwitchUsername;
         private System.Windows.Forms.Label label_TwitchAccessToken;
         private System.Windows.Forms.Label label_TwitchChannelID;
