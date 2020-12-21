@@ -54,6 +54,18 @@
 * **Auto enter last used profile**
   * Also know as the Fork-in-the-toaster mod, due to it's simple but effective nature, it is best used in conjunction with the Fast Load mod. The DLL will spam Enter key in order to automatically enter the game. It may cause potential issues if UPLAY servers are unavailable, but in general it makes your life quite a bit easier.
 
+* **Auto tune your Whammy DT**
+ * If you own a Digitech Whammy DT and have a simple USB-to-MIDI cable on hand, you will find this useful - automatically change the tuning of your guitar to the tuning of the current song without touching the pedal (works even with odd tunings like A443 or similar).
+ 
+* **Allow Riff Repeater Speed Above 100** 
+  * For whatever reason TTFAF is not fast enough for you, you can now play it in Riff Repeater with speeds over 100%. :)
+ 
+* **Screenshot Scores**
+  * If keeping track of your improvements is your jam, you may want to use this option which will tell Steam to take a screenshot of your latest playthrough for you. 
+  
+* **Show Current Note**
+  * While we still don't have a way of forcing the game to show the pause menu while you are playing, you can enable this budget version to see which note you are currently hitting, so that you can finally hit 100% instead of missing those pesky bends due to _bad note detection_.
+
 * **CDLC Enabler**
   * After all, this mod is based on the proxy DLL which bypassed the check which enabled users to play community made songs in the game.
 
