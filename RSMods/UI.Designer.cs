@@ -1915,7 +1915,7 @@
             // 
             this.label_Credits.AutoSize = true;
             this.label_Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Credits.Location = new System.Drawing.Point(992, 458);
+            this.label_Credits.Location = new System.Drawing.Point(989, 455);
             this.label_Credits.Name = "label_Credits";
             this.label_Credits.Size = new System.Drawing.Size(152, 52);
             this.label_Credits.TabIndex = 72;
@@ -1969,7 +1969,9 @@
             this.TabController.Controls.Add(this.tab_Twitch);
             this.TabController.Controls.Add(this.tab_GUISettings);
             this.TabController.Location = new System.Drawing.Point(3, 7);
+            this.TabController.Margin = new System.Windows.Forms.Padding(0);
             this.TabController.Name = "TabController";
+            this.TabController.Padding = new System.Drawing.Point(0, 0);
             this.TabController.SelectedIndex = 0;
             this.TabController.Size = new System.Drawing.Size(1158, 539);
             this.TabController.TabIndex = 100001;
@@ -2246,7 +2248,7 @@
             // checkBox_RevealTwitchAuthToken
             // 
             this.checkBox_RevealTwitchAuthToken.AutoSize = true;
-            this.checkBox_RevealTwitchAuthToken.Location = new System.Drawing.Point(541, 87);
+            this.checkBox_RevealTwitchAuthToken.Location = new System.Drawing.Point(548, 87);
             this.checkBox_RevealTwitchAuthToken.Name = "checkBox_RevealTwitchAuthToken";
             this.checkBox_RevealTwitchAuthToken.Size = new System.Drawing.Size(60, 17);
             this.checkBox_RevealTwitchAuthToken.TabIndex = 126;
@@ -2577,8 +2579,8 @@
             this.tab_GUISettings.Controls.Add(this.checkBox_ChangeTheme);
             this.tab_GUISettings.Controls.Add(this.label_Credits);
             this.tab_GUISettings.Location = new System.Drawing.Point(4, 22);
+            this.tab_GUISettings.Margin = new System.Windows.Forms.Padding(0);
             this.tab_GUISettings.Name = "tab_GUISettings";
-            this.tab_GUISettings.Padding = new System.Windows.Forms.Padding(3);
             this.tab_GUISettings.Size = new System.Drawing.Size(1150, 513);
             this.tab_GUISettings.TabIndex = 5;
             this.tab_GUISettings.Text = "GUI Settings";
@@ -2649,7 +2651,7 @@
             // checkBox_ChangeTheme
             // 
             this.checkBox_ChangeTheme.AutoSize = true;
-            this.checkBox_ChangeTheme.Location = new System.Drawing.Point(19, 18);
+            this.checkBox_ChangeTheme.Location = new System.Drawing.Point(16, 15);
             this.checkBox_ChangeTheme.Name = "checkBox_ChangeTheme";
             this.checkBox_ChangeTheme.Size = new System.Drawing.Size(99, 17);
             this.checkBox_ChangeTheme.TabIndex = 73;
