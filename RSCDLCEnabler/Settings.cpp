@@ -4,9 +4,7 @@
 void Settings::Initialize()
 {
 	modSettings = {  // Default values incase the INI doesn't load
-		{"AddVolumeKey",  "O"},
-		{"DecreaseVolumeKey", "I"},
-		{"ChangedSelectedVolumeKey", "P"},
+
 		{"CustomSongListTitles", "K"},
 		{"ToggleLoftKey", "T"},
 		{"ShowSongTimerKey", "S"},
@@ -16,11 +14,19 @@ void Settings::Initialize()
 		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
 
+		{"MasterVolumeKey", "5"},
+		{"SongVolumeKey", "6"},
+		{"Player1VolumeKey", "7"},
+		{"Player2VolumeKey", "8"},
+		{"MicrophoneVolumeKey", "9"},
+		{"VoiceOverVolumeKey", "0"},
+		{"SFXVolumeKey", "S"},
+		{"ChangedSelectedVolumeKey", "P"},
+
 		{"ForceReEnumerationEnabled", "automatic"},
 
 		{"ToggleLoftEnabled", "off"},
-		{"AddVolumeEnabled", "off"},
-		{"DecreaseVolumeEnabled", "off"},
+		{"VolumeControlEnabled", "off"},
 		{"ShowSongTimerEnabled", "on"},
 		{"ForceReEnumerationEnabled", "off"},
 		{"RainbowStringsEnabled", "off"},
@@ -55,6 +61,7 @@ void Settings::Initialize()
 		{"CheckForNewSongsInterval", 5000},
 		{"RRSpeedInterval", 0},
 		{"TuningPedal", 0},
+		{"VolumeControlInterval", 5},
 		{"CustomStringColors", 0},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -111,9 +118,6 @@ void Settings::ReadKeyBinds() {
 	modSettings = {
 		// Mods
 			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
-			{ "AddVolumeKey", reader.GetValue("Keybinds", "AddVolumeKey", "O") },
-			{ "DecreaseVolumeKey",  reader.GetValue("Keybinds", "DecreaseVolumeKey", "I") },
-			{ "ChangedSelectedVolumeKey", reader.GetValue("Keybinds", "ChangedSelectedVolumeKey", "P") },
 			{ "CustomSongListTitles", reader.GetValue("Keybinds", "CustomSongListTitles", "K")},
 			{ "ShowSongTimerKey", reader.GetValue("Keybinds", "ShowSongTimerKey", "N")},
 			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
@@ -121,6 +125,15 @@ void Settings::ReadKeyBinds() {
 			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
+
+			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
+			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
+			{ "Player1VolumeKey", reader.GetValue("Audio Keybindings", "Player1VolumeKey", "7") },
+			{ "Player2VolumeKey", reader.GetValue("Audio Keybindings", "Player2VolumeKey", "8") },
+			{ "MicrophoneVolumeKey", reader.GetValue("Audio Keybindings", "MicrophoneVolumeKey", "9") },
+			{ "VoiceOverVolumeKey", reader.GetValue("Audio Keybindings", "VoiceOverVolumeKey", "0") },
+			{ "SFXVolumeKey", reader.GetValue("Audio Keybindings", "SFXVolumeKey", "S") },
+			{ "ChangedSelectedVolumeKey", reader.GetValue("Audio Keybindings", "ChangedSelectedVolumeKey", "P") },
 	};
 	//std::cout << "Read " << modSettings["ToggleLoftKey"] << std::endl;
 }
@@ -137,6 +150,7 @@ void Settings::ReadModSettings() {
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
 		{"RRSpeedInterval", reader.GetLongValue("Mod Settings", "RRSpeedInterval", 0)},
 		{"TuningPedal", reader.GetLongValue("Mod Settings", "TuningPedal", 0)},
+		{"VolumeControlInterval", reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -156,8 +170,7 @@ void Settings::ReadModSettings() {
 
 	// Mods Enabled / Disabled
 	modSettings["ToggleLoftEnabled"] = reader.GetValue("Toggle Switches", "ToggleLoft", "on");
-	modSettings["AddVolumeEnabled"] = reader.GetValue("Toggle Switches", "AddVolume", "off");
-	modSettings["DecreaseVolumeEnabled"] = reader.GetValue("Toggle Switches", "DecreaseVolume", "off");
+	modSettings["VolumeControlEnabled"] = reader.GetValue("Toggle Switches", "VolumeControl", "off");
 	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "off");
 	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
 	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");

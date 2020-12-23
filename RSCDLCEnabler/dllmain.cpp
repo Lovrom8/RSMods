@@ -81,34 +81,50 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Value: " << Settings::ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
 				std::cout << "Reloaded settings" << std::endl;
 			}
-			else if (keyPressed == Settings::GetKeyBind("AddVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
-				float volume = 0;
-				RTPCValue_type type = RTPCValue_GameObject;
-				WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
-
-				//std::cout << volume << std::endl;
-
-				if (volume <= 95.0f)
-					volume += 5.0f;
+			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
 				else
-					volume = 100.0f; // Incase the volume is 96-99 we can't throw it over 100.
-
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
 			}
-			else if (keyPressed == Settings::GetKeyBind("DecreaseVolumeKey") && Settings::ReturnSettingValue("DecreaseVolumeEnabled") == "on") {
-				float volume = 0;
-				RTPCValue_type type = RTPCValue_GameObject;
-				WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
-
-				if (volume >= 5.0f)
-					volume -= 5.0f;
+			else if (keyPressed == Settings::GetKeyBind("SongVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
 				else
-					volume = 0.0f; // Incase the volume is 1-4 we can't throw it below 0.
-
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
 			}
+			else if (keyPressed == Settings::GetKeyBind("Player1VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
+			}
+			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Player2VolumeKey");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Player2VolumeKey");
+			}
+			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
+			}
+			else if (keyPressed == Settings::GetKeyBind("VoiceOverVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
+			}
+			else if (keyPressed == Settings::GetKeyBind("SFXVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on")
+			{
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
+			}
+			
 
 			/*else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
 				DiscoModeEnabled = !DiscoModeEnabled;
@@ -123,7 +139,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				}
 			}*/
 
-			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("AddVolumeEnabled") == "on") {
+			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				currentVolumeIndex++;
 
 				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit.
@@ -369,7 +385,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
 
-		if (Settings::ReturnSettingValue("AddVolumeEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
+		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);

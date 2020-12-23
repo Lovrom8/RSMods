@@ -207,6 +207,9 @@
     <ClCompile Include="Lib\Midi\RtMidi.cpp">
       <Filter>Main Headers\Midi</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\VolumeControl.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -409,6 +412,9 @@
     </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">
       <Filter>Main Headers\Midi</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VolumeControl.hpp">
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
