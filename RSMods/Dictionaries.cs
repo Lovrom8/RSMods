@@ -24,7 +24,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_AutoLoadProfile, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.");
             TooltipDictionary.Add(checkBox_Fretless, "Removes the Fret Wire from the neck, making your instrument appear to be fretless.");
             TooltipDictionary.Add(checkBox_RemoveInlays, "Disables the guitar neck inlay display entirely.\nNote: This only works with the standard dot inlays.");
-            TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the song is using the in-game mixer without needing to open it.");
+            TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the game is using the in-game mixer without needing to open it.\nAlso includes a hidden \"Master Volume\" control.");
             TooltipDictionary.Add(checkBox_GuitarSpeak, "Use your guitar to control the menus!");
             TooltipDictionary.Add(checkBox_RemoveLyrics, "Disables the display of song lyrics while in Learn-A-Song mode.");
             TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
@@ -53,7 +53,8 @@ namespace RSMods
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
-            TooltipDictionary.Add(groupBox_Keybindings, "Set key binds for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting teh key for it to be saved.");
+            TooltipDictionary.Add(groupBox_Keybindings_MODS, "Set keybindings for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting the key for it to be saved.");
+            TooltipDictionary.Add(groupBox_Keybindings_AUDIO, "Set keybindings for changing the volume in game.\nPress the keybinding to increase the volume.\nPress control and the keybinding to decrease the volume.\nYou need to press ENTER after setting the key for it to be saved.");
             TooltipDictionary.Add(button_ResetModsToDefault, "Resets all RSMods values to defaults");
 
             // Set & Forget Mods (Cache.psarc Modifications)
@@ -163,27 +164,37 @@ namespace RSMods
             return GuitarSpeakPresetDictionary;
         }
 
-        public static Dictionary<int, string> SongListIndexToINISetting = new Dictionary<int, string>()
+
+        public static List<string> SongListIndexToINISetting = new List<string>()
         {
-            {0, ReadSettings.Songlist1Identifier},
-            {1, ReadSettings.Songlist2Identifier},
-            {2, ReadSettings.Songlist3Identifier},
-            {3, ReadSettings.Songlist4Identifier},
-            {4, ReadSettings.Songlist5Identifier},
-            {5, ReadSettings.Songlist6Identifier}
+            ReadSettings.Songlist1Identifier,
+            ReadSettings.Songlist2Identifier,
+            ReadSettings.Songlist3Identifier,
+            ReadSettings.Songlist4Identifier,
+            ReadSettings.Songlist5Identifier,
+            ReadSettings.Songlist6Identifier
         };
 
-        public static Dictionary<int, string> KeybindingsIndexToINISetting = new Dictionary<int, string>()
+        public static List<string> KeybindingsIndexToINISetting = new List<string>()
         {
-            {0, ReadSettings.ToggleLoftIdentifier},
-            {1, ReadSettings.AddVolumeIdentifier},
-            {2, ReadSettings.DecreaseVolumeIdentifier},
-            {3, ReadSettings.ChangeSelectedVolumeKeyIdentifier},
-            {4, ReadSettings.ShowSongTimerIdentifier},
-            {5, ReadSettings.ForceReEnumerationIdentifier},
-            {6, ReadSettings.RainbowStringsIdentifier},
-            {7, ReadSettings.RemoveLyricsKeyIdentifier},
-            {8, ReadSettings.RRSpeedKeyIdentifier}
+            ReadSettings.ToggleLoftIdentifier,
+            ReadSettings.ShowSongTimerIdentifier,
+            ReadSettings.ForceReEnumerationIdentifier,
+            ReadSettings.RainbowStringsIdentifier,
+            ReadSettings.RemoveLyricsKeyIdentifier,
+            ReadSettings.RRSpeedKeyIdentifier
+        };
+
+        public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
+        {
+            ReadSettings.MasterVolumeKeyIdentifier,
+            ReadSettings.SongVolumeKeyIdentifier,
+            ReadSettings.Player1VolumeKeyIdentifier,
+            ReadSettings.Player2VolumeKeyIdentifier,
+            ReadSettings.MicrophoneVolumeKeyIdentifier,
+            ReadSettings.VoiceOverVolumeKeyIdentifier,
+            ReadSettings.SFXVolumeKeyIdentifier,
+            ReadSettings.ChangeSelectedVolumeKeyIdentifier
         };
 
         public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
@@ -212,9 +223,6 @@ namespace RSMods
         public static List<string> currentModKeypressList = new List<string>()
         {
             "Toggle Loft",
-            "Add Volume",
-            "Decrease Volume",
-            "Change Selected Volume",
             "Show Song Timer",
             "Force ReEnumeration",
             "Rainbow Strings",
@@ -222,17 +230,28 @@ namespace RSMods
             "RR Speed Change"
         };
 
+        public static List<string> currentAudioKeypressList = new List<string>()
+        {
+            "Master Volume",
+            "Song Volume",
+            "Player 1 Volume",
+            "Player 2 Volume",
+            "Microphone Volume",
+            "Voice-Over Volume",
+            "SFX Volume",
+            "Show Volume On Screen"
+        };
+
         public static List<string> songlists = new List<string>();
 
         public static List<string> savedKeysForModToggles = new List<string>();
+
+        public static List<string> savedKeysForVolumes = new List<string>();
 
         public static List<string> refreshKeybindingList()
         {
             savedKeysForModToggles.Clear();
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
@@ -251,6 +270,20 @@ namespace RSMods
             songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
             songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
             return songlists;
+        }
+
+        public static List<string> refreshAudioKeybindingList()
+        {
+            savedKeysForVolumes.Clear();
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MasterVolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SongVolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player1VolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player2VolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier)));
+            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
+            return savedKeysForVolumes;
         }
 
     }

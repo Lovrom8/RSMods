@@ -14,7 +14,6 @@ namespace RSMods
         public static Color defaultBackgroundColor = Color.Azure;
         public static Color defaultTextColor = Color.Black;
 
-        //public static string dumpLocation = "RSMods.ini";
         #region Default Settings
         public static Dictionary<string, Dictionary<string, string>> Settings = new Dictionary<string, Dictionary<string, string>>()
         {
@@ -30,20 +29,27 @@ namespace RSMods
             }},
             {"[Keybinds]", new Dictionary<string, string> {
                 { ReadSettings.ToggleLoftIdentifier, "" }, // Toggle Loft
-                { ReadSettings.AddVolumeIdentifier, "" }, // Add Volume
-                { ReadSettings.DecreaseVolumeIdentifier, "" }, // Decrease Volume
-                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, "" }, // Change Selected Volume
                 { ReadSettings.ShowSongTimerIdentifier, "" }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, "" }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, "" } // Riff Repeater Above 100% key.
             }},
+            {"[Audio Keybindings]", new Dictionary<string, string>
+            {
+                { ReadSettings.MasterVolumeKeyIdentifier, "" }, // Master Volume (Hidden in the in-game mixer)
+                { ReadSettings.SongVolumeKeyIdentifier, "" }, // Song Volume
+                { ReadSettings.Player1VolumeKeyIdentifier, "" }, // Player 1 Guitar / Bass Volume
+                { ReadSettings.Player2VolumeKeyIdentifier, "" }, // Player 2 Guitar / Bass Volume
+                { ReadSettings.MicrophoneVolumeKeyIdentifier, "" }, // Microphone Volume
+                { ReadSettings.VoiceOverVolumeKeyIdentifier, "" }, // Rocksmith Dad Volume
+                { ReadSettings.SFXVolumeKeyIdentifier, "" }, // SFX Volume
+                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, "" }, // Change Selected Volume
+            }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
                 { ReadSettings.ToggleLoftEnabledIdentifier, "off" }, // Toggle Loft Enabled / Disabled
-                { ReadSettings.AddVolumeEnabledIdentifier, "off" }, // Add Volume Enabled / Disabled
-                { ReadSettings.DecreaseVolumeEnabledIdentifier, "off" }, // Decrease Volume Enabled/ Disabled
+                { ReadSettings.VolumeControlEnabledIdentifier, "off" }, // Volume Control Enabled / Disabled
                 { ReadSettings.ShowSongTimerEnabledIdentifier, "off" }, // Show Song Timer Enabled / Disabled
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, "off" }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, "off" }, // Rainbow String Enabled / Disabled
@@ -93,7 +99,8 @@ namespace RSMods
                 { ReadSettings.ExtendedRangeTuningIdentifier, "-5" }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, "5000" }, // Enumerate new CDLC / ODLC every X ms
                 { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1" }, // The rate of how much one key press should gain the Riff Repeater speed.
-                { ReadSettings.TuningPedalIdentifier, "" } // What tuning pedal does the user use?
+                { ReadSettings.TuningPedalIdentifier, "" }, // What tuning pedal does the user use?
+                { ReadSettings.VolumeControlIntervalIdentifier, "5" } // By what number should we increase / decrease the volume.
             }},
 
             {"[Guitar Speak]", new Dictionary<string, string>
@@ -136,20 +143,27 @@ namespace RSMods
             }},
             {"[Keybinds]", new Dictionary<string, string> {
                 { ReadSettings.ToggleLoftIdentifier, ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier) }, // Toggle Loft
-                { ReadSettings.AddVolumeIdentifier, ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier) }, // Add Volume
-                { ReadSettings.DecreaseVolumeIdentifier, ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier) }, // Decrease Volume
-                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier) }, // Change Selected Volume
                 { ReadSettings.ShowSongTimerIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier) }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings
                 { ReadSettings.RemoveLyricsKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier) }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier) } // Riff Repeater Above 100% Key
             }},
+            {"[Audio Keybindings]", new Dictionary<string, string>
+            {
+                { ReadSettings.MasterVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.MasterVolumeKeyIdentifier) }, // Master Volume (Hidden in the in-game mixer)
+                { ReadSettings.SongVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.SongVolumeKeyIdentifier) }, // Song Volume
+                { ReadSettings.Player1VolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.Player1VolumeKeyIdentifier) }, // Player 1 Guitar / Bass Volume
+                { ReadSettings.Player2VolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.Player2VolumeKeyIdentifier) }, // Player 2 Guitar / Bass Volume
+                { ReadSettings.MicrophoneVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier) }, // Microphone Volume
+                { ReadSettings.VoiceOverVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier) }, // Rocksmith Dad Volume
+                { ReadSettings.SFXVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier) }, // SFX Volume
+                { ReadSettings.ChangeSelectedVolumeKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier) }, // Change Selected Volume
+            }},
             {"[Toggle Switches]", new Dictionary<string, string>
             {
                 { ReadSettings.ToggleLoftEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) }, // Toggle Loft Enabled / Disabled
-                { ReadSettings.AddVolumeEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) }, // Add Volume Enabled / Disabled
-                { ReadSettings.DecreaseVolumeEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) }, // Decrease Volume Enabled/ Disabled
+                { ReadSettings.VolumeControlEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.VolumeControlEnabledIdentifier) }, // Volume Control Enabled / Disabled
                 { ReadSettings.ShowSongTimerEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) }, // Show Song Timer Enabled / Disabled
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) }, // Rainbow String Enabled / Disabled
@@ -199,7 +213,8 @@ namespace RSMods
                 { ReadSettings.ExtendedRangeTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier) }, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier) }, // Enumerate new CDLC / ODLC every X ms
                 { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier) }, // The rate of how much one key press should gain the Riff Repeater speed.
-                { ReadSettings.TuningPedalIdentifier, ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) } // What tuning pedal does the user use?
+                { ReadSettings.TuningPedalIdentifier, ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) }, // What tuning pedal does the user use?
+                { ReadSettings.VolumeControlIntervalIdentifier, ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier) }, // By what number should we increase / decrease the volume.
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {
@@ -243,7 +258,7 @@ namespace RSMods
             }
         }
         #endregion
-        #region Check if RS is void
+        #region Is RS Void
         public static void IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
         {
             if(File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")))

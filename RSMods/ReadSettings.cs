@@ -8,13 +8,14 @@ namespace RSMods
     {
         #region Setup Variables
         public static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, AddVolumeKey, DecreaseVolumeKey, ChangeSelectedVolumeKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
-                             ToggleLoftEnabled, AddVolumeEnabled, DecreaseVolumeEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
+                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
+                             MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
+                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                                                 RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
                                                 GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor,
@@ -27,21 +28,27 @@ namespace RSMods
                 Songlist5Identifier = "SongListTitle_5 = ",
                 Songlist6Identifier = "SongListTitle_6 = ",
 
-                // Toggle On Key Identifiers
+                // Keybindings
                 ToggleLoftIdentifier = "ToggleLoftKey = ",
-                AddVolumeIdentifier = "AddVolumeKey = ",
-                DecreaseVolumeIdentifier = "DecreaseVolumeKey = ",
                 ShowSongTimerIdentifier = "ShowSongTimerKey = ",
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
-                ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
                 RRSpeedKeyIdentifier = "RRSpeedKey = ",
+
+                // Audio Keybindings
+                MasterVolumeKeyIdentifier = "MasterVolumeKey = ",
+                SongVolumeKeyIdentifier = "SongVolumeKey = ",
+                Player1VolumeKeyIdentifier = "Player1VolumeKey = ",
+                Player2VolumeKeyIdentifier = "Player2VolumeKey = ",
+                MicrophoneVolumeKeyIdentifier = "MicrophoneVolumeKey = ",
+                VoiceOverVolumeKeyIdentifier = "VoiceOverVolumeKey = ",
+                SFXVolumeKeyIdentifier = "SFXVolumeKey = ",
+                ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
 
                 // Toggle Effects
                 ToggleLoftEnabledIdentifier = "ToggleLoft = ",
-                AddVolumeEnabledIdentifier = "AddVolume = ",
-                DecreaseVolumeEnabledIdentifier = "DecreaseVolume = ",
+                VolumeControlEnabledIdentifier = "VolumeControl = ",
                 ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
                 RainbowStringsEnabledIdentifier = "RainbowStrings = ",
@@ -91,6 +98,7 @@ namespace RSMods
                 CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
                 RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
                 TuningPedalIdentifier = "TuningPedal = ",
+                VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
 
                 // Guitar Speak
                 GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -179,12 +187,6 @@ namespace RSMods
 
                 if (IdentifierIsFound(currentLine, ToggleLoftIdentifier, identifierToGrab))
                     return FillSettingVariable(ToggleLoftIdentifier, SettingType.VKEY, currentLine, out ToggleLoftKey);
-                if (IdentifierIsFound(currentLine, AddVolumeIdentifier, identifierToGrab))
-                    return FillSettingVariable(AddVolumeIdentifier, SettingType.VKEY, currentLine, out AddVolumeKey);
-                if(IdentifierIsFound(currentLine, DecreaseVolumeIdentifier, identifierToGrab))
-                    return FillSettingVariable(DecreaseVolumeIdentifier, SettingType.VKEY, currentLine, out DecreaseVolumeKey);
-                if (IdentifierIsFound(currentLine, ChangeSelectedVolumeKeyIdentifier, identifierToGrab))
-                    return FillSettingVariable(ChangeSelectedVolumeKeyIdentifier, SettingType.VKEY, currentLine, out ChangeSelectedVolumeKey);
                 if (IdentifierIsFound(currentLine, ShowSongTimerIdentifier, identifierToGrab))
                     return FillSettingVariable(ShowSongTimerIdentifier, SettingType.VKEY, currentLine, out ShowSongTimerKey);
                 if (IdentifierIsFound(currentLine, ForceReEnumerationIdentifier, identifierToGrab))
@@ -197,15 +199,34 @@ namespace RSMods
                     return FillSettingVariable(RRSpeedKeyIdentifier, SettingType.VKEY, currentLine, out RRSpeedKey);
 
                 #endregion
+                #region Audio Keybindings
+                // Audio Keybindings
+
+                if (IdentifierIsFound(currentLine, MasterVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(MasterVolumeKeyIdentifier, SettingType.VKEY, currentLine, out MasterVolumeKey);
+                if (IdentifierIsFound(currentLine, SongVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(SongVolumeKeyIdentifier, SettingType.VKEY, currentLine, out SongVolumeKey);
+                if (IdentifierIsFound(currentLine, Player1VolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(Player1VolumeKeyIdentifier, SettingType.VKEY, currentLine, out Player1VolumeKey);
+                if (IdentifierIsFound(currentLine, Player2VolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(Player2VolumeKeyIdentifier, SettingType.VKEY, currentLine, out Player2VolumeKey);
+                if (IdentifierIsFound(currentLine, MicrophoneVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(MicrophoneVolumeKeyIdentifier, SettingType.VKEY, currentLine, out MicrophoneVolumeKey);
+                if (IdentifierIsFound(currentLine, VoiceOverVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(VoiceOverVolumeKeyIdentifier, SettingType.VKEY, currentLine, out VoiceOverVolumeKey);
+                if (IdentifierIsFound(currentLine, SFXVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(SFXVolumeKeyIdentifier, SettingType.VKEY, currentLine, out SFXVolumeKey);
+                if (IdentifierIsFound(currentLine, ChangeSelectedVolumeKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(ChangeSelectedVolumeKeyIdentifier, SettingType.VKEY, currentLine, out ChangeSelectedVolumeKey);
+
+                #endregion
                 #region Toggle Switches
                 // Toggle Switches
 
                 if (IdentifierIsFound(currentLine, ToggleLoftEnabledIdentifier, identifierToGrab))
                     return FillSettingVariable(ToggleLoftEnabledIdentifier, SettingType.ON_OFF, currentLine, out ToggleLoftEnabled);
-                if (IdentifierIsFound(currentLine, AddVolumeEnabledIdentifier, identifierToGrab))
-                    return FillSettingVariable(AddVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out AddVolumeEnabled);
-                if (IdentifierIsFound(currentLine, DecreaseVolumeEnabledIdentifier, identifierToGrab))
-                    return FillSettingVariable(DecreaseVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out DecreaseVolumeEnabled);
+                if (IdentifierIsFound(currentLine, VolumeControlEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(VolumeControlEnabledIdentifier, SettingType.ON_OFF, currentLine, out VolumeControlEnabled);
                 if (IdentifierIsFound(currentLine, ShowSongTimerEnabledIdentifier, identifierToGrab))
                     return FillSettingVariable(ShowSongTimerEnabledIdentifier, SettingType.ON_OFF, currentLine, out ShowSongTimerEnabled);
                 if (IdentifierIsFound(currentLine, ForceReEnumerationEnabledIdentifier, identifierToGrab))
@@ -304,6 +325,8 @@ namespace RSMods
                     return FillSettingVariable(RiffRepeaterSpeedIntervalIdentifier, SettingType.STRING, currentLine, out RiffRepeaterSpeedInterval);
                 if (IdentifierIsFound(currentLine, TuningPedalIdentifier, identifierToGrab))
                     return FillSettingVariable(TuningPedalIdentifier, SettingType.STRING, currentLine, out TuningPedal);
+                if (IdentifierIsFound(currentLine, VolumeControlIntervalIdentifier, identifierToGrab))
+                    return FillSettingVariable(VolumeControlIntervalIdentifier, SettingType.STRING, currentLine, out VolumeControlInterval);
                 #endregion
                 #region Guitar Speak
 

@@ -29,18 +29,14 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.listBox_Songlist = new System.Windows.Forms.ListBox();
-            this.listBox_Modlist = new System.Windows.Forms.ListBox();
+            this.listBox_Modlist_MODS = new System.Windows.Forms.ListBox();
             this.checkBox_ToggleLoft = new System.Windows.Forms.CheckBox();
-            this.AddVolumeCheckbox = new System.Windows.Forms.CheckBox();
-            this.DecreaseVolumeCheckbox = new System.Windows.Forms.CheckBox();
             this.checkBox_SongTimer = new System.Windows.Forms.CheckBox();
             this.label_ToggleLoftKey = new System.Windows.Forms.Label();
-            this.label_AddVolumeKey = new System.Windows.Forms.Label();
-            this.label_DecreaseVolumeKey = new System.Windows.Forms.Label();
             this.label_SongTimerKey = new System.Windows.Forms.Label();
             this.label_ReEnumerationKey = new System.Windows.Forms.Label();
-            this.textBox_NewKeyAssignment = new System.Windows.Forms.TextBox();
-            this.label_NewKeyAssignment = new System.Windows.Forms.Label();
+            this.textBox_NewKeyAssignment_MODS = new System.Windows.Forms.TextBox();
+            this.label_NewKeyAssignment_MODS = new System.Windows.Forms.Label();
             this.label_ChangeSonglistName = new System.Windows.Forms.Label();
             this.textBox_NewSonglistName = new System.Windows.Forms.TextBox();
             this.checkBox_ExtendedRange = new System.Windows.Forms.CheckBox();
@@ -77,11 +73,10 @@
             this.checkBox_RainbowStrings = new System.Windows.Forms.CheckBox();
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
-            this.groupBox_Keybindings = new System.Windows.Forms.GroupBox();
+            this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
             this.label_RRSpeedKey = new System.Windows.Forms.Label();
-            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
             this.label_RemoveLyricsKey = new System.Windows.Forms.Label();
-            this.button_ClearSelectedKeybind = new System.Windows.Forms.Button();
+            this.button_ClearSelectedKeybind_MODS = new System.Windows.Forms.Button();
             this.button_ResetModsToDefault = new System.Windows.Forms.Button();
             this.button_String0ColorButton = new System.Windows.Forms.Button();
             this.textBox_String0Color = new System.Windows.Forms.TextBox();
@@ -164,9 +159,25 @@
             this.TabController = new System.Windows.Forms.TabControl();
             this.tab_Songlists = new System.Windows.Forms.TabPage();
             this.tab_Keybindings = new System.Windows.Forms.TabPage();
+            this.groupBox_Keybindings_AUDIO = new System.Windows.Forms.GroupBox();
+            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
+            this.label_SFXVolumeKey = new System.Windows.Forms.Label();
+            this.label_VoiceOverVolumeKey = new System.Windows.Forms.Label();
+            this.label_MicrophoneVolumeKey = new System.Windows.Forms.Label();
+            this.label_Player2VolumeKey = new System.Windows.Forms.Label();
+            this.label_Player1VolumeKey = new System.Windows.Forms.Label();
+            this.label_SongVolumeKey = new System.Windows.Forms.Label();
+            this.label_MasterVolumeKey = new System.Windows.Forms.Label();
+            this.button_ClearSelectedKeybind_AUDIO = new System.Windows.Forms.Button();
+            this.label_NewAssignmentAUDIO = new System.Windows.Forms.Label();
+            this.textBox_NewKeyAssignment_AUDIO = new System.Windows.Forms.TextBox();
+            this.listBox_Modlist_AUDIO = new System.Windows.Forms.ListBox();
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.groupBox_ControlVolume = new System.Windows.Forms.GroupBox();
+            this.label_ControlVolumeInterval = new System.Windows.Forms.Label();
+            this.nUpDown_VolumeInterval = new System.Windows.Forms.NumericUpDown();
             this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
             this.label_FontTestNumbers = new System.Windows.Forms.Label();
             this.label_FontTestlowercase = new System.Windows.Forms.Label();
@@ -230,7 +241,7 @@
             this.groupBox_ExtendedRangeWhen.SuspendLayout();
             this.groupBox_EnabledMods.SuspendLayout();
             this.groupBox_Songlist.SuspendLayout();
-            this.groupBox_Keybindings.SuspendLayout();
+            this.groupBox_Keybindings_MODS.SuspendLayout();
             this.groupBox_StringColors.SuspendLayout();
             this.groupBox_SetAndForget.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String0)).BeginInit();
@@ -247,9 +258,12 @@
             this.TabController.SuspendLayout();
             this.tab_Songlists.SuspendLayout();
             this.tab_Keybindings.SuspendLayout();
+            this.groupBox_Keybindings_AUDIO.SuspendLayout();
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.groupBox_ControlVolume.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).BeginInit();
             this.groupBox_OnScreenFont.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.groupBox_RRSpeed.SuspendLayout();
@@ -270,14 +284,14 @@
             this.listBox_Songlist.TabIndex = 2;
             this.listBox_Songlist.SelectedIndexChanged += new System.EventHandler(this.Fill_Songlist_Name);
             // 
-            // listBox_Modlist
+            // listBox_Modlist_MODS
             // 
-            this.listBox_Modlist.FormattingEnabled = true;
-            this.listBox_Modlist.Location = new System.Drawing.Point(22, 29);
-            this.listBox_Modlist.Name = "listBox_Modlist";
-            this.listBox_Modlist.Size = new System.Drawing.Size(185, 134);
-            this.listBox_Modlist.TabIndex = 5;
-            this.listBox_Modlist.SelectedIndexChanged += new System.EventHandler(this.LoadPreviousKeyAssignment);
+            this.listBox_Modlist_MODS.FormattingEnabled = true;
+            this.listBox_Modlist_MODS.Location = new System.Drawing.Point(22, 29);
+            this.listBox_Modlist_MODS.Name = "listBox_Modlist_MODS";
+            this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 134);
+            this.listBox_Modlist_MODS.TabIndex = 5;
+            this.listBox_Modlist_MODS.SelectedIndexChanged += new System.EventHandler(this.LoadPreviousKeyAssignment);
             // 
             // checkBox_ToggleLoft
             // 
@@ -291,36 +305,6 @@
             this.checkBox_ToggleLoft.CheckedChanged += new System.EventHandler(this.Save_ToggleLoft);
             this.checkBox_ToggleLoft.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.checkBox_ToggleLoft.MouseHover += new System.EventHandler(this.RunToolTips);
-            // 
-            // AddVolumeCheckbox
-            // 
-            this.AddVolumeCheckbox.AutoSize = true;
-            this.AddVolumeCheckbox.Enabled = false;
-            this.AddVolumeCheckbox.Location = new System.Drawing.Point(370, 156);
-            this.AddVolumeCheckbox.Name = "AddVolumeCheckbox";
-            this.AddVolumeCheckbox.Size = new System.Drawing.Size(83, 17);
-            this.AddVolumeCheckbox.TabIndex = 8;
-            this.AddVolumeCheckbox.Text = "Add Volume";
-            this.AddVolumeCheckbox.UseVisualStyleBackColor = true;
-            this.AddVolumeCheckbox.Visible = false;
-            this.AddVolumeCheckbox.CheckedChanged += new System.EventHandler(this.Save_AddVolume);
-            this.AddVolumeCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.AddVolumeCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
-            // 
-            // DecreaseVolumeCheckbox
-            // 
-            this.DecreaseVolumeCheckbox.AutoSize = true;
-            this.DecreaseVolumeCheckbox.Enabled = false;
-            this.DecreaseVolumeCheckbox.Location = new System.Drawing.Point(370, 133);
-            this.DecreaseVolumeCheckbox.Name = "DecreaseVolumeCheckbox";
-            this.DecreaseVolumeCheckbox.Size = new System.Drawing.Size(110, 17);
-            this.DecreaseVolumeCheckbox.TabIndex = 9;
-            this.DecreaseVolumeCheckbox.Text = "Decrease Volume";
-            this.DecreaseVolumeCheckbox.UseVisualStyleBackColor = true;
-            this.DecreaseVolumeCheckbox.Visible = false;
-            this.DecreaseVolumeCheckbox.CheckedChanged += new System.EventHandler(this.Save_DecreaseVolume);
-            this.DecreaseVolumeCheckbox.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.DecreaseVolumeCheckbox.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_SongTimer
             // 
@@ -340,61 +324,48 @@
             this.label_ToggleLoftKey.AutoSize = true;
             this.label_ToggleLoftKey.Location = new System.Drawing.Point(464, 14);
             this.label_ToggleLoftKey.Name = "label_ToggleLoftKey";
-            this.label_ToggleLoftKey.Size = new System.Drawing.Size(0, 13);
+            this.label_ToggleLoftKey.Size = new System.Drawing.Size(67, 13);
             this.label_ToggleLoftKey.TabIndex = 14;
-            // 
-            // label_AddVolumeKey
-            // 
-            this.label_AddVolumeKey.AutoSize = true;
-            this.label_AddVolumeKey.Location = new System.Drawing.Point(464, 37);
-            this.label_AddVolumeKey.Name = "label_AddVolumeKey";
-            this.label_AddVolumeKey.Size = new System.Drawing.Size(0, 13);
-            this.label_AddVolumeKey.TabIndex = 15;
-            // 
-            // label_DecreaseVolumeKey
-            // 
-            this.label_DecreaseVolumeKey.AutoSize = true;
-            this.label_DecreaseVolumeKey.Location = new System.Drawing.Point(464, 60);
-            this.label_DecreaseVolumeKey.Name = "label_DecreaseVolumeKey";
-            this.label_DecreaseVolumeKey.Size = new System.Drawing.Size(0, 13);
-            this.label_DecreaseVolumeKey.TabIndex = 16;
+            this.label_ToggleLoftKey.Text = "Toggle Loft: ";
             // 
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 103);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 39);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
-            this.label_SongTimerKey.Size = new System.Drawing.Size(0, 13);
+            this.label_SongTimerKey.Size = new System.Drawing.Size(67, 13);
             this.label_SongTimerKey.TabIndex = 17;
+            this.label_SongTimerKey.Text = "Song Timer: ";
             // 
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 126);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 64);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
-            this.label_ReEnumerationKey.Size = new System.Drawing.Size(0, 13);
+            this.label_ReEnumerationKey.Size = new System.Drawing.Size(72, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
+            this.label_ReEnumerationKey.Text = "Enumeration: ";
             // 
-            // textBox_NewKeyAssignment
+            // textBox_NewKeyAssignment_MODS
             // 
-            this.textBox_NewKeyAssignment.Location = new System.Drawing.Point(222, 93);
-            this.textBox_NewKeyAssignment.MaxLength = 1;
-            this.textBox_NewKeyAssignment.Name = "textBox_NewKeyAssignment";
-            this.textBox_NewKeyAssignment.Size = new System.Drawing.Size(188, 20);
-            this.textBox_NewKeyAssignment.TabIndex = 20;
-            this.textBox_NewKeyAssignment.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_NewKeyAssignment.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
-            this.textBox_NewKeyAssignment.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
-            this.textBox_NewKeyAssignment.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
+            this.textBox_NewKeyAssignment_MODS.Location = new System.Drawing.Point(222, 93);
+            this.textBox_NewKeyAssignment_MODS.MaxLength = 1;
+            this.textBox_NewKeyAssignment_MODS.Name = "textBox_NewKeyAssignment_MODS";
+            this.textBox_NewKeyAssignment_MODS.Size = new System.Drawing.Size(188, 20);
+            this.textBox_NewKeyAssignment_MODS.TabIndex = 20;
+            this.textBox_NewKeyAssignment_MODS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_NewKeyAssignment_MODS.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
+            this.textBox_NewKeyAssignment_MODS.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
+            this.textBox_NewKeyAssignment_MODS.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
             // 
-            // label_NewKeyAssignment
+            // label_NewKeyAssignment_MODS
             // 
-            this.label_NewKeyAssignment.AutoSize = true;
-            this.label_NewKeyAssignment.Location = new System.Drawing.Point(219, 59);
-            this.label_NewKeyAssignment.Name = "label_NewKeyAssignment";
-            this.label_NewKeyAssignment.Size = new System.Drawing.Size(196, 13);
-            this.label_NewKeyAssignment.TabIndex = 21;
-            this.label_NewKeyAssignment.Text = "New Assignment (Press Enter To Save):";
+            this.label_NewKeyAssignment_MODS.AutoSize = true;
+            this.label_NewKeyAssignment_MODS.Location = new System.Drawing.Point(219, 59);
+            this.label_NewKeyAssignment_MODS.Name = "label_NewKeyAssignment_MODS";
+            this.label_NewKeyAssignment_MODS.Size = new System.Drawing.Size(196, 13);
+            this.label_NewKeyAssignment_MODS.TabIndex = 21;
+            this.label_NewKeyAssignment_MODS.Text = "New Assignment (Press Enter To Save):";
             // 
             // label_ChangeSonglistName
             // 
@@ -430,10 +401,11 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 148);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 93);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
-            this.label_RainbowStringsKey.Size = new System.Drawing.Size(0, 13);
+            this.label_RainbowStringsKey.Size = new System.Drawing.Size(90, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
+            this.label_RainbowStringsKey.Text = "Rainbow Strings: ";
             // 
             // listBox_ExtendedRangeTunings
             // 
@@ -720,8 +692,6 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SongTimer);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ToggleLoft);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_Fretless);
-            this.groupBox_EnabledMods.Controls.Add(this.AddVolumeCheckbox);
-            this.groupBox_EnabledMods.Controls.Add(this.DecreaseVolumeCheckbox);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AutoLoadProfile);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RainbowStrings);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ExtendedRange);
@@ -789,9 +759,9 @@
             this.checkBox_ControlVolume.AutoSize = true;
             this.checkBox_ControlVolume.Location = new System.Drawing.Point(131, 175);
             this.checkBox_ControlVolume.Name = "checkBox_ControlVolume";
-            this.checkBox_ControlVolume.Size = new System.Drawing.Size(125, 17);
+            this.checkBox_ControlVolume.Size = new System.Drawing.Size(128, 17);
             this.checkBox_ControlVolume.TabIndex = 47;
-            this.checkBox_ControlVolume.Text = "Control Song Volume";
+            this.checkBox_ControlVolume.Text = "Control Game Volume";
             this.checkBox_ControlVolume.UseVisualStyleBackColor = true;
             this.checkBox_ControlVolume.CheckedChanged += new System.EventHandler(this.Save_VolumeControls);
             this.checkBox_ControlVolume.MouseLeave += new System.EventHandler(this.HideToolTips);
@@ -889,63 +859,54 @@
     "eches oddly.\r\n";
             this.label_SonglistWarning.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // groupBox_Keybindings
+            // groupBox_Keybindings_MODS
             // 
-            this.groupBox_Keybindings.Controls.Add(this.label_RRSpeedKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_ChangeSelectedVolumeKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_RemoveLyricsKey);
-            this.groupBox_Keybindings.Controls.Add(this.button_ClearSelectedKeybind);
-            this.groupBox_Keybindings.Controls.Add(this.label_NewKeyAssignment);
-            this.groupBox_Keybindings.Controls.Add(this.textBox_NewKeyAssignment);
-            this.groupBox_Keybindings.Controls.Add(this.label_ReEnumerationKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_SongTimerKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_DecreaseVolumeKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_AddVolumeKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_ToggleLoftKey);
-            this.groupBox_Keybindings.Controls.Add(this.label_RainbowStringsKey);
-            this.groupBox_Keybindings.Controls.Add(this.listBox_Modlist);
-            this.groupBox_Keybindings.Location = new System.Drawing.Point(15, 17);
-            this.groupBox_Keybindings.Name = "groupBox_Keybindings";
-            this.groupBox_Keybindings.Size = new System.Drawing.Size(701, 222);
-            this.groupBox_Keybindings.TabIndex = 52;
-            this.groupBox_Keybindings.TabStop = false;
-            this.groupBox_Keybindings.Text = "Key Bindings";
-            this.groupBox_Keybindings.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_Keybindings.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_RRSpeedKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_RemoveLyricsKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.button_ClearSelectedKeybind_MODS);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_NewKeyAssignment_MODS);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.textBox_NewKeyAssignment_MODS);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_ReEnumerationKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_SongTimerKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_ToggleLoftKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_RainbowStringsKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.listBox_Modlist_MODS);
+            this.groupBox_Keybindings_MODS.Location = new System.Drawing.Point(15, 17);
+            this.groupBox_Keybindings_MODS.Name = "groupBox_Keybindings_MODS";
+            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 178);
+            this.groupBox_Keybindings_MODS.TabIndex = 52;
+            this.groupBox_Keybindings_MODS.TabStop = false;
+            this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
+            this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // label_RRSpeedKey
             // 
             this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 194);
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 149);
             this.label_RRSpeedKey.Name = "label_RRSpeedKey";
-            this.label_RRSpeedKey.Size = new System.Drawing.Size(0, 13);
+            this.label_RRSpeedKey.Size = new System.Drawing.Size(110, 13);
             this.label_RRSpeedKey.TabIndex = 53;
-            // 
-            // label_ChangeSelectedVolumeKey
-            // 
-            this.label_ChangeSelectedVolumeKey.AutoSize = true;
-            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(464, 82);
-            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
-            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(0, 13);
-            this.label_ChangeSelectedVolumeKey.TabIndex = 31;
+            this.label_RRSpeedKey.Text = "Riff Repeater Speed: ";
             // 
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 169);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 120);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
-            this.label_RemoveLyricsKey.Size = new System.Drawing.Size(0, 13);
+            this.label_RemoveLyricsKey.Size = new System.Drawing.Size(83, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
+            this.label_RemoveLyricsKey.Text = "Remove Lyrics: ";
             // 
-            // button_ClearSelectedKeybind
+            // button_ClearSelectedKeybind_MODS
             // 
-            this.button_ClearSelectedKeybind.Location = new System.Drawing.Point(222, 130);
-            this.button_ClearSelectedKeybind.Name = "button_ClearSelectedKeybind";
-            this.button_ClearSelectedKeybind.Size = new System.Drawing.Size(188, 23);
-            this.button_ClearSelectedKeybind.TabIndex = 29;
-            this.button_ClearSelectedKeybind.Text = "Clear Selected Keybind";
-            this.button_ClearSelectedKeybind.UseVisualStyleBackColor = true;
-            this.button_ClearSelectedKeybind.Click += new System.EventHandler(this.DeleteKeyBind);
+            this.button_ClearSelectedKeybind_MODS.Location = new System.Drawing.Point(222, 130);
+            this.button_ClearSelectedKeybind_MODS.Name = "button_ClearSelectedKeybind_MODS";
+            this.button_ClearSelectedKeybind_MODS.Size = new System.Drawing.Size(188, 23);
+            this.button_ClearSelectedKeybind_MODS.TabIndex = 29;
+            this.button_ClearSelectedKeybind_MODS.Text = "Clear Selected Keybind";
+            this.button_ClearSelectedKeybind_MODS.UseVisualStyleBackColor = true;
+            this.button_ClearSelectedKeybind_MODS.Click += new System.EventHandler(this.Delete_Keybind_MODS);
             // 
             // button_ResetModsToDefault
             // 
@@ -1990,13 +1951,149 @@
             // tab_Keybindings
             // 
             this.tab_Keybindings.BackColor = System.Drawing.Color.Azure;
-            this.tab_Keybindings.Controls.Add(this.groupBox_Keybindings);
+            this.tab_Keybindings.Controls.Add(this.groupBox_Keybindings_AUDIO);
+            this.tab_Keybindings.Controls.Add(this.groupBox_Keybindings_MODS);
             this.tab_Keybindings.Location = new System.Drawing.Point(4, 22);
             this.tab_Keybindings.Name = "tab_Keybindings";
             this.tab_Keybindings.Padding = new System.Windows.Forms.Padding(3);
             this.tab_Keybindings.Size = new System.Drawing.Size(1150, 513);
             this.tab_Keybindings.TabIndex = 1;
             this.tab_Keybindings.Text = "Keybindings";
+            // 
+            // groupBox_Keybindings_AUDIO
+            // 
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_ChangeSelectedVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_SFXVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_VoiceOverVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_MicrophoneVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_Player2VolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_Player1VolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_SongVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_MasterVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.button_ClearSelectedKeybind_AUDIO);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_NewAssignmentAUDIO);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.textBox_NewKeyAssignment_AUDIO);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.listBox_Modlist_AUDIO);
+            this.groupBox_Keybindings_AUDIO.Location = new System.Drawing.Point(15, 214);
+            this.groupBox_Keybindings_AUDIO.Name = "groupBox_Keybindings_AUDIO";
+            this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 222);
+            this.groupBox_Keybindings_AUDIO.TabIndex = 53;
+            this.groupBox_Keybindings_AUDIO.TabStop = false;
+            this.groupBox_Keybindings_AUDIO.Text = "Audio Key Bindings";
+            this.groupBox_Keybindings_AUDIO.Visible = false;
+            this.groupBox_Keybindings_AUDIO.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // label_ChangeSelectedVolumeKey
+            // 
+            this.label_ChangeSelectedVolumeKey.AutoSize = true;
+            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(463, 195);
+            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
+            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(132, 13);
+            this.label_ChangeSelectedVolumeKey.TabIndex = 61;
+            this.label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: ";
+            // 
+            // label_SFXVolumeKey
+            // 
+            this.label_SFXVolumeKey.AutoSize = true;
+            this.label_SFXVolumeKey.Location = new System.Drawing.Point(464, 169);
+            this.label_SFXVolumeKey.Name = "label_SFXVolumeKey";
+            this.label_SFXVolumeKey.Size = new System.Drawing.Size(71, 13);
+            this.label_SFXVolumeKey.TabIndex = 60;
+            this.label_SFXVolumeKey.Text = "SFX Volume: ";
+            // 
+            // label_VoiceOverVolumeKey
+            // 
+            this.label_VoiceOverVolumeKey.AutoSize = true;
+            this.label_VoiceOverVolumeKey.Location = new System.Drawing.Point(464, 143);
+            this.label_VoiceOverVolumeKey.Name = "label_VoiceOverVolumeKey";
+            this.label_VoiceOverVolumeKey.Size = new System.Drawing.Size(104, 13);
+            this.label_VoiceOverVolumeKey.TabIndex = 59;
+            this.label_VoiceOverVolumeKey.Text = "Voice-Over Volume: ";
+            // 
+            // label_MicrophoneVolumeKey
+            // 
+            this.label_MicrophoneVolumeKey.AutoSize = true;
+            this.label_MicrophoneVolumeKey.Location = new System.Drawing.Point(464, 115);
+            this.label_MicrophoneVolumeKey.Name = "label_MicrophoneVolumeKey";
+            this.label_MicrophoneVolumeKey.Size = new System.Drawing.Size(107, 13);
+            this.label_MicrophoneVolumeKey.TabIndex = 58;
+            this.label_MicrophoneVolumeKey.Text = "Microphone Volume: ";
+            // 
+            // label_Player2VolumeKey
+            // 
+            this.label_Player2VolumeKey.AutoSize = true;
+            this.label_Player2VolumeKey.Location = new System.Drawing.Point(464, 88);
+            this.label_Player2VolumeKey.Name = "label_Player2VolumeKey";
+            this.label_Player2VolumeKey.Size = new System.Drawing.Size(86, 13);
+            this.label_Player2VolumeKey.TabIndex = 57;
+            this.label_Player2VolumeKey.Text = "Player2 Volume: ";
+            // 
+            // label_Player1VolumeKey
+            // 
+            this.label_Player1VolumeKey.AutoSize = true;
+            this.label_Player1VolumeKey.Location = new System.Drawing.Point(464, 62);
+            this.label_Player1VolumeKey.Name = "label_Player1VolumeKey";
+            this.label_Player1VolumeKey.Size = new System.Drawing.Size(86, 13);
+            this.label_Player1VolumeKey.TabIndex = 56;
+            this.label_Player1VolumeKey.Text = "Player1 Volume: ";
+            // 
+            // label_SongVolumeKey
+            // 
+            this.label_SongVolumeKey.AutoSize = true;
+            this.label_SongVolumeKey.Location = new System.Drawing.Point(464, 39);
+            this.label_SongVolumeKey.Name = "label_SongVolumeKey";
+            this.label_SongVolumeKey.Size = new System.Drawing.Size(76, 13);
+            this.label_SongVolumeKey.TabIndex = 55;
+            this.label_SongVolumeKey.Text = "Song Volume: ";
+            // 
+            // label_MasterVolumeKey
+            // 
+            this.label_MasterVolumeKey.AutoSize = true;
+            this.label_MasterVolumeKey.Location = new System.Drawing.Point(464, 16);
+            this.label_MasterVolumeKey.Name = "label_MasterVolumeKey";
+            this.label_MasterVolumeKey.Size = new System.Drawing.Size(83, 13);
+            this.label_MasterVolumeKey.TabIndex = 54;
+            this.label_MasterVolumeKey.Text = "Master Volume: ";
+            // 
+            // button_ClearSelectedKeybind_AUDIO
+            // 
+            this.button_ClearSelectedKeybind_AUDIO.Location = new System.Drawing.Point(222, 130);
+            this.button_ClearSelectedKeybind_AUDIO.Name = "button_ClearSelectedKeybind_AUDIO";
+            this.button_ClearSelectedKeybind_AUDIO.Size = new System.Drawing.Size(188, 23);
+            this.button_ClearSelectedKeybind_AUDIO.TabIndex = 29;
+            this.button_ClearSelectedKeybind_AUDIO.Text = "Clear Selected Keybind";
+            this.button_ClearSelectedKeybind_AUDIO.UseVisualStyleBackColor = true;
+            this.button_ClearSelectedKeybind_AUDIO.Click += new System.EventHandler(this.Delete_Keybind_AUDIO);
+            // 
+            // label_NewAssignmentAUDIO
+            // 
+            this.label_NewAssignmentAUDIO.AutoSize = true;
+            this.label_NewAssignmentAUDIO.Location = new System.Drawing.Point(219, 59);
+            this.label_NewAssignmentAUDIO.Name = "label_NewAssignmentAUDIO";
+            this.label_NewAssignmentAUDIO.Size = new System.Drawing.Size(196, 13);
+            this.label_NewAssignmentAUDIO.TabIndex = 21;
+            this.label_NewAssignmentAUDIO.Text = "New Assignment (Press Enter To Save):";
+            // 
+            // textBox_NewKeyAssignment_AUDIO
+            // 
+            this.textBox_NewKeyAssignment_AUDIO.Location = new System.Drawing.Point(222, 93);
+            this.textBox_NewKeyAssignment_AUDIO.MaxLength = 1;
+            this.textBox_NewKeyAssignment_AUDIO.Name = "textBox_NewKeyAssignment_AUDIO";
+            this.textBox_NewKeyAssignment_AUDIO.Size = new System.Drawing.Size(188, 20);
+            this.textBox_NewKeyAssignment_AUDIO.TabIndex = 20;
+            this.textBox_NewKeyAssignment_AUDIO.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox_NewKeyAssignment_AUDIO.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
+            this.textBox_NewKeyAssignment_AUDIO.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
+            this.textBox_NewKeyAssignment_AUDIO.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
+            // 
+            // listBox_Modlist_AUDIO
+            // 
+            this.listBox_Modlist_AUDIO.FormattingEnabled = true;
+            this.listBox_Modlist_AUDIO.Location = new System.Drawing.Point(22, 29);
+            this.listBox_Modlist_AUDIO.Name = "listBox_Modlist_AUDIO";
+            this.listBox_Modlist_AUDIO.Size = new System.Drawing.Size(185, 134);
+            this.listBox_Modlist_AUDIO.TabIndex = 5;
+            this.listBox_Modlist_AUDIO.SelectedIndexChanged += new System.EventHandler(this.LoadPreviousVolumeAssignment);
             // 
             // tab_ModToggles
             // 
@@ -2023,6 +2120,7 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.tab_ModSettings.Controls.Add(this.groupBox_ControlVolume);
             this.tab_ModSettings.Controls.Add(this.groupBox_OnScreenFont);
             this.tab_ModSettings.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
@@ -2041,6 +2139,45 @@
             this.tab_ModSettings.Size = new System.Drawing.Size(1150, 513);
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
+            // 
+            // groupBox_ControlVolume
+            // 
+            this.groupBox_ControlVolume.Controls.Add(this.label_ControlVolumeInterval);
+            this.groupBox_ControlVolume.Controls.Add(this.nUpDown_VolumeInterval);
+            this.groupBox_ControlVolume.Location = new System.Drawing.Point(706, 428);
+            this.groupBox_ControlVolume.Name = "groupBox_ControlVolume";
+            this.groupBox_ControlVolume.Size = new System.Drawing.Size(200, 79);
+            this.groupBox_ControlVolume.TabIndex = 100004;
+            this.groupBox_ControlVolume.TabStop = false;
+            this.groupBox_ControlVolume.Text = "Control Volume";
+            this.groupBox_ControlVolume.Visible = false;
+            // 
+            // label_ControlVolumeInterval
+            // 
+            this.label_ControlVolumeInterval.AutoSize = true;
+            this.label_ControlVolumeInterval.Location = new System.Drawing.Point(18, 27);
+            this.label_ControlVolumeInterval.Name = "label_ControlVolumeInterval";
+            this.label_ControlVolumeInterval.Size = new System.Drawing.Size(158, 13);
+            this.label_ControlVolumeInterval.TabIndex = 1;
+            this.label_ControlVolumeInterval.Text = "Increase / Decrease Volume By";
+            // 
+            // nUpDown_VolumeInterval
+            // 
+            this.nUpDown_VolumeInterval.Location = new System.Drawing.Point(37, 49);
+            this.nUpDown_VolumeInterval.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_VolumeInterval.Name = "nUpDown_VolumeInterval";
+            this.nUpDown_VolumeInterval.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_VolumeInterval.TabIndex = 0;
+            this.nUpDown_VolumeInterval.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_VolumeInterval.ValueChanged += new System.EventHandler(this.Save_VolumeInterval);
             // 
             // groupBox_OnScreenFont
             // 
@@ -2701,8 +2838,8 @@
             this.groupBox_EnabledMods.PerformLayout();
             this.groupBox_Songlist.ResumeLayout(false);
             this.groupBox_Songlist.PerformLayout();
-            this.groupBox_Keybindings.ResumeLayout(false);
-            this.groupBox_Keybindings.PerformLayout();
+            this.groupBox_Keybindings_MODS.ResumeLayout(false);
+            this.groupBox_Keybindings_MODS.PerformLayout();
             this.groupBox_StringColors.ResumeLayout(false);
             this.groupBox_StringColors.PerformLayout();
             this.groupBox_SetAndForget.ResumeLayout(false);
@@ -2725,9 +2862,14 @@
             this.TabController.ResumeLayout(false);
             this.tab_Songlists.ResumeLayout(false);
             this.tab_Keybindings.ResumeLayout(false);
+            this.groupBox_Keybindings_AUDIO.ResumeLayout(false);
+            this.groupBox_Keybindings_AUDIO.PerformLayout();
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.groupBox_ControlVolume.ResumeLayout(false);
+            this.groupBox_ControlVolume.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).EndInit();
             this.groupBox_OnScreenFont.ResumeLayout(false);
             this.groupBox_OnScreenFont.PerformLayout();
             this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
@@ -2751,18 +2893,14 @@
         
 
         private System.Windows.Forms.ListBox listBox_Songlist;
-        private System.Windows.Forms.ListBox listBox_Modlist;
+        private System.Windows.Forms.ListBox listBox_Modlist_MODS;
         private System.Windows.Forms.CheckBox checkBox_ToggleLoft;
-        private System.Windows.Forms.CheckBox AddVolumeCheckbox;
-        private System.Windows.Forms.CheckBox DecreaseVolumeCheckbox;
         private System.Windows.Forms.CheckBox checkBox_SongTimer;
         private System.Windows.Forms.Label label_ToggleLoftKey;
-        private System.Windows.Forms.Label label_AddVolumeKey;
-        private System.Windows.Forms.Label label_DecreaseVolumeKey;
         private System.Windows.Forms.Label label_SongTimerKey;
         private System.Windows.Forms.Label label_ReEnumerationKey;
-        private System.Windows.Forms.TextBox textBox_NewKeyAssignment;
-        private System.Windows.Forms.Label label_NewKeyAssignment;
+        private System.Windows.Forms.TextBox textBox_NewKeyAssignment_MODS;
+        private System.Windows.Forms.Label label_NewKeyAssignment_MODS;
         private System.Windows.Forms.Label label_ChangeSonglistName;
         private System.Windows.Forms.TextBox textBox_NewSonglistName;
         private System.Windows.Forms.CheckBox checkBox_ExtendedRange;
@@ -2786,7 +2924,7 @@
         private System.Windows.Forms.GroupBox groupBox_EnabledMods;
         private System.Windows.Forms.CheckBox checkBox_RemoveLaneMarkers;
         private System.Windows.Forms.GroupBox groupBox_Songlist;
-        private System.Windows.Forms.GroupBox groupBox_Keybindings;
+        private System.Windows.Forms.GroupBox groupBox_Keybindings_MODS;
         private System.Windows.Forms.Button button_ResetModsToDefault;
         private System.Windows.Forms.Button button_String0ColorButton;
         private System.Windows.Forms.TextBox textBox_String0Color;
@@ -2828,7 +2966,7 @@
         private System.Windows.Forms.Button button_RemoveTuning;
         private System.Windows.Forms.ListBox listBox_Tunings;
         private System.Windows.Forms.Button button_AddExitGame;
-        private System.Windows.Forms.Button button_ClearSelectedKeybind;
+        private System.Windows.Forms.Button button_ClearSelectedKeybind_MODS;
         private System.Windows.Forms.CheckBox checkBox_RemoveLyrics;
         private System.Windows.Forms.ToolTip ToolTip;
         private System.Windows.Forms.Button button_RemoveTemp;
@@ -2899,7 +3037,6 @@
         private System.Windows.Forms.Label label_TwitchChannelIDVal;
         private System.Windows.Forms.Label label_TwitchUsernameVal;
         private System.Windows.Forms.Label label_AuthorizedAs;
-        private System.Windows.Forms.Label label_ChangeSelectedVolumeKey;
         private System.Windows.Forms.Label label_HorizontalLineTwitch;
         private System.Windows.Forms.DataGridView dgv_DefaultRewards;
         private System.Windows.Forms.Label label_IsListeningToEvents;
@@ -2946,6 +3083,22 @@
         private System.Windows.Forms.Label label_FontTestNumbers;
         private System.Windows.Forms.Label label_FontTestlowercase;
         private System.Windows.Forms.Label label_FontTestCAPITALS;
+        private System.Windows.Forms.GroupBox groupBox_Keybindings_AUDIO;
+        private System.Windows.Forms.Button button_ClearSelectedKeybind_AUDIO;
+        private System.Windows.Forms.Label label_NewAssignmentAUDIO;
+        private System.Windows.Forms.TextBox textBox_NewKeyAssignment_AUDIO;
+        private System.Windows.Forms.ListBox listBox_Modlist_AUDIO;
+        private System.Windows.Forms.Label label_ChangeSelectedVolumeKey;
+        private System.Windows.Forms.Label label_SFXVolumeKey;
+        private System.Windows.Forms.Label label_VoiceOverVolumeKey;
+        private System.Windows.Forms.Label label_MicrophoneVolumeKey;
+        private System.Windows.Forms.Label label_Player2VolumeKey;
+        private System.Windows.Forms.Label label_Player1VolumeKey;
+        private System.Windows.Forms.Label label_SongVolumeKey;
+        private System.Windows.Forms.Label label_MasterVolumeKey;
+        private System.Windows.Forms.GroupBox groupBox_ControlVolume;
+        private System.Windows.Forms.Label label_ControlVolumeInterval;
+        private System.Windows.Forms.NumericUpDown nUpDown_VolumeInterval;
     }
 }
 

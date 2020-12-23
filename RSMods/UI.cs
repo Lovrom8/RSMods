@@ -22,8 +22,6 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
-        // Global Vars
-        bool CreatedToolTipYet = false;
 
         public MainForm()
         {
@@ -49,11 +47,17 @@ namespace RSMods
             // Fill Songlist List
             LoadSonglists();
 
-            // Fill Keybindings List (Fill list box)
+            // Fill Mod Keybindings List (Fill list box)
             LoadKeybindingModNames();
 
-            // Load Keybinding Values
+            // Fill Audio Keybinding List
+            LoadAudioKeybindings();
+
+            // Load Mod Keybinding Values
             ShowCurrentKeybindingValues();
+
+            // Load Audio Keybinding Values
+            ShowCurrentAudioKeybindingValues();
 
             // Load Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
@@ -93,7 +97,7 @@ namespace RSMods
 
         private void LocateRocksmith(string RSFolder)
         {
-            
+
             if (RSFolder == String.Empty)
             {
                 MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -121,7 +125,13 @@ namespace RSMods
         private void LoadKeybindingModNames()
         {
             foreach (string mod in Dictionaries.currentModKeypressList)
-                listBox_Modlist.Items.Add(mod);
+                listBox_Modlist_MODS.Items.Add(mod);
+        }
+
+        private void LoadAudioKeybindings()
+        {
+            foreach (string volume in Dictionaries.currentAudioKeypressList)
+                listBox_Modlist_AUDIO.Items.Add(volume);
         }
 
         private void PreventDoubleSave()
@@ -142,14 +152,23 @@ namespace RSMods
         private void ShowCurrentKeybindingValues()
         {
             label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
-            label_AddVolumeKey.Text = "Add Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.AddVolumeIdentifier));
-            label_DecreaseVolumeKey.Text = "Decrease Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeIdentifier));
-            label_ChangeSelectedVolumeKey.Text = "Change Selected Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
             label_SongTimerKey.Text = "Show Song Timer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier));
             label_ReEnumerationKey.Text = "Force ReEnumeration: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier));
             label_RainbowStringsKey.Text = "Rainbow Strings: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier));
             label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
             label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
+        }
+
+        private void ShowCurrentAudioKeybindingValues()
+        {
+            label_MasterVolumeKey.Text = "Master Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MasterVolumeKeyIdentifier));
+            label_SongVolumeKey.Text = "Song Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SongVolumeKeyIdentifier));
+            label_Player1VolumeKey.Text = "Player1 Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player1VolumeKeyIdentifier));
+            label_Player2VolumeKey.Text = "Player2 Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player2VolumeKeyIdentifier));
+            label_MicrophoneVolumeKey.Text = "Microphone Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier));
+            label_VoiceOverVolumeKey.Text = "Voice-Over Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier));
+            label_SFXVolumeKey.Text = "SFX Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier));
+            label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
         }
 
         #endregion
@@ -172,11 +191,13 @@ namespace RSMods
                     radio_LoftOffInSong.Checked = true;
             }
 
-            if (ReadSettings.ProcessSettings(ReadSettings.AddVolumeEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
+            if (ReadSettings.ProcessSettings(ReadSettings.VolumeControlEnabledIdentifier) == "on") // Add Volume Enabled / Disabled
+            {
                 checkBox_ControlVolume.Checked = true;
-
-            if (ReadSettings.ProcessSettings(ReadSettings.DecreaseVolumeEnabledIdentifier) == "on") // Decrease Volume Enabled / Disabled
-                checkBox_ControlVolume.Checked = true;
+                groupBox_Keybindings_AUDIO.Visible = true;
+                groupBox_ControlVolume.Visible = true;
+                nUpDown_VolumeInterval.Value = Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier));
+            }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
                 checkBox_SongTimer.Checked = true;
@@ -445,19 +466,34 @@ namespace RSMods
                 Save_Songlists_Keybindings(sender, e);
             }
 
-            else if (sender == textBox_NewKeyAssignment)
+            else if (((TextBox)sender) == textBox_NewKeyAssignment_MODS)
             {
                 e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
 
                 if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
-                    textBox_NewKeyAssignment.Text = e.KeyCode.ToString();
+                    textBox_NewKeyAssignment_MODS.Text = e.KeyCode.ToString();
 
                 else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91)) // Number or Letter was pressed (Will be overrided by text input)
                 {
                     if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
                         return;
                     else
-                        textBox_NewKeyAssignment.Text = "";
+                        textBox_NewKeyAssignment_MODS.Text = "";
+                }
+            }
+            else if (((TextBox)sender) == textBox_NewKeyAssignment_AUDIO)
+            {
+                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
+
+                if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
+                    textBox_NewKeyAssignment_AUDIO.Text = e.KeyCode.ToString();
+
+                else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91)) // Number or Letter was pressed (Will be overrided by text input)
+                {
+                    if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        return;
+                    else
+                        textBox_NewKeyAssignment_AUDIO.Text = "";
                 }
             }
         }
@@ -465,16 +501,30 @@ namespace RSMods
         private void CheckKeyPressesUp(object sender, KeyEventArgs e)
         {
             if (KeyConversion.KeyUpDictionary.Contains(e.KeyCode))
-                textBox_NewKeyAssignment.Text = e.KeyCode.ToString();
+            {
+                if (sender == textBox_NewKeyAssignment_MODS)
+                    textBox_NewKeyAssignment_MODS.Text = e.KeyCode.ToString();
+                else if (sender == textBox_NewKeyAssignment_AUDIO)
+                    textBox_NewKeyAssignment_AUDIO.Text = e.KeyCode.ToString();
+            }
+
         }
 
         private void CheckMouseInput(object sender, MouseEventArgs e)
         {
             if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
-                textBox_NewKeyAssignment.Text = e.Button.ToString();
+            {
+                if (sender == textBox_NewKeyAssignment_MODS)
+                    textBox_NewKeyAssignment_MODS.Text = e.Button.ToString();
+                else if (sender == textBox_NewKeyAssignment_AUDIO)
+                    textBox_NewKeyAssignment_AUDIO.Text = e.Button.ToString();
+            }
+
         }
 
-        private void LoadPreviousKeyAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment.Text = Dictionaries.refreshKeybindingList()[listBox_Modlist.SelectedIndex];
+        private void LoadPreviousKeyAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment_MODS.Text = Dictionaries.refreshKeybindingList()[listBox_Modlist_MODS.SelectedIndex];
+
+        private void LoadPreviousVolumeAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment_AUDIO.Text = Dictionaries.refreshAudioKeybindingList()[listBox_Modlist_AUDIO.SelectedIndex];
         #endregion
         #region Reset To Default
         private void ResetToDefaultSettings(object sender, EventArgs e)
@@ -534,47 +584,75 @@ namespace RSMods
 
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
-            string currentTab = TabController.SelectedTab.Text.ToString();
+            TextBox textBox = ((TextBox)sender);
 
-            if (currentTab == "Song Lists")
+            // Song Lists
+            if (textBox.Name == textBox_NewSonglistName.Name)
             {
-                foreach (KeyValuePair<int, string> currentSongList in Dictionaries.SongListIndexToINISetting)
+
+                foreach (string currentSongList in Dictionaries.SongListIndexToINISetting)
                 {
+                    int index = Dictionaries.SongListIndexToINISetting.IndexOf(currentSongList);
+
                     if (textBox_NewSonglistName.Text.Trim() == "") // The game UI will break with a blank name.
                     {
                         MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
-
-                    else if (currentSongList.Key == listBox_Songlist.SelectedIndex)
+                    else if (index == listBox_Songlist.SelectedIndex)
                     {
-                        SaveChanges(currentSongList.Value, textBox_NewSonglistName.Text);
-                        listBox_Songlist.Items[currentSongList.Key] = textBox_NewSonglistName.Text;
+                        SaveChanges(currentSongList, textBox_NewSonglistName.Text);
+                        listBox_Songlist.Items[index] = textBox_NewSonglistName.Text;
                         break;
                     };
                 }
             }
 
-            if (currentTab == "Keybindings")
+            // Mod Keybindings
+            if (textBox.Name == textBox_NewKeyAssignment_MODS.Name)
             {
-                foreach (KeyValuePair<int, string> currentKeybinding in Dictionaries.KeybindingsIndexToINISetting)
+                foreach (string currentKeybinding in Dictionaries.KeybindingsIndexToINISetting)
                 {
-                    if (textBox_NewKeyAssignment.Text == "")
+                    int index = Dictionaries.KeybindingsIndexToINISetting.IndexOf(currentKeybinding);
+
+                    if (textBox_NewKeyAssignment_MODS.Text == "")
                     {
                         MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                     }
-
-                    else if (currentKeybinding.Key == listBox_Modlist.SelectedIndex)
+                    else if (index == listBox_Modlist_MODS.SelectedIndex)
                     {
-                        SaveChanges(currentKeybinding.Value, KeyConversion.VirtualKey(textBox_NewKeyAssignment.Text));
+                        SaveChanges(currentKeybinding, KeyConversion.VirtualKey(textBox_NewKeyAssignment_MODS.Text));
                         break;
                     }
                 }
 
-                textBox_NewKeyAssignment.Text = String.Empty;
+                textBox_NewKeyAssignment_MODS.Text = String.Empty;
+            }
+
+            // Audio Keybindings
+            if (textBox.Name == textBox_NewKeyAssignment_AUDIO.Name)
+            {
+                foreach (string currentKeybinding in Dictionaries.AudioKeybindingsIndexToINISetting)
+                {
+                    int index = Dictionaries.AudioKeybindingsIndexToINISetting.IndexOf(currentKeybinding);
+
+                    if (textBox_NewKeyAssignment_AUDIO.Text == "")
+                    {
+                        MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                    }
+                    else if (index == listBox_Modlist_AUDIO.SelectedIndex)
+                    {
+                        SaveChanges(currentKeybinding, KeyConversion.VirtualKey(textBox_NewKeyAssignment_AUDIO.Text));
+                        break;
+                    }
+                }
+
+                textBox_NewKeyAssignment_AUDIO.Text = String.Empty;
             }
             ShowCurrentKeybindingValues();
+            ShowCurrentAudioKeybindingValues();
         }
         #endregion
         #region String Colors
@@ -825,10 +903,6 @@ namespace RSMods
             groupBox_LoftOffWhen.Visible = checkBox_ToggleLoft.Checked;
         }
 
-        private void Save_AddVolume(object sender, EventArgs e) => SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, AddVolumeCheckbox.Checked.ToString().ToLower());
-
-        private void Save_DecreaseVolume(object sender, EventArgs e) => SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, DecreaseVolumeCheckbox.Checked.ToString().ToLower());
-
         private void Save_SongTimer(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, checkBox_SongTimer.Checked.ToString().ToLower());
 
         private void Save_ForceEnumeration(object sender, EventArgs e)
@@ -942,19 +1016,36 @@ namespace RSMods
 
         private void Save_ExtendedRangeTuningAt(object sender, EventArgs e) => SaveChanges(ReadSettings.ExtendedRangeTuningIdentifier, Convert.ToString((listBox_ExtendedRangeTunings.SelectedIndex * -1) - 2));
 
-        private void DeleteKeyBind(object sender, EventArgs e)
+        private void Delete_Keybind_MODS(object sender, EventArgs e)
         {
-            textBox_NewKeyAssignment.Text = "";
+            textBox_NewKeyAssignment_MODS.Text = "";
 
-            foreach (KeyValuePair<int, string> currentMod in Dictionaries.KeybindingsIndexToINISetting)
+            foreach (string currentMod in Dictionaries.KeybindingsIndexToINISetting)
             {
-                if (currentMod.Key == listBox_Modlist.SelectedIndex)
+                int index = Dictionaries.KeybindingsIndexToINISetting.IndexOf(currentMod);
+                if (index == listBox_Modlist_MODS.SelectedIndex)
                 {
-                    SaveChanges(currentMod.Value, "");
+                    SaveChanges(currentMod, "");
                     break;
                 }
             }
             ShowCurrentKeybindingValues();
+        }
+
+        private void Delete_Keybind_AUDIO(object sender, EventArgs e)
+        {
+            textBox_NewKeyAssignment_AUDIO.Text = "";
+
+            foreach (string currentMod in Dictionaries.AudioKeybindingsIndexToINISetting)
+            {
+                int index = Dictionaries.AudioKeybindingsIndexToINISetting.IndexOf(currentMod);
+                if (index == listBox_Modlist_AUDIO.SelectedIndex)
+                {
+                    SaveChanges(currentMod, "");
+                    break;
+                }
+            }
+            ShowCurrentAudioKeybindingValues();
         }
 
         private void Save_RemoveLyrics(object sender, EventArgs e)
@@ -985,8 +1076,9 @@ namespace RSMods
 
         private void Save_VolumeControls(object sender, EventArgs e)
         {
-            SaveChanges(ReadSettings.AddVolumeEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
-            SaveChanges(ReadSettings.DecreaseVolumeEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
+            groupBox_Keybindings_AUDIO.Visible = checkBox_ControlVolume.Checked;
+            groupBox_ControlVolume.Visible = checkBox_ControlVolume.Checked;
+            SaveChanges(ReadSettings.VolumeControlEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
         }
 
         private void Save_HeadstockOffInSongOnlyButton(object sender, EventArgs e)
@@ -1038,8 +1130,13 @@ namespace RSMods
             if (radio_HeadstockAlwaysOff.Checked)
                 SaveChanges(ReadSettings.RemoveHeadstockWhenIdentifier, "startup");
         }
+
+        private void Save_VolumeInterval(object sender, EventArgs e) => SaveChanges(ReadSettings.VolumeControlIntervalIdentifier, Convert.ToInt32(nUpDown_VolumeInterval.Value).ToString());
         #endregion
         #region Tooltips
+
+        bool CreatedToolTipYet = false;
+
         private void HideToolTips(object sender, EventArgs e)
         {
             if (ActiveForm != null) // This fixes a glitch where if you are hovering over a Control that calls the tooltip, and alt-tab, the program will crash since ActiveFrame turns to null... If the user is highlighting something, and the window becomes null, we need to refrain from trying to hide the tooltip that "does not exist".
