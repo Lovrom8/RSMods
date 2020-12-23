@@ -24,8 +24,8 @@ using namespace CrowdControl::EffectList;
 
 namespace CrowdControl::EffectList {
 	std::map<std::string, CCEffect*> AllEffects{
-		{ "rainbow", new RainbowEffect(20) },
-		{ "drunk", new DrunkModeEffect(10) },
+		{ "rainbowstrings", new RainbowEffect(20) },
+		{ "drunkmode", new DrunkModeEffect(10) },
 		{ "fyourfc", new FYourFCEffect(5) },
 		{ "solidrandom", new SolidNotesRandomEffect(10) },
 		{ "solidcustom", new SolidNotesCustomEffect(10) },
