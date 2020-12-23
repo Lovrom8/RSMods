@@ -70,6 +70,15 @@ inline std::vector<std::string> songModes = { // These are all the menus where y
 	"ScoreAttack_Pause",
 };
 
+inline std::vector<std::string> multiplayerTuners = {
+	"LearnASong_PreSongTunerMP",
+	"NonStopPlay_PreSongTunerMP",
+	"SessionMode_PreSMTunerMP",
+	"UIMenu_TunerMP",
+	"Duet_PreSongTuner",
+	"H2H_PreSongTuner",
+};
+
 inline std::vector<std::string> learnASongModes = {
 	"LearnASong_Game",
 	"NonStopPlay_Game",

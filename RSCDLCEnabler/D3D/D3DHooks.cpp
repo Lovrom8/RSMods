@@ -419,7 +419,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 				//Log("0x%08x", crc);
 
-				if (headstockTexturePointers.size() == 3) {
+				int headstockCRCLimit = 3;
+
+				if (MemHelpers::IsInStringArray(currentMenu, NULL, multiplayerTuners))
+					headstockCRCLimit = 6;
+
+				if (headstockTexturePointers.size() == headstockCRCLimit) {
 					calculatedHeadstocks = true;
 					resetHeadstockCache = false;
 					std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
