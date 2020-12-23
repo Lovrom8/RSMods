@@ -427,7 +427,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				if (headstockTexturePointers.size() == headstockCRCLimit) {
 					calculatedHeadstocks = true;
 					resetHeadstockCache = false;
-					std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
+					//std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
 				}
 
 				return REMOVE_TEXTURE;

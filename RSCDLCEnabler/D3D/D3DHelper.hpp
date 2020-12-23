@@ -86,6 +86,16 @@ inline std::vector<std::string> learnASongModes = {
 	"NonStopPlay_Pause",
 };
 
+inline std::vector<std::string> fastRRModes = {
+	"LearnASong_Game",
+	"NonStopPlay_Game",
+	"LearnASong_Pause",
+	"NonStopPlay_Pause",
+	"RiffRepeater",
+	"RiffRepeater_AdvancedSettings",
+	"RiffRepeater_Pause",
+};
+
 inline std::vector<std::string> scoreAttackModes = {
 	"ScoreAttack_Game",
 	"ScoreAttack_Pause",

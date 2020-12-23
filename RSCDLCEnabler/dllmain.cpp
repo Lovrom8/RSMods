@@ -688,6 +688,9 @@ unsigned WINAPI MainThread() {
 				RemoveLyrics = true;
 
 
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
+				MemHelpers::AutomatedOpenRRSpeedAbuse();
+
 			/// If User Is Entering Song
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
@@ -707,9 +710,6 @@ unsigned WINAPI MainThread() {
 						toggleSkyline = true;
 					DrawSkylineInMenu = false;
 				}
-
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
-					MemHelpers::AutomatedOpenRRSpeedAbuse();
 
 				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning) {
 					Midi::AutomateDownTuning();

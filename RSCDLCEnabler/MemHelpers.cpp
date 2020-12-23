@@ -394,6 +394,7 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 	Sleep(5000); // Main animation from Tuner -> In game where we can control the menu
+
 	std::cout << "Triggering RR" << std::endl;
 
 	Util::SendKey(VK_SPACE); // Open RR Menu
