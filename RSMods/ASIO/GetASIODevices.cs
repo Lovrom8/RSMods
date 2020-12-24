@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using System.Windows.Forms;
 
 namespace RSMods
 {
@@ -30,7 +29,7 @@ namespace RSMods
                 registry_device.Close();
 
                 // Verify we have a real device and not just a fake key
-                if (deviceInfo.clsID == null && deviceInfo.deviceDescription == null && deviceInfo.deviceName == null)
+                if (deviceInfo.clsID == null || deviceInfo.deviceDescription == null || deviceInfo.deviceName == null)
                     continue;
 
                 // Get DLL Location
