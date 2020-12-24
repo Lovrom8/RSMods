@@ -81,7 +81,7 @@ namespace RSMods
             LoadFonts();
 
             // Load ASIO Devices
-            ASIO.FindDevices();
+            ASIO.Devices.FindDevices();
         }
 
         #region Startup Functions

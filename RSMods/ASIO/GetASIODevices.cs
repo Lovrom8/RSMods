@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 
-namespace RSMods
+namespace RSMods.ASIO
 {
-    class ASIO
+    public class Devices
     {
         public static List<DriverInfo> FindDevices()
         {
