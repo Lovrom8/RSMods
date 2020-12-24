@@ -34,7 +34,7 @@ namespace RSMods
                     continue;
 
                 // Get DLL Location
-                RegistryKey dllLocation = Registry.ClassesRoot.OpenSubKey("CLSID").OpenSubKey(deviceInfo.clsID.ToString()).OpenSubKey("InprocServer32");
+                RegistryKey dllLocation = Registry.ClassesRoot.OpenSubKey("CLSID").OpenSubKey(deviceInfo.clsID).OpenSubKey("InprocServer32");
                 deviceInfo.dllPath = (string)dllLocation.GetValue("");
                 dllLocation.Close();
 
