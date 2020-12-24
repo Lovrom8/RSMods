@@ -101,7 +101,9 @@ namespace RSMods
             TooltipDictionary.Add(label_TwitchAuthorized, "Please take care to make sure none of these entries are shown on your stream.");
             TooltipDictionary.Add(label_TwitchUsername, "Please take care to make sure none of these entries are shown on your stream.");
             TooltipDictionary.Add(label_TwitchChannelID, "Please take care to make sure none of these entries are shown on your stream.");
-            TooltipDictionary.Add(label_TwitchAccessTokenVal, "Please take care to make sure none of these entries are shown on your stream.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
+            TooltipDictionary.Add(label_TwitchAccessTokenVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
+            TooltipDictionary.Add(label_TwitchUsernameVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
+            TooltipDictionary.Add(label_TwitchChannelIDVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
             TooltipDictionary.Add(checkBox_RevealTwitchAuthToken, "Only reveal this when asked by RSMods developers.\nThis is how we look to see when events happen in your stream.");
         }
 

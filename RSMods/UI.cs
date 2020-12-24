@@ -1659,7 +1659,7 @@ namespace RSMods
             }
         }
 
-        private void Twitch_CopyAccessToken(object sender, MouseEventArgs e) => Clipboard.SetText(((Label)sender).Text);
+        private void Twitch_CopyOnClick(object sender, MouseEventArgs e) => Clipboard.SetText(((Label)sender).Text);
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
        {

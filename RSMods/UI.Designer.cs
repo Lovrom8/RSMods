@@ -2639,7 +2639,7 @@
             this.label_TwitchAccessTokenVal.TabIndex = 8;
             this.label_TwitchAccessTokenVal.TextChanged += new System.EventHandler(this.Twitch_NewAccessToken);
             this.label_TwitchAccessTokenVal.MouseHover += new System.EventHandler(this.RunToolTips);
-            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyAccessToken);
+            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
             // 
             // label_TwitchChannelIDVal
             // 
@@ -2648,6 +2648,8 @@
             this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
             this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchChannelIDVal.TabIndex = 7;
+            this.label_TwitchChannelIDVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchChannelIDVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
             // 
             // label_TwitchUsernameVal
             // 
@@ -2656,6 +2658,8 @@
             this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
             this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchUsernameVal.TabIndex = 6;
+            this.label_TwitchUsernameVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchUsernameVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
             // 
             // label_TwitchAccessToken
             // 
