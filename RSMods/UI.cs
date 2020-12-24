@@ -1659,6 +1659,8 @@ namespace RSMods
             }
         }
 
+        private void Twitch_CopyAccessToken(object sender, MouseEventArgs e) => Clipboard.SetText(((Label)sender).Text);
+
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
        {
            if (!(dgv_EnabledRewards.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn))

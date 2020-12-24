@@ -2638,6 +2638,8 @@
             this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchAccessTokenVal.TabIndex = 8;
             this.label_TwitchAccessTokenVal.TextChanged += new System.EventHandler(this.Twitch_NewAccessToken);
+            this.label_TwitchAccessTokenVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyAccessToken);
             // 
             // label_TwitchChannelIDVal
             // 
