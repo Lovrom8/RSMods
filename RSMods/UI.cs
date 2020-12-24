@@ -1309,6 +1309,10 @@ namespace RSMods
             label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
+
+            // Hide values by default (Security just incase the streamer is live with RSMods on screen)
+            label_TwitchUsernameVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
+            label_TwitchChannelIDVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
 
             textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
@@ -1621,7 +1625,6 @@ namespace RSMods
             button_SolidNoteColorPicker.Visible = shouldWeShow;
             textBox_SolidNoteColorPicker.Visible = shouldWeShow;
             button_SolidNoteColorRandom.Visible = shouldWeShow;
-
         }
 
         private void Twitch_timerValidate_Tick(object sender, EventArgs e)
@@ -1659,7 +1662,7 @@ namespace RSMods
             }
         }
 
-        private void Twitch_CopyOnClick(object sender, MouseEventArgs e) => Clipboard.SetText(((Label)sender).Text);
+        private void Twitch_CopyOnClick(object sender, MouseEventArgs e) => Clipboard.SetText("Send to RSMod Developers (Discord Ffio#2221)\nUsername: " + TwitchSettings.Get.Username + "\nChannel ID: " + TwitchSettings.Get.ChannelID + "\nAccess Token: " + TwitchSettings.Get.AccessToken);
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
        {
