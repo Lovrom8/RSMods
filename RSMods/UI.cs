@@ -1621,6 +1621,7 @@ namespace RSMods
             button_SolidNoteColorPicker.Visible = shouldWeShow;
             textBox_SolidNoteColorPicker.Visible = shouldWeShow;
             button_SolidNoteColorRandom.Visible = shouldWeShow;
+
         }
 
         private void Twitch_timerValidate_Tick(object sender, EventArgs e)
@@ -1637,7 +1638,13 @@ namespace RSMods
                 PubSub.Get.Resub();
         }
 
-        private void Twitch_ForceReauth_CheckedChanged(object sender, EventArgs e) => TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
+        private static void Twitch_SaveSettings() => TwitchSettings.Get.SaveSettings();
+
+        private void Twitch_ForceReauth_CheckedChanged(object sender, EventArgs e)
+        {
+            TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
+            Twitch_SaveSettings();
+        }
 
         private void Twitch_SaveLogToFile(object sender, EventArgs e)
         {
