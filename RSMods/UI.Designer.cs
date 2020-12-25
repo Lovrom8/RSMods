@@ -271,6 +271,9 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.checkBox_ASIO_Input2_Disabled = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_Input1_Disabled = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_Output_Disabled = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -2425,6 +2428,7 @@
             // 
             // groupBox_ASIO_Output
             // 
+            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_Disabled);
             this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlEndpointVolume);
             this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlMasterVolume);
             this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_MaxVolume);
@@ -2503,9 +2507,11 @@
             this.listBox_AvailableASIODevices_Output.Name = "listBox_AvailableASIODevices_Output";
             this.listBox_AvailableASIODevices_Output.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Output.TabIndex = 0;
+            this.listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableOutput);
             // 
             // groupBox_ASIO_Input2
             // 
+            this.groupBox_ASIO_Input2.Controls.Add(this.checkBox_ASIO_Input2_Disabled);
             this.groupBox_ASIO_Input2.Controls.Add(this.checkBox_ASIO_Input2_ControlEndpointVolume);
             this.groupBox_ASIO_Input2.Controls.Add(this.checkBox_ASIO_Input2_ControlMasterVolume);
             this.groupBox_ASIO_Input2.Controls.Add(this.label_ASIO_Input2_MaxVolume);
@@ -2588,6 +2594,7 @@
             // 
             // groupBox_ASIO_Input1
             // 
+            this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_Disabled);
             this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_ControlEndpointVolume);
             this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_ControlMasterVolume);
             this.groupBox_ASIO_Input1.Controls.Add(this.label_ASIO_Input1_MaxVolume);
@@ -3267,6 +3274,39 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // checkBox_ASIO_Input2_Disabled
+            // 
+            this.checkBox_ASIO_Input2_Disabled.AutoSize = true;
+            this.checkBox_ASIO_Input2_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Input2_Disabled.Name = "checkBox_ASIO_Input2_Disabled";
+            this.checkBox_ASIO_Input2_Disabled.Size = new System.Drawing.Size(67, 17);
+            this.checkBox_ASIO_Input2_Disabled.TabIndex = 10;
+            this.checkBox_ASIO_Input2_Disabled.Text = "Disabled";
+            this.checkBox_ASIO_Input2_Disabled.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Input2_Disabled.CheckedChanged += new System.EventHandler(this.checkBox_ASIO_Input2_Disabled_CheckedChanged);
+            // 
+            // checkBox_ASIO_Input1_Disabled
+            // 
+            this.checkBox_ASIO_Input1_Disabled.AutoSize = true;
+            this.checkBox_ASIO_Input1_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Input1_Disabled.Name = "checkBox_ASIO_Input1_Disabled";
+            this.checkBox_ASIO_Input1_Disabled.Size = new System.Drawing.Size(67, 17);
+            this.checkBox_ASIO_Input1_Disabled.TabIndex = 11;
+            this.checkBox_ASIO_Input1_Disabled.Text = "Disabled";
+            this.checkBox_ASIO_Input1_Disabled.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(this.checkBox_ASIO_Input1_Disabled_CheckedChanged);
+            // 
+            // checkBox_ASIO_Output_Disabled
+            // 
+            this.checkBox_ASIO_Output_Disabled.AutoSize = true;
+            this.checkBox_ASIO_Output_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Output_Disabled.Name = "checkBox_ASIO_Output_Disabled";
+            this.checkBox_ASIO_Output_Disabled.Size = new System.Drawing.Size(67, 17);
+            this.checkBox_ASIO_Output_Disabled.TabIndex = 12;
+            this.checkBox_ASIO_Output_Disabled.Text = "Disabled";
+            this.checkBox_ASIO_Output_Disabled.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Output_Disabled.CheckedChanged += new System.EventHandler(this.checkBox_ASIO_Output_Disabled_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3608,6 +3648,9 @@
         private System.Windows.Forms.CheckBox checkBox_ASIO_Input1_ControlEndpointVolume;
         private System.Windows.Forms.CheckBox checkBox_ASIO_Input1_ControlMasterVolume;
         private System.Windows.Forms.Label label_ASIO_Credits;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Input2_Disabled;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Input1_Disabled;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Output_Disabled;
     }
 }
 

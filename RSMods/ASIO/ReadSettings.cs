@@ -17,6 +17,8 @@ namespace RSMods.ASIO
         INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent,
         INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent;
 
+        public static bool DisabledInput0 = false, DisabledInput1 = false, DisabledOutput = false;
+
         public static string EnableWasapiOutputsIdentifier = "EnableWasapiOutputs=",
         EnableWasapiInputsIdentifier = "EnableWasapiInputs=",
         EnableAsioIdentifier = "EnableAsio=",
@@ -46,16 +48,16 @@ namespace RSMods.ASIO
         {
             switch(section)
             {
+                case Sections.Config:
+                    return "[Config]";
+                case Sections.Asio:
+                    return "[Asio]";
                 case Sections.Output:
                     return "[Asio.Output]";
                 case Sections.Input0:
                     return "[Asio.Input.0]";
                 case Sections.Input1:
                     return "[Asio.Input.1]";
-                case Sections.Config:
-                    return "[Config]";
-                case Sections.Asio:
-                    return "[Asio]";
             }
             return "";
         }
@@ -89,7 +91,18 @@ namespace RSMods.ASIO
                     if (currentLine[0] == '[') // Section
                         lastKnownSection = currentLine;
                     else if (currentLine[0] == ';') // Commented out
+                    {
+                        if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
+                        {
+                            if (sectionToGrab == Sections.Output && lastKnownSection == SectionToName(Sections.Output))
+                                DisabledOutput = true;
+                            if (sectionToGrab == Sections.Input0 && lastKnownSection == SectionToName(Sections.Input0))
+                                DisabledInput0 = true;
+                            if (sectionToGrab == Sections.Input1 && lastKnownSection == SectionToName(Sections.Input1))
+                                DisabledInput1 = true;
+                        }
                         continue;
+                    }
                 }
                     
 
