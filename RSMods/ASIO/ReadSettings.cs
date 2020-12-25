@@ -11,7 +11,7 @@ namespace RSMods.ASIO
 {
     public class ReadSettings
     {
-        public static string EnableWasapiOutputs, EnableWasapiInputs, EnableAsio,
+        private static string EnableWasapiOutputs, EnableWasapiInputs, EnableAsio,
         BufferSizeMode, CustomBufferSize,
         OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent,
         INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent,
@@ -42,7 +42,7 @@ namespace RSMods.ASIO
 
         private static string lastKnownSection = "";
 
-        private static string SectionToName(Sections section)
+        public static string SectionToName(Sections section)
         {
             switch(section)
             {
@@ -84,8 +84,14 @@ namespace RSMods.ASIO
             foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini")))
             {
 
-                if (currentLine.Length > 0 && currentLine[0] == '[')
-                    lastKnownSection = currentLine;
+                if (currentLine.Length > 0)
+                {
+                    if (currentLine[0] == '[') // Section
+                        lastKnownSection = currentLine;
+                    else if (currentLine[0] == ';') // Commented out
+                        continue;
+                }
+                    
 
                 #region Config
                     // Config

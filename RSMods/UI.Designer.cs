@@ -193,13 +193,26 @@
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.tab_RSASIO = new System.Windows.Forms.TabPage();
+            this.label_ASIO_Credits = new System.Windows.Forms.Label();
+            this.groupBox_ASIO_Output = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Output_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_Output_ControlMasterVolume = new System.Windows.Forms.CheckBox();
+            this.label_ASIO_Output_MaxVolume = new System.Windows.Forms.Label();
+            this.nUpDown_ASIO_Output_MaxVolume = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_ASIO_Output_BaseChannel = new System.Windows.Forms.NumericUpDown();
+            this.label_ASIO_Output_BaseChannel = new System.Windows.Forms.Label();
+            this.listBox_AvailableASIODevices_Output = new System.Windows.Forms.ListBox();
             this.groupBox_ASIO_Input2 = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Input2_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_Input2_ControlMasterVolume = new System.Windows.Forms.CheckBox();
             this.label_ASIO_Input2_MaxVolume = new System.Windows.Forms.Label();
             this.nUpDown_ASIO_Input2_MaxVolume = new System.Windows.Forms.NumericUpDown();
             this.nUpDown_ASIO_Input2_Channel = new System.Windows.Forms.NumericUpDown();
             this.label_ASIO_Input2_Channel = new System.Windows.Forms.Label();
             this.listBox_AvailableASIODevices_Input2 = new System.Windows.Forms.ListBox();
             this.groupBox_ASIO_Input1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Input1_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_Input1_ControlMasterVolume = new System.Windows.Forms.CheckBox();
             this.label_ASIO_Input1_MaxVolume = new System.Windows.Forms.Label();
             this.nUpDown_ASIO_Input1_MaxVolume = new System.Windows.Forms.NumericUpDown();
             this.nUpDown_ASIO_Input1_Channel = new System.Windows.Forms.NumericUpDown();
@@ -258,19 +271,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.checkBox_ASIO_Input2_ControlMasterVolume = new System.Windows.Forms.CheckBox();
-            this.checkBox_ASIO_Input2_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
-            this.checkBox_ASIO_Input1_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
-            this.checkBox_ASIO_Input1_ControlMasterVolume = new System.Windows.Forms.CheckBox();
-            this.groupBox_ASIO_Output = new System.Windows.Forms.GroupBox();
-            this.checkBox_ASIO_Output_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
-            this.checkBox_ASIO_Output_ControlMasterVolume = new System.Windows.Forms.CheckBox();
-            this.label_ASIO_Output_MaxVolume = new System.Windows.Forms.Label();
-            this.nUpDown_ASIO_Output_MaxVolume = new System.Windows.Forms.NumericUpDown();
-            this.nUpDown_ASIO_Output_BaseChannel = new System.Windows.Forms.NumericUpDown();
-            this.label_ASIO_Output_BaseChannel = new System.Windows.Forms.Label();
-            this.listBox_AvailableASIODevices_Output = new System.Windows.Forms.ListBox();
-            this.label_ASIO_Credits = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -305,6 +305,9 @@
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.tab_RSASIO.SuspendLayout();
+            this.groupBox_ASIO_Output.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).BeginInit();
             this.groupBox_ASIO_Input2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Input2_MaxVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Input2_Channel)).BeginInit();
@@ -319,9 +322,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
-            this.groupBox_ASIO_Output.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -2413,6 +2413,97 @@
             this.tab_RSASIO.TabIndex = 7;
             this.tab_RSASIO.Text = "RS_ASIO Settings";
             // 
+            // label_ASIO_Credits
+            // 
+            this.label_ASIO_Credits.AutoSize = true;
+            this.label_ASIO_Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_ASIO_Credits.Location = new System.Drawing.Point(829, 485);
+            this.label_ASIO_Credits.Name = "label_ASIO_Credits";
+            this.label_ASIO_Credits.Size = new System.Drawing.Size(308, 17);
+            this.label_ASIO_Credits.TabIndex = 11;
+            this.label_ASIO_Credits.Text = "Big Thank You To Mdias For Creating RS_ASIO";
+            // 
+            // groupBox_ASIO_Output
+            // 
+            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlEndpointVolume);
+            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlMasterVolume);
+            this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_MaxVolume);
+            this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_MaxVolume);
+            this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_BaseChannel);
+            this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_BaseChannel);
+            this.groupBox_ASIO_Output.Controls.Add(this.listBox_AvailableASIODevices_Output);
+            this.groupBox_ASIO_Output.Location = new System.Drawing.Point(604, 166);
+            this.groupBox_ASIO_Output.Name = "groupBox_ASIO_Output";
+            this.groupBox_ASIO_Output.Size = new System.Drawing.Size(499, 230);
+            this.groupBox_ASIO_Output.TabIndex = 10;
+            this.groupBox_ASIO_Output.TabStop = false;
+            this.groupBox_ASIO_Output.Text = "Output";
+            // 
+            // checkBox_ASIO_Output_ControlEndpointVolume
+            // 
+            this.checkBox_ASIO_Output_ControlEndpointVolume.AutoSize = true;
+            this.checkBox_ASIO_Output_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_Output_ControlEndpointVolume.Name = "checkBox_ASIO_Output_ControlEndpointVolume";
+            this.checkBox_ASIO_Output_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
+            this.checkBox_ASIO_Output_ControlEndpointVolume.TabIndex = 9;
+            this.checkBox_ASIO_Output_ControlEndpointVolume.Text = "Control Endpoint Volume";
+            this.checkBox_ASIO_Output_ControlEndpointVolume.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_ASIO_Output_ControlMasterVolume
+            // 
+            this.checkBox_ASIO_Output_ControlMasterVolume.AutoSize = true;
+            this.checkBox_ASIO_Output_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_Output_ControlMasterVolume.Name = "checkBox_ASIO_Output_ControlMasterVolume";
+            this.checkBox_ASIO_Output_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
+            this.checkBox_ASIO_Output_ControlMasterVolume.TabIndex = 8;
+            this.checkBox_ASIO_Output_ControlMasterVolume.Text = "Control Master Volume";
+            this.checkBox_ASIO_Output_ControlMasterVolume.UseVisualStyleBackColor = true;
+            // 
+            // label_ASIO_Output_MaxVolume
+            // 
+            this.label_ASIO_Output_MaxVolume.AutoSize = true;
+            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(250, 69);
+            this.label_ASIO_Output_MaxVolume.Name = "label_ASIO_Output_MaxVolume";
+            this.label_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(68, 13);
+            this.label_ASIO_Output_MaxVolume.TabIndex = 7;
+            this.label_ASIO_Output_MaxVolume.Text = "Max Volume:";
+            // 
+            // nUpDown_ASIO_Output_MaxVolume
+            // 
+            this.nUpDown_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(338, 67);
+            this.nUpDown_ASIO_Output_MaxVolume.Name = "nUpDown_ASIO_Output_MaxVolume";
+            this.nUpDown_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_ASIO_Output_MaxVolume.TabIndex = 4;
+            // 
+            // nUpDown_ASIO_Output_BaseChannel
+            // 
+            this.nUpDown_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(338, 28);
+            this.nUpDown_ASIO_Output_BaseChannel.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.nUpDown_ASIO_Output_BaseChannel.Name = "nUpDown_ASIO_Output_BaseChannel";
+            this.nUpDown_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_ASIO_Output_BaseChannel.TabIndex = 3;
+            // 
+            // label_ASIO_Output_BaseChannel
+            // 
+            this.label_ASIO_Output_BaseChannel.AutoSize = true;
+            this.label_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(250, 30);
+            this.label_ASIO_Output_BaseChannel.Name = "label_ASIO_Output_BaseChannel";
+            this.label_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(76, 13);
+            this.label_ASIO_Output_BaseChannel.TabIndex = 2;
+            this.label_ASIO_Output_BaseChannel.Text = "Base Channel:";
+            // 
+            // listBox_AvailableASIODevices_Output
+            // 
+            this.listBox_AvailableASIODevices_Output.FormattingEnabled = true;
+            this.listBox_AvailableASIODevices_Output.Location = new System.Drawing.Point(23, 30);
+            this.listBox_AvailableASIODevices_Output.Name = "listBox_AvailableASIODevices_Output";
+            this.listBox_AvailableASIODevices_Output.Size = new System.Drawing.Size(193, 147);
+            this.listBox_AvailableASIODevices_Output.TabIndex = 0;
+            // 
             // groupBox_ASIO_Input2
             // 
             this.groupBox_ASIO_Input2.Controls.Add(this.checkBox_ASIO_Input2_ControlEndpointVolume);
@@ -2428,6 +2519,26 @@
             this.groupBox_ASIO_Input2.TabIndex = 4;
             this.groupBox_ASIO_Input2.TabStop = false;
             this.groupBox_ASIO_Input2.Text = "Input 2";
+            // 
+            // checkBox_ASIO_Input2_ControlEndpointVolume
+            // 
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.AutoSize = true;
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.Name = "checkBox_ASIO_Input2_ControlEndpointVolume";
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.TabIndex = 9;
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.Text = "Control Endpoint Volume";
+            this.checkBox_ASIO_Input2_ControlEndpointVolume.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_ASIO_Input2_ControlMasterVolume
+            // 
+            this.checkBox_ASIO_Input2_ControlMasterVolume.AutoSize = true;
+            this.checkBox_ASIO_Input2_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_Input2_ControlMasterVolume.Name = "checkBox_ASIO_Input2_ControlMasterVolume";
+            this.checkBox_ASIO_Input2_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
+            this.checkBox_ASIO_Input2_ControlMasterVolume.TabIndex = 8;
+            this.checkBox_ASIO_Input2_ControlMasterVolume.Text = "Control Master Volume";
+            this.checkBox_ASIO_Input2_ControlMasterVolume.UseVisualStyleBackColor = true;
             // 
             // label_ASIO_Input2_MaxVolume
             // 
@@ -2449,7 +2560,7 @@
             // 
             this.nUpDown_ASIO_Input2_Channel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_Input2_Channel.Maximum = new decimal(new int[] {
-            8,
+            64,
             0,
             0,
             0});
@@ -2473,6 +2584,7 @@
             this.listBox_AvailableASIODevices_Input2.Name = "listBox_AvailableASIODevices_Input2";
             this.listBox_AvailableASIODevices_Input2.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input2.TabIndex = 0;
+            this.listBox_AvailableASIODevices_Input2.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput1);
             // 
             // groupBox_ASIO_Input1
             // 
@@ -2489,6 +2601,26 @@
             this.groupBox_ASIO_Input1.TabIndex = 3;
             this.groupBox_ASIO_Input1.TabStop = false;
             this.groupBox_ASIO_Input1.Text = "Input 1";
+            // 
+            // checkBox_ASIO_Input1_ControlEndpointVolume
+            // 
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.AutoSize = true;
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.Location = new System.Drawing.Point(253, 142);
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.Name = "checkBox_ASIO_Input1_ControlEndpointVolume";
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.TabIndex = 11;
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.Text = "Control Endpoint Volume";
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_ASIO_Input1_ControlMasterVolume
+            // 
+            this.checkBox_ASIO_Input1_ControlMasterVolume.AutoSize = true;
+            this.checkBox_ASIO_Input1_ControlMasterVolume.Location = new System.Drawing.Point(253, 110);
+            this.checkBox_ASIO_Input1_ControlMasterVolume.Name = "checkBox_ASIO_Input1_ControlMasterVolume";
+            this.checkBox_ASIO_Input1_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
+            this.checkBox_ASIO_Input1_ControlMasterVolume.TabIndex = 10;
+            this.checkBox_ASIO_Input1_ControlMasterVolume.Text = "Control Master Volume";
+            this.checkBox_ASIO_Input1_ControlMasterVolume.UseVisualStyleBackColor = true;
             // 
             // label_ASIO_Input1_MaxVolume
             // 
@@ -2510,7 +2642,7 @@
             // 
             this.nUpDown_ASIO_Input1_Channel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_Input1_Channel.Maximum = new decimal(new int[] {
-            8,
+            64,
             0,
             0,
             0});
@@ -2534,6 +2666,7 @@
             this.listBox_AvailableASIODevices_Input1.Name = "listBox_AvailableASIODevices_Input1";
             this.listBox_AvailableASIODevices_Input1.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input1.TabIndex = 0;
+            this.listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput0);
             // 
             // groupBox_ASIO_Config
             // 
@@ -2639,6 +2772,7 @@
             this.radio_ASIO_BufferSize_Custom.TabStop = true;
             this.radio_ASIO_BufferSize_Custom.Text = "Custom";
             this.radio_ASIO_BufferSize_Custom.UseVisualStyleBackColor = true;
+            this.radio_ASIO_BufferSize_Custom.CheckedChanged += new System.EventHandler(this.radio_ASIO_BufferSize_Custom_CheckedChanged);
             // 
             // radio_ASIO_BufferSize_Host
             // 
@@ -3133,137 +3267,6 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // checkBox_ASIO_Input2_ControlMasterVolume
-            // 
-            this.checkBox_ASIO_Input2_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Input2_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
-            this.checkBox_ASIO_Input2_ControlMasterVolume.Name = "checkBox_ASIO_Input2_ControlMasterVolume";
-            this.checkBox_ASIO_Input2_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
-            this.checkBox_ASIO_Input2_ControlMasterVolume.TabIndex = 8;
-            this.checkBox_ASIO_Input2_ControlMasterVolume.Text = "Control Master Volume";
-            this.checkBox_ASIO_Input2_ControlMasterVolume.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_ASIO_Input2_ControlEndpointVolume
-            // 
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.Name = "checkBox_ASIO_Input2_ControlEndpointVolume";
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.TabIndex = 9;
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.Text = "Control Endpoint Volume";
-            this.checkBox_ASIO_Input2_ControlEndpointVolume.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_ASIO_Input1_ControlEndpointVolume
-            // 
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.Location = new System.Drawing.Point(253, 142);
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.Name = "checkBox_ASIO_Input1_ControlEndpointVolume";
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.TabIndex = 11;
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.Text = "Control Endpoint Volume";
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_ASIO_Input1_ControlMasterVolume
-            // 
-            this.checkBox_ASIO_Input1_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Input1_ControlMasterVolume.Location = new System.Drawing.Point(253, 110);
-            this.checkBox_ASIO_Input1_ControlMasterVolume.Name = "checkBox_ASIO_Input1_ControlMasterVolume";
-            this.checkBox_ASIO_Input1_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
-            this.checkBox_ASIO_Input1_ControlMasterVolume.TabIndex = 10;
-            this.checkBox_ASIO_Input1_ControlMasterVolume.Text = "Control Master Volume";
-            this.checkBox_ASIO_Input1_ControlMasterVolume.UseVisualStyleBackColor = true;
-            // 
-            // groupBox_ASIO_Output
-            // 
-            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlEndpointVolume);
-            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlMasterVolume);
-            this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_MaxVolume);
-            this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_MaxVolume);
-            this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_BaseChannel);
-            this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_BaseChannel);
-            this.groupBox_ASIO_Output.Controls.Add(this.listBox_AvailableASIODevices_Output);
-            this.groupBox_ASIO_Output.Location = new System.Drawing.Point(604, 166);
-            this.groupBox_ASIO_Output.Name = "groupBox_ASIO_Output";
-            this.groupBox_ASIO_Output.Size = new System.Drawing.Size(499, 230);
-            this.groupBox_ASIO_Output.TabIndex = 10;
-            this.groupBox_ASIO_Output.TabStop = false;
-            this.groupBox_ASIO_Output.Text = "Output";
-            // 
-            // checkBox_ASIO_Output_ControlEndpointVolume
-            // 
-            this.checkBox_ASIO_Output_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Output_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
-            this.checkBox_ASIO_Output_ControlEndpointVolume.Name = "checkBox_ASIO_Output_ControlEndpointVolume";
-            this.checkBox_ASIO_Output_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
-            this.checkBox_ASIO_Output_ControlEndpointVolume.TabIndex = 9;
-            this.checkBox_ASIO_Output_ControlEndpointVolume.Text = "Control Endpoint Volume";
-            this.checkBox_ASIO_Output_ControlEndpointVolume.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_ASIO_Output_ControlMasterVolume
-            // 
-            this.checkBox_ASIO_Output_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Output_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
-            this.checkBox_ASIO_Output_ControlMasterVolume.Name = "checkBox_ASIO_Output_ControlMasterVolume";
-            this.checkBox_ASIO_Output_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
-            this.checkBox_ASIO_Output_ControlMasterVolume.TabIndex = 8;
-            this.checkBox_ASIO_Output_ControlMasterVolume.Text = "Control Master Volume";
-            this.checkBox_ASIO_Output_ControlMasterVolume.UseVisualStyleBackColor = true;
-            // 
-            // label_ASIO_Output_MaxVolume
-            // 
-            this.label_ASIO_Output_MaxVolume.AutoSize = true;
-            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(250, 69);
-            this.label_ASIO_Output_MaxVolume.Name = "label_ASIO_Output_MaxVolume";
-            this.label_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(68, 13);
-            this.label_ASIO_Output_MaxVolume.TabIndex = 7;
-            this.label_ASIO_Output_MaxVolume.Text = "Max Volume:";
-            // 
-            // nUpDown_ASIO_Output_MaxVolume
-            // 
-            this.nUpDown_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(338, 67);
-            this.nUpDown_ASIO_Output_MaxVolume.Name = "nUpDown_ASIO_Output_MaxVolume";
-            this.nUpDown_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(120, 20);
-            this.nUpDown_ASIO_Output_MaxVolume.TabIndex = 4;
-            // 
-            // nUpDown_ASIO_Output_BaseChannel
-            // 
-            this.nUpDown_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(338, 28);
-            this.nUpDown_ASIO_Output_BaseChannel.Maximum = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            this.nUpDown_ASIO_Output_BaseChannel.Name = "nUpDown_ASIO_Output_BaseChannel";
-            this.nUpDown_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(120, 20);
-            this.nUpDown_ASIO_Output_BaseChannel.TabIndex = 3;
-            // 
-            // label_ASIO_Output_BaseChannel
-            // 
-            this.label_ASIO_Output_BaseChannel.AutoSize = true;
-            this.label_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(250, 30);
-            this.label_ASIO_Output_BaseChannel.Name = "label_ASIO_Output_BaseChannel";
-            this.label_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(76, 13);
-            this.label_ASIO_Output_BaseChannel.TabIndex = 2;
-            this.label_ASIO_Output_BaseChannel.Text = "Base Channel:";
-            // 
-            // listBox_AvailableASIODevices_Output
-            // 
-            this.listBox_AvailableASIODevices_Output.FormattingEnabled = true;
-            this.listBox_AvailableASIODevices_Output.Location = new System.Drawing.Point(23, 30);
-            this.listBox_AvailableASIODevices_Output.Name = "listBox_AvailableASIODevices_Output";
-            this.listBox_AvailableASIODevices_Output.Size = new System.Drawing.Size(193, 147);
-            this.listBox_AvailableASIODevices_Output.TabIndex = 0;
-            // 
-            // label_ASIO_Credits
-            // 
-            this.label_ASIO_Credits.AutoSize = true;
-            this.label_ASIO_Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_ASIO_Credits.Location = new System.Drawing.Point(829, 485);
-            this.label_ASIO_Credits.Name = "label_ASIO_Credits";
-            this.label_ASIO_Credits.Size = new System.Drawing.Size(308, 17);
-            this.label_ASIO_Credits.TabIndex = 11;
-            this.label_ASIO_Credits.Text = "Big Thank You To Mdias For Creating RS_ASIO";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3329,6 +3332,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.tab_RSASIO.ResumeLayout(false);
             this.tab_RSASIO.PerformLayout();
+            this.groupBox_ASIO_Output.ResumeLayout(false);
+            this.groupBox_ASIO_Output.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).EndInit();
             this.groupBox_ASIO_Input2.ResumeLayout(false);
             this.groupBox_ASIO_Input2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Input2_MaxVolume)).EndInit();
@@ -3350,10 +3357,6 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
-            this.groupBox_ASIO_Output.ResumeLayout(false);
-            this.groupBox_ASIO_Output.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

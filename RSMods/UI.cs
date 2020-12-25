@@ -82,6 +82,9 @@ namespace RSMods
 
             // Load RS_ASIO
             VerifyInstallOfASIO();
+
+            // Load RS_ASIO Settings
+            LoadASIOSettings();
         }
 
         #region Startup Functions
@@ -182,6 +185,10 @@ namespace RSMods
                 listBox_AvailableASIODevices_Input2.Items.Add(device.deviceName);
                 listBox_AvailableASIODevices_Output.Items.Add(device.deviceName);
             }
+
+            listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
+            listBox_AvailableASIODevices_Input2.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
+            listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
         }
 
         private void VerifyInstallOfASIO()
@@ -361,6 +368,46 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on")
                 checkBox_ShowCurrentNote.Checked = true;
+        }
+
+        private void LoadASIOSettings()
+        {
+            if (!ASIO.ReadSettings.VerifySettingsExist())
+                return;
+
+            // Config
+            checkBox_ASIO_WASAPI_Output.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config)));
+            checkBox_ASIO_WASAPI_Input.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiInputsIdentifier, ASIO.ReadSettings.Sections.Config)));
+            checkBox_ASIO_ASIO.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableAsioIdentifier, ASIO.ReadSettings.Sections.Config)));
+
+            // Asio
+            if (ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio) == "custom")
+            {
+                radio_ASIO_BufferSize_Custom.Checked = true;
+                nUpDown_ASIO_CustomBufferSize.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.CustomBufferSizeIdentifier, ASIO.ReadSettings.Sections.Asio));
+            }
+            if (ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio) == "driver")
+                radio_ASIO_BufferSize_Driver.Checked = true;
+            if (ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio) == "host")
+                radio_ASIO_BufferSize_Host.Checked = true;
+
+            // Output
+            nUpDown_ASIO_Output_BaseChannel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output));
+            checkBox_ASIO_Output_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output)));
+            checkBox_ASIO_Output_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output)));
+            nUpDown_ASIO_Output_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output));
+
+            // Input0
+            nUpDown_ASIO_Input1_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0));
+            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
+            checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
+            nUpDown_ASIO_Input1_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0));
+
+            // Input1
+            nUpDown_ASIO_Input2_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1));
+            checkBox_ASIO_Input2_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
+            checkBox_ASIO_Input2_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
+            nUpDown_ASIO_Input2_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1));
         }
 
         #endregion
@@ -675,6 +722,13 @@ namespace RSMods
             ShowCurrentKeybindingValues();
             ShowCurrentAudioKeybindingValues();
         }
+
+        private void ASIO_SaveChanges_Middleware(string identifierToChange, ASIO.ReadSettings.Sections section, string ChangedSettingValue, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false)
+        {
+            ASIO.WriteSettings.SaveChanges(identifierToChange, section, ChangedSettingValue, disableOutput, disableInput0, disableInput1);
+            ShowSavedSettingsLabel();
+        }
+
         #endregion
         #region String Colors
 
@@ -1723,6 +1777,9 @@ namespace RSMods
             SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
         }
         #endregion
+        
+        private void ASIO_ListAvailableInput0(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
+
         #region Midi
 
         private void LoadMidiDeviceNames(object sender, EventArgs e)
@@ -1740,6 +1797,14 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+        }
+
+        private void ASIO_ListAvailableInput1(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input2.SelectedItem.ToString());
+
+        private void radio_ASIO_BufferSize_Custom_CheckedChanged(object sender, EventArgs e)
+        {
+            label_ASIO_CustomBufferSize.Visible = radio_ASIO_BufferSize_Custom.Checked;
+            nUpDown_ASIO_CustomBufferSize.Visible = radio_ASIO_BufferSize_Custom.Checked;
         }
     }
 

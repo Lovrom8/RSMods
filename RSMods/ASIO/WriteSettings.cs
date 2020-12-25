@@ -21,6 +21,10 @@ namespace RSMods.ASIO
             }},
             {"[Asio]", new Dictionary<string, string>
             {
+                {"; available buffer size modes:", "" },
+                {"; driver - respect buffer size setting set in the driver", ""},
+                {"; host   - use a buffer size as close as possible as that requested by the host application", ""},
+                {"; custom - use the buffer size specified in CustomBufferSize field", ""},
                 { ReadSettings.BufferSizeModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.BufferSizeModeIdentifier, ReadSettings.Sections.Asio)},
                 { ReadSettings.CustomBufferSizeIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomBufferSizeIdentifier, ReadSettings.Sections.Asio)}
             }},
@@ -50,7 +54,7 @@ namespace RSMods.ASIO
             }}
         };
 
-        public static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite)
+        private static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false)
         {
             using (StreamWriter sw = File.CreateText(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini")))
             {
@@ -59,13 +63,16 @@ namespace RSMods.ASIO
                     sw.WriteLine(section);
                     foreach (KeyValuePair<string, string> entry in DictionaryToWrite[section])
                     {
-                        sw.WriteLine(entry.Key + entry.Value);
+                        if (((section == ReadSettings.SectionToName(ReadSettings.Sections.Output) && disableOutput) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input0) && disableInput0) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input1) && disableInput1)) && entry.Key == ReadSettings.DriverIdentifier)
+                            sw.WriteLine(';' + entry.Key + entry.Value);
+                        else
+                            sw.WriteLine(entry.Key + entry.Value);
                     }
                 }
             }
         }
 
-        private void SaveChanges(string IdentifierToChange, string SectionToChange, string ChangedSettingValue)
+        public static void SaveChanges(string IdentifierToChange, ReadSettings.Sections iniSection, string ChangedSettingValue, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
             if (ChangedSettingValue == "true")
@@ -73,16 +80,19 @@ namespace RSMods.ASIO
             else if (ChangedSettingValue == "false")
                 ChangedSettingValue = "off";
 
-                foreach (KeyValuePair<string, string> entry in newSettings[SectionToChange])
+            foreach (string section in newSettings.Keys)
+            {
+                foreach (KeyValuePair<string, string> entry in newSettings[section])
                 {
-                    if (IdentifierToChange == entry.Key)
+                    if (IdentifierToChange == entry.Key && ReadSettings.SectionToName(iniSection) == section)
                     {
-                        newSettings[SectionToChange][IdentifierToChange] = ChangedSettingValue;
+                        newSettings[section][IdentifierToChange] = ChangedSettingValue;
                         break; // We found what we need, so let's leave.
                     }
                 }
+            }
 
-            WriteINI(newSettings);
+            WriteINI(newSettings, disableOutput, disableInput0, disableInput1);
         }
     }
 }
