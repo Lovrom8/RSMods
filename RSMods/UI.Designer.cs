@@ -2446,6 +2446,7 @@
             this.groupBox_ASIO_Output.TabIndex = 10;
             this.groupBox_ASIO_Output.TabStop = false;
             this.groupBox_ASIO_Output.Text = "Output";
+            this.groupBox_ASIO_Output.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_ASIO_Output_ClearSelection
             // 
@@ -2478,6 +2479,7 @@
             this.checkBox_ASIO_Output_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Output_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Output_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Output_EndpointVolume);
+            this.checkBox_ASIO_Output_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_Output_ControlMasterVolume
             // 
@@ -2530,6 +2532,7 @@
             this.label_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(76, 13);
             this.label_ASIO_Output_BaseChannel.TabIndex = 2;
             this.label_ASIO_Output_BaseChannel.Text = "Base Channel:";
+            this.label_ASIO_Output_BaseChannel.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // listBox_AvailableASIODevices_Output
             // 
@@ -2539,6 +2542,7 @@
             this.listBox_AvailableASIODevices_Output.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Output.TabIndex = 0;
             this.listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableOutput);
+            this.listBox_AvailableASIODevices_Output.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_ASIO_Input1
             // 
@@ -2557,6 +2561,7 @@
             this.groupBox_ASIO_Input1.TabIndex = 4;
             this.groupBox_ASIO_Input1.TabStop = false;
             this.groupBox_ASIO_Input1.Text = "Input 2";
+            this.groupBox_ASIO_Input1.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_ASIO_Input1_ClearSelection
             // 
@@ -2589,6 +2594,7 @@
             this.checkBox_ASIO_Input1_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Input1_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Input1_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Input1_EndpointVolume);
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_Input1_ControlMasterVolume
             // 
@@ -2641,6 +2647,7 @@
             this.label_ASIO_Input1_Channel.Size = new System.Drawing.Size(49, 13);
             this.label_ASIO_Input1_Channel.TabIndex = 2;
             this.label_ASIO_Input1_Channel.Text = "Channel:";
+            this.label_ASIO_Input1_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // listBox_AvailableASIODevices_Input1
             // 
@@ -2650,6 +2657,7 @@
             this.listBox_AvailableASIODevices_Input1.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input1.TabIndex = 0;
             this.listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput1);
+            this.listBox_AvailableASIODevices_Input1.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_ASIO_Input0
             // 
@@ -2668,6 +2676,7 @@
             this.groupBox_ASIO_Input0.TabIndex = 3;
             this.groupBox_ASIO_Input0.TabStop = false;
             this.groupBox_ASIO_Input0.Text = "Input 1";
+            this.groupBox_ASIO_Input0.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_ASIO_Input0_ClearSelection
             // 
@@ -2700,6 +2709,7 @@
             this.checkBox_ASIO_Input0_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Input0_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Input0_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Input0_EndpointVolume);
+            this.checkBox_ASIO_Input0_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_Input0_ControlMasterVolume
             // 
@@ -2752,6 +2762,7 @@
             this.label_ASIO_Input0_Channel.Size = new System.Drawing.Size(49, 13);
             this.label_ASIO_Input0_Channel.TabIndex = 1;
             this.label_ASIO_Input0_Channel.Text = "Channel:";
+            this.label_ASIO_Input0_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // listBox_AvailableASIODevices_Input0
             // 
@@ -2761,6 +2772,7 @@
             this.listBox_AvailableASIODevices_Input0.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input0.TabIndex = 0;
             this.listBox_AvailableASIODevices_Input0.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput0);
+            this.listBox_AvailableASIODevices_Input0.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_ASIO_Config
             // 
@@ -2773,6 +2785,7 @@
             this.groupBox_ASIO_Config.TabIndex = 2;
             this.groupBox_ASIO_Config.TabStop = false;
             this.groupBox_ASIO_Config.Text = "Config";
+            this.groupBox_ASIO_Config.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_ASIO
             // 
@@ -2784,6 +2797,7 @@
             this.checkBox_ASIO_ASIO.Text = "Use ASIO";
             this.checkBox_ASIO_ASIO.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_ASIO.CheckedChanged += new System.EventHandler(this.ASIO_ASIO);
+            this.checkBox_ASIO_ASIO.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_WASAPI_Input
             // 
@@ -2795,6 +2809,7 @@
             this.checkBox_ASIO_WASAPI_Input.Text = "Use WASAPI Input";
             this.checkBox_ASIO_WASAPI_Input.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_WASAPI_Input.CheckedChanged += new System.EventHandler(this.ASIO_WASAPI_Input);
+            this.checkBox_ASIO_WASAPI_Input.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ASIO_WASAPI_Output
             // 
@@ -2806,6 +2821,7 @@
             this.checkBox_ASIO_WASAPI_Output.Text = "Use WASAPI Output";
             this.checkBox_ASIO_WASAPI_Output.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_WASAPI_Output.CheckedChanged += new System.EventHandler(this.ASIO_WASAPI_Output);
+            this.checkBox_ASIO_WASAPI_Output.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_ASIO_BufferSize
             // 
@@ -2820,6 +2836,7 @@
             this.groupBox_ASIO_BufferSize.TabIndex = 1;
             this.groupBox_ASIO_BufferSize.TabStop = false;
             this.groupBox_ASIO_BufferSize.Text = "Buffer Size";
+            this.groupBox_ASIO_BufferSize.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // label_ASIO_CustomBufferSize
             // 
@@ -2830,6 +2847,7 @@
             this.label_ASIO_CustomBufferSize.TabIndex = 4;
             this.label_ASIO_CustomBufferSize.Text = "Custom Buffer Size";
             this.label_ASIO_CustomBufferSize.Visible = false;
+            this.label_ASIO_CustomBufferSize.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // nUpDown_ASIO_CustomBufferSize
             // 
@@ -2871,6 +2889,7 @@
             this.radio_ASIO_BufferSize_Custom.Text = "Custom";
             this.radio_ASIO_BufferSize_Custom.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Custom.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Custom);
+            this.radio_ASIO_BufferSize_Custom.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // radio_ASIO_BufferSize_Host
             // 
@@ -2883,6 +2902,7 @@
             this.radio_ASIO_BufferSize_Host.Text = "Host";
             this.radio_ASIO_BufferSize_Host.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Host.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Host);
+            this.radio_ASIO_BufferSize_Host.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // radio_ASIO_BufferSize_Driver
             // 
@@ -2895,6 +2915,7 @@
             this.radio_ASIO_BufferSize_Driver.Text = "Driver";
             this.radio_ASIO_BufferSize_Driver.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Driver.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Driver);
+            this.radio_ASIO_BufferSize_Driver.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // tab_Twitch
             // 

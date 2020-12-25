@@ -105,6 +105,29 @@ namespace RSMods
             TooltipDictionary.Add(label_TwitchUsernameVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
             TooltipDictionary.Add(label_TwitchChannelIDVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
             TooltipDictionary.Add(checkBox_RevealTwitchAuthToken, "Only reveal this when asked by RSMods developers.\nThis is how we look to see when events happen in your stream.");
+
+            // RS_ASIO
+            TooltipDictionary.Add(groupBox_ASIO_Output, "If your headphones support ASIO, this is where you would manage them.");
+            TooltipDictionary.Add(groupBox_ASIO_Input0, "If you use an audio interface, this is where you would manage it.\nThis is meant for the Player 1 \"Cable\"");
+            TooltipDictionary.Add(groupBox_ASIO_Input1, "If you use an audio interface, this is where you would manage it.\nThis is meant for the Player 2 \"Cable\"");
+            TooltipDictionary.Add(groupBox_ASIO_BufferSize, "Use this to box to change how much latency there is.\nThe lower you go, you have a higher chance of getting crackling audio.");
+            TooltipDictionary.Add(listBox_AvailableASIODevices_Output, "A list of all connected ASIO devices.\nClick to save the selected device as your Output device (headphones)");
+            TooltipDictionary.Add(listBox_AvailableASIODevices_Input0, "A list of all connected ASIO devices.\nClick to save the selected device as your Input0 device (guitar / bass | Player 1)");
+            TooltipDictionary.Add(listBox_AvailableASIODevices_Input1, "A list of all connected ASIO devices.\nClick to save the selected device as your Input1 device (guitar / bass | Player 2)");
+            TooltipDictionary.Add(radio_ASIO_BufferSize_Driver, "Respect the buffer size setting set by your device");
+            TooltipDictionary.Add(radio_ASIO_BufferSize_Host, "Respect the buffer size setting of Rocksmith");
+            TooltipDictionary.Add(radio_ASIO_BufferSize_Custom, "Respect the buffer size in the Custom Buffer Size field");
+            TooltipDictionary.Add(label_ASIO_CustomBufferSize, "The lower this value goes, the lower the latency.\nWhile bringing down the latency, you have a higher chance of crackling audio.\nTry to find the sweet spot.");
+            TooltipDictionary.Add(checkBox_ASIO_ASIO, "This is the main reason people use RS_ASIO.\nEnable this if you have an audio interface to potentially lower latency.");
+            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Input, "Enable this if you want to play with a USB cable AND your audio interface in multiplayer");
+            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Output, "Enable this if you have headphones that don't go through your audio interface.");
+            TooltipDictionary.Add(checkBox_ASIO_Output_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
+            TooltipDictionary.Add(checkBox_ASIO_Input0_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
+            TooltipDictionary.Add(checkBox_ASIO_Input1_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
+            TooltipDictionary.Add(label_ASIO_Input0_Channel, "This is what channel we look for audio on.\nA good way to find this value is to see how many inputs are before and subtract 1.\nEx: My cable is plugged into the 2nd input, so my channel is 1.");
+            TooltipDictionary.Add(label_ASIO_Input1_Channel, "This is what channel we look for audio on.\nA good way to find this value is to see how many inputs are before and subtract 1.\nEx: My cable is plugged into the 2nd input, so my channel is 1.");
+            TooltipDictionary.Add(label_ASIO_Output_BaseChannel, "This is what channel we want to send the audio to.\nA good way to find this value is to see how many outputs are before and subtract 1.\nEx: My headphones is plugged into the 2nd output, so my base channel is 1.");
+
         }
 
         public Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>(){}; // Can't put variables into it until after we create it.
