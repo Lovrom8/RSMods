@@ -3126,7 +3126,7 @@
             0,
             0,
             0});
-            this.nUpDown_Rocksmith_MaxOutputBuffer.ValueChanged += new System.EventHandler(this.nUpDown_Rocksmith_MaxOutputBuffer_ValueChanged);
+            this.nUpDown_Rocksmith_MaxOutputBuffer.ValueChanged += new System.EventHandler(this.Rocksmith_MaxBufferSize);
             // 
             // nUpDown_Rocksmith_LatencyBuffer
             // 
@@ -3224,6 +3224,7 @@
             this.checkBox_Rocksmith_PostEffects.TabIndex = 5;
             this.checkBox_Rocksmith_PostEffects.Text = "Post Processing Effects";
             this.checkBox_Rocksmith_PostEffects.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_PostEffects.CheckedChanged += new System.EventHandler(this.Rocksmith_PostEffects);
             // 
             // checkBox_Rocksmith_PerPixelLighting
             // 
@@ -3234,6 +3235,7 @@
             this.checkBox_Rocksmith_PerPixelLighting.TabIndex = 9;
             this.checkBox_Rocksmith_PerPixelLighting.Text = "Pixel Perfect Lighting";
             this.checkBox_Rocksmith_PerPixelLighting.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_PerPixelLighting.CheckedChanged += new System.EventHandler(this.Rocksmith_PerPixelLighting);
             // 
             // checkBox_Rocksmith_DepthOfField
             // 
@@ -3244,6 +3246,7 @@
             this.checkBox_Rocksmith_DepthOfField.TabIndex = 8;
             this.checkBox_Rocksmith_DepthOfField.Text = "Depth of Field";
             this.checkBox_Rocksmith_DepthOfField.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_DepthOfField.CheckedChanged += new System.EventHandler(this.Rocksmith_DepthOfField);
             // 
             // checkBox_Rocksmith_HighResScope
             // 
@@ -3254,6 +3257,7 @@
             this.checkBox_Rocksmith_HighResScope.TabIndex = 7;
             this.checkBox_Rocksmith_HighResScope.Text = "High Resolution Audio Visualizer";
             this.checkBox_Rocksmith_HighResScope.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_HighResScope.CheckedChanged += new System.EventHandler(this.Rocksmith_HighResScope);
             // 
             // checkBox_Rocksmith_Shadows
             // 
@@ -3264,6 +3268,7 @@
             this.checkBox_Rocksmith_Shadows.TabIndex = 6;
             this.checkBox_Rocksmith_Shadows.Text = "Realtime Shadows";
             this.checkBox_Rocksmith_Shadows.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_Shadows.CheckedChanged += new System.EventHandler(this.Rocksmith_Shadows);
             // 
             // checkBox_Rocksmith_GamepadUI
             // 
@@ -3274,6 +3279,7 @@
             this.checkBox_Rocksmith_GamepadUI.TabIndex = 4;
             this.checkBox_Rocksmith_GamepadUI.Text = "Show Gamepad UI";
             this.checkBox_Rocksmith_GamepadUI.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_GamepadUI.CheckedChanged += new System.EventHandler(this.Rocksmith_GamepadUI);
             // 
             // checkBox_Rocksmith_DisableBrowser
             // 
