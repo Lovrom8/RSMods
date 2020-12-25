@@ -747,6 +747,12 @@ namespace RSMods
             ShowSavedSettingsLabel();
         }
 
+        private void Rocksmith_SaveChanges_Middleware(string identifierToChange, string ChangedSettingValue)
+        {
+            Rocksmith.WriteSettings.SaveChanges(identifierToChange, ChangedSettingValue);
+            ShowSavedSettingsLabel();
+        }
+
         #endregion
         #region String Colors
 
@@ -1892,6 +1898,9 @@ namespace RSMods
         private void ASIO_Input0_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Input0, ASIO_ListAvailableInput0, ASIO.ReadSettings.Sections.Input0);
         private void ASIO_Input1_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Input1, ASIO_ListAvailableInput1, ASIO.ReadSettings.Sections.Input1);
         private void ASIO_Output_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Output, ASIO_ListAvailableOutput, ASIO.ReadSettings.Sections.Output);
+        #endregion
+        #region Rocksmith Settings
+        private void Rocksmith_DisableBrowser(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.DisableBrowserIdentifier, checkBox_Rocksmith_DisableBrowser.Checked.ToString().ToLower());
         #endregion
         #region Midi
 

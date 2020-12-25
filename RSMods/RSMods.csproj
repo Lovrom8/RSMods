@@ -97,6 +97,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GuitarSpeak.cs" />
+    <Compile Include="Rocksmith\ReadSettings.cs" />
+    <Compile Include="Rocksmith\WriteSettings.cs" />
     <Compile Include="SetAndForgetMods.cs" />
     <Compile Include="Twitch\EffectServer\EffectMessage.cs" />
     <Compile Include="Twitch\EffectServer\EffectServerTCP.cs" />
