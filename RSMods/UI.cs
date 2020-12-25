@@ -81,7 +81,7 @@ namespace RSMods
             LoadFonts();
 
             // Load ASIO Devices
-            ASIO.Devices.FindDevices();
+            LoadASIODevices();
         }
 
         #region Startup Functions
@@ -172,6 +172,16 @@ namespace RSMods
             label_VoiceOverVolumeKey.Text = "Voice-Over Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier));
             label_SFXVolumeKey.Text = "SFX Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier));
             label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
+        }
+
+        private void LoadASIODevices()
+        {
+            foreach(ASIO.Devices.DriverInfo device in ASIO.Devices.FindDevices())
+            {
+                listBox_AvailableASIODevices_Input1.Items.Add(device.deviceName);
+                listBox_AvailableASIODevices_Input2.Items.Add(device.deviceName);
+                listBox_AvailableASIODevices_Output.Items.Add(device.deviceName);
+            }
         }
 
         #endregion
