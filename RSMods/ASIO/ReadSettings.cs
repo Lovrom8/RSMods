@@ -71,13 +71,10 @@ namespace RSMods.ASIO
 
         private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
 
-        private static bool VerifySettingsExist()
+        public static bool VerifySettingsExist()
         {
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini")))
-            {
-                MessageBox.Show("You must use RS_ASIO to use this tab.");
                 return false;
-            }
             return true;
         }
 

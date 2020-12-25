@@ -80,8 +80,8 @@ namespace RSMods
             // Load All System Fonts
             LoadFonts();
 
-            // Load ASIO Devices
-            LoadASIODevices();
+            // Load RS_ASIO
+            VerifyInstallOfASIO();
         }
 
         #region Startup Functions
@@ -182,6 +182,14 @@ namespace RSMods
                 listBox_AvailableASIODevices_Input2.Items.Add(device.deviceName);
                 listBox_AvailableASIODevices_Output.Items.Add(device.deviceName);
             }
+        }
+
+        private void VerifyInstallOfASIO()
+        {
+            if (!ASIO.ReadSettings.VerifySettingsExist())
+                TabController.TabPages.Remove(tab_RSASIO);
+            else
+                LoadASIODevices();
         }
 
         #endregion
