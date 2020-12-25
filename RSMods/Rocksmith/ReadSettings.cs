@@ -54,7 +54,7 @@ namespace RSMods.Rocksmith
 
         private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
 
-        private static bool VerifySettingsINI()
+        public static bool VerifySettingsINI()
         {
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini")))
                 return false;

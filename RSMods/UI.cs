@@ -77,6 +77,9 @@ namespace RSMods
             // Load RS_ASIO Settings
             LoadASIOSettings();
 
+            // Load Rocksmith Settings
+            LoadRocksmithSettings();
+
             // Prevent some double saving
             PreventDoubleSave();
 
@@ -140,40 +143,6 @@ namespace RSMods
                 listBox_Modlist_AUDIO.Items.Add(volume);
         }
 
-        private void PreventDoubleSave()
-        {
-            // Disable changes while we change them. This prevents us from saving a value we already know.
-            listBox_ExtendedRangeTunings.SelectedIndexChanged -= new System.EventHandler(Save_ExtendedRangeTuningAt);
-            nUpDown_ForceEnumerationXMS.ValueChanged -= new System.EventHandler(Save_EnumerateEveryXMS);
-            listBox_AvailableASIODevices_Input0.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput0);
-            listBox_AvailableASIODevices_Input1.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput1);
-            listBox_AvailableASIODevices_Output.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableOutput);
-            checkBox_ASIO_Output_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Output_Disable);
-            checkBox_ASIO_Input0_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input0_Disable);
-            checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
-
-
-            // Now we can change things without saving.
-            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
-            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
-            listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
-            listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
-            listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
-            checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
-            checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
-            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
-
-            // Re-enable the saving of the values now that we've done our work.
-            listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
-            nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(Save_EnumerateEveryXMS);
-            listBox_AvailableASIODevices_Input0.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput0);
-            listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput1);
-            listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableOutput);
-            checkBox_ASIO_Output_Disabled.CheckedChanged += new System.EventHandler(ASIO_Output_Disable);
-            checkBox_ASIO_Input0_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input0_Disable);
-            checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
-        }
-
         private void ShowCurrentKeybindingValues()
         {
             label_ToggleLoftKey.Text = "Toggle Loft: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier));
@@ -215,7 +184,7 @@ namespace RSMods
         }
 
         #endregion
-        #region Show Settings In GUI
+        #region Show Prior Settings In GUI
         private void LoadModSettings()
         {
             if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
@@ -426,6 +395,108 @@ namespace RSMods
             checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
             nUpDown_ASIO_Input1_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1));
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
+        }
+
+        private void LoadRocksmithSettings()
+        {
+            if (!Rocksmith.ReadSettings.VerifySettingsINI())
+                return;
+            // Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.));
+            // Audio Settings
+
+            checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier)));
+            checkBox_Rocksmith_ExclusiveMode.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ExclusiveModeIdentifier)));
+            nUpDown_Rocksmith_LatencyBuffer.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier));
+            checkBox_Rocksmith_ForceWDM.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceWDMIdentifier)));
+            checkBox_Rocksmith_ForceDirextXSink.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceDirectXSinkIdentifier)));
+            checkBox_Rocksmith_DumpAudioLog.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DumpAudioLogIdentifier)));
+            if (Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier))))
+                nUpDown_Rocksmith_MaxOutputBuffer.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier));
+            else
+                checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
+            checkBox_Rocksmith_RTCOnly.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier)));
+            checkBox_Rocksmith_LowLatencyMode.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier)));
+            // Visual Settings
+
+            checkBox_Rocksmith_GamepadUI.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ShowGamepadUIIdentifier)));
+            nUpDown_Rocksmith_ScreenWidth.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenWidthIdentifier));
+            nUpDown_Rocksmith_ScreenHeight.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenHeightIdentifier));
+            switch (Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.FullscreenIdentifier)))
+            {
+                case 0:
+                    radio_Rocksmith_Windowed.Checked = true;
+                    break;
+                case 1:
+                    radio_Rocksmith_NonExclusiveFullScreen.Checked = true;
+                    break;
+                case 2:
+                    radio_Rocksmith_ExclusiveFullScreen.Checked = true;
+                    break;
+                default:
+                    break;
+            }
+            switch (Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.VisualQualityIdentifier)))
+            {
+                case 0:
+                    radio_Rocksmith_LowQuality.Checked = true;
+                    break;
+                case 1:
+                    radio_Rocksmith_MediumQuality.Checked = true;
+                    break;
+                case 2:
+                case 3:
+                    radio_Rocksmith_HighQuality.Checked = true;
+                    break;
+                default:
+                    break;
+            }
+            nUpDown_Rocksmith_RenderWidth.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier));
+            nUpDown_Rocksmith_RenderHeight.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier));
+            checkBox_Rocksmith_PostEffects.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePostEffectsIdentifier)));
+            checkBox_Rocksmith_Shadows.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableShadowsIdentifier)));
+            checkBox_Rocksmith_HighResScope.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableHighResScopeIdentifier)));
+            checkBox_Rocksmith_DepthOfField.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableDepthOfFieldIdentifier)));
+            checkBox_Rocksmith_PerPixelLighting.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePerPixelLightingIdentifier)));
+            checkBox_Rocksmith_MSAASamples.Checked = Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MsaaSamplesIdentifier)) == 4;
+            checkBox_Rocksmith_DisableBrowser.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DisableBrowserIdentifier)));
+            checkBox_Rocksmith_EnableRenderRes.Checked = (Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier) != "0" || Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier) != "0");
+
+            // Network Settings
+            checkBox_Rocksmith_UseProxy.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.UseProxyIdentifier)));
+        }
+
+        private void PreventDoubleSave()
+        {
+            // Disable changes while we change them. This prevents us from saving a value we already know.
+            listBox_ExtendedRangeTunings.SelectedIndexChanged -= new System.EventHandler(Save_ExtendedRangeTuningAt);
+            nUpDown_ForceEnumerationXMS.ValueChanged -= new System.EventHandler(Save_EnumerateEveryXMS);
+            listBox_AvailableASIODevices_Input0.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput0);
+            listBox_AvailableASIODevices_Input1.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput1);
+            listBox_AvailableASIODevices_Output.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableOutput);
+            checkBox_ASIO_Output_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Output_Disable);
+            checkBox_ASIO_Input0_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input0_Disable);
+            checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
+
+
+            // Now we can change things without saving.
+            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
+            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
+            listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
+            listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
+            listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
+            checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
+            checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
+            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
+
+            // Re-enable the saving of the values now that we've done our work.
+            listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
+            nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(Save_EnumerateEveryXMS);
+            listBox_AvailableASIODevices_Input0.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput0);
+            listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput1);
+            listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableOutput);
+            checkBox_ASIO_Output_Disabled.CheckedChanged += new System.EventHandler(ASIO_Output_Disable);
+            checkBox_ASIO_Input0_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input0_Disable);
+            checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
         }
 
         #endregion
@@ -1901,6 +1972,24 @@ namespace RSMods
         #endregion
         #region Rocksmith Settings
         private void Rocksmith_DisableBrowser(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.DisableBrowserIdentifier, checkBox_Rocksmith_DisableBrowser.Checked.ToString().ToLower());
+        private void Rocksmith_UseProxy(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.UseProxyIdentifier, checkBox_Rocksmith_UseProxy.Checked.ToString().ToLower());
+        private void Rocksmith_MSAA(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.MsaaSamplesIdentifier, (((Convert.ToInt32(checkBox_Rocksmith_MSAASamples.Checked) * 3) + 1).ToString()));
+        private void Rocksmith_EnableRenderRes(object sender, EventArgs e)
+        {
+            label_Rocksmith_RenderWidth.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
+            label_Rocksmith_RenderHeight.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
+            nUpDown_Rocksmith_RenderWidth.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
+            nUpDown_Rocksmith_RenderHeight.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
+        }
+        private void Rocksmith_AutomateMaxBufferSize(object sender, EventArgs e)
+        {
+            nUpDown_Rocksmith_MaxOutputBuffer.Enabled = !checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked;
+            if (checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked)
+                nUpDown_Rocksmith_MaxOutputBuffer.Value = 0;
+            else
+                nUpDown_Rocksmith_MaxOutputBuffer.Value = 32;
+        }
+        private void nUpDown_Rocksmith_MaxOutputBuffer_ValueChanged(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier, nUpDown_Rocksmith_MaxOutputBuffer.Value.ToString());
         #endregion
         #region Midi
 
