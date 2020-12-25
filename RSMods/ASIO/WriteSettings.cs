@@ -22,9 +22,9 @@ namespace RSMods.ASIO
             {"[Asio]", new Dictionary<string, string>
             {
                 {"; available buffer size modes:", "" },
-                {"; driver - respect buffer size setting set in the driver", ""},
-                {"; host   - use a buffer size as close as possible as that requested by the host application", ""},
-                {"; custom - use the buffer size specified in CustomBufferSize field", ""},
+                {";    driver - respect buffer size setting set in the driver", ""},
+                {";    host   - use a buffer size as close as possible as that requested by the host application", ""},
+                {";    custom - use the buffer size specified in CustomBufferSize field", ""},
                 { ReadSettings.BufferSizeModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.BufferSizeModeIdentifier, ReadSettings.Sections.Asio)},
                 { ReadSettings.CustomBufferSizeIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomBufferSizeIdentifier, ReadSettings.Sections.Asio)}
             }},
@@ -68,6 +68,7 @@ namespace RSMods.ASIO
                         else
                             sw.WriteLine(entry.Key + entry.Value);
                     }
+                    sw.WriteLine();
                 }
             }
         }
