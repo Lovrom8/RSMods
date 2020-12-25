@@ -145,33 +145,33 @@ namespace RSMods
             // Disable changes while we change them. This prevents us from saving a value we already know.
             listBox_ExtendedRangeTunings.SelectedIndexChanged -= new System.EventHandler(Save_ExtendedRangeTuningAt);
             nUpDown_ForceEnumerationXMS.ValueChanged -= new System.EventHandler(Save_EnumerateEveryXMS);
-            listBox_AvailableASIODevices_Input1.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput0);
-            listBox_AvailableASIODevices_Input2.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput1);
+            listBox_AvailableASIODevices_Input0.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput0);
+            listBox_AvailableASIODevices_Input1.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableInput1);
             listBox_AvailableASIODevices_Output.SelectedIndexChanged -= new System.EventHandler(ASIO_ListAvailableOutput);
-            checkBox_ASIO_Output_Disabled.CheckedChanged -= new System.EventHandler(checkBox_ASIO_Output_Disabled_CheckedChanged);
-            checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(checkBox_ASIO_Input1_Disabled_CheckedChanged);
-            checkBox_ASIO_Input2_Disabled.CheckedChanged -= new System.EventHandler(checkBox_ASIO_Input2_Disabled_CheckedChanged);
+            checkBox_ASIO_Output_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Output_Disable);
+            checkBox_ASIO_Input0_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input0_Disable);
+            checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
 
 
             // Now we can change things without saving.
             nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
             listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
-            listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
-            listBox_AvailableASIODevices_Input2.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
+            listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
+            listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
             listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
             checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
-            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
-            checkBox_ASIO_Input2_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
+            checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
+            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
             nUpDown_ForceEnumerationXMS.ValueChanged += new System.EventHandler(Save_EnumerateEveryXMS);
-            listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput0);
-            listBox_AvailableASIODevices_Input2.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput1);
+            listBox_AvailableASIODevices_Input0.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput0);
+            listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableInput1);
             listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(ASIO_ListAvailableOutput);
-            checkBox_ASIO_Output_Disabled.CheckedChanged += new System.EventHandler(checkBox_ASIO_Output_Disabled_CheckedChanged);
-            checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(checkBox_ASIO_Input1_Disabled_CheckedChanged);
-            checkBox_ASIO_Input2_Disabled.CheckedChanged += new System.EventHandler(checkBox_ASIO_Input2_Disabled_CheckedChanged);
+            checkBox_ASIO_Output_Disabled.CheckedChanged += new System.EventHandler(ASIO_Output_Disable);
+            checkBox_ASIO_Input0_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input0_Disable);
+            checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
         }
 
         private void ShowCurrentKeybindingValues()
@@ -200,8 +200,8 @@ namespace RSMods
         {
             foreach(ASIO.Devices.DriverInfo device in ASIO.Devices.FindDevices())
             {
+                listBox_AvailableASIODevices_Input0.Items.Add(device.deviceName);
                 listBox_AvailableASIODevices_Input1.Items.Add(device.deviceName);
-                listBox_AvailableASIODevices_Input2.Items.Add(device.deviceName);
                 listBox_AvailableASIODevices_Output.Items.Add(device.deviceName);
             }
         }
@@ -414,18 +414,18 @@ namespace RSMods
             // checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
 
             // Input0
-            nUpDown_ASIO_Input1_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0));
-            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
-            checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
-            nUpDown_ASIO_Input1_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0));
-            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
+            nUpDown_ASIO_Input0_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0));
+            checkBox_ASIO_Input0_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
+            checkBox_ASIO_Input0_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
+            nUpDown_ASIO_Input0_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0));
+            checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
 
             // Input1
-            nUpDown_ASIO_Input2_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1));
-            checkBox_ASIO_Input2_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
-            checkBox_ASIO_Input2_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
-            nUpDown_ASIO_Input2_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1));
-            checkBox_ASIO_Input2_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
+            nUpDown_ASIO_Input1_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1));
+            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
+            checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
+            nUpDown_ASIO_Input1_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1));
+            checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
         }
 
         #endregion
@@ -743,7 +743,7 @@ namespace RSMods
 
         private void ASIO_SaveChanges_Middleware(string identifierToChange, ASIO.ReadSettings.Sections section, string ChangedSettingValue)
         {
-            ASIO.WriteSettings.SaveChanges(identifierToChange, section, ChangedSettingValue, checkBox_ASIO_Output_Disabled.Checked, checkBox_ASIO_Input1_Disabled.Checked, checkBox_ASIO_Input2_Disabled.Checked);
+            ASIO.WriteSettings.SaveChanges(identifierToChange, section, ChangedSettingValue, checkBox_ASIO_Output_Disabled.Checked, checkBox_ASIO_Input0_Disabled.Checked, checkBox_ASIO_Input1_Disabled.Checked);
             ShowSavedSettingsLabel();
         }
 
@@ -1795,41 +1795,104 @@ namespace RSMods
             SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
         }
         #endregion
-        
-        private void ASIO_ListAvailableInput0(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
-        private void ASIO_ListAvailableInput1(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input2.SelectedItem.ToString());
+        #region RS_ASIO
+
+        // Config
+        private void ASIO_WASAPI_Output(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_WASAPI_Output.Checked).ToString());
+        private void ASIO_WASAPI_Input(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableWasapiInputsIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_WASAPI_Input.Checked).ToString());
+        private void ASIO_ASIO(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableAsioIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_ASIO.Checked).ToString());
+
+        // Driver
+        private void ASIO_ListAvailableInput0(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input0.SelectedItem.ToString());
+        private void ASIO_ListAvailableInput1(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
         private void ASIO_ListAvailableOutput(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output, listBox_AvailableASIODevices_Output.SelectedItem.ToString());
 
-        private void checkBox_ASIO_Output_Disabled_CheckedChanged(object sender, EventArgs e)
+        // Disable / Comment Out Driver
+        private void ASIO_Output_Disable(object sender, EventArgs e)
         {
             if (listBox_AvailableASIODevices_Output.SelectedItem != null)
                 ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output, listBox_AvailableASIODevices_Output.SelectedItem.ToString());
             else
                 ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output, "");
         }
-
-        private void checkBox_ASIO_Input1_Disabled_CheckedChanged(object sender, EventArgs e)
+        private void ASIO_Input0_Disable(object sender, EventArgs e)
         {
-            if (listBox_AvailableASIODevices_Input1.SelectedItem != null)
-                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
+            if (listBox_AvailableASIODevices_Input0.SelectedItem != null)
+                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input0.SelectedItem.ToString());
             else
                 ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, "");
         }
-
-        private void checkBox_ASIO_Input2_Disabled_CheckedChanged(object sender, EventArgs e)
+        private void ASIO_Input1_Disable(object sender, EventArgs e)
         {
-            if (listBox_AvailableASIODevices_Input2.SelectedItem != null)
-                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input2.SelectedItem.ToString());
+            if (listBox_AvailableASIODevices_Input1.SelectedItem != null)
+                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
             else
                 ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, "");
         }
 
-        private void radio_ASIO_BufferSize_Custom_CheckedChanged(object sender, EventArgs e)
+        // Buffer Size
+        private void ASIO_BufferSize_Driver(object sender, EventArgs e)
+        {
+            if (radio_ASIO_BufferSize_Driver.Checked)
+                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio, "driver");
+        }
+        private void ASIO_BufferSize_Host(object sender, EventArgs e)
+        {
+            if (radio_ASIO_BufferSize_Host.Checked)
+                ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio, "host");
+        }
+        private void ASIO_BufferSize_Custom(object sender, EventArgs e)
         {
             label_ASIO_CustomBufferSize.Visible = radio_ASIO_BufferSize_Custom.Checked;
             nUpDown_ASIO_CustomBufferSize.Visible = radio_ASIO_BufferSize_Custom.Checked;
+            ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio, "custom");
         }
+        private void ASIO_CustomBufferSize(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.CustomBufferSizeIdentifier, ASIO.ReadSettings.Sections.Asio, nUpDown_ASIO_CustomBufferSize.Value.ToString());
 
+        // Input0 Settings
+        private void ASIO_Input0_Channel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0, nUpDown_ASIO_Input0_Channel.Value.ToString());
+        private void ASIO_Input0_MaxVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0, nUpDown_ASIO_Input0_MaxVolume.Value.ToString());
+        private void ASIO_Input0_MasterVolume(object sender, EventArgs e)
+        {
+            ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0, Convert.ToInt32(checkBox_ASIO_Input0_ControlMasterVolume.Checked).ToString());
+            label_ASIO_Input0_MaxVolume.Visible = checkBox_ASIO_Input0_ControlMasterVolume.Checked;
+            nUpDown_ASIO_Input0_MaxVolume.Visible = checkBox_ASIO_Input0_ControlMasterVolume.Checked;
+        }
+        private void ASIO_Input0_EndpointVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0, Convert.ToInt32(checkBox_ASIO_Input0_ControlEndpointVolume.Checked).ToString());
+
+        // Input1 Settings
+        private void ASIO_Input1_Channel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1, nUpDown_ASIO_Input1_Channel.Value.ToString());
+        private void ASIO_Input1_MaxVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1, nUpDown_ASIO_Input1_MaxVolume.Value.ToString());
+        private void ASIO_Input1_MasterVolume(object sender, EventArgs e)
+        {
+            ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1, Convert.ToInt32(checkBox_ASIO_Input1_ControlMasterVolume.Checked).ToString());
+            label_ASIO_Input1_MaxVolume.Visible = checkBox_ASIO_Input1_ControlMasterVolume.Checked;
+            nUpDown_ASIO_Input1_MaxVolume.Visible = checkBox_ASIO_Input1_ControlMasterVolume.Checked;
+        }
+        private void ASIO_Input1_EndpointVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1, Convert.ToInt32(checkBox_ASIO_Input1_ControlEndpointVolume.Checked).ToString());
+
+        // Output Settings
+        private void ASIO_Output_BaseChannel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_BaseChannel.Value.ToString());
+        private void ASIO_Output_MaxVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_MaxVolume.Value.ToString());
+        private void ASIO_Output_MasterVolume(object sender, EventArgs e) {
+            ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output, Convert.ToInt32(checkBox_ASIO_Output_ControlMasterVolume.Checked).ToString());
+            label_ASIO_Output_MaxVolume.Visible = checkBox_ASIO_Output_ControlMasterVolume.Checked;
+            nUpDown_ASIO_Output_MaxVolume.Visible = checkBox_ASIO_Output_ControlMasterVolume.Checked;
+        }
+        private void ASIO_Output_EndpointVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output, Convert.ToInt32(checkBox_ASIO_Output_ControlEndpointVolume.Checked).ToString());
+
+        // Clear Selection
+        private void ASIO_ClearSelectedDevice(ListBox deviceList, EventHandler e, ASIO.ReadSettings.Sections section)
+        {
+            deviceList.SelectedIndexChanged -= e;
+            deviceList.SelectedIndex = -1;
+            ASIO_SaveChanges_Middleware(ASIO.ReadSettings.DriverIdentifier, section, "");
+            deviceList.SelectedIndexChanged += e;
+        }
+        private void ASIO_Input0_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Input0, ASIO_ListAvailableInput0, ASIO.ReadSettings.Sections.Input0);
+        private void ASIO_Input1_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Input1, ASIO_ListAvailableInput1, ASIO.ReadSettings.Sections.Input1);
+        private void ASIO_Output_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Output, ASIO_ListAvailableOutput, ASIO.ReadSettings.Sections.Output);
+        #endregion
         #region Midi
 
         private void LoadMidiDeviceNames(object sender, EventArgs e)
