@@ -128,6 +128,32 @@ namespace RSMods
             TooltipDictionary.Add(label_ASIO_Input1_Channel, "This is what channel we look for audio on.\nA good way to find this value is to see how many inputs are before and subtract 1.\nEx: My cable is plugged into the 2nd input, so my channel is 1.");
             TooltipDictionary.Add(label_ASIO_Output_BaseChannel, "This is what channel we want to send the audio to.\nA good way to find this value is to see how many outputs are before and subtract 1.\nEx: My headphones is plugged into the 2nd output, so my base channel is 1.");
 
+            // Rocksmith Settings
+            TooltipDictionary.Add(checkBox_Rocksmith_EnableMicrophone, "Check this box to enable singing.");
+            TooltipDictionary.Add(checkBox_Rocksmith_ExclusiveMode, "Check this box to give Rocksmith 2014 exclusive control of PC Audio.\nThis will cause Rocksmith to take over all audio, but will cause latency if turned off.");
+            TooltipDictionary.Add(label_Rocksmith_LatencyBuffer, "This value allows you to adjust the number of audio buffers used in one area of the Rocksmith 2014 audio engine.\nA smaller value will use fewer buffers.\nFewer buffers mean lower latency, but increase the demands on your PC to avoid audio crackling.");
+            TooltipDictionary.Add(checkBox_Rocksmith_ForceWDM, "Check this box if you've tried the fine tuning configuration options and still cannot get good audio latency or have audio issues you cannot resolve.\nThis will force the game to use the previous Windows mechanism to control your audio devices.\nIt can impose higher latency than the default system, but is a good fallback.");
+            TooltipDictionary.Add(checkBox_Rocksmith_ForceDirextXSink, "Check this box if you've tried all other configuration options and still cannot get good audio.\nThis forces the game to use an old Windows mechanism to control your audio devices.\nIt will almost always impose high latency, but should allow you to run the game.\nUse this as your last option.");
+            TooltipDictionary.Add(checkBox_Rocksmith_DumpAudioLog, "Check this box if you need to send debugging information to Ubisoft.\nIt will create a text file called audiodump.txt, located in the same directory as the Rocksmith application.\nHaving this value on with hurt performance so leave it unchecked for normal gameplay.");
+            TooltipDictionary.Add(label_Rocksmith_MaxOutputBuffer, "A few audio devices have been found to have very large output buffers.\nIn this case, the game does its best to choose a reliable audio buffer size.\nHowever, you might find that setting this variable will help to resolve audio issues.\nIn its default setting of 0, it leaves the configuration of this value up to Rocksmith.\nMost audio cards end up using an audio buffer size of 1024.\nFast PCs can usually run with this at 512.\nIf you have disabled Exclusive Mode, you may need to use a higher setting for this.\nWe haven’t run into any specific issues caused by the choice of values for MaxOutputBufferSize, but you may have better luck using multiples of 8 or 32.");
+            TooltipDictionary.Add(checkBox_Rocksmith_RTCOnly, "Check this box to only allow official Ubisoft cables to work.\nThis will prevent Rocksmith from hijacking your microphone while you're playing.");
+            TooltipDictionary.Add(checkBox_Rocksmith_LowLatencyMode, "Uncheck this box if you’re having trouble getting the game to have good audio performance.\nThis will drop the game back to the original Rocksmith audio settings and may resolve some audio crackling issues at the cost of some of the Rocksmith 2014 latency improvements.");
+            TooltipDictionary.Add(checkBox_Rocksmith_GamepadUI, "Check this box to show the controller UI in game.");
+            TooltipDictionary.Add(label_Rocksmith_ScreenWidth, "Screen horizontal resolution, in pixels.");
+            TooltipDictionary.Add(label_Rocksmith_ScreenHeight, "Screen vertical resolution, in pixels.");
+            TooltipDictionary.Add(groupBox_Rocksmith_Fullscreen, "Check whether you want Rocksmith to run in windowed, non-exclusive fullscreen, or exclusive fullscreen.");
+            TooltipDictionary.Add(radio_Rocksmith_NonExclusiveFullScreen, "Non-exclusive mode is helpful if you have multiple monitors and want Rocksmith 2014 to be fullscreen on one monitor and other windows available on your second monitor.");
+            TooltipDictionary.Add(groupBox_Rocksmith_VisualQuality, "Set this value to reflect the visual quality setting you’d like to use.");
+            TooltipDictionary.Add(label_Rocksmith_RenderWidth, "Set this value to whatever width you want to the game to render at, in pixels.\nSet it to 0 to override this effect.");
+            TooltipDictionary.Add(label_Rocksmith_RenderHeight, "Set this value to whatever height you want to the game to render at, in pixels.\nSet it to 0 to override this effect.");
+            TooltipDictionary.Add(checkBox_Rocksmith_PostEffects, "Check this box to enable Bloom, Glow, and Color Correction.");
+            TooltipDictionary.Add(checkBox_Rocksmith_Shadows, "Check this box to enable realtime shadows.");
+            TooltipDictionary.Add(checkBox_Rocksmith_HighResScope, "Check this box to show the high resolution audio visualizer in game.");
+            TooltipDictionary.Add(checkBox_Rocksmith_DepthOfField, "Check this box to enable the Depth of Field effect.");
+            TooltipDictionary.Add(checkBox_Rocksmith_PerPixelLighting, "Check this box to color every pixel accurately.");
+            TooltipDictionary.Add(checkBox_Rocksmith_MSAASamples, "Check this box if you want to use anti-aliasing.");
+            TooltipDictionary.Add(checkBox_Rocksmith_DisableBrowser, "Check this box to stop Rocksmith from opening their website every two weeks.");
+            TooltipDictionary.Add(checkBox_Rocksmith_UseProxy, "Use a proxy to connect to the Rocksmith servers?\nReal usage is unknown.");
         }
 
         public Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>(){}; // Can't put variables into it until after we create it.

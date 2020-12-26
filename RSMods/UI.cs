@@ -2022,6 +2022,13 @@ namespace RSMods
             label_Rocksmith_RenderHeight.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
             nUpDown_Rocksmith_RenderWidth.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
             nUpDown_Rocksmith_RenderHeight.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;
+
+            if (!checkBox_Rocksmith_EnableRenderRes.Checked)
+            {
+                nUpDown_Rocksmith_RenderWidth.Value = 0;
+                nUpDown_Rocksmith_RenderHeight.Value = 0;
+            }
+                
         }
 
         // Network Settings
