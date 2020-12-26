@@ -387,6 +387,9 @@ bool MemHelpers::IsInSong() {
 float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
 
+	if (!riffRepeaterSpeed)
+		return 100.f;
+
 	if (newSpeed != NULL) // If we aren't just trying to see the current speed.
 		*(float*)riffRepeaterSpeed = newSpeed;
 	return *(float*)riffRepeaterSpeed;
