@@ -1972,6 +1972,21 @@ namespace RSMods
         #endregion
         #region Rocksmith Settings
         // Audio Settings
+        private void Rocksmith_EnableMicrophone(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnableMicrophoneIdentifier, checkBox_Rocksmith_EnableMicrophone.Checked.ToString().ToLower());
+        private void Rocksmith_ExclusiveMode(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ExclusiveModeIdentifier, checkBox_Rocksmith_ExclusiveMode.Checked.ToString().ToLower());
+        private void Rocksmith_LatencyBuffer(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.LatencyBufferIdentifier, nUpDown_Rocksmith_LatencyBuffer.Value.ToString());
+        private void Rocksmith_ForceWDM(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ForceWDMIdentifier, checkBox_Rocksmith_ForceWDM.Checked.ToString().ToLower());
+        private void Rocksmith_ForceDirextXSink(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ForceDirectXSinkIdentifier, checkBox_Rocksmith_ForceDirextXSink.Checked.ToString().ToLower());
+        private void Rocksmith_DumpAudioLog(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.DumpAudioLogIdentifier, checkBox_Rocksmith_DumpAudioLog.Checked.ToString().ToLower());
+        private void Rocksmith_MaxBufferSize(object sender, EventArgs e)
+        {
+            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier, nUpDown_Rocksmith_MaxOutputBuffer.Value.ToString());
+            if (nUpDown_Rocksmith_MaxOutputBuffer.Value == 0)
+                checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
+        }
+        private void Rocksmith_RTCOnly(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier, checkBox_Rocksmith_RTCOnly.Checked.ToString().ToLower());
+        private void Rocksmith_LowLatencyMode(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier, checkBox_Rocksmith_LowLatencyMode.Checked.ToString().ToLower());
+
         private void Rocksmith_AutomateMaxBufferSize(object sender, EventArgs e)
         {
             nUpDown_Rocksmith_MaxOutputBuffer.Enabled = !checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked;
@@ -1980,16 +1995,19 @@ namespace RSMods
             else
                 nUpDown_Rocksmith_MaxOutputBuffer.Value = 32;
         }
-        private void Rocksmith_MaxBufferSize(object sender, EventArgs e)
-        {
-            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier, nUpDown_Rocksmith_MaxOutputBuffer.Value.ToString());
-            if (nUpDown_Rocksmith_MaxOutputBuffer.Value == 0)
-                checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
-        }
+
         // Visual Settings
         private void Rocksmith_GamepadUI(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ShowGamepadUIIdentifier, checkBox_Rocksmith_GamepadUI.Checked.ToString().ToLower());
-
-
+        private void Rocksmith_ScreenWidth(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ScreenWidthIdentifier, nUpDown_Rocksmith_ScreenWidth.Value.ToString());
+        private void Rocksmith_ScreenHeight(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ScreenHeightIdentifier, nUpDown_Rocksmith_ScreenHeight.Value.ToString());
+        private void Rocksmith_Windowed(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "0");
+        private void Rocksmith_NonExclusiveFullScreen(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "1");
+        private void Rocksmith_ExclusiveFullScreen(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "2");
+        private void Rocksmith_LowQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "0");
+        private void Rocksmith_MediumQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "1");
+        private void Rocksmith_HighQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "2");
+        private void Rocksmith_RenderWidth(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.RenderingWidthIdentifier, nUpDown_Rocksmith_RenderWidth.Value.ToString());
+        private void Rocksmith_RenderHeight(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.RenderingHeightIdentifier, nUpDown_Rocksmith_RenderHeight.Value.ToString());
         private void Rocksmith_PostEffects(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnablePostEffectsIdentifier, checkBox_Rocksmith_PostEffects.Checked.ToString().ToLower());
         private void Rocksmith_Shadows(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnableShadowsIdentifier, checkBox_Rocksmith_Shadows.Checked.ToString().ToLower());
         private void Rocksmith_HighResScope(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnableHighResScopeIdentifier, checkBox_Rocksmith_HighResScope.Checked.ToString().ToLower());
@@ -1997,6 +2015,7 @@ namespace RSMods
         private void Rocksmith_PerPixelLighting(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnablePerPixelLightingIdentifier, checkBox_Rocksmith_PerPixelLighting.Checked.ToString().ToLower());
         private void Rocksmith_MSAA(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.MsaaSamplesIdentifier, (((Convert.ToInt32(checkBox_Rocksmith_MSAASamples.Checked) * 3) + 1).ToString()));
         private void Rocksmith_DisableBrowser(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.DisableBrowserIdentifier, checkBox_Rocksmith_DisableBrowser.Checked.ToString().ToLower());
+
         private void Rocksmith_EnableRenderRes(object sender, EventArgs e)
         {
             label_Rocksmith_RenderWidth.Visible = checkBox_Rocksmith_EnableRenderRes.Checked;

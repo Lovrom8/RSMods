@@ -3015,6 +3015,7 @@
             this.checkBox_Rocksmith_LowLatencyMode.TabIndex = 15;
             this.checkBox_Rocksmith_LowLatencyMode.Text = "Low Latency Mode";
             this.checkBox_Rocksmith_LowLatencyMode.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_LowLatencyMode.CheckedChanged += new System.EventHandler(this.Rocksmith_LowLatencyMode);
             // 
             // checkBox_Rocksmith_RTCOnly
             // 
@@ -3025,6 +3026,7 @@
             this.checkBox_Rocksmith_RTCOnly.TabIndex = 14;
             this.checkBox_Rocksmith_RTCOnly.Text = "Real Tone Cable Only";
             this.checkBox_Rocksmith_RTCOnly.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_RTCOnly.CheckedChanged += new System.EventHandler(this.Rocksmith_RTCOnly);
             // 
             // checkBox_Rocksmith_DumpAudioLog
             // 
@@ -3035,6 +3037,7 @@
             this.checkBox_Rocksmith_DumpAudioLog.TabIndex = 13;
             this.checkBox_Rocksmith_DumpAudioLog.Text = "Dump Audio Log";
             this.checkBox_Rocksmith_DumpAudioLog.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_DumpAudioLog.CheckedChanged += new System.EventHandler(this.Rocksmith_DumpAudioLog);
             // 
             // checkBox_Rocksmith_ForceDirextXSink
             // 
@@ -3045,6 +3048,7 @@
             this.checkBox_Rocksmith_ForceDirextXSink.TabIndex = 12;
             this.checkBox_Rocksmith_ForceDirextXSink.Text = "Force DirectXSink";
             this.checkBox_Rocksmith_ForceDirextXSink.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_ForceDirextXSink.CheckedChanged += new System.EventHandler(this.Rocksmith_ForceDirextXSink);
             // 
             // checkBox_Rocksmith_ForceWDM
             // 
@@ -3055,6 +3059,7 @@
             this.checkBox_Rocksmith_ForceWDM.TabIndex = 11;
             this.checkBox_Rocksmith_ForceWDM.Text = "Force WDM";
             this.checkBox_Rocksmith_ForceWDM.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_ForceWDM.CheckedChanged += new System.EventHandler(this.Rocksmith_ForceWDM);
             // 
             // checkBox_Rocksmith_ExclusiveMode
             // 
@@ -3065,6 +3070,7 @@
             this.checkBox_Rocksmith_ExclusiveMode.TabIndex = 10;
             this.checkBox_Rocksmith_ExclusiveMode.Text = "Exclusive Mode";
             this.checkBox_Rocksmith_ExclusiveMode.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_ExclusiveMode.CheckedChanged += new System.EventHandler(this.Rocksmith_ExclusiveMode);
             // 
             // checkBox_Rocksmith_EnableMicrophone
             // 
@@ -3075,6 +3081,7 @@
             this.checkBox_Rocksmith_EnableMicrophone.TabIndex = 9;
             this.checkBox_Rocksmith_EnableMicrophone.Text = "Enable Microphone";
             this.checkBox_Rocksmith_EnableMicrophone.UseVisualStyleBackColor = true;
+            this.checkBox_Rocksmith_EnableMicrophone.CheckedChanged += new System.EventHandler(this.Rocksmith_EnableMicrophone);
             // 
             // checkBox_Rocksmith_Override_MaxOutputBufferSize
             // 
@@ -3149,6 +3156,7 @@
             0,
             0,
             0});
+            this.nUpDown_Rocksmith_LatencyBuffer.ValueChanged += new System.EventHandler(this.Rocksmith_LatencyBuffer);
             // 
             // groupBox_Rocksmith_VisualSettings
             // 
@@ -3314,6 +3322,7 @@
             this.radio_Rocksmith_ExclusiveFullScreen.TabStop = true;
             this.radio_Rocksmith_ExclusiveFullScreen.Text = "Exclusive Fullscreen";
             this.radio_Rocksmith_ExclusiveFullScreen.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_ExclusiveFullScreen.CheckedChanged += new System.EventHandler(this.Rocksmith_ExclusiveFullScreen);
             // 
             // radio_Rocksmith_NonExclusiveFullScreen
             // 
@@ -3325,6 +3334,7 @@
             this.radio_Rocksmith_NonExclusiveFullScreen.TabStop = true;
             this.radio_Rocksmith_NonExclusiveFullScreen.Text = "Non-Exclusive Fullscreen";
             this.radio_Rocksmith_NonExclusiveFullScreen.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_NonExclusiveFullScreen.CheckedChanged += new System.EventHandler(this.Rocksmith_NonExclusiveFullScreen);
             // 
             // radio_Rocksmith_Windowed
             // 
@@ -3336,6 +3346,7 @@
             this.radio_Rocksmith_Windowed.TabStop = true;
             this.radio_Rocksmith_Windowed.Text = "Windowed";
             this.radio_Rocksmith_Windowed.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_Windowed.CheckedChanged += new System.EventHandler(this.Rocksmith_Windowed);
             // 
             // groupBox_Rocksmith_VisualQuality
             // 
@@ -3359,6 +3370,7 @@
             this.radio_Rocksmith_HighQuality.TabStop = true;
             this.radio_Rocksmith_HighQuality.Text = "High Quality";
             this.radio_Rocksmith_HighQuality.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_HighQuality.CheckedChanged += new System.EventHandler(this.Rocksmith_HighQuality);
             // 
             // radio_Rocksmith_MediumQuality
             // 
@@ -3370,6 +3382,7 @@
             this.radio_Rocksmith_MediumQuality.TabStop = true;
             this.radio_Rocksmith_MediumQuality.Text = "Medium Quality";
             this.radio_Rocksmith_MediumQuality.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_MediumQuality.CheckedChanged += new System.EventHandler(this.Rocksmith_MediumQuality);
             // 
             // radio_Rocksmith_LowQuality
             // 
@@ -3381,6 +3394,7 @@
             this.radio_Rocksmith_LowQuality.TabStop = true;
             this.radio_Rocksmith_LowQuality.Text = "Low Quality";
             this.radio_Rocksmith_LowQuality.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_LowQuality.CheckedChanged += new System.EventHandler(this.Rocksmith_LowQuality);
             // 
             // groupBox_Rocksmith_Resolutions
             // 
@@ -3449,6 +3463,7 @@
             this.nUpDown_Rocksmith_RenderHeight.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_Rocksmith_RenderHeight.TabIndex = 3;
             this.nUpDown_Rocksmith_RenderHeight.Visible = false;
+            this.nUpDown_Rocksmith_RenderHeight.ValueChanged += new System.EventHandler(this.Rocksmith_RenderHeight);
             // 
             // nUpDown_Rocksmith_RenderWidth
             // 
@@ -3462,6 +3477,7 @@
             this.nUpDown_Rocksmith_RenderWidth.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_Rocksmith_RenderWidth.TabIndex = 2;
             this.nUpDown_Rocksmith_RenderWidth.Visible = false;
+            this.nUpDown_Rocksmith_RenderWidth.ValueChanged += new System.EventHandler(this.Rocksmith_RenderWidth);
             // 
             // nUpDown_Rocksmith_ScreenHeight
             // 
@@ -3474,6 +3490,7 @@
             this.nUpDown_Rocksmith_ScreenHeight.Name = "nUpDown_Rocksmith_ScreenHeight";
             this.nUpDown_Rocksmith_ScreenHeight.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_Rocksmith_ScreenHeight.TabIndex = 1;
+            this.nUpDown_Rocksmith_ScreenHeight.ValueChanged += new System.EventHandler(this.Rocksmith_ScreenHeight);
             // 
             // nUpDown_Rocksmith_ScreenWidth
             // 
@@ -3486,6 +3503,7 @@
             this.nUpDown_Rocksmith_ScreenWidth.Name = "nUpDown_Rocksmith_ScreenWidth";
             this.nUpDown_Rocksmith_ScreenWidth.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_Rocksmith_ScreenWidth.TabIndex = 0;
+            this.nUpDown_Rocksmith_ScreenWidth.ValueChanged += new System.EventHandler(this.Rocksmith_ScreenWidth);
             // 
             // tab_Twitch
             // 
