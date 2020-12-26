@@ -14,8 +14,13 @@ namespace RSMods.ASIO
             List<DriverInfo> availableDevices = new List<DriverInfo>();
 
             RegistryKey registry_ASIO = Registry.LocalMachine.OpenSubKey("Software\\ASIO");
-            
-            foreach(string asioDevice in registry_ASIO.GetSubKeyNames())
+
+            if (registry_ASIO == null)
+                return availableDevices;
+
+            string[] subKeyNames = registry_ASIO.GetSubKeyNames();
+
+            foreach (string asioDevice in subKeyNames)
             {
                 // Setup variables
                 DriverInfo deviceInfo = new DriverInfo();

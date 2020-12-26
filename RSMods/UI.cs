@@ -61,31 +61,31 @@ namespace RSMods
 
             // Load Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
-           
+
             // Load Checkbox Values From RSMods.ini
             LoadModSettings();
-            
+
             // Load Default String Colors
             StringColors_LoadDefaultStringColors();
-            
+
             // Load Colors Saved as Theme Colors.
             CustomTheme_LoadCustomColors();
-            
+
             // Load RS_ASIO
             VerifyInstallOfASIO();
-            
+
             // Load RS_ASIO Settings
             LoadASIOSettings();
-            
+
             // Load Rocksmith Settings
             LoadRocksmithSettings();
-            
+
             // Prevent some double saving
             PreventDoubleSave();
-            
+
             // Load Set And Forget Mods
             SetForget_LoadSetAndForgetMods();
-            
+
             // Load All System Fonts
             LoadFonts();
         }
@@ -209,11 +209,11 @@ namespace RSMods
                 groupBox_Keybindings_AUDIO.Visible = true;
                 groupBox_ControlVolume.Visible = true;
 
-                string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier;
+                string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier);
                 int intVal = 0;
 
                 if (int.TryParse(valStr, out intVal))
-                    nUpDown_VolumeInterval.Value = intVal);
+                    nUpDown_VolumeInterval.Value = intVal;
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
