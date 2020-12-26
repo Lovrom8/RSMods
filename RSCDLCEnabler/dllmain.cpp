@@ -173,15 +173,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
-				newSongSpeed = MemHelpers::RiffRepeaterSpeed() + Settings::GetModSetting("RRSpeedInterval");
+				newSongSpeed = MemHelpers::RiffRepeaterSpeed();
 
-				if (GetAsyncKeyState(VK_SHIFT) < 0) {
-					useNewSongSpeed = false;
-					newSongSpeed = 100.f;
-					MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-				}
+				if (GetAsyncKeyState(VK_SHIFT) < 0)
+					newSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
 				else
-					useNewSongSpeed = true;
+					newSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
+				
+				if (newSongSpeed > 200.f)
+					newSongSpeed = 200.f;
+
+				if (newSongSpeed < 15.f)
+					newSongSpeed = 15.f;
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			}
@@ -414,17 +417,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize[0] / 1.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 1.45), (int)(WindowSize[1] / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, learnASongModes)) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			if (useNewSongSpeed) {
-				if ((newSongSpeed - Settings::GetModSetting("RRSpeedInterval")) > 100.f)
-					MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed() - Settings::GetModSetting("RRSpeedInterval")) + "%", whiteText, (int)(WindowSize[0] / 2.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 2.50), (int)(WindowSize[1] / 8), pDevice);
-			}
-			else
-				MemHelpers::RiffRepeaterSpeed(100.f);
+			if (useNewSongSpeed)
+				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()) + "%", whiteText, (int)(WindowSize[0] / 2.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 2.50), (int)(WindowSize[1] / 8), pDevice);
 		}
-		else
-			useNewSongSpeed = false;
 
 		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") {
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
