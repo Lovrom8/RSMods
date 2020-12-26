@@ -61,31 +61,31 @@ namespace RSMods
 
             // Load Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
-
+           
             // Load Checkbox Values From RSMods.ini
             LoadModSettings();
-
+            
             // Load Default String Colors
             StringColors_LoadDefaultStringColors();
-
+            
             // Load Colors Saved as Theme Colors.
             CustomTheme_LoadCustomColors();
-
+            
             // Load RS_ASIO
             VerifyInstallOfASIO();
-
+            
             // Load RS_ASIO Settings
             LoadASIOSettings();
-
+            
             // Load Rocksmith Settings
             LoadRocksmithSettings();
-
+            
             // Prevent some double saving
             PreventDoubleSave();
-
+            
             // Load Set And Forget Mods
             SetForget_LoadSetAndForgetMods();
-
+            
             // Load All System Fonts
             LoadFonts();
         }
@@ -167,7 +167,7 @@ namespace RSMods
 
         private void LoadASIODevices()
         {
-            foreach(ASIO.Devices.DriverInfo device in ASIO.Devices.FindDevices())
+            foreach (ASIO.Devices.DriverInfo device in ASIO.Devices.FindDevices())
             {
                 listBox_AvailableASIODevices_Input0.Items.Add(device.deviceName);
                 listBox_AvailableASIODevices_Input1.Items.Add(device.deviceName);
@@ -208,7 +208,12 @@ namespace RSMods
                 checkBox_ControlVolume.Checked = true;
                 groupBox_Keybindings_AUDIO.Visible = true;
                 groupBox_ControlVolume.Visible = true;
-                nUpDown_VolumeInterval.Value = Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier));
+
+                string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier;
+                int intVal = 0;
+
+                if (int.TryParse(valStr, out intVal))
+                    nUpDown_VolumeInterval.Value = intVal);
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
@@ -318,7 +323,12 @@ namespace RSMods
             {
                 checkBox_RiffRepeaterSpeedAboveOneHundred.Checked = true;
                 groupBox_RRSpeed.Visible = true;
-                nUpDown_RiffRepeaterSpeed.Value = Convert.ToDecimal(ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier));
+
+                string val = ReadSettings.ProcessSettings(ReadSettings.RiffRepeaterSpeedIntervalIdentifier);
+                decimal decimalVal = 0;
+
+                if (Decimal.TryParse(val, out decimalVal))
+                    nUpDown_RiffRepeaterSpeed.Value = decimalVal;
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) == "on")
@@ -1436,12 +1446,12 @@ namespace RSMods
             }
         }
 
-        
+
 
         private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkbox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
 
         private void GuitarSpeakHelpButton_Click(object sender, EventArgs e) => System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
-        
+
 
         private void RefreshGuitarSpeakPresets()
         {
@@ -1511,7 +1521,7 @@ namespace RSMods
                 Twitch_AddToSelectedRewards(enabledReward);
 
         }
-        
+
         private void LoadTwitchSettings()
         {
             TwitchSettings.Get._context = SynchronizationContext.Current;
@@ -1951,7 +1961,8 @@ namespace RSMods
         // Output Settings
         private void ASIO_Output_BaseChannel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_BaseChannel.Value.ToString());
         private void ASIO_Output_MaxVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_MaxVolume.Value.ToString());
-        private void ASIO_Output_MasterVolume(object sender, EventArgs e) {
+        private void ASIO_Output_MasterVolume(object sender, EventArgs e)
+        {
             ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output, Convert.ToInt32(checkBox_ASIO_Output_ControlMasterVolume.Checked).ToString());
             label_ASIO_Output_MaxVolume.Visible = checkBox_ASIO_Output_ControlMasterVolume.Checked;
             nUpDown_ASIO_Output_MaxVolume.Visible = checkBox_ASIO_Output_ControlMasterVolume.Checked;
@@ -2028,12 +2039,12 @@ namespace RSMods
                 nUpDown_Rocksmith_RenderWidth.Value = 0;
                 nUpDown_Rocksmith_RenderHeight.Value = 0;
             }
-                
+
         }
 
         // Network Settings
         private void Rocksmith_UseProxy(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.UseProxyIdentifier, checkBox_Rocksmith_UseProxy.Checked.ToString().ToLower());
-        
+
         #endregion
         #region Midi
 
@@ -2043,9 +2054,9 @@ namespace RSMods
 
             uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
 
-            for(uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
+            for (uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
             {
-                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS {};
+                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS { };
                 Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
                 this.listBox_ListMidiDevices.Items.Add(temp.szPname);
             }
