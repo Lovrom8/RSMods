@@ -92,7 +92,7 @@ namespace RSMods.Twitch.EffectServer
                         }
                         catch (IOException ioex) // If the game (and the connection with it) was closed
                         {
-                            Debug.Write($"IOEx: {ioex.Message}");
+                            TwitchSettings.Get.AddToLog($"IOEx: {ioex.Message}");
                             remainingRewards.Clear();
                         }
                     }
@@ -100,7 +100,7 @@ namespace RSMods.Twitch.EffectServer
             }
             catch (SocketException socketException)
             {
-                Debug.Write($"SocketException: {socketException.Message}");
+                TwitchSettings.Get.AddToLog($"SocketException: {socketException.Message}");
             }
         }
 
@@ -145,7 +145,7 @@ namespace RSMods.Twitch.EffectServer
             }
             catch (SocketException socketException)
             {
-                Debug.Write($"Socket exception: {socketException}");
+                TwitchSettings.Get.AddToLog($"Socket exception: {socketException}");
             }
         }
 
