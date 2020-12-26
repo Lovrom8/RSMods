@@ -84,7 +84,9 @@ namespace RSMods.ASIO
 
         public static string ProcessSettings(string identifierToGrab, Sections sectionToGrab)
         {
-            VerifySettingsExist();
+            if (!VerifySettingsExist())
+                return string.Empty;
+
             foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini")))
             {
 

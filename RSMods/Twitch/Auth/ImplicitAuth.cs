@@ -78,8 +78,8 @@ namespace RSMods.Twitch
             // WARNING: dumb dumb solution, which just happens to work
 
             // Unforunately, unlike the OAuth client credentials flow which requires secret keys (i.e. something you wouldn't like to use in an open-source app) & returns access_token directly in the URL,
-            // implicit OAuth keeps it in document.location.hash, which can't be accesed from server side (i.e. from HTTP request), so we do some crappy shizzle to read the value from server side
-            // in more precise words, we redirect to a slightly modified URL from window.location.href, that actually forces a new HTTP request, and then we actually grab the access token
+            // implicit OAuth keeps it in document.location.hash, which can't be accesed from server side (i.e. from HTTP request), so we do some crappy shizzle to read that value, but from server side!
+            // In more precise words, we redirect to a slightly modified URL from window.location.href, and that actually forces a new HTTP request and in the end we actually grab the access token
 
             string currUrl = request.Url.ToString();
             if (!currUrl.Contains("access_token"))
