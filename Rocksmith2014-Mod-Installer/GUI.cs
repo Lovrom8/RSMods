@@ -11,7 +11,7 @@ namespace RS2014_Mod_Installer
         {
             InitializeComponent();
         }
-        // 
+
         private void UseCDLCButton_Click(object sender, EventArgs e)
         {
             if (Worker.WhereIsRocksmith() == String.Empty)
