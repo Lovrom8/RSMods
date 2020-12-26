@@ -126,8 +126,7 @@
   <ItemGroup>
     <None Include="Assets\LogoX256.ico" />
     <Content Include="LogoX256.ico" />
-    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.xml" />
-    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.xml" />
+    <None Include="Resources\Microsoft.Extensions.Logging.Abstractions.dll" />
     <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll" />
     <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll" />
     <Content Include="Resources\RSModsGUI\7z.dll" />

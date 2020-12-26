@@ -258,6 +258,16 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Microsoft_Extensions_Logging_Abstractions {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft_Extensions_Logging_Abstractions", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Microsoft_WindowsAPICodePack {
             get {
                 object obj = ResourceManager.GetObject("Microsoft_WindowsAPICodePack", resourceCulture);

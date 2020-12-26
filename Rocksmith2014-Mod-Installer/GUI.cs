@@ -14,17 +14,20 @@ namespace RS2014_Mod_Installer
 
         private void UseCDLCButton_Click(object sender, EventArgs e)
         {
-            if(Worker.WhereIsRocksmith() == String.Empty)
+            if (Worker.WhereIsRocksmith() == String.Empty)
             {
                 MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
                 return;
             }
-            
+
             IsVoid(Worker.WhereIsRocksmith());
-            DLLStuff.InjectGUI(Worker.WhereIsRocksmith());
-            MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by opening: " + Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe", "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Process.Start(Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe");
+            if (DLLStuff.InjectGUI(Worker.WhereIsRocksmith()))
+            {
+                MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by opening: " + Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe", "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Process.Start(Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe");
+            }
+
             DLLStuff.InjectDLL(Worker.WhereIsRocksmith());
         }
 

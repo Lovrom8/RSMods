@@ -19,7 +19,7 @@ namespace RS2014_Mod_Installer
             Environment.Exit(1);
         }
 
-        public static void InjectGUI(string rocksmithLocation)
+        public static bool InjectGUI(string rocksmithLocation)
         {
             string rootModFolder = Path.Combine(rocksmithLocation, "RSMods");
             string customModsFolder = Path.Combine(rootModFolder, "CustomMods");
@@ -30,12 +30,14 @@ namespace RS2014_Mod_Installer
             Directory.CreateDirectory(customModsFolder);
             Directory.CreateDirectory(ddcFolder);
             Directory.CreateDirectory(toolsFolder);
-
-            // Root Folder
+            try
+            {
+                // Root Folder
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.dll"), Properties.Resources.Microsoft_WindowsAPICodePack);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.WindowsAPICodePack.Shell.dll"), Properties.Resources.Microsoft_WindowsAPICodePack_Shell);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.dll"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "MiscUtil.dll"), Properties.Resources.MiscUtil);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "NDesk.Options.dll"), Properties.Resources.NDesk_Options);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Newtonsoft.Json.dll"), Properties.Resources.Newtonsoft_Json);
@@ -65,7 +67,7 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.PubSub.dll"), Properties.Resources.TwitchLib_PubSub);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "X360.dll"), Properties.Resources.X360);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "zlib.net.dll"), Properties.Resources.zlib_net);
-            // ddc Folder
+                // ddc Folder
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc.exe"), Properties.Resources.ddc);
                 File.WriteAllText(Path.Combine(ddcFolder, "ddc_chords_protector.xml"), Properties.Resources.ddc_chords_protector);
                 File.WriteAllText(Path.Combine(ddcFolder, "ddc_chords_remover.xml"), Properties.Resources.ddc_chords_remover);
@@ -76,7 +78,7 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_merge_all_levels.cfg"), Properties.Resources.ddc_merge_all_levels);
                 File.WriteAllText(Path.Combine(ddcFolder, "license.txt"), Properties.Resources.license);
                 File.WriteAllText(Path.Combine(ddcFolder, "readme.txt"), Properties.Resources.readme1);
-            // tools Folder
+                // tools Folder
                 File.WriteAllBytes(Path.Combine(toolsFolder, "7za.exe"), Properties.Resources._7za);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "core.jar"), Properties.Resources.core);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "CreateToolkitShortcut.exe"), Properties.Resources.CreateToolkitShortcut);
@@ -91,7 +93,18 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(toolsFolder, "revorb.exe"), Properties.Resources.revorb);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "topng.exe"), Properties.Resources.topng);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "ww2ogg.exe"), Properties.Resources.ww2ogg);
+            }
+            catch (IOException ex)
+            {
+                if (ex.Message.Contains("cannot access"))
+                    MessageBox.Show("Please make sure you don't have an instance of RSMods already running!", "Error");
+                else
+                    MessageBox.Show($"Error: {ex.Message}");
 
+                return false;
+            }
+
+            return true;
         }
     }
 } 
