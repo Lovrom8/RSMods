@@ -99,8 +99,10 @@ namespace CrowdControl {
 				currentMessageLength += bytesRead;
 			} while (bytesRead > 0);
 
-			if (currentMessageLength == -1) //Usually happens when the connection closes (i.e. when the server is down)
-				continue;
+			if (currentMessageLength == -1) { //Usually happens when the connection closes (i.e. when the server is down)
+				serverStarted = false;
+				break;
+			}
 
 			//Parse command
 			std::string command = std::string(&buffer[0], &buffer[currentMessageLength]);
