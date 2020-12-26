@@ -7,6 +7,8 @@ using System.IO;
 using System.Windows.Forms;
 using RSMods.Util;
 
+#pragma warning disable IDE0052
+
 namespace RSMods.ASIO
 {
     public class ReadSettings

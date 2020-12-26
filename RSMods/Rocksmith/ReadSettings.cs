@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using RSMods.Util;
 
+#pragma warning disable IDE0052
+
 namespace RSMods.Rocksmith
 {
     class ReadSettings
