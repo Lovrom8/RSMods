@@ -187,6 +187,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					newSongSpeed = 15.f;
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
+				saveNewRRSpeedToFile = true;
 			}
 
 			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
@@ -614,6 +615,19 @@ void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6
 	}
 }
 
+unsigned WINAPI StreamerLogThread() {
+	while (!D3DHooks::GameClosing) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes) && saveNewRRSpeedToFile) {
+			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
+			rrText << std::to_string((int)newSongSpeed) << std::endl;
+			saveNewRRSpeedToFile = false;
+		}
+		Sleep(50);
+	}
+
+	return 0;
+}
+
 unsigned WINAPI MainThread() {
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
@@ -797,6 +811,7 @@ void Initialize() {
 	std::thread(EnumerationThread).detach();
 	std::thread(HandleEffectQueueThread).detach();
 	std::thread(MidiThread).detach();
+	std::thread(StreamerLogThread).detach();
 
 	// Probably check ini setting before starting this thing
 	CrowdControl::StartServer();
