@@ -1832,7 +1832,7 @@ namespace RSMods
             }
         }
 
-        private void Twitch_CopyOnClick(object sender, MouseEventArgs e) => Clipboard.SetText("Send to RSMod Developers (Discord Ffio#2221)\nUsername: " + TwitchSettings.Get.Username + "\nChannel ID: " + TwitchSettings.Get.ChannelID + "\nAccess Token: " + TwitchSettings.Get.AccessToken);
+        private void Twitch_CopyOnClick(object sender, MouseEventArgs e) => Clipboard.SetText("Send to RSMod Developers ( Discord Ffio#2221 or LovroM8#9999 )\nUsername: " + TwitchSettings.Get.Username + "\nChannel ID: " + TwitchSettings.Get.ChannelID + "\nAccess Token: " + TwitchSettings.Get.AccessToken);
 
         /*private void dgv_EnabledRewards_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
        {
