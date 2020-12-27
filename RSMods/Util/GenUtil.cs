@@ -13,6 +13,22 @@ namespace RSMods.Util
 {
     public static class GenUtil
     {
+        public static decimal StrToDecDef(string s, decimal @default)
+        {
+            decimal number;
+            if (decimal.TryParse(s, out number))
+                return number;
+            return @default;
+        }
+
+        public static int StrToIntDef(string s, int @default)
+        {
+            int number;
+            if (int.TryParse(s, out number))
+                return number;
+            return @default;
+        }
+
         public static bool IsDirectoryEmpty(string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();

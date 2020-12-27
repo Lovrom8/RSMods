@@ -339,7 +339,7 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
                 {
-                    int tuningPedal = Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier));
+                    int tuningPedal = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier), 0);
 
                     switch (tuningPedal)
                     {
@@ -370,15 +370,15 @@ namespace RSMods
                 return;
 
             // Config
-            checkBox_ASIO_WASAPI_Output.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config)));
-            checkBox_ASIO_WASAPI_Input.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiInputsIdentifier, ASIO.ReadSettings.Sections.Config)));
-            checkBox_ASIO_ASIO.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableAsioIdentifier, ASIO.ReadSettings.Sections.Config)));
+            checkBox_ASIO_WASAPI_Output.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config), 0));
+            checkBox_ASIO_WASAPI_Input.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableWasapiInputsIdentifier, ASIO.ReadSettings.Sections.Config), 0));
+            checkBox_ASIO_ASIO.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableAsioIdentifier, ASIO.ReadSettings.Sections.Config), 0));
 
             // Asio
             if (ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio) == "custom")
             {
                 radio_ASIO_BufferSize_Custom.Checked = true;
-                nUpDown_ASIO_CustomBufferSize.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.CustomBufferSizeIdentifier, ASIO.ReadSettings.Sections.Asio));
+                nUpDown_ASIO_CustomBufferSize.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.CustomBufferSizeIdentifier, ASIO.ReadSettings.Sections.Asio), 0);
             }
             if (ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BufferSizeModeIdentifier, ASIO.ReadSettings.Sections.Asio) == "driver")
                 radio_ASIO_BufferSize_Driver.Checked = true;
@@ -386,24 +386,24 @@ namespace RSMods
                 radio_ASIO_BufferSize_Host.Checked = true;
 
             // Output
-            nUpDown_ASIO_Output_BaseChannel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output));
-            checkBox_ASIO_Output_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output)));
-            checkBox_ASIO_Output_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output)));
-            nUpDown_ASIO_Output_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output));
+            nUpDown_ASIO_Output_BaseChannel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output), 0);
+            checkBox_ASIO_Output_ControlEndpointVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output), 0));
+            checkBox_ASIO_Output_ControlMasterVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output), 0));
+            nUpDown_ASIO_Output_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output), 0);
             // checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
 
             // Input0
-            nUpDown_ASIO_Input0_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0));
-            checkBox_ASIO_Input0_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
-            checkBox_ASIO_Input0_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0)));
-            nUpDown_ASIO_Input0_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0));
+            nUpDown_ASIO_Input0_Channel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0), 0);
+            checkBox_ASIO_Input0_ControlEndpointVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0), 0));
+            checkBox_ASIO_Input0_ControlMasterVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0), 0));
+            nUpDown_ASIO_Input0_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0), 0);
             checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
 
             // Input1
-            nUpDown_ASIO_Input1_Channel.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1));
-            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
-            checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1)));
-            nUpDown_ASIO_Input1_MaxVolume.Value = Convert.ToInt32(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1));
+            nUpDown_ASIO_Input1_Channel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1), 0);
+            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1), 0));
+            checkBox_ASIO_Input1_ControlMasterVolume.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1), 0));
+            nUpDown_ASIO_Input1_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1), 0);
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
         }
 
@@ -414,24 +414,24 @@ namespace RSMods
             // Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.));
             // Audio Settings
 
-            checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier)));
-            checkBox_Rocksmith_ExclusiveMode.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ExclusiveModeIdentifier)));
-            nUpDown_Rocksmith_LatencyBuffer.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier));
-            checkBox_Rocksmith_ForceWDM.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceWDMIdentifier)));
-            checkBox_Rocksmith_ForceDirextXSink.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceDirectXSinkIdentifier)));
-            checkBox_Rocksmith_DumpAudioLog.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DumpAudioLogIdentifier)));
-            if (Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier))))
-                nUpDown_Rocksmith_MaxOutputBuffer.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier));
+            checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier), 0));
+            checkBox_Rocksmith_ExclusiveMode.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ExclusiveModeIdentifier), 0));
+            nUpDown_Rocksmith_LatencyBuffer.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier), 0);
+            checkBox_Rocksmith_ForceWDM.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceWDMIdentifier), 0));
+            checkBox_Rocksmith_ForceDirextXSink.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceDirectXSinkIdentifier), 0));
+            checkBox_Rocksmith_DumpAudioLog.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DumpAudioLogIdentifier), 0));
+            if (Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier), 0)))
+                nUpDown_Rocksmith_MaxOutputBuffer.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MaxOutputBufferSizeIdentifier), 0);
             else
                 checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
-            checkBox_Rocksmith_RTCOnly.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier)));
-            checkBox_Rocksmith_LowLatencyMode.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier)));
+            checkBox_Rocksmith_RTCOnly.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RealToneCableOnlyIdentifier), 0));
+            checkBox_Rocksmith_LowLatencyMode.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.Win32UltraLowLatencyModeIdentifier), 0));
             // Visual Settings
 
-            checkBox_Rocksmith_GamepadUI.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ShowGamepadUIIdentifier)));
-            nUpDown_Rocksmith_ScreenWidth.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenWidthIdentifier));
-            nUpDown_Rocksmith_ScreenHeight.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenHeightIdentifier));
-            switch (Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.FullscreenIdentifier)))
+            checkBox_Rocksmith_GamepadUI.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ShowGamepadUIIdentifier), 0));
+            nUpDown_Rocksmith_ScreenWidth.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenWidthIdentifier), 0);
+            nUpDown_Rocksmith_ScreenHeight.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ScreenHeightIdentifier), 0);
+            switch (GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.FullscreenIdentifier), 0))
             {
                 case 0:
                     radio_Rocksmith_Windowed.Checked = true;
@@ -445,7 +445,7 @@ namespace RSMods
                 default:
                     break;
             }
-            switch (Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.VisualQualityIdentifier)))
+            switch (GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.VisualQualityIdentifier), 0))
             {
                 case 0:
                     radio_Rocksmith_LowQuality.Checked = true;
@@ -460,19 +460,19 @@ namespace RSMods
                 default:
                     break;
             }
-            nUpDown_Rocksmith_RenderWidth.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier));
-            nUpDown_Rocksmith_RenderHeight.Value = Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier));
-            checkBox_Rocksmith_PostEffects.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePostEffectsIdentifier)));
-            checkBox_Rocksmith_Shadows.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableShadowsIdentifier)));
-            checkBox_Rocksmith_HighResScope.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableHighResScopeIdentifier)));
-            checkBox_Rocksmith_DepthOfField.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableDepthOfFieldIdentifier)));
-            checkBox_Rocksmith_PerPixelLighting.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePerPixelLightingIdentifier)));
-            checkBox_Rocksmith_MSAASamples.Checked = Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MsaaSamplesIdentifier)) == 4;
-            checkBox_Rocksmith_DisableBrowser.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DisableBrowserIdentifier)));
+            nUpDown_Rocksmith_RenderWidth.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier), 0);
+            nUpDown_Rocksmith_RenderHeight.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier), 0);
+            checkBox_Rocksmith_PostEffects.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePostEffectsIdentifier), 0));
+            checkBox_Rocksmith_Shadows.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableShadowsIdentifier), 0));
+            checkBox_Rocksmith_HighResScope.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableHighResScopeIdentifier), 0));
+            checkBox_Rocksmith_DepthOfField.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableDepthOfFieldIdentifier), 0));
+            checkBox_Rocksmith_PerPixelLighting.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePerPixelLightingIdentifier), 0));
+            checkBox_Rocksmith_MSAASamples.Checked = GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MsaaSamplesIdentifier), 0) == 4;
+            checkBox_Rocksmith_DisableBrowser.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DisableBrowserIdentifier), 0));
             checkBox_Rocksmith_EnableRenderRes.Checked = (Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier) != "0" || Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier) != "0");
 
             // Network Settings
-            checkBox_Rocksmith_UseProxy.Checked = Convert.ToBoolean(Convert.ToInt32(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.UseProxyIdentifier)));
+            checkBox_Rocksmith_UseProxy.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.UseProxyIdentifier), 0));
         }
 
         private void PreventDoubleSave()
@@ -490,7 +490,7 @@ namespace RSMods
 
             // Now we can change things without saving.
             nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
-            listBox_ExtendedRangeTunings.SelectedIndex = (Convert.ToInt32(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) * -1) - 2; // Loads old ER tuning settings
+            listBox_ExtendedRangeTunings.SelectedIndex = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
             listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
             listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
             listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
