@@ -163,6 +163,21 @@ struct Tuning {
 	}
 };
 
+struct Resolution {
+	UINT width, height;
+
+	Resolution()
+	{
+		width = 0;
+		height = 0;
+	}
+
+	Resolution(UINT W, UINT H) {
+		width = W;
+		height = H;
+	}
+};
+
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo

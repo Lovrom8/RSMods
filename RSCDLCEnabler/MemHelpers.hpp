@@ -27,9 +27,9 @@ namespace MemHelpers {
 	bool IsSongInDrop(Tuning tuning);
 	bool IsSongInStandard(Tuning tuning);
 	int GetTrueTuning();
-	int* GetWindowSize();
+	Resolution GetWindowSize();
 	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
-	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice);
+	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { NULL, NULL });
 	void ToggleDrunkMode(bool enable);
 	bool IsInSong();
 	float RiffRepeaterSpeed(float newSpeed = NULL);
@@ -50,7 +50,7 @@ namespace MemHelpers {
 	inline int WindowSizeX = NULL, WindowSizeY = NULL;
 };
 
-namespace Util { // TODO: put in a more appropriate place
+namespace Util {
 	inline void SendKey(unsigned int key) {
 		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, key, 0);
 		Sleep(30);

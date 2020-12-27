@@ -299,19 +299,16 @@ void MemHelpers::PatchCDLCCheck() {
 	}
 }
 
-int* MemHelpers::GetWindowSize() {
+Resolution MemHelpers::GetWindowSize() {
 	RECT WindowSize;
+
+	Resolution currentSize;
 	if (GetWindowRect(FindWindow(NULL, L"Rocksmith 2014"), &WindowSize))
 	{
-		int width = WindowSize.right - WindowSize.left;
-		int height = WindowSize.bottom - WindowSize.top;
-
-		int* dimensions = new int[2]{ width, height };
-
-		return dimensions;
+		currentSize.width = WindowSize.right - WindowSize.left;
+		currentSize.height = WindowSize.bottom - WindowSize.top;
 	}
-	else
-		return new int[2]{ 0, 0 };
+		return currentSize;
 }
 
 bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
@@ -332,19 +329,21 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 }
 
 // textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF (or 255 in hex).
-void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice)
+void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize)
 {
-	int* WindowSize = MemHelpers::GetWindowSize();
+	Resolution WindowSize = MemHelpers::GetWindowSize();
+
+	bool useInputFontSize = (setFontSize.width != NULL && setFontSize.height != NULL);
 
 	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
-	if (WindowSizeX != (WindowSize[0] / 96) || WindowSizeY != (WindowSize[1] / 72) || CustomDX9Font == NULL) {
-		WindowSizeX = (WindowSize[0] / 96);
-		WindowSizeY = (WindowSize[1] / 72);
+	if ((WindowSizeX != (WindowSize.width / 96) || WindowSizeY != (WindowSize.height / 72) || CustomDX9Font == NULL) && !useInputFontSize) {
+		WindowSizeX = (WindowSize.width / 96);
+		WindowSizeY = (WindowSize.height / 72);
 
 		CustomDX9Font = D3DXCreateFontA(pDevice, WindowSizeX, WindowSizeY, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
 	}
-
-	delete[] WindowSize;
+	else if (useInputFontSize)
+		CustomDX9Font = D3DXCreateFontA(pDevice, setFontSize.width, setFontSize.height, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
 
 	// Create Area To Draw Text
 	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom

@@ -385,7 +385,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	}
 
 	int whiteText = 0xFFFFFFFF;
-	int* WindowSize = MemHelpers::GetWindowSize();
+	Resolution WindowSize = MemHelpers::GetWindowSize();
 
 	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
 
@@ -395,7 +395,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
 
 			if (currentVolumeIndex != 0)
-				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize[0] / 54.85), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 14.22), (int)(WindowSize[1] / 8), pDevice);
+				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
 		}
 
 		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
@@ -415,20 +415,20 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				minutes = 0;
 			}
 
-			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize[0] / 1.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 1.45), (int)(WindowSize[1] / 8), pDevice);
+			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 			if (useNewSongSpeed)
-				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()) + "%", whiteText, (int)(WindowSize[0] / 2.35), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 2.50), (int)(WindowSize[1] / 8), pDevice);
+				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)MemHelpers::RiffRepeaterSpeed()) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 		}
 
 		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") {
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
-				MemHelpers::DX9DrawText(GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 5.5), (int)(WindowSize[1] / 1.75), (int)(WindowSize[0] / 5.75), (int)(WindowSize[1] / 8), pDevice);
+				MemHelpers::DX9DrawText(GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 1.75), (int)(WindowSize.width / 5.75), (int)(WindowSize.height / 8), pDevice);
 			else
-				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize[0] / 3.87), (int)(WindowSize[1] / 30.85), (int)(WindowSize[0] / 4), (int)(WindowSize[1] / 8), pDevice);
+				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
 		}
 			
 
@@ -447,8 +447,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			D3DHooks::regenerateUserDefinedTexture = false;
 		}
 	}
-
-	delete[] WindowSize;
 	return hRet;
 }
 
