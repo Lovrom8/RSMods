@@ -16,6 +16,7 @@ namespace RSMods.Twitch
     {
         private TwitchPubSub pubSub;
         private static EffectServerTCP effectServer;
+        private bool authedPoints = false, authedBits = false, authedSubs = false;
         private List<string> eventHashes = new List<string>();
 
         public void SetUp()
@@ -72,12 +73,24 @@ namespace RSMods.Twitch
             }
             else
             {
+                if (authedBits && authedPoints && authedSubs)
+                    return;
+
                 if (e.Topic.Contains("points"))
+                {
                     TwitchSettings.Get.AddToLog($"Authorized channel points events, poggers in chat!");
+                    authedPoints = true;
+                }    
                 else if (e.Topic.Contains("bits"))
+                {
                     TwitchSettings.Get.AddToLog($"Authorized bit events, poggers in chat!");
+                    authedBits = true;
+                }
                 else if (e.Topic.Contains("sub"))
+                {
                     TwitchSettings.Get.AddToLog($"Authorized sub events, poggers in chat!");
+                    authedSubs = true;
+                }
             }
         }
 

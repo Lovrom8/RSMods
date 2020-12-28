@@ -24,9 +24,8 @@ namespace RSMods.Twitch.EffectServer
         private TimeSpan retrySpan;
         private NetworkStream stream;
 
-        private int effectId = 0;
         private Dictionary<int, TwitchReward> usedRewards;
-        private ConcurrentQueue<Tuple<int, TwitchReward>> remainingRewards;
+        private ConcurrentQueue<TwitchReward> remainingRewards;
         private int retryInterval = 1; // In seconds
 
         private string ipAdr = "127.0.0.1";
@@ -48,7 +47,8 @@ namespace RSMods.Twitch.EffectServer
             HandleRemainingEffects(cts.Token);
 
             usedRewards = new Dictionary<int, TwitchReward>();
-            remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>();
+            remainingRewards = new ConcurrentQueue<TwitchReward>();
+            // remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>();
             //remainingRewards = new ConcurrentDictionary<int, TwitchReward>();
 
             TwitchSettings.Get.AddToLog("Started the effect server");
@@ -64,9 +64,11 @@ namespace RSMods.Twitch.EffectServer
             {
                 while (!ct.IsCancellationRequested)
                 {
-                    Tuple<int, TwitchReward> currentReward;
+                    TwitchReward currentReward;
                     if (remainingRewards.TryDequeue(out currentReward))
-                        SendEffectToTheGame(currentReward.Item2, true);
+                        SendEffectToTheGame(currentReward, true);
+
+                    //TwitchSettings.Get.AddToLog("Trying...");
 
                     await Task.Delay(retrySpan, ct);
                 }
@@ -81,6 +83,7 @@ namespace RSMods.Twitch.EffectServer
             try
             {
                 connectedTcpClient = tcpListener.AcceptTcpClient();
+                TwitchSettings.Get.AddToLog("Connected to the game...");
             }
             catch (SocketException socketException)
             {
@@ -138,11 +141,9 @@ namespace RSMods.Twitch.EffectServer
 
                              if (response.status == 3) // If retry code was returned, put it back in the queue
                              {
-                                 remainingRewards.Enqueue(new Tuple<int, TwitchReward>(effectId, currentReward));
-                                 TwitchSettings.Get.AddToLog($"Requeing {currentReward.Name}");
+                                 remainingRewards.Enqueue(currentReward);
+                                // TwitchSettings.Get.AddToLog($"Requeing {currentReward.Name}");
                              }
-                             else
-                                 Interlocked.Increment(ref effectId);
 
                              // We'd already dequeued the current effect, so no need to remove it if it goes through
                              //if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
@@ -157,7 +158,7 @@ namespace RSMods.Twitch.EffectServer
                      else
                          TwitchSettings.Get.AddToLog($"IO Exception: {ioex.Message}");
 
-                     remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>(); // Clean up after ourselves
+                     remainingRewards = new ConcurrentQueue<TwitchReward>(); // Clean up after ourselves
                  }
                  catch (SocketException socketException)
                  {
@@ -166,16 +167,13 @@ namespace RSMods.Twitch.EffectServer
              });
         }
 
-        public void AddEffectToTheQueue(TwitchReward reward) => remainingRewards.Enqueue(new Tuple<int, TwitchReward>(effectId, reward));
+        public void AddEffectToTheQueue(TwitchReward reward) => remainingRewards.Enqueue(reward);
 
         public void SendEffectToTheGame(TwitchReward reward, bool newEffect = true)
         {
-            if (newEffect)
-                usedRewards.Add(effectId, reward);
-
             Request request = new Request()
             {
-                id = effectId,
+                id = 1,
                 code = reward.InternalMsgEnable.ToLower().Replace("enable", "").Trim(),
                 type = 1,
                 viewer = "rsmods"
