@@ -2481,11 +2481,11 @@
             // 
             this.label_ASIO_Credits.AutoSize = true;
             this.label_ASIO_Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_ASIO_Credits.Location = new System.Drawing.Point(829, 485);
+            this.label_ASIO_Credits.Location = new System.Drawing.Point(972, 466);
             this.label_ASIO_Credits.Name = "label_ASIO_Credits";
-            this.label_ASIO_Credits.Size = new System.Drawing.Size(308, 17);
+            this.label_ASIO_Credits.Size = new System.Drawing.Size(163, 34);
             this.label_ASIO_Credits.TabIndex = 11;
-            this.label_ASIO_Credits.Text = "Big Thank You To Mdias For Creating RS_ASIO";
+            this.label_ASIO_Credits.Text = "Big Thank You To Mdias\r\nFor Creating RS_ASIO";
             // 
             // groupBox_ASIO_Output
             // 
@@ -2498,9 +2498,9 @@
             this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_BaseChannel);
             this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_BaseChannel);
             this.groupBox_ASIO_Output.Controls.Add(this.listBox_AvailableASIODevices_Output);
-            this.groupBox_ASIO_Output.Location = new System.Drawing.Point(604, 166);
+            this.groupBox_ASIO_Output.Location = new System.Drawing.Point(490, 24);
             this.groupBox_ASIO_Output.Name = "groupBox_ASIO_Output";
-            this.groupBox_ASIO_Output.Size = new System.Drawing.Size(499, 230);
+            this.groupBox_ASIO_Output.Size = new System.Drawing.Size(470, 224);
             this.groupBox_ASIO_Output.TabIndex = 10;
             this.groupBox_ASIO_Output.TabStop = false;
             this.groupBox_ASIO_Output.Text = "Output";
@@ -2519,7 +2519,7 @@
             // checkBox_ASIO_Output_Disabled
             // 
             this.checkBox_ASIO_Output_Disabled.AutoSize = true;
-            this.checkBox_ASIO_Output_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Output_Disabled.Location = new System.Drawing.Point(253, 198);
             this.checkBox_ASIO_Output_Disabled.Name = "checkBox_ASIO_Output_Disabled";
             this.checkBox_ASIO_Output_Disabled.Size = new System.Drawing.Size(67, 17);
             this.checkBox_ASIO_Output_Disabled.TabIndex = 12;
@@ -2615,7 +2615,7 @@
             this.groupBox_ASIO_Input1.Controls.Add(this.listBox_AvailableASIODevices_Input1);
             this.groupBox_ASIO_Input1.Location = new System.Drawing.Point(14, 260);
             this.groupBox_ASIO_Input1.Name = "groupBox_ASIO_Input1";
-            this.groupBox_ASIO_Input1.Size = new System.Drawing.Size(499, 230);
+            this.groupBox_ASIO_Input1.Size = new System.Drawing.Size(470, 230);
             this.groupBox_ASIO_Input1.TabIndex = 4;
             this.groupBox_ASIO_Input1.TabStop = false;
             this.groupBox_ASIO_Input1.Text = "Input 2";
@@ -2634,7 +2634,7 @@
             // checkBox_ASIO_Input1_Disabled
             // 
             this.checkBox_ASIO_Input1_Disabled.AutoSize = true;
-            this.checkBox_ASIO_Input1_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Input1_Disabled.Location = new System.Drawing.Point(253, 207);
             this.checkBox_ASIO_Input1_Disabled.Name = "checkBox_ASIO_Input1_Disabled";
             this.checkBox_ASIO_Input1_Disabled.Size = new System.Drawing.Size(67, 17);
             this.checkBox_ASIO_Input1_Disabled.TabIndex = 10;
@@ -2730,7 +2730,7 @@
             this.groupBox_ASIO_Input0.Controls.Add(this.listBox_AvailableASIODevices_Input0);
             this.groupBox_ASIO_Input0.Location = new System.Drawing.Point(14, 24);
             this.groupBox_ASIO_Input0.Name = "groupBox_ASIO_Input0";
-            this.groupBox_ASIO_Input0.Size = new System.Drawing.Size(499, 230);
+            this.groupBox_ASIO_Input0.Size = new System.Drawing.Size(470, 224);
             this.groupBox_ASIO_Input0.TabIndex = 3;
             this.groupBox_ASIO_Input0.TabStop = false;
             this.groupBox_ASIO_Input0.Text = "Input 1";
@@ -2749,7 +2749,7 @@
             // checkBox_ASIO_Input0_Disabled
             // 
             this.checkBox_ASIO_Input0_Disabled.AutoSize = true;
-            this.checkBox_ASIO_Input0_Disabled.Location = new System.Drawing.Point(391, 207);
+            this.checkBox_ASIO_Input0_Disabled.Location = new System.Drawing.Point(253, 192);
             this.checkBox_ASIO_Input0_Disabled.Name = "checkBox_ASIO_Input0_Disabled";
             this.checkBox_ASIO_Input0_Disabled.Size = new System.Drawing.Size(67, 17);
             this.checkBox_ASIO_Input0_Disabled.TabIndex = 11;
@@ -2837,9 +2837,9 @@
             this.groupBox_ASIO_Config.Controls.Add(this.checkBox_ASIO_ASIO);
             this.groupBox_ASIO_Config.Controls.Add(this.checkBox_ASIO_WASAPI_Input);
             this.groupBox_ASIO_Config.Controls.Add(this.checkBox_ASIO_WASAPI_Output);
-            this.groupBox_ASIO_Config.Location = new System.Drawing.Point(957, 24);
+            this.groupBox_ASIO_Config.Location = new System.Drawing.Point(966, 216);
             this.groupBox_ASIO_Config.Name = "groupBox_ASIO_Config";
-            this.groupBox_ASIO_Config.Size = new System.Drawing.Size(146, 111);
+            this.groupBox_ASIO_Config.Size = new System.Drawing.Size(161, 111);
             this.groupBox_ASIO_Config.TabIndex = 2;
             this.groupBox_ASIO_Config.TabStop = false;
             this.groupBox_ASIO_Config.Text = "Config";
@@ -2888,9 +2888,9 @@
             this.groupBox_ASIO_BufferSize.Controls.Add(this.radio_ASIO_BufferSize_Custom);
             this.groupBox_ASIO_BufferSize.Controls.Add(this.radio_ASIO_BufferSize_Host);
             this.groupBox_ASIO_BufferSize.Controls.Add(this.radio_ASIO_BufferSize_Driver);
-            this.groupBox_ASIO_BufferSize.Location = new System.Drawing.Point(604, 24);
+            this.groupBox_ASIO_BufferSize.Location = new System.Drawing.Point(966, 24);
             this.groupBox_ASIO_BufferSize.Name = "groupBox_ASIO_BufferSize";
-            this.groupBox_ASIO_BufferSize.Size = new System.Drawing.Size(258, 111);
+            this.groupBox_ASIO_BufferSize.Size = new System.Drawing.Size(161, 177);
             this.groupBox_ASIO_BufferSize.TabIndex = 1;
             this.groupBox_ASIO_BufferSize.TabStop = false;
             this.groupBox_ASIO_BufferSize.Text = "Buffer Size";
@@ -2899,7 +2899,7 @@
             // label_ASIO_CustomBufferSize
             // 
             this.label_ASIO_CustomBufferSize.AutoSize = true;
-            this.label_ASIO_CustomBufferSize.Location = new System.Drawing.Point(131, 61);
+            this.label_ASIO_CustomBufferSize.Location = new System.Drawing.Point(28, 110);
             this.label_ASIO_CustomBufferSize.Name = "label_ASIO_CustomBufferSize";
             this.label_ASIO_CustomBufferSize.Size = new System.Drawing.Size(96, 13);
             this.label_ASIO_CustomBufferSize.TabIndex = 4;
@@ -2914,7 +2914,7 @@
             0,
             0,
             0});
-            this.nUpDown_ASIO_CustomBufferSize.Location = new System.Drawing.Point(123, 80);
+            this.nUpDown_ASIO_CustomBufferSize.Location = new System.Drawing.Point(20, 129);
             this.nUpDown_ASIO_CustomBufferSize.Maximum = new decimal(new int[] {
             496,
             0,
