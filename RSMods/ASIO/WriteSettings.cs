@@ -63,7 +63,9 @@ namespace RSMods.ASIO
                     sw.WriteLine(section);
                     foreach (KeyValuePair<string, string> entry in DictionaryToWrite[section])
                     {
-                        if (((section == ReadSettings.SectionToName(ReadSettings.Sections.Output) && disableOutput) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input0) && disableInput0) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input1) && disableInput1)) && entry.Key == ReadSettings.DriverIdentifier)
+                        if (((section == ReadSettings.SectionToName(ReadSettings.Sections.Output) && disableOutput) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input0) && disableInput0)) && entry.Key == ReadSettings.DriverIdentifier)
+                            sw.WriteLine(entry.Key);
+                        else if ((section == ReadSettings.SectionToName(ReadSettings.Sections.Input1) && disableInput1) && entry.Key == ReadSettings.DriverIdentifier)
                             sw.WriteLine(';' + entry.Key + entry.Value);
                         else
                             sw.WriteLine(entry.Key + entry.Value);
