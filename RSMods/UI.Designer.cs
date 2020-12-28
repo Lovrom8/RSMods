@@ -193,6 +193,16 @@
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.tab_RSASIO = new System.Windows.Forms.TabPage();
+            this.groupBox_ASIO_InputMic = new System.Windows.Forms.GroupBox();
+            this.button_ASIO_InputMic_ClearSelection = new System.Windows.Forms.Button();
+            this.checkBox_ASIO_InputMic_Disabled = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASIO_InputMic_ControlMasterVolume = new System.Windows.Forms.CheckBox();
+            this.label_ASIO_InputMic_MaxVolume = new System.Windows.Forms.Label();
+            this.nUpDown_ASIO_InputMic_MaxVolume = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_ASIO_InputMic_Channel = new System.Windows.Forms.NumericUpDown();
+            this.label_ASIO_InputMic_Channel = new System.Windows.Forms.Label();
+            this.listBox_AvailableASIODevices_InputMic = new System.Windows.Forms.ListBox();
             this.label_ASIO_Credits = new System.Windows.Forms.Label();
             this.groupBox_ASIO_Output = new System.Windows.Forms.GroupBox();
             this.button_ASIO_Output_ClearSelection = new System.Windows.Forms.Button();
@@ -355,6 +365,9 @@
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.tab_RSASIO.SuspendLayout();
+            this.groupBox_ASIO_InputMic.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_MaxVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_Channel)).BeginInit();
             this.groupBox_ASIO_Output.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).BeginInit();
@@ -2465,6 +2478,7 @@
             // tab_RSASIO
             // 
             this.tab_RSASIO.BackColor = System.Drawing.Color.Azure;
+            this.tab_RSASIO.Controls.Add(this.groupBox_ASIO_InputMic);
             this.tab_RSASIO.Controls.Add(this.label_ASIO_Credits);
             this.tab_RSASIO.Controls.Add(this.groupBox_ASIO_Output);
             this.tab_RSASIO.Controls.Add(this.groupBox_ASIO_Input1);
@@ -2476,6 +2490,122 @@
             this.tab_RSASIO.Size = new System.Drawing.Size(1150, 513);
             this.tab_RSASIO.TabIndex = 7;
             this.tab_RSASIO.Text = "RS_ASIO Settings";
+            // 
+            // groupBox_ASIO_InputMic
+            // 
+            this.groupBox_ASIO_InputMic.Controls.Add(this.button_ASIO_InputMic_ClearSelection);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_Disabled);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_ControlEndpointVolume);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_ControlMasterVolume);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.label_ASIO_InputMic_MaxVolume);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.nUpDown_ASIO_InputMic_MaxVolume);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.nUpDown_ASIO_InputMic_Channel);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.label_ASIO_InputMic_Channel);
+            this.groupBox_ASIO_InputMic.Controls.Add(this.listBox_AvailableASIODevices_InputMic);
+            this.groupBox_ASIO_InputMic.Location = new System.Drawing.Point(490, 260);
+            this.groupBox_ASIO_InputMic.Name = "groupBox_ASIO_InputMic";
+            this.groupBox_ASIO_InputMic.Size = new System.Drawing.Size(470, 230);
+            this.groupBox_ASIO_InputMic.TabIndex = 12;
+            this.groupBox_ASIO_InputMic.TabStop = false;
+            this.groupBox_ASIO_InputMic.Text = "Input Microphone";
+            this.groupBox_ASIO_InputMic.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // button_ASIO_InputMic_ClearSelection
+            // 
+            this.button_ASIO_InputMic_ClearSelection.Location = new System.Drawing.Point(22, 192);
+            this.button_ASIO_InputMic_ClearSelection.Name = "button_ASIO_InputMic_ClearSelection";
+            this.button_ASIO_InputMic_ClearSelection.Size = new System.Drawing.Size(194, 23);
+            this.button_ASIO_InputMic_ClearSelection.TabIndex = 14;
+            this.button_ASIO_InputMic_ClearSelection.Text = "Clear Selection";
+            this.button_ASIO_InputMic_ClearSelection.UseVisualStyleBackColor = true;
+            this.button_ASIO_InputMic_ClearSelection.Click += new System.EventHandler(this.ASIO_InputMic_ClearSelection);
+            // 
+            // checkBox_ASIO_InputMic_Disabled
+            // 
+            this.checkBox_ASIO_InputMic_Disabled.AutoSize = true;
+            this.checkBox_ASIO_InputMic_Disabled.Location = new System.Drawing.Point(253, 207);
+            this.checkBox_ASIO_InputMic_Disabled.Name = "checkBox_ASIO_InputMic_Disabled";
+            this.checkBox_ASIO_InputMic_Disabled.Size = new System.Drawing.Size(67, 17);
+            this.checkBox_ASIO_InputMic_Disabled.TabIndex = 10;
+            this.checkBox_ASIO_InputMic_Disabled.Text = "Disabled";
+            this.checkBox_ASIO_InputMic_Disabled.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(this.ASIO_InputMic_Disable);
+            // 
+            // checkBox_ASIO_InputMic_ControlEndpointVolume
+            // 
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.AutoSize = true;
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Name = "checkBox_ASIO_InputMic_ControlEndpointVolume";
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.TabIndex = 9;
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Text = "Control Endpoint Volume";
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_InputMic_EndpointVolume);
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // checkBox_ASIO_InputMic_ControlMasterVolume
+            // 
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.AutoSize = true;
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.Name = "checkBox_ASIO_InputMic_ControlMasterVolume";
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.TabIndex = 8;
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.Text = "Control Master Volume";
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.CheckedChanged += new System.EventHandler(this.ASIO_InputMic_MasterVolume);
+            // 
+            // label_ASIO_InputMic_MaxVolume
+            // 
+            this.label_ASIO_InputMic_MaxVolume.AutoSize = true;
+            this.label_ASIO_InputMic_MaxVolume.Location = new System.Drawing.Point(250, 69);
+            this.label_ASIO_InputMic_MaxVolume.Name = "label_ASIO_InputMic_MaxVolume";
+            this.label_ASIO_InputMic_MaxVolume.Size = new System.Drawing.Size(68, 13);
+            this.label_ASIO_InputMic_MaxVolume.TabIndex = 7;
+            this.label_ASIO_InputMic_MaxVolume.Text = "Max Volume:";
+            this.label_ASIO_InputMic_MaxVolume.Visible = false;
+            // 
+            // nUpDown_ASIO_InputMic_MaxVolume
+            // 
+            this.nUpDown_ASIO_InputMic_MaxVolume.Location = new System.Drawing.Point(338, 67);
+            this.nUpDown_ASIO_InputMic_MaxVolume.Name = "nUpDown_ASIO_InputMic_MaxVolume";
+            this.nUpDown_ASIO_InputMic_MaxVolume.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_ASIO_InputMic_MaxVolume.TabIndex = 4;
+            this.nUpDown_ASIO_InputMic_MaxVolume.Visible = false;
+            this.nUpDown_ASIO_InputMic_MaxVolume.ValueChanged += new System.EventHandler(this.ASIO_InputMic_MaxVolume);
+            // 
+            // nUpDown_ASIO_InputMic_Channel
+            // 
+            this.nUpDown_ASIO_InputMic_Channel.Location = new System.Drawing.Point(338, 28);
+            this.nUpDown_ASIO_InputMic_Channel.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.nUpDown_ASIO_InputMic_Channel.Name = "nUpDown_ASIO_InputMic_Channel";
+            this.nUpDown_ASIO_InputMic_Channel.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_ASIO_InputMic_Channel.TabIndex = 3;
+            this.nUpDown_ASIO_InputMic_Channel.ValueChanged += new System.EventHandler(this.ASIO_InputMic_Channel);
+
+            // 
+            // label_ASIO_InputMic_Channel
+            // 
+            this.label_ASIO_InputMic_Channel.AutoSize = true;
+            this.label_ASIO_InputMic_Channel.Location = new System.Drawing.Point(250, 30);
+            this.label_ASIO_InputMic_Channel.Name = "label_ASIO_InputMic_Channel";
+            this.label_ASIO_InputMic_Channel.Size = new System.Drawing.Size(49, 13);
+            this.label_ASIO_InputMic_Channel.TabIndex = 2;
+            this.label_ASIO_InputMic_Channel.Text = "Channel:";
+            this.label_ASIO_InputMic_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // listBox_AvailableASIODevices_InputMic
+            // 
+            this.listBox_AvailableASIODevices_InputMic.FormattingEnabled = true;
+            this.listBox_AvailableASIODevices_InputMic.Location = new System.Drawing.Point(23, 30);
+            this.listBox_AvailableASIODevices_InputMic.Name = "listBox_AvailableASIODevices_InputMic";
+            this.listBox_AvailableASIODevices_InputMic.Size = new System.Drawing.Size(193, 147);
+            this.listBox_AvailableASIODevices_InputMic.TabIndex = 0;
+            this.listBox_AvailableASIODevices_InputMic.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInputMic);
+            this.listBox_AvailableASIODevices_InputMic.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // label_ASIO_Credits
             // 
@@ -4080,6 +4210,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.tab_RSASIO.ResumeLayout(false);
             this.tab_RSASIO.PerformLayout();
+            this.groupBox_ASIO_InputMic.ResumeLayout(false);
+            this.groupBox_ASIO_InputMic.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_MaxVolume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_Channel)).EndInit();
             this.groupBox_ASIO_Output.ResumeLayout(false);
             this.groupBox_ASIO_Output.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).EndInit();
@@ -4426,6 +4560,16 @@
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_LowLatencyMode;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_EnableRenderRes;
         private System.Windows.Forms.Label label_Rocksmith_Thanks;
+        private System.Windows.Forms.GroupBox groupBox_ASIO_InputMic;
+        private System.Windows.Forms.Button button_ASIO_InputMic_ClearSelection;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_InputMic_Disabled;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_InputMic_ControlEndpointVolume;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_InputMic_ControlMasterVolume;
+        private System.Windows.Forms.Label label_ASIO_InputMic_MaxVolume;
+        private System.Windows.Forms.NumericUpDown nUpDown_ASIO_InputMic_MaxVolume;
+        private System.Windows.Forms.NumericUpDown nUpDown_ASIO_InputMic_Channel;
+        private System.Windows.Forms.Label label_ASIO_InputMic_Channel;
+        private System.Windows.Forms.ListBox listBox_AvailableASIODevices_InputMic;
     }
 }
 

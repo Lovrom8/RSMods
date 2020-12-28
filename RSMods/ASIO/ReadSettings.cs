@@ -17,9 +17,10 @@ namespace RSMods.ASIO
         BufferSizeMode, CustomBufferSize,
         OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent,
         INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent,
-        INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent;
+        INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent,
+        INPUTMic_Driver, INPUTMic_Channel, INPUTMic_EnableSoftwareEndpointVolumeControl, INPUTMic_EnableSoftwareMasterVolumeControl, INPUTMic_SoftwareMasterVolumePercent;
 
-        public static bool DisabledInput0 = false, DisabledInput1 = false, DisabledOutput = false;
+        public static bool DisabledInput0 = false, DisabledInput1 = false, DisabledOutput = false, DisabledInputMic = false;
 
         public static string EnableWasapiOutputsIdentifier = "EnableWasapiOutputs=",
         EnableWasapiInputsIdentifier = "EnableWasapiInputs=",
@@ -37,11 +38,12 @@ namespace RSMods.ASIO
 
         public enum Sections
         {
-            Output = 0,
-            Input0 = 1,
-            Input1 = 2,
-            Config = 3,
-            Asio = 4
+            Config = 0,
+            Asio = 1,
+            Output = 2,
+            Input0 = 3,
+            Input1 = 4,
+            InputMic = 5
         };
 
         private static string lastKnownSection = "";
@@ -60,6 +62,9 @@ namespace RSMods.ASIO
                     return "[Asio.Input.0]";
                 case Sections.Input1:
                     return "[Asio.Input.1]";
+                case Sections.InputMic:
+                    return "[Asio.Input.Mic]";
+
             }
             return "";
         }
@@ -82,6 +87,8 @@ namespace RSMods.ASIO
             return true;
         }
 
+        private static bool FoundCorrectSection(Sections inputSection, Sections expectedSection) => (inputSection == expectedSection && lastKnownSection == SectionToName(expectedSection));
+
         public static string ProcessSettings(string identifierToGrab, Sections sectionToGrab)
         {
             if (!VerifySettingsExist())
@@ -98,12 +105,14 @@ namespace RSMods.ASIO
                     {
                         if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
                         {
-                            if (sectionToGrab == Sections.Output && lastKnownSection == SectionToName(Sections.Output))
+                            if (FoundCorrectSection(sectionToGrab, Sections.Output))
                                 DisabledOutput = true;
-                            if (sectionToGrab == Sections.Input0 && lastKnownSection == SectionToName(Sections.Input0))
+                            if (FoundCorrectSection(sectionToGrab, Sections.Input0))
                                 DisabledInput0 = true;
-                            if (sectionToGrab == Sections.Input1 && lastKnownSection == SectionToName(Sections.Input1))
+                            if (FoundCorrectSection(sectionToGrab, Sections.Input1))
                                 DisabledInput1 = true;
+                            if (FoundCorrectSection(sectionToGrab, Sections.InputMic))
+                                DisabledInputMic = true;
                         }
                         continue;
                     }
@@ -112,7 +121,7 @@ namespace RSMods.ASIO
 
                 #region Config
                     // Config
-                if (sectionToGrab == Sections.Config && lastKnownSection == SectionToName(Sections.Config))
+                if (FoundCorrectSection(sectionToGrab, Sections.Config))
                 {
                     if (IdentifierIsFound(currentLine, EnableWasapiOutputsIdentifier, identifierToGrab))
                         return FillSettingVariable(EnableWasapiOutputsIdentifier, sectionToGrab, currentLine, out EnableWasapiOutputs);
@@ -125,7 +134,7 @@ namespace RSMods.ASIO
                 #region Asio
                 // Asio
 
-                if (sectionToGrab == Sections.Asio && lastKnownSection == SectionToName(Sections.Asio))
+                if (FoundCorrectSection(sectionToGrab, Sections.Asio))
                 {
                     if (IdentifierIsFound(currentLine, BufferSizeModeIdentifier, identifierToGrab))
                         return FillSettingVariable(BufferSizeModeIdentifier, sectionToGrab, currentLine, out BufferSizeMode);
@@ -136,7 +145,7 @@ namespace RSMods.ASIO
                 #region Output
                 // Output
 
-                if (sectionToGrab == Sections.Output && lastKnownSection == SectionToName(Sections.Output))
+                if (FoundCorrectSection(sectionToGrab, Sections.Output))
                 {
                     if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
                         return FillSettingVariable(DriverIdentifier, sectionToGrab, currentLine, out OUTPUT_Driver);
@@ -153,7 +162,7 @@ namespace RSMods.ASIO
                 #region Input0
                 // Input0
 
-                else if (sectionToGrab == Sections.Input0 && lastKnownSection == SectionToName(Sections.Input0))
+                else if (FoundCorrectSection(sectionToGrab, Sections.Input0))
                 {
                     if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
                         return FillSettingVariable(DriverIdentifier, sectionToGrab, currentLine, out INPUT0_Driver);
@@ -170,7 +179,7 @@ namespace RSMods.ASIO
                 #region Input1
                 // Input1
 
-                else if (sectionToGrab == Sections.Input1 && lastKnownSection == SectionToName(Sections.Input1))
+                else if (FoundCorrectSection(sectionToGrab, Sections.Input1))
                 {
                     if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
                         return FillSettingVariable(DriverIdentifier, sectionToGrab, currentLine, out INPUT1_Driver);
@@ -183,6 +192,24 @@ namespace RSMods.ASIO
                     if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
                         return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out INPUT1_SoftwareMasterVolumePercent);
                 }
+                #endregion
+                #region Input Mic
+                // Input Mic (Added in v0.5.5)
+
+                else if (FoundCorrectSection(sectionToGrab, Sections.InputMic))
+                {
+                    if (IdentifierIsFound(currentLine, DriverIdentifier, identifierToGrab))
+                        return FillSettingVariable(DriverIdentifier, sectionToGrab, currentLine, out INPUTMic_Driver);
+                    if (IdentifierIsFound(currentLine, ChannelIdentifier, identifierToGrab))
+                        return FillSettingVariable(ChannelIdentifier, sectionToGrab, currentLine, out INPUTMic_Channel);
+                    if (IdentifierIsFound(currentLine, EnableSoftwareEndpointVolumeControlIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableSoftwareEndpointVolumeControlIdentifier, sectionToGrab, currentLine, out INPUTMic_EnableSoftwareEndpointVolumeControl);
+                    if (IdentifierIsFound(currentLine, EnableSoftwareMasterVolumeControlIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableSoftwareMasterVolumeControlIdentifier, sectionToGrab, currentLine, out INPUTMic_EnableSoftwareMasterVolumeControl);
+                    if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
+                        return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out INPUTMic_SoftwareMasterVolumePercent);
+                }
+
                 #endregion
             }
             return "";

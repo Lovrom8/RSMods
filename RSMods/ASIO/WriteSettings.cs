@@ -51,10 +51,19 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.Input1)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.Input1)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.Input1)},
-            }}
+            }},
+            {"[Asio.Input.Mic]", new Dictionary<string, string>
+            {
+                { ReadSettings.DriverIdentifier, ReadSettings.ProcessSettings(ReadSettings.DriverIdentifier, ReadSettings.Sections.InputMic)},
+                { ReadSettings.ChannelIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChannelIdentifier, ReadSettings.Sections.InputMic)},
+                { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
+                { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
+                { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.InputMic)},
+
+            }},
         };
 
-        private static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false)
+        private static void WriteINI(Dictionary<string, Dictionary<string, string>> DictionaryToWrite, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false, bool disableInputMic = false)
         {
             using (StreamWriter sw = File.CreateText(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini")))
             {
@@ -63,7 +72,7 @@ namespace RSMods.ASIO
                     sw.WriteLine(section);
                     foreach (KeyValuePair<string, string> entry in DictionaryToWrite[section])
                     {
-                        if (((section == ReadSettings.SectionToName(ReadSettings.Sections.Output) && disableOutput) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input0) && disableInput0)) && entry.Key == ReadSettings.DriverIdentifier)
+                        if (((section == ReadSettings.SectionToName(ReadSettings.Sections.Output) && disableOutput) || (section == ReadSettings.SectionToName(ReadSettings.Sections.Input0) && disableInput0) || (section == ReadSettings.SectionToName(ReadSettings.Sections.InputMic) && disableInputMic)) && entry.Key == ReadSettings.DriverIdentifier)
                             sw.WriteLine(entry.Key);
                         else if ((section == ReadSettings.SectionToName(ReadSettings.Sections.Input1) && disableInput1) && entry.Key == ReadSettings.DriverIdentifier)
                             sw.WriteLine(';' + entry.Key + entry.Value);
@@ -75,7 +84,7 @@ namespace RSMods.ASIO
             }
         }
 
-        public static void SaveChanges(string IdentifierToChange, ReadSettings.Sections iniSection, string ChangedSettingValue, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false)
+        public static void SaveChanges(string IdentifierToChange, ReadSettings.Sections iniSection, string ChangedSettingValue, bool disableOutput = false, bool disableInput0 = false, bool disableInput1 = false, bool disableInputMic = false)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
             if (ChangedSettingValue == "true")
@@ -95,7 +104,7 @@ namespace RSMods.ASIO
                 }
             }
 
-            WriteINI(newSettings, disableOutput, disableInput0, disableInput1);
+            WriteINI(newSettings, disableOutput, disableInput0, disableInput1, disableInputMic);
         }
     }
 }
