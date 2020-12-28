@@ -21,6 +21,8 @@ namespace RSMods.Twitch.EffectServer
         private Thread tcpListenerThread;
         private CancellationTokenSource cts;
         private TcpClient connectedTcpClient;
+        private TimeSpan retrySpan;
+        private NetworkStream stream;
 
         private int effectId = 0;
         private Dictionary<int, TwitchReward> usedRewards;
@@ -37,13 +39,12 @@ namespace RSMods.Twitch.EffectServer
 
         private void StartServer()
         {
-            tcpListener = new TcpListener(IPAddress.Parse(ipAdr), port);
-
-            /*tcpListenerThread = new Thread(new ThreadStart(ListenForIncomingResponse));
+            tcpListenerThread = new Thread(new ThreadStart(GetConnectionToTheGame));
             tcpListenerThread.IsBackground = true;
-            tcpListenerThread.Start();*/
+            tcpListenerThread.Start();
 
             cts = new CancellationTokenSource();
+            retrySpan = TimeSpan.FromSeconds(retryInterval);
             HandleRemainingEffects(cts.Token);
 
             usedRewards = new Dictionary<int, TwitchReward>();
@@ -55,7 +56,6 @@ namespace RSMods.Twitch.EffectServer
 
         /*private void ListenForIncomingResponse()
         {
- 
         }*/
 
         private void HandleRemainingEffects(CancellationToken ct)
@@ -66,83 +66,21 @@ namespace RSMods.Twitch.EffectServer
                 {
                     Tuple<int, TwitchReward> currentReward;
                     if (remainingRewards.TryDequeue(out currentReward))
-                        SendEffectToTheGame(currentReward.Item2, false);
+                        SendEffectToTheGame(currentReward.Item2, true);
 
-                    await Task.Delay(TimeSpan.FromSeconds(retryInterval), ct);
+                    await Task.Delay(retrySpan, ct);
                 }
             }, ct);
         }
 
-        private async void SendMessageToGame(string message)
+        private void GetConnectionToTheGame()
         {
-            //if (connectedTcpClient == null)
-            //    return;
+            tcpListener = new TcpListener(IPAddress.Parse(ipAdr), port);
+            tcpListener.Start();
 
             try
             {
-                /* if (!connectedTcpClient.Client.Connected)
-                 {
-                     TwitchSettings.Get.AddToLog("Not connected :( Pleaase restart the game!");
-                     return;
-                 }*/
-
-                while (true)
-                {
-                    tcpListener.Start();
-                    WinMsgUtil.SendMsgToRS("Reconnect to CC");
-                    await Task.Delay(500);
-
-                    using (connectedTcpClient = tcpListener.AcceptTcpClient())
-                    {
-                        try
-                        {
-                            using (NetworkStream stream = connectedTcpClient.GetStream())
-                            {
-                                var serverMessageAsByteArray = new List<byte>();
-                                serverMessageAsByteArray.AddRange(Encoding.ASCII.GetBytes(message));
-                                serverMessageAsByteArray.Add((byte)0);
-
-                                stream.Write(serverMessageAsByteArray.ToArray(), 0, serverMessageAsByteArray.Count());
-
-                                Debug.Write($"Sent a message to the game: {message}");
-                                Debug.Write("Server is listening for the response");
-
-                                Byte[] bytes = new Byte[1024];
-
-
-                                int length;
-
-                                while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
-                                {
-                                    var incomingData = new byte[length];
-                                    Array.Copy(bytes, 0, incomingData, 0, length);
-
-                                    string clientMessage = Encoding.ASCII.GetString(incomingData);
-                                    Debug.Write($"Recieved a message from the game: {clientMessage}");
-
-                                    if (clientMessage != "\0")
-                                    {
-                                        var response = JsonConvert.DeserializeObject<Response>(clientMessage);
-
-                                        if (response.status == 3) // && !remainingRewards.ContainsKey(response.id))// If retry code was returned, put it in the queue
-                                            remainingRewards.Enqueue(new Tuple<int, TwitchReward>(response.id, usedRewards[response.id]));
-
-                                        // We'd already dequeued the current effect, so no need to remove it if it goes through
-                                        //if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
-                                        //    remainingRewards.TryRemove(response.id, null);
-
-                                        tcpListener.Stop();
-                                    }
-                                }
-                            }
-                        }
-                        catch (IOException ioex) // If the game (and the connection with it) was closed
-                        {
-                            TwitchSettings.Get.AddToLog($"IOEx: {ioex.Message}");
-                            remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>(); // Clean up after ourselves
-                        }
-                    }
-                }
+                connectedTcpClient = tcpListener.AcceptTcpClient();
             }
             catch (SocketException socketException)
             {
@@ -150,30 +88,90 @@ namespace RSMods.Twitch.EffectServer
             }
         }
 
-        public void AddEffectToTheQueue(TwitchReward reward)
+        private async void SendMessageToGame(string message, TwitchReward currentReward)
         {
-            remainingRewards.Enqueue(new Tuple<int, TwitchReward>(effectId, reward));
+            if (connectedTcpClient == null)
+            {
+                WinMsgUtil.SendMsgToRS("Reconnect to CC");
+                await Task.Delay(500);
+            }
+
+            if (!connectedTcpClient.Client.Connected)
+            {
+                MessageBox.Show("Unable to connect to the effect server, please restart the game and RSMods!", "Error");
+                return;
+            }
+
+            await Task.Run(() =>
+             {
+                 try
+                 {
+                     if (!connectedTcpClient.Connected)
+                         return;
+
+                     stream = connectedTcpClient.GetStream();
+
+                     var serverMessageAsByteArray = new List<byte>();
+                     serverMessageAsByteArray.AddRange(Encoding.ASCII.GetBytes(message));
+                     serverMessageAsByteArray.Add((byte)0);
+
+                     stream.Write(serverMessageAsByteArray.ToArray(), 0, serverMessageAsByteArray.Count());
+
+                     Debug.Write($"Sent a message to the game: {message}");
+                     Debug.Write("Server is listening for the response");
+
+                     Byte[] bytes = new Byte[1024];
+
+                     int length;
+
+                     while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                     {
+                         var incomingData = new byte[length];
+                         Array.Copy(bytes, 0, incomingData, 0, length);
+
+                         string clientMessage = Encoding.ASCII.GetString(incomingData);
+                         Debug.Write($"Recieved a message from the game: {clientMessage}");
+
+                         if (clientMessage != "\0")
+                         {
+                             var response = JsonConvert.DeserializeObject<Response>(clientMessage);
+
+                             if (response.status == 3) // If retry code was returned, put it back in the queue
+                             {
+                                 remainingRewards.Enqueue(new Tuple<int, TwitchReward>(effectId, currentReward));
+                                 TwitchSettings.Get.AddToLog($"Requeing {currentReward.Name}");
+                             }
+                             else
+                                 Interlocked.Increment(ref effectId);
+
+                             // We'd already dequeued the current effect, so no need to remove it if it goes through
+                             //if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
+                             //    remainingRewards.TryRemove(response.id, null);
+                         }
+                     }
+                 }
+                 catch (IOException ioex) // If the game (and the connection with it) was closed
+                 {
+                     if (ioex.Message.Contains("forcibly"))
+                         TwitchSettings.Get.AddToLog($"Looks like the game was closed :(");
+                     else
+                         TwitchSettings.Get.AddToLog($"IO Exception: {ioex.Message}");
+
+                     remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>(); // Clean up after ourselves
+                 }
+                 catch (SocketException socketException)
+                 {
+                     TwitchSettings.Get.AddToLog($"SocketException: {socketException.Message}");
+                 }
+             });
         }
+
+        public void AddEffectToTheQueue(TwitchReward reward) => remainingRewards.Enqueue(new Tuple<int, TwitchReward>(effectId, reward));
 
         public void SendEffectToTheGame(TwitchReward reward, bool newEffect = true)
         {
-            /* if (connectedTcpClient == null || !connectedTcpClient.Client.Connected)
-             {
-                 WinMsgUtil.SendMsgToRS("Reconnect to CC");
-                 await Task.Delay(2000);
-             }
-
-             if (connectedTcpClient == null) // If we are still unable to connect, something is very wrong
-             {
-                 MessageBox.Show("Unable to connect to the effect server, please restart the game and RSMods!", "Error");
-                 return;
-             }*/
-
             if (newEffect)
-            {
-                Interlocked.Increment(ref effectId);
                 usedRewards.Add(effectId, reward);
-            }
 
             Request request = new Request()
             {
@@ -198,7 +196,8 @@ namespace RSMods.Twitch.EffectServer
             }
             request.parameters.Add(new Dictionary<string, int>() { { "duration", reward.Length } });
 
-            SendMessageToGame(JsonConvert.SerializeObject(request));
+            SendMessageToGame(JsonConvert.SerializeObject(request), reward);
         }
     }
 }
+
