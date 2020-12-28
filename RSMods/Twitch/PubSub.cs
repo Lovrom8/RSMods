@@ -140,7 +140,7 @@ namespace RSMods.Twitch
             if (reward == null) // If there's no reward specified for this amount of bits
                 return;
 
-            effectServer.AddEffectToQueue(reward);
+            effectServer.AddEffectToTheQueue(reward);
 
             /* TCP Server instead of WM_COPYDATA, to accomodate the way CC effect server works :(
              * if (reward.AdditionalMsg != "")
