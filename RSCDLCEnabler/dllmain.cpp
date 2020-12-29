@@ -604,7 +604,7 @@ void UpdateSettings() { // Live updates from the INI
 }
 
 void ClearLogs() {
-	if (debug) {
+	if (debug) { 
 		bool didWeDeleteFiles = false;
 
 		std::filesystem::path rocksmithFolder = std::filesystem::current_path();
