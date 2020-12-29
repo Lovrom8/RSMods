@@ -603,13 +603,21 @@ void UpdateSettings() { // Live updates from the INI
 	Sleep(500);
 }
 
-void ClearLogs() { // Not taken from here: https://stackoverflow.com/questions/6935279/delete-all-txt-in-a-directory-with-c :P
+void ClearLogs() {
 	if (debug) {
-		std::string command = "del /Q ";
-		std::string path = "*.mdmp";
-		system(command.append(path).c_str());
+		bool didWeDeleteFiles = false;
 
-		std::cout << "Deleting Useless Log Files" << std::endl;
+		std::filesystem::path rocksmithFolder = std::filesystem::current_path();
+		for (const auto& file : std::filesystem::directory_iterator(rocksmithFolder)) {
+			if (file.path().extension().string() == (std::string)".mdmp")
+			{
+				std::filesystem::remove(file.path());
+				didWeDeleteFiles = true;
+			}
+		}
+
+		if (didWeDeleteFiles)
+			std::cout << "Deleting Useless Log Files" << std::endl;
 	}
 }
 
