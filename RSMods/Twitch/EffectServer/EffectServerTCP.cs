@@ -101,7 +101,7 @@ namespace RSMods.Twitch.EffectServer
 
             if (!connectedTcpClient.Client.Connected)
             {
-                MessageBox.Show("Unable to connect to the effect server, please restart the game and RSMods!", "Error");
+                TwitchSettings.Get.AddToLog("Unable to connect to the effect server, please restart RSMods!");
                 return;
             }
 
