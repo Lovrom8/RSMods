@@ -89,6 +89,9 @@ namespace RSMods
 
             // Load All System Fonts
             LoadFonts();
+
+            // Backup Profile JIC
+            BackupProfile.SaveProfile();
         }
 
         #region Startup Functions
