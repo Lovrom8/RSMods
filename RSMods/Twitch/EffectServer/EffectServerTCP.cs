@@ -99,7 +99,7 @@ namespace RSMods.Twitch.EffectServer
                 await Task.Delay(500);
             }
 
-            if (!connectedTcpClient.Client.Connected)
+            if (connectedTcpClient == null || !connectedTcpClient.Client.Connected)
             {
                 TwitchSettings.Get.AddToLog("Unable to connect to the effect server, please restart RSMods!");
                 return;

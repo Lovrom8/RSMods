@@ -17,6 +17,7 @@ using System.Xml;
 using System.Threading.Tasks;
 using RSMods.Twitch.EffectServer;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace RSMods
 {
@@ -1812,8 +1813,16 @@ namespace RSMods
             PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
         }
 
-        private void Twitch_TestReward(object sender, EventArgs e) => Twitch_SendFakeReward();
-
+        private void Twitch_TestReward(object sender, EventArgs e)
+        {
+            if(Process.GetProcessesByName("Rocksmith2014").Length == 0)
+            {
+                TwitchSettings.Get.AddToLog("The game does not appear to be running!");
+                return;
+            }
+            
+            Twitch_SendFakeReward();
+        }
         private void Twitch_ShowSolidNoteColorRelatedStuff(bool shouldWeShow)
         {
             button_SolidNoteColorPicker.Visible = shouldWeShow;
