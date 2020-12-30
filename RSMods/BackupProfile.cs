@@ -13,7 +13,7 @@ namespace RSMods
     class BackupProfile
     {
 
-        private static string GetSaveDirectory()
+        public static string GetSaveDirectory()
         {
             RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
             string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/", fullProfileFolder = "";

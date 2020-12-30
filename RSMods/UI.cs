@@ -92,6 +92,9 @@ namespace RSMods
 
             // Backup Profile JIC
             BackupProfile.SaveProfile();
+
+            // Test
+            Profiles.AvailableProfiles();
         }
 
         #region Startup Functions
