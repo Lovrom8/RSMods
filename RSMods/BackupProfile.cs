@@ -21,7 +21,11 @@ namespace RSMods
             foreach(string user in availableUser.GetSubKeyNames())
             {
                 if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                {
                     fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
+                    break;
+                }
+                    
                 else
                     continue;
             }
