@@ -89,10 +89,6 @@ namespace RSMods
             }
         }
 
-        public static void Unzip(byte[] array, Stream outStream, bool rewind = true)
-        {
-            Unzip(new MemoryStream(array), outStream, rewind);
-        }
         public static void Unzip(Stream str, Stream outStream, bool rewind = true)
         {
             int len;
@@ -112,7 +108,7 @@ namespace RSMods
             }
         }
 
-        private static string DecryptProfiles(string path)
+        public static string DecryptProfiles(string path, bool dumpToFile = false, string dumpFile = "profileDump.json")
         {
             try
             {
@@ -121,6 +117,15 @@ namespace RSMods
                 using (var br = new StreamReader(outMS))
                 {
                     DecryptProfile(input, outMS);
+                    
+                    if (dumpToFile)
+                    {
+                        using (StreamWriter sw = File.CreateText(dumpFile))
+                        {
+                            sw.WriteLine(br.ReadToEnd());
+                        }
+                    }
+                        
                     return br.ReadToEnd();
                 }
             }
