@@ -270,6 +270,9 @@ namespace RSMods
         {
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
 
+            if (!File.Exists(Constants.ToneManager_CustomPath))
+                MessageBox.Show("Could not extract tones from cache.psarc. Please press Import Existing Settings button!", "Error");
+
             string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
             var tonesJson = JObject.Parse(toneManagerFileContent);
             //var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
@@ -294,6 +297,41 @@ namespace RSMods
             RepackCachePsarc();
 
             MessageBox.Show("Successfully changed default tones!", "Success");
+        }
+
+        public static void SetGuitarArcadeTone(string selectedToneName, int selectedToneType)
+        {
+            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
+
+            if (!File.Exists(Constants.ToneManager_CustomPath))
+                MessageBox.Show("Could not extract tones from cache.psarc. Please press Import Existing Settings button!", "Error");
+
+            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
+            var tonesJson = JObject.Parse(toneManagerFileContent);
+
+            var selectedTone = tonesFromAllProfiles[selectedToneName];
+
+            selectedToneType += 8; // GuitarArcade tones start at the 8th element of Tone list
+
+            var x = tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType];
+
+            tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
+
+            try
+            {
+                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Error:{ioex.Message}");
+                return;
+            }
+
+            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+
+            RepackCachePsarc();
+
+            MessageBox.Show("Successfully changed GuitarArcade tones!", "Success");
         }
 
         public static List<string> GetSteamProfilesFolder()

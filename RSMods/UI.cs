@@ -1085,6 +1085,32 @@ namespace RSMods
                 SetForget_FillUI();
         }
 
+        private void SetAndForget_AssignNewGuitarArcadeTone(object sender, EventArgs e)
+        {
+            if (listBox_ProfileTones.SelectedItem == null)
+                return;
+
+            int selectedToneType = -1;
+
+            var gaRadioControls = new List<RadioButton>() { 
+                radio_TempleOfBendsTone, radio_ScaleWarriorsTone, radio_StringsSkipSaloonTone, 
+                radio_ScaleRacerTone, radio_NinjaSlideNTone, radio_HurtlinHurdlesTone, radio_HarmonicHeistTone,
+                radio_DucksReduxTone, radio_RainbowLaserTone, radio_GoneWailinTone};
+
+            for(int i = 0; i < 10; i++)
+            {
+                if (gaRadioControls[i].Checked)
+                {
+                    selectedToneType = i;
+                    break;
+                }
+            }
+                
+            string selectedToneName = listBox_ProfileTones.SelectedItem.ToString();
+
+            SetAndForgetMods.SetGuitarArcadeTone(selectedToneName, selectedToneType);
+        }
+
         #endregion
         #region Save Setting Middleware
 

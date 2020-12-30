@@ -331,6 +331,19 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.label_SetAndForgetGuitarArcade = new System.Windows.Forms.Label();
+            this.label_HorizontalRulerGuitarArcade = new System.Windows.Forms.Label();
+            this.button_AssignNewGuitarArcadeTone = new System.Windows.Forms.Button();
+            this.radio_TempleOfBendsTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleWarriorsTone = new System.Windows.Forms.RadioButton();
+            this.radio_StringsSkipSaloonTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleRacerTone = new System.Windows.Forms.RadioButton();
+            this.radio_NinjaSlideNTone = new System.Windows.Forms.RadioButton();
+            this.radio_HurtlinHurdlesTone = new System.Windows.Forms.RadioButton();
+            this.radio_HarmonicHeistTone = new System.Windows.Forms.RadioButton();
+            this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
+            this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
+            this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1213,9 +1226,22 @@
             // groupBox_SetAndForget
             // 
             this.groupBox_SetAndForget.BackColor = System.Drawing.Color.Azure;
+            this.groupBox_SetAndForget.Controls.Add(this.radio_GoneWailinTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_RainbowLaserTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_DucksReduxTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_HarmonicHeistTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_HurtlinHurdlesTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_NinjaSlideNTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_ScaleRacerTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_StringsSkipSaloonTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_ScaleWarriorsTone);
+            this.groupBox_SetAndForget.Controls.Add(this.radio_TempleOfBendsTone);
+            this.groupBox_SetAndForget.Controls.Add(this.button_AssignNewGuitarArcadeTone);
+            this.groupBox_SetAndForget.Controls.Add(this.label_SetAndForgetGuitarArcade);
             this.groupBox_SetAndForget.Controls.Add(this.button_AddDCInput);
             this.groupBox_SetAndForget.Controls.Add(this.label_ChangeTonesHeader);
             this.groupBox_SetAndForget.Controls.Add(this.label_HorizontalRuleSetAndForget);
+            this.groupBox_SetAndForget.Controls.Add(this.label_HorizontalRulerGuitarArcade);
             this.groupBox_SetAndForget.Controls.Add(this.button_ImportExistingSettings);
             this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningHighEStringLetter);
             this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningBStringLetter);
@@ -1252,9 +1278,9 @@
             this.groupBox_SetAndForget.Controls.Add(this.button_AddTuning);
             this.groupBox_SetAndForget.Controls.Add(this.button_RemoveTuning);
             this.groupBox_SetAndForget.Controls.Add(this.listBox_Tunings);
-            this.groupBox_SetAndForget.Location = new System.Drawing.Point(6, 25);
+            this.groupBox_SetAndForget.Location = new System.Drawing.Point(6, 11);
             this.groupBox_SetAndForget.Name = "groupBox_SetAndForget";
-            this.groupBox_SetAndForget.Size = new System.Drawing.Size(1131, 345);
+            this.groupBox_SetAndForget.Size = new System.Drawing.Size(1131, 499);
             this.groupBox_SetAndForget.TabIndex = 68;
             this.groupBox_SetAndForget.TabStop = false;
             this.groupBox_SetAndForget.Text = "Set-and-forget mods";
@@ -1380,7 +1406,6 @@
             this.radio_DefaultLeadTone.Name = "radio_DefaultLeadTone";
             this.radio_DefaultLeadTone.Size = new System.Drawing.Size(257, 17);
             this.radio_DefaultLeadTone.TabIndex = 101;
-            this.radio_DefaultLeadTone.TabStop = true;
             this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
             this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.HideToolTips);
@@ -2585,7 +2610,6 @@
             this.nUpDown_ASIO_InputMic_Channel.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_InputMic_Channel.TabIndex = 3;
             this.nUpDown_ASIO_InputMic_Channel.ValueChanged += new System.EventHandler(this.ASIO_InputMic_Channel);
-
             // 
             // label_ASIO_InputMic_Channel
             // 
@@ -4145,6 +4169,135 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // label_SetAndForgetGuitarArcade
+            // 
+            this.label_SetAndForgetGuitarArcade.Location = new System.Drawing.Point(3, 316);
+            this.label_SetAndForgetGuitarArcade.Name = "label_SetAndForgetGuitarArcade";
+            this.label_SetAndForgetGuitarArcade.Size = new System.Drawing.Size(1132, 18);
+            this.label_SetAndForgetGuitarArcade.TabIndex = 112;
+            this.label_SetAndForgetGuitarArcade.Text = "Change GuitarArcade tones";
+            // 
+            // label_HorizontalRulerGuitarArcade
+            // 
+            this.label_HorizontalRulerGuitarArcade.AutoSize = true;
+            this.label_HorizontalRulerGuitarArcade.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_HorizontalRulerGuitarArcade.Location = new System.Drawing.Point(6, 314);
+            this.label_HorizontalRulerGuitarArcade.Name = "label_HorizontalRulerGuitarArcade";
+            this.label_HorizontalRulerGuitarArcade.Size = new System.Drawing.Size(1119, 15);
+            this.label_HorizontalRulerGuitarArcade.TabIndex = 113;
+            this.label_HorizontalRulerGuitarArcade.Text = resources.GetString("label_HorizontalRulerGuitarArcade.Text");
+            // 
+            // button_AssignNewGuitarArcadeTone
+            // 
+            this.button_AssignNewGuitarArcadeTone.Location = new System.Drawing.Point(398, 458);
+            this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
+            this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
+            this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
+            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
+            this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
+            this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetAndForget_AssignNewGuitarArcadeTone);
+            // 
+            // radio_TempleOfBendsTone
+            // 
+            this.radio_TempleOfBendsTone.AutoSize = true;
+            this.radio_TempleOfBendsTone.Checked = true;
+            this.radio_TempleOfBendsTone.Location = new System.Drawing.Point(398, 332);
+            this.radio_TempleOfBendsTone.Name = "radio_TempleOfBendsTone";
+            this.radio_TempleOfBendsTone.Size = new System.Drawing.Size(276, 17);
+            this.radio_TempleOfBendsTone.TabIndex = 115;
+            this.radio_TempleOfBendsTone.Text = "Set Highlighted Tone As New Temple of Bends Tone";
+            this.radio_TempleOfBendsTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleWarriorsTone
+            // 
+            this.radio_ScaleWarriorsTone.AutoSize = true;
+            this.radio_ScaleWarriorsTone.Location = new System.Drawing.Point(398, 355);
+            this.radio_ScaleWarriorsTone.Name = "radio_ScaleWarriorsTone";
+            this.radio_ScaleWarriorsTone.Size = new System.Drawing.Size(265, 17);
+            this.radio_ScaleWarriorsTone.TabIndex = 116;
+            this.radio_ScaleWarriorsTone.Text = "Set Highlighted Tone As New Scale Warriors Tone";
+            this.radio_ScaleWarriorsTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_StringsSkipSaloonTone
+            // 
+            this.radio_StringsSkipSaloonTone.AutoSize = true;
+            this.radio_StringsSkipSaloonTone.Location = new System.Drawing.Point(398, 378);
+            this.radio_StringsSkipSaloonTone.Name = "radio_StringsSkipSaloonTone";
+            this.radio_StringsSkipSaloonTone.Size = new System.Drawing.Size(283, 17);
+            this.radio_StringsSkipSaloonTone.TabIndex = 117;
+            this.radio_StringsSkipSaloonTone.Text = "Set Highlighted Tone As New String Skip Saloon Tone";
+            this.radio_StringsSkipSaloonTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleRacerTone
+            // 
+            this.radio_ScaleRacerTone.AutoSize = true;
+            this.radio_ScaleRacerTone.Location = new System.Drawing.Point(398, 401);
+            this.radio_ScaleRacerTone.Name = "radio_ScaleRacerTone";
+            this.radio_ScaleRacerTone.Size = new System.Drawing.Size(255, 17);
+            this.radio_ScaleRacerTone.TabIndex = 118;
+            this.radio_ScaleRacerTone.Text = "Set Highlighted Tone As New Scale Racer Tone";
+            this.radio_ScaleRacerTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_NinjaSlideNTone
+            // 
+            this.radio_NinjaSlideNTone.AutoSize = true;
+            this.radio_NinjaSlideNTone.Location = new System.Drawing.Point(398, 424);
+            this.radio_NinjaSlideNTone.Name = "radio_NinjaSlideNTone";
+            this.radio_NinjaSlideNTone.Size = new System.Drawing.Size(257, 17);
+            this.radio_NinjaSlideNTone.TabIndex = 119;
+            this.radio_NinjaSlideNTone.Text = "Set Highlighted Tone As New Ninja Slide N Tone";
+            this.radio_NinjaSlideNTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_HurtlinHurdlesTone
+            // 
+            this.radio_HurtlinHurdlesTone.AutoSize = true;
+            this.radio_HurtlinHurdlesTone.Location = new System.Drawing.Point(702, 332);
+            this.radio_HurtlinHurdlesTone.Name = "radio_HurtlinHurdlesTone";
+            this.radio_HurtlinHurdlesTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_HurtlinHurdlesTone.TabIndex = 120;
+            this.radio_HurtlinHurdlesTone.Text = "Set Highlighted Tone As New Hurtlin\' Hurdles Tone";
+            this.radio_HurtlinHurdlesTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_HarmonicHeistTone
+            // 
+            this.radio_HarmonicHeistTone.AutoSize = true;
+            this.radio_HarmonicHeistTone.Location = new System.Drawing.Point(702, 355);
+            this.radio_HarmonicHeistTone.Name = "radio_HarmonicHeistTone";
+            this.radio_HarmonicHeistTone.Size = new System.Drawing.Size(268, 17);
+            this.radio_HarmonicHeistTone.TabIndex = 121;
+            this.radio_HarmonicHeistTone.Text = "Set Highlighted Tone As New Harmonic Heist Tone";
+            this.radio_HarmonicHeistTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_DucksReduxTone
+            // 
+            this.radio_DucksReduxTone.AutoSize = true;
+            this.radio_DucksReduxTone.Location = new System.Drawing.Point(702, 378);
+            this.radio_DucksReduxTone.Name = "radio_DucksReduxTone";
+            this.radio_DucksReduxTone.Size = new System.Drawing.Size(261, 17);
+            this.radio_DucksReduxTone.TabIndex = 122;
+            this.radio_DucksReduxTone.Text = "Set Highlighted Tone As New Ducks Redux Tone";
+            this.radio_DucksReduxTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_RainbowLaserTone
+            // 
+            this.radio_RainbowLaserTone.AutoSize = true;
+            this.radio_RainbowLaserTone.Location = new System.Drawing.Point(702, 401);
+            this.radio_RainbowLaserTone.Name = "radio_RainbowLaserTone";
+            this.radio_RainbowLaserTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_RainbowLaserTone.TabIndex = 123;
+            this.radio_RainbowLaserTone.Text = "Set Highlighted Tone As New Rainbow Laser Tone";
+            this.radio_RainbowLaserTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_GoneWailinTone
+            // 
+            this.radio_GoneWailinTone.AutoSize = true;
+            this.radio_GoneWailinTone.Location = new System.Drawing.Point(702, 424);
+            this.radio_GoneWailinTone.Name = "radio_GoneWailinTone";
+            this.radio_GoneWailinTone.Size = new System.Drawing.Size(256, 17);
+            this.radio_GoneWailinTone.TabIndex = 124;
+            this.radio_GoneWailinTone.Text = "Set Highlighted Tone As New Gone Wailin\' Tone";
+            this.radio_GoneWailinTone.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4570,6 +4723,19 @@
         private System.Windows.Forms.NumericUpDown nUpDown_ASIO_InputMic_Channel;
         private System.Windows.Forms.Label label_ASIO_InputMic_Channel;
         private System.Windows.Forms.ListBox listBox_AvailableASIODevices_InputMic;
+        private System.Windows.Forms.Label label_SetAndForgetGuitarArcade;
+        private System.Windows.Forms.Label label_HorizontalRulerGuitarArcade;
+        private System.Windows.Forms.RadioButton radio_ScaleWarriorsTone;
+        private System.Windows.Forms.RadioButton radio_TempleOfBendsTone;
+        private System.Windows.Forms.Button button_AssignNewGuitarArcadeTone;
+        private System.Windows.Forms.RadioButton radio_HurtlinHurdlesTone;
+        private System.Windows.Forms.RadioButton radio_NinjaSlideNTone;
+        private System.Windows.Forms.RadioButton radio_ScaleRacerTone;
+        private System.Windows.Forms.RadioButton radio_StringsSkipSaloonTone;
+        private System.Windows.Forms.RadioButton radio_HarmonicHeistTone;
+        private System.Windows.Forms.RadioButton radio_RainbowLaserTone;
+        private System.Windows.Forms.RadioButton radio_DucksReduxTone;
+        private System.Windows.Forms.RadioButton radio_GoneWailinTone;
     }
 }
 
