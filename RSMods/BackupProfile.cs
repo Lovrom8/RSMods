@@ -41,9 +41,7 @@ namespace RSMods
 
             string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
             DateTime now = DateTime.Now;
-            string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MMddyyyy HHmmss"));
-
-            MessageBox.Show(timedBackupFolder);
+            string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MM-dd-yyyy_HH-mm-ss"));
 
             Directory.CreateDirectory(profileBackupsFolder);
             Directory.CreateDirectory(timedBackupFolder);
