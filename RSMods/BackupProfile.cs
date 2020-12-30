@@ -42,9 +42,15 @@ namespace RSMods
             string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
             DateTime now = DateTime.Now;
             string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MM-dd-yyyy_HH-mm-ss"));
+            string howToRestoreBackupTxt = Path.Combine(profileBackupsFolder, "howto.txt");
 
             Directory.CreateDirectory(profileBackupsFolder);
             Directory.CreateDirectory(timedBackupFolder);
+
+            using (StreamWriter sw = File.CreateText(howToRestoreBackupTxt))
+            {
+                sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
+            }
 
             foreach(var file in Directory.GetFiles(profileFolder))
             {
