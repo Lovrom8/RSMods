@@ -3554,6 +3554,11 @@
             0,
             0,
             0});
+            this.nUpDown_Rocksmith_LatencyBuffer.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nUpDown_Rocksmith_LatencyBuffer.Name = "nUpDown_Rocksmith_LatencyBuffer";
             this.nUpDown_Rocksmith_LatencyBuffer.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_Rocksmith_LatencyBuffer.TabIndex = 4;
