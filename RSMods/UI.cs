@@ -96,11 +96,13 @@ namespace RSMods
             LoadFonts();
 
             // Backup Profile JIC
-            if (!debug)
-                BackupProfile.SaveProfile();
+            BackupProfile.SaveProfile();
 
             // Load Checkbox Values From RSMods.ini
             LoadModSettings();
+
+            // Delete Old Backups To Save Space
+            //DeleteOldBackups(5);
         }
 
 #region Startup Functions
@@ -201,6 +203,36 @@ namespace RSMods
         {
             foreach (KeyValuePair<string, string> profileData in Profiles.AvailableProfiles())
                 listBox_AutoLoadProfiles.Items.Add(profileData.Key);
+        }
+
+        private void DeleteOldBackups(int maxAmountOfBackups)
+        {
+
+            if (maxAmountOfBackups == 0) // User says they want all the backups.
+                return;
+
+            string backupFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
+
+            DirectoryInfo[] backups = new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime).ToArray();
+
+            int foldersLeftToRemove = backups.Length - maxAmountOfBackups;
+
+            foreach (DirectoryInfo backup in backups)
+            {
+                if (foldersLeftToRemove == 0)
+                    break;
+
+                if (Array.IndexOf(backups, backup.Name) < backups.Length - maxAmountOfBackups)
+                {
+                    foreach(string file in Directory.GetFiles(backup.FullName))
+                    {
+                        File.Delete(file);
+                    }
+                    Directory.Delete(backup.FullName);
+                    foldersLeftToRemove--;
+                }
+                    
+            }
         }
 
 #endregion

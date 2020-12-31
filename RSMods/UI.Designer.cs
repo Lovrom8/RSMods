@@ -190,6 +190,7 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
             this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
+            this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.groupBox_ControlVolumeIncrement = new System.Windows.Forms.GroupBox();
             this.nUpDown_VolumeInterval = new System.Windows.Forms.NumericUpDown();
@@ -346,7 +347,7 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
+            this.checkBox_BackupProfile = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -821,6 +822,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_BackupProfile);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ShowCurrentNote);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_useMidiAutoTuning);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RiffRepeaterSpeedAboveOneHundred);
@@ -843,7 +845,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(15, 14);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 243);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 270);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -2449,6 +2451,16 @@
             this.groupBox_AutoLoadProfiles.TabIndex = 100005;
             this.groupBox_AutoLoadProfiles.TabStop = false;
             this.groupBox_AutoLoadProfiles.Text = "Auto Load Profile";
+            // 
+            // button_AutoLoadProfile_ClearSelection
+            // 
+            this.button_AutoLoadProfile_ClearSelection.Location = new System.Drawing.Point(15, 140);
+            this.button_AutoLoadProfile_ClearSelection.Name = "button_AutoLoadProfile_ClearSelection";
+            this.button_AutoLoadProfile_ClearSelection.Size = new System.Drawing.Size(166, 23);
+            this.button_AutoLoadProfile_ClearSelection.TabIndex = 1;
+            this.button_AutoLoadProfile_ClearSelection.Text = "Clear Selection";
+            this.button_AutoLoadProfile_ClearSelection.UseVisualStyleBackColor = true;
+            this.button_AutoLoadProfile_ClearSelection.Click += new System.EventHandler(this.AutoLoadProfile_ClearSelection);
             // 
             // listBox_AutoLoadProfiles
             // 
@@ -4326,15 +4338,15 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // button_AutoLoadProfile_ClearSelection
+            // checkBox_BackupProfile
             // 
-            this.button_AutoLoadProfile_ClearSelection.Location = new System.Drawing.Point(15, 140);
-            this.button_AutoLoadProfile_ClearSelection.Name = "button_AutoLoadProfile_ClearSelection";
-            this.button_AutoLoadProfile_ClearSelection.Size = new System.Drawing.Size(166, 23);
-            this.button_AutoLoadProfile_ClearSelection.TabIndex = 1;
-            this.button_AutoLoadProfile_ClearSelection.Text = "Clear Selection";
-            this.button_AutoLoadProfile_ClearSelection.UseVisualStyleBackColor = true;
-            this.button_AutoLoadProfile_ClearSelection.Click += new System.EventHandler(this.AutoLoadProfile_ClearSelection);
+            this.checkBox_BackupProfile.AutoSize = true;
+            this.checkBox_BackupProfile.Location = new System.Drawing.Point(11, 243);
+            this.checkBox_BackupProfile.Name = "checkBox_BackupProfile";
+            this.checkBox_BackupProfile.Size = new System.Drawing.Size(95, 17);
+            this.checkBox_BackupProfile.TabIndex = 52;
+            this.checkBox_BackupProfile.Text = "Backup Profile";
+            this.checkBox_BackupProfile.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -4777,6 +4789,7 @@
         private System.Windows.Forms.ListBox listBox_AutoLoadProfiles;
         private System.Windows.Forms.Button button_GuitarSpeak_ClearSavedValue;
         private System.Windows.Forms.Button button_AutoLoadProfile_ClearSelection;
+        private System.Windows.Forms.CheckBox checkBox_BackupProfile;
     }
 }
 
