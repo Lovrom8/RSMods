@@ -54,6 +54,7 @@ void Settings::Initialize()
 		{"ChordsMode", "off"},
 		{"ShowCurrentNoteOnScreen", "off"},
 		{"OnScreenFont", "Arial"},
+		{"ProfileToLoad", ""},
 	};
 
 	customSettings = {
@@ -198,6 +199,7 @@ void Settings::ReadModSettings() {
 	modSettings["ChordsMode"] = reader.GetValue("Toggle Switches", "ChordsMode", "off");
 	modSettings["ShowCurrentNoteOnScreen"] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
 	modSettings["OnScreenFont"] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");
+	modSettings["ProfileToLoad"] = reader.GetValue("Toggle Switches", "ProfileToLoad", "");
 }
 
 void Settings::ReadStringColors() {
