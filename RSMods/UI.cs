@@ -23,11 +23,6 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
-        #if DEBUG
-        bool debug = true;
-        #else
-        bool debug = false;
-        #endif
 
         public MainForm()
         {
@@ -105,7 +100,7 @@ namespace RSMods
             DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
         }
 
-#region Startup Functions
+    #region Startup Functions
 
         private void InitWinForms()
         {
@@ -242,7 +237,7 @@ namespace RSMods
         }
 
 #endregion
-#region Show Prior Settings In GUI
+    #region Show Prior Settings In GUI
         private void LoadModSettings()
         {
             if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
@@ -591,7 +586,7 @@ namespace RSMods
         }
 
 #endregion
-#region Custom Themes
+    #region Custom Themes
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
         private List<Control> ControlList = new List<Control>(); // Don't make this readonly
@@ -705,7 +700,7 @@ namespace RSMods
         private void Apply_ThemeColors(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
 
 #endregion
-#region Check For Keypresses (Keybindings)
+    #region Check For Keypresses (Keybindings)
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
@@ -774,7 +769,7 @@ namespace RSMods
 
         private void LoadPreviousVolumeAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment_AUDIO.Text = Dictionaries.refreshAudioKeybindingList()[listBox_Modlist_AUDIO.SelectedIndex];
 #endregion
-#region Reset To Default
+    #region Reset To Default
         private void ResetToDefaultSettings(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
@@ -795,7 +790,7 @@ namespace RSMods
             newForm.Show();
         }
 #endregion
-#region Save Settings
+    #region Save Settings
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
@@ -916,7 +911,7 @@ namespace RSMods
         }
 
 #endregion
-#region String Colors
+    #region String Colors
 
         private void StringColors_ChangeStringColor(object sender, EventArgs e)
         {
@@ -982,7 +977,7 @@ namespace RSMods
         private void StringColors_ColorBlindStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors(true);
 
 #endregion
-#region Prep Set And Forget Mods
+    #region Prep Set And Forget Mods
         // SetAndForget Mods
 
         private void SetForget_FillUI()
@@ -1014,7 +1009,7 @@ namespace RSMods
             SetForget_FillUI();
         }
 #endregion
-#region Set And Forget UI Functions
+    #region Set And Forget UI Functions
 
         private void SetForget_RestoreDefaults(object sender, EventArgs e)
         {
@@ -1178,7 +1173,7 @@ namespace RSMods
         }
 
 #endregion
-#region Save Setting Middleware
+    #region Save Setting Middleware
 
         private void Save_ToggleLoft(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
         {
@@ -1462,7 +1457,7 @@ namespace RSMods
 
 
 #endregion
-#region Tooltips
+    #region Tooltips
 
         bool CreatedToolTipYet = false;
 
@@ -1503,7 +1498,7 @@ namespace RSMods
         }
 
 #endregion
-#region Guitar Speak Functions
+    #region Guitar Speak Functions
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
             if (listBox_GuitarSpeakNote.SelectedIndex >= 0 && listBox_GuitarSpeakOctave.SelectedIndex >= 0 && listBox_GuitarSpeakKeypress.SelectedIndex >= 0)
@@ -1682,7 +1677,7 @@ namespace RSMods
 
 
 #endregion
-#region Prep Twitch Tab
+    #region Prep Twitch Tab
         private void EnableTwitchTab()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -1750,7 +1745,7 @@ namespace RSMods
             TwitchSettings.Get.LoadEnabledEffects();
         }
 #endregion
-#region Twitch UI Functions
+    #region Twitch UI Functions
         private void Twitch_ReAuthorize_Click(object sender, EventArgs e)
         {
             ImplicitAuth auth = new ImplicitAuth();
@@ -2085,7 +2080,7 @@ namespace RSMods
            SaveEnabledRewardsToFile();
        }*/
 #endregion
-#region Fonts
+    #region Fonts
         private void LoadFonts() // Not modified from here: https://stackoverflow.com/a/8657854 :eyes:
         {
             InstalledFontCollection fontList = new InstalledFontCollection();
@@ -2110,7 +2105,7 @@ namespace RSMods
             SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
         }
 #endregion
-#region RS_ASIO
+    #region RS_ASIO
 
         // Config
         private void ASIO_WASAPI_Output(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_WASAPI_Output.Checked).ToString());
@@ -2230,7 +2225,7 @@ namespace RSMods
         private void ASIO_InputMic_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_InputMic, ASIO_ListAvailableInputMic, ASIO.ReadSettings.Sections.InputMic);
 
 #endregion
-#region Rocksmith Settings
+    #region Rocksmith Settings
         // Audio Settings
         private void Rocksmith_EnableMicrophone(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnableMicrophoneIdentifier, checkBox_Rocksmith_EnableMicrophone.Checked.ToString().ToLower());
         private void Rocksmith_ExclusiveMode(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ExclusiveModeIdentifier, checkBox_Rocksmith_ExclusiveMode.Checked.ToString().ToLower());
@@ -2295,7 +2290,7 @@ namespace RSMods
         private void Rocksmith_UseProxy(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.UseProxyIdentifier, checkBox_Rocksmith_UseProxy.Checked.ToString().ToLower());
 
 #endregion
-#region Midi
+    #region Midi
 
         private void LoadMidiDeviceNames(object sender, EventArgs e)
         {
