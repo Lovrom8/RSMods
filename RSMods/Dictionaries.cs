@@ -19,7 +19,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_RemoveHeadstock, "Stops the Headstock of the guitar being drawn.\n“Headless” guitar mode. Just cleans up some more of the UI.");
             TooltipDictionary.Add(checkBox_RemoveSkyline, "Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press.");
             TooltipDictionary.Add(checkBox_GreenScreen, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience.\nInvalidated by \"No Loft\".");
-            TooltipDictionary.Add(checkBox_AutoLoadProfile, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.");
+            TooltipDictionary.Add(checkBox_AutoLoadProfile, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.\nAlso allows you to specify what profile you want to always load");
             TooltipDictionary.Add(checkBox_Fretless, "Removes the Fret Wire from the neck, making your instrument appear to be fretless.");
             TooltipDictionary.Add(checkBox_RemoveInlays, "Disables the guitar neck inlay display entirely.\nNote: This only works with the standard dot inlays.");
             TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the game is using the in-game mixer without needing to open it.\nAlso includes a hidden \"Master Volume\" control.");
@@ -48,12 +48,17 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_WhammyChordsMode, "If you are using the Whammy or Whammy Bass.\nAre you using the pedal in Chords Mode or Classic Mode.\nClassic Mode = UnChecked, Chords Mode = Checked.");
             TooltipDictionary.Add(checkBox_ExtendedRangeDrop, "By default we require a song to be in standard to trigger Extended Range.\nTurn this on if you want drop tunings to also trigger Extended Range.\n(Ex: If you drop at B, but are playing Drop B, this checkbox will trigger Extended Range Mode)");
             TooltipDictionary.Add(groupBox_OnScreenFont, "If RSMods needs to show text in game, what font should we use?");
-
+            TooltipDictionary.Add(groupBox_AutoLoadProfiles, "If you play with another person, but want to always load into your account this is the place for you.\nThis gets the same benefits of \"Autoload Last Used Profile\" but allows you to pick which profile will always load first");
+            TooltipDictionary.Add(listBox_AutoLoadProfiles, "A list of all the profiles you have saved inside of Rocksmith 2014");
+            TooltipDictionary.Add(checkBox_BackupProfile, "Everytime you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save everytime you open this GUI.");
+            TooltipDictionary.Add(groupBox_Backups, "If you open the RSMods GUI a lot, and are low on disk space, this is the spot for you.\nThis section allows you to set how many backups we store before we start deleting older backups.\nSet this to 0 to allow us to store as many backups as possible.");
+            TooltipDictionary.Add(checkBox_UnlimitedBackups, "If you have an insane amount of disk space, and want to save all your backups, check this box.\nWith this checked, we save every backup when you open RSMods and will never delete them.");
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
             TooltipDictionary.Add(groupBox_Keybindings_MODS, "Set keybindings for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting the key for it to be saved.");
             TooltipDictionary.Add(groupBox_Keybindings_AUDIO, "Set keybindings for changing the volume in game.\nPress the keybinding to increase the volume.\nPress control and the keybinding to decrease the volume.\nYou need to press ENTER after setting the key for it to be saved.");
             TooltipDictionary.Add(button_ResetModsToDefault, "Resets all RSMods values to defaults");
+            TooltipDictionary.Add(button_AutoLoadProfile_ClearSelection, "Clears out profile field of \"Autoload Last Used Profile\" to always open the profile you ended on last play session");
 
             // Set & Forget Mods (Cache.psarc Modifications)
             // Tones

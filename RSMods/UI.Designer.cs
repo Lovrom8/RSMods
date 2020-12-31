@@ -155,7 +155,7 @@
             this.radio_LyricsOffHotkey = new System.Windows.Forms.RadioButton();
             this.radio_LyricsAlwaysOff = new System.Windows.Forms.RadioButton();
             this.groupBox_GuitarSpeak = new System.Windows.Forms.GroupBox();
-            this.button_GuitarSpeak_ClearSavedValue = new System.Windows.Forms.Button();
+            this.button_GuitarSpeak_DeleteSavedValue = new System.Windows.Forms.Button();
             this.button_GuitarSpeakHelp = new System.Windows.Forms.Button();
             this.label_GuitarSpeakSaved = new System.Windows.Forms.Label();
             this.listBox_GuitarSpeakSaved = new System.Windows.Forms.ListBox();
@@ -865,6 +865,7 @@
             this.checkBox_BackupProfile.Text = "Backup Profile";
             this.checkBox_BackupProfile.UseVisualStyleBackColor = true;
             this.checkBox_BackupProfile.CheckedChanged += new System.EventHandler(this.Save_BackupProfile);
+            this.checkBox_BackupProfile.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_ShowCurrentNote
             // 
@@ -2016,7 +2017,7 @@
             // 
             // groupBox_GuitarSpeak
             // 
-            this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeak_ClearSavedValue);
+            this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeak_DeleteSavedValue);
             this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeakHelp);
             this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakSaved);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakSaved);
@@ -2036,15 +2037,15 @@
             this.groupBox_GuitarSpeak.Text = "Guitar Speak";
             this.groupBox_GuitarSpeak.Visible = false;
             // 
-            // button_GuitarSpeak_ClearSavedValue
+            // button_GuitarSpeak_DeleteSavedValue
             // 
-            this.button_GuitarSpeak_ClearSavedValue.Location = new System.Drawing.Point(317, 151);
-            this.button_GuitarSpeak_ClearSavedValue.Name = "button_GuitarSpeak_ClearSavedValue";
-            this.button_GuitarSpeak_ClearSavedValue.Size = new System.Drawing.Size(109, 23);
-            this.button_GuitarSpeak_ClearSavedValue.TabIndex = 13;
-            this.button_GuitarSpeak_ClearSavedValue.Text = "Clear Saved Value";
-            this.button_GuitarSpeak_ClearSavedValue.UseVisualStyleBackColor = true;
-            this.button_GuitarSpeak_ClearSavedValue.Click += new System.EventHandler(this.GuitarSpeak_ClearSavedValue);
+            this.button_GuitarSpeak_DeleteSavedValue.Location = new System.Drawing.Point(311, 147);
+            this.button_GuitarSpeak_DeleteSavedValue.Name = "button_GuitarSpeak_DeleteSavedValue";
+            this.button_GuitarSpeak_DeleteSavedValue.Size = new System.Drawing.Size(115, 23);
+            this.button_GuitarSpeak_DeleteSavedValue.TabIndex = 13;
+            this.button_GuitarSpeak_DeleteSavedValue.Text = "Delete Saved Value";
+            this.button_GuitarSpeak_DeleteSavedValue.UseVisualStyleBackColor = true;
+            this.button_GuitarSpeak_DeleteSavedValue.Click += new System.EventHandler(this.GuitarSpeak_ClearSavedValue);
             // 
             // button_GuitarSpeakHelp
             // 
@@ -2469,6 +2470,7 @@
             this.groupBox_Backups.TabStop = false;
             this.groupBox_Backups.Text = "How Many Backups";
             this.groupBox_Backups.Visible = false;
+            this.groupBox_Backups.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // checkBox_UnlimitedBackups
             // 
@@ -2480,6 +2482,7 @@
             this.checkBox_UnlimitedBackups.Text = "Unlimited Backups";
             this.checkBox_UnlimitedBackups.UseVisualStyleBackColor = true;
             this.checkBox_UnlimitedBackups.CheckedChanged += new System.EventHandler(this.UnlimitedBackups);
+            this.checkBox_UnlimitedBackups.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // nUpDown_NumberOfBackups
             // 
@@ -2510,6 +2513,7 @@
             this.groupBox_AutoLoadProfiles.TabStop = false;
             this.groupBox_AutoLoadProfiles.Text = "Auto Load Profile";
             this.groupBox_AutoLoadProfiles.Visible = false;
+            this.groupBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_AutoLoadProfile_ClearSelection
             // 
@@ -2520,6 +2524,7 @@
             this.button_AutoLoadProfile_ClearSelection.Text = "Clear Selection";
             this.button_AutoLoadProfile_ClearSelection.UseVisualStyleBackColor = true;
             this.button_AutoLoadProfile_ClearSelection.Click += new System.EventHandler(this.AutoLoadProfile_ClearSelection);
+            this.button_AutoLoadProfile_ClearSelection.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // listBox_AutoLoadProfiles
             // 
@@ -2529,6 +2534,7 @@
             this.listBox_AutoLoadProfiles.Size = new System.Drawing.Size(166, 108);
             this.listBox_AutoLoadProfiles.TabIndex = 0;
             this.listBox_AutoLoadProfiles.SelectedIndexChanged += new System.EventHandler(this.Save_AutoLoadProfile);
+            this.listBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // groupBox_ControlVolumeIncrement
             // 
@@ -4839,7 +4845,7 @@
         private System.Windows.Forms.RadioButton radio_GoneWailinTone;
         private System.Windows.Forms.GroupBox groupBox_AutoLoadProfiles;
         private System.Windows.Forms.ListBox listBox_AutoLoadProfiles;
-        private System.Windows.Forms.Button button_GuitarSpeak_ClearSavedValue;
+        private System.Windows.Forms.Button button_GuitarSpeak_DeleteSavedValue;
         private System.Windows.Forms.Button button_AutoLoadProfile_ClearSelection;
         private System.Windows.Forms.CheckBox checkBox_BackupProfile;
         private System.Windows.Forms.GroupBox groupBox_Backups;

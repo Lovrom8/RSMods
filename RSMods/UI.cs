@@ -1442,7 +1442,7 @@ namespace RSMods
             {
                 nUpDown_NumberOfBackups.Value = 50;
                 nUpDown_NumberOfBackups.Enabled = true;
-            }   
+            }
         }
 
         private void Save_NumberOfBackups(object sender, EventArgs e)
