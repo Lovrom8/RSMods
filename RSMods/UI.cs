@@ -63,9 +63,6 @@ namespace RSMods
             // Load Guitar Speak Preset Values
             RefreshGuitarSpeakPresets();
 
-            // Load Checkbox Values From RSMods.ini
-            LoadModSettings();
-
             // Load Default String Colors
             StringColors_LoadDefaultStringColors();
 
@@ -81,6 +78,9 @@ namespace RSMods
             // Load Rocksmith Settings
             LoadRocksmithSettings();
 
+            // Load All Available Rocksmith Profiles
+            LoadRocksmithProfiles();
+
             // Prevent some double saving
             PreventDoubleSave();
 
@@ -93,8 +93,8 @@ namespace RSMods
             // Backup Profile JIC
             BackupProfile.SaveProfile();
 
-            // Test
-            Profiles.AvailableProfiles();
+            // Load Checkbox Values From RSMods.ini
+            LoadModSettings();
         }
 
         #region Startup Functions
@@ -191,6 +191,12 @@ namespace RSMods
                 LoadASIODevices();
         }
 
+        private void LoadRocksmithProfiles()
+        {
+            foreach (KeyValuePair<string, string> profileData in Profiles.AvailableProfiles())
+                listBox_AutoLoadProfiles.Items.Add(profileData.Key);
+        }
+
         #endregion
         #region Show Prior Settings In GUI
         private void LoadModSettings()
@@ -215,7 +221,7 @@ namespace RSMods
             {
                 checkBox_ControlVolume.Checked = true;
                 groupBox_Keybindings_AUDIO.Visible = true;
-                groupBox_ControlVolume.Visible = true;
+                groupBox_ControlVolumeIncrement.Visible = true;
 
                 string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier);
                 int intVal = 0;
@@ -288,8 +294,11 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on") // Greenscreen Wall Enabled / Disabled
                 checkBox_GreenScreen.Checked = true;
 
-            if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
+            if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") { // Force Load Profile On Game Boot Enabled / Disabled
                 checkBox_AutoLoadProfile.Checked = true;
+                if (ReadSettings.ProcessSettings(ReadSettings.ProfileToLoadIdentifier) != "")
+                    listBox_AutoLoadProfiles.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.ProfileToLoadIdentifier);
+            }
 
             if (ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on") // Fretless Mode Enabled / Disabled
                 checkBox_Fretless.Checked = true;
@@ -1204,7 +1213,11 @@ namespace RSMods
 
         private void Save_GreenScreenWall(object sender, EventArgs e) => SaveChanges(ReadSettings.GreenScreenWallIdentifier, checkBox_GreenScreen.Checked.ToString().ToLower());
 
-        private void Save_AutoLoadProfile(object sender, EventArgs e) => SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, checkBox_AutoLoadProfile.Checked.ToString().ToLower());
+        private void Save_AutoLoadLastProfile(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.ForceProfileEnabledIdentifier, checkBox_AutoLoadProfile.Checked.ToString().ToLower());
+            groupBox_AutoLoadProfiles.Visible = checkBox_AutoLoadProfile.Checked;
+        }
 
         private void Save_Fretless(object sender, EventArgs e) => SaveChanges(ReadSettings.FretlessModeEnabledIdentifier, checkBox_Fretless.Checked.ToString().ToLower());
 
@@ -1304,7 +1317,7 @@ namespace RSMods
         private void Save_VolumeControls(object sender, EventArgs e)
         {
             groupBox_Keybindings_AUDIO.Visible = checkBox_ControlVolume.Checked;
-            groupBox_ControlVolume.Visible = checkBox_ControlVolume.Checked;
+            groupBox_ControlVolumeIncrement.Visible = checkBox_ControlVolume.Checked;
             SaveChanges(ReadSettings.VolumeControlEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
         }
 
@@ -1359,6 +1372,17 @@ namespace RSMods
         }
 
         private void Save_VolumeInterval(object sender, EventArgs e) => SaveChanges(ReadSettings.VolumeControlIntervalIdentifier, Convert.ToInt32(nUpDown_VolumeInterval.Value).ToString());
+
+        private void Save_AutoLoadProfile(object sender, EventArgs e)
+        {
+            if (listBox_AutoLoadProfiles.SelectedIndex == -1)
+                SaveChanges(ReadSettings.ProfileToLoadIdentifier, "");
+            else
+                SaveChanges(ReadSettings.ProfileToLoadIdentifier, listBox_AutoLoadProfiles.SelectedItem.ToString());
+        }
+
+        private void AutoLoadProfile_ClearSelection(object sender, EventArgs e) => listBox_AutoLoadProfiles.ClearSelected();
+
         #endregion
         #region Tooltips
 
@@ -1416,17 +1440,17 @@ namespace RSMods
                     if (listBox_GuitarSpeakKeypress.SelectedItem.ToString() == entry.Key)
                     {
                         SaveChanges(entry.Value, outputNoteOctave.ToString());
-                        listBox_GuitarSpeakPresets.ClearSelected();
+                        listBox_GuitarSpeakSaved.ClearSelected();
 
-                        foreach (string guitarSpeakItem in listBox_GuitarSpeakPresets.Items)
+                        foreach (string guitarSpeakItem in listBox_GuitarSpeakSaved.Items)
                         {
                             if (guitarSpeakItem.Contains(listBox_GuitarSpeakKeypress.SelectedItem.ToString()))
                             {
-                                listBox_GuitarSpeakPresets.Items.Remove(guitarSpeakItem);
+                                listBox_GuitarSpeakSaved.Items.Remove(guitarSpeakItem);
                                 break;
                             }
                         }
-                        listBox_GuitarSpeakPresets.Items.Add(listBox_GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeak.GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
+                        listBox_GuitarSpeakSaved.Items.Add(listBox_GuitarSpeakKeypress.SelectedItem.ToString() + ": " + GuitarSpeak.GuitarSpeakNoteOctaveMath(outputNoteOctave.ToString()));
                         RefreshGuitarSpeakPresets();
                     }
                 }
@@ -1502,11 +1526,82 @@ namespace RSMods
 
         private void RefreshGuitarSpeakPresets()
         {
-            listBox_GuitarSpeakPresets.Items.Clear();
+            listBox_GuitarSpeakSaved.Items.Clear();
 
             foreach (KeyValuePair<string, string> guitarSpeakKeypress in Dictionaries.RefreshGuitarSpeakPresets())
-                listBox_GuitarSpeakPresets.Items.Add(guitarSpeakKeypress.Key + guitarSpeakKeypress.Value);
+                listBox_GuitarSpeakSaved.Items.Add(guitarSpeakKeypress.Key + guitarSpeakKeypress.Value);
         }
+
+        private void GuitarSpeak_ClearSavedValue(object sender, EventArgs e)
+        {
+            int valueToRemove = listBox_GuitarSpeakSaved.SelectedIndex;
+
+            if (valueToRemove == -1)
+                return;
+
+            listBox_GuitarSpeakSaved.SelectedIndex = -1;
+            
+            switch (valueToRemove) // Delete, Space, Enter, Tab, PgUp, PgDn, Up, Down, Escape, Open Bracket, Close Bracket, Tilde/Tilda, Forward Slash, Close Guitar Speak
+            {
+                case 0:
+                    SaveChanges(ReadSettings.GuitarSpeakDeleteIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 1:
+                    SaveChanges(ReadSettings.GuitarSpeakSpaceIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 2:
+                    SaveChanges(ReadSettings.GuitarSpeakEnterIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 3:
+                    SaveChanges(ReadSettings.GuitarSpeakTabIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 4:
+                    SaveChanges(ReadSettings.GuitarSpeakPGUPIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 5:
+                    SaveChanges(ReadSettings.GuitarSpeakPGDNIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 6:
+                    SaveChanges(ReadSettings.GuitarSpeakUPIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 7:
+                    SaveChanges(ReadSettings.GuitarSpeakDNIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 8:
+                    SaveChanges(ReadSettings.GuitarSpeakESCIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 9:
+                    SaveChanges(ReadSettings.GuitarSpeakOBracketIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 10:
+                    SaveChanges(ReadSettings.GuitarSpeakCBracketIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 11:
+                    SaveChanges(ReadSettings.GuitarSpeakTildeaIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 12:
+                    SaveChanges(ReadSettings.GuitarSpeakForSlashIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+                case 13:
+                    SaveChanges(ReadSettings.GuitarSpeakCloseIdentifier, "");
+                    RefreshGuitarSpeakPresets();
+                    return;
+            }
+        }
+
 
         #endregion
         #region Prep Twitch Tab

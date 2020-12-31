@@ -15,7 +15,7 @@ namespace RSMods
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont,
+                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -78,6 +78,7 @@ namespace RSMods
                 ChordsModeIdentifier = "ChordsMode = ",
                 ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
                 OnScreenFontIdentifier = "OnScreenFont = ",
+                ProfileToLoadIdentifier = "ProfileToLoad = ",
 
                     // String Colors (Normal {N} & Colorblind {CB})
                     // Normal String Colors
@@ -283,6 +284,9 @@ namespace RSMods
                     return FillSettingVariable(ShowCurrentNoteOnScreenIdentifier, SettingType.ON_OFF, currentLine, out ShowCurrentNoteOnScreen);
                 if (IdentifierIsFound(currentLine, OnScreenFontIdentifier, identifierToGrab))
                     return FillSettingVariable(OnScreenFontIdentifier, SettingType.STRING, currentLine, out OnScreenFont);
+                if (IdentifierIsFound(currentLine, ProfileToLoadIdentifier, identifierToGrab))
+                    return FillSettingVariable(ProfileToLoadIdentifier, SettingType.STRING, currentLine, out ProfileToLoad);
+
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})

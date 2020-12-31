@@ -94,9 +94,22 @@
             this.radio_colorBlindERColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
+            this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
+            this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
+            this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
+            this.radio_HarmonicHeistTone = new System.Windows.Forms.RadioButton();
+            this.radio_HurtlinHurdlesTone = new System.Windows.Forms.RadioButton();
+            this.radio_NinjaSlideNTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleRacerTone = new System.Windows.Forms.RadioButton();
+            this.radio_StringsSkipSaloonTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleWarriorsTone = new System.Windows.Forms.RadioButton();
+            this.radio_TempleOfBendsTone = new System.Windows.Forms.RadioButton();
+            this.button_AssignNewGuitarArcadeTone = new System.Windows.Forms.Button();
+            this.label_SetAndForgetGuitarArcade = new System.Windows.Forms.Label();
             this.button_AddDCInput = new System.Windows.Forms.Button();
             this.label_ChangeTonesHeader = new System.Windows.Forms.Label();
             this.label_HorizontalRuleSetAndForget = new System.Windows.Forms.Label();
+            this.label_HorizontalRulerGuitarArcade = new System.Windows.Forms.Label();
             this.button_ImportExistingSettings = new System.Windows.Forms.Button();
             this.label_CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
             this.label_CustomTuningBStringLetter = new System.Windows.Forms.Label();
@@ -141,9 +154,10 @@
             this.radio_LyricsOffHotkey = new System.Windows.Forms.RadioButton();
             this.radio_LyricsAlwaysOff = new System.Windows.Forms.RadioButton();
             this.groupBox_GuitarSpeak = new System.Windows.Forms.GroupBox();
+            this.button_GuitarSpeak_ClearSavedValue = new System.Windows.Forms.Button();
             this.button_GuitarSpeakHelp = new System.Windows.Forms.Button();
-            this.label_GuitarSpeakPresets = new System.Windows.Forms.Label();
-            this.listBox_GuitarSpeakPresets = new System.Windows.Forms.ListBox();
+            this.label_GuitarSpeakSaved = new System.Windows.Forms.Label();
+            this.listBox_GuitarSpeakSaved = new System.Windows.Forms.ListBox();
             this.checkbox_GuitarSpeakWhileTuning = new System.Windows.Forms.CheckBox();
             this.button_GuitarSpeakSave = new System.Windows.Forms.Button();
             this.label_GuitarSpeakKeypress = new System.Windows.Forms.Label();
@@ -175,8 +189,9 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
-            this.groupBox_ControlVolume = new System.Windows.Forms.GroupBox();
-            this.label_ControlVolumeInterval = new System.Windows.Forms.Label();
+            this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
+            this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
+            this.groupBox_ControlVolumeIncrement = new System.Windows.Forms.GroupBox();
             this.nUpDown_VolumeInterval = new System.Windows.Forms.NumericUpDown();
             this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
             this.label_FontTestNumbers = new System.Windows.Forms.Label();
@@ -331,19 +346,7 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.label_SetAndForgetGuitarArcade = new System.Windows.Forms.Label();
-            this.label_HorizontalRulerGuitarArcade = new System.Windows.Forms.Label();
-            this.button_AssignNewGuitarArcadeTone = new System.Windows.Forms.Button();
-            this.radio_TempleOfBendsTone = new System.Windows.Forms.RadioButton();
-            this.radio_ScaleWarriorsTone = new System.Windows.Forms.RadioButton();
-            this.radio_StringsSkipSaloonTone = new System.Windows.Forms.RadioButton();
-            this.radio_ScaleRacerTone = new System.Windows.Forms.RadioButton();
-            this.radio_NinjaSlideNTone = new System.Windows.Forms.RadioButton();
-            this.radio_HurtlinHurdlesTone = new System.Windows.Forms.RadioButton();
-            this.radio_HarmonicHeistTone = new System.Windows.Forms.RadioButton();
-            this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
-            this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
-            this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
+            this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -371,7 +374,8 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
-            this.groupBox_ControlVolume.SuspendLayout();
+            this.groupBox_AutoLoadProfiles.SuspendLayout();
+            this.groupBox_ControlVolumeIncrement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).BeginInit();
             this.groupBox_OnScreenFont.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
@@ -628,7 +632,7 @@
             this.checkBox_AutoLoadProfile.TabIndex = 38;
             this.checkBox_AutoLoadProfile.Text = "Autoload Last Used Profile";
             this.checkBox_AutoLoadProfile.UseVisualStyleBackColor = true;
-            this.checkBox_AutoLoadProfile.CheckedChanged += new System.EventHandler(this.Save_AutoLoadProfile);
+            this.checkBox_AutoLoadProfile.CheckedChanged += new System.EventHandler(this.Save_AutoLoadLastProfile);
             this.checkBox_AutoLoadProfile.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.checkBox_AutoLoadProfile.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
@@ -661,7 +665,7 @@
             // radio_LoftAlwaysOff
             // 
             this.radio_LoftAlwaysOff.AutoSize = true;
-            this.radio_LoftAlwaysOff.Location = new System.Drawing.Point(16, 14);
+            this.radio_LoftAlwaysOff.Location = new System.Drawing.Point(16, 17);
             this.radio_LoftAlwaysOff.Name = "radio_LoftAlwaysOff";
             this.radio_LoftAlwaysOff.Size = new System.Drawing.Size(96, 17);
             this.radio_LoftAlwaysOff.TabIndex = 44;
@@ -729,7 +733,7 @@
             this.groupBox_HowToEnumerate.Controls.Add(this.nUpDown_ForceEnumerationXMS);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationAutomatic);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationManual);
-            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(669, 275);
+            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(670, 27);
             this.groupBox_HowToEnumerate.Name = "groupBox_HowToEnumerate";
             this.groupBox_HowToEnumerate.Size = new System.Drawing.Size(293, 77);
             this.groupBox_HowToEnumerate.TabIndex = 47;
@@ -779,7 +783,7 @@
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffInSong);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffHotkey);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftAlwaysOff);
-            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(968, 103);
+            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(974, 27);
             this.groupBox_LoftOffWhen.Name = "groupBox_LoftOffWhen";
             this.groupBox_LoftOffWhen.Size = new System.Drawing.Size(145, 86);
             this.groupBox_LoftOffWhen.TabIndex = 48;
@@ -793,7 +797,7 @@
             // 
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_ExtendedRangeDrop);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
-            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(16, 19);
+            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(10, 20);
             this.groupBox_ExtendedRangeWhen.Name = "groupBox_ExtendedRangeWhen";
             this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(214, 205);
             this.groupBox_ExtendedRangeWhen.TabIndex = 49;
@@ -1188,9 +1192,9 @@
             this.groupBox_StringColors.Controls.Add(this.button_String1ColorButton);
             this.groupBox_StringColors.Controls.Add(this.textBox_String0Color);
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
-            this.groupBox_StringColors.Location = new System.Drawing.Point(680, 19);
+            this.groupBox_StringColors.Location = new System.Drawing.Point(337, 232);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
-            this.groupBox_StringColors.Size = new System.Drawing.Size(282, 243);
+            this.groupBox_StringColors.Size = new System.Drawing.Size(282, 270);
             this.groupBox_StringColors.TabIndex = 65;
             this.groupBox_StringColors.TabStop = false;
             this.groupBox_StringColors.Text = "Change String Colors";
@@ -1285,6 +1289,126 @@
             this.groupBox_SetAndForget.TabStop = false;
             this.groupBox_SetAndForget.Text = "Set-and-forget mods";
             // 
+            // radio_GoneWailinTone
+            // 
+            this.radio_GoneWailinTone.AutoSize = true;
+            this.radio_GoneWailinTone.Location = new System.Drawing.Point(702, 424);
+            this.radio_GoneWailinTone.Name = "radio_GoneWailinTone";
+            this.radio_GoneWailinTone.Size = new System.Drawing.Size(256, 17);
+            this.radio_GoneWailinTone.TabIndex = 124;
+            this.radio_GoneWailinTone.Text = "Set Highlighted Tone As New Gone Wailin\' Tone";
+            this.radio_GoneWailinTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_RainbowLaserTone
+            // 
+            this.radio_RainbowLaserTone.AutoSize = true;
+            this.radio_RainbowLaserTone.Location = new System.Drawing.Point(702, 401);
+            this.radio_RainbowLaserTone.Name = "radio_RainbowLaserTone";
+            this.radio_RainbowLaserTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_RainbowLaserTone.TabIndex = 123;
+            this.radio_RainbowLaserTone.Text = "Set Highlighted Tone As New Rainbow Laser Tone";
+            this.radio_RainbowLaserTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_DucksReduxTone
+            // 
+            this.radio_DucksReduxTone.AutoSize = true;
+            this.radio_DucksReduxTone.Location = new System.Drawing.Point(702, 378);
+            this.radio_DucksReduxTone.Name = "radio_DucksReduxTone";
+            this.radio_DucksReduxTone.Size = new System.Drawing.Size(261, 17);
+            this.radio_DucksReduxTone.TabIndex = 122;
+            this.radio_DucksReduxTone.Text = "Set Highlighted Tone As New Ducks Redux Tone";
+            this.radio_DucksReduxTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_HarmonicHeistTone
+            // 
+            this.radio_HarmonicHeistTone.AutoSize = true;
+            this.radio_HarmonicHeistTone.Location = new System.Drawing.Point(702, 355);
+            this.radio_HarmonicHeistTone.Name = "radio_HarmonicHeistTone";
+            this.radio_HarmonicHeistTone.Size = new System.Drawing.Size(268, 17);
+            this.radio_HarmonicHeistTone.TabIndex = 121;
+            this.radio_HarmonicHeistTone.Text = "Set Highlighted Tone As New Harmonic Heist Tone";
+            this.radio_HarmonicHeistTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_HurtlinHurdlesTone
+            // 
+            this.radio_HurtlinHurdlesTone.AutoSize = true;
+            this.radio_HurtlinHurdlesTone.Location = new System.Drawing.Point(702, 332);
+            this.radio_HurtlinHurdlesTone.Name = "radio_HurtlinHurdlesTone";
+            this.radio_HurtlinHurdlesTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_HurtlinHurdlesTone.TabIndex = 120;
+            this.radio_HurtlinHurdlesTone.Text = "Set Highlighted Tone As New Hurtlin\' Hurdles Tone";
+            this.radio_HurtlinHurdlesTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_NinjaSlideNTone
+            // 
+            this.radio_NinjaSlideNTone.AutoSize = true;
+            this.radio_NinjaSlideNTone.Location = new System.Drawing.Point(398, 424);
+            this.radio_NinjaSlideNTone.Name = "radio_NinjaSlideNTone";
+            this.radio_NinjaSlideNTone.Size = new System.Drawing.Size(257, 17);
+            this.radio_NinjaSlideNTone.TabIndex = 119;
+            this.radio_NinjaSlideNTone.Text = "Set Highlighted Tone As New Ninja Slide N Tone";
+            this.radio_NinjaSlideNTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleRacerTone
+            // 
+            this.radio_ScaleRacerTone.AutoSize = true;
+            this.radio_ScaleRacerTone.Location = new System.Drawing.Point(398, 401);
+            this.radio_ScaleRacerTone.Name = "radio_ScaleRacerTone";
+            this.radio_ScaleRacerTone.Size = new System.Drawing.Size(255, 17);
+            this.radio_ScaleRacerTone.TabIndex = 118;
+            this.radio_ScaleRacerTone.Text = "Set Highlighted Tone As New Scale Racer Tone";
+            this.radio_ScaleRacerTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_StringsSkipSaloonTone
+            // 
+            this.radio_StringsSkipSaloonTone.AutoSize = true;
+            this.radio_StringsSkipSaloonTone.Location = new System.Drawing.Point(398, 378);
+            this.radio_StringsSkipSaloonTone.Name = "radio_StringsSkipSaloonTone";
+            this.radio_StringsSkipSaloonTone.Size = new System.Drawing.Size(283, 17);
+            this.radio_StringsSkipSaloonTone.TabIndex = 117;
+            this.radio_StringsSkipSaloonTone.Text = "Set Highlighted Tone As New String Skip Saloon Tone";
+            this.radio_StringsSkipSaloonTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleWarriorsTone
+            // 
+            this.radio_ScaleWarriorsTone.AutoSize = true;
+            this.radio_ScaleWarriorsTone.Location = new System.Drawing.Point(398, 355);
+            this.radio_ScaleWarriorsTone.Name = "radio_ScaleWarriorsTone";
+            this.radio_ScaleWarriorsTone.Size = new System.Drawing.Size(265, 17);
+            this.radio_ScaleWarriorsTone.TabIndex = 116;
+            this.radio_ScaleWarriorsTone.Text = "Set Highlighted Tone As New Scale Warriors Tone";
+            this.radio_ScaleWarriorsTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_TempleOfBendsTone
+            // 
+            this.radio_TempleOfBendsTone.AutoSize = true;
+            this.radio_TempleOfBendsTone.Checked = true;
+            this.radio_TempleOfBendsTone.Location = new System.Drawing.Point(398, 332);
+            this.radio_TempleOfBendsTone.Name = "radio_TempleOfBendsTone";
+            this.radio_TempleOfBendsTone.Size = new System.Drawing.Size(276, 17);
+            this.radio_TempleOfBendsTone.TabIndex = 115;
+            this.radio_TempleOfBendsTone.TabStop = true;
+            this.radio_TempleOfBendsTone.Text = "Set Highlighted Tone As New Temple of Bends Tone";
+            this.radio_TempleOfBendsTone.UseVisualStyleBackColor = true;
+            // 
+            // button_AssignNewGuitarArcadeTone
+            // 
+            this.button_AssignNewGuitarArcadeTone.Location = new System.Drawing.Point(398, 458);
+            this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
+            this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
+            this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
+            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
+            this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
+            this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetAndForget_AssignNewGuitarArcadeTone);
+            // 
+            // label_SetAndForgetGuitarArcade
+            // 
+            this.label_SetAndForgetGuitarArcade.Location = new System.Drawing.Point(3, 316);
+            this.label_SetAndForgetGuitarArcade.Name = "label_SetAndForgetGuitarArcade";
+            this.label_SetAndForgetGuitarArcade.Size = new System.Drawing.Size(1132, 18);
+            this.label_SetAndForgetGuitarArcade.TabIndex = 112;
+            this.label_SetAndForgetGuitarArcade.Text = "Change GuitarArcade tones";
+            // 
             // button_AddDCInput
             // 
             this.button_AddDCInput.Location = new System.Drawing.Point(723, 135);
@@ -1315,6 +1439,16 @@
             this.label_HorizontalRuleSetAndForget.Size = new System.Drawing.Size(1119, 15);
             this.label_HorizontalRuleSetAndForget.TabIndex = 110;
             this.label_HorizontalRuleSetAndForget.Text = resources.GetString("label_HorizontalRuleSetAndForget.Text");
+            // 
+            // label_HorizontalRulerGuitarArcade
+            // 
+            this.label_HorizontalRulerGuitarArcade.AutoSize = true;
+            this.label_HorizontalRulerGuitarArcade.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label_HorizontalRulerGuitarArcade.Location = new System.Drawing.Point(6, 314);
+            this.label_HorizontalRulerGuitarArcade.Name = "label_HorizontalRulerGuitarArcade";
+            this.label_HorizontalRulerGuitarArcade.Size = new System.Drawing.Size(1119, 15);
+            this.label_HorizontalRulerGuitarArcade.TabIndex = 113;
+            this.label_HorizontalRulerGuitarArcade.Text = resources.GetString("label_HorizontalRulerGuitarArcade.Text");
             // 
             // button_ImportExistingSettings
             // 
@@ -1406,6 +1540,7 @@
             this.radio_DefaultLeadTone.Name = "radio_DefaultLeadTone";
             this.radio_DefaultLeadTone.Size = new System.Drawing.Size(257, 17);
             this.radio_DefaultLeadTone.TabIndex = 101;
+            this.radio_DefaultLeadTone.TabStop = true;
             this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
             this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.HideToolTips);
@@ -1787,7 +1922,7 @@
             // 
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineOffInSong);
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineAlwaysOff);
-            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(968, 19);
+            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(974, 221);
             this.groupBox_ToggleSkylineWhen.Name = "groupBox_ToggleSkylineWhen";
             this.groupBox_ToggleSkylineWhen.Size = new System.Drawing.Size(145, 68);
             this.groupBox_ToggleSkylineWhen.TabIndex = 69;
@@ -1825,9 +1960,9 @@
             // 
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsOffHotkey);
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsAlwaysOff);
-            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(970, 284);
+            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(974, 304);
             this.groupBox_ToggleLyricsOffWhen.Name = "groupBox_ToggleLyricsOffWhen";
-            this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(145, 68);
+            this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(162, 68);
             this.groupBox_ToggleLyricsOffWhen.TabIndex = 70;
             this.groupBox_ToggleLyricsOffWhen.TabStop = false;
             this.groupBox_ToggleLyricsOffWhen.Text = "Toggle Lyrics Off When:";
@@ -1863,9 +1998,10 @@
             // 
             // groupBox_GuitarSpeak
             // 
+            this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeak_ClearSavedValue);
             this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeakHelp);
-            this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakPresets);
-            this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakPresets);
+            this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakSaved);
+            this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakSaved);
             this.groupBox_GuitarSpeak.Controls.Add(this.checkbox_GuitarSpeakWhileTuning);
             this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeakSave);
             this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakKeypress);
@@ -1874,13 +2010,23 @@
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakKeypress);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakOctave);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakNote);
-            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(341, 19);
+            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(232, 20);
             this.groupBox_GuitarSpeak.Name = "groupBox_GuitarSpeak";
-            this.groupBox_GuitarSpeak.Size = new System.Drawing.Size(291, 354);
+            this.groupBox_GuitarSpeak.Size = new System.Drawing.Size(432, 206);
             this.groupBox_GuitarSpeak.TabIndex = 71;
             this.groupBox_GuitarSpeak.TabStop = false;
             this.groupBox_GuitarSpeak.Text = "Guitar Speak";
             this.groupBox_GuitarSpeak.Visible = false;
+            // 
+            // button_GuitarSpeak_ClearSavedValue
+            // 
+            this.button_GuitarSpeak_ClearSavedValue.Location = new System.Drawing.Point(317, 151);
+            this.button_GuitarSpeak_ClearSavedValue.Name = "button_GuitarSpeak_ClearSavedValue";
+            this.button_GuitarSpeak_ClearSavedValue.Size = new System.Drawing.Size(109, 23);
+            this.button_GuitarSpeak_ClearSavedValue.TabIndex = 13;
+            this.button_GuitarSpeak_ClearSavedValue.Text = "Clear Saved Value";
+            this.button_GuitarSpeak_ClearSavedValue.UseVisualStyleBackColor = true;
+            this.button_GuitarSpeak_ClearSavedValue.Click += new System.EventHandler(this.GuitarSpeak_ClearSavedValue);
             // 
             // button_GuitarSpeakHelp
             // 
@@ -1894,27 +2040,27 @@
             this.button_GuitarSpeakHelp.UseVisualStyleBackColor = true;
             this.button_GuitarSpeakHelp.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
             // 
-            // label_GuitarSpeakPresets
+            // label_GuitarSpeakSaved
             // 
-            this.label_GuitarSpeakPresets.AutoSize = true;
-            this.label_GuitarSpeakPresets.Location = new System.Drawing.Point(6, 222);
-            this.label_GuitarSpeakPresets.Name = "label_GuitarSpeakPresets";
-            this.label_GuitarSpeakPresets.Size = new System.Drawing.Size(42, 13);
-            this.label_GuitarSpeakPresets.TabIndex = 11;
-            this.label_GuitarSpeakPresets.Text = "Presets";
+            this.label_GuitarSpeakSaved.AutoSize = true;
+            this.label_GuitarSpeakSaved.Location = new System.Drawing.Point(314, 26);
+            this.label_GuitarSpeakSaved.Name = "label_GuitarSpeakSaved";
+            this.label_GuitarSpeakSaved.Size = new System.Drawing.Size(73, 13);
+            this.label_GuitarSpeakSaved.TabIndex = 11;
+            this.label_GuitarSpeakSaved.Text = "Saved Values";
             // 
-            // listBox_GuitarSpeakPresets
+            // listBox_GuitarSpeakSaved
             // 
-            this.listBox_GuitarSpeakPresets.FormattingEnabled = true;
-            this.listBox_GuitarSpeakPresets.Location = new System.Drawing.Point(6, 242);
-            this.listBox_GuitarSpeakPresets.Name = "listBox_GuitarSpeakPresets";
-            this.listBox_GuitarSpeakPresets.Size = new System.Drawing.Size(280, 108);
-            this.listBox_GuitarSpeakPresets.TabIndex = 10;
+            this.listBox_GuitarSpeakSaved.FormattingEnabled = true;
+            this.listBox_GuitarSpeakSaved.Location = new System.Drawing.Point(282, 48);
+            this.listBox_GuitarSpeakSaved.Name = "listBox_GuitarSpeakSaved";
+            this.listBox_GuitarSpeakSaved.Size = new System.Drawing.Size(144, 82);
+            this.listBox_GuitarSpeakSaved.TabIndex = 10;
             // 
             // checkbox_GuitarSpeakWhileTuning
             // 
             this.checkbox_GuitarSpeakWhileTuning.AutoSize = true;
-            this.checkbox_GuitarSpeakWhileTuning.Location = new System.Drawing.Point(133, 171);
+            this.checkbox_GuitarSpeakWhileTuning.Location = new System.Drawing.Point(111, 151);
             this.checkbox_GuitarSpeakWhileTuning.Name = "checkbox_GuitarSpeakWhileTuning";
             this.checkbox_GuitarSpeakWhileTuning.Size = new System.Drawing.Size(111, 17);
             this.checkbox_GuitarSpeakWhileTuning.TabIndex = 9;
@@ -1926,7 +2072,7 @@
             // 
             // button_GuitarSpeakSave
             // 
-            this.button_GuitarSpeakSave.Location = new System.Drawing.Point(181, 140);
+            this.button_GuitarSpeakSave.Location = new System.Drawing.Point(6, 147);
             this.button_GuitarSpeakSave.Name = "button_GuitarSpeakSave";
             this.button_GuitarSpeakSave.Size = new System.Drawing.Size(95, 23);
             this.button_GuitarSpeakSave.TabIndex = 8;
@@ -2038,9 +2184,9 @@
             // 
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockOffInSong);
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockAlwaysOff);
-            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(968, 204);
+            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(974, 131);
             this.groupBox_ToggleHeadstockOffWhen.Name = "groupBox_ToggleHeadstockOffWhen";
-            this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(168, 68);
+            this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(162, 77);
             this.groupBox_ToggleHeadstockOffWhen.TabIndex = 73;
             this.groupBox_ToggleHeadstockOffWhen.TabStop = false;
             this.groupBox_ToggleHeadstockOffWhen.Text = "Toggle Headstock Off When:";
@@ -2049,7 +2195,7 @@
             // radio_HeadstockOffInSong
             // 
             this.radio_HeadstockOffInSong.AutoSize = true;
-            this.radio_HeadstockOffInSong.Location = new System.Drawing.Point(7, 41);
+            this.radio_HeadstockOffInSong.Location = new System.Drawing.Point(8, 50);
             this.radio_HeadstockOffInSong.Name = "radio_HeadstockOffInSong";
             this.radio_HeadstockOffInSong.Size = new System.Drawing.Size(134, 17);
             this.radio_HeadstockOffInSong.TabIndex = 1;
@@ -2061,7 +2207,7 @@
             // radio_HeadstockAlwaysOff
             // 
             this.radio_HeadstockAlwaysOff.AutoSize = true;
-            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(7, 21);
+            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(6, 27);
             this.radio_HeadstockAlwaysOff.Name = "radio_HeadstockAlwaysOff";
             this.radio_HeadstockAlwaysOff.Size = new System.Drawing.Size(130, 17);
             this.radio_HeadstockAlwaysOff.TabIndex = 0;
@@ -2272,7 +2418,8 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
-            this.tab_ModSettings.Controls.Add(this.groupBox_ControlVolume);
+            this.tab_ModSettings.Controls.Add(this.groupBox_AutoLoadProfiles);
+            this.tab_ModSettings.Controls.Add(this.groupBox_ControlVolumeIncrement);
             this.tab_ModSettings.Controls.Add(this.groupBox_OnScreenFont);
             this.tab_ModSettings.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
@@ -2292,37 +2439,47 @@
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
             // 
-            // groupBox_ControlVolume
+            // groupBox_AutoLoadProfiles
             // 
-            this.groupBox_ControlVolume.Controls.Add(this.label_ControlVolumeInterval);
-            this.groupBox_ControlVolume.Controls.Add(this.nUpDown_VolumeInterval);
-            this.groupBox_ControlVolume.Location = new System.Drawing.Point(706, 428);
-            this.groupBox_ControlVolume.Name = "groupBox_ControlVolume";
-            this.groupBox_ControlVolume.Size = new System.Drawing.Size(200, 79);
-            this.groupBox_ControlVolume.TabIndex = 100004;
-            this.groupBox_ControlVolume.TabStop = false;
-            this.groupBox_ControlVolume.Text = "Control Volume";
-            this.groupBox_ControlVolume.Visible = false;
+            this.groupBox_AutoLoadProfiles.Controls.Add(this.button_AutoLoadProfile_ClearSelection);
+            this.groupBox_AutoLoadProfiles.Controls.Add(this.listBox_AutoLoadProfiles);
+            this.groupBox_AutoLoadProfiles.Location = new System.Drawing.Point(763, 221);
+            this.groupBox_AutoLoadProfiles.Name = "groupBox_AutoLoadProfiles";
+            this.groupBox_AutoLoadProfiles.Size = new System.Drawing.Size(200, 171);
+            this.groupBox_AutoLoadProfiles.TabIndex = 100005;
+            this.groupBox_AutoLoadProfiles.TabStop = false;
+            this.groupBox_AutoLoadProfiles.Text = "Auto Load Profile";
             // 
-            // label_ControlVolumeInterval
+            // listBox_AutoLoadProfiles
             // 
-            this.label_ControlVolumeInterval.AutoSize = true;
-            this.label_ControlVolumeInterval.Location = new System.Drawing.Point(18, 27);
-            this.label_ControlVolumeInterval.Name = "label_ControlVolumeInterval";
-            this.label_ControlVolumeInterval.Size = new System.Drawing.Size(158, 13);
-            this.label_ControlVolumeInterval.TabIndex = 1;
-            this.label_ControlVolumeInterval.Text = "Increase / Decrease Volume By";
+            this.listBox_AutoLoadProfiles.FormattingEnabled = true;
+            this.listBox_AutoLoadProfiles.Location = new System.Drawing.Point(15, 26);
+            this.listBox_AutoLoadProfiles.Name = "listBox_AutoLoadProfiles";
+            this.listBox_AutoLoadProfiles.Size = new System.Drawing.Size(166, 108);
+            this.listBox_AutoLoadProfiles.TabIndex = 0;
+            this.listBox_AutoLoadProfiles.SelectedIndexChanged += new System.EventHandler(this.Save_AutoLoadProfile);
+            // 
+            // groupBox_ControlVolumeIncrement
+            // 
+            this.groupBox_ControlVolumeIncrement.Controls.Add(this.nUpDown_VolumeInterval);
+            this.groupBox_ControlVolumeIncrement.Location = new System.Drawing.Point(182, 452);
+            this.groupBox_ControlVolumeIncrement.Name = "groupBox_ControlVolumeIncrement";
+            this.groupBox_ControlVolumeIncrement.Size = new System.Drawing.Size(143, 50);
+            this.groupBox_ControlVolumeIncrement.TabIndex = 100004;
+            this.groupBox_ControlVolumeIncrement.TabStop = false;
+            this.groupBox_ControlVolumeIncrement.Text = "Control Volume Increment";
+            this.groupBox_ControlVolumeIncrement.Visible = false;
             // 
             // nUpDown_VolumeInterval
             // 
-            this.nUpDown_VolumeInterval.Location = new System.Drawing.Point(37, 49);
+            this.nUpDown_VolumeInterval.Location = new System.Drawing.Point(6, 20);
             this.nUpDown_VolumeInterval.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.nUpDown_VolumeInterval.Name = "nUpDown_VolumeInterval";
-            this.nUpDown_VolumeInterval.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_VolumeInterval.Size = new System.Drawing.Size(131, 20);
             this.nUpDown_VolumeInterval.TabIndex = 0;
             this.nUpDown_VolumeInterval.Value = new decimal(new int[] {
             1,
@@ -2337,9 +2494,9 @@
             this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestlowercase);
             this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestCAPITALS);
             this.groupBox_OnScreenFont.Controls.Add(this.listBox_AvailableFonts);
-            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(341, 393);
+            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(625, 388);
             this.groupBox_OnScreenFont.Name = "groupBox_OnScreenFont";
-            this.groupBox_OnScreenFont.Size = new System.Drawing.Size(353, 114);
+            this.groupBox_OnScreenFont.Size = new System.Drawing.Size(357, 114);
             this.groupBox_OnScreenFont.TabIndex = 100003;
             this.groupBox_OnScreenFont.TabStop = false;
             this.groupBox_OnScreenFont.Text = "On Screen Font";
@@ -2392,9 +2549,9 @@
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
-            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(16, 297);
+            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(10, 232);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
-            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 210);
+            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 209);
             this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
             this.groupBox_MidiAutoTuneDevice.TabStop = false;
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
@@ -2405,7 +2562,7 @@
             // checkBox_WhammyChordsMode
             // 
             this.checkBox_WhammyChordsMode.AutoSize = true;
-            this.checkBox_WhammyChordsMode.Location = new System.Drawing.Point(220, 172);
+            this.checkBox_WhammyChordsMode.Location = new System.Drawing.Point(212, 172);
             this.checkBox_WhammyChordsMode.Name = "checkBox_WhammyChordsMode";
             this.checkBox_WhammyChordsMode.Size = new System.Drawing.Size(89, 17);
             this.checkBox_WhammyChordsMode.TabIndex = 5;
@@ -2430,7 +2587,7 @@
             // radio_WhammyDT
             // 
             this.radio_WhammyDT.AutoSize = true;
-            this.radio_WhammyDT.Location = new System.Drawing.Point(10, 148);
+            this.radio_WhammyDT.Location = new System.Drawing.Point(10, 143);
             this.radio_WhammyDT.Name = "radio_WhammyDT";
             this.radio_WhammyDT.Size = new System.Drawing.Size(129, 17);
             this.radio_WhammyDT.TabIndex = 3;
@@ -2469,9 +2626,9 @@
             // groupBox_RRSpeed
             // 
             this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
-            this.groupBox_RRSpeed.Location = new System.Drawing.Point(16, 234);
+            this.groupBox_RRSpeed.Location = new System.Drawing.Point(10, 452);
             this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
-            this.groupBox_RRSpeed.Size = new System.Drawing.Size(214, 50);
+            this.groupBox_RRSpeed.Size = new System.Drawing.Size(172, 50);
             this.groupBox_RRSpeed.TabIndex = 100001;
             this.groupBox_RRSpeed.TabStop = false;
             this.groupBox_RRSpeed.Text = "Riff Repeater Speed Increment";
@@ -2491,7 +2648,7 @@
             0,
             0});
             this.nUpDown_RiffRepeaterSpeed.Name = "nUpDown_RiffRepeaterSpeed";
-            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(201, 20);
+            this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(153, 20);
             this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
             this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
             1,
@@ -4169,134 +4326,15 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // label_SetAndForgetGuitarArcade
+            // button_AutoLoadProfile_ClearSelection
             // 
-            this.label_SetAndForgetGuitarArcade.Location = new System.Drawing.Point(3, 316);
-            this.label_SetAndForgetGuitarArcade.Name = "label_SetAndForgetGuitarArcade";
-            this.label_SetAndForgetGuitarArcade.Size = new System.Drawing.Size(1132, 18);
-            this.label_SetAndForgetGuitarArcade.TabIndex = 112;
-            this.label_SetAndForgetGuitarArcade.Text = "Change GuitarArcade tones";
-            // 
-            // label_HorizontalRulerGuitarArcade
-            // 
-            this.label_HorizontalRulerGuitarArcade.AutoSize = true;
-            this.label_HorizontalRulerGuitarArcade.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_HorizontalRulerGuitarArcade.Location = new System.Drawing.Point(6, 314);
-            this.label_HorizontalRulerGuitarArcade.Name = "label_HorizontalRulerGuitarArcade";
-            this.label_HorizontalRulerGuitarArcade.Size = new System.Drawing.Size(1119, 15);
-            this.label_HorizontalRulerGuitarArcade.TabIndex = 113;
-            this.label_HorizontalRulerGuitarArcade.Text = resources.GetString("label_HorizontalRulerGuitarArcade.Text");
-            // 
-            // button_AssignNewGuitarArcadeTone
-            // 
-            this.button_AssignNewGuitarArcadeTone.Location = new System.Drawing.Point(398, 458);
-            this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
-            this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
-            this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
-            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
-            this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
-            this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetAndForget_AssignNewGuitarArcadeTone);
-            // 
-            // radio_TempleOfBendsTone
-            // 
-            this.radio_TempleOfBendsTone.AutoSize = true;
-            this.radio_TempleOfBendsTone.Checked = true;
-            this.radio_TempleOfBendsTone.Location = new System.Drawing.Point(398, 332);
-            this.radio_TempleOfBendsTone.Name = "radio_TempleOfBendsTone";
-            this.radio_TempleOfBendsTone.Size = new System.Drawing.Size(276, 17);
-            this.radio_TempleOfBendsTone.TabIndex = 115;
-            this.radio_TempleOfBendsTone.Text = "Set Highlighted Tone As New Temple of Bends Tone";
-            this.radio_TempleOfBendsTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_ScaleWarriorsTone
-            // 
-            this.radio_ScaleWarriorsTone.AutoSize = true;
-            this.radio_ScaleWarriorsTone.Location = new System.Drawing.Point(398, 355);
-            this.radio_ScaleWarriorsTone.Name = "radio_ScaleWarriorsTone";
-            this.radio_ScaleWarriorsTone.Size = new System.Drawing.Size(265, 17);
-            this.radio_ScaleWarriorsTone.TabIndex = 116;
-            this.radio_ScaleWarriorsTone.Text = "Set Highlighted Tone As New Scale Warriors Tone";
-            this.radio_ScaleWarriorsTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_StringsSkipSaloonTone
-            // 
-            this.radio_StringsSkipSaloonTone.AutoSize = true;
-            this.radio_StringsSkipSaloonTone.Location = new System.Drawing.Point(398, 378);
-            this.radio_StringsSkipSaloonTone.Name = "radio_StringsSkipSaloonTone";
-            this.radio_StringsSkipSaloonTone.Size = new System.Drawing.Size(283, 17);
-            this.radio_StringsSkipSaloonTone.TabIndex = 117;
-            this.radio_StringsSkipSaloonTone.Text = "Set Highlighted Tone As New String Skip Saloon Tone";
-            this.radio_StringsSkipSaloonTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_ScaleRacerTone
-            // 
-            this.radio_ScaleRacerTone.AutoSize = true;
-            this.radio_ScaleRacerTone.Location = new System.Drawing.Point(398, 401);
-            this.radio_ScaleRacerTone.Name = "radio_ScaleRacerTone";
-            this.radio_ScaleRacerTone.Size = new System.Drawing.Size(255, 17);
-            this.radio_ScaleRacerTone.TabIndex = 118;
-            this.radio_ScaleRacerTone.Text = "Set Highlighted Tone As New Scale Racer Tone";
-            this.radio_ScaleRacerTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_NinjaSlideNTone
-            // 
-            this.radio_NinjaSlideNTone.AutoSize = true;
-            this.radio_NinjaSlideNTone.Location = new System.Drawing.Point(398, 424);
-            this.radio_NinjaSlideNTone.Name = "radio_NinjaSlideNTone";
-            this.radio_NinjaSlideNTone.Size = new System.Drawing.Size(257, 17);
-            this.radio_NinjaSlideNTone.TabIndex = 119;
-            this.radio_NinjaSlideNTone.Text = "Set Highlighted Tone As New Ninja Slide N Tone";
-            this.radio_NinjaSlideNTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_HurtlinHurdlesTone
-            // 
-            this.radio_HurtlinHurdlesTone.AutoSize = true;
-            this.radio_HurtlinHurdlesTone.Location = new System.Drawing.Point(702, 332);
-            this.radio_HurtlinHurdlesTone.Name = "radio_HurtlinHurdlesTone";
-            this.radio_HurtlinHurdlesTone.Size = new System.Drawing.Size(267, 17);
-            this.radio_HurtlinHurdlesTone.TabIndex = 120;
-            this.radio_HurtlinHurdlesTone.Text = "Set Highlighted Tone As New Hurtlin\' Hurdles Tone";
-            this.radio_HurtlinHurdlesTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_HarmonicHeistTone
-            // 
-            this.radio_HarmonicHeistTone.AutoSize = true;
-            this.radio_HarmonicHeistTone.Location = new System.Drawing.Point(702, 355);
-            this.radio_HarmonicHeistTone.Name = "radio_HarmonicHeistTone";
-            this.radio_HarmonicHeistTone.Size = new System.Drawing.Size(268, 17);
-            this.radio_HarmonicHeistTone.TabIndex = 121;
-            this.radio_HarmonicHeistTone.Text = "Set Highlighted Tone As New Harmonic Heist Tone";
-            this.radio_HarmonicHeistTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_DucksReduxTone
-            // 
-            this.radio_DucksReduxTone.AutoSize = true;
-            this.radio_DucksReduxTone.Location = new System.Drawing.Point(702, 378);
-            this.radio_DucksReduxTone.Name = "radio_DucksReduxTone";
-            this.radio_DucksReduxTone.Size = new System.Drawing.Size(261, 17);
-            this.radio_DucksReduxTone.TabIndex = 122;
-            this.radio_DucksReduxTone.Text = "Set Highlighted Tone As New Ducks Redux Tone";
-            this.radio_DucksReduxTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_RainbowLaserTone
-            // 
-            this.radio_RainbowLaserTone.AutoSize = true;
-            this.radio_RainbowLaserTone.Location = new System.Drawing.Point(702, 401);
-            this.radio_RainbowLaserTone.Name = "radio_RainbowLaserTone";
-            this.radio_RainbowLaserTone.Size = new System.Drawing.Size(267, 17);
-            this.radio_RainbowLaserTone.TabIndex = 123;
-            this.radio_RainbowLaserTone.Text = "Set Highlighted Tone As New Rainbow Laser Tone";
-            this.radio_RainbowLaserTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_GoneWailinTone
-            // 
-            this.radio_GoneWailinTone.AutoSize = true;
-            this.radio_GoneWailinTone.Location = new System.Drawing.Point(702, 424);
-            this.radio_GoneWailinTone.Name = "radio_GoneWailinTone";
-            this.radio_GoneWailinTone.Size = new System.Drawing.Size(256, 17);
-            this.radio_GoneWailinTone.TabIndex = 124;
-            this.radio_GoneWailinTone.Text = "Set Highlighted Tone As New Gone Wailin\' Tone";
-            this.radio_GoneWailinTone.UseVisualStyleBackColor = true;
+            this.button_AutoLoadProfile_ClearSelection.Location = new System.Drawing.Point(15, 140);
+            this.button_AutoLoadProfile_ClearSelection.Name = "button_AutoLoadProfile_ClearSelection";
+            this.button_AutoLoadProfile_ClearSelection.Size = new System.Drawing.Size(166, 23);
+            this.button_AutoLoadProfile_ClearSelection.TabIndex = 1;
+            this.button_AutoLoadProfile_ClearSelection.Text = "Clear Selection";
+            this.button_AutoLoadProfile_ClearSelection.UseVisualStyleBackColor = true;
+            this.button_AutoLoadProfile_ClearSelection.Click += new System.EventHandler(this.AutoLoadProfile_ClearSelection);
             // 
             // MainForm
             // 
@@ -4352,8 +4390,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
-            this.groupBox_ControlVolume.ResumeLayout(false);
-            this.groupBox_ControlVolume.PerformLayout();
+            this.groupBox_AutoLoadProfiles.ResumeLayout(false);
+            this.groupBox_ControlVolumeIncrement.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).EndInit();
             this.groupBox_OnScreenFont.ResumeLayout(false);
             this.groupBox_OnScreenFont.PerformLayout();
@@ -4532,8 +4570,8 @@
         private System.Windows.Forms.CheckBox checkBox_RainbowStrings;
         private System.Windows.Forms.CheckBox checkBox_ControlVolume;
         private System.Windows.Forms.CheckBox checkbox_GuitarSpeakWhileTuning;
-        private System.Windows.Forms.Label label_GuitarSpeakPresets;
-        private System.Windows.Forms.ListBox listBox_GuitarSpeakPresets;
+        private System.Windows.Forms.Label label_GuitarSpeakSaved;
+        private System.Windows.Forms.ListBox listBox_GuitarSpeakSaved;
         private System.Windows.Forms.Button button_GuitarSpeakHelp;
         private System.Windows.Forms.GroupBox groupBox_ToggleHeadstockOffWhen;
         private System.Windows.Forms.RadioButton radio_HeadstockOffInSong;
@@ -4624,8 +4662,7 @@
         private System.Windows.Forms.Label label_Player1VolumeKey;
         private System.Windows.Forms.Label label_SongVolumeKey;
         private System.Windows.Forms.Label label_MasterVolumeKey;
-        private System.Windows.Forms.GroupBox groupBox_ControlVolume;
-        private System.Windows.Forms.Label label_ControlVolumeInterval;
+        private System.Windows.Forms.GroupBox groupBox_ControlVolumeIncrement;
         private System.Windows.Forms.NumericUpDown nUpDown_VolumeInterval;
         private System.Windows.Forms.TabPage tab_RSASIO;
         private System.Windows.Forms.ListBox listBox_AvailableASIODevices_Input0;
@@ -4736,6 +4773,10 @@
         private System.Windows.Forms.RadioButton radio_RainbowLaserTone;
         private System.Windows.Forms.RadioButton radio_DucksReduxTone;
         private System.Windows.Forms.RadioButton radio_GoneWailinTone;
+        private System.Windows.Forms.GroupBox groupBox_AutoLoadProfiles;
+        private System.Windows.Forms.ListBox listBox_AutoLoadProfiles;
+        private System.Windows.Forms.Button button_GuitarSpeak_ClearSavedValue;
+        private System.Windows.Forms.Button button_AutoLoadProfile_ClearSelection;
     }
 }
 

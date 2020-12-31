@@ -77,6 +77,7 @@ namespace RSMods
                 { ReadSettings.ChordsModeIdentifier, "off" }, // Is the pedal using Chords Mode.
                 { ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off" }, // Display Current Note Name
                 { ReadSettings.OnScreenFontIdentifier, "Arial" }, // Font to use when we show text over Rocksmith
+                { ReadSettings.ProfileToLoadIdentifier, "" }, // Default profile to load.
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -191,6 +192,7 @@ namespace RSMods
                 { ReadSettings.ChordsModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) }, // Is the pedal using Chords Mode.
                 { ReadSettings.ShowCurrentNoteOnScreenIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) }, // Display Current Note Name
                 { ReadSettings.OnScreenFontIdentifier, ReadSettings.ProcessSettings(ReadSettings.OnScreenFontIdentifier) }, // Font to use when we show text over Rocksmith
+                { ReadSettings.ProfileToLoadIdentifier, ReadSettings.ProcessSettings(ReadSettings.ProfileToLoadIdentifier) }, // Profile To Load
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
