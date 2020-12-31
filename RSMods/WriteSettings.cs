@@ -127,6 +127,8 @@ namespace RSMods
                 { ReadSettings.CustomGUIThemeIdentifier, "off"}, // Use a Custom GUI theme.
                 { ReadSettings.CustomGUIBackgroundColorIdentifier, "F0FFFF" }, // Custom Theme Background Color
                 { ReadSettings.CustomGUITextColorIdentifier, "000000" }, // Custom Theme Text Color
+                { ReadSettings.BackupProfileIdentifier, "on" }, // Should we backup profiles
+                { ReadSettings.NumberOfBackupsIdentifier, "50" }, // How many backups should we store before we start deleting them.
             }},
         };
         #endregion
@@ -241,6 +243,8 @@ namespace RSMods
                 { ReadSettings.CustomGUIThemeIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) }, // Use a Custom GUI theme.
                 { ReadSettings.CustomGUIBackgroundColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUIBackgroundColorIdentifier) }, // Custom Theme Background Color
                 { ReadSettings.CustomGUITextColorIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) }, // Custom Theme Text Color
+                { ReadSettings.BackupProfileIdentifier, ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) }, // Should we backup the user's profile
+                { ReadSettings.NumberOfBackupsIdentifier, ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier) } // How many backups should we store before we start deleting them
             }},
         };
         #endregion

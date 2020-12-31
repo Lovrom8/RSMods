@@ -20,7 +20,7 @@ namespace RSMods
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
                                                 GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
-                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor;
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups;
             public static string
                 // Song List Identifiers
                 Songlist1Identifier = "SongListTitle_1 = ",
@@ -124,7 +124,9 @@ namespace RSMods
                 // GUI Settings
                 CustomGUIThemeIdentifier = "CustomTheme = ",
                 CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
-                CustomGUITextColorIdentifier = "ThemeTextColor = ";
+                CustomGUITextColorIdentifier = "ThemeTextColor = ",
+                BackupProfileIdentifier = "BackupProfile = ",
+                NumberOfBackupsIdentifier = "NumberOfBackups = ";
         #endregion
         #region Functions to make things look nicer
         enum SettingType
@@ -378,6 +380,10 @@ namespace RSMods
                     return FillSettingVariable(CustomGUIBackgroundColorIdentifier, SettingType.STRING, currentLine, out CustomGUIBackgroundColor);
                 if (IdentifierIsFound(currentLine, CustomGUITextColorIdentifier, identifierToGrab))
                     return FillSettingVariable(CustomGUITextColorIdentifier, SettingType.STRING, currentLine, out CustomGUITextColor);
+                if (IdentifierIsFound(currentLine, BackupProfileIdentifier, identifierToGrab))
+                    return FillSettingVariable(BackupProfileIdentifier, SettingType.ON_OFF, currentLine, out BackupProfile);
+                if (IdentifierIsFound(currentLine, NumberOfBackupsIdentifier, identifierToGrab))
+                    return FillSettingVariable(NumberOfBackupsIdentifier, SettingType.STRING, currentLine, out NumberOfBackups);
                 #endregion
             }
             return ""; // Yeah, we don't know what you're looking for...

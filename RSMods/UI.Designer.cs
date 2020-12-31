@@ -61,6 +61,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_BackupProfile = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowCurrentNote = new System.Windows.Forms.CheckBox();
             this.checkBox_useMidiAutoTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_RiffRepeaterSpeedAboveOneHundred = new System.Windows.Forms.CheckBox();
@@ -189,6 +190,9 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_ModSettings = new System.Windows.Forms.TabPage();
+            this.groupBox_Backups = new System.Windows.Forms.GroupBox();
+            this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
+            this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
             this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
@@ -262,7 +266,7 @@
             this.radio_ASIO_BufferSize_Driver = new System.Windows.Forms.RadioButton();
             this.tab_Rocksmith = new System.Windows.Forms.TabPage();
             this.label_Rocksmith_Thanks = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox_Rocksmith_AudioSettings = new System.Windows.Forms.GroupBox();
             this.checkBox_Rocksmith_LowLatencyMode = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_RTCOnly = new System.Windows.Forms.CheckBox();
             this.checkBox_Rocksmith_DumpAudioLog = new System.Windows.Forms.CheckBox();
@@ -347,7 +351,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.checkBox_BackupProfile = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -375,6 +378,8 @@
             this.tab_ModToggles.SuspendLayout();
             this.tab_SetAndForget.SuspendLayout();
             this.tab_ModSettings.SuspendLayout();
+            this.groupBox_Backups.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.groupBox_ControlVolumeIncrement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).BeginInit();
@@ -399,7 +404,7 @@
             this.groupBox_ASIO_BufferSize.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_CustomBufferSize)).BeginInit();
             this.tab_Rocksmith.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBox_Rocksmith_AudioSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_Rocksmith_MaxOutputBuffer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_Rocksmith_LatencyBuffer)).BeginInit();
             this.groupBox_Rocksmith_VisualSettings.SuspendLayout();
@@ -849,6 +854,17 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_BackupProfile
+            // 
+            this.checkBox_BackupProfile.AutoSize = true;
+            this.checkBox_BackupProfile.Location = new System.Drawing.Point(11, 243);
+            this.checkBox_BackupProfile.Name = "checkBox_BackupProfile";
+            this.checkBox_BackupProfile.Size = new System.Drawing.Size(95, 17);
+            this.checkBox_BackupProfile.TabIndex = 52;
+            this.checkBox_BackupProfile.Text = "Backup Profile";
+            this.checkBox_BackupProfile.UseVisualStyleBackColor = true;
+            this.checkBox_BackupProfile.CheckedChanged += new System.EventHandler(this.Save_BackupProfile);
             // 
             // checkBox_ShowCurrentNote
             // 
@@ -2420,6 +2436,7 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
+            this.tab_ModSettings.Controls.Add(this.groupBox_Backups);
             this.tab_ModSettings.Controls.Add(this.groupBox_AutoLoadProfiles);
             this.tab_ModSettings.Controls.Add(this.groupBox_ControlVolumeIncrement);
             this.tab_ModSettings.Controls.Add(this.groupBox_OnScreenFont);
@@ -2441,6 +2458,47 @@
             this.tab_ModSettings.TabIndex = 4;
             this.tab_ModSettings.Text = "Mod Settings";
             // 
+            // groupBox_Backups
+            // 
+            this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
+            this.groupBox_Backups.Controls.Add(this.nUpDown_NumberOfBackups);
+            this.groupBox_Backups.Location = new System.Drawing.Point(991, 385);
+            this.groupBox_Backups.Name = "groupBox_Backups";
+            this.groupBox_Backups.Size = new System.Drawing.Size(132, 86);
+            this.groupBox_Backups.TabIndex = 100006;
+            this.groupBox_Backups.TabStop = false;
+            this.groupBox_Backups.Text = "How Many Backups";
+            this.groupBox_Backups.Visible = false;
+            // 
+            // checkBox_UnlimitedBackups
+            // 
+            this.checkBox_UnlimitedBackups.AutoSize = true;
+            this.checkBox_UnlimitedBackups.Location = new System.Drawing.Point(15, 62);
+            this.checkBox_UnlimitedBackups.Name = "checkBox_UnlimitedBackups";
+            this.checkBox_UnlimitedBackups.Size = new System.Drawing.Size(114, 17);
+            this.checkBox_UnlimitedBackups.TabIndex = 1;
+            this.checkBox_UnlimitedBackups.Text = "Unlimited Backups";
+            this.checkBox_UnlimitedBackups.UseVisualStyleBackColor = true;
+            this.checkBox_UnlimitedBackups.CheckedChanged += new System.EventHandler(this.UnlimitedBackups);
+            // 
+            // nUpDown_NumberOfBackups
+            // 
+            this.nUpDown_NumberOfBackups.Location = new System.Drawing.Point(15, 23);
+            this.nUpDown_NumberOfBackups.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.nUpDown_NumberOfBackups.Name = "nUpDown_NumberOfBackups";
+            this.nUpDown_NumberOfBackups.Size = new System.Drawing.Size(104, 20);
+            this.nUpDown_NumberOfBackups.TabIndex = 0;
+            this.nUpDown_NumberOfBackups.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.nUpDown_NumberOfBackups.ValueChanged += new System.EventHandler(this.Save_NumberOfBackups);
+            // 
             // groupBox_AutoLoadProfiles
             // 
             this.groupBox_AutoLoadProfiles.Controls.Add(this.button_AutoLoadProfile_ClearSelection);
@@ -2451,6 +2509,7 @@
             this.groupBox_AutoLoadProfiles.TabIndex = 100005;
             this.groupBox_AutoLoadProfiles.TabStop = false;
             this.groupBox_AutoLoadProfiles.Text = "Auto Load Profile";
+            this.groupBox_AutoLoadProfiles.Visible = false;
             // 
             // button_AutoLoadProfile_ClearSelection
             // 
@@ -3302,7 +3361,7 @@
             // 
             this.tab_Rocksmith.BackColor = System.Drawing.Color.Azure;
             this.tab_Rocksmith.Controls.Add(this.label_Rocksmith_Thanks);
-            this.tab_Rocksmith.Controls.Add(this.groupBox1);
+            this.tab_Rocksmith.Controls.Add(this.groupBox_Rocksmith_AudioSettings);
             this.tab_Rocksmith.Controls.Add(this.groupBox_Rocksmith_VisualSettings);
             this.tab_Rocksmith.Location = new System.Drawing.Point(4, 22);
             this.tab_Rocksmith.Name = "tab_Rocksmith";
@@ -3322,26 +3381,26 @@
     "st of the tooltips from this section are from their documentation provided with " +
     "the game.";
             // 
-            // groupBox1
+            // groupBox_Rocksmith_AudioSettings
             // 
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_LowLatencyMode);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_RTCOnly);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_DumpAudioLog);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_ForceDirextXSink);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_ForceWDM);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_ExclusiveMode);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_EnableMicrophone);
-            this.groupBox1.Controls.Add(this.checkBox_Rocksmith_Override_MaxOutputBufferSize);
-            this.groupBox1.Controls.Add(this.label_Rocksmith_MaxOutputBuffer);
-            this.groupBox1.Controls.Add(this.label_Rocksmith_LatencyBuffer);
-            this.groupBox1.Controls.Add(this.nUpDown_Rocksmith_MaxOutputBuffer);
-            this.groupBox1.Controls.Add(this.nUpDown_Rocksmith_LatencyBuffer);
-            this.groupBox1.Location = new System.Drawing.Point(524, 26);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(304, 224);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Audio Settings";
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_LowLatencyMode);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_RTCOnly);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_DumpAudioLog);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_ForceDirextXSink);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_ForceWDM);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_ExclusiveMode);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_EnableMicrophone);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.checkBox_Rocksmith_Override_MaxOutputBufferSize);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.label_Rocksmith_MaxOutputBuffer);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.label_Rocksmith_LatencyBuffer);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.nUpDown_Rocksmith_MaxOutputBuffer);
+            this.groupBox_Rocksmith_AudioSettings.Controls.Add(this.nUpDown_Rocksmith_LatencyBuffer);
+            this.groupBox_Rocksmith_AudioSettings.Location = new System.Drawing.Point(524, 26);
+            this.groupBox_Rocksmith_AudioSettings.Name = "groupBox_Rocksmith_AudioSettings";
+            this.groupBox_Rocksmith_AudioSettings.Size = new System.Drawing.Size(304, 224);
+            this.groupBox_Rocksmith_AudioSettings.TabIndex = 3;
+            this.groupBox_Rocksmith_AudioSettings.TabStop = false;
+            this.groupBox_Rocksmith_AudioSettings.Text = "Audio Settings";
             // 
             // checkBox_Rocksmith_LowLatencyMode
             // 
@@ -4338,16 +4397,6 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // checkBox_BackupProfile
-            // 
-            this.checkBox_BackupProfile.AutoSize = true;
-            this.checkBox_BackupProfile.Location = new System.Drawing.Point(11, 243);
-            this.checkBox_BackupProfile.Name = "checkBox_BackupProfile";
-            this.checkBox_BackupProfile.Size = new System.Drawing.Size(95, 17);
-            this.checkBox_BackupProfile.TabIndex = 52;
-            this.checkBox_BackupProfile.Text = "Backup Profile";
-            this.checkBox_BackupProfile.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4402,6 +4451,9 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.tab_SetAndForget.ResumeLayout(false);
             this.tab_ModSettings.ResumeLayout(false);
+            this.groupBox_Backups.ResumeLayout(false);
+            this.groupBox_Backups.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.groupBox_ControlVolumeIncrement.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_VolumeInterval)).EndInit();
@@ -4436,8 +4488,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_CustomBufferSize)).EndInit();
             this.tab_Rocksmith.ResumeLayout(false);
             this.tab_Rocksmith.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBox_Rocksmith_AudioSettings.ResumeLayout(false);
+            this.groupBox_Rocksmith_AudioSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_Rocksmith_MaxOutputBuffer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_Rocksmith_LatencyBuffer)).EndInit();
             this.groupBox_Rocksmith_VisualSettings.ResumeLayout(false);
@@ -4745,7 +4797,7 @@
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_HighResScope;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_MSAASamples;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_PerPixelLighting;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox_Rocksmith_AudioSettings;
         private System.Windows.Forms.GroupBox groupBox_Rocksmith_Network;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_UseProxy;
         private System.Windows.Forms.CheckBox checkBox_Rocksmith_Override_MaxOutputBufferSize;
@@ -4790,6 +4842,9 @@
         private System.Windows.Forms.Button button_GuitarSpeak_ClearSavedValue;
         private System.Windows.Forms.Button button_AutoLoadProfile_ClearSelection;
         private System.Windows.Forms.CheckBox checkBox_BackupProfile;
+        private System.Windows.Forms.GroupBox groupBox_Backups;
+        private System.Windows.Forms.CheckBox checkBox_UnlimitedBackups;
+        private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
     }
 }
 

@@ -95,14 +95,14 @@ namespace RSMods
             // Load All System Fonts
             LoadFonts();
 
-            // Backup Profile JIC
-            BackupProfile.SaveProfile();
+            // Backup Profiles Just In Case
+            BackupProfiles();
 
             // Load Checkbox Values From RSMods.ini
             LoadModSettings();
 
             // Delete Old Backups To Save Space
-            //DeleteOldBackups(5);
+            DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
         }
 
 #region Startup Functions
@@ -233,6 +233,12 @@ namespace RSMods
                 }
                     
             }
+        }
+
+        private void BackupProfiles()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
+                BackupProfile.SaveProfile();
         }
 
 #endregion
@@ -417,6 +423,13 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on")
                 checkBox_ShowCurrentNote.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
+            {
+                checkBox_BackupProfile.Checked = true;
+                nUpDown_NumberOfBackups.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50);
+            }
+                
         }
 
         private void LoadASIOSettings()
@@ -1420,6 +1433,33 @@ namespace RSMods
         }
 
         private void AutoLoadProfile_ClearSelection(object sender, EventArgs e) => listBox_AutoLoadProfiles.ClearSelected();
+        private void Save_BackupProfile(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.BackupProfileIdentifier, checkBox_BackupProfile.Checked.ToString().ToLower());
+            groupBox_Backups.Visible = checkBox_BackupProfile.Checked;
+        }
+
+        private void UnlimitedBackups(object sender, EventArgs e)
+        {
+            if (checkBox_UnlimitedBackups.Checked)
+                nUpDown_NumberOfBackups.Value = 0;
+            else
+            {
+                nUpDown_NumberOfBackups.Value = 50;
+                nUpDown_NumberOfBackups.Enabled = true;
+            }   
+        }
+
+        private void Save_NumberOfBackups(object sender, EventArgs e)
+        {
+            if (nUpDown_NumberOfBackups.Value == 0)
+            {
+                nUpDown_NumberOfBackups.Enabled = false;
+                checkBox_UnlimitedBackups.Checked = true;
+            }
+            SaveChanges(ReadSettings.NumberOfBackupsIdentifier, nUpDown_NumberOfBackups.Value.ToString());
+        }
+
 
 #endregion
 #region Tooltips
