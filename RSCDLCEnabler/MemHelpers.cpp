@@ -419,3 +419,19 @@ void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 	automatedSongSpeedInThisSong = true; // Don't run this again in the same song if we put this in a loop.
 	useNewSongSpeed = true; // Show RR Speed Text
 }
+
+std::string MemHelpers::CurrentSelectedUser() {
+	uintptr_t badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
+
+	if (!badValue)
+		return (std::string)"";
+
+	while (badValue < 0x10000000) {
+		Sleep(100);
+		badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
+	}
+
+	std::string hopeThisWorks = std::string((const char*)badValue);
+
+	return hopeThisWorks;
+}

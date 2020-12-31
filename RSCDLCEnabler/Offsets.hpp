@@ -95,6 +95,10 @@ namespace Offsets {
 	extern uintptr_t ptr_songSpeed;
 	extern std::vector<unsigned int> ptr_songSpeedOffsets;
 
+	// Selected Profile Name
+	extern uintptr_t ptr_selectedProfileName;
+	extern std::vector<unsigned int> ptr_selectedProfileNameOffsets;
+
 	// Colorblind Mode
 	extern uintptr_t ptr_colorBlindMode;
 	extern std::vector<unsigned int> ptr_colorBlindModeOffsets;

@@ -101,6 +101,10 @@ namespace Offsets {
 	uintptr_t ptr_songSpeed = 0x00F5C4CC;
 	std::vector<unsigned int> ptr_songSpeedOffsets{ 0x10, 0x28, 0x38, 0x18, 0x4, 0x1C, 0x28 };
 
+	// Selected Profile Name
+	uintptr_t ptr_selectedProfileName = 0x00F5C5AC;
+	std::vector<unsigned int> ptr_selectedProfileNameOffsets{ 0x18, 0x3C, 0x28, 0x1FC };
+
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };

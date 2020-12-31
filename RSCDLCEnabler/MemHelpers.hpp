@@ -36,6 +36,7 @@ namespace MemHelpers {
 	void AutomatedOpenRRSpeedAbuse();
 	Tuning GetTuningAtTuner();
 	bool IsExtendedRangeTuner();
+	std::string CurrentSelectedUser();
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);

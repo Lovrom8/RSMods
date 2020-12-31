@@ -805,8 +805,25 @@ unsigned WINAPI MainThread() {
 			if (currentMenu == "MainMenu") // Yay We Loaded :P
 				GameLoaded = true;
 
-			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) // "Fork in the toaster" / Spam Enter Method
-				AutoEnterGame();
+			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) { // "Fork in the toaster" / Spam Enter Method
+				if (currentMenu == (std::string)"ProfileSelect") {
+					selectedUser = MemHelpers::CurrentSelectedUser();
+					if (selectedUser == (std::string)"test") // The profile we're looking for
+						AutoEnterGame();
+					else if (selectedUser == (std::string)"New profile") {// Yeah, the profile they're looking for doesn't exist :|
+						std::cout << "(Auto Load) Invalid Profile Name" << std::endl;
+						GameLoaded = true;
+					}
+					else { // Not the profile we're looking for
+						
+						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_DOWN, 0);
+						Sleep(30);
+						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DOWN, 0);
+					}
+				}
+				else
+					AutoEnterGame();
+			}
 		}
 	}
 	return 0;
