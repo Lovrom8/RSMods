@@ -28,6 +28,9 @@
   * If you are a streamer, this one may especially come in handy. The background behind the noteway (be it a crowd in the venue or just a plain wall), can now be removed on the fly and replaced with a dark background. It is suggested that you also turn off "Venue Mode" in the game settings as this will help with performance a little as well as make sure you don't have the colored showlights being displayed. The all black background can then be "keyed out" in OBS using a Luma key set for black (luma key works better than chroma key for this), effectively giving you the ability to make the note highway "float" over whatever background you use. To you while playing, or recording game footage locally, it will just appear as an all black background.
   * **Options** - loft can be automatically toggled off as soon as the game is started or only when in a song, or by pressing the hotkey that you define.
   
+* **Greenscreen Wall**
+  * Similar to Toggle Loft, but only applied to the background wall. This keeps the amps visible and a few of the other UI elements that are removed with Toggle Loft.
+  
 * **Force ReEnumeration**
   * Normally after adding a new song to your collection, you would have had to either restart the game, or enter the in-game Shop in order for the game to recognize the new songs.
   * **Options**
