@@ -353,6 +353,10 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.TabController_ModSettings = new System.Windows.Forms.TabControl();
+            this.tabPage_ModSettings_ER = new System.Windows.Forms.TabPage();
+            this.tabPage_ModSettings_Automation = new System.Windows.Forms.TabPage();
+            this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -423,6 +427,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
+            this.TabController_ModSettings.SuspendLayout();
+            this.tabPage_ModSettings_ER.SuspendLayout();
+            this.tabPage_ModSettings_Automation.SuspendLayout();
+            this.tabPage_ModSettings_Misc.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -741,7 +749,7 @@
             this.groupBox_HowToEnumerate.Controls.Add(this.nUpDown_ForceEnumerationXMS);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationAutomatic);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationManual);
-            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(670, 20);
+            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(12, 240);
             this.groupBox_HowToEnumerate.Name = "groupBox_HowToEnumerate";
             this.groupBox_HowToEnumerate.Size = new System.Drawing.Size(293, 77);
             this.groupBox_HowToEnumerate.TabIndex = 47;
@@ -791,7 +799,7 @@
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffInSong);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffHotkey);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftAlwaysOff);
-            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(974, 20);
+            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(515, 169);
             this.groupBox_LoftOffWhen.Name = "groupBox_LoftOffWhen";
             this.groupBox_LoftOffWhen.Size = new System.Drawing.Size(145, 86);
             this.groupBox_LoftOffWhen.TabIndex = 48;
@@ -805,7 +813,7 @@
             // 
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_ExtendedRangeDrop);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
-            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(10, 20);
+            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(15, 20);
             this.groupBox_ExtendedRangeWhen.Name = "groupBox_ExtendedRangeWhen";
             this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(214, 205);
             this.groupBox_ExtendedRangeWhen.TabIndex = 49;
@@ -853,7 +861,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(15, 14);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 270);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 298);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -1236,9 +1244,9 @@
             this.groupBox_StringColors.Controls.Add(this.button_String1ColorButton);
             this.groupBox_StringColors.Controls.Add(this.textBox_String0Color);
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
-            this.groupBox_StringColors.Location = new System.Drawing.Point(337, 232);
+            this.groupBox_StringColors.Location = new System.Drawing.Point(273, 20);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
-            this.groupBox_StringColors.Size = new System.Drawing.Size(282, 270);
+            this.groupBox_StringColors.Size = new System.Drawing.Size(282, 250);
             this.groupBox_StringColors.TabIndex = 65;
             this.groupBox_StringColors.TabStop = false;
             this.groupBox_StringColors.Text = "Change String Colors";
@@ -1966,7 +1974,7 @@
             // 
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineOffInSong);
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineAlwaysOff);
-            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(974, 200);
+            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(511, 91);
             this.groupBox_ToggleSkylineWhen.Name = "groupBox_ToggleSkylineWhen";
             this.groupBox_ToggleSkylineWhen.Size = new System.Drawing.Size(145, 68);
             this.groupBox_ToggleSkylineWhen.TabIndex = 69;
@@ -2004,7 +2012,7 @@
             // 
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsOffHotkey);
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsAlwaysOff);
-            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(974, 273);
+            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(511, 6);
             this.groupBox_ToggleLyricsOffWhen.Name = "groupBox_ToggleLyricsOffWhen";
             this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(149, 68);
             this.groupBox_ToggleLyricsOffWhen.TabIndex = 70;
@@ -2054,7 +2062,7 @@
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakKeypress);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakOctave);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakNote);
-            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(232, 20);
+            this.groupBox_GuitarSpeak.Location = new System.Drawing.Point(12, 18);
             this.groupBox_GuitarSpeak.Name = "groupBox_GuitarSpeak";
             this.groupBox_GuitarSpeak.Size = new System.Drawing.Size(432, 206);
             this.groupBox_GuitarSpeak.TabIndex = 71;
@@ -2228,7 +2236,7 @@
             // 
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockOffInSong);
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockAlwaysOff);
-            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(974, 117);
+            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(515, 266);
             this.groupBox_ToggleHeadstockOffWhen.Name = "groupBox_ToggleHeadstockOffWhen";
             this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(162, 77);
             this.groupBox_ToggleHeadstockOffWhen.TabIndex = 73;
@@ -2462,21 +2470,8 @@
             // tab_ModSettings
             // 
             this.tab_ModSettings.BackColor = System.Drawing.Color.Azure;
-            this.tab_ModSettings.Controls.Add(this.groupBox_Backups);
-            this.tab_ModSettings.Controls.Add(this.groupBox_AutoLoadProfiles);
-            this.tab_ModSettings.Controls.Add(this.groupBox_ControlVolumeIncrement);
-            this.tab_ModSettings.Controls.Add(this.groupBox_OnScreenFont);
-            this.tab_ModSettings.Controls.Add(this.groupBox_MidiAutoTuneDevice);
-            this.tab_ModSettings.Controls.Add(this.groupBox_RRSpeed);
+            this.tab_ModSettings.Controls.Add(this.TabController_ModSettings);
             this.tab_ModSettings.Controls.Add(this.button_ResetModsToDefault);
-            this.tab_ModSettings.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
-            this.tab_ModSettings.Controls.Add(this.groupBox_ToggleHeadstockOffWhen);
-            this.tab_ModSettings.Controls.Add(this.groupBox_GuitarSpeak);
-            this.tab_ModSettings.Controls.Add(this.groupBox_StringColors);
-            this.tab_ModSettings.Controls.Add(this.groupBox_HowToEnumerate);
-            this.tab_ModSettings.Controls.Add(this.groupBox_LoftOffWhen);
-            this.tab_ModSettings.Controls.Add(this.groupBox_ToggleSkylineWhen);
-            this.tab_ModSettings.Controls.Add(this.groupBox_ExtendedRangeWhen);
             this.tab_ModSettings.Location = new System.Drawing.Point(4, 22);
             this.tab_ModSettings.Name = "tab_ModSettings";
             this.tab_ModSettings.Padding = new System.Windows.Forms.Padding(3);
@@ -2488,9 +2483,9 @@
             // 
             this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
             this.groupBox_Backups.Controls.Add(this.nUpDown_NumberOfBackups);
-            this.groupBox_Backups.Location = new System.Drawing.Point(991, 354);
+            this.groupBox_Backups.Location = new System.Drawing.Point(515, 355);
             this.groupBox_Backups.Name = "groupBox_Backups";
-            this.groupBox_Backups.Size = new System.Drawing.Size(132, 86);
+            this.groupBox_Backups.Size = new System.Drawing.Size(128, 86);
             this.groupBox_Backups.TabIndex = 100006;
             this.groupBox_Backups.TabStop = false;
             this.groupBox_Backups.Text = "How Many Backups";
@@ -2500,7 +2495,7 @@
             // checkBox_UnlimitedBackups
             // 
             this.checkBox_UnlimitedBackups.AutoSize = true;
-            this.checkBox_UnlimitedBackups.Location = new System.Drawing.Point(15, 62);
+            this.checkBox_UnlimitedBackups.Location = new System.Drawing.Point(8, 62);
             this.checkBox_UnlimitedBackups.Name = "checkBox_UnlimitedBackups";
             this.checkBox_UnlimitedBackups.Size = new System.Drawing.Size(114, 17);
             this.checkBox_UnlimitedBackups.TabIndex = 1;
@@ -2511,7 +2506,7 @@
             // 
             // nUpDown_NumberOfBackups
             // 
-            this.nUpDown_NumberOfBackups.Location = new System.Drawing.Point(15, 23);
+            this.nUpDown_NumberOfBackups.Location = new System.Drawing.Point(11, 23);
             this.nUpDown_NumberOfBackups.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -2531,7 +2526,7 @@
             // 
             this.groupBox_AutoLoadProfiles.Controls.Add(this.button_AutoLoadProfile_ClearSelection);
             this.groupBox_AutoLoadProfiles.Controls.Add(this.listBox_AutoLoadProfiles);
-            this.groupBox_AutoLoadProfiles.Location = new System.Drawing.Point(763, 221);
+            this.groupBox_AutoLoadProfiles.Location = new System.Drawing.Point(892, 266);
             this.groupBox_AutoLoadProfiles.Name = "groupBox_AutoLoadProfiles";
             this.groupBox_AutoLoadProfiles.Size = new System.Drawing.Size(200, 171);
             this.groupBox_AutoLoadProfiles.TabIndex = 100005;
@@ -2564,7 +2559,7 @@
             // groupBox_ControlVolumeIncrement
             // 
             this.groupBox_ControlVolumeIncrement.Controls.Add(this.nUpDown_VolumeInterval);
-            this.groupBox_ControlVolumeIncrement.Location = new System.Drawing.Point(182, 452);
+            this.groupBox_ControlVolumeIncrement.Location = new System.Drawing.Point(21, 15);
             this.groupBox_ControlVolumeIncrement.Name = "groupBox_ControlVolumeIncrement";
             this.groupBox_ControlVolumeIncrement.Size = new System.Drawing.Size(143, 50);
             this.groupBox_ControlVolumeIncrement.TabIndex = 100004;
@@ -2596,7 +2591,7 @@
             this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestlowercase);
             this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestCAPITALS);
             this.groupBox_OnScreenFont.Controls.Add(this.listBox_AvailableFonts);
-            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(625, 388);
+            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(255, 17);
             this.groupBox_OnScreenFont.Name = "groupBox_OnScreenFont";
             this.groupBox_OnScreenFont.Size = new System.Drawing.Size(357, 114);
             this.groupBox_OnScreenFont.TabIndex = 100003;
@@ -2651,7 +2646,7 @@
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
-            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(10, 232);
+            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(791, 18);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
             this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 209);
             this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
@@ -2728,7 +2723,7 @@
             // groupBox_RRSpeed
             // 
             this.groupBox_RRSpeed.Controls.Add(this.nUpDown_RiffRepeaterSpeed);
-            this.groupBox_RRSpeed.Location = new System.Drawing.Point(10, 452);
+            this.groupBox_RRSpeed.Location = new System.Drawing.Point(21, 81);
             this.groupBox_RRSpeed.Name = "groupBox_RRSpeed";
             this.groupBox_RRSpeed.Size = new System.Drawing.Size(172, 50);
             this.groupBox_RRSpeed.TabIndex = 100001;
@@ -4428,6 +4423,60 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // TabController_ModSettings
+            // 
+            this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_ER);
+            this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_Automation);
+            this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_Misc);
+            this.TabController_ModSettings.Location = new System.Drawing.Point(6, 6);
+            this.TabController_ModSettings.Name = "TabController_ModSettings";
+            this.TabController_ModSettings.SelectedIndex = 0;
+            this.TabController_ModSettings.Size = new System.Drawing.Size(1130, 473);
+            this.TabController_ModSettings.TabIndex = 100007;
+            // 
+            // tabPage_ModSettings_ER
+            // 
+            this.tabPage_ModSettings_ER.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_ER.Controls.Add(this.groupBox_ExtendedRangeWhen);
+            this.tabPage_ModSettings_ER.Controls.Add(this.groupBox_StringColors);
+            this.tabPage_ModSettings_ER.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_ModSettings_ER.Name = "tabPage_ModSettings_ER";
+            this.tabPage_ModSettings_ER.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_ModSettings_ER.Size = new System.Drawing.Size(1122, 447);
+            this.tabPage_ModSettings_ER.TabIndex = 0;
+            this.tabPage_ModSettings_ER.Text = "Extended Range";
+            // 
+            // tabPage_ModSettings_Automation
+            // 
+            this.tabPage_ModSettings_Automation.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_GuitarSpeak);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_Backups);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_HowToEnumerate);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_AutoLoadProfiles);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_LoftOffWhen);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_MidiAutoTuneDevice);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_ToggleHeadstockOffWhen);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_ToggleSkylineWhen);
+            this.tabPage_ModSettings_Automation.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_ModSettings_Automation.Name = "tabPage_ModSettings_Automation";
+            this.tabPage_ModSettings_Automation.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_ModSettings_Automation.Size = new System.Drawing.Size(1122, 447);
+            this.tabPage_ModSettings_Automation.TabIndex = 1;
+            this.tabPage_ModSettings_Automation.Text = "Automation";
+            // 
+            // tabPage_ModSettings_Misc
+            // 
+            this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OnScreenFont);
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_RRSpeed);
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_ControlVolumeIncrement);
+            this.tabPage_ModSettings_Misc.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_ModSettings_Misc.Name = "tabPage_ModSettings_Misc";
+            this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(1122, 447);
+            this.tabPage_ModSettings_Misc.TabIndex = 2;
+            this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4545,6 +4594,10 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
+            this.TabController_ModSettings.ResumeLayout(false);
+            this.tabPage_ModSettings_ER.ResumeLayout(false);
+            this.tabPage_ModSettings_Automation.ResumeLayout(false);
+            this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -4878,6 +4931,10 @@
         private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
         private System.Windows.Forms.CheckBox checkBox_RainbowNotes;
         private System.Windows.Forms.Label label_RainbowNotesKey;
+        private System.Windows.Forms.TabControl TabController_ModSettings;
+        private System.Windows.Forms.TabPage tabPage_ModSettings_ER;
+        private System.Windows.Forms.TabPage tabPage_ModSettings_Automation;
+        private System.Windows.Forms.TabPage tabPage_ModSettings_Misc;
     }
 }
 
