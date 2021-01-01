@@ -138,9 +138,6 @@
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\Effects\RainbowEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="CC\Effects\KillGuitarVolumeEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
@@ -209,6 +206,12 @@
     </ClCompile>
     <ClCompile Include="Mods\VolumeControl.cpp">
       <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RainbowNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RainbowStringsEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,9 +347,6 @@
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="CC\Effects\RainbowEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
@@ -415,6 +415,12 @@
     </ClInclude>
     <ClInclude Include="Mods\VolumeControl.hpp">
       <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RainbowNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RainbowStringsEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

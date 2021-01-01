@@ -1,21 +1,21 @@
-#include "RainbowEffect.hpp"
+#include "RainbowStringsEffect.hpp"
 
 namespace CrowdControl::Effects {
-	EffectResult RainbowEffect::Test(Request request)
+	EffectResult RainbowStringsEffect::Test(Request request)
 	{
-		std::cout << "RainbowEffect::Test()" << std::endl;
+		std::cout << "RainbowStringsEffect::Test()" << std::endl;
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
 		return EffectResult::Success;
 	}
 
-	EffectResult RainbowEffect::Start(Request request)
+	EffectResult RainbowStringsEffect::Start(Request request)
 	{
-		std::cout << "RainbowEffect::Start()" << std::endl;
+		std::cout << "RainbowStringsEffect::Start()" << std::endl;
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
+		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
 		running = true;
@@ -28,7 +28,7 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
-	void RainbowEffect::Run()
+	void RainbowStringsEffect::Run()
 	{
 		// Stop automatically after duration has elapsed
 		if (running) {
@@ -39,9 +39,9 @@ namespace CrowdControl::Effects {
 		}
 	}
 
-	EffectResult RainbowEffect::Stop()
+	EffectResult RainbowStringsEffect::Stop()
 	{
-		std::cout << "RainbowEffect::Stop()" << std::endl;
+		std::cout << "RainbowStringsEffect::Stop()" << std::endl;
 
 		running = false;
 		ERMode::ToggleRainbowMode();

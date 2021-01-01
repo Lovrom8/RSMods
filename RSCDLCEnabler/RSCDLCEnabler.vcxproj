@@ -17,6 +17,7 @@
     <ClCompile Include="CC\ControlServer.cpp" />
     <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp" />
     <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp" />
+    <ClCompile Include="CC\Effects\RainbowNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="CC\ControlServer.hpp" />
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp" />
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp" />
+    <ClInclude Include="CC\Effects\RainbowNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
     <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp" />
     <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
@@ -52,7 +54,7 @@
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp" />
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp" />
-    <ClInclude Include="CC\Effects\RainbowEffect.hpp" />
+    <ClInclude Include="CC\Effects\RainbowStringsEffect.hpp" />
     <ClInclude Include="CC\Effects\SolidNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
@@ -99,7 +101,7 @@
     <ClCompile Include="Lib\ImGUI\RobotoFont.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="MemHelpers.cpp" />
-    <ClCompile Include="CC\Effects\RainbowEffect.cpp" />
+    <ClCompile Include="CC\Effects\RainbowStringsEffect.cpp" />
     <ClCompile Include="Scrapped.hpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>

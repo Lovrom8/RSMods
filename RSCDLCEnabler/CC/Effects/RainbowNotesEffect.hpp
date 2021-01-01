@@ -4,10 +4,10 @@
 #include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
-	class RainbowEffect : public CCEffect
+	class RainbowNotesEffect : public CCEffect
 	{
 	public:
-		RainbowEffect(unsigned int durationSeconds) {
+		RainbowNotesEffect(unsigned int durationSeconds) {
 			duration = durationSeconds;
 		}
 
@@ -18,7 +18,6 @@ namespace CrowdControl::Effects {
 
 	private:
 		std::vector<std::string> incompatibleEffects =
-			{ "solidrandom",  "solidcustom", "solidcustomrgb" };
+		{ "solidrandom",  "solidcustom", "solidcustomrgb" };
 	};
 }
-
