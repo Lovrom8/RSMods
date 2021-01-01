@@ -32,6 +32,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerIdentifier, "" }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, "" }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, "" }, // Rainbow Strings
+                { ReadSettings.RainbowNotesIdentifier, "" }, // Rainbow Notes
                 { ReadSettings.RemoveLyricsKeyIdentifier, "" }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, "" } // Riff Repeater Above 100% key.
             }},
@@ -150,6 +151,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier) }, // Show Song Timer
                 { ReadSettings.ForceReEnumerationIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier) }, // Force ReEnumeration
                 { ReadSettings.RainbowStringsIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier) }, // Rainbow Strings
+                { ReadSettings.RainbowNotesIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowNotesIdentifier) }, // Rainbow Notes
                 { ReadSettings.RemoveLyricsKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier) }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier) } // Riff Repeater Above 100% Key
             }},

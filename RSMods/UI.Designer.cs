@@ -61,6 +61,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_RainbowNotes = new System.Windows.Forms.CheckBox();
             this.checkBox_BackupProfile = new System.Windows.Forms.CheckBox();
             this.checkBox_ShowCurrentNote = new System.Windows.Forms.CheckBox();
             this.checkBox_useMidiAutoTuning = new System.Windows.Forms.CheckBox();
@@ -351,7 +352,7 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.checkBox_RainbowNotes = new System.Windows.Forms.CheckBox();
+            this.label_RainbowNotesKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -480,7 +481,7 @@
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 39);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 35);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
             this.label_SongTimerKey.Size = new System.Drawing.Size(67, 13);
             this.label_SongTimerKey.TabIndex = 17;
@@ -489,7 +490,7 @@
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 64);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 57);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
             this.label_ReEnumerationKey.Size = new System.Drawing.Size(72, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
@@ -550,7 +551,7 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 93);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 79);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
             this.label_RainbowStringsKey.Size = new System.Drawing.Size(90, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
@@ -857,6 +858,18 @@
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
             // 
+            // checkBox_RainbowNotes
+            // 
+            this.checkBox_RainbowNotes.AutoSize = true;
+            this.checkBox_RainbowNotes.Location = new System.Drawing.Point(131, 61);
+            this.checkBox_RainbowNotes.Name = "checkBox_RainbowNotes";
+            this.checkBox_RainbowNotes.Size = new System.Drawing.Size(99, 17);
+            this.checkBox_RainbowNotes.TabIndex = 53;
+            this.checkBox_RainbowNotes.Text = "Rainbow Notes";
+            this.checkBox_RainbowNotes.UseVisualStyleBackColor = true;
+            this.checkBox_RainbowNotes.CheckedChanged += new System.EventHandler(this.Save_RainbowNotes);
+            this.checkBox_RainbowNotes.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
             // checkBox_BackupProfile
             // 
             this.checkBox_BackupProfile.AutoSize = true;
@@ -1024,6 +1037,7 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_RainbowNotesKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RRSpeedKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RemoveLyricsKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.button_ClearSelectedKeybind_MODS);
@@ -1046,7 +1060,7 @@
             // label_RRSpeedKey
             // 
             this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 149);
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 147);
             this.label_RRSpeedKey.Name = "label_RRSpeedKey";
             this.label_RRSpeedKey.Size = new System.Drawing.Size(110, 13);
             this.label_RRSpeedKey.TabIndex = 53;
@@ -1055,7 +1069,7 @@
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 120);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 123);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
             this.label_RemoveLyricsKey.Size = new System.Drawing.Size(83, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
@@ -4405,16 +4419,14 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
-            // checkBox_RainbowNotes
+            // label_RainbowNotesKey
             // 
-            this.checkBox_RainbowNotes.AutoSize = true;
-            this.checkBox_RainbowNotes.Location = new System.Drawing.Point(131, 61);
-            this.checkBox_RainbowNotes.Name = "checkBox_RainbowNotes";
-            this.checkBox_RainbowNotes.Size = new System.Drawing.Size(99, 17);
-            this.checkBox_RainbowNotes.TabIndex = 53;
-            this.checkBox_RainbowNotes.Text = "Rainbow Notes";
-            this.checkBox_RainbowNotes.UseVisualStyleBackColor = true;
-            this.checkBox_RainbowNotes.CheckedChanged += new System.EventHandler(this.Save_RainbowNotes);
+            this.label_RainbowNotesKey.AutoSize = true;
+            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 101);
+            this.label_RainbowNotesKey.Name = "label_RainbowNotesKey";
+            this.label_RainbowNotesKey.Size = new System.Drawing.Size(86, 13);
+            this.label_RainbowNotesKey.TabIndex = 54;
+            this.label_RainbowNotesKey.Text = "Rainbow Notes: ";
             // 
             // MainForm
             // 
@@ -4865,6 +4877,7 @@
         private System.Windows.Forms.CheckBox checkBox_UnlimitedBackups;
         private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
         private System.Windows.Forms.CheckBox checkBox_RainbowNotes;
+        private System.Windows.Forms.Label label_RainbowNotesKey;
     }
 }
 

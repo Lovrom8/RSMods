@@ -10,7 +10,7 @@ namespace RSMods
     {
         #region Setup Variables
         private static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
-                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
+                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey, RemoveLyricsKey, RRSpeedKey,
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
@@ -35,6 +35,7 @@ namespace RSMods
                 ShowSongTimerIdentifier = "ShowSongTimerKey = ",
                 ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
                 RainbowStringsIdentifier = "RainbowStringsKey = ",
+                RainbowNotesIdentifier = "RainbowNotesKey = ",
                 RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
                 RRSpeedKeyIdentifier = "RRSpeedKey = ",
 
@@ -199,6 +200,8 @@ namespace RSMods
                     return FillSettingVariable(ForceReEnumerationIdentifier, SettingType.VKEY, currentLine, out ForceReEnumerationKey);
                 if (IdentifierIsFound(currentLine, RainbowStringsIdentifier, identifierToGrab))
                     return FillSettingVariable(RainbowStringsIdentifier, SettingType.VKEY, currentLine, out RainbowStringsKey);
+                if (IdentifierIsFound(currentLine, RainbowNotesIdentifier, identifierToGrab))
+                    return FillSettingVariable(RainbowNotesIdentifier, SettingType.VKEY, currentLine, out RainbowNotesKey);
                 if (IdentifierIsFound(currentLine, RemoveLyricsKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(RemoveLyricsKeyIdentifier, SettingType.VKEY, currentLine, out RemoveLyricsKey);
                 if (IdentifierIsFound(currentLine, RRSpeedKeyIdentifier, identifierToGrab))

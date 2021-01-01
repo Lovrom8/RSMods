@@ -26,6 +26,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_GuitarSpeak, "Use your guitar to control the menus!");
             TooltipDictionary.Add(checkBox_RemoveLyrics, "Disables the display of song lyrics while in Learn-A-Song mode.");
             TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
+            TooltipDictionary.Add(checkBox_RainbowNotes, "Experimental.\nHow Pro are you? This makes all the notes constantly cycle through colors.");
             TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
             TooltipDictionary.Add(checkBox_RemoveLaneMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
             TooltipDictionary.Add(checkBox_ScreenShotScores, "We will automatically take a steam screenshot whenever you finish a song");
@@ -239,6 +240,7 @@ namespace RSMods
             ReadSettings.ShowSongTimerIdentifier,
             ReadSettings.ForceReEnumerationIdentifier,
             ReadSettings.RainbowStringsIdentifier,
+            ReadSettings.RainbowNotesIdentifier,
             ReadSettings.RemoveLyricsKeyIdentifier,
             ReadSettings.RRSpeedKeyIdentifier
         };
@@ -284,6 +286,7 @@ namespace RSMods
             "Show Song Timer",
             "Force ReEnumeration",
             "Rainbow Strings",
+            "Rainbow Notes",
             "Remove Lyrics",
             "RR Speed Change"
         };
@@ -313,6 +316,7 @@ namespace RSMods
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowNotesIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
             return savedKeysForModToggles;
