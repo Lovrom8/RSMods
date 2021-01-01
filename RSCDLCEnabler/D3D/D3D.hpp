@@ -39,10 +39,9 @@ inline static std::mt19937 rng(rd());
 inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture;
 
 inline unsigned long crc;
-inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
+inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
-inline unsigned long crcNotewayGutter = 0x00004a4a, crcNotewayPreRollLanes = 0x00035193, crcNotewayNumbers = 0x00090000, crcNotewayLanes = 0x005a00b9, crcNotewayStems = 0x02a50002;
 
 inline float rainbowSpeed = 2.f;
 inline const int randomTextureCount = 10;

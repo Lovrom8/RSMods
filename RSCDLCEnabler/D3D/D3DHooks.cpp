@@ -184,7 +184,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (pBaseNotewayTexture) {
 			if (CRCForTexture(pCurrNotewayTexture, crc)) {
-				if (crc == crcNotewayLanes)
+				if (crc == crcNoteLanes)
 					pDevice->SetTexture(1, notewayTexture);
 			}
 		}
