@@ -53,6 +53,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerEnabledIdentifier, "off" }, // Show Song Timer Enabled / Disabled
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, "off" }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, "off" }, // Rainbow String Enabled / Disabled
+                { ReadSettings.RainbowNotesEnabledIdentifier, "off" }, // Rainbow Notes Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, "off" }, // Extended Range Enabled / Disabled
                 { ReadSettings.ExtendedRangeDropTuningIdentifier, "off" }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
                 { ReadSettings.CustomStringColorNumberIndetifier, "0" }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
@@ -170,6 +171,7 @@ namespace RSMods
                 { ReadSettings.ShowSongTimerEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) }, // Show Song Timer Enabled / Disabled
                 { ReadSettings.ForceReEnumerationEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) }, // Force ReEnumeration Manual / Automatic / Disabled
                 { ReadSettings.RainbowStringsEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) }, // Rainbow String Enabled / Disabled
+                { ReadSettings.RainbowNotesEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.RainbowNotesEnabledIdentifier) }, // Rainbow Notes Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) }, // Extended Range Enabled / Disabled
                 { ReadSettings.ExtendedRangeDropTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeDropTuningIdentifier) }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
                 { ReadSettings.CustomStringColorNumberIndetifier, ReadSettings.ProcessSettings(ReadSettings.CustomStringColorNumberIndetifier) }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)

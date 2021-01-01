@@ -12,7 +12,7 @@ namespace RSMods
         private static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
                              ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RemoveLyricsKey, RRSpeedKey,
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
-                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
+                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                                                 RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
@@ -54,6 +54,7 @@ namespace RSMods
                 ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
                 ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
                 RainbowStringsEnabledIdentifier = "RainbowStrings = ",
+                RainbowNotesEnabledIdentifier = "RainbowNotes = ",
                 ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
                 ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
                 CustomStringColorNumberIndetifier = "CustomStringColors = ",
@@ -238,6 +239,8 @@ namespace RSMods
                     return FillSettingVariable(ForceReEnumerationEnabledIdentifier, SettingType.STRING, currentLine, out ForceReEnumerationEnabled);
                 if (IdentifierIsFound(currentLine, RainbowStringsEnabledIdentifier, identifierToGrab))
                     return FillSettingVariable(RainbowStringsEnabledIdentifier, SettingType.ON_OFF, currentLine, out RainbowStringsEnabled);
+                if (IdentifierIsFound(currentLine, RainbowNotesEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(RainbowNotesEnabledIdentifier, SettingType.ON_OFF, currentLine, out RainbowNotesEnabled);
                 if (IdentifierIsFound(currentLine, ExtendedRangeEnabledIdentifier, identifierToGrab))
                     return FillSettingVariable(ExtendedRangeEnabledIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeEnabled);
                 if (IdentifierIsFound(currentLine, ExtendedRangeDropTuningIdentifier, identifierToGrab))

@@ -351,6 +351,7 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.checkBox_RainbowNotes = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -536,7 +537,7 @@
             // checkBox_ExtendedRange
             // 
             this.checkBox_ExtendedRange.AutoSize = true;
-            this.checkBox_ExtendedRange.Location = new System.Drawing.Point(131, 84);
+            this.checkBox_ExtendedRange.Location = new System.Drawing.Point(131, 107);
             this.checkBox_ExtendedRange.Name = "checkBox_ExtendedRange";
             this.checkBox_ExtendedRange.Size = new System.Drawing.Size(146, 17);
             this.checkBox_ExtendedRange.TabIndex = 27;
@@ -606,7 +607,7 @@
             // checkBox_RemoveSkyline
             // 
             this.checkBox_RemoveSkyline.AutoSize = true;
-            this.checkBox_RemoveSkyline.Location = new System.Drawing.Point(131, 130);
+            this.checkBox_RemoveSkyline.Location = new System.Drawing.Point(131, 153);
             this.checkBox_RemoveSkyline.Name = "checkBox_RemoveSkyline";
             this.checkBox_RemoveSkyline.Size = new System.Drawing.Size(103, 17);
             this.checkBox_RemoveSkyline.TabIndex = 36;
@@ -632,7 +633,7 @@
             // checkBox_AutoLoadProfile
             // 
             this.checkBox_AutoLoadProfile.AutoSize = true;
-            this.checkBox_AutoLoadProfile.Location = new System.Drawing.Point(131, 153);
+            this.checkBox_AutoLoadProfile.Location = new System.Drawing.Point(131, 176);
             this.checkBox_AutoLoadProfile.Name = "checkBox_AutoLoadProfile";
             this.checkBox_AutoLoadProfile.Size = new System.Drawing.Size(151, 17);
             this.checkBox_AutoLoadProfile.TabIndex = 38;
@@ -827,6 +828,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_RainbowNotes);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BackupProfile);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ShowCurrentNote);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_useMidiAutoTuning);
@@ -870,7 +872,7 @@
             // checkBox_ShowCurrentNote
             // 
             this.checkBox_ShowCurrentNote.AutoSize = true;
-            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(131, 220);
+            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(131, 243);
             this.checkBox_ShowCurrentNote.Name = "checkBox_ShowCurrentNote";
             this.checkBox_ShowCurrentNote.Size = new System.Drawing.Size(116, 17);
             this.checkBox_ShowCurrentNote.TabIndex = 51;
@@ -894,7 +896,7 @@
             // checkBox_RiffRepeaterSpeedAboveOneHundred
             // 
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.AutoSize = true;
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 197);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 220);
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Name = "checkBox_RiffRepeaterSpeedAboveOneHundred";
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Size = new System.Drawing.Size(159, 17);
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.TabIndex = 49;
@@ -918,7 +920,7 @@
             // checkBox_ControlVolume
             // 
             this.checkBox_ControlVolume.AutoSize = true;
-            this.checkBox_ControlVolume.Location = new System.Drawing.Point(131, 175);
+            this.checkBox_ControlVolume.Location = new System.Drawing.Point(131, 198);
             this.checkBox_ControlVolume.Name = "checkBox_ControlVolume";
             this.checkBox_ControlVolume.Size = new System.Drawing.Size(128, 17);
             this.checkBox_ControlVolume.TabIndex = 47;
@@ -957,7 +959,7 @@
             // checkBox_CustomColors
             // 
             this.checkBox_CustomColors.AutoSize = true;
-            this.checkBox_CustomColors.Location = new System.Drawing.Point(131, 107);
+            this.checkBox_CustomColors.Location = new System.Drawing.Point(131, 130);
             this.checkBox_CustomColors.Name = "checkBox_CustomColors";
             this.checkBox_CustomColors.Size = new System.Drawing.Size(123, 17);
             this.checkBox_CustomColors.TabIndex = 44;
@@ -970,7 +972,7 @@
             // checkBox_RemoveLaneMarkers
             // 
             this.checkBox_RemoveLaneMarkers.AutoSize = true;
-            this.checkBox_RemoveLaneMarkers.Location = new System.Drawing.Point(131, 61);
+            this.checkBox_RemoveLaneMarkers.Location = new System.Drawing.Point(131, 84);
             this.checkBox_RemoveLaneMarkers.Name = "checkBox_RemoveLaneMarkers";
             this.checkBox_RemoveLaneMarkers.Size = new System.Drawing.Size(134, 17);
             this.checkBox_RemoveLaneMarkers.TabIndex = 43;
@@ -4403,6 +4405,17 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // checkBox_RainbowNotes
+            // 
+            this.checkBox_RainbowNotes.AutoSize = true;
+            this.checkBox_RainbowNotes.Location = new System.Drawing.Point(131, 61);
+            this.checkBox_RainbowNotes.Name = "checkBox_RainbowNotes";
+            this.checkBox_RainbowNotes.Size = new System.Drawing.Size(99, 17);
+            this.checkBox_RainbowNotes.TabIndex = 53;
+            this.checkBox_RainbowNotes.Text = "Rainbow Notes";
+            this.checkBox_RainbowNotes.UseVisualStyleBackColor = true;
+            this.checkBox_RainbowNotes.CheckedChanged += new System.EventHandler(this.Save_RainbowNotes);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4851,6 +4864,7 @@
         private System.Windows.Forms.GroupBox groupBox_Backups;
         private System.Windows.Forms.CheckBox checkBox_UnlimitedBackups;
         private System.Windows.Forms.NumericUpDown nUpDown_NumberOfBackups;
+        private System.Windows.Forms.CheckBox checkBox_RainbowNotes;
     }
 }
 

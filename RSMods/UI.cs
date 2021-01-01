@@ -287,6 +287,9 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on") // Rainbow String Enabled / Disabled
                 checkBox_RainbowStrings.Checked = true;
 
+            if (ReadSettings.ProcessSettings(ReadSettings.RainbowNotesEnabledIdentifier) == "on") // Rainbow Notes Enabled / Disabled
+                checkBox_RainbowNotes.Checked = true;
+
             if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on") // Extended Range Enabled / Disabled
             {
                 checkBox_ExtendedRange.Checked = true;
@@ -1217,6 +1220,8 @@ namespace RSMods
         }
 
         private void Save_RainbowStrings(object sender, EventArgs e) => SaveChanges(ReadSettings.RainbowStringsEnabledIdentifier, checkBox_RainbowStrings.Checked.ToString().ToLower());
+
+        private void Save_RainbowNotes(object sender, EventArgs e) => SaveChanges(ReadSettings.RainbowNotesEnabledIdentifier, checkBox_RainbowNotes.Checked.ToString().ToLower());
 
         private void Save_ExtendedRange(object sender, EventArgs e)
         {
