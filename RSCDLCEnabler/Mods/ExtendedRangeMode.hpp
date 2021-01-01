@@ -14,7 +14,9 @@ namespace ERMode {
 	void Toggle7StringMode();
 	void DoRainbow();
 	void ToggleRainbowMode();
+	void ToggleRainbowNotes();
 	bool IsRainbowEnabled();
+	bool IsRainbowNotesEnabled();
 	void ResetString(int strIndex);
 	void ResetAllStrings();
 	void SetCustomColors(int strIdx, ColorMap customColorMap);
@@ -25,6 +27,7 @@ namespace ERMode {
 
 	inline bool Is7StringSong = false;
 	inline bool RainbowEnabled = false;
+	inline bool RainbowNotesEnabled = false;
 	inline bool ColorsSaved = false;
 
 	inline int currentOffsetIdx = 0;

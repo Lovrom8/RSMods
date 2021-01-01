@@ -26,7 +26,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	}
 	
 	// Rainbow Notes
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS) // Rainbow Notes
+	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS) // Rainbow Notes
 		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -191,7 +191,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}*/
 
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
-	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { 
+	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0) { 
 
 		if (ERMode::customNoteColorH > 179)
 			ERMode::customNoteColorH -= 180;

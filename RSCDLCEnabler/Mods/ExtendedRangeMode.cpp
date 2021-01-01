@@ -240,12 +240,20 @@ void ERMode::ToggleRainbowMode() {
 	RainbowEnabled = !RainbowEnabled;
 }
 
+void ERMode::ToggleRainbowNotes() {
+	RainbowNotesEnabled = !RainbowNotesEnabled;
+}
+
 bool ERMode::IsRainbowEnabled() {
 	return RainbowEnabled;
 }
 
+bool ERMode::IsRainbowNotesEnabled() {
+	return RainbowNotesEnabled;
+}
+
 void ERMode::DoRainbow() {
-	if (!RainbowEnabled)
+	if (!RainbowEnabled && !RainbowNotesEnabled)
 		return;
 
 	std::vector<uintptr_t> stringsEnabled;
@@ -268,7 +276,7 @@ void ERMode::DoRainbow() {
 	float speed = 2.f;
 	float stringOffset = 20.f;
 
-	while (RainbowEnabled) {
+	while (RainbowEnabled || RainbowNotesEnabled) {
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
 		for (int i = 0; i < 6; i++) {
