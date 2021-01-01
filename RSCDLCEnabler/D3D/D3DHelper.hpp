@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <fstream>
 
 namespace D3DHelper {
 	inline char dlldir[320];
@@ -11,20 +12,20 @@ namespace D3DHelper {
 		return pldir;
 	}
 
-	inline void Log(const char* fmt, ...) {
-		if (!fmt || fmt)
-			return;
+	inline void Log(const char* fmt, ...)
+	{
+		if (!fmt)	return;
 
-		/*char text[4096];
-		va_list	ap;
+		char		text[4096];
+		va_list		ap;
 		va_start(ap, fmt);
 		vsprintf_s(text, fmt, ap);
 		va_end(ap);
 
 		std::ofstream logfile;
 		logfile.open(GetDirFile((PCHAR)"log.txt"), std::ios::app);
-		if (logfile.is_open() && text) logfile << text << std::endl;
-		logfile.close();*/
+		if (logfile.is_open() && text)	logfile << text << std::endl;
+		logfile.close();
 	}
 }
 

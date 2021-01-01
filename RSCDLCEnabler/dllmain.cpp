@@ -288,6 +288,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3D::GenerateTextures(pDevice, D3D::Rainbow);
 		//GenerateTextures(pDevice, Random);
 		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
+		D3D::GenerateTextures(pDevice, D3D::Noteway);
 	}
 
 	ImGui_ImplDX9_NewFrame();

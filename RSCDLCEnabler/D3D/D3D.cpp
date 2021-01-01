@@ -65,13 +65,13 @@ RSColor GenerateRandomColor() {
 	return rndColor;
 }
 
-void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet) {
+void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width, UINT in_height, int in_lineHeight, int howManyLines) {
 	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
 		Sleep(500);
 
 	using namespace Gdiplus;
-	UINT width = 256, height = 128;
-	int lineHeight = 8;
+	UINT width = in_width, height = in_height;
+	int lineHeight = in_lineHeight;
 
 	if (Ok != GdiplusStartup(&token_, &inp, NULL))
 		std::cout << "GDI+ failed to start up!" << std::endl;
@@ -82,7 +82,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
-	for (int i = 0; i < 16;i++) {
+	for (int i = 0; i < howManyLines; i++) {
 		currColor = colorSet[i]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 
 		Gdiplus::Color middleColor(currColor.r * 255, currColor.g * 255, currColor.b * 255); // Notes
@@ -214,6 +214,12 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 		colorSet.insert(colorSet.end(), colorsCB.begin(), colorsCB.end());
 
 		GenerateTexture(pDevice, &ourTexture, colorSet);
+	}
+	else if (type == Noteway) {
+		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor("FFFFFF"));
+		colorSet.insert(colorSet.end(), Settings::ConvertHexToColor("000000"));
+
+		GenerateTexture(pDevice, &notewayTexture, colorSet, 256, 32, 16, 2);
 	}
 }
 

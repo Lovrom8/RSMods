@@ -19,12 +19,13 @@ namespace D3D {
 		Random_Solid = 1,
 		Rainbow = 2,
 		Custom = 3,
+		Noteway = 4,
 	};
 
 	ColorMap GetCustomColors(int strIdx, bool CB);
 	void SetCustomColors();
 	HRESULT GenerateSolidTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32);
-	void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet);
+	void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16);
 	void GenerateTextures(IDirect3DDevice9* pDevice, TextureType type);
 };
 
@@ -35,18 +36,19 @@ inline ULONG_PTR token_;
 inline static std::random_device rd;
 inline static std::mt19937 rng(rd());
 
-inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
+inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture;
 
 inline unsigned long crc;
 inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcNoteBackground = 0x00035193, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
+inline unsigned long crcNotewayGutter = 0x00004a4a, crcNotewayPreRollLanes = 0x00035193, crcNotewayNumbers = 0x00090000, crcNotewayLanes = 0x005a00b9, crcNotewayStems = 0x02a50002;
 
 inline float rainbowSpeed = 2.f;
 inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture;
-inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture;
+inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
+inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture, notewayTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
 inline std::vector<ColorList> randomTextureColors;
@@ -139,6 +141,10 @@ inline std::vector<ThiccMesh> tunerHighlight{
 inline std::vector<ThiccMesh> leftyFix{
 	{ 60, 392, 198, 0, 0, 4, 2, 9, 7 }, // Machine Heads 3+3
 	{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // Strings past tuner 3+3
+};
+
+inline std::vector<ThiccMesh> noteway{
+
 };
 
 // All the single (thicc) ladies

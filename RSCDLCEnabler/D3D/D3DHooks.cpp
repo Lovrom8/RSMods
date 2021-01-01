@@ -149,11 +149,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (startLogging) {
 				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 					allMeshes.push_back(currentThicc);
-				if (!NOTE_STEMS && (Stride == 32 || Stride == 34 || Stride == 36)) // Criteria for search
+				if (NOTE_STEMS) // Criteria for search
 					std::cout << "{ " << Stride << ", " << PrimCount << ", " << NumVertices << ", " << StartIndex << ", " << StartRegister << ", " << (UINT)PrimType << ", " << (UINT)decl->Type << ", " << VectorCount << ", " << NumElements << " },"<< std::endl; // Thicc Mesh -> Console
 				//std::cout << "{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
 				//Log("{ %d, %d, %d},", Stride, PrimCount, NumVertices); // Mesh -> Log File
 				//Log("{ %d, %d, %d, %d, %d, %d, %d, %d, %d }, ", Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements); // ThiccMesh -> Log File
+				//std::cout << std::hex << crc << std::endl;
 			}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -175,6 +176,19 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Mods
+
+	// Change Noteway Color | This NEEDS to be above Extended Range / Custom Colors or it won't work.
+	/*if (IsToBeRemoved(noteHighway, current)) {
+		pDevice->GetTexture(1, &pBaseNotewayTexture);
+		pCurrNotewayTexture = (IDirect3DTexture9*)pBaseNotewayTexture;
+
+		if (pBaseNotewayTexture) {
+			if (CRCForTexture(pCurrNotewayTexture, crc)) {
+				if (crc == crcNotewayLanes)
+					pDevice->SetTexture(1, notewayTexture);
+			}
+		}
+	}*/
 
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
 	if (ERMode::RainbowEnabled && ERMode::customNoteColorH > 0) { 
