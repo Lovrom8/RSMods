@@ -202,7 +202,8 @@ namespace RSMods.Twitch
             //    return;
 
             DefaultRewards.AddRange(new List<TwitchReward> {
-                new TwitchReward("Rainbow Strings", "Your strings will continuously shift colors like rainbow", "rainbowstrings"),
+                new TwitchReward("Rainbow Strings", "Your strings will continuously shift colors like a rainbow", "rainbowstrings"),
+                new TwitchReward("Rainbow Notes", "The notes on screeen will continously shift colors like a rainbow", "rainbownotes"),
                 new TwitchReward("Remove Notes", "Make noteheads not show at all",  "removenotes"),
                 new TwitchReward("Transparent Notes", "Make noteheads transparent",  "transparentnotes"),
                 new TwitchReward("Solid color notes", "Make all notes have the same color",  "solidnotes"),
