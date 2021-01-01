@@ -209,6 +209,9 @@ namespace RSMods
 
             string backupFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
 
+            if (!Directory.Exists(backupFolder))
+                return;
+
             DirectoryInfo[] backups = new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime).ToArray();
 
             int foldersLeftToRemove = backups.Length - maxAmountOfBackups;
