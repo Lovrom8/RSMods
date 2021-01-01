@@ -10,6 +10,7 @@ void Settings::Initialize()
 		{"ShowSongTimerKey", "S"},
 		{"ForceReEnumerationKey", "F"},
 		{"RainbowStringsKey", "V"},
+		{"RainbowNotesKey", "N"},
 		{"RemoveLyricsKey", "L"},
 		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
@@ -124,6 +125,7 @@ void Settings::ReadKeyBinds() {
 			{ "ForceReEnumerationKey", reader.GetValue("Keybinds", "ForceReEnumerationKey", "F")},
 			{ "MenuToggleKey", reader.GetValue("Keybinds", "MenuToggleKey", "M")},
 			{ "RainbowStringsKey", reader.GetValue("Keybinds", "RainbowStringsKey", "V")},
+			{ "RainbowNotesKey", reader.GetValue("Keybinds", "RainbowNotesKey", "N")},
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
 
@@ -175,6 +177,7 @@ void Settings::ReadModSettings() {
 	modSettings["ShowSongTimerEnabled"] = reader.GetValue("Toggle Switches", "ShowSongTimer", "off");
 	modSettings["ForceReEnumerationEnabled"] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "automatic");
 	modSettings["RainbowStringsEnabled"] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
+	modSettings["RainbowNotesEnabled"] = reader.GetValue("Toggle Switches", "RainbowNotes", "off");
 	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "off");
 	modSettings["ExtendedRangeDropTuning"] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
 	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");

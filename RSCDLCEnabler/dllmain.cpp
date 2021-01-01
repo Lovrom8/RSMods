@@ -70,6 +70,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				ERMode::ToggleRainbowMode();
 				std::cout << "Rainbows Are Pretty Cool" << std::endl;
 			}
+
+			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") {
+				ERMode::ToggleRainbowNotes();
+				std::cout << "Those notes do be kinda pretty" << std::endl;
+			}
+
 			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
 				if (D3DHooks::RemoveLyrics)
@@ -791,7 +797,7 @@ unsigned WINAPI MainThread() {
 			if (enableColorBlindCheckboxGUI)
 				MemHelpers::ToggleCB(cbEnabled);
 
-			if (ERMode::IsRainbowEnabled()) // Rainbow mode / ER Mode
+			if (ERMode::IsRainbowEnabled() || ERMode::IsRainbowNotesEnabled()) // Rainbow mode / ER Mode
 				ERMode::DoRainbow();
 			else
 				ERMode::Toggle7StringMode();

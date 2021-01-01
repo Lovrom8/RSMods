@@ -275,15 +275,18 @@ void ERMode::DoRainbow() {
 	float h = 0.f;
 	float speed = 2.f;
 	float stringOffset = 20.f;
-
+	bool didWeUseRainbowStrings = false; // If we don't use this, then the strings won't reset to default colors unless you end with rainbow strings.
 	while (RainbowEnabled || RainbowNotesEnabled) {
 		h += speed;
 		if (h >= 360.f) { h = 0.f; }
 		for (int i = 0; i < 6; i++) {
-			oldEnabledColors.push_back(*(Color*)stringsEnabled[i]);
-			oldHigh.push_back(*(Color*)stringsHigh[i]);
-			oldDisabledColors.push_back(*(Color*)stringsDisabled[i]);
-
+			if (RainbowEnabled) {
+				oldEnabledColors.push_back(*(Color*)stringsEnabled[i]);
+				oldHigh.push_back(*(Color*)stringsHigh[i]);
+				oldDisabledColors.push_back(*(Color*)stringsDisabled[i]);
+				didWeUseRainbowStrings = true;
+			}
+			
 			int newH = h + (stringOffset * i);
 			c.setH(newH);
 
@@ -294,21 +297,24 @@ void ERMode::DoRainbow() {
 				customNoteColorH = (newH / 2) - 1;
 			else
 				customNoteColorH = 1;
-			*(Color*)stringsEnabled[i] = c;
-			*(Color*)stringsHigh[i] = c;
-			*(Color*)stringsDisabled[i] = c;
+			if (RainbowEnabled) {
+				*(Color*)stringsEnabled[i] = c;
+				*(Color*)stringsHigh[i] = c;
+				*(Color*)stringsDisabled[i] = c;
+			}
+
+			if (!RainbowEnabled && didWeUseRainbowStrings) {
+				if (oldEnabledColors.size() == 0)
+					return;
+
+				for (int i = 0; i < 6; i++) {
+					*(Color*)stringsEnabled[i] = oldEnabledColors[i];
+					*(Color*)stringsHigh[i] = oldHigh[i];
+					*(Color*)stringsDisabled[i] = oldDisabledColors[i];
+				}
+			}
 		}
-
 		Sleep(16);
-	}
-
-	if (oldEnabledColors.size() == 0)
-		return;
-
-	for (int i = 0; i < 6; i++) {
-		*(Color*)stringsEnabled[i] = oldEnabledColors[i];
-		*(Color*)stringsHigh[i] = oldHigh[i];
-		*(Color*)stringsDisabled[i] = oldDisabledColors[i];
 	}
 }
 
