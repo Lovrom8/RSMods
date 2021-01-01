@@ -76,6 +76,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_RainbowNotesKey = new System.Windows.Forms.Label();
             this.label_RRSpeedKey = new System.Windows.Forms.Label();
             this.label_RemoveLyricsKey = new System.Windows.Forms.Label();
             this.button_ClearSelectedKeybind_MODS = new System.Windows.Forms.Button();
@@ -352,7 +353,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.label_RainbowNotesKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -673,7 +673,7 @@
             // radio_LoftAlwaysOff
             // 
             this.radio_LoftAlwaysOff.AutoSize = true;
-            this.radio_LoftAlwaysOff.Location = new System.Drawing.Point(16, 17);
+            this.radio_LoftAlwaysOff.Location = new System.Drawing.Point(17, 17);
             this.radio_LoftAlwaysOff.Name = "radio_LoftAlwaysOff";
             this.radio_LoftAlwaysOff.Size = new System.Drawing.Size(96, 17);
             this.radio_LoftAlwaysOff.TabIndex = 44;
@@ -686,7 +686,7 @@
             // radio_LoftOffHotkey
             // 
             this.radio_LoftOffHotkey.AutoSize = true;
-            this.radio_LoftOffHotkey.Location = new System.Drawing.Point(17, 37);
+            this.radio_LoftOffHotkey.Location = new System.Drawing.Point(17, 38);
             this.radio_LoftOffHotkey.Name = "radio_LoftOffHotkey";
             this.radio_LoftOffHotkey.Size = new System.Drawing.Size(115, 17);
             this.radio_LoftOffHotkey.TabIndex = 45;
@@ -741,7 +741,7 @@
             this.groupBox_HowToEnumerate.Controls.Add(this.nUpDown_ForceEnumerationXMS);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationAutomatic);
             this.groupBox_HowToEnumerate.Controls.Add(this.radio_ForceEnumerationManual);
-            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(670, 27);
+            this.groupBox_HowToEnumerate.Location = new System.Drawing.Point(670, 20);
             this.groupBox_HowToEnumerate.Name = "groupBox_HowToEnumerate";
             this.groupBox_HowToEnumerate.Size = new System.Drawing.Size(293, 77);
             this.groupBox_HowToEnumerate.TabIndex = 47;
@@ -791,7 +791,7 @@
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffInSong);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffHotkey);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftAlwaysOff);
-            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(974, 27);
+            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(974, 20);
             this.groupBox_LoftOffWhen.Name = "groupBox_LoftOffWhen";
             this.groupBox_LoftOffWhen.Size = new System.Drawing.Size(145, 86);
             this.groupBox_LoftOffWhen.TabIndex = 48;
@@ -1056,6 +1056,15 @@
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.HideToolTips);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // label_RainbowNotesKey
+            // 
+            this.label_RainbowNotesKey.AutoSize = true;
+            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 101);
+            this.label_RainbowNotesKey.Name = "label_RainbowNotesKey";
+            this.label_RainbowNotesKey.Size = new System.Drawing.Size(86, 13);
+            this.label_RainbowNotesKey.TabIndex = 54;
+            this.label_RainbowNotesKey.Text = "Rainbow Notes: ";
             // 
             // label_RRSpeedKey
             // 
@@ -1957,7 +1966,7 @@
             // 
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineOffInSong);
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineAlwaysOff);
-            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(974, 221);
+            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(974, 200);
             this.groupBox_ToggleSkylineWhen.Name = "groupBox_ToggleSkylineWhen";
             this.groupBox_ToggleSkylineWhen.Size = new System.Drawing.Size(145, 68);
             this.groupBox_ToggleSkylineWhen.TabIndex = 69;
@@ -1995,9 +2004,9 @@
             // 
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsOffHotkey);
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsAlwaysOff);
-            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(974, 304);
+            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(974, 273);
             this.groupBox_ToggleLyricsOffWhen.Name = "groupBox_ToggleLyricsOffWhen";
-            this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(162, 68);
+            this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(149, 68);
             this.groupBox_ToggleLyricsOffWhen.TabIndex = 70;
             this.groupBox_ToggleLyricsOffWhen.TabStop = false;
             this.groupBox_ToggleLyricsOffWhen.Text = "Toggle Lyrics Off When:";
@@ -2006,7 +2015,7 @@
             // radio_LyricsOffHotkey
             // 
             this.radio_LyricsOffHotkey.AutoSize = true;
-            this.radio_LyricsOffHotkey.Location = new System.Drawing.Point(16, 42);
+            this.radio_LyricsOffHotkey.Location = new System.Drawing.Point(17, 42);
             this.radio_LyricsOffHotkey.Name = "radio_LyricsOffHotkey";
             this.radio_LyricsOffHotkey.Size = new System.Drawing.Size(124, 17);
             this.radio_LyricsOffHotkey.TabIndex = 46;
@@ -2020,7 +2029,7 @@
             // radio_LyricsAlwaysOff
             // 
             this.radio_LyricsAlwaysOff.AutoSize = true;
-            this.radio_LyricsAlwaysOff.Location = new System.Drawing.Point(16, 19);
+            this.radio_LyricsAlwaysOff.Location = new System.Drawing.Point(17, 19);
             this.radio_LyricsAlwaysOff.Name = "radio_LyricsAlwaysOff";
             this.radio_LyricsAlwaysOff.Size = new System.Drawing.Size(105, 17);
             this.radio_LyricsAlwaysOff.TabIndex = 44;
@@ -2067,7 +2076,7 @@
             // 
             this.button_GuitarSpeakHelp.BackColor = System.Drawing.Color.Azure;
             this.button_GuitarSpeakHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_GuitarSpeakHelp.Location = new System.Drawing.Point(262, 7);
+            this.button_GuitarSpeakHelp.Location = new System.Drawing.Point(402, 11);
             this.button_GuitarSpeakHelp.Name = "button_GuitarSpeakHelp";
             this.button_GuitarSpeakHelp.Size = new System.Drawing.Size(24, 23);
             this.button_GuitarSpeakHelp.TabIndex = 12;
@@ -2219,7 +2228,7 @@
             // 
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockOffInSong);
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockAlwaysOff);
-            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(974, 131);
+            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(974, 117);
             this.groupBox_ToggleHeadstockOffWhen.Name = "groupBox_ToggleHeadstockOffWhen";
             this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(162, 77);
             this.groupBox_ToggleHeadstockOffWhen.TabIndex = 73;
@@ -2242,7 +2251,7 @@
             // radio_HeadstockAlwaysOff
             // 
             this.radio_HeadstockAlwaysOff.AutoSize = true;
-            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(6, 27);
+            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(8, 27);
             this.radio_HeadstockAlwaysOff.Name = "radio_HeadstockAlwaysOff";
             this.radio_HeadstockAlwaysOff.Size = new System.Drawing.Size(130, 17);
             this.radio_HeadstockAlwaysOff.TabIndex = 0;
@@ -2479,7 +2488,7 @@
             // 
             this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
             this.groupBox_Backups.Controls.Add(this.nUpDown_NumberOfBackups);
-            this.groupBox_Backups.Location = new System.Drawing.Point(991, 385);
+            this.groupBox_Backups.Location = new System.Drawing.Point(991, 354);
             this.groupBox_Backups.Name = "groupBox_Backups";
             this.groupBox_Backups.Size = new System.Drawing.Size(132, 86);
             this.groupBox_Backups.TabIndex = 100006;
@@ -2692,7 +2701,7 @@
             // label_MidiWhatTuningPedalDoYouUse
             // 
             this.label_MidiWhatTuningPedalDoYouUse.AutoSize = true;
-            this.label_MidiWhatTuningPedalDoYouUse.Location = new System.Drawing.Point(10, 127);
+            this.label_MidiWhatTuningPedalDoYouUse.Location = new System.Drawing.Point(7, 128);
             this.label_MidiWhatTuningPedalDoYouUse.Name = "label_MidiWhatTuningPedalDoYouUse";
             this.label_MidiWhatTuningPedalDoYouUse.Size = new System.Drawing.Size(166, 13);
             this.label_MidiWhatTuningPedalDoYouUse.TabIndex = 2;
@@ -2710,9 +2719,9 @@
             // listBox_ListMidiDevices
             // 
             this.listBox_ListMidiDevices.FormattingEnabled = true;
-            this.listBox_ListMidiDevices.Location = new System.Drawing.Point(6, 26);
+            this.listBox_ListMidiDevices.Location = new System.Drawing.Point(13, 27);
             this.listBox_ListMidiDevices.Name = "listBox_ListMidiDevices";
-            this.listBox_ListMidiDevices.Size = new System.Drawing.Size(208, 43);
+            this.listBox_ListMidiDevices.Size = new System.Drawing.Size(288, 43);
             this.listBox_ListMidiDevices.TabIndex = 0;
             this.listBox_ListMidiDevices.SelectedIndexChanged += new System.EventHandler(this.Save_AutoTuneDevice);
             // 
@@ -4418,15 +4427,6 @@
             this.label_SettingsSaved.TabIndex = 52;
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
-            // 
-            // label_RainbowNotesKey
-            // 
-            this.label_RainbowNotesKey.AutoSize = true;
-            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 101);
-            this.label_RainbowNotesKey.Name = "label_RainbowNotesKey";
-            this.label_RainbowNotesKey.Size = new System.Drawing.Size(86, 13);
-            this.label_RainbowNotesKey.TabIndex = 54;
-            this.label_RainbowNotesKey.Text = "Rainbow Notes: ";
             // 
             // MainForm
             // 
