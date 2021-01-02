@@ -41,7 +41,7 @@ inline static std::mt19937 rng(rd());
 inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture, pBaseGutterTexture, pBaseFretNumTexture;
 
 inline unsigned long crc;
-inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
+inline unsigned long crcNotewayFretNumbers = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLanes = 0x35193, crcNotewayGutters = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
 

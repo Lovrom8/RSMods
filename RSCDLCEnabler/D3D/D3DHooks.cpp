@@ -186,9 +186,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (CRCForTexture(pCurrNotewayTexture, crc)) {
 				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
 					pDevice->SetTexture(1, notewayTexture);
-				else if (crc == crcFretNums && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
+				else if (crc == crcNotewayFretNumbers && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
 					pDevice->SetTexture(1, fretNumTexture);
-				else if (crc == crcChordShapeSurround && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
+				else if (crc == crcNotewayGutters && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
 					pDevice->SetTexture(1, gutterTexture);
 			}
 		}
