@@ -27,6 +27,7 @@ namespace RSMods.Twitch.EffectServer
         private Dictionary<int, TwitchReward> usedRewards;
         private ConcurrentQueue<TwitchReward> remainingRewards;
         private int retryInterval = 1; // In seconds
+        private bool reconnect = false;
 
         private string ipAdr = "127.0.0.1";
         private int port = 45659;
@@ -36,11 +37,16 @@ namespace RSMods.Twitch.EffectServer
             StartServer();
         }
 
-        private void StartServer()
+        private void StartConnectionThread()
         {
             tcpListenerThread = new Thread(new ThreadStart(GetConnectionToTheGame));
             tcpListenerThread.IsBackground = true;
             tcpListenerThread.Start();
+        }
+
+        private void StartServer()
+        {
+            StartConnectionThread();
 
             cts = new CancellationTokenSource();
             retrySpan = TimeSpan.FromSeconds(retryInterval);
@@ -75,19 +81,37 @@ namespace RSMods.Twitch.EffectServer
             }, ct);
         }
 
-        private void GetConnectionToTheGame()
+        public void StopTCPListener()
         {
-            tcpListener = new TcpListener(IPAddress.Parse(ipAdr), port);
-            tcpListener.Start();
-
             try
             {
+                if (tcpListener != null)
+                    tcpListener.Stop();
+            }
+            catch (SocketException) //Likely the error due to it being stopped from another thread
+            {
+            }
+        }
+
+        private void GetConnectionToTheGame()
+        {
+            try
+            {
+                if (tcpListener != null && tcpListener.Server.IsBound) //No need to reconnect if we have already connected to the socket
+                    return;
+
+                tcpListener = new TcpListener(IPAddress.Parse(ipAdr), port);
+
+                reconnect = false;
+
+                tcpListener.Start();
                 connectedTcpClient = tcpListener.AcceptTcpClient();
                 TwitchSettings.Get.AddToLog("Connected to the game...");
             }
             catch (SocketException socketException)
             {
-                TwitchSettings.Get.AddToLog($"SocketException: {socketException.Message}");
+                if (!socketException.Message.Contains("WSACancelBlockingCall"))
+                    TwitchSettings.Get.AddToLog($"SocketException: {socketException.Message}");
             }
         }
 
@@ -142,7 +166,7 @@ namespace RSMods.Twitch.EffectServer
                              if (response.status == 3) // If retry code was returned, put it back in the queue
                              {
                                  remainingRewards.Enqueue(currentReward);
-                                // TwitchSettings.Get.AddToLog($"Requeing {currentReward.Name}");
+                                 // TwitchSettings.Get.AddToLog($"Requeing {currentReward.Name}");
                              }
 
                              // We'd already dequeued the current effect, so no need to remove it if it goes through
@@ -159,6 +183,13 @@ namespace RSMods.Twitch.EffectServer
                          TwitchSettings.Get.AddToLog($"IO Exception: {ioex.Message}");
 
                      remainingRewards = new ConcurrentQueue<TwitchReward>(); // Clean up after ourselves
+
+                     if (!reconnect)
+                     {
+                         tcpListener.Stop();
+                         StartConnectionThread();
+                         reconnect = true;
+                     }
                  }
                  catch (SocketException socketException)
                  {

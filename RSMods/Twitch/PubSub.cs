@@ -49,6 +49,9 @@ namespace RSMods.Twitch
             pubSub.OnChannelSubscription += OnSubscriptionRecieved;
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
 
+            if (effectServer != null)
+                effectServer.StopTCPListener();
+
             effectServer = new EffectServerTCP();
         }
 
