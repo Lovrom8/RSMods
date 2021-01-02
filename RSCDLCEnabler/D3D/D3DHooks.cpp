@@ -178,17 +178,21 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	// Mods
 
 	// Change Noteway Color | This NEEDS to be above Extended Range / Custom Colors or it won't work.
-	/*if (IsToBeRemoved(noteHighway, current)) {
+	if (IsToBeRemoved(noteHighway, current) && Settings::ReturnSettingValue("CustomHighwayColors") == (std::string)"on") {
 		pDevice->GetTexture(1, &pBaseNotewayTexture);
 		pCurrNotewayTexture = (IDirect3DTexture9*)pBaseNotewayTexture;
 
 		if (pBaseNotewayTexture) {
 			if (CRCForTexture(pCurrNotewayTexture, crc)) {
-				if (crc == crcNoteLanes)
+				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
 					pDevice->SetTexture(1, notewayTexture);
+				else if (crc == crcFretNums && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
+					pDevice->SetTexture(1, fretNumTexture);
+				else if (crc == crcChordShapeSurround && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
+					pDevice->SetTexture(1, gutterTexture);
 			}
 		}
-	}*/
+	}
 
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
 	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0) { 

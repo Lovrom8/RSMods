@@ -14,11 +14,13 @@ namespace Settings {
 	void ReadKeyBinds();
 	void ReadModSettings();
 	void ReadStringColors();
+	void ReadNotewayColors();
 
 	// Return INI Settings
 	unsigned int GetKeyBind(std::string name);
 	int GetModSetting(std::string name);
 	std::string ReturnSettingValue(std::string name);
+	std::string ReturnNotewayColor(std::string name);
 
 	// Functions
 	int GetVKCodeForString(std::string vkString);
@@ -40,6 +42,7 @@ namespace Settings {
 	inline std::map<std::string, std::string> modSettings;
 	inline std::map<std::string, int> customSettings;
 	inline std::map<std::string, std::string> twitchSettings;
+	inline std::map<std::string, std::string> notewayColors;
 
 	// Misc 
 	inline std::map<std::string, unsigned int> keyMap = { // Talk about taking the easy way out ;)

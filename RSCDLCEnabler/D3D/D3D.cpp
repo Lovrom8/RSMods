@@ -216,10 +216,18 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 		GenerateTexture(pDevice, &ourTexture, colorSet);
 	}
 	else if (type == Noteway) {
-		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor("FFFFFF"));
-		colorSet.insert(colorSet.end(), Settings::ConvertHexToColor("000000"));
+		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayNumbered")));
+		colorSet.insert(colorSet.end(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayUnNumbered")));
 
 		GenerateTexture(pDevice, &notewayTexture, colorSet, 256, 32, 16, 2);
+	}
+	else if (type == Gutter) {
+		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayGutter")));
+		GenerateTexture(pDevice, &gutterTexture, colorSet, 256, 16, 16, 1);
+	}
+	else if (type == FretNums) {
+		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomFretNubmers")));
+		GenerateTexture(pDevice, &fretNumTexture, colorSet, 256, 16, 16, 1);
 	}
 }
 

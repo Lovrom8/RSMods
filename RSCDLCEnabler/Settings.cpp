@@ -203,6 +203,7 @@ void Settings::ReadModSettings() {
 	modSettings["ShowCurrentNoteOnScreen"] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
 	modSettings["OnScreenFont"] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");
 	modSettings["ProfileToLoad"] = reader.GetValue("Toggle Switches", "ProfileToLoad", "");
+	modSettings["CustomHighwayColors"] = reader.GetValue("Highway Colors", "CustomHighwayColors", "");
 }
 
 void Settings::ReadStringColors() {
@@ -234,6 +235,21 @@ void Settings::ReadStringColors() {
 	}
 }
 
+void Settings::ReadNotewayColors() {
+	CSimpleIniA reader;
+	if (reader.LoadFile("RSMods.ini") < 0) {
+		std::cout << "Error reading saved settings" << std::endl;
+		return;
+	}
+
+	notewayColors = {
+			{ "CustomHighwayNumbered", reader.GetValue("Highway Colors", "CustomHighwayNumbered", "") },
+			{ "CustomHighwayUnNumbered", reader.GetValue("Highway Colors", "CustomHighwayUnNumbered", "") },
+			{ "CustomHighwayGutter", reader.GetValue("Highway Colors", "CustomHighwayGutter", "") },
+			{ "CustomFretNubmers", reader.GetValue("Highway Colors", "CustomFretNubmers", "") },
+	};
+}
+
 
 // Return INI Settings
 
@@ -254,6 +270,10 @@ bool Settings::IsTwitchSettingEnabled(std::string name) {
 		return false;
 
 	return twitchSettings[name] == "on";
+}
+
+std::string Settings::ReturnNotewayColor(std::string name) {
+	return notewayColors[name];
 }
 
 // Misc Functions
@@ -344,6 +364,7 @@ void Settings::UpdateSettings() {
 	ReadKeyBinds();
 	ReadModSettings();
 	ReadStringColors();
+	ReadNotewayColors();
 }
 
 

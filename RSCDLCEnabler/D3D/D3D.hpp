@@ -20,6 +20,8 @@ namespace D3D {
 		Rainbow = 2,
 		Custom = 3,
 		Noteway = 4,
+		Gutter = 5,
+		FretNums = 6,
 	};
 
 	ColorMap GetCustomColors(int strIdx, bool CB);
@@ -36,7 +38,7 @@ inline ULONG_PTR token_;
 inline static std::random_device rd;
 inline static std::mt19937 rng(rd());
 
-inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture;
+inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture, pBaseGutterTexture, pBaseFretNumTexture;
 
 inline unsigned long crc;
 inline unsigned long crcFretNums = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLaneMarkers = 0x35193, crcChordShapeSurround = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
@@ -47,7 +49,7 @@ inline float rainbowSpeed = 2.f;
 inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
-inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture, notewayTexture;
+inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture, notewayTexture, gutterTexture, fretNumTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
 inline std::vector<ColorList> randomTextureColors;
