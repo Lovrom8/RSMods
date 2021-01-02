@@ -2736,6 +2736,7 @@
             this.groupBox_CustomHighway.TabStop = false;
             this.groupBox_CustomHighway.Text = "Custom Highway Colors";
             this.groupBox_CustomHighway.Visible = false;
+            this.groupBox_CustomHighway.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_ResetNotewayColors
             // 

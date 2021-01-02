@@ -118,6 +118,7 @@ namespace RSMods
             TooltipDictionary.Add(button_ChangeUnNumberedFrets, "This will change the color of all NON-numbered frets in game.\nThis needs to be paired with Change Numbered Frets or it won't work!");
             TooltipDictionary.Add(button_ChangeNotewayGutter, "This will change what the sides of the noteway are colored with.");
             TooltipDictionary.Add(button_ChangeFretNumber, "This will change the color of the fret numbers that show up on the noteway.\nThis doesn't change the orange note numbers!");
+            TooltipDictionary.Add(groupBox_CustomHighway, "These colors are just the \"Base\" colors.\nRocksmith tampers with these colors.\nAim for a lighter color to try to counteract the tampering");
 
             // RS_ASIO
             TooltipDictionary.Add(groupBox_ASIO_Output, "If your headphones support ASIO, this is where you would manage them.");
