@@ -20,115 +20,123 @@ namespace RSMods
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
                                                 GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
-                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups;
-            public static string
-                // Song List Identifiers
-                Songlist1Identifier = "SongListTitle_1 = ",
-                Songlist2Identifier = "SongListTitle_2 = ",
-                Songlist3Identifier = "SongListTitle_3 = ",
-                Songlist4Identifier = "SongListTitle_4 = ",
-                Songlist5Identifier = "SongListTitle_5 = ",
-                Songlist6Identifier = "SongListTitle_6 = ",
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups,
+                             CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers;
+        public static string
+            // Song List Identifiers
+            Songlist1Identifier = "SongListTitle_1 = ",
+            Songlist2Identifier = "SongListTitle_2 = ",
+            Songlist3Identifier = "SongListTitle_3 = ",
+            Songlist4Identifier = "SongListTitle_4 = ",
+            Songlist5Identifier = "SongListTitle_5 = ",
+            Songlist6Identifier = "SongListTitle_6 = ",
 
-                // Keybindings
-                ToggleLoftIdentifier = "ToggleLoftKey = ",
-                ShowSongTimerIdentifier = "ShowSongTimerKey = ",
-                ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
-                RainbowStringsIdentifier = "RainbowStringsKey = ",
-                RainbowNotesIdentifier = "RainbowNotesKey = ",
-                RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
-                RRSpeedKeyIdentifier = "RRSpeedKey = ",
+            // Keybindings
+            ToggleLoftIdentifier = "ToggleLoftKey = ",
+            ShowSongTimerIdentifier = "ShowSongTimerKey = ",
+            ForceReEnumerationIdentifier = "ForceReEnumerationKey = ",
+            RainbowStringsIdentifier = "RainbowStringsKey = ",
+            RainbowNotesIdentifier = "RainbowNotesKey = ",
+            RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
+            RRSpeedKeyIdentifier = "RRSpeedKey = ",
 
-                // Audio Keybindings
-                MasterVolumeKeyIdentifier = "MasterVolumeKey = ",
-                SongVolumeKeyIdentifier = "SongVolumeKey = ",
-                Player1VolumeKeyIdentifier = "Player1VolumeKey = ",
-                Player2VolumeKeyIdentifier = "Player2VolumeKey = ",
-                MicrophoneVolumeKeyIdentifier = "MicrophoneVolumeKey = ",
-                VoiceOverVolumeKeyIdentifier = "VoiceOverVolumeKey = ",
-                SFXVolumeKeyIdentifier = "SFXVolumeKey = ",
-                ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
+            // Audio Keybindings
+            MasterVolumeKeyIdentifier = "MasterVolumeKey = ",
+            SongVolumeKeyIdentifier = "SongVolumeKey = ",
+            Player1VolumeKeyIdentifier = "Player1VolumeKey = ",
+            Player2VolumeKeyIdentifier = "Player2VolumeKey = ",
+            MicrophoneVolumeKeyIdentifier = "MicrophoneVolumeKey = ",
+            VoiceOverVolumeKeyIdentifier = "VoiceOverVolumeKey = ",
+            SFXVolumeKeyIdentifier = "SFXVolumeKey = ",
+            ChangeSelectedVolumeKeyIdentifier = "ChangedSelectedVolumeKey = ",
 
-                // Toggle Effects
-                ToggleLoftEnabledIdentifier = "ToggleLoft = ",
-                VolumeControlEnabledIdentifier = "VolumeControl = ",
-                ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
-                ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
-                RainbowStringsEnabledIdentifier = "RainbowStrings = ",
-                RainbowNotesEnabledIdentifier = "RainbowNotes = ",
-                ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
-                ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
-                CustomStringColorNumberIndetifier = "CustomStringColors = ",
-                DiscoModeIdentifier = "DiscoMode = ",
-                RemoveHeadstockIdentifier = "Headstock = ",
-                RemoveSkylineIdentifier = "Skyline = ",
-                GreenScreenWallIdentifier = "GreenScreenWall = ",
-                ForceProfileEnabledIdentifier = "ForceProfileLoad = ",
-                FretlessModeEnabledIdentifier = "Fretless = ",
-                RemoveInlaysIdentifier = "Inlays = ",
-                ToggleLoftWhenIdentifier = "ToggleLoftWhen = ",
-                ToggleSkylineWhenIdentifier = "ToggleSkylineWhen = ",
-                RemoveLaneMarkersIdentifier = "LaneMarkers = ",
-                RemoveLyricsIdentifier = "Lyrics = ",
-                RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
-                GuitarSpeakIdentifier = "GuitarSpeak = ",
-                RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
-                ScreenShotScoresIdentifier = "ScreenShotScores = ",
-                RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
-                MidiAutoTuningIdentifier = "AutoTuneForSong = ",
-                MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
-                ChordsModeIdentifier = "ChordsMode = ",
-                ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
-                OnScreenFontIdentifier = "OnScreenFont = ",
-                ProfileToLoadIdentifier = "ProfileToLoad = ",
+            // Toggle Effects
+            ToggleLoftEnabledIdentifier = "ToggleLoft = ",
+            VolumeControlEnabledIdentifier = "VolumeControl = ",
+            ShowSongTimerEnabledIdentifier = "ShowSongTimer = ",
+            ForceReEnumerationEnabledIdentifier = "ForceReEnumeration = ",
+            RainbowStringsEnabledIdentifier = "RainbowStrings = ",
+            RainbowNotesEnabledIdentifier = "RainbowNotes = ",
+            ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
+            ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
+            CustomStringColorNumberIndetifier = "CustomStringColors = ",
+            DiscoModeIdentifier = "DiscoMode = ",
+            RemoveHeadstockIdentifier = "Headstock = ",
+            RemoveSkylineIdentifier = "Skyline = ",
+            GreenScreenWallIdentifier = "GreenScreenWall = ",
+            ForceProfileEnabledIdentifier = "ForceProfileLoad = ",
+            FretlessModeEnabledIdentifier = "Fretless = ",
+            RemoveInlaysIdentifier = "Inlays = ",
+            ToggleLoftWhenIdentifier = "ToggleLoftWhen = ",
+            ToggleSkylineWhenIdentifier = "ToggleSkylineWhen = ",
+            RemoveLaneMarkersIdentifier = "LaneMarkers = ",
+            RemoveLyricsIdentifier = "Lyrics = ",
+            RemoveLyricsWhenIdentifier = "RemoveLyricsWhen = ",
+            GuitarSpeakIdentifier = "GuitarSpeak = ",
+            RemoveHeadstockWhenIdentifier = "RemoveHeadstockWhen = ",
+            ScreenShotScoresIdentifier = "ScreenShotScores = ",
+            RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
+            MidiAutoTuningIdentifier = "AutoTuneForSong = ",
+            MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
+            ChordsModeIdentifier = "ChordsMode = ",
+            ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
+            OnScreenFontIdentifier = "OnScreenFont = ",
+            ProfileToLoadIdentifier = "ProfileToLoad = ",
 
-                    // String Colors (Normal {N} & Colorblind {CB})
-                    // Normal String Colors
-                    String0Color_N_Identifier = "string0_N = ",
-                    String1Color_N_Identifier = "string1_N = ",
-                    String2Color_N_Identifier = "string2_N = ",
-                    String3Color_N_Identifier = "string3_N = ",
-                    String4Color_N_Identifier = "string4_N = ",
-                    String5Color_N_Identifier = "string5_N = ",
-                    // Colorblind String Colors
-                    String0Color_CB_Identifier = "string0_CB = ",
-                    String1Color_CB_Identifier = "string1_CB = ",
-                    String2Color_CB_Identifier = "string2_CB = ",
-                    String3Color_CB_Identifier = "string3_CB = ",
-                    String4Color_CB_Identifier = "string4_CB = ",
-                    String5Color_CB_Identifier = "string5_CB = ",
+                // String Colors (Normal {N} & Colorblind {CB})
+                // Normal String Colors
+                String0Color_N_Identifier = "string0_N = ",
+                String1Color_N_Identifier = "string1_N = ",
+                String2Color_N_Identifier = "string2_N = ",
+                String3Color_N_Identifier = "string3_N = ",
+                String4Color_N_Identifier = "string4_N = ",
+                String5Color_N_Identifier = "string5_N = ",
+                // Colorblind String Colors
+                String0Color_CB_Identifier = "string0_CB = ",
+                String1Color_CB_Identifier = "string1_CB = ",
+                String2Color_CB_Identifier = "string2_CB = ",
+                String3Color_CB_Identifier = "string3_CB = ",
+                String4Color_CB_Identifier = "string4_CB = ",
+                String5Color_CB_Identifier = "string5_CB = ",
 
-                // Mod Settings
-                ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
-                CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
-                RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
-                TuningPedalIdentifier = "TuningPedal = ",
-                VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
+            // Mod Settings
+            ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
+            CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
+            RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
+            TuningPedalIdentifier = "TuningPedal = ",
+            VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
 
-                // Guitar Speak
-                GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
-                GuitarSpeakSpaceIdentifier = "GuitarSpeakSpaceWhen = ",
-                GuitarSpeakEnterIdentifier = "GuitarSpeakEnterWhen = ",
-                GuitarSpeakTabIdentifier = "GuitarSpeakTabWhen = ",
-                GuitarSpeakPGUPIdentifier = "GuitarSpeakPGUPWhen = ",
-                GuitarSpeakPGDNIdentifier = "GuitarSpeakPGDNWhen = ",
-                GuitarSpeakUPIdentifier = "GuitarSpeakUPWhen = ",
-                GuitarSpeakDNIdentifier = "GuitarSpeanDNWhen = ",
-                GuitarSpeakESCIdentifier = "GuitarSpeakESCWhen = ",
-                GuitarSpeakCloseIdentifier = "GuitarSpeakCloseWhen = ",
-                GuitarSpeakOBracketIdentifier = "GuitarSpeakOBracketWhen = ",
-                GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
-                GuitarSpeakTildeaIdentifier = "GuitarSpeakTildeaWhen = ",
-                GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
-                GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ",
+            // Guitar Speak
+            GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
+            GuitarSpeakSpaceIdentifier = "GuitarSpeakSpaceWhen = ",
+            GuitarSpeakEnterIdentifier = "GuitarSpeakEnterWhen = ",
+            GuitarSpeakTabIdentifier = "GuitarSpeakTabWhen = ",
+            GuitarSpeakPGUPIdentifier = "GuitarSpeakPGUPWhen = ",
+            GuitarSpeakPGDNIdentifier = "GuitarSpeakPGDNWhen = ",
+            GuitarSpeakUPIdentifier = "GuitarSpeakUPWhen = ",
+            GuitarSpeakDNIdentifier = "GuitarSpeanDNWhen = ",
+            GuitarSpeakESCIdentifier = "GuitarSpeakESCWhen = ",
+            GuitarSpeakCloseIdentifier = "GuitarSpeakCloseWhen = ",
+            GuitarSpeakOBracketIdentifier = "GuitarSpeakOBracketWhen = ",
+            GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
+            GuitarSpeakTildeaIdentifier = "GuitarSpeakTildeaWhen = ",
+            GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
+            GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ",
 
+            // Highway Colors
+            CustomHighwayColorsIdentifier = "CustomHighwayColors = ",
+            CustomHighwayNumberedIdentifier = "CustomHighwayNumbered = ",
+            CustomHighwayUnNumberedIdentifier = "CustomHighwayUnNumbered = ",
+            CustomHighwayGutterIdentifier = "CustomHighwayGutter = ",
+            CustomFretNubmersIdentifier = "CustomFretNubmers = ",
 
-                // GUI Settings
-                CustomGUIThemeIdentifier = "CustomTheme = ",
-                CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
-                CustomGUITextColorIdentifier = "ThemeTextColor = ",
-                BackupProfileIdentifier = "BackupProfile = ",
-                NumberOfBackupsIdentifier = "NumberOfBackups = ";
+            // GUI Settings
+            CustomGUIThemeIdentifier = "CustomTheme = ",
+            CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
+            CustomGUITextColorIdentifier = "ThemeTextColor = ",
+            BackupProfileIdentifier = "BackupProfile = ",
+            NumberOfBackupsIdentifier = "NumberOfBackups = ";
+
         #endregion
         #region Functions to make things look nicer
         enum SettingType
@@ -376,6 +384,20 @@ namespace RSMods
                     return FillSettingVariable(GuitarSpeakForSlashIdentifier, SettingType.STRING, currentLine, out GuitarSpeakForSlash);
                 if (IdentifierIsFound(currentLine, GuitarSpeakTuningIdentifier, identifierToGrab))
                     return FillSettingVariable(GuitarSpeakTuningIdentifier, SettingType.ON_OFF, currentLine, out GuitarSpeakWhileTuning);
+                #endregion
+                #region Highway Colors
+                // Highway Colors
+
+                if (IdentifierIsFound(currentLine, CustomHighwayColorsIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomHighwayColorsIdentifier, SettingType.STRING, currentLine, out CustomHighwayColors);
+                if (IdentifierIsFound(currentLine, CustomHighwayNumberedIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomHighwayNumberedIdentifier, SettingType.STRING, currentLine, out CustomHighwayNumbered);
+                if (IdentifierIsFound(currentLine, CustomHighwayUnNumberedIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomHighwayUnNumberedIdentifier, SettingType.STRING, currentLine, out CustomHighwayUnNumbered);
+                if (IdentifierIsFound(currentLine, CustomHighwayGutterIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomHighwayGutterIdentifier, SettingType.STRING, currentLine, out CustomHighwayGutter);
+                if (IdentifierIsFound(currentLine, CustomFretNubmersIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomFretNubmersIdentifier, SettingType.STRING, currentLine, out CustomFretNubmers);
                 #endregion
                 #region GUI Settings
                 // GUI Settings

@@ -34,6 +34,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_ChangeTheme, "Use this feature to customize the colors used in this GUI.");
             TooltipDictionary.Add(checkBox_useMidiAutoTuning, "If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.");
             TooltipDictionary.Add(checkBox_ShowCurrentNote, "Shows the note you are currently playing on screen.");
+            TooltipDictionary.Add(checkBox_CustomHighway, "This setting lets you change the colors of the noteway in game.\nThis can be useful for streamers if they want to make the noteway invisible.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
@@ -112,6 +113,12 @@ namespace RSMods
             TooltipDictionary.Add(label_TwitchChannelIDVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
             TooltipDictionary.Add(checkBox_RevealTwitchAuthToken, "Only reveal this when asked by RSMods developers.\nThis is how we look to see when events happen in your stream.");
 
+            // Custom Noteway Colors
+            TooltipDictionary.Add(button_ChangeNumberedFrets, "This will change the color of all numbered frets in game.\n3, 5, 7, 9, 12, 15, 17, 19, 21, 24");
+            TooltipDictionary.Add(button_ChangeUnNumberedFrets, "This will change the color of all NON-numbered frets in game.");
+            TooltipDictionary.Add(button_ChangeNotewayGutter, "This will change what the sides of the noteway are colored with.");
+            TooltipDictionary.Add(button_ChangeFretNumber, "This will change the color of the fret numbers that show up on the noteway.\nThis doesn't change the orange note numbers!");
+
             // RS_ASIO
             TooltipDictionary.Add(groupBox_ASIO_Output, "If your headphones support ASIO, this is where you would manage them.");
             TooltipDictionary.Add(groupBox_ASIO_Input0, "If you use an audio interface, this is where you would manage it.\nThis is meant for the Player 1 \"Cable\"");
@@ -178,6 +185,18 @@ namespace RSMods
             stringNumberToColorTextBox.Add(3, textBox_String3Color);
             stringNumberToColorTextBox.Add(4, textBox_String4Color);
             stringNumberToColorTextBox.Add(5, textBox_String5Color);
+        }
+
+        public Dictionary<Control, Control> notewayButtonToColorTextbox = new Dictionary<Control, Control>() {};
+
+        private void NotewayColors_FillNotewayButtonToColorDictionary()
+        {
+            notewayButtonToColorTextbox.Clear();
+
+            notewayButtonToColorTextbox.Add(button_ChangeNumberedFrets, textBox_ShowNumberedFrets);
+            notewayButtonToColorTextbox.Add(button_ChangeUnNumberedFrets, textBox_ShowUnNumberedFrets);
+            notewayButtonToColorTextbox.Add(button_ChangeNotewayGutter, textBox_ShowNotewayGutter);
+            notewayButtonToColorTextbox.Add(button_ChangeFretNumber, textBox_ShowFretNumber);
         }
     };
 
@@ -278,6 +297,14 @@ namespace RSMods
                 {"B String", ReadSettings.String4Color_CB_Identifier},
                 {"e String", ReadSettings.String5Color_CB_Identifier}
             }}
+        };
+
+        public static Dictionary<string, string> notewayColorButtonsToSettingIdentifier = new Dictionary<string, string>()
+        {
+            {"Change Numbered Frets", ReadSettings.CustomHighwayNumberedIdentifier },
+            {"Change UnNumbered Frets", ReadSettings.CustomHighwayUnNumberedIdentifier },
+            {"Change Noteway Sides", ReadSettings.CustomHighwayGutterIdentifier},
+            {"Change Fret Number", ReadSettings.CustomFretNubmersIdentifier },
         };
 
         public static List<string> currentModKeypressList = new List<string>()

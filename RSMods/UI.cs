@@ -66,6 +66,9 @@ namespace RSMods
             // Load Default String Colors
             StringColors_LoadDefaultStringColors();
 
+            // Load Default Noteway Colors
+            NotewayColors_LoadDefaultStringColors();
+
             // Load Colors Saved as Theme Colors.
             CustomTheme_LoadCustomColors();
 
@@ -430,6 +433,11 @@ namespace RSMods
             {
                 checkBox_BackupProfile.Checked = true;
                 nUpDown_NumberOfBackups.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50);
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on")
+            {
+                checkBox_CustomHighway.Checked = true;
             }
                 
         }
@@ -983,7 +991,53 @@ namespace RSMods
 
         private void StringColors_ColorBlindStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors(true);
 
-#endregion
+        #endregion
+    #region Noteway Colors
+        private void NotewayColors_ChangeNotewayColor(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false
+            };
+
+            string notewayColorButtonIdentifier = String.Empty;
+            int notewayObject = 0;
+            NotewayColors_FillNotewayButtonToColorDictionary();
+
+            foreach (KeyValuePair<string, string> notewayColorButton in Dictionaries.notewayColorButtonsToSettingIdentifier)
+            {
+                if (sender.ToString().Contains(notewayColorButton.Key.ToString()))
+                {
+                    notewayColorButtonIdentifier = notewayColorButton.Value.ToString();
+                    break; // We have the one value we need, so we can leave.
+                }
+                notewayObject++;
+            }
+
+            if (ReadSettings.ProcessSettings(notewayColorButtonIdentifier) != "")
+                colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(notewayColorButtonIdentifier));
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveChanges(notewayColorButtonIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                notewayButtonToColorTextbox[((Button)sender)].BackColor = colorDialog.Color;
+            }
+        }
+
+        private void NotewayColors_LoadDefaultStringColors()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayNumberedIdentifier) != "")
+                textBox_ShowNumberedFrets.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomHighwayNumberedIdentifier));
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayUnNumberedIdentifier) != "")
+                textBox_ShowUnNumberedFrets.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomHighwayUnNumberedIdentifier));
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayGutterIdentifier) != "")
+                textBox_ShowNotewayGutter.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomHighwayGutterIdentifier));
+            if (ReadSettings.ProcessSettings(ReadSettings.CustomFretNubmersIdentifier) != "")
+                textBox_ShowFretNumber.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomFretNubmersIdentifier));
+        }
+
+    #endregion
     #region Prep Set And Forget Mods
         // SetAndForget Mods
 
@@ -1464,8 +1518,27 @@ namespace RSMods
             SaveChanges(ReadSettings.NumberOfBackupsIdentifier, nUpDown_NumberOfBackups.Value.ToString());
         }
 
+        private void Save_CustomHighway(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.CustomHighwayColorsIdentifier, checkBox_CustomHighway.Checked.ToString().ToLower());
+            groupBox_CustomHighway.Visible = checkBox_CustomHighway.Checked;
+        }
 
-#endregion
+        private void ResetNotewayColors(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.CustomHighwayNumberedIdentifier, "");
+            SaveChanges(ReadSettings.CustomHighwayUnNumberedIdentifier, "");
+            SaveChanges(ReadSettings.CustomHighwayGutterIdentifier, "");
+            SaveChanges(ReadSettings.CustomFretNubmersIdentifier, "");
+
+            textBox_ShowNumberedFrets.BackColor = SystemColors.Control;
+            textBox_ShowUnNumberedFrets.BackColor = SystemColors.Control;
+            textBox_ShowNotewayGutter.BackColor = SystemColors.Control;
+            textBox_ShowFretNumber.BackColor = SystemColors.Control;
+        }
+
+
+        #endregion
     #region Tooltips
 
         bool CreatedToolTipYet = false;

@@ -124,6 +124,14 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakForSlashIdentifier, "" }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTuningIdentifier, "off" }, // Use Guitar Speak in Tuning Menus
             }},
+            {"[Highway Colors]", new Dictionary<string, string>
+            {
+                { ReadSettings.CustomHighwayColorsIdentifier, "off" }, // Should we use Custom Noteway Colors
+                { ReadSettings.CustomHighwayNumberedIdentifier, "" }, // Numbered Frets Color
+                { ReadSettings.CustomHighwayUnNumberedIdentifier, "" }, // UnNumbered Frets Color
+                { ReadSettings.CustomHighwayGutterIdentifier, "" }, // Sides of Note Highway Color
+                { ReadSettings.CustomFretNubmersIdentifier, "" }, // Fret Numbers Color
+            }},
             {"[GUI Settings]", new Dictionary<string, string>
             {
                 { ReadSettings.CustomGUIThemeIdentifier, "off"}, // Use a Custom GUI theme.
@@ -241,6 +249,14 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakTildeaIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier) }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakForSlashIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier) }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTuningIdentifier, ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) },  // Use Guitar Speak in Tuning Menus
+            }},
+            {"[Highway Colors]", new Dictionary<string, string>
+            {
+                { ReadSettings.CustomHighwayColorsIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) }, // Should we use Custom Noteway Colors
+                { ReadSettings.CustomHighwayNumberedIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomHighwayNumberedIdentifier) }, // Numbered Frets Color
+                { ReadSettings.CustomHighwayUnNumberedIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomHighwayUnNumberedIdentifier) }, // UnNumbered Frets Color
+                { ReadSettings.CustomHighwayGutterIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomHighwayGutterIdentifier) }, // Sides of Note Highway Color
+                { ReadSettings.CustomFretNubmersIdentifier, ReadSettings.ProcessSettings(ReadSettings.CustomFretNubmersIdentifier) }, // Fret Numbers Color
             }},
             {"[GUI Settings]", new Dictionary<string, string>
             {
