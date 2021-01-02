@@ -368,6 +368,7 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1307,6 +1308,7 @@
             // groupBox_SetAndForget
             // 
             this.groupBox_SetAndForget.BackColor = System.Drawing.Color.Azure;
+            this.groupBox_SetAndForget.Controls.Add(this.button_ResetToDefaultCachePsarc);
             this.groupBox_SetAndForget.Controls.Add(this.radio_GoneWailinTone);
             this.groupBox_SetAndForget.Controls.Add(this.radio_RainbowLaserTone);
             this.groupBox_SetAndForget.Controls.Add(this.radio_DucksReduxTone);
@@ -4613,6 +4615,17 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // button_ResetToDefaultCachePsarc
+            // 
+            this.button_ResetToDefaultCachePsarc.Location = new System.Drawing.Point(944, 473);
+            this.button_ResetToDefaultCachePsarc.Name = "button_ResetToDefaultCachePsarc";
+            this.button_ResetToDefaultCachePsarc.Size = new System.Drawing.Size(181, 23);
+            this.button_ResetToDefaultCachePsarc.TabIndex = 125;
+            this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
+            this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
+            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.ResetCachePsarc);
+            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5084,6 +5097,7 @@
         private System.Windows.Forms.Button button_ChangeUnNumberedFrets;
         private System.Windows.Forms.Button button_ChangeNumberedFrets;
         private System.Windows.Forms.Button button_ResetNotewayColors;
+        private System.Windows.Forms.Button button_ResetToDefaultCachePsarc;
     }
 }
 

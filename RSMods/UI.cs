@@ -1078,6 +1078,15 @@ namespace RSMods
                 SetForget_FillUI();
         }
 
+        private void ResetCachePsarc(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Woah, hang on there!\nHave you tried pressing the \"Restore Cache Backup\" button?\nThis should be a last resort.\nWe call home to Steam to redownload all modified files.\nThis will only break the mods in this section, nothing else.", "HANG ON!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                System.Diagnostics.Process.Start("steam://validate/221680");
+                SetAndForgetMods.RemoveTempFolders();
+            }
+
+        }
         private void SetForget_UnpackCacheAgain(object sender, EventArgs e) => SetAndForgetMods.CleanUnpackedCache();
 
         private void SetForget_AddCustomTunings(object sender, EventArgs e) => SetAndForgetMods.AddCustomTunings();
