@@ -666,9 +666,6 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	//GuitarSpeak.DrawTunerInGame();
 
-	if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
-		userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
-
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
@@ -713,6 +710,10 @@ unsigned WINAPI MainThread() {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
+			if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
+				userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
+			else
+				userWantsRRSpeedEnabled = false;
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 				MemHelpers::AutomatedOpenRRSpeedAbuse();
