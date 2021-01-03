@@ -98,6 +98,7 @@
             this.radio_colorBlindERColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
+            this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
             this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
             this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
             this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
@@ -368,7 +369,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1367,6 +1367,17 @@
             this.groupBox_SetAndForget.TabIndex = 68;
             this.groupBox_SetAndForget.TabStop = false;
             this.groupBox_SetAndForget.Text = "Set-and-forget mods";
+            // 
+            // button_ResetToDefaultCachePsarc
+            // 
+            this.button_ResetToDefaultCachePsarc.Location = new System.Drawing.Point(944, 473);
+            this.button_ResetToDefaultCachePsarc.Name = "button_ResetToDefaultCachePsarc";
+            this.button_ResetToDefaultCachePsarc.Size = new System.Drawing.Size(181, 23);
+            this.button_ResetToDefaultCachePsarc.TabIndex = 125;
+            this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
+            this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
+            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.ResetCachePsarc);
+            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // radio_GoneWailinTone
             // 
@@ -3623,7 +3634,7 @@
             // checkBox_Rocksmith_LowLatencyMode
             // 
             this.checkBox_Rocksmith_LowLatencyMode.AutoSize = true;
-            this.checkBox_Rocksmith_LowLatencyMode.Location = new System.Drawing.Point(156, 189);
+            this.checkBox_Rocksmith_LowLatencyMode.Location = new System.Drawing.Point(156, 166);
             this.checkBox_Rocksmith_LowLatencyMode.Name = "checkBox_Rocksmith_LowLatencyMode";
             this.checkBox_Rocksmith_LowLatencyMode.Size = new System.Drawing.Size(117, 17);
             this.checkBox_Rocksmith_LowLatencyMode.TabIndex = 15;
@@ -3635,7 +3646,7 @@
             // checkBox_Rocksmith_RTCOnly
             // 
             this.checkBox_Rocksmith_RTCOnly.AutoSize = true;
-            this.checkBox_Rocksmith_RTCOnly.Location = new System.Drawing.Point(156, 166);
+            this.checkBox_Rocksmith_RTCOnly.Location = new System.Drawing.Point(156, 143);
             this.checkBox_Rocksmith_RTCOnly.Name = "checkBox_Rocksmith_RTCOnly";
             this.checkBox_Rocksmith_RTCOnly.Size = new System.Drawing.Size(130, 17);
             this.checkBox_Rocksmith_RTCOnly.TabIndex = 14;
@@ -3647,7 +3658,7 @@
             // checkBox_Rocksmith_DumpAudioLog
             // 
             this.checkBox_Rocksmith_DumpAudioLog.AutoSize = true;
-            this.checkBox_Rocksmith_DumpAudioLog.Location = new System.Drawing.Point(156, 143);
+            this.checkBox_Rocksmith_DumpAudioLog.Location = new System.Drawing.Point(156, 120);
             this.checkBox_Rocksmith_DumpAudioLog.Name = "checkBox_Rocksmith_DumpAudioLog";
             this.checkBox_Rocksmith_DumpAudioLog.Size = new System.Drawing.Size(105, 17);
             this.checkBox_Rocksmith_DumpAudioLog.TabIndex = 13;
@@ -3707,18 +3718,18 @@
             // checkBox_Rocksmith_Override_MaxOutputBufferSize
             // 
             this.checkBox_Rocksmith_Override_MaxOutputBufferSize.AutoSize = true;
-            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Location = new System.Drawing.Point(156, 120);
+            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Location = new System.Drawing.Point(228, 56);
             this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Name = "checkBox_Rocksmith_Override_MaxOutputBufferSize";
-            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Size = new System.Drawing.Size(137, 17);
+            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Size = new System.Drawing.Size(71, 17);
             this.checkBox_Rocksmith_Override_MaxOutputBufferSize.TabIndex = 8;
-            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Text = "Automate Output Buffer";
+            this.checkBox_Rocksmith_Override_MaxOutputBufferSize.Text = "Automate";
             this.checkBox_Rocksmith_Override_MaxOutputBufferSize.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_Override_MaxOutputBufferSize.CheckedChanged += new System.EventHandler(this.Rocksmith_AutomateMaxBufferSize);
             // 
             // label_Rocksmith_MaxOutputBuffer
             // 
             this.label_Rocksmith_MaxOutputBuffer.AutoSize = true;
-            this.label_Rocksmith_MaxOutputBuffer.Location = new System.Drawing.Point(6, 57);
+            this.label_Rocksmith_MaxOutputBuffer.Location = new System.Drawing.Point(2, 57);
             this.label_Rocksmith_MaxOutputBuffer.Name = "label_Rocksmith_MaxOutputBuffer";
             this.label_Rocksmith_MaxOutputBuffer.Size = new System.Drawing.Size(99, 13);
             this.label_Rocksmith_MaxOutputBuffer.TabIndex = 7;
@@ -3728,7 +3739,7 @@
             // label_Rocksmith_LatencyBuffer
             // 
             this.label_Rocksmith_LatencyBuffer.AutoSize = true;
-            this.label_Rocksmith_LatencyBuffer.Location = new System.Drawing.Point(7, 28);
+            this.label_Rocksmith_LatencyBuffer.Location = new System.Drawing.Point(2, 28);
             this.label_Rocksmith_LatencyBuffer.Name = "label_Rocksmith_LatencyBuffer";
             this.label_Rocksmith_LatencyBuffer.Size = new System.Drawing.Size(79, 13);
             this.label_Rocksmith_LatencyBuffer.TabIndex = 6;
@@ -3742,7 +3753,7 @@
             0,
             0,
             0});
-            this.nUpDown_Rocksmith_MaxOutputBuffer.Location = new System.Drawing.Point(111, 55);
+            this.nUpDown_Rocksmith_MaxOutputBuffer.Location = new System.Drawing.Point(101, 55);
             this.nUpDown_Rocksmith_MaxOutputBuffer.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -3760,7 +3771,7 @@
             // 
             // nUpDown_Rocksmith_LatencyBuffer
             // 
-            this.nUpDown_Rocksmith_LatencyBuffer.Location = new System.Drawing.Point(111, 26);
+            this.nUpDown_Rocksmith_LatencyBuffer.Location = new System.Drawing.Point(101, 26);
             this.nUpDown_Rocksmith_LatencyBuffer.Maximum = new decimal(new int[] {
             10,
             0,
@@ -4614,17 +4625,6 @@
             this.label_SettingsSaved.TabIndex = 52;
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
-            // 
-            // button_ResetToDefaultCachePsarc
-            // 
-            this.button_ResetToDefaultCachePsarc.Location = new System.Drawing.Point(944, 473);
-            this.button_ResetToDefaultCachePsarc.Name = "button_ResetToDefaultCachePsarc";
-            this.button_ResetToDefaultCachePsarc.Size = new System.Drawing.Size(181, 23);
-            this.button_ResetToDefaultCachePsarc.TabIndex = 125;
-            this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
-            this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
-            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.ResetCachePsarc);
-            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // MainForm
             // 
