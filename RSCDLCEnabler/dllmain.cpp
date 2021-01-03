@@ -710,10 +710,7 @@ unsigned WINAPI MainThread() {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-			if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
-				userWantsRRSpeedEnabled = true; // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
-			else
-				userWantsRRSpeedEnabled = false;
+			userWantsRRSpeedEnabled = (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on"); // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
 
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
 				MemHelpers::AutomatedOpenRRSpeedAbuse();
