@@ -3682,7 +3682,7 @@
             // checkBox_Rocksmith_ForceWDM
             // 
             this.checkBox_Rocksmith_ForceWDM.AutoSize = true;
-            this.checkBox_Rocksmith_ForceWDM.Location = new System.Drawing.Point(9, 166);
+            this.checkBox_Rocksmith_ForceWDM.Location = new System.Drawing.Point(10, 166);
             this.checkBox_Rocksmith_ForceWDM.Name = "checkBox_Rocksmith_ForceWDM";
             this.checkBox_Rocksmith_ForceWDM.Size = new System.Drawing.Size(84, 17);
             this.checkBox_Rocksmith_ForceWDM.TabIndex = 11;
