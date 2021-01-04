@@ -26,6 +26,7 @@ namespace Midi {
 	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz); 
 
 	// Digitech Whammy & Whammy Bass
+	void Digitech_Whammy_Auto_Tuning(int highestTuning, int TrueTuning_Hertz);
 	void Digitech_Whammy_Auto_TrueTune(int TrueTuning_Hertz); 
 
 	extern int MidiCC, MidiPC;
@@ -104,60 +105,64 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 	// Classic Mode
 
 	// Whammy
-	{0, 21}, // +2 OCT
-	{1, 22}, // +1 OCT
-	{2, 23}, // +5th
-	{3, 24}, // +4th
-	{4, 25}, // +2nd
-	{5, 26}, // -2nd
-	{6, 27}, // -4th
-	{7, 28}, // -5th
-	{8, 29}, // -1 OCT
-	{9, 30}, // Dive Bomb
+	{1, 22}, // +2 OCT
+	{2, 23}, // +1 OCT
+	{3, 24}, // +5th
+	{4, 25}, // +4th
+	{5, 26}, // +2nd
+	{6, 27}, // -2nd
+	{7, 28}, // -4th
+	{8, 29}, // -5th
+	{9, 30}, // -1 OCT
+	{10, 31}, // Dive Bomb
 
 	// Detune
-	{10, 31}, // Deep
-	{11, 32}, // Shallow
+	{11, 32}, // Deep
+	{12, 33}, // Shallow
 
 	// Harmony (Up Pos || Down Pos)
-	{12, 33}, // -4th || +3rd
-	{13, 34}, // -4th || +5th
-	{14, 35}, // -5th || +5th
-	{15, 36}, // +5th || +6th
-	{16, 37}, // +5th || +OCT
-	{17, 38}, // -OCT || -4th
-	{18, 39}, // -OCT || +OCT
-	{19, 40}, // +OCT || +10th
-	{20, 41}, // +1 OCT || +2 OCT
+	{13, 34}, // -4th || +3rd
+	{14, 35}, // -4th || +5th
+	{15, 36}, // -5th || +5th
+	{16, 37}, // +5th || +6th
+	{17, 38}, // +5th || +OCT
+	{18, 39}, // -OCT || -4th
+	{19, 40}, // -OCT || +OCT
+	{20, 41}, // +OCT || +10th
+	{21, 42}, // +1 OCT || +2 OCT
 
 	// Chords Mode
 
 	// Whammy
-	{42, 63}, // +2 OCT
-	{43, 64}, // +1 OCT
-	{44, 65}, // +5th
-	{45, 66}, // +4th
-	{46, 67}, // +2nd
-	{47, 68}, // -2nd
-	{48, 69}, // -4th
-	{49, 70}, // -5th
-	{50, 71}, // -1 OCT
-	{51, 72}, // Dive Bomb
+	{43, 64}, // +2 OCT
+	{44, 65}, // +1 OCT
+	{45, 66}, // +5th
+	{46, 67}, // +4th
+	{47, 68}, // +2nd
+	{48, 69}, // -2nd
+	{49, 70}, // -4th
+	{50, 71}, // -5th
+	{51, 72}, // -1 OCT
+	{52, 73}, // Dive Bomb
 
 	// Detune
-	{52, 73}, // Deep
-	{53, 74}, // Shallow
+	{53, 74}, // Deep
+	{54, 75}, // Shallow
 
 	// Harmony (Up Pos || Down Pos)
-	{54, 75}, // -4th || +3rd
-	{55, 76}, // -4th || +5th
-	{56, 77}, // -5th || +5th
-	{57, 78}, // +5th || +6th
-	{58, 79}, // +5th || +OCT
-	{59, 80}, // -OCT || -4th
-	{60, 81}, // -OCT || +OCT
-	{61, 82}, // +OCT || +10th
-	{62, 83}, // +1 OCT || +2 OCT
+	{55, 76}, // -4th || +3rd
+	{56, 77}, // -4th || +5th
+	{57, 78}, // -5th || +5th
+	{58, 79}, // +5th || +6th
+	{59, 80}, // +5th || +OCT
+	{60, 81}, // -OCT || -4th
+	{61, 82}, // -OCT || +OCT
+	{62, 83}, // +OCT || +10th
+	{63, 84}, // +1 OCT || +2 OCT
+};
+
+inline std::vector<float> DIGITECH_WHAMMY_frequencyChart = {
+	1760.0f, 880.0f, 659.25f, 587.33f, 493.88f, 392.0f, 329.63f, 293.66f, 220.0f, 55.0f
 };
 
 
@@ -166,7 +171,7 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 // Pedal -> Drop Tune Capable, True Tuning Capable
 inline std::map<unsigned int, std::pair<bool, bool>> pedalCanUseMap = {
 	{1, {true, true}}, // Whammy DT
-	{2, {false, true}}, // Whammy / Bass Whammy
+	{2, {true, true}}, // Whammy / Bass Whammy
 	{3, {false, false}} // Dummy pedal
 };
 

@@ -153,6 +153,9 @@ namespace Midi {
 			case 1:
 				Digitech_Whammy_DT_Auto_Tuning(highestTuning);
 				break;
+			case 2:
+				Digitech_Whammy_Auto_Tuning(highestTuning, TrueTuning_Hertz);
+				break;
 			default:
 				break;
 			}
@@ -179,7 +182,7 @@ namespace Midi {
 				Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
 				break;
 			case 2:
-				Digitech_Whammy_Auto_TrueTune(TrueTuning_Hertz);
+				//Digitech_Whammy_Auto_TrueTune(TrueTuning_Hertz);
 				break;
 
 			default:
@@ -348,8 +351,63 @@ namespace Midi {
 
 		// Below A440
 		else {
-			SendProgramChange(4 + offset);
+			SendProgramChange(6 + offset);
 			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
 		}
+	}
+
+	void Digitech_Whammy_Auto_Tuning(int highestTuning, int TrueTuning_Hertz) { // Based on the work done by PoizenJam
+
+		// TODO: Target_Hertz reports the normal Hertz
+		// TODO: Toggle off true tuning when not needed
+		// TODO: Toggle off Drop when not needed
+
+
+		// Init Variables
+		bool trueTune = false;
+		int temp_PC;
+		float Target_Hertz;
+
+		// Chords Mode Offset
+		int offset = 0;
+		if (DIGITECH_CHORDS_MODE)
+			offset = 42;
+
+		// Should We True Tune?
+		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+			trueTune = false;
+
+		// Find Target PC
+		Target_Hertz = (float)(TrueTuning_Hertz * pow(2, (highestTuning / 12)));
+		std::cout << "Target Hertz: " << Target_Hertz << std::endl;
+
+		// Calculate Max Hertz From Target_Hertz. If-Else block :(
+		if (Target_Hertz < 220.0f)
+			temp_PC = 10;
+		else if (Target_Hertz < 293.66f)
+			temp_PC = 9;
+		else if (Target_Hertz < 329.66f)
+			temp_PC = 8;
+		else if (Target_Hertz < 392.0f)
+			temp_PC = 7;
+		else if (Target_Hertz < 493.88f)
+			temp_PC = 6;
+		else if (Target_Hertz < 587.33f)
+			temp_PC = 5;
+		else if (Target_Hertz < 629.25f)
+			temp_PC = 4;
+		else if (Target_Hertz < 880.0f)
+			temp_PC = 3;
+		else if (Target_Hertz < 1760.0f)
+			temp_PC = 2;
+		else
+			temp_PC = 1;
+
+		// Calculate PC & CC
+		SendProgramChange(temp_PC + offset);
+		std::cout << "First Value: " << (abs(440 - Target_Hertz)) << std::endl;
+		std::cout << "Second Value: " << (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) << std::endl;
+		std::cout << "Combined: " << (abs(440 - Target_Hertz) * (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) - 1) << std::endl;
+		SendControlChange(abs(440 - Target_Hertz) * (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) - 1);
 	}
 }
