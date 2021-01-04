@@ -358,18 +358,18 @@ namespace Midi {
 
 	void Digitech_Whammy_Auto_Tuning(int highestTuning, int TrueTuning_Hertz) { // Based on the work done by PoizenJam
 
-		// TODO: Target_Hertz reports the normal Hertz
-		// TODO: Toggle off true tuning when not needed
-		// TODO: Toggle off Drop when not needed
-
+		// E Standard @ A440 works
+		// E Standard < A440 works
+		// E Standard > A440 don't work
+		// Eb Standard Works
+		// Eb Standard > A440 works
 
 		// Init Variables
 		bool trueTune = false;
-		int temp_PC;
-		float Target_Hertz;
+		int temp_PC, offset = 0;
+		float Target_Hertz, Target_SemiTones, float_highestTuning = (float)highestTuning;
 
 		// Chords Mode Offset
-		int offset = 0;
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 
@@ -377,37 +377,35 @@ namespace Midi {
 		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
 			trueTune = false;
 
-		// Find Target PC
-		Target_Hertz = (float)(TrueTuning_Hertz * pow(2, (highestTuning / 12)));
-		std::cout << "Target Hertz: " << Target_Hertz << std::endl;
+		// Find Target SemiTones
+		Target_Hertz = (float)(TrueTuning_Hertz * powf(2, (float_highestTuning / 12.0f)));
+		Target_SemiTones = (12 * log2(Target_Hertz / 440));
+		std::cout << "Target SemiTones: " << Target_SemiTones << std::endl;
 
 		// Calculate Max Hertz From Target_Hertz. If-Else block :(
-		if (Target_Hertz < 220.0f)
+		if (Target_SemiTones < -12)
 			temp_PC = 10;
-		else if (Target_Hertz < 293.66f)
+		else if (Target_SemiTones < -7)
 			temp_PC = 9;
-		else if (Target_Hertz < 329.66f)
+		else if (Target_SemiTones < -5)
 			temp_PC = 8;
-		else if (Target_Hertz < 392.0f)
+		else if (Target_SemiTones < -2)
 			temp_PC = 7;
-		else if (Target_Hertz < 493.88f)
+		else if (Target_SemiTones < 2)
 			temp_PC = 6;
-		else if (Target_Hertz < 587.33f)
+		else if (Target_SemiTones < 5)
 			temp_PC = 5;
-		else if (Target_Hertz < 629.25f)
+		else if (Target_SemiTones < 7)
 			temp_PC = 4;
-		else if (Target_Hertz < 880.0f)
+		else if (Target_SemiTones < 12)
 			temp_PC = 3;
-		else if (Target_Hertz < 1760.0f)
+		else if (Target_SemiTones < 24)
 			temp_PC = 2;
 		else
 			temp_PC = 1;
 
 		// Calculate PC & CC
-		SendProgramChange(temp_PC + offset);
-		std::cout << "First Value: " << (abs(440 - Target_Hertz)) << std::endl;
-		std::cout << "Second Value: " << (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) << std::endl;
-		std::cout << "Combined: " << (abs(440 - Target_Hertz) * (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) - 1) << std::endl;
-		SendControlChange(abs(440 - Target_Hertz) * (128 / abs(440 - DIGITECH_WHAMMY_frequencyChart.at(temp_PC - 1))) - 1);
+		SendProgramChange((temp_PC - 1) + offset);
+		SendControlChange((char)(Target_SemiTones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1))));
 	}
 }

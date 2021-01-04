@@ -161,8 +161,8 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 	{63, 84}, // +1 OCT || +2 OCT
 };
 
-inline std::vector<float> DIGITECH_WHAMMY_frequencyChart = {
-	1760.0f, 880.0f, 659.25f, 587.33f, 493.88f, 392.0f, 329.63f, 293.66f, 220.0f, 55.0f
+inline std::vector<int> DIGITECH_WHAMMY_semiTones = {
+	24, 12, 7, 5, 2, -2, -5, -7, -12, -36
 };
 
 
