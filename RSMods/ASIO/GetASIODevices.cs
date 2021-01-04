@@ -37,11 +37,6 @@ namespace RSMods.ASIO
                 if (deviceInfo.clsID == null || deviceInfo.deviceDescription == null || deviceInfo.deviceName == null)
                     continue;
 
-                // Get DLL Location
-                RegistryKey dllLocation = Registry.ClassesRoot.OpenSubKey("CLSID").OpenSubKey(deviceInfo.clsID).OpenSubKey("InprocServer32");
-                deviceInfo.dllPath = (string)dllLocation.GetValue("");
-                dllLocation.Close();
-
                 // Put device into list
                 availableDevices.Add(deviceInfo);
             }
@@ -55,7 +50,6 @@ namespace RSMods.ASIO
             public string clsID;
             public string deviceName;
             public string deviceDescription;
-            public string dllPath;
         }
     }
 }
