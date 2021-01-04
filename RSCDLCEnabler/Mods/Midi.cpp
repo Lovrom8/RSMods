@@ -365,7 +365,7 @@ namespace Midi {
 		// Eb Standard > A440 works
 
 		// Init Variables
-		bool trueTune = false;
+		int TrueTuning = TrueTuning_Hertz;
 		int temp_PC, offset = 0;
 		float Target_Hertz, Target_SemiTones, float_highestTuning = (float)highestTuning;
 
@@ -373,33 +373,33 @@ namespace Midi {
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 
-		// Should We True Tune?
-		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
-			trueTune = false;
+		// Bass @ A220 fix
+		if (TrueTuning < 260)
+			TrueTuning *= 2;
 
 		// Find Target SemiTones
-		Target_Hertz = (float)(TrueTuning_Hertz * powf(2, (float_highestTuning / 12.0f)));
+		Target_Hertz = (float)(TrueTuning * powf(2, (float_highestTuning / 12.0f)));
 		Target_SemiTones = (12 * log2(Target_Hertz / 440));
 		std::cout << "Target SemiTones: " << Target_SemiTones << std::endl;
 
-		// Calculate Max Hertz From Target_Hertz. If-Else block :(
-		if (Target_SemiTones < -12)
+		// Calculate Max Hertz From Target_SemiTones. If-Else block :(
+		if (Target_SemiTones < -12.0f)
 			temp_PC = 10;
-		else if (Target_SemiTones < -7)
+		else if (Target_SemiTones < -7.0f)
 			temp_PC = 9;
-		else if (Target_SemiTones < -5)
+		else if (Target_SemiTones < -5.0f)
 			temp_PC = 8;
-		else if (Target_SemiTones < -2)
+		else if (Target_SemiTones < -2.0f)
 			temp_PC = 7;
-		else if (Target_SemiTones < 2)
+		else if (Target_SemiTones < 2.0f)
 			temp_PC = 6;
-		else if (Target_SemiTones < 5)
+		else if (Target_SemiTones < 5.0f)
 			temp_PC = 5;
-		else if (Target_SemiTones < 7)
+		else if (Target_SemiTones < 7.0f)
 			temp_PC = 4;
-		else if (Target_SemiTones < 12)
+		else if (Target_SemiTones < 12.0f)
 			temp_PC = 3;
-		else if (Target_SemiTones < 24)
+		else if (Target_SemiTones < 24.0f)
 			temp_PC = 2;
 		else
 			temp_PC = 1;
