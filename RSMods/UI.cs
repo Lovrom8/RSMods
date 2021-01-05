@@ -413,7 +413,11 @@ namespace RSMods
                             radio_WhammyDT.Checked = true;
                             break;
                         case 2:
-                            radio_WhammyORBass.Checked = true;
+                            radio_WhammyBass.Checked = true;
+                            checkBox_WhammyChordsMode.Visible = true;
+                            break;
+                        case 3:
+                            radio_Whammy.Checked = true;
                             checkBox_WhammyChordsMode.Visible = true;
                             break;
                         default:
@@ -1469,10 +1473,16 @@ namespace RSMods
 
         private void Save_WhammyDT(object sender, EventArgs e) => SaveChanges(ReadSettings.TuningPedalIdentifier, "1");
 
-        private void Save_WhammyORBass(object sender, EventArgs e)
+        private void Save_WhammyBass(object sender, EventArgs e)
         {
             SaveChanges(ReadSettings.TuningPedalIdentifier, "2");
-            checkBox_WhammyChordsMode.Visible = radio_WhammyORBass.Checked;
+            checkBox_WhammyChordsMode.Visible = radio_WhammyBass.Checked;
+        }
+
+        private void Save_Whammy(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.TuningPedalIdentifier, "3");
+            checkBox_WhammyChordsMode.Visible = radio_Whammy.Checked;
         }
 
         private void Save_WhammyChordsMode(object sender, EventArgs e) => SaveChanges(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());

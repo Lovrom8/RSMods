@@ -204,8 +204,9 @@
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
+            this.radio_Whammy = new System.Windows.Forms.RadioButton();
             this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
-            this.radio_WhammyORBass = new System.Windows.Forms.RadioButton();
+            this.radio_WhammyBass = new System.Windows.Forms.RadioButton();
             this.radio_WhammyDT = new System.Windows.Forms.RadioButton();
             this.label_MidiWhatTuningPedalDoYouUse = new System.Windows.Forms.Label();
             this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
@@ -2638,15 +2639,16 @@
             // 
             // groupBox_MidiAutoTuneDevice
             // 
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_Whammy);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.checkBox_WhammyChordsMode);
-            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyORBass);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyBass);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyDT);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
             this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(791, 18);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
-            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 209);
+            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 233);
             this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
             this.groupBox_MidiAutoTuneDevice.TabStop = false;
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
@@ -2654,10 +2656,22 @@
             this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.LoadMidiDeviceNames);
             this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
+            // radio_Whammy
+            // 
+            this.radio_Whammy.AutoSize = true;
+            this.radio_Whammy.Location = new System.Drawing.Point(10, 193);
+            this.radio_Whammy.Name = "radio_Whammy";
+            this.radio_Whammy.Size = new System.Drawing.Size(111, 17);
+            this.radio_Whammy.TabIndex = 6;
+            this.radio_Whammy.TabStop = true;
+            this.radio_Whammy.Text = "Digitech Whammy";
+            this.radio_Whammy.UseVisualStyleBackColor = true;
+            this.radio_Whammy.CheckedChanged += new System.EventHandler(this.Save_Whammy);
+            // 
             // checkBox_WhammyChordsMode
             // 
             this.checkBox_WhammyChordsMode.AutoSize = true;
-            this.checkBox_WhammyChordsMode.Location = new System.Drawing.Point(212, 172);
+            this.checkBox_WhammyChordsMode.Location = new System.Drawing.Point(208, 176);
             this.checkBox_WhammyChordsMode.Name = "checkBox_WhammyChordsMode";
             this.checkBox_WhammyChordsMode.Size = new System.Drawing.Size(89, 17);
             this.checkBox_WhammyChordsMode.TabIndex = 5;
@@ -2667,17 +2681,17 @@
             this.checkBox_WhammyChordsMode.CheckedChanged += new System.EventHandler(this.Save_WhammyChordsMode);
             this.checkBox_WhammyChordsMode.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
-            // radio_WhammyORBass
+            // radio_WhammyBass
             // 
-            this.radio_WhammyORBass.AutoSize = true;
-            this.radio_WhammyORBass.Location = new System.Drawing.Point(10, 171);
-            this.radio_WhammyORBass.Name = "radio_WhammyORBass";
-            this.radio_WhammyORBass.Size = new System.Drawing.Size(196, 17);
-            this.radio_WhammyORBass.TabIndex = 4;
-            this.radio_WhammyORBass.TabStop = true;
-            this.radio_WhammyORBass.Text = "Digitech Whammy or Whammy Bass";
-            this.radio_WhammyORBass.UseVisualStyleBackColor = true;
-            this.radio_WhammyORBass.CheckedChanged += new System.EventHandler(this.Save_WhammyORBass);
+            this.radio_WhammyBass.AutoSize = true;
+            this.radio_WhammyBass.Location = new System.Drawing.Point(10, 168);
+            this.radio_WhammyBass.Name = "radio_WhammyBass";
+            this.radio_WhammyBass.Size = new System.Drawing.Size(137, 17);
+            this.radio_WhammyBass.TabIndex = 4;
+            this.radio_WhammyBass.TabStop = true;
+            this.radio_WhammyBass.Text = "Digitech Whammy Bass";
+            this.radio_WhammyBass.UseVisualStyleBackColor = true;
+            this.radio_WhammyBass.CheckedChanged += new System.EventHandler(this.Save_WhammyBass);
             // 
             // radio_WhammyDT
             // 
@@ -4935,7 +4949,7 @@
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuneDevice;
         private System.Windows.Forms.ListBox listBox_ListMidiDevices;
         private System.Windows.Forms.Label label_SelectedMidiDevice;
-        private System.Windows.Forms.RadioButton radio_WhammyORBass;
+        private System.Windows.Forms.RadioButton radio_WhammyBass;
         private System.Windows.Forms.RadioButton radio_WhammyDT;
         private System.Windows.Forms.Label label_MidiWhatTuningPedalDoYouUse;
         private System.Windows.Forms.CheckBox checkBox_WhammyChordsMode;
@@ -5098,6 +5112,7 @@
         private System.Windows.Forms.Button button_ChangeNumberedFrets;
         private System.Windows.Forms.Button button_ResetNotewayColors;
         private System.Windows.Forms.Button button_ResetToDefaultCachePsarc;
+        private System.Windows.Forms.RadioButton radio_Whammy;
     }
 }
 
