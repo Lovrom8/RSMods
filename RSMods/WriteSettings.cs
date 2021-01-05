@@ -120,6 +120,7 @@ namespace RSMods
                 { ReadSettings.GuitarSpeakCBracketIdentifier, CreateDefaultOnOldINI(ReadSettings.GuitarSpeakCBracketIdentifier, "") }, // Guitar Speak Press Close Bracket "}" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTildeaIdentifier, CreateDefaultOnOldINI(ReadSettings.GuitarSpeakTildeaIdentifier, "") }, // Guitar Speak Press Tilde / Tilda "~" When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakForSlashIdentifier, CreateDefaultOnOldINI(ReadSettings.GuitarSpeakForSlashIdentifier, "") }, // Guitar Speak Press Forward Slash "/" When Midi Note = (0{C-1} - 96{C7})
+                { ReadSettings.GuitarSpeakAltIdentifier, CreateDefaultOnOldINI(ReadSettings.GuitarSpeakAltIdentifier, "") }, // Guitar Speak Press ALT When Midi Note = (0{C-1} - 96{C7})
                 { ReadSettings.GuitarSpeakTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.GuitarSpeakTuningIdentifier, "off") }, // Use Guitar Speak in Tuning Menus
             }},
             {"[Highway Colors]", new Dictionary<string, string>

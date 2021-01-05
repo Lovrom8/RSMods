@@ -19,7 +19,7 @@ namespace RSMods
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
-                                                GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakWhileTuning,
+                                                GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakAlt, GuitarSpeakWhileTuning,
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups,
                              CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers;
         public static string
@@ -121,6 +121,7 @@ namespace RSMods
             GuitarSpeakCBracketIdentifier = "GuitarSpeakCBracketWhen = ",
             GuitarSpeakTildeaIdentifier = "GuitarSpeakTildeaWhen = ",
             GuitarSpeakForSlashIdentifier = "GuitarSpeakForSlashWhen = ",
+            GuitarSpeakAltIdentifier = "GuitarSpeakAltWhen = ",
             GuitarSpeakTuningIdentifier = "GuitarSpeakWhileTuning = ",
 
             // Highway Colors
@@ -384,6 +385,8 @@ namespace RSMods
                     return FillSettingVariable(GuitarSpeakTildeaIdentifier, SettingType.STRING, currentLine, out GuitarSpeakTildea);
                 if (IdentifierIsFound(currentLine, GuitarSpeakForSlashIdentifier, identifierToGrab))
                     return FillSettingVariable(GuitarSpeakForSlashIdentifier, SettingType.STRING, currentLine, out GuitarSpeakForSlash);
+                if (IdentifierIsFound(currentLine, GuitarSpeakAltIdentifier, identifierToGrab))
+                    return FillSettingVariable(GuitarSpeakAltIdentifier, SettingType.STRING, currentLine, out GuitarSpeakAlt);
                 if (IdentifierIsFound(currentLine, GuitarSpeakTuningIdentifier, identifierToGrab))
                     return FillSettingVariable(GuitarSpeakTuningIdentifier, SettingType.ON_OFF, currentLine, out GuitarSpeakWhileTuning);
                 #endregion

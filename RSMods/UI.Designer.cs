@@ -2215,6 +2215,7 @@
             "Close Bracket",
             "Tilde / Tilda",
             "Forward Slash",
+            "Alt",
             "Close Guitar Speak"});
             this.listBox_GuitarSpeakKeypress.Location = new System.Drawing.Point(150, 48);
             this.listBox_GuitarSpeakKeypress.Name = "listBox_GuitarSpeakKeypress";

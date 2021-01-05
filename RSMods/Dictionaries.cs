@@ -6,6 +6,7 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        #region Tooltips
         private Dictionary<Control, string> TooltipDictionary = new Dictionary<Control, string>() {};
 
         private void FillToolTipDictionary()
@@ -174,9 +175,9 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_Rocksmith_DisableBrowser, "Check this box to stop Rocksmith from opening their website every two weeks.");
             TooltipDictionary.Add(checkBox_Rocksmith_UseProxy, "Use a proxy to connect to the Rocksmith servers?\nReal usage is unknown.");
         }
-
+        #endregion
+        #region Fill Color Textboxes
         public Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>(){}; // Can't put variables into it until after we create it.
-
         private void StringColors_FillStringNumberToColorDictionary()
         {
             stringNumberToColorTextBox.Clear();
@@ -200,10 +201,12 @@ namespace RSMods
             notewayButtonToColorTextbox.Add(button_ChangeNotewayGutter, textBox_ShowNotewayGutter);
             notewayButtonToColorTextbox.Add(button_ChangeFretNumber, textBox_ShowFretNumber);
         }
+        #endregion
     };
 
     class Dictionaries
     {
+        #region Guitar Speak
         public static Dictionary<string, string> GuitarSpeakKeyPressDictionary = new Dictionary<string, string>()
         {
             {"Delete", ReadSettings.GuitarSpeakDeleteIdentifier},
@@ -219,7 +222,27 @@ namespace RSMods
             {"Close Bracket", ReadSettings.GuitarSpeakCBracketIdentifier},
             {"Tilde / Tilda", ReadSettings.GuitarSpeakTildeaIdentifier},
             {"Forward Slash", ReadSettings.GuitarSpeakForSlashIdentifier},
+            {"Alt", ReadSettings.GuitarSpeakAltIdentifier},
             {"Close Guitar Speak", ReadSettings.GuitarSpeakCloseIdentifier}
+        };
+
+        public static List<string> GuitarSpeakIndexToINISetting = new List<string>()
+        {
+            ReadSettings.GuitarSpeakDeleteIdentifier,
+            ReadSettings.GuitarSpeakSpaceIdentifier,
+            ReadSettings.GuitarSpeakEnterIdentifier,
+            ReadSettings.GuitarSpeakTabIdentifier,
+            ReadSettings.GuitarSpeakPGUPIdentifier,
+            ReadSettings.GuitarSpeakPGDNIdentifier,
+            ReadSettings.GuitarSpeakUPIdentifier,
+            ReadSettings.GuitarSpeakDNIdentifier,
+            ReadSettings.GuitarSpeakESCIdentifier,
+            ReadSettings.GuitarSpeakOBracketIdentifier,
+            ReadSettings.GuitarSpeakCBracketIdentifier,
+            ReadSettings.GuitarSpeakTildeaIdentifier,
+            ReadSettings.GuitarSpeakForSlashIdentifier,
+            ReadSettings.GuitarSpeakAltIdentifier,
+            ReadSettings.GuitarSpeakCloseIdentifier
         };
 
         public static Dictionary<string, string> GuitarSpeakPresetDictionary = new Dictionary<string, string>();
@@ -240,10 +263,12 @@ namespace RSMods
             GuitarSpeakPresetDictionary.Add("Close Bracket: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier)));
             GuitarSpeakPresetDictionary.Add("Tilde / Tilda: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier)));
             GuitarSpeakPresetDictionary.Add("Forward Slash: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)));
+            GuitarSpeakPresetDictionary.Add("Alt: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakAltIdentifier)));
             GuitarSpeakPresetDictionary.Add("Close Guitar Speak: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier)));
             return GuitarSpeakPresetDictionary;
         }
-
+        #endregion
+        #region Index To Identifier
 
         public static List<string> SongListIndexToINISetting = new List<string>()
         {
@@ -277,6 +302,8 @@ namespace RSMods
             ReadSettings.SFXVolumeKeyIdentifier,
             ReadSettings.ChangeSelectedVolumeKeyIdentifier
         };
+        #endregion
+        #region Colors
 
         public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
         {
@@ -309,6 +336,8 @@ namespace RSMods
             {"Change Fret Number", ReadSettings.CustomFretNubmersIdentifier },
         };
 
+        #endregion
+        #region Current Keybind Mod Names
         public static List<string> currentModKeypressList = new List<string>()
         {
             "Toggle Loft",
@@ -331,11 +360,10 @@ namespace RSMods
             "SFX Volume",
             "Show Volume On Screen"
         };
-
+        #endregion
+        #region Refresh Lists
         public static List<string> songlists = new List<string>();
-
         public static List<string> savedKeysForModToggles = new List<string>();
-
         public static List<string> savedKeysForVolumes = new List<string>();
 
         public static List<string> refreshKeybindingList()
@@ -376,6 +404,6 @@ namespace RSMods
             savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
             return savedKeysForVolumes;
         }
-
+        #endregion
     }
 }

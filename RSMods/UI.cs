@@ -1714,70 +1714,13 @@ namespace RSMods
                 return;
 
             listBox_GuitarSpeakSaved.SelectedIndex = -1;
-            
-            switch (valueToRemove) // Delete, Space, Enter, Tab, PgUp, PgDn, Up, Down, Escape, Open Bracket, Close Bracket, Tilde/Tilda, Forward Slash, Close Guitar Speak
-            {
-                case 0:
-                    SaveChanges(ReadSettings.GuitarSpeakDeleteIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 1:
-                    SaveChanges(ReadSettings.GuitarSpeakSpaceIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 2:
-                    SaveChanges(ReadSettings.GuitarSpeakEnterIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 3:
-                    SaveChanges(ReadSettings.GuitarSpeakTabIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 4:
-                    SaveChanges(ReadSettings.GuitarSpeakPGUPIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 5:
-                    SaveChanges(ReadSettings.GuitarSpeakPGDNIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 6:
-                    SaveChanges(ReadSettings.GuitarSpeakUPIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 7:
-                    SaveChanges(ReadSettings.GuitarSpeakDNIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 8:
-                    SaveChanges(ReadSettings.GuitarSpeakESCIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 9:
-                    SaveChanges(ReadSettings.GuitarSpeakOBracketIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 10:
-                    SaveChanges(ReadSettings.GuitarSpeakCBracketIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 11:
-                    SaveChanges(ReadSettings.GuitarSpeakTildeaIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 12:
-                    SaveChanges(ReadSettings.GuitarSpeakForSlashIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-                case 13:
-                    SaveChanges(ReadSettings.GuitarSpeakCloseIdentifier, "");
-                    RefreshGuitarSpeakPresets();
-                    return;
-            }
+
+            SaveChanges(Dictionaries.GuitarSpeakIndexToINISetting[valueToRemove], "");
+
+            RefreshGuitarSpeakPresets();
         }
 
-
-#endregion
+    #endregion
     #region Prep Twitch Tab
         private void EnableTwitchTab()
         {
