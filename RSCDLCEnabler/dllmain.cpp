@@ -107,9 +107,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}
 			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Player2VolumeKey");
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
 				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Player2VolumeKey");
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
 			}
 			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
