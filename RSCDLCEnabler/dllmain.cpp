@@ -398,7 +398,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (D3DHooks::GameLoaded) { // Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
 
-		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) { // If the user wants us to show the volume )
+		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes) || AutomatedSelectedVolume)) { // If the user wants us to show the volume
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
@@ -407,7 +407,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "") {
+		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "")) {
 			std::string currentSongTimeString = MemHelpers::ShowSongTimer();
 			size_t stringSize;
 
@@ -699,6 +699,11 @@ unsigned WINAPI MainThread() {
 				GreenScreenWall = true;
 			}
 
+			if (!AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "automatic") {
+				AutomatedSelectedVolume = true;
+				currentVolumeIndex = 1;
+			}
+				
 			if (!LoftOff && !LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") == "startup") { // Turn the loft off on startup
 				MemHelpers::ToggleLoft();
 				LoftOff = true;
@@ -739,6 +744,15 @@ unsigned WINAPI MainThread() {
 					Midi::AutomateDownTuning();
 					Midi::AutomateTrueTuning();
 				}
+
+				if (!AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
+				
+					AutomatedSongTimer = true;
+					showSongTimerOnScreen = true;
+				}
+					
+				if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song")
+					currentVolumeIndex = 1;
 			}
 
 			/// If User Is Exiting A Song / In A Menu
@@ -746,6 +760,15 @@ unsigned WINAPI MainThread() {
 			else {
 				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
 				newSongSpeed = 100.f;
+				
+				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
+				
+					AutomatedSongTimer = false;
+					showSongTimerOnScreen = false;
+				}	
+
+				if (Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") // User only wants to see selected volume in game.
+					currentVolumeIndex = 0;
 
 				if (Midi::alreadyAutomatedTuningInThisSong) {
 					Midi::RevertAutomatedTuning();

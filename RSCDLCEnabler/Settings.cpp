@@ -56,6 +56,8 @@ void Settings::Initialize()
 		{"ShowCurrentNoteOnScreen", "off"},
 		{"OnScreenFont", "Arial"},
 		{"ProfileToLoad", ""},
+		{"ShowSongTimerWhen", "manual"},
+		{"ShowSelectedVolumeWhen", "manual"},
 	};
 
 	customSettings = {
@@ -206,6 +208,8 @@ void Settings::ReadModSettings() {
 	modSettings["OnScreenFont"] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");
 	modSettings["ProfileToLoad"] = reader.GetValue("Toggle Switches", "ProfileToLoad", "");
 	modSettings["CustomHighwayColors"] = reader.GetValue("Highway Colors", "CustomHighwayColors", "");
+	modSettings["ShowSongTimerWhen"] = reader.GetValue("Toggle Switches", "ShowSongTimerWhen", "manual");
+	modSettings["ShowSelectedVolumeWhen"] = reader.GetValue("Toggle Switches", "ShowSelectedVolumeWhen", "manual");
 }
 
 void Settings::ReadStringColors() {
