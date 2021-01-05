@@ -25,9 +25,11 @@ namespace Midi {
 	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning);
 	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz); 
 
-	// Digitech Whammy & Whammy Bass
-	void Digitech_Whammy_Auto_Tuning(int highestTuning, int TrueTuning_Hertz);
-	void Digitech_Whammy_Auto_TrueTune(int TrueTuning_Hertz); 
+	// Digitech Whammy Bass
+	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz);
+
+	// Digitech Whammy
+	void Digitech_Whammy_Auto_TrueTune(int TrueTuning_Hertz);
 
 	extern int MidiCC, MidiPC;
 	inline bool scannedForMidiDevices = false;
@@ -39,7 +41,7 @@ namespace Midi {
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
 	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false, userWantsToUseAutoTuning = false;
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
-	inline unsigned int pedalToUse = 0; // 0 = No pedal. 1 = Whammy DT. 2 = Whammy / Whammy Bass
+	inline unsigned int pedalToUse = 0; // 0 = No pedal. 1 = Whammy DT. 2 = Whammy Bass. 3 = Whammy. 4 = Dummy
 };
 
 // Midi Specifications
@@ -101,7 +103,7 @@ inline std::map<char, char> DIGITECH_WHAMMY_DT_activeBypassMap = {
 
 	{78, 78} // NULL (Use for E Standard / other tunings that can't be used on the pedal)
 };
-inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
+inline std::map<char, char> DIGITECH_WHAMMY_BASS_activeBypassMap = {
 	// Classic Mode
 
 	// Whammy
@@ -161,28 +163,29 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 	{63, 84}, // +1 OCT || +2 OCT
 };
 
-inline std::vector<int> DIGITECH_WHAMMY_semiTones = {
-	24, 12, 7, 5, 2, -2, -5, -7, -12, -36
+inline std::vector<float> DIGITECH_WHAMMY_semiTones = {
+	24.0f, 12.0f, 7.0f, 5.0f, 2.0f, -2.0f, -5.0f, -7.0f, -12.0f, -36.0f
 };
-
 
 // Pedal -> Functions
 
 // Pedal -> Drop Tune Capable, True Tuning Capable
 inline std::map<unsigned int, std::pair<bool, bool>> pedalCanUseMap = {
 	{1, {true, true}}, // Whammy DT
-	{2, {true, true}}, // Whammy / Bass Whammy
-	{3, {false, false}} // Dummy pedal
+	{2, {true, true}}, // Whammy Bass
+	{3, {false, true}}, // Whammy
+	{4, {false, false}} // Dummy Pedal
 };
 
 // Pedal -> activeBypassMap
 inline std::map<unsigned int, std::map<char, char>> pedalToActiveBypassMap = {
 	{1, DIGITECH_WHAMMY_DT_activeBypassMap},
-	{2, DIGITECH_WHAMMY_activeBypassMap}
+	{2, DIGITECH_WHAMMY_BASS_activeBypassMap},
 };
 
 // Pedal -> CC Channel
 inline std::map<unsigned int, unsigned int> pedalToCC_Channel = {
 	{1, DIGITECH_WHAMMY_CC_CHANNEL},
-	{2, DIGITECH_WHAMMY_CC_CHANNEL}
+	{2, DIGITECH_WHAMMY_CC_CHANNEL},
+	{3, DIGITECH_WHAMMY_CC_CHANNEL}
 };

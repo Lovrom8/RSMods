@@ -154,7 +154,7 @@ namespace Midi {
 				Digitech_Whammy_DT_Auto_Tuning(highestTuning);
 				break;
 			case 2:
-				Digitech_Whammy_Auto_Tuning(highestTuning, TrueTuning_Hertz);
+				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
 				break;
 			default:
 				break;
@@ -181,8 +181,8 @@ namespace Midi {
 			case 1:
 				Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
 				break;
-			case 2:
-				//Digitech_Whammy_Auto_TrueTune(TrueTuning_Hertz);
+			case 3:
+				Digitech_Whammy_Auto_TrueTune(TrueTuning_Hertz);
 				break;
 
 			default:
@@ -356,56 +356,53 @@ namespace Midi {
 		}
 	}
 
-	void Digitech_Whammy_Auto_Tuning(int highestTuning, int TrueTuning_Hertz) { // Based on the work done by PoizenJam
-
-		// E Standard @ A440 works
-		// E Standard < A440 works
-		// E Standard > A440 don't work
-		// Eb Standard Works
-		// Eb Standard > A440 works
-
-		// Init Variables
-		int TrueTuning = TrueTuning_Hertz;
-		int temp_PC, offset = 0;
-		float Target_Hertz, Target_SemiTones, float_highestTuning = (float)highestTuning;
+	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { // Based on the work done by PoizenJam
+		int temp_PC, temp_CC, offset = 0;
+		float Target_Hertz, Target_Semitones;
 
 		// Chords Mode Offset
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 
-		// Bass @ A220 fix
-		if (TrueTuning < 260)
-			TrueTuning *= 2;
+		// Account for A220 and it's offsets
+		if (TrueTuning_Hertz < 260)
+			TrueTuning_Hertz = TrueTuning_Hertz * 2;
 
-		// Find Target SemiTones
-		Target_Hertz = (float)(TrueTuning * powf(2, (float_highestTuning / 12.0f)));
-		Target_SemiTones = (12 * log2(Target_Hertz / 440));
-		std::cout << "Target SemiTones: " << Target_SemiTones << std::endl;
+		// Find Target Hertz of combined True Tuning and Drop Tuning
+		Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
-		// Calculate Max Hertz From Target_SemiTones. If-Else block :(
-		if (Target_SemiTones < -12.0f)
+		// Convert Target_Hertz to Semitones(relative to A440)
+		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
+
+		// Calculate PC (pre-digitech offset) needed to achieve target Semitones. If-Else block :(
+		if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
 			temp_PC = 10;
-		else if (Target_SemiTones < -7.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
 			temp_PC = 9;
-		else if (Target_SemiTones < -5.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
 			temp_PC = 8;
-		else if (Target_SemiTones < -2.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
 			temp_PC = 7;
-		else if (Target_SemiTones < 2.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
 			temp_PC = 6;
-		else if (Target_SemiTones < 5.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < 2.00f)
 			temp_PC = 5;
-		else if (Target_SemiTones < 7.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
 			temp_PC = 4;
-		else if (Target_SemiTones < 12.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
 			temp_PC = 3;
-		else if (Target_SemiTones < 24.0f)
+		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
 			temp_PC = 2;
 		else
 			temp_PC = 1;
 
-		// Calculate PC & CC
-		SendProgramChange((temp_PC - 1) + offset);
-		SendControlChange((char)(Target_SemiTones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1))));
+		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
+
+		// Does the song actually NEED us to do any changes?
+		if (temp_CC != 0) {
+			SendProgramChange(temp_PC + offset - 1);
+			SendControlChange(temp_CC);
+		}
+		
 	}
 }
