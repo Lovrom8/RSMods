@@ -125,7 +125,7 @@ namespace Midi {
 		if (!alreadyAutomatedTuningInThisSong) {
 			alreadyAutomatedTuningInThisSong = true;
 
-			if (pedalToUse == 0 || !pedalCanUseMap.find(pedalToUse)->second.first) {
+			if (!pedalCanUseMap.find(pedalToUse)->second.first) {
 				std::cout << "Your pedal doesn't support drop tuning." << std::endl;
 				return;
 			}
@@ -156,6 +156,9 @@ namespace Midi {
 			case 2:
 				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
 				break;
+			case 3:
+				Digitech_Whammy_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
+				break;
 			default:
 				break;
 			}
@@ -166,7 +169,7 @@ namespace Midi {
 		if (!alreadyAutomatedTrueTuningInThisSong && userWantsToUseAutoTuning) {
 			alreadyAutomatedTrueTuningInThisSong = true;
 
-			if (pedalToUse == 0 || !pedalCanUseMap.find(pedalToUse)->second.second) {
+			if (!pedalCanUseMap.find(pedalToUse)->second.second) {
 				std::cout << "Your pedal doesn't support true tuning." << std::endl;
 				return;
 			}
@@ -181,10 +184,6 @@ namespace Midi {
 			case 1:
 				Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
 				break;
-			case 3:
-				Digitech_Whammy_Auto_TrueTune(TrueTuning_Hertz);
-				break;
-
 			default:
 				break;
 			}
@@ -334,29 +333,58 @@ namespace Midi {
 		}
 	}
 
-	void Digitech_Whammy_Auto_TrueTune(int TrueTuning_Hertz) {
-		int offset = 0;
+	// Based on the work done by PoizenJam
+	void Digitech_Whammy_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
+		int temp_PC, temp_CC, offset = 0;
+		float Target_Hertz, Target_Semitones;
+
+		// Chords Mode Offset
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 		
-		// A440 / A220
-		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
-			return;
+		// Account for A220 and it's offsets
+		if (TrueTuning_Hertz < 260)
+			TrueTuning_Hertz = TrueTuning_Hertz * 2;
 
-		// Above A440
-		else if (TrueTuning_Hertz > 440) {
-			SendProgramChange(5 + offset);
-			SendControlChange((char)(TrueTuning_Hertz - 440));
-		}
+		// Find Target Hertz of combined True Tuning and Drop Tuning
+		Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
-		// Below A440
-		else {
-			SendProgramChange(6 + offset);
-			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
+		// Convert Target_Hertz to Semitones(relative to A440)
+		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
+
+		// Calculate PC needed to achieve target Semitones. If-Else block :(
+		if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
+			temp_PC = 10;
+		else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
+			temp_PC = 9;
+		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
+			temp_PC = 8;
+		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
+			temp_PC = 7;
+		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
+			temp_PC = 6;
+		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
+			temp_PC = 5;
+		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
+			temp_PC = 4;
+		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
+			temp_PC = 3;
+		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
+			temp_PC = 2;
+		else
+			temp_PC = 1;
+
+		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
+
+		// Does the song actually NEED us to do any changes?
+		if (temp_CC != 0) {
+			SendProgramChange(temp_PC + offset - 1);
+			SendControlChange(temp_CC);
 		}
 	}
 
-	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { // Based on the work done by PoizenJam
+	// Based on the work done by PoizenJam
+	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
 		int temp_PC, temp_CC, offset = 0;
 		float Target_Hertz, Target_Semitones;
 
@@ -396,7 +424,7 @@ namespace Midi {
 		else
 			temp_PC = 1;
 
-		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
+		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_BASS_semiTones.at(temp_PC - 1)));
 
 		// Does the song actually NEED us to do any changes?
 		if (temp_CC != 0) {
