@@ -132,7 +132,7 @@ namespace RSMods
         {
             WriteSettings.IsVoid(GenUtil.GetRSDirectory());
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
+                WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults); // Creates Settings File
 
             if (!File.Exists(Constants.SettingsPath))
                 File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
@@ -580,7 +580,7 @@ namespace RSMods
 
 
             // Now we can change things without saving.
-            nUpDown_ForceEnumerationXMS.Value = Decimal.Parse(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier)) / 1000; // Loads old settings for enumeration every x ms
+            nUpDown_ForceEnumerationXMS.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
             listBox_ExtendedRangeTunings.SelectedIndex = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
             listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
             listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
@@ -795,7 +795,7 @@ namespace RSMods
             {
                 File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini"));
                 RefreshForm();
-                WriteSettings.WriteINI(WriteSettings.Settings); // Refresh Form will regenerate all the settings, so we need to overwrite them.
+                WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults); // Refresh Form will regenerate all the settings, so we need to overwrite them.
             }
             else
                 MessageBox.Show("All your settings have been saved, and nothing was reset");
@@ -818,19 +818,19 @@ namespace RSMods
             else if (ChangedSettingValue == "false")
                 ChangedSettingValue = "off";
 
-            foreach (string section in WriteSettings.saveSettings.Keys)
+            foreach (string section in WriteSettings.saveSettingsOrDefaults.Keys)
             {
-                foreach (KeyValuePair<string, string> entry in WriteSettings.saveSettings[section])
+                foreach (KeyValuePair<string, string> entry in WriteSettings.saveSettingsOrDefaults[section])
                 {
                     if (IdentifierToChange == entry.Key)
                     {
-                        WriteSettings.saveSettings[section][IdentifierToChange] = ChangedSettingValue;
+                        WriteSettings.saveSettingsOrDefaults[section][IdentifierToChange] = ChangedSettingValue;
                         break; // We found what we need, so let's leave.
                     }
                 }
             }
 
-            WriteSettings.WriteINI(WriteSettings.saveSettings);
+            WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults);
             ShowSavedSettingsLabel();
             WinMsgUtil.SendMsgToRS("update all");
         }
@@ -988,7 +988,7 @@ namespace RSMods
                 }
             }
             else
-                WriteSettings.WriteINI(WriteSettings.Settings);
+                WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults);
         }
 
         private void StringColors_DefaultStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors();

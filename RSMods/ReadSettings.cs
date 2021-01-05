@@ -172,9 +172,11 @@ namespace RSMods
 
         private static void VerifySettingsINI()
         {
-            if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
-                WriteSettings.WriteINI(WriteSettings.Settings); // Creates Settings File
+            if (!DoesSettingsINIExist())
+                WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults); // Creates Settings File
         }
+
+        public static bool DoesSettingsINIExist() => File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini"));
         #endregion
         public static string ProcessSettings(string identifierToGrab)
         {
