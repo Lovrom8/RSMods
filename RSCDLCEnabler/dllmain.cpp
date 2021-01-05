@@ -751,8 +751,11 @@ unsigned WINAPI MainThread() {
 					showSongTimerOnScreen = true;
 				}
 					
-				if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song")
+				if (!AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") {
 					currentVolumeIndex = 1;
+					AutomatedSelectedVolume = true;
+				}
+					
 			}
 
 			/// If User Is Exiting A Song / In A Menu
@@ -767,8 +770,10 @@ unsigned WINAPI MainThread() {
 					showSongTimerOnScreen = false;
 				}	
 
-				if (Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") // User only wants to see selected volume in game.
+				if (AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") { // User only wants to see selected volume in game.
 					currentVolumeIndex = 0;
+					AutomatedSelectedVolume = false;
+				}
 
 				if (Midi::alreadyAutomatedTuningInThisSong) {
 					Midi::RevertAutomatedTuning();
