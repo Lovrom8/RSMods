@@ -78,7 +78,8 @@ void Settings::Initialize()
 		{"GuitarSpeakOBracket", 0},
 		{"GuitarSpeakCBracket", 0},
 		{"GuitarSpeakTildea", 0},
-		{"GuitarSpeakForSlash", 0}
+		{"GuitarSpeakForSlash", 0},
+		{"GuitarSpeakAlt", 0}
 	};
 
 	twitchSettings = {
@@ -169,6 +170,7 @@ void Settings::ReadModSettings() {
 		{"GuitarSpeakCBracket", reader.GetLongValue("Guitar Speak", "GuitarSpeakCBracketWhen", 0)},
 		{"GuitarSpeakTildea", reader.GetLongValue("Guitar Speak", "GuitarSpeakTildeaWhen", 0)},
 		{"GuitarSpeakForSlash", reader.GetLongValue("Guitar Speak", "GuitarSpeakForSlashWhen", 0)},
+		{"GuitarSpeakAlt", reader.GetLongValue("Guitar Speak", "GuitarSpeakAltWhen", 0)},
 	};
 
 	// Mods Enabled / Disabled

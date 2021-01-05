@@ -42,6 +42,7 @@ namespace GuitarSpeak {
 		{"CBRACKET", VK_OEM_6}, // Close Bracket
 		{"TILDEA", VK_OEM_3},	// Tilde/a
 		{"FORSLASH", VK_OEM_2}, // Forward Slash
+		{"ALT", VK_MENU},        // Alt
 	};
 
 	inline std::vector<std::string> calibrationMenus = {

@@ -136,4 +136,5 @@ void GuitarSpeak::FillKeyList() {
 	strKeyList[Settings::GetModSetting("GuitarSpeakCBracket")] = "CBRACKET";
 	strKeyList[Settings::GetModSetting("GuitarSpeakTildea")] = "TILDEA";
 	strKeyList[Settings::GetModSetting("GuitarSpeakForSlash")] = "FORSLASH";
+	strKeyList[Settings::GetModSetting("GuitarSpeakAlt")] = "ALT";
 }
