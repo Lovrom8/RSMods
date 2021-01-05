@@ -79,6 +79,8 @@ namespace RSMods
                 { ReadSettings.ShowCurrentNoteOnScreenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowCurrentNoteOnScreenIdentifier, "off") }, // Display Current Note Name
                 { ReadSettings.OnScreenFontIdentifier, CreateDefaultOnOldINI(ReadSettings.OnScreenFontIdentifier, "Arial") }, // Font to use when we show text over Rocksmith
                 { ReadSettings.ProfileToLoadIdentifier, CreateDefaultOnOldINI(ReadSettings.ProfileToLoadIdentifier, "") }, // Default profile to load.
+                { ReadSettings.ShowSongTimerWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSongTimerWhenIdentifier, "manual") }, // Should we start the game with song timer on.
+                { ReadSettings.ShowSelectedVolumeWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual") }, // Should we always show the selected volume.
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

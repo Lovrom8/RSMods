@@ -197,6 +197,13 @@
             this.TabController_ModSettings = new System.Windows.Forms.TabControl();
             this.tabPage_ModSettings_ER = new System.Windows.Forms.TabPage();
             this.tabPage_ModSettings_Automation = new System.Windows.Forms.TabPage();
+            this.groupBox_ControlSongVolumeWhen = new System.Windows.Forms.GroupBox();
+            this.radio_ControlSongVolumeManual = new System.Windows.Forms.RadioButton();
+            this.radio_ControlSongVolumeInSong = new System.Windows.Forms.RadioButton();
+            this.radio_ControlSongVolumeAlways = new System.Windows.Forms.RadioButton();
+            this.groupBox_SongTimer = new System.Windows.Forms.GroupBox();
+            this.radio_SongTimerManual = new System.Windows.Forms.RadioButton();
+            this.radio_SongTimerAlways = new System.Windows.Forms.RadioButton();
             this.groupBox_Backups = new System.Windows.Forms.GroupBox();
             this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
             this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
@@ -400,6 +407,8 @@
             this.TabController_ModSettings.SuspendLayout();
             this.tabPage_ModSettings_ER.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
+            this.groupBox_ControlSongVolumeWhen.SuspendLayout();
+            this.groupBox_SongTimer.SuspendLayout();
             this.groupBox_Backups.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
@@ -2545,6 +2554,8 @@
             // tabPage_ModSettings_Automation
             // 
             this.tabPage_ModSettings_Automation.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_ControlSongVolumeWhen);
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_SongTimer);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_GuitarSpeak);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_Backups);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
@@ -2561,11 +2572,96 @@
             this.tabPage_ModSettings_Automation.TabIndex = 1;
             this.tabPage_ModSettings_Automation.Text = "Automation";
             // 
+            // groupBox_ControlSongVolumeWhen
+            // 
+            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeManual);
+            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeInSong);
+            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeAlways);
+            this.groupBox_ControlSongVolumeWhen.Location = new System.Drawing.Point(356, 349);
+            this.groupBox_ControlSongVolumeWhen.Name = "groupBox_ControlSongVolumeWhen";
+            this.groupBox_ControlSongVolumeWhen.Size = new System.Drawing.Size(155, 92);
+            this.groupBox_ControlSongVolumeWhen.TabIndex = 100008;
+            this.groupBox_ControlSongVolumeWhen.TabStop = false;
+            this.groupBox_ControlSongVolumeWhen.Text = "Control Song Volume When";
+            this.groupBox_ControlSongVolumeWhen.Visible = false;
+            // 
+            // radio_ControlSongVolumeManual
+            // 
+            this.radio_ControlSongVolumeManual.AutoSize = true;
+            this.radio_ControlSongVolumeManual.Location = new System.Drawing.Point(11, 69);
+            this.radio_ControlSongVolumeManual.Name = "radio_ControlSongVolumeManual";
+            this.radio_ControlSongVolumeManual.Size = new System.Drawing.Size(112, 17);
+            this.radio_ControlSongVolumeManual.TabIndex = 2;
+            this.radio_ControlSongVolumeManual.TabStop = true;
+            this.radio_ControlSongVolumeManual.Text = "Manual (Keypress)";
+            this.radio_ControlSongVolumeManual.UseVisualStyleBackColor = true;
+            this.radio_ControlSongVolumeManual.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeManual);
+            // 
+            // radio_ControlSongVolumeInSong
+            // 
+            this.radio_ControlSongVolumeInSong.AutoSize = true;
+            this.radio_ControlSongVolumeInSong.Location = new System.Drawing.Point(11, 46);
+            this.radio_ControlSongVolumeInSong.Name = "radio_ControlSongVolumeInSong";
+            this.radio_ControlSongVolumeInSong.Size = new System.Drawing.Size(72, 17);
+            this.radio_ControlSongVolumeInSong.TabIndex = 1;
+            this.radio_ControlSongVolumeInSong.TabStop = true;
+            this.radio_ControlSongVolumeInSong.Text = "In A Song";
+            this.radio_ControlSongVolumeInSong.UseVisualStyleBackColor = true;
+            this.radio_ControlSongVolumeInSong.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeInSong);
+            // 
+            // radio_ControlSongVolumeAlways
+            // 
+            this.radio_ControlSongVolumeAlways.AutoSize = true;
+            this.radio_ControlSongVolumeAlways.Location = new System.Drawing.Point(11, 23);
+            this.radio_ControlSongVolumeAlways.Name = "radio_ControlSongVolumeAlways";
+            this.radio_ControlSongVolumeAlways.Size = new System.Drawing.Size(58, 17);
+            this.radio_ControlSongVolumeAlways.TabIndex = 0;
+            this.radio_ControlSongVolumeAlways.TabStop = true;
+            this.radio_ControlSongVolumeAlways.Text = "Always";
+            this.radio_ControlSongVolumeAlways.UseVisualStyleBackColor = true;
+            this.radio_ControlSongVolumeAlways.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeAlways);
+            // 
+            // groupBox_SongTimer
+            // 
+            this.groupBox_SongTimer.Controls.Add(this.radio_SongTimerManual);
+            this.groupBox_SongTimer.Controls.Add(this.radio_SongTimerAlways);
+            this.groupBox_SongTimer.Location = new System.Drawing.Point(356, 266);
+            this.groupBox_SongTimer.Name = "groupBox_SongTimer";
+            this.groupBox_SongTimer.Size = new System.Drawing.Size(149, 77);
+            this.groupBox_SongTimer.TabIndex = 100007;
+            this.groupBox_SongTimer.TabStop = false;
+            this.groupBox_SongTimer.Text = "Toggle Song Timer When";
+            this.groupBox_SongTimer.Visible = false;
+            // 
+            // radio_SongTimerManual
+            // 
+            this.radio_SongTimerManual.AutoSize = true;
+            this.radio_SongTimerManual.Location = new System.Drawing.Point(11, 50);
+            this.radio_SongTimerManual.Name = "radio_SongTimerManual";
+            this.radio_SongTimerManual.Size = new System.Drawing.Size(112, 17);
+            this.radio_SongTimerManual.TabIndex = 1;
+            this.radio_SongTimerManual.TabStop = true;
+            this.radio_SongTimerManual.Text = "Manual (Keypress)";
+            this.radio_SongTimerManual.UseVisualStyleBackColor = true;
+            this.radio_SongTimerManual.CheckedChanged += new System.EventHandler(this.Save_SongTimerManual);
+            // 
+            // radio_SongTimerAlways
+            // 
+            this.radio_SongTimerAlways.AutoSize = true;
+            this.radio_SongTimerAlways.Location = new System.Drawing.Point(11, 27);
+            this.radio_SongTimerAlways.Name = "radio_SongTimerAlways";
+            this.radio_SongTimerAlways.Size = new System.Drawing.Size(98, 17);
+            this.radio_SongTimerAlways.TabIndex = 0;
+            this.radio_SongTimerAlways.TabStop = true;
+            this.radio_SongTimerAlways.Text = "Always In Song";
+            this.radio_SongTimerAlways.UseVisualStyleBackColor = true;
+            this.radio_SongTimerAlways.CheckedChanged += new System.EventHandler(this.Save_SongTimerAlways);
+            // 
             // groupBox_Backups
             // 
             this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
             this.groupBox_Backups.Controls.Add(this.nUpDown_NumberOfBackups);
-            this.groupBox_Backups.Location = new System.Drawing.Point(511, 355);
+            this.groupBox_Backups.Location = new System.Drawing.Point(522, 351);
             this.groupBox_Backups.Name = "groupBox_Backups";
             this.groupBox_Backups.Size = new System.Drawing.Size(128, 86);
             this.groupBox_Backups.TabIndex = 100006;
@@ -4698,6 +4794,10 @@
             this.TabController_ModSettings.ResumeLayout(false);
             this.tabPage_ModSettings_ER.ResumeLayout(false);
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
+            this.groupBox_ControlSongVolumeWhen.ResumeLayout(false);
+            this.groupBox_ControlSongVolumeWhen.PerformLayout();
+            this.groupBox_SongTimer.ResumeLayout(false);
+            this.groupBox_SongTimer.PerformLayout();
             this.groupBox_Backups.ResumeLayout(false);
             this.groupBox_Backups.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
@@ -5114,6 +5214,13 @@
         private System.Windows.Forms.Button button_ResetNotewayColors;
         private System.Windows.Forms.Button button_ResetToDefaultCachePsarc;
         private System.Windows.Forms.RadioButton radio_Whammy;
+        private System.Windows.Forms.GroupBox groupBox_SongTimer;
+        private System.Windows.Forms.RadioButton radio_SongTimerManual;
+        private System.Windows.Forms.RadioButton radio_SongTimerAlways;
+        private System.Windows.Forms.GroupBox groupBox_ControlSongVolumeWhen;
+        private System.Windows.Forms.RadioButton radio_ControlSongVolumeManual;
+        private System.Windows.Forms.RadioButton radio_ControlSongVolumeInSong;
+        private System.Windows.Forms.RadioButton radio_ControlSongVolumeAlways;
     }
 }
 

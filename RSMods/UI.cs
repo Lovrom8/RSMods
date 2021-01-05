@@ -268,6 +268,7 @@ namespace RSMods
                 checkBox_ControlVolume.Checked = true;
                 groupBox_Keybindings_AUDIO.Visible = true;
                 groupBox_ControlVolumeIncrement.Visible = true;
+                groupBox_ControlSongVolumeWhen.Visible = true;
 
                 string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier);
                 int intVal = 0;
@@ -277,7 +278,14 @@ namespace RSMods
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
+            { 
                 checkBox_SongTimer.Checked = true;
+                groupBox_SongTimer.Visible = true;
+                if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerWhenIdentifier) == "automatic")
+                    radio_SongTimerAlways.Checked = true;
+                else
+                    radio_SongTimerManual.Checked = true;
+            }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
             {
@@ -440,10 +448,14 @@ namespace RSMods
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on")
-            {
                 checkBox_CustomHighway.Checked = true;
-            }
-                
+
+            if (ReadSettings.ProcessSettings(ReadSettings.ShowSelectedVolumeWhenIdentifier) == "automatic")
+                radio_ControlSongVolumeAlways.Checked = true;
+            else if (ReadSettings.ProcessSettings(ReadSettings.ShowSelectedVolumeWhenIdentifier) == "song")
+                radio_ControlSongVolumeInSong.Checked = true;
+            else
+                radio_ControlSongVolumeManual.Checked = true;
         }
 
         private void LoadASIOSettings()
@@ -1259,7 +1271,11 @@ namespace RSMods
             groupBox_LoftOffWhen.Visible = checkBox_ToggleLoft.Checked;
         }
 
-        private void Save_SongTimer(object sender, EventArgs e) => SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, checkBox_SongTimer.Checked.ToString().ToLower());
+        private void Save_SongTimer(object sender, EventArgs e)
+        {
+            SaveChanges(ReadSettings.ShowSongTimerEnabledIdentifier, checkBox_SongTimer.Checked.ToString().ToLower());
+            groupBox_SongTimer.Visible = checkBox_SongTimer.Checked;
+        }
 
         private void Save_ForceEnumeration(object sender, EventArgs e)
         {
@@ -1440,6 +1456,7 @@ namespace RSMods
         {
             groupBox_Keybindings_AUDIO.Visible = checkBox_ControlVolume.Checked;
             groupBox_ControlVolumeIncrement.Visible = checkBox_ControlVolume.Checked;
+            groupBox_ControlSongVolumeWhen.Visible = checkBox_ControlVolume.Checked;
             SaveChanges(ReadSettings.VolumeControlEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
         }
 
@@ -1556,8 +1573,37 @@ namespace RSMods
             textBox_ShowFretNumber.BackColor = SystemColors.Control;
         }
 
+        private void Save_SongTimerAlways(object sender, EventArgs e)
+        {
+            if (radio_SongTimerAlways.Checked)
+                SaveChanges(ReadSettings.ShowSongTimerWhenIdentifier, "automatic");
+        }
 
-        #endregion
+        private void Save_SongTimerManual(object sender, EventArgs e)
+        {
+            if (radio_SongTimerManual.Checked)
+                SaveChanges(ReadSettings.ShowSongTimerWhenIdentifier, "manual");
+        }
+
+        private void Save_ControlSongVolumeManual(object sender, EventArgs e)
+        {
+            if (radio_ControlSongVolumeManual.Checked)
+                SaveChanges(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual");
+        }
+
+        private void Save_ControlSongVolumeInSong(object sender, EventArgs e)
+        {
+            if (radio_ControlSongVolumeInSong.Checked)
+                SaveChanges(ReadSettings.ShowSelectedVolumeWhenIdentifier, "song");
+        }
+
+        private void Save_ControlSongVolumeAlways(object sender, EventArgs e)
+        {
+            if (radio_ControlSongVolumeAlways.Checked)
+                SaveChanges(ReadSettings.ShowSelectedVolumeWhenIdentifier, "automatic");
+        }
+
+    #endregion
     #region Tooltips
 
         bool CreatedToolTipYet = false;

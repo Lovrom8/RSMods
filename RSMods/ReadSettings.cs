@@ -9,19 +9,39 @@ namespace RSMods
     class ReadSettings
     {
         #region Setup Variables
-        private static string Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
+        private static string
+                             // Song Lists
+                             Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
+
+                             // Mod Key Bindings
                              ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey, RemoveLyricsKey, RRSpeedKey,
+
+                             // Audio Key Bindings
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
+                    
+                             // Mod On / Off
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                                                RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
+                             RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
+                             ShowSongTimerWhen, ShowSelectedVolumeWhen,
+                            
+                             // String Colors
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
+                        
+                             // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval,
+                        
+                             // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
-                                                GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakAlt, GuitarSpeakWhileTuning,
-                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups,
-                             CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers;
+                             GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakAlt, GuitarSpeakWhileTuning,
+
+                             // Highway Colors
+                             CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers,
+
+                             // GUI Settings
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups;
+
         public static string
             // Song List Identifiers
             Songlist1Identifier = "SongListTitle_1 = ",
@@ -82,6 +102,8 @@ namespace RSMods
             ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
             OnScreenFontIdentifier = "OnScreenFont = ",
             ProfileToLoadIdentifier = "ProfileToLoad = ",
+            ShowSongTimerWhenIdentifier = "ShowSongTimerWhen = ",
+            ShowSelectedVolumeWhenIdentifier = "ShowSelectedVolumeWhen = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -305,7 +327,10 @@ namespace RSMods
                     return FillSettingVariable(OnScreenFontIdentifier, SettingType.STRING, currentLine, out OnScreenFont);
                 if (IdentifierIsFound(currentLine, ProfileToLoadIdentifier, identifierToGrab))
                     return FillSettingVariable(ProfileToLoadIdentifier, SettingType.STRING, currentLine, out ProfileToLoad);
-
+                if (IdentifierIsFound(currentLine, ShowSongTimerWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(ShowSongTimerWhenIdentifier, SettingType.STRING, currentLine, out ShowSongTimerWhen);
+                if (IdentifierIsFound(currentLine, ShowSelectedVolumeWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(ShowSelectedVolumeWhenIdentifier, SettingType.STRING, currentLine, out ShowSelectedVolumeWhen);
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})
