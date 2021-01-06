@@ -430,7 +430,6 @@ std::string MemHelpers::CurrentSelectedUser() {
 	while (badValue < 0x10000000 && i < 25) {
 		Sleep(100);
 		badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
-		std::cout << "Bad Pointer" << std::endl;
 		i++;
 	}
 
