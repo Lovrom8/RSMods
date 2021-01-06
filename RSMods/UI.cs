@@ -402,7 +402,13 @@ namespace RSMods
                 decimal decimalVal = 0;
 
                 if (Decimal.TryParse(val, out decimalVal))
+                {
+                    if (decimalVal < 2)
+                        decimalVal = 2;
                     nUpDown_RiffRepeaterSpeed.Value = decimalVal;
+                    SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, decimalVal.ToString());
+                }
+                    
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) == "on")
