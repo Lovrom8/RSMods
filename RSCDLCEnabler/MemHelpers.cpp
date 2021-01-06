@@ -426,9 +426,12 @@ std::string MemHelpers::CurrentSelectedUser() {
 	if (!badValue)
 		return (std::string)"";
 
-	while (badValue < 0x10000000) {
+	int i = 0;
+	while (badValue < 0x10000000 && i < 25) {
 		Sleep(100);
 		badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
+		std::cout << "Bad Pointer" << std::endl;
+		i++;
 	}
 
 	std::string hopeThisWorks = std::string((const char*)badValue);
