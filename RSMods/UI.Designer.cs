@@ -3015,6 +3015,7 @@
             this.groupBox_RRSpeed.TabStop = false;
             this.groupBox_RRSpeed.Text = "Riff Repeater Speed Increment";
             this.groupBox_RRSpeed.Visible = false;
+            this.groupBox_RRSpeed.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // nUpDown_RiffRepeaterSpeed
             // 

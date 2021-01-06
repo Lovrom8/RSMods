@@ -102,7 +102,7 @@ namespace RSMods
             {
                 { ReadSettings.ExtendedRangeTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeTuningIdentifier, "-5")}, // Enable Extended Range Mode When Low E Is X Below E
                 { ReadSettings.CheckForNewSongIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.CheckForNewSongIntervalIdentifier, "5000") }, // Enumerate new CDLC / ODLC every X ms
-                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "1") }, // The rate of how much one key press should gain the Riff Repeater speed.
+                { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "2") }, // The rate of how much one key press should gain the Riff Repeater speed.
                 { ReadSettings.TuningPedalIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningPedalIdentifier, "") }, // What tuning pedal does the user use?
                 { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") } // By what number should we increase / decrease the volume.
             }},
