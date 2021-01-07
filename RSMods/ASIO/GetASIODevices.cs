@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Win32;
 
 namespace RSMods.ASIO
@@ -13,35 +14,43 @@ namespace RSMods.ASIO
         {
             List<DriverInfo> availableDevices = new List<DriverInfo>();
 
-            RegistryKey registry_ASIO = Registry.LocalMachine.OpenSubKey("Software\\ASIO");
-
-            if (registry_ASIO == null)
-                return availableDevices;
-
-            string[] subKeyNames = registry_ASIO.GetSubKeyNames();
-
-            foreach (string asioDevice in subKeyNames)
+            try
             {
-                // Setup variables
-                DriverInfo deviceInfo = new DriverInfo();
-                RegistryKey registry_device = Registry.LocalMachine.OpenSubKey($"Software\\ASIO\\{asioDevice}");
+                RegistryKey registry_ASIO = Registry.LocalMachine.OpenSubKey("Software\\ASIO");
 
-                // Set device information from Software\ASIO
-                deviceInfo.clsID = (string)registry_device.GetValue("CLSID");
-                deviceInfo.deviceDescription = (string)registry_device.GetValue("Description");
-                deviceInfo.deviceName = asioDevice;
+                if (registry_ASIO == null)
+                    return availableDevices;
 
-                registry_device.Close();
+                string[] subKeyNames = registry_ASIO.GetSubKeyNames();
 
-                // Verify we have a real device and not just a fake key
-                if (deviceInfo.clsID == null || deviceInfo.deviceDescription == null || deviceInfo.deviceName == null)
-                    continue;
+                foreach (string asioDevice in subKeyNames)
+                {
+                    // Setup variables
+                    DriverInfo deviceInfo = new DriverInfo();
+                    RegistryKey registry_device = Registry.LocalMachine.OpenSubKey($"Software\\ASIO\\{asioDevice}");
 
-                // Put device into list
-                availableDevices.Add(deviceInfo);
+                    // Set device information from Software\ASIO
+                    deviceInfo.clsID = (string)registry_device.GetValue("CLSID");
+                    deviceInfo.deviceDescription = (string)registry_device.GetValue("Description");
+                    deviceInfo.deviceName = asioDevice;
+
+                    registry_device.Close();
+
+                    // Verify we have a real device and not just a fake key
+                    if (deviceInfo.clsID == null || deviceInfo.deviceDescription == null || deviceInfo.deviceName == null)
+                        continue;
+
+                    // Put device into list
+                    availableDevices.Add(deviceInfo);
+                }
+
+                registry_ASIO.Close();
             }
+            catch (NullReferenceException ex)
+            {
+                MessageBox.Show($"ASIO Error: {ex.Message}", "ASIO Error");
+            } 
 
-            registry_ASIO.Close();
             return availableDevices;
         }
 

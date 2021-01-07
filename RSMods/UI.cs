@@ -1222,7 +1222,7 @@ namespace RSMods
 
         private void SetForget_LoadTonesFromProfiles(object sender, EventArgs e)
         {
-            var profileTones = SetAndForgetMods.GetSteamProfilesFolder();
+            var profileTones = SetAndForgetMods.GetSteamProfilesTones();
 
             if (profileTones.Count > 0)
             {

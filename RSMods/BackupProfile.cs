@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Forms;
 using RSMods.Data;
+using RSMods.Util;
 
 namespace RSMods
 {
@@ -15,19 +16,31 @@ namespace RSMods
 
         public static string GetSaveDirectory()
         {
-            RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
-            string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/", fullProfileFolder = "";
+            string fullProfileFolder = string.Empty;
 
-            foreach(string user in availableUser.GetSubKeyNames())
+            try
             {
-                if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
+
+                if (availableUser == null) // If the key doesn't exist for whatever reason, try to manually find the path by searching for files with 
+                    return GenUtil.GetSteamProfilesFolderManual();
+
+                string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/";
+
+                foreach (string user in availableUser.GetSubKeyNames())
                 {
-                    fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
-                    break;
+                    if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                    {
+                        fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
+                        break;
+                    }
+
+                    else
+                        continue;
                 }
-                    
-                else
-                    continue;
+            }
+            catch (NullReferenceException) // If for whatever reason the key doesn't exist, let's not crash the whole application
+            {
             }
 
             return fullProfileFolder;
@@ -56,7 +69,7 @@ namespace RSMods
                 sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
             }
 
-            foreach(var file in Directory.GetFiles(profileFolder))
+            foreach (var file in Directory.GetFiles(profileFolder))
             {
                 File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)));
             }

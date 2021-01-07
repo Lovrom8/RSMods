@@ -334,35 +334,25 @@ namespace RSMods
             MessageBox.Show("Successfully changed GuitarArcade tones!", "Success");
         }
 
-        public static List<string> GetSteamProfilesFolder()
+        public static List<string> GetSteamProfilesTones()
         {
             var profileTones = new List<string>();
+            var userprofileFolder = GenUtil.GetSteamProfilesFolderManual();
 
-            string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
-            try
+            if (Directory.Exists(userprofileFolder))
             {
-                var subdirs = new DirectoryInfo(steamUserdataPath).GetDirectories(@"221680", SearchOption.AllDirectories).ToArray();
-                var userprofileFolder = subdirs.FirstOrDefault(dir => !dir.FullName.Contains("760")); //760 is the ID for Steam's screenshot thingy
+                var profiles = Directory.EnumerateFiles(userprofileFolder, "*_PRFLDB", SearchOption.AllDirectories).ToList();
 
-                if (Directory.Exists(userprofileFolder.FullName))
+                tonesFromAllProfiles.Clear();
+
+                foreach (string profile in profiles)
                 {
-                    var profiles = Directory.EnumerateFiles(userprofileFolder.FullName, "*_PRFLDB", SearchOption.AllDirectories).ToList();
-
-                    tonesFromAllProfiles.Clear();
-
-                    foreach (string profile in profiles)
-                        foreach (var tone in Tone2014.Import(profile))
-                        {
-                            tonesFromAllProfiles.Add(tone.Name, tone);
-                            profileTones.Add(tone.Name);
-                        }   
+                    foreach (var tone in Tone2014.Import(profile))
+                    {
+                        tonesFromAllProfiles.Add(tone.Name, tone);
+                        profileTones.Add(tone.Name);
+                    }
                 }
-                else
-                    MessageBox.Show("Could not find profile folder!", "Error");
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
             }
 
             return profileTones;
@@ -442,7 +432,7 @@ namespace RSMods
                     }
                 }
                 catch (ManagementException) //Not much we can do in this case and it's not really important that we inform the user
-                {}
+                { }
             }
             return new Tuple<string, bool>("Unspecified", false);
         }

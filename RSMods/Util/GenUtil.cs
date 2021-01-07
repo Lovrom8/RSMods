@@ -55,28 +55,32 @@ namespace RSMods.Util
         public static string GetDefaultBrowser(string url)
         {
             string browserName = "iexplore.exe";
-            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"))
+            try
             {
-                if (userChoiceKey != null)
+                using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"))
                 {
-                    object progIdValue = userChoiceKey.GetValue("Progid");
-                    if (progIdValue != null)
+                    if (userChoiceKey != null)
                     {
-                        if (progIdValue.ToString().ToLower().Contains("chrome"))
-                            browserName = "chrome.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("firefox"))
-                            browserName = "firefox.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("safari"))
-                            browserName = "safari.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("opera"))
-                            browserName = "opera.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("brave"))
-                            browserName = "brave.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("edge"))
-                            return $"microsoft-edge:{url}";
+                        object progIdValue = userChoiceKey.GetValue("Progid");
+                        if (progIdValue != null)
+                        {
+                            if (progIdValue.ToString().ToLower().Contains("chrome"))
+                                browserName = "chrome.exe";
+                            else if (progIdValue.ToString().ToLower().Contains("firefox"))
+                                browserName = "firefox.exe";
+                            else if (progIdValue.ToString().ToLower().Contains("safari"))
+                                browserName = "safari.exe";
+                            else if (progIdValue.ToString().ToLower().Contains("opera"))
+                                browserName = "opera.exe";
+                            else if (progIdValue.ToString().ToLower().Contains("brave"))
+                                browserName = "brave.exe";
+                            else if (progIdValue.ToString().ToLower().Contains("edge"))
+                                return $"microsoft-edge:{url}";
+                        }
                     }
                 }
             }
+            catch (NullReferenceException) { }
 
             return browserName;
         }
@@ -333,6 +337,27 @@ namespace RSMods.Util
                 }
             }
             return String.Empty;
+        }
+
+        public static string GetSteamProfilesFolderManual()
+        {
+            string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
+            try
+            {
+                var subdirs = new DirectoryInfo(steamUserdataPath).GetDirectories(@"221680", SearchOption.AllDirectories).ToArray();
+                var userprofileFolder = subdirs.FirstOrDefault(dir => !dir.FullName.Contains("760")); //760 is the ID for Steam's screenshot thingy
+
+                if (Directory.Exists(userprofileFolder.FullName))
+                    return userprofileFolder.FullName;
+                else
+                    MessageBox.Show("Could not find profile folder!", "Error");
+            }
+            catch (IOException ioex)
+            {
+                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
+            }
+
+            return string.Empty;
         }
     }
 }
