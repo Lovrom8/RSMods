@@ -10,6 +10,9 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.Win32;
+using System.Windows.Forms;
+using RSMods.Util;
 
 namespace RSMods
 {
@@ -102,7 +105,7 @@ namespace RSMods
         public static Dictionary<string, string> AvailableProfiles()
         {
             Dictionary<string, string> profiles = new Dictionary<string, string>();
-            DirectoryInfo directory = new DirectoryInfo(BackupProfile.GetSaveDirectory());
+            DirectoryInfo directory = new DirectoryInfo(Profiles.GetSaveDirectory());
             try
             {
                 JToken token = JObject.Parse(DecryptProfiles(Path.Combine(directory.FullName, "LocalProfiles.json")));
@@ -116,7 +119,73 @@ namespace RSMods
 
             return profiles;
         }
+
+        public static string GetSaveDirectory()
+        {
+            string fullProfileFolder = string.Empty;
+
+            try
+            {
+                RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
+
+                if (availableUser == null) // If the key doesn't exist for whatever reason, try to manually find the path by searching for files with 
+                    return GenUtil.GetSteamProfilesFolderManual();
+
+                string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/";
+
+                foreach (string user in availableUser.GetSubKeyNames())
+                {
+                    if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                    {
+                        fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
+                        break;
+                    }
+
+                    else
+                        continue;
+                }
+            }
+            catch (NullReferenceException) // If for whatever reason the key doesn't exist, let's not crash the whole application
+            {
+            }
+
+            return fullProfileFolder;
+        }
+
         #endregion
+        #region Backup Profile
+
+        public static void SaveProfile()
+        {
+            string profileFolder = GetSaveDirectory();
+
+            if (profileFolder == "")
+            {
+                MessageBox.Show("We can't find your profiles to backup");
+                return;
+            }
+
+            string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
+            DateTime now = DateTime.Now;
+            string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MM-dd-yyyy_HH-mm-ss"));
+            string howToRestoreBackupTxt = Path.Combine(profileBackupsFolder, "howto.txt");
+
+            Directory.CreateDirectory(profileBackupsFolder);
+            Directory.CreateDirectory(timedBackupFolder);
+
+            using (StreamWriter sw = File.CreateText(howToRestoreBackupTxt))
+            {
+                sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
+            }
+
+            foreach (var file in Directory.GetFiles(profileFolder))
+            {
+                File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)));
+            }
+        }
+
+        #endregion
+
         #region Decrypt Profile
 
         private static void DecryptFile(Stream input, Stream output, byte[] key)
@@ -286,40 +355,40 @@ namespace RSMods
             object argument = JsonConvert.DeserializeObject(serializedSection);
             object profile = JsonConvert.DeserializeObject(jsonProfile);
 
-            if (RSMods.ProfileClasses.CSharpArgumentInfo.callSite_2 == null)
+            if (Profile.Tools.CSharpArgumentInfo.callSite_2 == null)
             {
-                RSMods.ProfileClasses.CSharpArgumentInfo.callSite_2 = CallSite<Func<CallSite, object, string, object, object>>.Create(BinderSetIndex(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[]
+                Profile.Tools.CSharpArgumentInfo.callSite_2 = CallSite<Func<CallSite, object, string, object, object>>.Create(BinderSetIndex(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[]
                 {
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                 }));
             }
-            RSMods.ProfileClasses.CSharpArgumentInfo.callSite_2.Target(RSMods.ProfileClasses.CSharpArgumentInfo.callSite_2, profile, nameOfSection, argument);
+            Profile.Tools.CSharpArgumentInfo.callSite_2.Target(Profile.Tools.CSharpArgumentInfo.callSite_2, profile, nameOfSection, argument);
 
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
                 Formatting = Formatting.Indented,
-                Converters = new List<JsonConverter> { new RSMods.ProfileClasses.DecimalFormatJsonConverter(6) }
+                Converters = new List<JsonConverter> { new Profile.Tools.DecimalFormatJsonConverter(6) }
             };
 
-            if (RSMods.ProfileClasses.CSharpArgumentInfo.callSite_3 == null)
-                RSMods.ProfileClasses.CSharpArgumentInfo.callSite_3 = CallSite<Func<CallSite, object, string>>.Create(BinderConvert(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(string).TypeHandle), Type.GetTypeFromHandle(typeof(Profiles).TypeHandle)));
+            if (Profile.Tools.CSharpArgumentInfo.callSite_3 == null)
+                Profile.Tools.CSharpArgumentInfo.callSite_3 = CallSite<Func<CallSite, object, string>>.Create(BinderConvert(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(string).TypeHandle), Type.GetTypeFromHandle(typeof(Profiles).TypeHandle)));
 
-            Func<CallSite, object, string> target = RSMods.ProfileClasses.CSharpArgumentInfo.callSite_3.Target;
-            CallSite callsite_3_temp = RSMods.ProfileClasses.CSharpArgumentInfo.callSite_3;
+            Func<CallSite, object, string> target = Profile.Tools.CSharpArgumentInfo.callSite_3.Target;
+            CallSite callsite_3_temp = Profile.Tools.CSharpArgumentInfo.callSite_3;
 
-            if (RSMods.ProfileClasses.CSharpArgumentInfo.callSite_4 == null)
+            if (Profile.Tools.CSharpArgumentInfo.callSite_4 == null)
             {
-                RSMods.ProfileClasses.CSharpArgumentInfo.callSite_4 = CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>>.Create(BinderInvokeMember(CSharpBinderFlags.None, "SerializeObject", Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[] {
+                Profile.Tools.CSharpArgumentInfo.callSite_4 = CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>>.Create(BinderInvokeMember(CSharpBinderFlags.None, "SerializeObject", Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[] {
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType | CSharpArgumentInfoFlags.IsStaticType),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType)
                 }));
             }
-            return target(callsite_3_temp, RSMods.ProfileClasses.CSharpArgumentInfo.callSite_4.Target(RSMods.ProfileClasses.CSharpArgumentInfo.callSite_4, Type.GetTypeFromHandle(typeof(JsonConvert).TypeHandle), profile, serializerSettings));
+            return target(callsite_3_temp, Profile.Tools.CSharpArgumentInfo.callSite_4.Target(Profile.Tools.CSharpArgumentInfo.callSite_4, Type.GetTypeFromHandle(typeof(JsonConvert).TypeHandle), profile, serializerSettings));
         }
 
         private static CallSiteBinder BinderSetIndex(CSharpBinderFlags flags, Type userProfileType, IEnumerable<Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo> cSharpArgumentInfo) => Binder.SetIndex(flags, userProfileType, cSharpArgumentInfo);
@@ -331,7 +400,7 @@ namespace RSMods
     }
 }
 #region Extra Classes
-namespace RSMods.ProfileClasses
+namespace RSMods.Profile.Tools
 {
     public static class CSharpArgumentInfo
     {
