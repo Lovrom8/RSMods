@@ -178,7 +178,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 			
 
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, learnASongModes))) { // Song Speed (RR speed)
+			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes)) && useNewSongSpeed) { // Song Speed (RR speed)
+				bool prepToTurnOff = false;
+
+				if (newSongSpeed >= 100.f)
+					prepToTurnOff = true;
+
 				newSongSpeed = MemHelpers::RiffRepeaterSpeed();
 
 				if (GetAsyncKeyState(VK_SHIFT) < 0)
@@ -189,11 +194,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (newSongSpeed > 205.f)
 					newSongSpeed = 205.f;
 
-				if (newSongSpeed < 25.f)
-					newSongSpeed = 25.f;
+				if (newSongSpeed < 100.f)
+					newSongSpeed = 100.f;
 
 				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
 				saveNewRRSpeedToFile = true;
+
+				if (prepToTurnOff && newSongSpeed == 100.f) // Disable UI if we bug out of the mode.
+					useNewSongSpeed = false;
 			}
 
 			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
@@ -429,17 +437,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes)) {
 			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			float realSongSpeed = 0;
+			float realSongSpeed = 100.f;
+
 			if (newSongSpeed > 100.f)
 				realSongSpeed = ((60 / (104.539 - (0.4393 * newSongSpeed))) * 100);
-			else if (newSongSpeed < 100.f) {  // Create one for below 105.
-				// realSongSpeed = ((0.000184058 * powf(newSongSpeed, 2.77866)) + 28.8455);
-				realSongSpeed = ((0.00865539 * pow(newSongSpeed, 2)) - (0.243649 * newSongSpeed) + 29.7957);
-			}
-			else
-				realSongSpeed = 100.f;
 
-			// realSongSpeed = (19.7978154153407 + (3.04494974778677 * newSongSpeed) + (-0.4034406878113 * pow(newSongSpeed, 2)) + (0.0247019240234486 * pow(newSongSpeed, 3)) + (-0.00079035766104733 * pow(newSongSpeed, 4)) + (0.0000146625365849827 * pow(newSongSpeed, 5)) + (-0.00000016545897100196 * pow(newSongSpeed, 6)) + (0.00000000115204440051485 * pow(newSongSpeed, 7)) +(-4.8331979118304E-12 * pow(newSongSpeed, 8)) + (1.11992819090063E-14 * pow(newSongSpeed, 9)) + (-1.1E-17 * pow(newSongSpeed, 10)));
 			if (useNewSongSpeed)
 				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 		}
