@@ -105,7 +105,13 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	int lowestTuning = highestLowest[1];
 
+	byte* currentTuning = MemHelpers::GetCurrentTuning();
+	Tuning tuning = Tuning(currentTuning[0], currentTuning[1], currentTuning[2], currentTuning[3], currentTuning[4], currentTuning[5]);
+
 	delete[] highestLowest;
+	delete[] currentTuning;
+
+	bool dropTuning = IsSongInDrop(tuning);
 
 	// Pointer is invalid
 	if (lowestTuning == 666)
@@ -116,11 +122,12 @@ bool MemHelpers::IsExtendedRangeSong() {
 		lowestTuning -= 12;
 	
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
-	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && dropTuning)
 		return true;
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
-	if (lowestTuning < Settings::GetModSetting("ExtendedRangeMode"))
+	
+	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!dropTuning || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2))
 		return true;
 
 	return false;
