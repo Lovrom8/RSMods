@@ -102,7 +102,7 @@ namespace RSMods
             // Delete Old Backups To Save Space
             DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
 
-            Profiles.DecryptProfiles("97CCE6AD412B447DAC28C9DA3A0CAEB1_PRFLDB", true);
+            //Profiles.DecryptProfiles("97CCE6AD412B447DAC28C9DA3A0CAEB1_PRFLDB", true);
         }
 
     #region Startup Functions
