@@ -106,10 +106,14 @@ bool MemHelpers::IsExtendedRangeSong() {
 	int lowestTuning = highestLowest[1];
 
 	byte* currentTuning = MemHelpers::GetCurrentTuning();
-	Tuning tuning = Tuning(currentTuning[0], currentTuning[1], currentTuning[2], currentTuning[3], currentTuning[4], currentTuning[5]);
+	Tuning tuning = Tuning();
+	if (currentTuning)
+		tuning = Tuning(currentTuning[0], currentTuning[1], currentTuning[2], currentTuning[3], currentTuning[4], currentTuning[5]);
 
 	delete[] highestLowest;
-	delete[] currentTuning;
+
+	if (currentTuning)
+		delete[] currentTuning;
 
 	bool dropTuning = IsSongInDrop(tuning);
 
@@ -288,7 +292,7 @@ void MemHelpers::ToggleCB(bool enabled) {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
 
-	if (!addrTimer)
+	if (!addrTimer || !cbEnabled)
 		return;
 
 	if (*(byte*)cbEnabled != (byte)enabled) //JIC, no need to write the same value constantly
