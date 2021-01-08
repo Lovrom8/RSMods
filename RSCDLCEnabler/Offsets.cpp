@@ -94,8 +94,9 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_preMainMenuOffsets{ 0x28, 0x8C };
 
 	// Timer
-	uintptr_t ptr_timer = 0x00F5C5AC;
-	std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 };
+	uintptr_t ptr_timer = 0x00F5C4FC;
+	//std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 }; // Single Player Only Value
+	std::vector<unsigned int> ptr_timerOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 }; // Singleplayer & Multiplayer
 
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
 	uintptr_t ptr_songSpeed = 0x00F5C4CC;
