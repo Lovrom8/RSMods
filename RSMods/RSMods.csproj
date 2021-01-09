@@ -99,7 +99,6 @@
     <Compile Include="ASIO\GetASIODevices.cs" />
     <Compile Include="ASIO\ReadSettings.cs" />
     <Compile Include="ASIO\WriteSettings.cs" />
-    <Compile Include="BackupProfile.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\TuningDefinition.cs" />
     <Compile Include="Dictionaries.cs">
