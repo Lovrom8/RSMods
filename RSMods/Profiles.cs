@@ -344,6 +344,9 @@ namespace RSMods
                 JToken parsedJson = JObject.Parse(json);
                 JToken wantedSection = parsedJson.SelectToken(objectToLookFor);
 
+                if (wantedSection == null)
+                    return default(T);
+
                 result = wantedSection.ToObject<T>();
             }
             return result;
@@ -441,8 +444,8 @@ namespace RSMods
             }
         }
     }
-#endregion
-#region Profile Section
+    #endregion
+    #region Profile Section
     public class Profile_Sections
     {
         #region Missions
@@ -600,13 +603,12 @@ namespace RSMods
         }
         #endregion
 
-        public class DemoTones { }
-
         #region Play Nexts
         public class Playnexts
         {
             public Histories Histories { get; set; }
-            public PlayNexts_Songs Songs { get; set; }
+            public Dictionary<string, PlayNexts_Song> Songs { get; set; }
+            public double Version { get; set; }
         }
 
         public class Histories
@@ -624,25 +626,15 @@ namespace RSMods
             public double Status { get; set; }
         }
 
-        public class PlayNexts_Songs
-        {
-            public Dictionary<string, PlayNexts_Song> SongDescription { get; set; }
-
-            public double Version { get; set; }
-        }
-
         public class PlayNexts_Song
         {
             public double TimeStamp { get; set; }
 
-            [JsonProperty(Required = Required.AllowNull)]
-            public Slot Slot1 { get; set; }
+            public Slot Slot3 { get; set; }
 
-            [JsonProperty(Required = Required.AllowNull)]
             public Slot Slot2 { get; set; }
 
-            [JsonProperty(Required = Required.AllowNull)]
-            public Slot Slot3 { get; set; }
+            public Slot Slot1 { get; set; }
         }
         #endregion
         #region Recently Played Venues
@@ -663,935 +655,2793 @@ namespace RSMods
         #region Chords
         public class Chords
         {
+            [JsonProperty("6110c00")]
             public bool _6110c00 { get; set; }
-            public bool a310000 { get; set; }
-            public bool a729ca0 { get; set; }
+
+            [JsonProperty("a310000")]
+            public bool A310000 { get; set; }
+
+            [JsonProperty("a729ca0")]
+            public bool A729ca0 { get; set; }
+
+            [JsonProperty("50000")]
             public bool _50000 { get; set; }
+
+            [JsonProperty("8800")]
             public bool _8800 { get; set; }
+
+            [JsonProperty("731000")]
             public bool _731000 { get; set; }
+
+            [JsonProperty("480e0")]
             public bool _480e0 { get; set; }
+
+            [JsonProperty("1400")]
             public bool _1400 { get; set; }
+
+            [JsonProperty("73140")]
             public bool _73140 { get; set; }
+
+            [JsonProperty("848000")]
             public bool _848000 { get; set; }
+
+            [JsonProperty("28060")]
             public bool _28060 { get; set; }
+
+            [JsonProperty("2126")]
             public bool _2126 { get; set; }
+
+            [JsonProperty("1465")]
             public bool _1465 { get; set; }
+
+            [JsonProperty("1460")]
             public bool _1460 { get; set; }
+
+            [JsonProperty("1463")]
             public bool _1463 { get; set; }
+
+            [JsonProperty("9")]
             public bool _9 { get; set; }
+
+            [JsonProperty("7")]
             public bool _7 { get; set; }
+
+            [JsonProperty("4")]
             public bool _4 { get; set; }
+
+            [JsonProperty("3")]
             public bool _3 { get; set; }
+
+            [JsonProperty("2")]
             public bool _2 { get; set; }
+
+            [JsonProperty("0")]
             public bool _0 { get; set; }
-            public bool c { get; set; }
-            public bool a { get; set; }
+
+            [JsonProperty("c")]
+            public bool C { get; set; }
+
+            [JsonProperty("a")]
+            public bool A { get; set; }
+
+            [JsonProperty("6528000")]
             public bool _6528000 { get; set; }
-            public bool ea49ce0 { get; set; }
+
+            [JsonProperty("ea49ce0")]
+            public bool Ea49ce0 { get; set; }
+
+            [JsonProperty("62d40")]
             public bool _62d40 { get; set; }
-            public bool e73a4e0 { get; set; }
+
+            [JsonProperty("e73a4e0")]
+            public bool E73a4e0 { get; set; }
+
+            [JsonProperty("2106")]
             public bool _2106 { get; set; }
+
+            [JsonProperty("2108")]
             public bool _2108 { get; set; }
-            public bool b63140 { get; set; }
+
+            [JsonProperty("b63140")]
+            public bool B63140 { get; set; }
+
+            [JsonProperty("781a0")]
             public bool _781a0 { get; set; }
+
+            [JsonProperty("62540")]
             public bool _62540 { get; set; }
+
+            [JsonProperty("10638000")]
             public bool _10638000 { get; set; }
+
+            [JsonProperty("1442")]
             public bool _1442 { get; set; }
+
             public double TimeStamp { get; set; }
+
+            [JsonProperty("1cd60000")]
             public bool _1cd60000 { get; set; }
+
+            [JsonProperty("73180")]
             public bool _73180 { get; set; }
+
+            [JsonProperty("7318c")]
             public bool _7318c { get; set; }
+
+            [JsonProperty("73980")]
             public bool _73980 { get; set; }
+
+            [JsonProperty("12b58000")]
             public bool _12b58000 { get; set; }
-            public bool a600000 { get; set; }
+
+            [JsonProperty("a600000")]
+            public bool A600000 { get; set; }
+
+            [JsonProperty("1ef7b000")]
             public bool _1ef7b000 { get; set; }
-            public bool a49c00 { get; set; }
-            public bool a731c00 { get; set; }
+
+            [JsonProperty("a49c00")]
+            public bool A49c00 { get; set; }
+
+            [JsonProperty("a731c00")]
+            public bool A731c00 { get; set; }
+
+            [JsonProperty("201080")]
             public bool _201080 { get; set; }
+
+            [JsonProperty("28000")]
             public bool _28000 { get; set; }
-            public bool a531ce5 { get; set; }
+
+            [JsonProperty("a531ce5")]
+            public bool A531ce5 { get; set; }
+
+            [JsonProperty("731084")]
             public bool _731084 { get; set; }
+
+            [JsonProperty("6000860")]
             public bool _6000860 { get; set; }
-            public bool a8394a5 { get; set; }
-            public bool d6b000 { get; set; }
+
+            [JsonProperty("a8394a5")]
+            public bool A8394a5 { get; set; }
+
+            [JsonProperty("d6b000")]
+            public bool D6b000 { get; set; }
+
+            [JsonProperty("4314c0")]
             public bool _4314c0 { get; set; }
+
+            [JsonProperty("394a0")]
             public bool _394a0 { get; set; }
+
+            [JsonProperty("394a5")]
             public bool _394a5 { get; set; }
+
+            [JsonProperty("120c00")]
             public bool _120c00 { get; set; }
-            public bool b53000 { get; set; }
+
+            [JsonProperty("b53000")]
+            public bool B53000 { get; set; }
+
+            [JsonProperty("2988")]
             public bool _2988 { get; set; }
+
+            [JsonProperty("28c20")]
             public bool _28c20 { get; set; }
+
+            [JsonProperty("8040")]
             public bool _8040 { get; set; }
-            public bool d63140 { get; set; }
+
+            [JsonProperty("d63140")]
+            public bool D63140 { get; set; }
+
+            [JsonProperty("394c0")]
             public bool _394c0 { get; set; }
-            public bool a53000 { get; set; }
+
+            [JsonProperty("a53000")]
+            public bool A53000 { get; set; }
+
+            [JsonProperty("6318c")]
             public bool _6318c { get; set; }
+
+            [JsonProperty("63180")]
             public bool _63180 { get; set; }
+
+            [JsonProperty("39ce8")]
             public bool _39ce8 { get; set; }
+
+            [JsonProperty("39ce0")]
             public bool _39ce0 { get; set; }
+
+            [JsonProperty("39ce7")]
             public bool _39ce7 { get; set; }
-            public bool a638000 { get; set; }
+
+            [JsonProperty("a638000")]
+            public bool A638000 { get; set; }
+
+            [JsonProperty("8431880")]
             public bool _8431880 { get; set; }
+
+            [JsonProperty("8431884")]
             public bool _8431884 { get; set; }
+
+            [JsonProperty("839ca5")]
             public bool _839ca5 { get; set; }
-            public bool c838000 { get; set; }
+
+            [JsonProperty("c838000")]
+            public bool C838000 { get; set; }
+
+            [JsonProperty("28c60")]
             public bool _28c60 { get; set; }
+
+            [JsonProperty("28c61")]
             public bool _28c61 { get; set; }
+
+            [JsonProperty("28c63")]
             public bool _28c63 { get; set; }
+
+            [JsonProperty("8000")]
             public bool _8000 { get; set; }
+
+            [JsonProperty("7bda0")]
             public bool _7bda0 { get; set; }
+
+            [JsonProperty("218c0")]
             public bool _218c0 { get; set; }
+
+            [JsonProperty("58120")]
             public bool _58120 { get; set; }
-            public bool a529ce5 { get; set; }
+
+            [JsonProperty("a529ce5")]
+            public bool A529ce5 { get; set; }
+
+            [JsonProperty("28860")]
             public bool _28860 { get; set; }
+
+            [JsonProperty("39ca5")]
             public bool _39ca5 { get; set; }
+
+            [JsonProperty("39ca0")]
             public bool _39ca0 { get; set; }
+
+            [JsonProperty("5280a")]
             public bool _5280a { get; set; }
-            public bool a018005 { get; set; }
+
+            [JsonProperty("a018005")]
+            public bool A018005 { get; set; }
+
+            [JsonProperty("28842")]
             public bool _28842 { get; set; }
+
+            [JsonProperty("1184000")]
             public bool _1184000 { get; set; }
-            public bool b52108 { get; set; }
+
+            [JsonProperty("b52108")]
+            public bool B52108 { get; set; }
+
+            [JsonProperty("2908")]
             public bool _2908 { get; set; }
+
+            [JsonProperty("2906")]
             public bool _2906 { get; set; }
+
+            [JsonProperty("2110c00")]
             public bool _2110c00 { get; set; }
-            public bool a529ca5 { get; set; }
+
+            [JsonProperty("a529ca5")]
+            public bool A529ca5 { get; set; }
+
+            [JsonProperty("6318ca3")]
             public bool _6318ca3 { get; set; }
+
+            [JsonProperty("4a560")]
             public bool _4a560 { get; set; }
+
+            [JsonProperty("6000000")]
             public bool _6000000 { get; set; }
+
+            [JsonProperty("6000003")]
             public bool _6000003 { get; set; }
+
+            [JsonProperty("7424c0")]
             public bool _7424c0 { get; set; }
+
+            [JsonProperty("739ca0")]
             public bool _739ca0 { get; set; }
+
+            [JsonProperty("2948")]
             public bool _2948 { get; set; }
+
+            [JsonProperty("294a")]
             public bool _294a { get; set; }
+
+            [JsonProperty("2110c41")]
             public bool _2110c41 { get; set; }
+
+            [JsonProperty("20c63")]
             public bool _20c63 { get; set; }
+
+            [JsonProperty("539ca0")]
             public bool _539ca0 { get; set; }
+
+            [JsonProperty("63")]
             public bool _63 { get; set; }
+
+            [JsonProperty("61")]
             public bool _61 { get; set; }
+
+            [JsonProperty("60")]
             public bool _60 { get; set; }
+
+            [JsonProperty("64")]
             public bool _64 { get; set; }
+
+            [JsonProperty("6301400")]
             public bool _6301400 { get; set; }
+
+            [JsonProperty("63140")]
             public bool _63140 { get; set; }
+
+            [JsonProperty("6314a")]
             public bool _6314a { get; set; }
+
+            [JsonProperty("20861")]
             public bool _20861 { get; set; }
+
+            [JsonProperty("20860")]
             public bool _20860 { get; set; }
+
+            [JsonProperty("2110c60")]
             public bool _2110c60 { get; set; }
+
+            [JsonProperty("2110c61")]
             public bool _2110c61 { get; set; }
+
+            [JsonProperty("20c40")]
             public bool _20c40 { get; set; }
+
+            [JsonProperty("40")]
             public bool _40 { get; set; }
+
+            [JsonProperty("43")]
             public bool _43 { get; set; }
+
+            [JsonProperty("4a520")]
             public bool _4a520 { get; set; }
+
+            [JsonProperty("950100")]
             public bool _950100 { get; set; }
+
+            [JsonProperty("6000040")]
             public bool _6000040 { get; set; }
+
+            [JsonProperty("6000043")]
             public bool _6000043 { get; set; }
+
+            [JsonProperty("4014c0")]
             public bool _4014c0 { get; set; }
+
+            [JsonProperty("739ce0")]
             public bool _739ce0 { get; set; }
+
+            [JsonProperty("20840")]
             public bool _20840 { get; set; }
+
+            [JsonProperty("20842")]
             public bool _20842 { get; set; }
-            public bool c63a106 { get; set; }
+
+            [JsonProperty("c63a106")]
+            public bool C63a106 { get; set; }
+
+            [JsonProperty("23")]
             public bool _23 { get; set; }
+
+            [JsonProperty("4014a0")]
             public bool _4014a0 { get; set; }
+
+            [JsonProperty("23198000")]
             public bool _23198000 { get; set; }
+
+            [JsonProperty("29420")]
             public bool _29420 { get; set; }
+
+            [JsonProperty("84a400")]
             public bool _84a400 { get; set; }
+
+            [JsonProperty("8394a0")]
             public bool _8394a0 { get; set; }
+
+            [JsonProperty("8394a5")]
             public bool _8394a5 { get; set; }
+
+            [JsonProperty("639ca0")]
             public bool _639ca0 { get; set; }
+
+            [JsonProperty("329460")]
             public bool _329460 { get; set; }
+
+            [JsonProperty("63214a3")]
             public bool _63214a3 { get; set; }
+
+            [JsonProperty("20800")]
             public bool _20800 { get; set; }
+
+            [JsonProperty("4320000")]
             public bool _4320000 { get; set; }
-            public bool a639c00 { get; set; }
+
+            [JsonProperty("a639c00")]
+            public bool A639c00 { get; set; }
+
+            [JsonProperty("29400")]
             public bool _29400 { get; set; }
+
+            [JsonProperty("219000")]
             public bool _219000 { get; set; }
+
+            [JsonProperty("10a49c00")]
             public bool _10a49c00 { get; set; }
+
+            [JsonProperty("73a400")]
             public bool _73a400 { get; set; }
+
+            [JsonProperty("4221040")]
             public bool _4221040 { get; set; }
+
+            [JsonProperty("4221042")]
             public bool _4221042 { get; set; }
+
+            [JsonProperty("301400")]
             public bool _301400 { get; set; }
+
+            [JsonProperty("1c0")]
             public bool _1c0 { get; set; }
-            public bool a738000 { get; set; }
+
+            [JsonProperty("a738000")]
+            public bool A738000 { get; set; }
+
+            [JsonProperty("29460")]
             public bool _29460 { get; set; }
+
+            [JsonProperty("29463")]
             public bool _29463 { get; set; }
+
+            [JsonProperty("6300000")]
             public bool _6300000 { get; set; }
+
+            [JsonProperty("6300002")]
             public bool _6300002 { get; set; }
+
+            [JsonProperty("6300003")]
             public bool _6300003 { get; set; }
+
+            [JsonProperty("8521800")]
             public bool _8521800 { get; set; }
+
+            [JsonProperty("1694ad69")]
             public bool _1694ad69 { get; set; }
+
+            [JsonProperty("11000")]
             public bool _11000 { get; set; }
+
+            [JsonProperty("11002")]
             public bool _11002 { get; set; }
+
+            [JsonProperty("7000e0")]
             public bool _7000e0 { get; set; }
+
+            [JsonProperty("801d00")]
             public bool _801d00 { get; set; }
+
+            [JsonProperty("600100")]
             public bool _600100 { get; set; }
-            public bool a3a400 { get; set; }
+
+            [JsonProperty("a3a400")]
+            public bool A3a400 { get; set; }
+
+            [JsonProperty("6398e0")]
             public bool _6398e0 { get; set; }
+
+            [JsonProperty("749ce0")]
             public bool _749ce0 { get; set; }
+
+            [JsonProperty("12a48000")]
             public bool _12a48000 { get; set; }
+
+            [JsonProperty("942900")]
             public bool _942900 { get; set; }
+
+            [JsonProperty("300840")]
             public bool _300840 { get; set; }
+
+            [JsonProperty("6300040")]
             public bool _6300040 { get; set; }
+
+            [JsonProperty("6300043")]
             public bool _6300043 { get; set; }
+
+            [JsonProperty("84a800")]
             public bool _84a800 { get; set; }
-            public bool e84a400 { get; set; }
-            public bool a4a4e7 { get; set; }
-            public bool a4a4e0 { get; set; }
+
+            [JsonProperty("e84a400")]
+            public bool E84a400 { get; set; }
+
+            [JsonProperty("a4a4e7")]
+            public bool A4a4e7 { get; set; }
+
+            [JsonProperty("a4a4e0")]
+            public bool A4a4e0 { get; set; }
+
+            [JsonProperty("20880")]
             public bool _20880 { get; set; }
+
+            [JsonProperty("52108")]
             public bool _52108 { get; set; }
+
+            [JsonProperty("52100")]
             public bool _52100 { get; set; }
+
+            [JsonProperty("300860")]
             public bool _300860 { get; set; }
+
+            [JsonProperty("6300060")]
             public bool _6300060 { get; set; }
+
+            [JsonProperty("9024e0")]
             public bool _9024e0 { get; set; }
-            public bool b5b400 { get; set; }
+
+            [JsonProperty("b5b400")]
+            public bool B5b400 { get; set; }
+
+            [JsonProperty("398b")]
             public bool _398b { get; set; }
+
+            [JsonProperty("21400")]
             public bool _21400 { get; set; }
+
+            [JsonProperty("429460")]
             public bool _429460 { get; set; }
+
+            [JsonProperty("8521884")]
             public bool _8521884 { get; set; }
+
+            [JsonProperty("8521880")]
             public bool _8521880 { get; set; }
+
+            [JsonProperty("11082")]
             public bool _11082 { get; set; }
-            public bool a521000 { get; set; }
+
+            [JsonProperty("a521000")]
+            public bool A521000 { get; set; }
+
+            [JsonProperty("429400")]
             public bool _429400 { get; set; }
+
+            [JsonProperty("20040")]
             public bool _20040 { get; set; }
+
+            [JsonProperty("10842108")]
             public bool _10842108 { get; set; }
+
+            [JsonProperty("510800")]
             public bool _510800 { get; set; }
-            public bool e530000 { get; set; }
+
+            [JsonProperty("e530000")]
+            public bool E530000 { get; set; }
+
+            [JsonProperty("21440")]
             public bool _21440 { get; set; }
+
+            [JsonProperty("4218c0")]
             public bool _4218c0 { get; set; }
+
+            [JsonProperty("2118000")]
             public bool _2118000 { get; set; }
-            public bool c0000a6 { get; set; }
-            public bool e739c00 { get; set; }
+
+            [JsonProperty("c0000a6")]
+            public bool C0000a6 { get; set; }
+
+            [JsonProperty("e739c00")]
+            public bool E739c00 { get; set; }
+
+            [JsonProperty("4418000")]
             public bool _4418000 { get; set; }
+
+            [JsonProperty("118800")]
             public bool _118800 { get; set; }
+
+            [JsonProperty("2218c20")]
             public bool _2218c20 { get; set; }
+
+            [JsonProperty("20000")]
             public bool _20000 { get; set; }
-            public bool d53000 { get; set; }
-            public bool e73a527 { get; set; }
+
+            [JsonProperty("d53000")]
+            public bool D53000 { get; set; }
+
+            [JsonProperty("e73a527")]
+            public bool E73a527 { get; set; }
+
+            [JsonProperty("4631")]
             public bool _4631 { get; set; }
+
+            [JsonProperty("521460")]
             public bool _521460 { get; set; }
+
+            [JsonProperty("462f")]
             public bool _462f { get; set; }
+
+            [JsonProperty("106000e8")]
             public bool _106000e8 { get; set; }
-            public bool a528000 { get; set; }
+
+            [JsonProperty("a528000")]
+            public bool A528000 { get; set; }
+
+            [JsonProperty("521800")]
             public bool _521800 { get; set; }
+
+            [JsonProperty("8429800")]
             public bool _8429800 { get; set; }
+
+            [JsonProperty("107b800")]
             public bool _107b800 { get; set; }
+
+            [JsonProperty("10803")]
             public bool _10803 { get; set; }
+
+            [JsonProperty("10800")]
             public bool _10800 { get; set; }
+
+            [JsonProperty("4a0e0")]
             public bool _4a0e0 { get; set; }
+
+            [JsonProperty("18c60000")]
             public bool _18c60000 { get; set; }
+
+            [JsonProperty("12738000")]
             public bool _12738000 { get; set; }
+
+            [JsonProperty("10860")]
             public bool _10860 { get; set; }
+
+            [JsonProperty("10863")]
             public bool _10863 { get; set; }
-            public bool c730000 { get; set; }
+
+            [JsonProperty("c730000")]
+            public bool C730000 { get; set; }
+
+            [JsonProperty("110c00")]
             public bool _110c00 { get; set; }
+
+            [JsonProperty("110c01")]
             public bool _110c01 { get; set; }
+
+            [JsonProperty("300040")]
             public bool _300040 { get; set; }
+
+            [JsonProperty("300043")]
             public bool _300043 { get; set; }
+
+            [JsonProperty("420e")]
             public bool _420e { get; set; }
+
+            [JsonProperty("10842")]
             public bool _10842 { get; set; }
+
+            [JsonProperty("10840")]
             public bool _10840 { get; set; }
+
+            [JsonProperty("1cc58000")]
             public bool _1cc58000 { get; set; }
+
+            [JsonProperty("10c61")]
             public bool _10c61 { get; set; }
+
+            [JsonProperty("10c60")]
             public bool _10c60 { get; set; }
-            public bool ca6 { get; set; }
-            public bool ca0 { get; set; }
+
+            [JsonProperty("ca6")]
+            public bool Ca6 { get; set; }
+
+            [JsonProperty("ca0")]
+            public bool Ca0 { get; set; }
+
+            [JsonProperty("74a4e0")]
             public bool _74a4e0 { get; set; }
-            public bool e73a400 { get; set; }
+
+            [JsonProperty("e73a400")]
+            public bool E73a400 { get; set; }
+
+            [JsonProperty("300060")]
             public bool _300060 { get; set; }
+
+            [JsonProperty("12049ce0")]
             public bool _12049ce0 { get; set; }
+
+            [JsonProperty("20a5")]
             public bool _20a5 { get; set; }
+
+            [JsonProperty("1ed60000")]
             public bool _1ed60000 { get; set; }
+
+            [JsonProperty("10c41")]
             public bool _10c41 { get; set; }
+
+            [JsonProperty("110c40")]
             public bool _110c40 { get; set; }
+
+            [JsonProperty("300000")]
             public bool _300000 { get; set; }
+
+            [JsonProperty("300003")]
             public bool _300003 { get; set; }
+
+            [JsonProperty("8398e0")]
             public bool _8398e0 { get; set; }
+
+            [JsonProperty("20c6")]
             public bool _20c6 { get; set; }
+
+            [JsonProperty("8429884")]
             public bool _8429884 { get; set; }
+
+            [JsonProperty("418c0")]
             public bool _418c0 { get; set; }
+
+            [JsonProperty("418c6")]
             public bool _418c6 { get; set; }
+
+            [JsonProperty("218c20")]
             public bool _218c20 { get; set; }
-            public bool a529400 { get; set; }
+
+            [JsonProperty("a529400")]
+            public bool A529400 { get; set; }
+
+            [JsonProperty("2208c20")]
             public bool _2208c20 { get; set; }
+
+            [JsonProperty("107b400")]
             public bool _107b400 { get; set; }
+
+            [JsonProperty("601c00")]
             public bool _601c00 { get; set; }
-            public bool a510000 { get; set; }
+
+            [JsonProperty("a510000")]
+            public bool A510000 { get; set; }
+
+            [JsonProperty("6418000")]
             public bool _6418000 { get; set; }
-            public bool e848000 { get; set; }
+
+            [JsonProperty("e848000")]
+            public bool E848000 { get; set; }
+
+            [JsonProperty("1ad78000")]
             public bool _1ad78000 { get; set; }
+
+            [JsonProperty("110c60")]
             public bool _110c60 { get; set; }
+
+            [JsonProperty("110c61")]
             public bool _110c61 { get; set; }
+
+            [JsonProperty("4e71")]
             public bool _4e71 { get; set; }
+
+            [JsonProperty("218c00")]
             public bool _218c00 { get; set; }
+
+            [JsonProperty("19460")]
             public bool _19460 { get; set; }
+
+            [JsonProperty("10c01")]
             public bool _10c01 { get; set; }
+
+            [JsonProperty("10c00")]
             public bool _10c00 { get; set; }
+
+            [JsonProperty("10c03")]
             public bool _10c03 { get; set; }
+
+            [JsonProperty("14a58000")]
             public bool _14a58000 { get; set; }
+
+            [JsonProperty("511002")]
             public bool _511002 { get; set; }
+
+            [JsonProperty("7420c0")]
             public bool _7420c0 { get; set; }
+
+            [JsonProperty("10628000")]
             public bool _10628000 { get; set; }
+
+            [JsonProperty("939ce0")]
             public bool _939ce0 { get; set; }
+
+            [JsonProperty("601d00")]
             public bool _601d00 { get; set; }
+
+            [JsonProperty("601d08")]
             public bool _601d08 { get; set; }
+
+            [JsonProperty("400c80")]
             public bool _400c80 { get; set; }
+
+            [JsonProperty("218000")]
             public bool _218000 { get; set; }
-            public bool c529400 { get; set; }
-            public bool e738000 { get; set; }
+
+            [JsonProperty("c529400")]
+            public bool C529400 { get; set; }
+
+            [JsonProperty("e738000")]
+            public bool E738000 { get; set; }
+
+            [JsonProperty("4010440")]
             public bool _4010440 { get; set; }
+
+            [JsonProperty("63a000")]
             public bool _63a000 { get; set; }
+
+            [JsonProperty("400000")]
             public bool _400000 { get; set; }
+
+            [JsonProperty("10004")]
             public bool _10004 { get; set; }
+
+            [JsonProperty("10002")]
             public bool _10002 { get; set; }
+
+            [JsonProperty("10003")]
             public bool _10003 { get; set; }
+
+            [JsonProperty("10000")]
             public bool _10000 { get; set; }
+
+            [JsonProperty("4a4e0")]
             public bool _4a4e0 { get; set; }
+
+            [JsonProperty("4a4e7")]
             public bool _4a4e7 { get; set; }
-            public bool a4a000 { get; set; }
+
+            [JsonProperty("a4a000")]
+            public bool A4a000 { get; set; }
+
+            [JsonProperty("431800")]
             public bool _431800 { get; set; }
+
+            [JsonProperty("23188000")]
             public bool _23188000 { get; set; }
+
+            [JsonProperty("8000004")]
             public bool _8000004 { get; set; }
-            public bool a529c00 { get; set; }
-            public bool c632106 { get; set; }
+
+            [JsonProperty("a529c00")]
+            public bool A529c00 { get; set; }
+
+            [JsonProperty("c632106")]
+            public bool C632106 { get; set; }
+
+            [JsonProperty("18c5a400")]
             public bool _18c5a400 { get; set; }
+
+            [JsonProperty("8530000")]
             public bool _8530000 { get; set; }
+
+            [JsonProperty("100860")]
             public bool _100860 { get; set; }
+
+            [JsonProperty("110002")]
             public bool _110002 { get; set; }
+
+            [JsonProperty("110000")]
             public bool _110000 { get; set; }
+
+            [JsonProperty("6429460")]
             public bool _6429460 { get; set; }
+
+            [JsonProperty("60140")]
             public bool _60140 { get; set; }
+
+            [JsonProperty("320c63")]
             public bool _320c63 { get; set; }
+
+            [JsonProperty("18020")]
             public bool _18020 { get; set; }
+
+            [JsonProperty("100840")]
             public bool _100840 { get; set; }
-            public bool a4ac00 { get; set; }
-            public bool e740000 { get; set; }
-            public bool f73180 { get; set; }
-            public bool f7318c { get; set; }
+
+            [JsonProperty("a4ac00")]
+            public bool A4ac00 { get; set; }
+
+            [JsonProperty("e740000")]
+            public bool E740000 { get; set; }
+
+            [JsonProperty("f73180")]
+            public bool F73180 { get; set; }
+
+            [JsonProperty("f7318c")]
+            public bool F7318c { get; set; }
+
+            [JsonProperty("210000")]
             public bool _210000 { get; set; }
+
+            [JsonProperty("18d70000")]
             public bool _18d70000 { get; set; }
-            public bool a510800 { get; set; }
+
+            [JsonProperty("a510800")]
+            public bool A510800 { get; set; }
+
+            [JsonProperty("520080")]
             public bool _520080 { get; set; }
+
+            [JsonProperty("842000")]
             public bool _842000 { get; set; }
+
+            [JsonProperty("8421000")]
             public bool _8421000 { get; set; }
+
+            [JsonProperty("18005")]
             public bool _18005 { get; set; }
+
+            [JsonProperty("18000")]
             public bool _18000 { get; set; }
+
+            [JsonProperty("431880")]
             public bool _431880 { get; set; }
+
+            [JsonProperty("2318000")]
             public bool _2318000 { get; set; }
+
+            [JsonProperty("42100")]
             public bool _42100 { get; set; }
-            public bool e720000 { get; set; }
+
+            [JsonProperty("e720000")]
+            public bool E720000 { get; set; }
+
+            [JsonProperty("4194c0")]
             public bool _4194c0 { get; set; }
-            public bool a4a900 { get; set; }
+
+            [JsonProperty("a4a900")]
+            public bool A4a900 { get; set; }
+
+            [JsonProperty("6100800")]
             public bool _6100800 { get; set; }
+
+            [JsonProperty("308840")]
             public bool _308840 { get; set; }
+
+            [JsonProperty("100800")]
             public bool _100800 { get; set; }
+
+            [JsonProperty("110060")]
             public bool _110060 { get; set; }
+
+            [JsonProperty("629c00")]
             public bool _629c00 { get; set; }
+
+            [JsonProperty("320c00")]
             public bool _320c00 { get; set; }
-            public bool a4a920 { get; set; }
+
+            [JsonProperty("a4a920")]
+            public bool A4a920 { get; set; }
+
+            [JsonProperty("6100860")]
             public bool _6100860 { get; set; }
+
+            [JsonProperty("2318c20")]
             public bool _2318c20 { get; set; }
-            public bool c63800 { get; set; }
+
+            [JsonProperty("c63800")]
+            public bool C63800 { get; set; }
+
+            [JsonProperty("4311000")]
             public bool _4311000 { get; set; }
+
+            [JsonProperty("4211082")]
             public bool _4211082 { get; set; }
+
+            [JsonProperty("4211080")]
             public bool _4211080 { get; set; }
+
+            [JsonProperty("210880")]
             public bool _210880 { get; set; }
+
+            [JsonProperty("42008")]
             public bool _42008 { get; set; }
+
+            [JsonProperty("63000a5")]
             public bool _63000a5 { get; set; }
+
+            [JsonProperty("500ca0")]
             public bool _500ca0 { get; set; }
-            public bool a49ce0 { get; set; }
-            public bool a49ce7 { get; set; }
+
+            [JsonProperty("a49ce0")]
+            public bool A49ce0 { get; set; }
+
+            [JsonProperty("a49ce7")]
+            public bool A49ce7 { get; set; }
+
+            [JsonProperty("2318c00")]
             public bool _2318c00 { get; set; }
+
+            [JsonProperty("8421084")]
             public bool _8421084 { get; set; }
+
+            [JsonProperty("8421884")]
             public bool _8421884 { get; set; }
-            public bool c63180 { get; set; }
+
+            [JsonProperty("c63180")]
+            public bool C63180 { get; set; }
+
+            [JsonProperty("29ce0")]
             public bool _29ce0 { get; set; }
+
+            [JsonProperty("29ce5")]
             public bool _29ce5 { get; set; }
+
+            [JsonProperty("842908")]
             public bool _842908 { get; set; }
+
+            [JsonProperty("8531800")]
             public bool _8531800 { get; set; }
+
+            [JsonProperty("100060")]
             public bool _100060 { get; set; }
-            public bool c7420c0 { get; set; }
-            public bool f73000 { get; set; }
-            public bool e629c00 { get; set; }
+
+            [JsonProperty("c7420c0")]
+            public bool C7420c0 { get; set; }
+
+            [JsonProperty("f73000")]
+            public bool F73000 { get; set; }
+
+            [JsonProperty("e629c00")]
+            public bool E629c00 { get; set; }
+
+            [JsonProperty("100c03")]
             public bool _100c03 { get; set; }
+
+            [JsonProperty("6ad6b")]
             public bool _6ad6b { get; set; }
+
+            [JsonProperty("318c20")]
             public bool _318c20 { get; set; }
+
+            [JsonProperty("18820")]
             public bool _18820 { get; set; }
+
+            [JsonProperty("41cc5")]
             public bool _41cc5 { get; set; }
-            public bool c732120 { get; set; }
+
+            [JsonProperty("c732120")]
+            public bool C732120 { get; set; }
+
+            [JsonProperty("2000c60")]
             public bool _2000c60 { get; set; }
+
+            [JsonProperty("210800")]
             public bool _210800 { get; set; }
-            public bool c4a400 { get; set; }
+
+            [JsonProperty("c4a400")]
+            public bool C4a400 { get; set; }
+
+            [JsonProperty("100c60")]
             public bool _100c60 { get; set; }
+
+            [JsonProperty("8421800")]
             public bool _8421800 { get; set; }
+
+            [JsonProperty("1084a948")]
             public bool _1084a948 { get; set; }
+
+            [JsonProperty("318c00")]
             public bool _318c00 { get; set; }
+
+            [JsonProperty("18800")]
             public bool _18800 { get; set; }
+
+            [JsonProperty("6628000")]
             public bool _6628000 { get; set; }
+
+            [JsonProperty("16b60000")]
             public bool _16b60000 { get; set; }
+
+            [JsonProperty("2000c40")]
             public bool _2000c40 { get; set; }
+
+            [JsonProperty("310800")]
             public bool _310800 { get; set; }
+
+            [JsonProperty("310802")]
             public bool _310802 { get; set; }
-            public bool a629c00 { get; set; }
+
+            [JsonProperty("a629c00")]
+            public bool A629c00 { get; set; }
+
+            [JsonProperty("1084a800")]
             public bool _1084a800 { get; set; }
+
+            [JsonProperty("318c60")]
             public bool _318c60 { get; set; }
+
+            [JsonProperty("6318c63")]
             public bool _6318c63 { get; set; }
+
+            [JsonProperty("100000")]
             public bool _100000 { get; set; }
+
+            [JsonProperty("6318000")]
             public bool _6318000 { get; set; }
+
+            [JsonProperty("200a0")]
             public bool _200a0 { get; set; }
+
+            [JsonProperty("210840")]
             public bool _210840 { get; set; }
-            public bool c63140 { get; set; }
-            public bool ea3a400 { get; set; }
+
+            [JsonProperty("c63140")]
+            public bool C63140 { get; set; }
+
+            [JsonProperty("ea3a400")]
+            public bool Ea3a400 { get; set; }
+
+            [JsonProperty("8531880")]
             public bool _8531880 { get; set; }
+
+            [JsonProperty("8531884")]
             public bool _8531884 { get; set; }
+
+            [JsonProperty("24a5")]
             public bool _24a5 { get; set; }
+
+            [JsonProperty("49c00")]
             public bool _49c00 { get; set; }
-            public bool c62d80 { get; set; }
-            public bool c63000 { get; set; }
+
+            [JsonProperty("c62d80")]
+            public bool C62d80 { get; set; }
+
+            [JsonProperty("c63000")]
+            public bool C63000 { get; set; }
+
+            [JsonProperty("9420c0")]
             public bool _9420c0 { get; set; }
+
+            [JsonProperty("24c7")]
             public bool _24c7 { get; set; }
-            public bool a52a0a5 { get; set; }
+
+            [JsonProperty("a52a0a5")]
+            public bool A52a0a5 { get; set; }
+
+            [JsonProperty("4a8e0")]
             public bool _4a8e0 { get; set; }
+
+            [JsonProperty("842")]
             public bool _842 { get; set; }
+
+            [JsonProperty("840")]
             public bool _840 { get; set; }
+
+            [JsonProperty("2ce7")]
             public bool _2ce7 { get; set; }
+
+            [JsonProperty("8400004")]
             public bool _8400004 { get; set; }
+
+            [JsonProperty("24e5")]
             public bool _24e5 { get; set; }
+
+            [JsonProperty("24e6")]
             public bool _24e6 { get; set; }
+
+            [JsonProperty("24e7")]
             public bool _24e7 { get; set; }
+
+            [JsonProperty("24e0")]
             public bool _24e0 { get; set; }
+
+            [JsonProperty("24e9")]
             public bool _24e9 { get; set; }
+
+            [JsonProperty("952c00")]
             public bool _952c00 { get; set; }
+
+            [JsonProperty("28e5")]
             public bool _28e5 { get; set; }
+
+            [JsonProperty("28e7")]
             public bool _28e7 { get; set; }
-            public bool e948000 { get; set; }
-            public bool a52108 { get; set; }
+
+            [JsonProperty("e948000")]
+            public bool E948000 { get; set; }
+
+            [JsonProperty("a52108")]
+            public bool A52108 { get; set; }
+
+            [JsonProperty("14a60000")]
             public bool _14a60000 { get; set; }
+
+            [JsonProperty("110380c")]
             public bool _110380c { get; set; }
+
+            [JsonProperty("9018c6")]
             public bool _9018c6 { get; set; }
+
+            [JsonProperty("50100")]
             public bool _50100 { get; set; }
+
+            [JsonProperty("318800")]
             public bool _318800 { get; set; }
+
+            [JsonProperty("128cc00")]
             public bool _128cc00 { get; set; }
+
+            [JsonProperty("860")]
             public bool _860 { get; set; }
+
+            [JsonProperty("863")]
             public bool _863 { get; set; }
+
+            [JsonProperty("862")]
             public bool _862 { get; set; }
+
+            [JsonProperty("865")]
             public bool _865 { get; set; }
+
+            [JsonProperty("107b5ad")]
             public bool _107b5ad { get; set; }
+
+            [JsonProperty("107b5a0")]
             public bool _107b5a0 { get; set; }
+
+            [JsonProperty("94ad60")]
             public bool _94ad60 { get; set; }
+
+            [JsonProperty("298c4")]
             public bool _298c4 { get; set; }
+
+            [JsonProperty("49d00")]
             public bool _49d00 { get; set; }
+
+            [JsonProperty("18c63800")]
             public bool _18c63800 { get; set; }
+
+            [JsonProperty("16c58000")]
             public bool _16c58000 { get; set; }
+
+            [JsonProperty("952900")]
             public bool _952900 { get; set; }
+
+            [JsonProperty("800")]
             public bool _800 { get; set; }
-            public bool d6294a { get; set; }
-            public bool d62940 { get; set; }
-            public bool b6b400 { get; set; }
+
+            [JsonProperty("d6294a")]
+            public bool D6294a { get; set; }
+
+            [JsonProperty("d62940")]
+            public bool D62940 { get; set; }
+
+            [JsonProperty("b6b400")]
+            public bool B6b400 { get; set; }
+
+            [JsonProperty("2108000")]
             public bool _2108000 { get; set; }
+
+            [JsonProperty("49d20")]
             public bool _49d20 { get; set; }
+
+            [JsonProperty("539c00")]
             public bool _539c00 { get; set; }
-            public bool e8 { get; set; }
-            public bool e700000 { get; set; }
-            public bool e700007 { get; set; }
+
+            [JsonProperty("e8")]
+            public bool E8 { get; set; }
+
+            [JsonProperty("e700000")]
+            public bool E700000 { get; set; }
+
+            [JsonProperty("e700007")]
+            public bool E700007 { get; set; }
+
+            [JsonProperty("31c07")]
             public bool _31c07 { get; set; }
+
+            [JsonProperty("31c00")]
             public bool _31c00 { get; set; }
+
+            [JsonProperty("5a529")]
             public bool _5a529 { get; set; }
+
+            [JsonProperty("31806")]
             public bool _31806 { get; set; }
+
+            [JsonProperty("31800")]
             public bool _31800 { get; set; }
+
+            [JsonProperty("31480")]
             public bool _31480 { get; set; }
+
+            [JsonProperty("5ad29")]
             public bool _5ad29 { get; set; }
+
+            [JsonProperty("5ad20")]
             public bool _5ad20 { get; set; }
-            public bool c0 { get; set; }
+
+            [JsonProperty("c0")]
+            public bool C0 { get; set; }
+
+            [JsonProperty("94a400")]
             public bool _94a400 { get; set; }
+
+            [JsonProperty("200c00")]
             public bool _200c00 { get; set; }
+
+            [JsonProperty("3a106")]
             public bool _3a106 { get; set; }
+
+            [JsonProperty("3a100")]
             public bool _3a100 { get; set; }
-            public bool a0 { get; set; }
-            public bool a6 { get; set; }
-            public bool a5 { get; set; }
+
+            [JsonProperty("a0")]
+            public bool A0 { get; set; }
+
+            [JsonProperty("a6")]
+            public bool A6 { get; set; }
+
+            [JsonProperty("a5")]
+            public bool A5 { get; set; }
+
+            [JsonProperty("639c00")]
             public bool _639c00 { get; set; }
-            public bool e83a400 { get; set; }
+
+            [JsonProperty("e83a400")]
+            public bool E83a400 { get; set; }
+
+            [JsonProperty("5a569")]
             public bool _5a569 { get; set; }
+
+            [JsonProperty("200800")]
             public bool _200800 { get; set; }
-            public bool a5b120 { get; set; }
+
+            [JsonProperty("a5b120")]
+            public bool A5b120 { get; set; }
+
+            [JsonProperty("631400")]
             public bool _631400 { get; set; }
+
+            [JsonProperty("194c3")]
             public bool _194c3 { get; set; }
+
+            [JsonProperty("742000")]
             public bool _742000 { get; set; }
+
+            [JsonProperty("1294a400")]
             public bool _1294a400 { get; set; }
+
+            [JsonProperty("40100")]
             public bool _40100 { get; set; }
+
+            [JsonProperty("18c58000")]
             public bool _18c58000 { get; set; }
+
+            [JsonProperty("7018e0")]
             public bool _7018e0 { get; set; }
+
+            [JsonProperty("630080")]
             public bool _630080 { get; set; }
-            public bool d6b56b { get; set; }
-            public bool d6b560 { get; set; }
-            public bool d6b400 { get; set; }
+
+            [JsonProperty("d6b56b")]
+            public bool D6b56b { get; set; }
+
+            [JsonProperty("d6b560")]
+            public bool D6b560 { get; set; }
+
+            [JsonProperty("d6b400")]
+            public bool D6b400 { get; set; }
+
+            [JsonProperty("294a5")]
             public bool _294a5 { get; set; }
+
+            [JsonProperty("12a5ad20")]
             public bool _12a5ad20 { get; set; }
+
+            [JsonProperty("12a5ad29")]
             public bool _12a5ad29 { get; set; }
-            public bool e84a4e0 { get; set; }
+
+            [JsonProperty("e84a4e0")]
+            public bool E84a4e0 { get; set; }
+
+            [JsonProperty("31c80")]
             public bool _31c80 { get; set; }
+
+            [JsonProperty("194a3")]
             public bool _194a3 { get; set; }
-            public bool e03800 { get; set; }
+
+            [JsonProperty("e03800")]
+            public bool E03800 { get; set; }
+
+            [JsonProperty("5a920")]
             public bool _5a920 { get; set; }
+
+            [JsonProperty("3a520")]
             public bool _3a520 { get; set; }
+
+            [JsonProperty("31884")]
             public bool _31884 { get; set; }
+
+            [JsonProperty("31880")]
             public bool _31880 { get; set; }
-            public bool c62c00 { get; set; }
+
+            [JsonProperty("c62c00")]
+            public bool C62c00 { get; set; }
+
+            [JsonProperty("1cc60000")]
             public bool _1cc60000 { get; set; }
+
+            [JsonProperty("1842")]
             public bool _1842 { get; set; }
+
+            [JsonProperty("1294a529")]
             public bool _1294a529 { get; set; }
+
+            [JsonProperty("9424e0")]
             public bool _9424e0 { get; set; }
+
+            [JsonProperty("200c80")]
             public bool _200c80 { get; set; }
+
+            [JsonProperty("318000")]
             public bool _318000 { get; set; }
+
+            [JsonProperty("25290000")]
             public bool _25290000 { get; set; }
-            public bool d68160 { get; set; }
+
+            [JsonProperty("d68160")]
+            public bool D68160 { get; set; }
+
+            [JsonProperty("200080")]
             public bool _200080 { get; set; }
+
+            [JsonProperty("22003800")]
             public bool _22003800 { get; set; }
+
+            [JsonProperty("18c63000")]
             public bool _18c63000 { get; set; }
+
+            [JsonProperty("831400")]
             public bool _831400 { get; set; }
+
+            [JsonProperty("838000")]
             public bool _838000 { get; set; }
-            public bool e83a540 { get; set; }
-            public bool a501080 { get; set; }
+
+            [JsonProperty("e83a540")]
+            public bool E83a540 { get; set; }
+
+            [JsonProperty("a501080")]
+            public bool A501080 { get; set; }
+
+            [JsonProperty("418c00")]
             public bool _418c00 { get; set; }
+
+            [JsonProperty("1c84")]
             public bool _1c84 { get; set; }
+
+            [JsonProperty("421800")]
             public bool _421800 { get; set; }
-            public bool a628000 { get; set; }
+
+            [JsonProperty("a628000")]
+            public bool A628000 { get; set; }
+
+            [JsonProperty("200040")]
             public bool _200040 { get; set; }
+
+            [JsonProperty("801c0")]
             public bool _801c0 { get; set; }
+
+            [JsonProperty("5b1c0")]
             public bool _5b1c0 { get; set; }
+
+            [JsonProperty("74a008")]
             public bool _74a008 { get; set; }
+
+            [JsonProperty("1d29")]
             public bool _1d29 { get; set; }
+
+            [JsonProperty("1d20")]
             public bool _1d20 { get; set; }
+
+            [JsonProperty("501440")]
             public bool _501440 { get; set; }
+
+            [JsonProperty("8628000")]
             public bool _8628000 { get; set; }
+
+            [JsonProperty("1900")]
             public bool _1900 { get; set; }
+
+            [JsonProperty("1906")]
             public bool _1906 { get; set; }
+
+            [JsonProperty("418400")]
             public bool _418400 { get; set; }
-            public bool a538000 { get; set; }
+
+            [JsonProperty("a538000")]
+            public bool A538000 { get; set; }
+
+            [JsonProperty("200000")]
             public bool _200000 { get; set; }
+
+            [JsonProperty("730000")]
             public bool _730000 { get; set; }
+
+            [JsonProperty("320ca0")]
             public bool _320ca0 { get; set; }
+
+            [JsonProperty("1d08")]
             public bool _1d08 { get; set; }
+
+            [JsonProperty("1d07")]
             public bool _1d07 { get; set; }
+
+            [JsonProperty("1d05")]
             public bool _1d05 { get; set; }
+
+            [JsonProperty("1d00")]
             public bool _1d00 { get; set; }
+
+            [JsonProperty("1886")]
             public bool _1886 { get; set; }
+
+            [JsonProperty("1884")]
             public bool _1884 { get; set; }
+
+            [JsonProperty("1082")]
             public bool _1082 { get; set; }
+
+            [JsonProperty("1080")]
             public bool _1080 { get; set; }
+
+            [JsonProperty("1084")]
             public bool _1084 { get; set; }
+
+            [JsonProperty("10852900")]
             public bool _10852900 { get; set; }
+
+            [JsonProperty("741c00")]
             public bool _741c00 { get; set; }
+
+            [JsonProperty("418420")]
             public bool _418420 { get; set; }
+
+            [JsonProperty("418421")]
             public bool _418421 { get; set; }
+
+            [JsonProperty("420c0")]
             public bool _420c0 { get; set; }
+
+            [JsonProperty("420c6")]
             public bool _420c6 { get; set; }
+
+            [JsonProperty("602106")]
             public bool _602106 { get; set; }
+
+            [JsonProperty("638000")]
             public bool _638000 { get; set; }
+
+            [JsonProperty("74000")]
             public bool _74000 { get; set; }
+
+            [JsonProperty("1c00")]
             public bool _1c00 { get; set; }
+
+            [JsonProperty("6110800")]
             public bool _6110800 { get; set; }
+
+            [JsonProperty("501400")]
             public bool _501400 { get; set; }
-            public bool c700000 { get; set; }
+
+            [JsonProperty("c700000")]
+            public bool C700000 { get; set; }
+
+            [JsonProperty("421080")]
             public bool _421080 { get; set; }
+
+            [JsonProperty("53180")]
             public bool _53180 { get; set; }
-            public bool e739ce7 { get; set; }
-            public bool e739ce0 { get; set; }
+
+            [JsonProperty("e739ce7")]
+            public bool E739ce7 { get; set; }
+
+            [JsonProperty("e739ce0")]
+            public bool E739ce0 { get; set; }
+
+            [JsonProperty("1c63")]
             public bool _1c63 { get; set; }
+
+            [JsonProperty("1d40")]
             public bool _1d40 { get; set; }
-            public bool a539c00 { get; set; }
+
+            [JsonProperty("a539c00")]
+            public bool A539c00 { get; set; }
+
+            [JsonProperty("1044")]
             public bool _1044 { get; set; }
+
+            [JsonProperty("1042")]
             public bool _1042 { get; set; }
+
+            [JsonProperty("1040")]
             public bool _1040 { get; set; }
+
+            [JsonProperty("18e70000")]
             public bool _18e70000 { get; set; }
+
+            [JsonProperty("4a108")]
             public bool _4a108 { get; set; }
+
+            [JsonProperty("30080")]
             public bool _30080 { get; set; }
+
+            [JsonProperty("2110000")]
             public bool _2110000 { get; set; }
+
+            [JsonProperty("254a")]
             public bool _254a { get; set; }
+
+            [JsonProperty("2547")]
             public bool _2547 { get; set; }
+
+            [JsonProperty("2540")]
             public bool _2540 { get; set; }
+
+            [JsonProperty("2549")]
             public bool _2549 { get; set; }
+
+            [JsonProperty("1000")]
             public bool _1000 { get; set; }
+
+            [JsonProperty("531800")]
             public bool _531800 { get; set; }
+
+            [JsonProperty("10a42900")]
             public bool _10a42900 { get; set; }
+
+            [JsonProperty("2529")]
             public bool _2529 { get; set; }
+
+            [JsonProperty("2527")]
             public bool _2527 { get; set; }
-            public bool a520000 { get; set; }
+
+            [JsonProperty("a520000")]
+            public bool A520000 { get; set; }
+
+            [JsonProperty("421000")]
             public bool _421000 { get; set; }
+
+            [JsonProperty("84218c4")]
             public bool _84218c4 { get; set; }
+
+            [JsonProperty("2500")]
             public bool _2500 { get; set; }
+
+            [JsonProperty("2507")]
             public bool _2507 { get; set; }
-            public bool a50000 { get; set; }
+
+            [JsonProperty("a50000")]
+            public bool A50000 { get; set; }
+
+            [JsonProperty("10ca0")]
             public bool _10ca0 { get; set; }
+
+            [JsonProperty("14a5294a")]
             public bool _14a5294a { get; set; }
+
+            [JsonProperty("14c58000")]
             public bool _14c58000 { get; set; }
+
+            [JsonProperty("421040")]
             public bool _421040 { get; set; }
+
+            [JsonProperty("421042")]
             public bool _421042 { get; set; }
-            public bool a629ca0 { get; set; }
-            public bool e93a4e0 { get; set; }
+
+            [JsonProperty("a629ca0")]
+            public bool A629ca0 { get; set; }
+
+            [JsonProperty("e93a4e0")]
+            public bool E93a4e0 { get; set; }
+
+            [JsonProperty("52d69")]
             public bool _52d69 { get; set; }
-            public bool ea4a800 { get; set; }
+
+            [JsonProperty("ea4a800")]
+            public bool Ea4a800 { get; set; }
+
+            [JsonProperty("41d00")]
             public bool _41d00 { get; set; }
+
+            [JsonProperty("49ca0")]
             public bool _49ca0 { get; set; }
+
+            [JsonProperty("4421040")]
             public bool _4421040 { get; set; }
+
+            [JsonProperty("731c00")]
             public bool _731c00 { get; set; }
+
+            [JsonProperty("2400")]
             public bool _2400 { get; set; }
-            public bool d73000 { get; set; }
+
+            [JsonProperty("d73000")]
+            public bool D73000 { get; set; }
+
+            [JsonProperty("41d27")]
             public bool _41d27 { get; set; }
-            public bool c8420c0 { get; set; }
+
+            [JsonProperty("c8420c0")]
+            public bool C8420c0 { get; set; }
+
+            [JsonProperty("8721884")]
             public bool _8721884 { get; set; }
+
+            [JsonProperty("314a0")]
             public bool _314a0 { get; set; }
+
+            [JsonProperty("73800")]
             public bool _73800 { get; set; }
+
+            [JsonProperty("2d29")]
             public bool _2d29 { get; set; }
+
+            [JsonProperty("498e6")]
             public bool _498e6 { get; set; }
+
+            [JsonProperty("1484a800")]
             public bool _1484a800 { get; set; }
+
+            [JsonProperty("429000")]
             public bool _429000 { get; set; }
+
+            [JsonProperty("52948")]
             public bool _52948 { get; set; }
+
+            [JsonProperty("49ce8")]
             public bool _49ce8 { get; set; }
+
+            [JsonProperty("49ce7")]
             public bool _49ce7 { get; set; }
+
+            [JsonProperty("49ce0")]
             public bool _49ce0 { get; set; }
+
+            [JsonProperty("2d4b")]
             public bool _2d4b { get; set; }
+
+            [JsonProperty("14a5b180")]
             public bool _14a5b180 { get; set; }
+
+            [JsonProperty("14a5b18a")]
             public bool _14a5b18a { get; set; }
+
+            [JsonProperty("6300840")]
             public bool _6300840 { get; set; }
+
+            [JsonProperty("31ce0")]
             public bool _31ce0 { get; set; }
+
+            [JsonProperty("31ce5")]
             public bool _31ce5 { get; set; }
+
+            [JsonProperty("2d6b")]
             public bool _2d6b { get; set; }
+
+            [JsonProperty("2d69")]
             public bool _2d69 { get; set; }
+
+            [JsonProperty("4201080")]
             public bool _4201080 { get; set; }
+
+            [JsonProperty("94a4e0")]
             public bool _94a4e0 { get; set; }
+
+            [JsonProperty("2219000")]
             public bool _2219000 { get; set; }
+
+            [JsonProperty("6519460")]
             public bool _6519460 { get; set; }
+
+            [JsonProperty("52900")]
             public bool _52900 { get; set; }
+
+            [JsonProperty("52908")]
             public bool _52908 { get; set; }
+
+            [JsonProperty("6300860")]
             public bool _6300860 { get; set; }
+
+            [JsonProperty("424c0")]
             public bool _424c0 { get; set; }
+
+            [JsonProperty("4a948")]
             public bool _4a948 { get; set; }
+
+            [JsonProperty("4a940")]
             public bool _4a940 { get; set; }
+
+            [JsonProperty("301000")]
             public bool _301000 { get; set; }
+
+            [JsonProperty("10738000")]
             public bool _10738000 { get; set; }
-            public bool a730000 { get; set; }
-            public bool d00000 { get; set; }
+
+            [JsonProperty("a730000")]
+            public bool A730000 { get; set; }
+
+            [JsonProperty("d00000")]
+            public bool D00000 { get; set; }
+
+            [JsonProperty("408c61")]
             public bool _408c61 { get; set; }
+
+            [JsonProperty("7340b")]
             public bool _7340b { get; set; }
+
+            [JsonProperty("2118c00")]
             public bool _2118c00 { get; set; }
+
+            [JsonProperty("4220000")]
             public bool _4220000 { get; set; }
+
+            [JsonProperty("1f188000")]
             public bool _1f188000 { get; set; }
+
+            [JsonProperty("20440")]
             public bool _20440 { get; set; }
+
+            [JsonProperty("23180000")]
             public bool _23180000 { get; set; }
+
+            [JsonProperty("2118c20")]
             public bool _2118c20 { get; set; }
-            public bool a5a400 { get; set; }
+
+            [JsonProperty("a5a400")]
+            public bool A5a400 { get; set; }
+
+            [JsonProperty("2118c41")]
             public bool _2118c41 { get; set; }
-            public bool a6294a0 { get; set; }
-            public bool a5ad20 { get; set; }
+
+            [JsonProperty("a6294a0")]
+            public bool A6294a0 { get; set; }
+
+            [JsonProperty("a5ad20")]
+            public bool A5ad20 { get; set; }
+
+            [JsonProperty("3194a3")]
             public bool _3194a3 { get; set; }
+
+            [JsonProperty("8021000")]
             public bool _8021000 { get; set; }
+
+            [JsonProperty("29d00")]
             public bool _29d00 { get; set; }
-            public bool a5010a0 { get; set; }
+
+            [JsonProperty("a5010a0")]
+            public bool A5010a0 { get; set; }
+
+            [JsonProperty("18c70000")]
             public bool _18c70000 { get; set; }
+
+            [JsonProperty("529400")]
             public bool _529400 { get; set; }
+
+            [JsonProperty("8314e0")]
             public bool _8314e0 { get; set; }
+
+            [JsonProperty("29c00")]
             public bool _29c00 { get; set; }
-            public bool b52900 { get; set; }
-            public bool e548000 { get; set; }
+
+            [JsonProperty("b52900")]
+            public bool B52900 { get; set; }
+
+            [JsonProperty("e548000")]
+            public bool E548000 { get; set; }
+
+            [JsonProperty("429800")]
             public bool _429800 { get; set; }
+
+            [JsonProperty("6418400")]
             public bool _6418400 { get; set; }
+
+            [JsonProperty("108c400")]
             public bool _108c400 { get; set; }
+
+            [JsonProperty("380a0")]
             public bool _380a0 { get; set; }
+
+            [JsonProperty("8631880")]
             public bool _8631880 { get; set; }
+
+            [JsonProperty("6418420")]
             public bool _6418420 { get; set; }
+
+            [JsonProperty("531ce0")]
             public bool _531ce0 { get; set; }
+
+            [JsonProperty("531ce5")]
             public bool _531ce5 { get; set; }
+
+            [JsonProperty("529c00")]
             public bool _529c00 { get; set; }
+
+            [JsonProperty("118c400")]
             public bool _118c400 { get; set; }
+
+            [JsonProperty("300c40")]
             public bool _300c40 { get; set; }
+
+            [JsonProperty("529460")]
             public bool _529460 { get; set; }
+
+            [JsonProperty("318a")]
             public bool _318a { get; set; }
+
+            [JsonProperty("318c")]
             public bool _318c { get; set; }
+
+            [JsonProperty("600000")]
             public bool _600000 { get; set; }
-            public bool e73800 { get; set; }
+
+            [JsonProperty("e73800")]
+            public bool E73800 { get; set; }
+
+            [JsonProperty("1ce70000")]
             public bool _1ce70000 { get; set; }
+
+            [JsonProperty("4110000")]
             public bool _4110000 { get; set; }
-            public bool e742527 { get; set; }
+
+            [JsonProperty("e742527")]
+            public bool E742527 { get; set; }
+
+            [JsonProperty("12950000")]
             public bool _12950000 { get; set; }
+
+            [JsonProperty("702000")]
             public bool _702000 { get; set; }
-            public bool c628000 { get; set; }
+
+            [JsonProperty("c628000")]
+            public bool C628000 { get; set; }
+
+            [JsonProperty("314a")]
             public bool _314a { get; set; }
+
+            [JsonProperty("528c00")]
             public bool _528c00 { get; set; }
+
+            [JsonProperty("21042")]
             public bool _21042 { get; set; }
+
+            [JsonProperty("21043")]
             public bool _21043 { get; set; }
+
+            [JsonProperty("21040")]
             public bool _21040 { get; set; }
+
+            [JsonProperty("3a4e0")]
             public bool _3a4e0 { get; set; }
+
+            [JsonProperty("1cc5")]
             public bool _1cc5 { get; set; }
+
+            [JsonProperty("1cc7")]
             public bool _1cc7 { get; set; }
+
+            [JsonProperty("321400")]
             public bool _321400 { get; set; }
+
+            [JsonProperty("2d6b0000")]
             public bool _2d6b0000 { get; set; }
-            public bool e742400 { get; set; }
+
+            [JsonProperty("e742400")]
+            public bool E742400 { get; set; }
+
+            [JsonProperty("1ca7")]
             public bool _1ca7 { get; set; }
+
+            [JsonProperty("1ca5")]
             public bool _1ca5 { get; set; }
+
+            [JsonProperty("1ca0")]
             public bool _1ca0 { get; set; }
+
+            [JsonProperty("3108")]
             public bool _3108 { get; set; }
+
+            [JsonProperty("21000")]
             public bool _21000 { get; set; }
-            public bool e73400 { get; set; }
+
+            [JsonProperty("e73400")]
+            public bool E73400 { get; set; }
+
+            [JsonProperty("8010004")]
             public bool _8010004 { get; set; }
-            public bool a518000 { get; set; }
+
+            [JsonProperty("a518000")]
+            public bool A518000 { get; set; }
+
+            [JsonProperty("8520000")]
             public bool _8520000 { get; set; }
+
+            [JsonProperty("628000")]
             public bool _628000 { get; set; }
+
+            [JsonProperty("1ce0")]
             public bool _1ce0 { get; set; }
+
+            [JsonProperty("1ce7")]
             public bool _1ce7 { get; set; }
+
+            [JsonProperty("1ce5")]
             public bool _1ce5 { get; set; }
+
+            [JsonProperty("628c60")]
             public bool _628c60 { get; set; }
+
+            [JsonProperty("628c63")]
             public bool _628c63 { get; set; }
+
+            [JsonProperty("6310000")]
             public bool _6310000 { get; set; }
+
+            [JsonProperty("14a50000")]
             public bool _14a50000 { get; set; }
-            public bool e839ce0 { get; set; }
+
+            [JsonProperty("e839ce0")]
+            public bool E839ce0 { get; set; }
+
+            [JsonProperty("12948000")]
             public bool _12948000 { get; set; }
-            public bool c63a000 { get; set; }
+
+            [JsonProperty("c63a000")]
+            public bool C63a000 { get; set; }
+
+            [JsonProperty("629460")]
             public bool _629460 { get; set; }
+
+            [JsonProperty("839c0")]
             public bool _839c0 { get; set; }
+
+            [JsonProperty("881e0")]
             public bool _881e0 { get; set; }
+
+            [JsonProperty("528060")]
             public bool _528060 { get; set; }
+
+            [JsonProperty("6318c0")]
             public bool _6318c0 { get; set; }
+
+            [JsonProperty("51ce7")]
             public bool _51ce7 { get; set; }
+
+            [JsonProperty("110803")]
             public bool _110803 { get; set; }
+
+            [JsonProperty("110800")]
             public bool _110800 { get; set; }
+
+            [JsonProperty("10a5")]
             public bool _10a5 { get; set; }
+
+            [JsonProperty("10a4")]
             public bool _10a4 { get; set; }
+
+            [JsonProperty("10a2")]
             public bool _10a2 { get; set; }
-            public bool e730000 { get; set; }
+
+            [JsonProperty("e730000")]
+            public bool E730000 { get; set; }
+
+            [JsonProperty("63194a3")]
             public bool _63194a3 { get; set; }
+
+            [JsonProperty("21082")]
             public bool _21082 { get; set; }
+
+            [JsonProperty("6428000")]
             public bool _6428000 { get; set; }
+
+            [JsonProperty("83a4e0")]
             public bool _83a4e0 { get; set; }
+
+            [JsonProperty("321040")]
             public bool _321040 { get; set; }
-            public bool e83a4e0 { get; set; }
+
+            [JsonProperty("e83a4e0")]
+            public bool E83a4e0 { get; set; }
+
+            [JsonProperty("628c00")]
             public bool _628c00 { get; set; }
+
+            [JsonProperty("8328000")]
             public bool _8328000 { get; set; }
+
+            [JsonProperty("1ec60000")]
             public bool _1ec60000 { get; set; }
+
+            [JsonProperty("431400")]
             public bool _431400 { get; set; }
+
+            [JsonProperty("318c0")]
             public bool _318c0 { get; set; }
+
+            [JsonProperty("110840")]
             public bool _110840 { get; set; }
-            public bool c5a40b { get; set; }
-            public bool c5a400 { get; set; }
+
+            [JsonProperty("c5a40b")]
+            public bool C5a40b { get; set; }
+
+            [JsonProperty("c5a400")]
+            public bool C5a400 { get; set; }
+
+            [JsonProperty("521040")]
             public bool _521040 { get; set; }
+
+            [JsonProperty("10800000")]
             public bool _10800000 { get; set; }
-            public bool f74000 { get; set; }
+
+            [JsonProperty("f74000")]
+            public bool F74000 { get; set; }
+
+            [JsonProperty("18e68000")]
             public bool _18e68000 { get; set; }
-            public bool a739ca0 { get; set; }
+
+            [JsonProperty("a739ca0")]
+            public bool A739ca0 { get; set; }
+
+            [JsonProperty("5a4e0")]
             public bool _5a4e0 { get; set; }
+
+            [JsonProperty("211080")]
             public bool _211080 { get; set; }
-            public bool c8320c0 { get; set; }
-            public bool c602000 { get; set; }
+
+            [JsonProperty("c8320c0")]
+            public bool C8320c0 { get; set; }
+
+            [JsonProperty("c602000")]
+            public bool C602000 { get; set; }
+
+            [JsonProperty("19080")]
             public bool _19080 { get; set; }
+
+            [JsonProperty("19082")]
             public bool _19082 { get; set; }
+
+            [JsonProperty("70180")]
             public bool _70180 { get; set; }
+
+            [JsonProperty("18e0")]
             public bool _18e0 { get; set; }
+
+            [JsonProperty("18e4")]
             public bool _18e4 { get; set; }
+
+            [JsonProperty("18e7")]
             public bool _18e7 { get; set; }
+
+            [JsonProperty("18e6")]
             public bool _18e6 { get; set; }
-            public bool c5a529 { get; set; }
+
+            [JsonProperty("c5a529")]
+            public bool C5a529 { get; set; }
+
+            [JsonProperty("320800")]
             public bool _320800 { get; set; }
+
+            [JsonProperty("18c6")]
             public bool _18c6 { get; set; }
+
+            [JsonProperty("18c4")]
             public bool _18c4 { get; set; }
+
+            [JsonProperty("3def")]
             public bool _3def { get; set; }
+
+            [JsonProperty("3ded")]
             public bool _3ded { get; set; }
+
+            [JsonProperty("400c0")]
             public bool _400c0 { get; set; }
+
+            [JsonProperty("42527")]
             public bool _42527 { get; set; }
+
+            [JsonProperty("3010a0")]
             public bool _3010a0 { get; set; }
+
+            [JsonProperty("35ad")]
             public bool _35ad { get; set; }
-            public bool f03000 { get; set; }
+
+            [JsonProperty("f03000")]
+            public bool F03000 { get; set; }
+
+            [JsonProperty("18a4")]
             public bool _18a4 { get; set; }
+
+            [JsonProperty("400e0")]
             public bool _400e0 { get; set; }
+
+            [JsonProperty("949c00")]
             public bool _949c00 { get; set; }
+
+            [JsonProperty("211000")]
             public bool _211000 { get; set; }
+
+            [JsonProperty("8420000")]
             public bool _8420000 { get; set; }
+
+            [JsonProperty("111000")]
             public bool _111000 { get; set; }
+
+            [JsonProperty("8210000")]
             public bool _8210000 { get; set; }
+
+            [JsonProperty("10400")]
             public bool _10400 { get; set; }
-            public bool c83a000 { get; set; }
+
+            [JsonProperty("c83a000")]
+            public bool C83a000 { get; set; }
+
+            [JsonProperty("5018e0")]
             public bool _5018e0 { get; set; }
+
+            [JsonProperty("4310040")]
             public bool _4310040 { get; set; }
+
+            [JsonProperty("48000")]
             public bool _48000 { get; set; }
+
+            [JsonProperty("73a4e0")]
             public bool _73a4e0 { get; set; }
+
+            [JsonProperty("129cc00")]
             public bool _129cc00 { get; set; }
+
+            [JsonProperty("310000")]
             public bool _310000 { get; set; }
+
+            [JsonProperty("310002")]
             public bool _310002 { get; set; }
+
+            [JsonProperty("39ce")]
             public bool _39ce { get; set; }
+
+            [JsonProperty("39cc")]
             public bool _39cc { get; set; }
+
+            [JsonProperty("2000043")]
             public bool _2000043 { get; set; }
-            public bool a639ca0 { get; set; }
+
+            [JsonProperty("a639ca0")]
+            public bool A639ca0 { get; set; }
+
+            [JsonProperty("520840")]
             public bool _520840 { get; set; }
+
+            [JsonProperty("520842")]
             public bool _520842 { get; set; }
+
+            [JsonProperty("4310000")]
             public bool _4310000 { get; set; }
+
+            [JsonProperty("5294a0")]
             public bool _5294a0 { get; set; }
+
+            [JsonProperty("14a0")]
             public bool _14a0 { get; set; }
+
+            [JsonProperty("14a3")]
             public bool _14a3 { get; set; }
+
+            [JsonProperty("14a5")]
             public bool _14a5 { get; set; }
+
+            [JsonProperty("14a7")]
             public bool _14a7 { get; set; }
-            public bool e838000 { get; set; }
+
+            [JsonProperty("e838000")]
+            public bool E838000 { get; set; }
+
+            [JsonProperty("20078000")]
             public bool _20078000 { get; set; }
-            public bool b4a0e0 { get; set; }
-            public bool c6420c0 { get; set; }
-            public bool c4ac00 { get; set; }
+
+            [JsonProperty("b4a0e0")]
+            public bool B4a0e0 { get; set; }
+
+            [JsonProperty("c6420c0")]
+            public bool C6420c0 { get; set; }
+
+            [JsonProperty("c4ac00")]
+            public bool C4ac00 { get; set; }
+
+            [JsonProperty("18420")]
             public bool _18420 { get; set; }
+
+            [JsonProperty("18421")]
             public bool _18421 { get; set; }
+
+            [JsonProperty("831ce0")]
             public bool _831ce0 { get; set; }
+
+            [JsonProperty("520800")]
             public bool _520800 { get; set; }
+
+            [JsonProperty("280c6")]
             public bool _280c6 { get; set; }
-            public bool a4a800 { get; set; }
-            public bool a4a807 { get; set; }
-            public bool a4a808 { get; set; }
+
+            [JsonProperty("a4a800")]
+            public bool A4a800 { get; set; }
+
+            [JsonProperty("a4a807")]
+            public bool A4a807 { get; set; }
+
+            [JsonProperty("a4a808")]
+            public bool A4a808 { get; set; }
+
+            [JsonProperty("529ce0")]
             public bool _529ce0 { get; set; }
+
+            [JsonProperty("8320800")]
             public bool _8320800 { get; set; }
-            public bool a539ca5 { get; set; }
-            public bool a539ca0 { get; set; }
+
+            [JsonProperty("a539ca5")]
+            public bool A539ca5 { get; set; }
+
+            [JsonProperty("a539ca0")]
+            public bool A539ca0 { get; set; }
+
+            [JsonProperty("7b5ad")]
             public bool _7b5ad { get; set; }
+
+            [JsonProperty("7b5a0")]
             public bool _7b5a0 { get; set; }
+
+            [JsonProperty("5294e5")]
             public bool _5294e5 { get; set; }
+
+            [JsonProperty("14e5")]
             public bool _14e5 { get; set; }
-            public bool a728000 { get; set; }
+
+            [JsonProperty("a728000")]
+            public bool A728000 { get; set; }
+
+            [JsonProperty("4298c0")]
             public bool _4298c0 { get; set; }
+
+            [JsonProperty("4298c4")]
             public bool _4298c4 { get; set; }
+
+            [JsonProperty("10a50000")]
             public bool _10a50000 { get; set; }
-            public bool e94a4e0 { get; set; }
+
+            [JsonProperty("e94a4e0")]
+            public bool E94a4e0 { get; set; }
+
+            [JsonProperty("4000004")]
             public bool _4000004 { get; set; }
-            public bool a531c00 { get; set; }
+
+            [JsonProperty("a531c00")]
+            public bool A531c00 { get; set; }
+
+            [JsonProperty("6329463")]
             public bool _6329463 { get; set; }
+
+            [JsonProperty("6329460")]
             public bool _6329460 { get; set; }
+
+            [JsonProperty("1084000")]
             public bool _1084000 { get; set; }
+
+            [JsonProperty("3a400")]
             public bool _3a400 { get; set; }
-            public bool e021000 { get; set; }
+
+            [JsonProperty("e021000")]
+            public bool E021000 { get; set; }
+
+            [JsonProperty("8200c80")]
             public bool _8200c80 { get; set; }
-            public bool a4a400 { get; set; }
+
+            [JsonProperty("a4a400")]
+            public bool A4a400 { get; set; }
+
+            [JsonProperty("63a106")]
             public bool _63a106 { get; set; }
+
+            [JsonProperty("839c00")]
             public bool _839c00 { get; set; }
-            public bool c000000 { get; set; }
+
+            [JsonProperty("c000000")]
+            public bool C000000 { get; set; }
+
+            [JsonProperty("732000")]
             public bool _732000 { get; set; }
+
+            [JsonProperty("23298000")]
             public bool _23298000 { get; set; }
+
+            [JsonProperty("3214a3")]
             public bool _3214a3 { get; set; }
+
+            [JsonProperty("3214a0")]
             public bool _3214a0 { get; set; }
+
+            [JsonProperty("18c68000")]
             public bool _18c68000 { get; set; }
+
+            [JsonProperty("4000043")]
             public bool _4000043 { get; set; }
+
+            [JsonProperty("4000040")]
             public bool _4000040 { get; set; }
+
+            [JsonProperty("31ca")]
             public bool _31ca { get; set; }
-            public bool c6b800 { get; set; }
+
+            [JsonProperty("c6b800")]
+            public bool C6b800 { get; set; }
+
+            [JsonProperty("8200004")]
             public bool _8200004 { get; set; }
+
+            [JsonProperty("2108421")]
             public bool _2108421 { get; set; }
+
+            [JsonProperty("631880")]
             public bool _631880 { get; set; }
+
+            [JsonProperty("4000064")]
             public bool _4000064 { get; set; }
+
+            [JsonProperty("108400")]
             public bool _108400 { get; set; }
+
+            [JsonProperty("401")]
             public bool _401 { get; set; }
+
+            [JsonProperty("10a58000")]
             public bool _10a58000 { get; set; }
+
+            [JsonProperty("39c05")]
             public bool _39c05 { get; set; }
+
+            [JsonProperty("39c00")]
             public bool _39c00 { get; set; }
+
+            [JsonProperty("93a4e0")]
             public bool _93a4e0 { get; set; }
+
+            [JsonProperty("18c63")]
             public bool _18c63 { get; set; }
+
+            [JsonProperty("18c60")]
             public bool _18c60 { get; set; }
+
+            [JsonProperty("39460")]
             public bool _39460 { get; set; }
+
+            [JsonProperty("12a5ac00")]
             public bool _12a5ac00 { get; set; }
+
+            [JsonProperty("631900")]
             public bool _631900 { get; set; }
+
+            [JsonProperty("84298c0")]
             public bool _84298c0 { get; set; }
+
+            [JsonProperty("84298c4")]
             public bool _84298c4 { get; set; }
+
+            [JsonProperty("421")]
             public bool _421 { get; set; }
+
+            [JsonProperty("5a120")]
             public bool _5a120 { get; set; }
-            public bool c40 { get; set; }
-            public bool c41 { get; set; }
-            public bool c43 { get; set; }
+
+            [JsonProperty("c40")]
+            public bool C40 { get; set; }
+
+            [JsonProperty("c41")]
+            public bool C41 { get; set; }
+
+            [JsonProperty("c43")]
+            public bool C43 { get; set; }
+
+            [JsonProperty("51d20")]
             public bool _51d20 { get; set; }
+
+            [JsonProperty("2108c00")]
             public bool _2108c00 { get; set; }
-            public bool b5ad20 { get; set; }
-            public bool b5ad29 { get; set; }
+
+            [JsonProperty("b5ad20")]
+            public bool B5ad20 { get; set; }
+
+            [JsonProperty("b5ad29")]
+            public bool B5ad29 { get; set; }
+
+            [JsonProperty("38c63")]
             public bool _38c63 { get; set; }
+
+            [JsonProperty("12952d69")]
             public bool _12952d69 { get; set; }
-            public bool c63 { get; set; }
-            public bool c60 { get; set; }
-            public bool c61 { get; set; }
+
+            [JsonProperty("c63")]
+            public bool C63 { get; set; }
+
+            [JsonProperty("c60")]
+            public bool C60 { get; set; }
+
+            [JsonProperty("c61")]
+            public bool C61 { get; set; }
+
+            [JsonProperty("74a400")]
             public bool _74a400 { get; set; }
+
+            [JsonProperty("18c23")]
             public bool _18c23 { get; set; }
+
+            [JsonProperty("18c21")]
             public bool _18c21 { get; set; }
+
+            [JsonProperty("18c20")]
             public bool _18c20 { get; set; }
+
+            [JsonProperty("51d00")]
             public bool _51d00 { get; set; }
+
+            [JsonProperty("464")]
             public bool _464 { get; set; }
+
+            [JsonProperty("2108c61")]
             public bool _2108c61 { get; set; }
-            public bool c740000 { get; set; }
+
+            [JsonProperty("c740000")]
+            public bool C740000 { get; set; }
+
+            [JsonProperty("4290c0")]
             public bool _4290c0 { get; set; }
-            public bool c04 { get; set; }
-            public bool c00 { get; set; }
-            public bool c03 { get; set; }
+
+            [JsonProperty("c04")]
+            public bool C04 { get; set; }
+
+            [JsonProperty("c00")]
+            public bool C00 { get; set; }
+
+            [JsonProperty("c03")]
+            public bool C03 { get; set; }
+
+            [JsonProperty("631800")]
             public bool _631800 { get; set; }
-            public bool a500085 { get; set; }
-            public bool a6394a0 { get; set; }
+
+            [JsonProperty("a500085")]
+            public bool A500085 { get; set; }
+
+            [JsonProperty("a6394a0")]
+            public bool A6394a0 { get; set; }
+
+            [JsonProperty("8024e0")]
             public bool _8024e0 { get; set; }
+
+            [JsonProperty("2018c00")]
             public bool _2018c00 { get; set; }
+
+            [JsonProperty("742400")]
             public bool _742400 { get; set; }
+
+            [JsonProperty("6319400")]
             public bool _6319400 { get; set; }
+
+            [JsonProperty("739c00")]
             public bool _739c00 { get; set; }
-            public bool c21 { get; set; }
+
+            [JsonProperty("c21")]
+            public bool C21 { get; set; }
+
+            [JsonProperty("6320000")]
             public bool _6320000 { get; set; }
-            public bool a010000 { get; set; }
+
+            [JsonProperty("a010000")]
+            public bool A010000 { get; set; }
+
+            [JsonProperty("311040")]
             public bool _311040 { get; set; }
+
+            [JsonProperty("10601c00")]
             public bool _10601c00 { get; set; }
+
+            [JsonProperty("4219082")]
             public bool _4219082 { get; set; }
+
+            [JsonProperty("4210000")]
             public bool _4210000 { get; set; }
+
+            [JsonProperty("84a4e0")]
             public bool _84a4e0 { get; set; }
-            public bool a5294a0 { get; set; }
-            public bool a5294a5 { get; set; }
+
+            [JsonProperty("a5294a0")]
+            public bool A5294a0 { get; set; }
+
+            [JsonProperty("a5294a5")]
+            public bool A5294a5 { get; set; }
+
+            [JsonProperty("2100c00")]
             public bool _2100c00 { get; set; }
-            public bool a428000 { get; set; }
+
+            [JsonProperty("a428000")]
+            public bool A428000 { get; set; }
+
+            [JsonProperty("4000840")]
             public bool _4000840 { get; set; }
+
+            [JsonProperty("108000e8")]
             public bool _108000e8 { get; set; }
+
+            [JsonProperty("311000")]
             public bool _311000 { get; set; }
+
+            [JsonProperty("6b560")]
             public bool _6b560 { get; set; }
-            public bool d6bc00 { get; set; }
-            public bool c80 { get; set; }
-            public bool c81 { get; set; }
+
+            [JsonProperty("d6bc00")]
+            public bool D6bc00 { get; set; }
+
+            [JsonProperty("c80")]
+            public bool C80 { get; set; }
+
+            [JsonProperty("c81")]
+            public bool C81 { get; set; }
+
+            [JsonProperty("1ef88000")]
             public bool _1ef88000 { get; set; }
+
+            [JsonProperty("739400")]
             public bool _739400 { get; set; }
+
+            [JsonProperty("83a400")]
             public bool _83a400 { get; set; }
-            public bool f7bda0 { get; set; }
+
+            [JsonProperty("f7bda0")]
+            public bool F7bda0 { get; set; }
+
+            [JsonProperty("839400")]
             public bool _839400 { get; set; }
+
+            [JsonProperty("1ef78000")]
             public bool _1ef78000 { get; set; }
-            public bool a500005 { get; set; }
-            public bool a5294e0 { get; set; }
+
+            [JsonProperty("a500005")]
+            public bool A500005 { get; set; }
+
+            [JsonProperty("a5294e0")]
+            public bool A5294e0 { get; set; }
+
+            [JsonProperty("531400")]
             public bool _531400 { get; set; }
+
+            [JsonProperty("742520")]
             public bool _742520 { get; set; }
+
+            [JsonProperty("639800")]
             public bool _639800 { get; set; }
-            public bool a52940 { get; set; }
-            public bool c6000a6 { get; set; }
+
+            [JsonProperty("a52940")]
+            public bool A52940 { get; set; }
+
+            [JsonProperty("c6000a6")]
+            public bool C6000a6 { get; set; }
+
+            [JsonProperty("12a58000")]
             public bool _12a58000 { get; set; }
+
+            [JsonProperty("6328000")]
             public bool _6328000 { get; set; }
-            public bool d62800 { get; set; }
+
+            [JsonProperty("d62800")]
+            public bool D62800 { get; set; }
+
+            [JsonProperty("6228000")]
             public bool _6228000 { get; set; }
+
+            [JsonProperty("531c00")]
             public bool _531c00 { get; set; }
+
+            [JsonProperty("14a5318a")]
             public bool _14a5318a { get; set; }
-            public bool a5b000 { get; set; }
+
+            [JsonProperty("a5b000")]
+            public bool A5b000 { get; set; }
+
+            [JsonProperty("38000")]
             public bool _38000 { get; set; }
+
+            [JsonProperty("31084")]
             public bool _31084 { get; set; }
+
+            [JsonProperty("31080")]
             public bool _31080 { get; set; }
+
+            [JsonProperty("6294a")]
             public bool _6294a { get; set; }
+
+            [JsonProperty("62940")]
             public bool _62940 { get; set; }
+
+            [JsonProperty("8220880")]
             public bool _8220880 { get; set; }
-            public bool a52900 { get; set; }
+
+            [JsonProperty("a52900")]
+            public bool A52900 { get; set; }
+
+            [JsonProperty("2310000")]
             public bool _2310000 { get; set; }
+
+            [JsonProperty("68160")]
             public bool _68160 { get; set; }
-            public bool a530000 { get; set; }
+
+            [JsonProperty("a530000")]
+            public bool A530000 { get; set; }
+
+            [JsonProperty("530000")]
             public bool _530000 { get; set; }
+
+            [JsonProperty("749c00")]
             public bool _749c00 { get; set; }
+
+            [JsonProperty("6529460")]
             public bool _6529460 { get; set; }
+
+            [JsonProperty("8400c0")]
             public bool _8400c0 { get; set; }
+
+            [JsonProperty("10000000")]
             public bool _10000000 { get; set; }
+
+            [JsonProperty("62900")]
             public bool _62900 { get; set; }
+
+            [JsonProperty("1ef70000")]
             public bool _1ef70000 { get; set; }
+
+            [JsonProperty("6520000")]
             public bool _6520000 { get; set; }
+
+            [JsonProperty("214a0")]
             public bool _214a0 { get; set; }
+
+            [JsonProperty("214a3")]
             public bool _214a3 { get; set; }
+
+            [JsonProperty("4321040")]
             public bool _4321040 { get; set; }
-            public bool a52800 { get; set; }
+
+            [JsonProperty("a52800")]
+            public bool A52800 { get; set; }
+
+            [JsonProperty("94ac00")]
             public bool _94ac00 { get; set; }
+
+            [JsonProperty("10848000")]
             public bool _10848000 { get; set; }
+
+            [JsonProperty("8840")]
             public bool _8840 { get; set; }
+
+            [JsonProperty("6110c61")]
             public bool _6110c61 { get; set; }
+
+            [JsonProperty("10600000")]
             public bool _10600000 { get; set; }
-            public bool e529c00 { get; set; }
+
+            [JsonProperty("e529c00")]
+            public bool E529c00 { get; set; }
+
+            [JsonProperty("8420c0")]
             public bool _8420c0 { get; set; }
+
+            [JsonProperty("419400")]
             public bool _419400 { get; set; }
         }
         #endregion
@@ -1650,7 +3500,7 @@ namespace RSMods
         }
         #endregion
         #region Nonstop Play
-        public class NSPPlayListRoot2
+        public class NSP_PlayListRoot2
         {
             public double NSP_PlayListArrangements { get; set; }
             public double NSP_PlayListTuning { get; set; }
@@ -1779,138 +3629,112 @@ namespace RSMods
         }
         #endregion
         #region Guitarcade
-        public class GC_ActiveChallengesCumulative
-        {
-            public double _2 { get; set; }
-            public double _1 { get; set; }
-            public double _0 { get; set; }
-        }
 
-        public class GC_ActiveChallenges
-        {
-            public double _2 { get; set; }
-            public double _1 { get; set; }
-            public double _0 { get; set; }
-        }
-
-        public class GC_ActiveChallengesRandomIndex
-        {
-            public double _2 { get; set; }
-            public double _1 { get; set; }
-            public double _0 { get; set; }
-        }
-
-        public class GC_CompletedChallenges
-        {
-            public double _3 { get; set; }
-            public double _2 { get; set; }
-            public double _1 { get; set; }
-            public double _6 { get; set; }
-            public double _4 { get; set; }
-        }
-
-        public class GC_Guitar
+        public class GC_Instrument
         {
             public double LastTimePlayed { get; set; }
             public double HighScore { get; set; }
-            public GC_ActiveChallengesCumulative ActiveChallengesCumulative { get; set; }
-            public GC_ActiveChallenges ActiveChallenges { get; set; }
-            public GC_ActiveChallengesRandomIndex ActiveChallengesRandomIndex { get; set; }
-            public GC_CompletedChallenges CompletedChallenges { get; set; }
+            public Dictionary<string, double> ActiveChallengesCumulative { get; set; }
+            public Dictionary<string, double> ActiveChallenges { get; set; }
+            public Dictionary<string, double> ActiveChallengesRandomIndex { get; set; }
+            public Dictionary<string, double> CompletedChallenges { get; set; }
             public double PlayCount { get; set; }
             public double SkillLevel { get; set; }
+        }
+
+        public class GC_Chordead
+        {
             public double CurrentLevel { get; set; }
             public double LevelsUnlockedChapterScreen { get; set; }
             public double LevelsUnlocked { get; set; }
         }
 
-        public class GC_Bass
+        public class GC_Bass_ScaleRacer
         {
             public double LastTimePlayed { get; set; }
             public double HighScore { get; set; }
-            public GC_ActiveChallengesCumulative ActiveChallengesCumulative { get; set; }
-            public GC_ActiveChallenges ActiveChallenges { get; set; }
-            public GC_ActiveChallengesRandomIndex ActiveChallengesRandomIndex { get; set; }
-            public GC_CompletedChallenges CompletedChallenges { get; set; }
+            public GC_Bass_ScaleRacer_Fix ActiveChallengesCumulative { get; set; }
+            public Dictionary<string, double> ActiveChallenges { get; set; }
+            public Dictionary<string, double> ActiveChallengesRandomIndex { get; set; }
+            public Dictionary<string, double> CompletedChallenges { get; set; }
             public double PlayCount { get; set; }
             public double SkillLevel { get; set; }
-            public double CurrentLevel { get; set; }
-            public double LevelsUnlockedChapterScreen { get; set; }
-            public double LevelsUnlocked { get; set; }
+        }
+
+        public class GC_Bass_ScaleRacer_Fix
+        {
+            [JsonProperty("2")]
+            public double _2 { get; set; }
+            [JsonProperty("1")]
+            public double _1 { get; set; }
+            [JsonProperty("0")]
+            public Dictionary<string, double> _0 { get; set; }
         }
 
         public class GC_TrackAndField
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_NinjaSlides
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_32925
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Chordead Guitar { get; set; }
+            public GC_Chordead Bass { get; set; }
         }
 
         public class GC_32926
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Chordead Guitar { get; set; }
+            public GC_Chordead Bass { get; set; }
         }
 
         public class GC_DucksPlus
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_TempleOfBends
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
-        }
-
-        public class GC_0
-        {
-            public double _4 { get; set; }
-            public double _3 { get; set; }
-            public double _2 { get; set; }
-            public double _1 { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_ScaleRacer
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Bass_ScaleRacer Bass { get; set; }
         }
 
         public class GC_StarChords
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_HarmonicHeist
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_WhaleRider
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_StringSkipSaloon
         {
-            public GC_Guitar Guitar { get; set; }
-            public GC_Bass Bass { get; set; }
+            public GC_Instrument Guitar { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GuitarcadeGames
@@ -2099,28 +3923,19 @@ namespace RSMods
 
         #endregion
         #region Songs
-        public class Songs_Root
-        {
-            public Dictionary<string, SongDetails> Songs { get; set; }
-        }
+        public class Songs : Dictionary<string, Song_Details> { }
 
-        public class SongDetails
+        public class Song_Details
         {
             public double TimeStamp { get; set; }
             public Song_DD DynamicDifficulty { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public Song_PlaynextStats PlaynextStats { get; set; }
         }
 
         public class Song_DD
         {
             public double Avg { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public Dictionary<string, Song_DD_Phrases> Phrases { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public List<double> LevelUp { get; set; }
         }
 
@@ -2134,28 +3949,22 @@ namespace RSMods
         public class Song_PlaynextStats
         {
             public double TimeStamp { get; set; }
+            public Song_PlaynextStats_PhraseIterations PhraseIterations { get; set; }
+            public Dictionary<string, Song_PlaynextStats_Chords> Chords { get; set; }
+            public Dictionary<string, Song_PlaynextStats_Articulations> Articulations { get; set; }
         }
 
         public class Song_PlaynextStats_PhraseIterations
         {
             public Dictionary<string, Song_PlaynextStats_PhraseIteration> PhaseIteration { get; set; }
-            public Dictionary<string, Song_PlaynextStats_Chords> Chords { get; set; }
-            public Dictionary<string, Song_PlaynextStats_Articulations> Articulations { get; set; }
         }
 
         public class Song_PlaynextStats_PhraseIteration
         {
-            [JsonProperty(Required = Required.AllowNull)]
             public double ChordsMissed { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public double ArticulationsMissed { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public double NotesMissed { get; set; }
-            [JsonProperty(Required = Required.AllowNull)]
             public double ChordsHit { get; set; }
-
             public double NotesHit { get; set; }
             public double ArticulationsHit { get; set; }
         }
@@ -2163,167 +3972,338 @@ namespace RSMods
         public class Song_PlaynextStats_Chords
         {
             public double Hit { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public double Missed { get; set; }
         }
 
         public class Song_PlaynextStats_Articulations
         {
             public double Hit { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
             public double Missed { get; set; }
         }
         #endregion
         #region Session Mode
         public class SessionMode
         {
-            [JsonProperty(Required = Required.AllowNull)]
             public SessionMode_CustomBands CustomBands { get; set; }
-
             public SessionMode_Missions Missions { get; set; }
-
             public SessionMode_Settings Settings { get; set; }
-
         }
 
         public class SessionMode_CustomBands { }
 
         public class SessionMode_Mission
         {
-            [JsonProperty(Required = Required.AllowNull)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
             public double TimeStamp { get; set; }
+
             public double PlayCount { get; set; }
         }
 
         public class SessionMode_Tempos
         {
+            [JsonProperty("8")]
             public SessionMode_Mission _8 { get; set; }
+            [JsonProperty("3")]
             public SessionMode_Mission _3 { get; set; }
+            [JsonProperty("2")]
             public SessionMode_Mission _2 { get; set; }
         }
 
         public class SessionMode_Notes
         {
+            [JsonProperty("9")]
             public SessionMode_Mission _9 { get; set; }
+            [JsonProperty("6")]
             public SessionMode_Mission _6 { get; set; }
+            [JsonProperty("2")]
             public SessionMode_Mission _2 { get; set; }
         }
 
 
         public class SessionMode_Scales
         {
+            [JsonProperty("7")]
             public SessionMode_Mission _7 { get; set; }
+            [JsonProperty("1")]
             public SessionMode_Mission _1 { get; set; }
+            [JsonProperty("14")]
             public SessionMode_Mission _14 { get; set; }
+            [JsonProperty("15")]
             public SessionMode_Mission _15 { get; set; }
         }
 
         public class SessionMode_Rooms
         {
+            [JsonProperty("4")]
             public SessionMode_Mission _4 { get; set; }
+            [JsonProperty("1")]
             public SessionMode_Mission _1 { get; set; }
+            [JsonProperty("0")]
             public SessionMode_Mission _0 { get; set; }
         }
 
         public class SessionMode_Complexities
         {
+            [JsonProperty("1")]
             public SessionMode_Mission _1 { get; set; }
+            [JsonProperty("0")]
             public SessionMode_Mission _0 { get; set; }
         }
 
         public class SessionMode_Grooves
         {
+            [JsonProperty("2")]
             public SessionMode_Mission _2 { get; set; }
+            [JsonProperty("1")]
             public SessionMode_Mission _1 { get; set; }
         }
 
         public class SessionMode_Missions
         {
+            [JsonProperty("BF96EB56102435A29C9A3D97C649165B")]
             public SessionMode_Mission BF96EB56102435A29C9A3D97C649165B { get; set; }
+
+            [JsonProperty("1219C8F1A6A735E8A7CE398322D96688")]
             public SessionMode_Mission _1219C8F1A6A735E8A7CE398322D96688 { get; set; }
+
+            [JsonProperty("1F76B8CF98CD343282F458D29903800F")]
             public SessionMode_Mission _1F76B8CF98CD343282F458D29903800F { get; set; }
+
+            [JsonProperty("010FE6D6292F3A8EB8258A802C57B230")]
             public SessionMode_Mission _010FE6D6292F3A8EB8258A802C57B230 { get; set; }
+
+            [JsonProperty("DB67160C7BD43582BC8E785D60A447BE")]
             public SessionMode_Mission DB67160C7BD43582BC8E785D60A447BE { get; set; }
+
+            [JsonProperty("411261DDF4FE3BD88A27712AE3986F9C")]
             public SessionMode_Mission _411261DDF4FE3BD88A27712AE3986F9C { get; set; }
+
+            [JsonProperty("F7B3D501A72134058FA09E5C49A22E75")]
             public SessionMode_Mission F7B3D501A72134058FA09E5C49A22E75 { get; set; }
+
+            [JsonProperty("C3C878CF9BA23CDD837E96495AA7A702")]
             public SessionMode_Mission C3C878CF9BA23CDD837E96495AA7A702 { get; set; }
+
+            [JsonProperty("9C0427E4DC4B370BB9F64A88A9CEFC56")]
             public SessionMode_Mission _9C0427E4DC4B370BB9F64A88A9CEFC56 { get; set; }
+
+            [JsonProperty("1A236BD1D8FA3FC8934283ADC5F0F773")]
             public SessionMode_Mission _1A236BD1D8FA3FC8934283ADC5F0F773 { get; set; }
+
+            [JsonProperty("E5501BDA8A593CAC8BA50B3EC78235EF")]
             public SessionMode_Mission E5501BDA8A593CAC8BA50B3EC78235EF { get; set; }
+
+            [JsonProperty("9F6A7AA159483AC1879EC0BFCAC2944B")]
             public SessionMode_Mission _9F6A7AA159483AC1879EC0BFCAC2944B { get; set; }
+
+            [JsonProperty("03B13729D4F63F8FBA0C63767C9262B8")]
             public SessionMode_Mission _03B13729D4F63F8FBA0C63767C9262B8 { get; set; }
+
+            [JsonProperty("03ADA6BA199E3222AB681CA78B477111")]
             public SessionMode_Mission _03ADA6BA199E3222AB681CA78B477111 { get; set; }
+
+            [JsonProperty("AA495F0A950535A18372E82159A3C972")]
             public SessionMode_Mission AA495F0A950535A18372E82159A3C972 { get; set; }
+
+            [JsonProperty("DCFEFFB614AC3005BD72474099CE1C4E")]
             public SessionMode_Mission DCFEFFB614AC3005BD72474099CE1C4E { get; set; }
+
+            [JsonProperty("CC899076BE6134DABB467DEC8F569C4D")]
             public SessionMode_Mission CC899076BE6134DABB467DEC8F569C4D { get; set; }
+
+            [JsonProperty("DF2B1032F33132358DB8363654FFA000")]
             public SessionMode_Mission DF2B1032F33132358DB8363654FFA000 { get; set; }
+
+            [JsonProperty("1A4795A54EAB3D21B8863164F98E0811")]
             public SessionMode_Mission _1A4795A54EAB3D21B8863164F98E0811 { get; set; }
+
+            [JsonProperty("48FB1981378B30FF8BECC9CA7A70D825")]
             public SessionMode_Mission _48FB1981378B30FF8BECC9CA7A70D825 { get; set; }
+
+            [JsonProperty("A0A96416DC3633609BCBD01E07C6025D")]
             public SessionMode_Mission A0A96416DC3633609BCBD01E07C6025D { get; set; }
+
+            [JsonProperty("2DE905F2730A349A9DCE8C4A9B8B3901")]
             public SessionMode_Mission _2DE905F2730A349A9DCE8C4A9B8B3901 { get; set; }
+
+            [JsonProperty("DF17AF729F06377B9BAFA16B2CCA7753")]
             public SessionMode_Mission DF17AF729F06377B9BAFA16B2CCA7753 { get; set; }
+
             public SessionMode_Tempos Tempos { get; set; }
+
+            [JsonProperty("C3372A367862331BB1726140FA3D0A2B")]
             public SessionMode_Mission C3372A367862331BB1726140FA3D0A2B { get; set; }
+
+            [JsonProperty("06340C8536A73735BCCF07A5A6A19AE7")]
             public SessionMode_Mission _06340C8536A73735BCCF07A5A6A19AE7 { get; set; }
+
+            [JsonProperty("0B4926A17B1E392E99C08E78D97280B6")]
             public SessionMode_Mission _0B4926A17B1E392E99C08E78D97280B6 { get; set; }
+
+            [JsonProperty("B966FC32977730D2AE23164972804684")]
             public SessionMode_Mission B966FC32977730D2AE23164972804684 { get; set; }
+
+            [JsonProperty("847363FB782D31498EE6C2A4C0259660")]
             public SessionMode_Mission _847363FB782D31498EE6C2A4C0259660 { get; set; }
+
+            [JsonProperty("EAB905E9D9C637AA8613C81B194D0789")]
             public SessionMode_Mission EAB905E9D9C637AA8613C81B194D0789 { get; set; }
+
+            [JsonProperty("4E6B94366C0F34148757470B0889041D")]
             public SessionMode_Mission _4E6B94366C0F34148757470B0889041D { get; set; }
+
+            [JsonProperty("4A344400452C39AC926066541F198209")]
             public SessionMode_Mission _4A344400452C39AC926066541F198209 { get; set; }
+
+            [JsonProperty("65998043CFA033798F419FBC0FB8E806")]
             public SessionMode_Mission _65998043CFA033798F419FBC0FB8E806 { get; set; }
+
+            [JsonProperty("B95856593B4F34879D8959FE2BAFF438")]
             public SessionMode_Mission B95856593B4F34879D8959FE2BAFF438 { get; set; }
+
+            [JsonProperty("FDB67B32BA4832098E553148B23B7623")]
             public SessionMode_Mission FDB67B32BA4832098E553148B23B7623 { get; set; }
+
+            [JsonProperty("93BD5C3358B93387AB2598BB396DBFAB")]
             public SessionMode_Mission _93BD5C3358B93387AB2598BB396DBFAB { get; set; }
+
+            [JsonProperty("48FD0185AB4A362AB7CF8B5DD041CA50")]
             public SessionMode_Mission _48FD0185AB4A362AB7CF8B5DD041CA50 { get; set; }
+
+            [JsonProperty("013212529E333EFFB20116387AB01447")]
             public SessionMode_Mission _013212529E333EFFB20116387AB01447 { get; set; }
+
+            [JsonProperty("4161F23998743F90A385C33ABA304C0A")]
             public SessionMode_Mission _4161F23998743F90A385C33ABA304C0A { get; set; }
+
+            [JsonProperty("AD3C0F12ED7A3D229A893FB871CACB85")]
             public SessionMode_Mission AD3C0F12ED7A3D229A893FB871CACB85 { get; set; }
+
+            [JsonProperty("C8CC52ED91CF3BAC90E2AA3CBA5D8692")]
             public SessionMode_Mission C8CC52ED91CF3BAC90E2AA3CBA5D8692 { get; set; }
+
+            [JsonProperty("6B357F63837E3B4599EA21E4189CFF22")]
             public SessionMode_Mission _6B357F63837E3B4599EA21E4189CFF22 { get; set; }
+
+            [JsonProperty("65DFDC5C5D8435F59D19D06D71AED4B7")]
             public SessionMode_Mission _65DFDC5C5D8435F59D19D06D71AED4B7 { get; set; }
+
+            [JsonProperty("2558B65D503236F5892E7CF055F94317")]
             public SessionMode_Mission _2558B65D503236F5892E7CF055F94317 { get; set; }
+
+            [JsonProperty("AA7902F6BD7C368C8AE8C3ACE00E6354")]
             public SessionMode_Mission AA7902F6BD7C368C8AE8C3ACE00E6354 { get; set; }
+
+            [JsonProperty("B0E91AE437673DEA85B2EEE9173B36AB")]
             public SessionMode_Mission B0E91AE437673DEA85B2EEE9173B36AB { get; set; }
+
             public SessionMode_Notes Notes { get; set; }
+
+            [JsonProperty("F8174557419332FD9814EAD805C5E72F")]
             public SessionMode_Mission F8174557419332FD9814EAD805C5E72F { get; set; }
+
+            [JsonProperty("9BA7702A70313CEAA03C6950FAACE821")]
             public SessionMode_Mission _9BA7702A70313CEAA03C6950FAACE821 { get; set; }
+
+            [JsonProperty("E9B88B6CC74A31FBB6B610EA21F49E37")]
             public SessionMode_Mission E9B88B6CC74A31FBB6B610EA21F49E37 { get; set; }
+
+            [JsonProperty("09A5C099B5853C5DB44F9D7A9C8FC404")]
             public SessionMode_Mission _09A5C099B5853C5DB44F9D7A9C8FC404 { get; set; }
+
+            [JsonProperty("539ECA429D4E333FA2B0D97E9A826EFA")]
             public SessionMode_Mission _539ECA429D4E333FA2B0D97E9A826EFA { get; set; }
+
+            [JsonProperty("6CBECBF7C5B0340DB001255E880359EC")]
             public SessionMode_Mission _6CBECBF7C5B0340DB001255E880359EC { get; set; }
+
+            [JsonProperty("7E24D00F50653AB0891470C10FE543D0")]
             public SessionMode_Mission _7E24D00F50653AB0891470C10FE543D0 { get; set; }
+
+            [JsonProperty("AA07ABD2545D398CBD3561D47961AACC")]
             public SessionMode_Mission AA07ABD2545D398CBD3561D47961AACC { get; set; }
+
+            [JsonProperty("739C196158ED38DD9B58E534C7F9B17B")]
             public SessionMode_Mission _739C196158ED38DD9B58E534C7F9B17B { get; set; }
+
+            [JsonProperty("FF55C9680E3C3355AA8EBE683F278C05")]
             public SessionMode_Mission FF55C9680E3C3355AA8EBE683F278C05 { get; set; }
+
+            [JsonProperty("BE4DFDBA138B3C6282B5FC1914F6E6EC")]
             public SessionMode_Mission BE4DFDBA138B3C6282B5FC1914F6E6EC { get; set; }
+
+            [JsonProperty("9E852B48AA5437D88323F99811862416")]
             public SessionMode_Mission _9E852B48AA5437D88323F99811862416 { get; set; }
+
+            [JsonProperty("EFCD8A9BE2CC3896B50C62A1885D8578")]
             public SessionMode_Mission EFCD8A9BE2CC3896B50C62A1885D8578 { get; set; }
+
+            [JsonProperty("F7F0118DC5763B4784FF84E9CEE28CE9")]
             public SessionMode_Mission F7F0118DC5763B4784FF84E9CEE28CE9 { get; set; }
+
+            [JsonProperty("87C5D0B1DC0E326E90EC212D43F77DA5")]
             public SessionMode_Mission _87C5D0B1DC0E326E90EC212D43F77DA5 { get; set; }
+
+            [JsonProperty("DFC1F34FCFF23DF69B535DABE5AAEAD6")]
             public SessionMode_Mission DFC1F34FCFF23DF69B535DABE5AAEAD6 { get; set; }
+
             public SessionMode_Scales Scales { get; set; }
+
+            [JsonProperty("1A6B23287C703658ACF30D63D8EC0A27")]
             public SessionMode_Mission _1A6B23287C703658ACF30D63D8EC0A27 { get; set; }
+
+            [JsonProperty("286D3F2E908330CC9FB04C734DCD3586")]
             public SessionMode_Mission _286D3F2E908330CC9FB04C734DCD3586 { get; set; }
+
+            [JsonProperty("2CCC26EF66E332C690E159661E1E2116")]
             public SessionMode_Mission _2CCC26EF66E332C690E159661E1E2116 { get; set; }
+
+            [JsonProperty("53F60DC4BE133E4998389C0247AC3FA6")]
             public SessionMode_Mission _53F60DC4BE133E4998389C0247AC3FA6 { get; set; }
+
+            [JsonProperty("64497E174E4933A58346AE5D325B3EE9")]
             public SessionMode_Mission _64497E174E4933A58346AE5D325B3EE9 { get; set; }
+
+            [JsonProperty("5BAD0314D6A931C088E3F0CA2B57F59C")]
             public SessionMode_Mission _5BAD0314D6A931C088E3F0CA2B57F59C { get; set; }
+
+            [JsonProperty("679B3EE913423F3EB20511AB43420BEA")]
             public SessionMode_Mission _679B3EE913423F3EB20511AB43420BEA { get; set; }
+
             public SessionMode_Rooms Rooms { get; set; }
+
+            [JsonProperty("281E3623FB6B34A3B5DB99B69ED65B8F")]
             public SessionMode_Mission _281E3623FB6B34A3B5DB99B69ED65B8F { get; set; }
+
+            [JsonProperty("D71194C59C163842B0D06A15EBBAEB77")]
             public SessionMode_Mission D71194C59C163842B0D06A15EBBAEB77 { get; set; }
+
+            [JsonProperty("2EE5059D6B213C188EA4BBF758A99004")]
             public SessionMode_Mission _2EE5059D6B213C188EA4BBF758A99004 { get; set; }
+
+            [JsonProperty("781CA376FACC385097ACEF8B83017227")]
             public SessionMode_Mission _781CA376FACC385097ACEF8B83017227 { get; set; }
+
+            [JsonProperty("E57F5A48AE0235BEAC4BA3FA26C81DE7")]
             public SessionMode_Mission E57F5A48AE0235BEAC4BA3FA26C81DE7 { get; set; }
+
+            [JsonProperty("AB9B725327713916888DDBF80878946E")]
             public SessionMode_Mission AB9B725327713916888DDBF80878946E { get; set; }
+
             public SessionMode_Complexities Complexities { get; set; }
+
             public SessionMode_Grooves Grooves { get; set; }
+
+            [JsonProperty("AF5B84E33F153E4E9E0D2CFFE0AFA614")]
             public SessionMode_Mission AF5B84E33F153E4E9E0D2CFFE0AFA614 { get; set; }
+
+            [JsonProperty("05E7C2A820D83A67A64ABBF612CC4287")]
             public SessionMode_Mission _05E7C2A820D83A67A64ABBF612CC4287 { get; set; }
+
+            [JsonProperty("8A1C59EA18EB33FF92B4933FC88396C1")]
             public SessionMode_Mission _8A1C59EA18EB33FF92B4933FC88396C1 { get; set; }
+
+            [JsonProperty("195EF76D59853C69A8C556C0FFEADFB7")]
             public SessionMode_Mission _195EF76D59853C69A8C556C0FFEADFB7 { get; set; }
         }
 
@@ -2458,7 +4438,7 @@ namespace RSMods
             public double SessionTime { get; set; }
             public double NSP_First { get; set; }
             public string SMMissCompleted { get; set; }
-            public Stats_DLCTag DLCTag { get; set; }
+            public Dictionary<string, bool> DLCTag { get; set; }
             public double TotalNumMissionCompletions { get; set; }
             public double SASongsPlayedMediumAndMore { get; set; }
             public double NumSongsMastered { get; set; }
@@ -2468,9 +4448,9 @@ namespace RSMods
             public double SessionMissionTime { get; set; }
             public double TimePlayedAndLesson { get; set; }
             public string HitTechniques { get; set; }
-            public List<Stats_GuitarcadePlayedTime> GuitarcadePlayedTime { get; set; }
+            public List<V_List> GuitarcadePlayedTime { get; set; }
             public double DiversityRating { get; set; }
-            public List<Stats_LessonPlayedCount> LessonPlayedCount { get; set; }
+            public List<V_List> LessonPlayedCount { get; set; }
             public double GuitarcadeStringSkipSaloonHS { get; set; }
             public double SANumSongsClearedHard { get; set; }
             public double FingerprintTechniques_Lead { get; set; }
@@ -2497,12 +4477,12 @@ namespace RSMods
             public double GuitarcadeDucksReduxHS { get; set; }
             public double StatsOnlineVersion { get; set; }
             public double MissCompletedCnt { get; set; }
-            public Stats_Songs Songs { get; set; }
+            public Dictionary<string, Stats_Song> Songs { get; set; }
             public double LongestSession { get; set; }
             public double FingerprintAccuracy_Bass { get; set; }
             public string Achievements { get; set; }
             public double AccuracyRating { get; set; }
-            public List<Stats_ArticulationAccuracy> ArticulationAccuracy { get; set; }
+            public List<V_List> ArticulationAccuracy { get; set; }
             public double ScoreAttackFailStreak { get; set; }
             public Stats_History History { get; set; }
             public double ConsecutiveNotes { get; set; }
@@ -2517,7 +4497,7 @@ namespace RSMods
             public double GuitarcadeGoneWailinHS { get; set; }
             public double UniqueChordsPlayed { get; set; }
             public double Learned { get; set; }
-            public List<Stats_GuitarcadePlayedCnt> GuitarcadePlayedCnt { get; set; }
+            public List<V_List> GuitarcadePlayedCnt { get; set; }
             public double FingerprintMastery_Lead { get; set; }
             public double SASongsPlayedEasyAndMore { get; set; }
             public double LeadSkillRating { get; set; }
@@ -2528,71 +4508,19 @@ namespace RSMods
             public string TSMissCompleted { get; set; }
         }
 
-        public class Stats_DLCTag
-        {
-            public Dictionary<string, bool> DLCTag { get; set; }
-        }
-
-        public class Stats_GuitarcadePlayedTime
-        {
-            public double V { get; set; }
-        }
-
-        public class Stats_LessonPlayedCount
-        {
-            public double V { get; set; }
-        }
-
-        public class Stats_Songs
-        {
-            public Dictionary<string, Stats_Song> Songs { get; set; }
-        }
-
         public class Stats_Song
         {
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double MasteryLast { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double PlayedCount { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double AccuracyGlobal { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public string DateLAS { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double AccuracyChords { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double MasteryPrevious { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double MasteryPeak { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double MasteryPreviousPeak { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
             public double Streak { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
-            public List<Stats_ArticulationAccuracy> ArticulationAccuracy { get; set; }
-
-            [JsonProperty(Required = Newtonsoft.Json.Required.AllowNull)]
-            public List<Stats_ChordsAccuracies> ChordsAccuracies { get; set; }
-
-        }
-
-        public class Stats_ArticulationAccuracy
-        {
-            public double V { get; set; }
-        }
-
-        public class Stats_ChordsAccuracies
-        {
-            public double V { get; set; }
+            public List<V_List> ArticulationAccuracy { get; set; }
+            public List<V_List> ChordsAccuracies { get; set; }
         }
 
         public class Stats_History
@@ -2600,16 +4528,9 @@ namespace RSMods
             public string LastUpdate { get; set; }
         }
 
-        public class Stats_GuitarcadePlayedCnt
-        {
-            public double V { get; set; }
-        }
         #endregion
         #region Score Attack
-        public class SongsSARoot
-        {
-            public Dictionary<string, SA_SongDetails> SongsSA { get; set; }
-        }
+        public class SongsSARoot : Dictionary<string, SA_SongDetails> { }
 
         public class SA_SongDetails
         {
@@ -2636,6 +4557,11 @@ namespace RSMods
             public double Master { get; set; }
         }
         #endregion
+
+        public class V_List
+        {
+            public double V { get; set; }
+        }
     }
 
 }
