@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using RSMods.Twitch.EffectServer;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using Newtonsoft.Json;
 
 namespace RSMods
 {
@@ -102,15 +101,6 @@ namespace RSMods
 
             // Delete Old Backups To Save Space
             DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
-
-            //object dumpJSON = Profiles.JSON_ToObject<Profile_Sections.SongsSARoot>("97CCE6AD412B447DAC28C9DA3A0CAEB1_PRFLDB", "SongsSA");
-
-            //File.WriteAllText("output.json", JsonConvert.SerializeObject(dumpJSON, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings
-            //{
-            //    NullValueHandling = NullValueHandling.Ignore,
-            //    StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
-            //    Converters = new List<JsonConverter> { new Tools.DecimalFormatJsonConverter(6) }
-            //}));
         }
 
     #region Startup Functions

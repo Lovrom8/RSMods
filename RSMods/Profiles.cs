@@ -274,8 +274,8 @@ namespace RSMods
             using (StreamReader json = new StreamReader(memoryStream))
             {
                 string serializedSection = JsonConvert.SerializeObject(SectionToWrite);
-                string jsonHandling = JSON_Handling(profileJSON, NameOfSection, serializedSection);
-                string jsonToUTF8 = FormatJSONForUTF8(jsonHandling);
+                string jsonHandling = JSON_Formatting(profileJSON, NameOfSection, serializedSection);
+                string jsonToUTF8 = FixJsonFormatting(jsonHandling);
                 byte[] utf8Encoding = Encoding.UTF8.GetBytes(jsonToUTF8);
                 MemoryStream utfMemStream = new MemoryStream(utf8Encoding);
                 using (FileStream profile = new FileStream(pathToOutput, FileMode.Create))
@@ -316,7 +316,7 @@ namespace RSMods
         }
         #endregion
         #region Utils
-        private static string FormatJSONForUTF8(string json)
+        private static string FixJsonFormatting(string json)
         {
             json = json.Replace("\u0020\u0020", String.Empty); // Get rid of indents
             json = json.Replace("\u0022\u003A", "\u0022\u0020\u003A"); // `":` -> `" :`
@@ -352,8 +352,72 @@ namespace RSMods
             return result;
         }
 
-        // I'm gonna be 100% honest. I don't know what this does.... At all...
-        private static string JSON_Handling(string jsonProfile, string nameOfSection, string serializedSection)
+        public static T JSON_ToObject<T>(string profilePath, Profile_Sections.Sections section) 
+        {
+            string sectionName = String.Empty;
+
+            switch (section)
+            {
+                case Profile_Sections.Sections.Missions:
+                    sectionName = "Mission";
+                    break;
+                case Profile_Sections.Sections.PlayNexts:
+                    sectionName = "Playnexts";
+                    break;
+                case Profile_Sections.Sections.RecentlyPlayedVenues:
+                    sectionName = "RecentlyPlayedVenues";
+                    break;
+                case Profile_Sections.Sections.Chords:
+                    sectionName = "Chords";
+                    break;
+                case Profile_Sections.Sections.Lessons:
+                    sectionName = "GE";
+                    break;
+                case Profile_Sections.Sections.NSP_PlayListRoot2:
+                    sectionName = "NSP_PlayListRoot2";
+                    break;
+                case Profile_Sections.Sections.Options:
+                    sectionName = "Options";
+                    break;
+                case Profile_Sections.Sections.Guitarcade:
+                    sectionName = "Guitarcade";
+                    break;
+                case Profile_Sections.Sections.SongLists:
+                    sectionName = "SongListsRoot";
+                    break;
+                case Profile_Sections.Sections.FavoritesList:
+                    sectionName = "FavoritesListRoot";
+                    break;
+                case Profile_Sections.Sections.DD:
+                    sectionName = "DynamicDifficulty";
+                    break;
+                case Profile_Sections.Sections.Prizes:
+                    sectionName = "Prizes";
+                    break;
+                case Profile_Sections.Sections.LearnASong:
+                    sectionName = "Songs";
+                    break;
+                case Profile_Sections.Sections.SessionMode:
+                    sectionName = "SessionMode";
+                    break;
+                case Profile_Sections.Sections.Achievements:
+                    sectionName = "Achievements";
+                    break;
+                case Profile_Sections.Sections.Stats:
+                    sectionName = "Stats";
+                    break;
+                case Profile_Sections.Sections.ScoreAttack:
+                    sectionName = "SongsSA";
+                    break;
+            }
+
+            if (sectionName == String.Empty)
+                return default(T);
+
+            return JSON_ToObject<T>(profilePath, sectionName);
+        }
+
+        private static string JSON_Formatting(string jsonProfile, string nameOfSection, string serializedSection)
         {
             object argument = JsonConvert.DeserializeObject(serializedSection);
             object profile = JsonConvert.DeserializeObject(jsonProfile);
@@ -448,6 +512,28 @@ namespace RSMods
     #region Profile Section
     public class Profile_Sections
     {
+        #region Enum
+        public enum Sections
+        {
+            Missions,
+            PlayNexts,
+            RecentlyPlayedVenues,
+            Chords,
+            Lessons,
+            NSP_PlayListRoot2,
+            Options,
+            Guitarcade,
+            SongLists,
+            FavoritesList,
+            DD,
+            Prizes,
+            LearnASong,
+            SessionMode,
+            Achievements,
+            Stats,
+            ScoreAttack
+        }
+        #endregion
         #region Missions
         public class Mission
         {
@@ -4530,7 +4616,7 @@ namespace RSMods
 
         #endregion
         #region Score Attack
-        public class SongsSARoot : Dictionary<string, SA_SongDetails> { }
+        public class SongsSA : Dictionary<string, SA_SongDetails> { }
 
         public class SA_SongDetails
         {
