@@ -355,16 +355,16 @@ namespace RSMods
             object argument = JsonConvert.DeserializeObject(serializedSection);
             object profile = JsonConvert.DeserializeObject(jsonProfile);
 
-            if (Tools.CSharpArgumentInfo.callSite_2 == null)
+            if (Tools.CSharpArgumentInfo.callSite_0 == null)
             {
-                Tools.CSharpArgumentInfo.callSite_2 = CallSite<Func<CallSite, object, string, object, object>>.Create(BinderSetIndex(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[]
+                Tools.CSharpArgumentInfo.callSite_0 = CallSite<Func<CallSite, object, string, object, object>>.Create(BinderSetIndex(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[]
                 {
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                 }));
             }
-            Tools.CSharpArgumentInfo.callSite_2.Target(Tools.CSharpArgumentInfo.callSite_2, profile, nameOfSection, argument);
+            Tools.CSharpArgumentInfo.callSite_0.Target(Tools.CSharpArgumentInfo.callSite_0, profile, nameOfSection, argument);
 
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
             {
@@ -374,21 +374,21 @@ namespace RSMods
                 Converters = new List<JsonConverter> { new Tools.DecimalFormatJsonConverter(6) }
             };
 
-            if (Tools.CSharpArgumentInfo.callSite_3 == null)
-                Tools.CSharpArgumentInfo.callSite_3 = CallSite<Func<CallSite, object, string>>.Create(BinderConvert(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(string).TypeHandle), Type.GetTypeFromHandle(typeof(Profiles).TypeHandle)));
+            if (Tools.CSharpArgumentInfo.callSite_1 == null)
+                Tools.CSharpArgumentInfo.callSite_1 = CallSite<Func<CallSite, object, string>>.Create(BinderConvert(CSharpBinderFlags.None, Type.GetTypeFromHandle(typeof(string).TypeHandle), Type.GetTypeFromHandle(typeof(Profiles).TypeHandle)));
 
-            Func<CallSite, object, string> target = Tools.CSharpArgumentInfo.callSite_3.Target;
-            CallSite callsite_3_temp = Tools.CSharpArgumentInfo.callSite_3;
+            Func<CallSite, object, string> target = Tools.CSharpArgumentInfo.callSite_1.Target;
+            CallSite callsite_3_temp = Tools.CSharpArgumentInfo.callSite_1;
 
-            if (Tools.CSharpArgumentInfo.callSite_4 == null)
+            if (Tools.CSharpArgumentInfo.callSite_2 == null)
             {
-                Tools.CSharpArgumentInfo.callSite_4 = CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>>.Create(BinderInvokeMember(CSharpBinderFlags.None, "SerializeObject", Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[] {
+                Tools.CSharpArgumentInfo.callSite_2 = CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>>.Create(BinderInvokeMember(CSharpBinderFlags.None, "SerializeObject", Type.GetTypeFromHandle(typeof(Profiles).TypeHandle), new Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo[] {
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType | CSharpArgumentInfoFlags.IsStaticType),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.None),
                     CreateCSharpArgumentInfo(CSharpArgumentInfoFlags.UseCompileTimeType)
                 }));
             }
-            return target(callsite_3_temp, Tools.CSharpArgumentInfo.callSite_4.Target(Tools.CSharpArgumentInfo.callSite_4, Type.GetTypeFromHandle(typeof(JsonConvert).TypeHandle), profile, serializerSettings));
+            return target(callsite_3_temp, Tools.CSharpArgumentInfo.callSite_2.Target(Tools.CSharpArgumentInfo.callSite_2, Type.GetTypeFromHandle(typeof(JsonConvert).TypeHandle), profile, serializerSettings));
         }
 
         private static CallSiteBinder BinderSetIndex(CSharpBinderFlags flags, Type userProfileType, IEnumerable<Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo> cSharpArgumentInfo) => Binder.SetIndex(flags, userProfileType, cSharpArgumentInfo);
@@ -404,20 +404,9 @@ namespace RSMods
     {
         public static class CSharpArgumentInfo
         {
-            // Token: 0x04000051 RID: 81
             public static CallSite<Func<CallSite, object, string, object, object>> callSite_0;
-
-            // Token: 0x04000052 RID: 82
-            public static CallSite<Func<CallSite, object, string, object>> callSite_1;
-
-            // Token: 0x04000053 RID: 83
-            public static CallSite<Func<CallSite, object, string, object, object>> callSite_2;
-
-            // Token: 0x04000054 RID: 84
-            public static CallSite<Func<CallSite, object, string>> callSite_3;
-
-            // Token: 0x04000055 RID: 85
-            public static CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>> callSite_4;
+            public static CallSite<Func<CallSite, object, string>> callSite_1;
+            public static CallSite<Func<CallSite, Type, object, JsonSerializerSettings, object>> callSite_2;
         }
 
         public class DecimalFormatJsonConverter : JsonConverter // Taken from stack overflow: https://stackoverflow.com/a/24052157 | Still isn't perfect (removes excessive 0's)
