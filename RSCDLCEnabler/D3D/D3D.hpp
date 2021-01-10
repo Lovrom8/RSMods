@@ -156,6 +156,7 @@ inline std::vector<ThiccMesh> tuningLetters{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 } };
 inline std::vector<ThiccMesh> greenScreenWallMesh{ { 92, 2, 6, 0, 0, 4, 2, 8, 9 } };
 inline std::vector<ThiccMesh> nostrings{ { 12, 1536, 1199, 0, 0, 4, 2, 9, 4 } };
 inline std::vector<ThiccMesh> drunkMode{ { 12, 2, 4, 0, 0, 4, 2, 12, 2 } };
+inline std::vector<ThiccMesh> preSongTunerFog{ { 12, 2, 4, 0, 0, 4, 2, 4, 2 } };
 
 // All the single (thin) ladies
 inline std::vector<Mesh> noteHighway{ { 32, 2, 4} };
