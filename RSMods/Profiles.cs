@@ -512,7 +512,6 @@ namespace RSMods
     #region Profile Section
     public class Profile_Sections
     {
-        #region Enum
         public enum Sections
         {
             Missions,
@@ -533,7 +532,45 @@ namespace RSMods
             Stats,
             ScoreAttack
         }
-        #endregion
+
+        public Mission Loaded_Missions;
+        public Playnexts Loaded_Playnexts;
+        public RecentlyPlayedVenues Loaded_RecentlyPlayedVenues;
+        public Chords Loaded_Chords;
+        public NSP_PlayListRoot2 Loaded_NSPPlaylistRoot2;
+        public Options Loaded_Options;
+        public Guitarcade Loaded_Guitarcade;
+        public SongListsRoot Loaded_Songlists;
+        public FavoritesListRoot Loaded_FavoritesList;
+        public DynamicDifficulty Loaded_DynamicDifficulty;
+        public Prizes Loaded_Prizes;
+        public Songs Loaded_LearnASong;
+        public SessionMode Loaded_SessionMode;
+        public Achievements Loaded_Achievements;
+        public Stats Loaded_Stats;
+        public SongsSA Loaded_ScoreAttack;
+
+
+        public void LoadProfileSections(string profilePath)
+        {
+            Loaded_Missions = Profiles.JSON_ToObject<Mission>(profilePath, Sections.Missions);
+            Loaded_Playnexts = Profiles.JSON_ToObject<Playnexts>(profilePath, Sections.PlayNexts);
+            Loaded_RecentlyPlayedVenues = Profiles.JSON_ToObject<RecentlyPlayedVenues>(profilePath, Sections.RecentlyPlayedVenues);
+            Loaded_Chords = Profiles.JSON_ToObject<Chords>(profilePath, Sections.Chords);
+            Loaded_NSPPlaylistRoot2 = Profiles.JSON_ToObject<NSP_PlayListRoot2>(profilePath, Sections.NSP_PlayListRoot2);
+            Loaded_Options = Profiles.JSON_ToObject<Options>(profilePath, Sections.Options);
+            Loaded_Guitarcade = Profiles.JSON_ToObject<Guitarcade>(profilePath, Sections.Guitarcade);
+            Loaded_Songlists = Profiles.JSON_ToObject<SongListsRoot>(profilePath, Sections.SongLists);
+            Loaded_FavoritesList = Profiles.JSON_ToObject<FavoritesListRoot>(profilePath, Sections.FavoritesList);
+            Loaded_DynamicDifficulty = Profiles.JSON_ToObject<DynamicDifficulty>(profilePath, Sections.DD);
+            Loaded_Prizes = Profiles.JSON_ToObject<Prizes>(profilePath, Sections.Prizes);
+            Loaded_LearnASong = Profiles.JSON_ToObject<Songs>(profilePath, Sections.LearnASong);
+            Loaded_SessionMode = Profiles.JSON_ToObject<SessionMode>(profilePath, Sections.SessionMode);
+            Loaded_Achievements = Profiles.JSON_ToObject<Achievements>(profilePath, Sections.Achievements);
+            Loaded_Stats = Profiles.JSON_ToObject<Stats>(profilePath, Sections.Stats);
+            Loaded_ScoreAttack = Profiles.JSON_ToObject<SongsSA>(profilePath, Sections.ScoreAttack);
+        }
+
         #region Missions
         public class Mission
         {
