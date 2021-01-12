@@ -2396,6 +2396,7 @@ namespace RSMods
     #region Profiles
 
         Dictionary<string, string> DLCKeyToSongName = new Dictionary<string, string>();
+        private string currentUnpackedProfile = String.Empty;
 
         private void Profile_LoadSongs(object sender, EventArgs e)
         {
@@ -2411,6 +2412,74 @@ namespace RSMods
                 listBox_Profile_Songlists.Items.Add(ReadSettings.ProcessSettings(songlistName));
 
             groupBox_Profile_SongLists.Visible = true;
+        }
+
+        private void Profile_SelectSongList(object sender, EventArgs e)
+        {
+
+            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
+            {
+                MessageBox.Show("Make sure to select a songlist AND a profile.");
+                return;
+            }
+
+            listBox_Profile_SongsInSelectedSonglist.Visible = true;
+            label_Profile_SongsInSonglist.Visible = true;
+
+            // Make sure we aren't unpacking the same profile over, and over, and over again.
+            if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+            {
+                currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+            }
+
+            string[] DLCKeysInSonglist = Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].ToArray();
+
+            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
+
+            foreach (string dlcKey in DLCKeysInSonglist)
+            {
+                if (DLCKeyToSongName.TryGetValue(dlcKey, out string songName)) // Only show the songs that are still in the user's game.
+                    listBox_Profile_SongsInSelectedSonglist.Items.Add(songName);
+            }
+        }
+
+        private void OpenProfileFromProfileName(string profileName) => Profile_Sections.LoadProfileSections(GetProfilePathFromName(profileName));
+
+        private string GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
+
+        private void Profiles_ClearSongList(object sender, EventArgs e)
+        {
+            Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Clear();
+            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
+        }
+
+        private void Profiles_AddToSonglist(object sender, EventArgs e)
+        {
+            if (listBox_Profile_AvailableSongs.SelectedIndex > -1 && listBox_Profile_AvailableProfiles.SelectedIndex > -1 && !listBox_Profile_SongsInSelectedSonglist.Items.Contains(listBox_Profile_AvailableSongs.SelectedItem.ToString()))
+            {
+                Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Add(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profile_AvailableSongs.SelectedItem.ToString()).Key);
+                listBox_Profile_SongsInSelectedSonglist.Items.Add(listBox_Profile_AvailableSongs.SelectedItem.ToString());
+            }
+                
+        }
+
+        private void Profiles_RemoeFromSonglist(object sender, EventArgs e)
+        {
+            if (listBox_Profile_SongsInSelectedSonglist.SelectedIndex < 0)
+                return;
+
+            Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Remove(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profile_SongsInSelectedSonglist.SelectedItem.ToString()).Key);
+            listBox_Profile_SongsInSelectedSonglist.Items.Remove(listBox_Profile_SongsInSelectedSonglist.SelectedItem.ToString());
+        }
+
+        private void Profiles_SaveSonglists(object sender, EventArgs e)
+        {
+            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
+                return;
+
+            Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profile_AvailableProfiles.SelectedItem.ToString()));
+            MessageBox.Show("Your profile has been saved!");
         }
 
 
@@ -2432,45 +2501,6 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
-        }
-
-        private string profileName_Unpacked = String.Empty;
-
-        private void listBox_Profile_Songlists_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
-            {
-                MessageBox.Show("Make sure to select a songlist AND a profile.");
-                return;
-            }
-                
-            listBox_Profile_SongsInSelectedSonglist.Visible = true;
-            label_Profile_SongsInSonglist.Visible = true;
-
-            // Make sure we aren't unpacking the same profile over, and over, and over again.
-            if (profileName_Unpacked != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
-            {
-                profileName_Unpacked = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
-            }
-
-            string[] DLCKeysInSonglist = Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].ToArray();
-
-            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
-
-            foreach (string dlcKey in DLCKeysInSonglist)
-            {
-                if(DLCKeyToSongName.TryGetValue(dlcKey, out string songName)) // Only show the songs that are still in the user's game.
-                    listBox_Profile_SongsInSelectedSonglist.Items.Add(songName);
-            }
-        }
-
-        private void OpenProfileFromProfileName(string profileName)
-        {
-            string extension = "_PRFLDB";
-
-            Profile_Sections.LoadProfileSections(Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + extension));
         }
     }
 

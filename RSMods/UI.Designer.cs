@@ -368,8 +368,19 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
+            this.label_Profile_AvailableProfiles = new System.Windows.Forms.Label();
+            this.groupBox_Profile_SongLists = new System.Windows.Forms.GroupBox();
+            this.button_Profile_SaveSonglist = new System.Windows.Forms.Button();
+            this.button_Profiles_ClearSonglist = new System.Windows.Forms.Button();
+            this.button_Profiles_RemoveFromSonglist = new System.Windows.Forms.Button();
+            this.button_Profiles_AddToSonglist = new System.Windows.Forms.Button();
+            this.label_Profile_SongsInSonglist = new System.Windows.Forms.Label();
+            this.label_Profile_AvailableSongs = new System.Windows.Forms.Label();
+            this.label_Profile_Songlists = new System.Windows.Forms.Label();
             this.listBox_Profile_Songlists = new System.Windows.Forms.ListBox();
             this.listBox_Profile_AvailableSongs = new System.Windows.Forms.ListBox();
+            this.listBox_Profile_SongsInSelectedSonglist = new System.Windows.Forms.ListBox();
+            this.listBox_Profile_AvailableProfiles = new System.Windows.Forms.ListBox();
             this.button_Profile_LoadSongs = new System.Windows.Forms.Button();
             this.progressBar_Profile_LoadPsarcs = new System.Windows.Forms.ProgressBar();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
@@ -382,13 +393,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.listBox_Profile_SongsInSelectedSonglist = new System.Windows.Forms.ListBox();
-            this.listBox_Profile_AvailableProfiles = new System.Windows.Forms.ListBox();
-            this.groupBox_Profile_SongLists = new System.Windows.Forms.GroupBox();
-            this.label_Profile_Songlists = new System.Windows.Forms.Label();
-            this.label_Profile_AvailableSongs = new System.Windows.Forms.Label();
-            this.label_Profile_SongsInSonglist = new System.Windows.Forms.Label();
-            this.label_Profile_AvailableProfiles = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -465,9 +469,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_Profiles.SuspendLayout();
+            this.groupBox_Profile_SongLists.SuspendLayout();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
-            this.groupBox_Profile_SongLists.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -4663,6 +4667,103 @@
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
             // 
+            // label_Profile_AvailableProfiles
+            // 
+            this.label_Profile_AvailableProfiles.AutoSize = true;
+            this.label_Profile_AvailableProfiles.Location = new System.Drawing.Point(13, 28);
+            this.label_Profile_AvailableProfiles.Name = "label_Profile_AvailableProfiles";
+            this.label_Profile_AvailableProfiles.Size = new System.Drawing.Size(66, 13);
+            this.label_Profile_AvailableProfiles.TabIndex = 8;
+            this.label_Profile_AvailableProfiles.Text = "Your Profiles";
+            // 
+            // groupBox_Profile_SongLists
+            // 
+            this.groupBox_Profile_SongLists.Controls.Add(this.button_Profile_SaveSonglist);
+            this.groupBox_Profile_SongLists.Controls.Add(this.button_Profiles_ClearSonglist);
+            this.groupBox_Profile_SongLists.Controls.Add(this.button_Profiles_RemoveFromSonglist);
+            this.groupBox_Profile_SongLists.Controls.Add(this.button_Profiles_AddToSonglist);
+            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_SongsInSonglist);
+            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_AvailableSongs);
+            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_Songlists);
+            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_Songlists);
+            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_AvailableSongs);
+            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_SongsInSelectedSonglist);
+            this.groupBox_Profile_SongLists.Location = new System.Drawing.Point(450, 19);
+            this.groupBox_Profile_SongLists.Name = "groupBox_Profile_SongLists";
+            this.groupBox_Profile_SongLists.Size = new System.Drawing.Size(678, 304);
+            this.groupBox_Profile_SongLists.TabIndex = 6;
+            this.groupBox_Profile_SongLists.TabStop = false;
+            this.groupBox_Profile_SongLists.Text = "Songlists";
+            this.groupBox_Profile_SongLists.Visible = false;
+            // 
+            // button_Profile_SaveSonglist
+            // 
+            this.button_Profile_SaveSonglist.Location = new System.Drawing.Point(6, 275);
+            this.button_Profile_SaveSonglist.Name = "button_Profile_SaveSonglist";
+            this.button_Profile_SaveSonglist.Size = new System.Drawing.Size(98, 23);
+            this.button_Profile_SaveSonglist.TabIndex = 11;
+            this.button_Profile_SaveSonglist.Text = "Save Songlists";
+            this.button_Profile_SaveSonglist.UseVisualStyleBackColor = true;
+            this.button_Profile_SaveSonglist.Click += new System.EventHandler(this.Profiles_SaveSonglists);
+            // 
+            // button_Profiles_ClearSonglist
+            // 
+            this.button_Profiles_ClearSonglist.Location = new System.Drawing.Point(574, 257);
+            this.button_Profiles_ClearSonglist.Name = "button_Profiles_ClearSonglist";
+            this.button_Profiles_ClearSonglist.Size = new System.Drawing.Size(97, 23);
+            this.button_Profiles_ClearSonglist.TabIndex = 10;
+            this.button_Profiles_ClearSonglist.Text = "Clear Songlist";
+            this.button_Profiles_ClearSonglist.UseVisualStyleBackColor = true;
+            this.button_Profiles_ClearSonglist.Click += new System.EventHandler(this.Profiles_ClearSongList);
+            // 
+            // button_Profiles_RemoveFromSonglist
+            // 
+            this.button_Profiles_RemoveFromSonglist.Location = new System.Drawing.Point(574, 186);
+            this.button_Profiles_RemoveFromSonglist.Name = "button_Profiles_RemoveFromSonglist";
+            this.button_Profiles_RemoveFromSonglist.Size = new System.Drawing.Size(98, 34);
+            this.button_Profiles_RemoveFromSonglist.TabIndex = 9;
+            this.button_Profiles_RemoveFromSonglist.Text = "Remove From Songlist";
+            this.button_Profiles_RemoveFromSonglist.UseVisualStyleBackColor = true;
+            this.button_Profiles_RemoveFromSonglist.Click += new System.EventHandler(this.Profiles_RemoeFromSonglist);
+            // 
+            // button_Profiles_AddToSonglist
+            // 
+            this.button_Profiles_AddToSonglist.Location = new System.Drawing.Point(574, 62);
+            this.button_Profiles_AddToSonglist.Name = "button_Profiles_AddToSonglist";
+            this.button_Profiles_AddToSonglist.Size = new System.Drawing.Size(97, 23);
+            this.button_Profiles_AddToSonglist.TabIndex = 8;
+            this.button_Profiles_AddToSonglist.Text = "Add To Songlist";
+            this.button_Profiles_AddToSonglist.UseVisualStyleBackColor = true;
+            this.button_Profiles_AddToSonglist.Click += new System.EventHandler(this.Profiles_AddToSonglist);
+            // 
+            // label_Profile_SongsInSonglist
+            // 
+            this.label_Profile_SongsInSonglist.AutoSize = true;
+            this.label_Profile_SongsInSonglist.Location = new System.Drawing.Point(236, 170);
+            this.label_Profile_SongsInSonglist.Name = "label_Profile_SongsInSonglist";
+            this.label_Profile_SongsInSonglist.Size = new System.Drawing.Size(112, 13);
+            this.label_Profile_SongsInSonglist.TabIndex = 7;
+            this.label_Profile_SongsInSonglist.Text = "Songs In This Songlist";
+            this.label_Profile_SongsInSonglist.Visible = false;
+            // 
+            // label_Profile_AvailableSongs
+            // 
+            this.label_Profile_AvailableSongs.AutoSize = true;
+            this.label_Profile_AvailableSongs.Location = new System.Drawing.Point(236, 28);
+            this.label_Profile_AvailableSongs.Name = "label_Profile_AvailableSongs";
+            this.label_Profile_AvailableSongs.Size = new System.Drawing.Size(76, 13);
+            this.label_Profile_AvailableSongs.TabIndex = 6;
+            this.label_Profile_AvailableSongs.Text = "All Your Songs";
+            // 
+            // label_Profile_Songlists
+            // 
+            this.label_Profile_Songlists.AutoSize = true;
+            this.label_Profile_Songlists.Location = new System.Drawing.Point(20, 44);
+            this.label_Profile_Songlists.Name = "label_Profile_Songlists";
+            this.label_Profile_Songlists.Size = new System.Drawing.Size(74, 13);
+            this.label_Profile_Songlists.TabIndex = 5;
+            this.label_Profile_Songlists.Text = "Your Songlists";
+            // 
             // listBox_Profile_Songlists
             // 
             this.listBox_Profile_Songlists.FormattingEnabled = true;
@@ -4670,7 +4771,7 @@
             this.listBox_Profile_Songlists.Name = "listBox_Profile_Songlists";
             this.listBox_Profile_Songlists.Size = new System.Drawing.Size(185, 173);
             this.listBox_Profile_Songlists.TabIndex = 3;
-            this.listBox_Profile_Songlists.SelectedIndexChanged += new System.EventHandler(this.listBox_Profile_Songlists_SelectedIndexChanged);
+            this.listBox_Profile_Songlists.SelectedIndexChanged += new System.EventHandler(this.Profile_SelectSongList);
             // 
             // listBox_Profile_AvailableSongs
             // 
@@ -4680,6 +4781,24 @@
             this.listBox_Profile_AvailableSongs.Size = new System.Drawing.Size(329, 108);
             this.listBox_Profile_AvailableSongs.Sorted = true;
             this.listBox_Profile_AvailableSongs.TabIndex = 2;
+            // 
+            // listBox_Profile_SongsInSelectedSonglist
+            // 
+            this.listBox_Profile_SongsInSelectedSonglist.FormattingEnabled = true;
+            this.listBox_Profile_SongsInSelectedSonglist.Location = new System.Drawing.Point(239, 186);
+            this.listBox_Profile_SongsInSelectedSonglist.Name = "listBox_Profile_SongsInSelectedSonglist";
+            this.listBox_Profile_SongsInSelectedSonglist.Size = new System.Drawing.Size(329, 95);
+            this.listBox_Profile_SongsInSelectedSonglist.Sorted = true;
+            this.listBox_Profile_SongsInSelectedSonglist.TabIndex = 4;
+            this.listBox_Profile_SongsInSelectedSonglist.Visible = false;
+            // 
+            // listBox_Profile_AvailableProfiles
+            // 
+            this.listBox_Profile_AvailableProfiles.FormattingEnabled = true;
+            this.listBox_Profile_AvailableProfiles.Location = new System.Drawing.Point(16, 51);
+            this.listBox_Profile_AvailableProfiles.Name = "listBox_Profile_AvailableProfiles";
+            this.listBox_Profile_AvailableProfiles.Size = new System.Drawing.Size(204, 160);
+            this.listBox_Profile_AvailableProfiles.TabIndex = 5;
             // 
             // button_Profile_LoadSongs
             // 
@@ -4802,77 +4921,6 @@
             this.label_SettingsSaved.TabIndex = 52;
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
-            // 
-            // listBox_Profile_SongsInSelectedSonglist
-            // 
-            this.listBox_Profile_SongsInSelectedSonglist.FormattingEnabled = true;
-            this.listBox_Profile_SongsInSelectedSonglist.Location = new System.Drawing.Point(239, 186);
-            this.listBox_Profile_SongsInSelectedSonglist.Name = "listBox_Profile_SongsInSelectedSonglist";
-            this.listBox_Profile_SongsInSelectedSonglist.Size = new System.Drawing.Size(329, 95);
-            this.listBox_Profile_SongsInSelectedSonglist.Sorted = true;
-            this.listBox_Profile_SongsInSelectedSonglist.TabIndex = 4;
-            this.listBox_Profile_SongsInSelectedSonglist.Visible = false;
-            // 
-            // listBox_Profile_AvailableProfiles
-            // 
-            this.listBox_Profile_AvailableProfiles.FormattingEnabled = true;
-            this.listBox_Profile_AvailableProfiles.Location = new System.Drawing.Point(16, 51);
-            this.listBox_Profile_AvailableProfiles.Name = "listBox_Profile_AvailableProfiles";
-            this.listBox_Profile_AvailableProfiles.Size = new System.Drawing.Size(204, 160);
-            this.listBox_Profile_AvailableProfiles.TabIndex = 5;
-            // 
-            // groupBox_Profile_SongLists
-            // 
-            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_SongsInSonglist);
-            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_AvailableSongs);
-            this.groupBox_Profile_SongLists.Controls.Add(this.label_Profile_Songlists);
-            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_Songlists);
-            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_AvailableSongs);
-            this.groupBox_Profile_SongLists.Controls.Add(this.listBox_Profile_SongsInSelectedSonglist);
-            this.groupBox_Profile_SongLists.Location = new System.Drawing.Point(529, 28);
-            this.groupBox_Profile_SongLists.Name = "groupBox_Profile_SongLists";
-            this.groupBox_Profile_SongLists.Size = new System.Drawing.Size(599, 304);
-            this.groupBox_Profile_SongLists.TabIndex = 6;
-            this.groupBox_Profile_SongLists.TabStop = false;
-            this.groupBox_Profile_SongLists.Text = "Songlists";
-            this.groupBox_Profile_SongLists.Visible = false;
-            // 
-            // label_Profile_Songlists
-            // 
-            this.label_Profile_Songlists.AutoSize = true;
-            this.label_Profile_Songlists.Location = new System.Drawing.Point(20, 44);
-            this.label_Profile_Songlists.Name = "label_Profile_Songlists";
-            this.label_Profile_Songlists.Size = new System.Drawing.Size(74, 13);
-            this.label_Profile_Songlists.TabIndex = 5;
-            this.label_Profile_Songlists.Text = "Your Songlists";
-            // 
-            // label_Profile_AvailableSongs
-            // 
-            this.label_Profile_AvailableSongs.AutoSize = true;
-            this.label_Profile_AvailableSongs.Location = new System.Drawing.Point(239, 25);
-            this.label_Profile_AvailableSongs.Name = "label_Profile_AvailableSongs";
-            this.label_Profile_AvailableSongs.Size = new System.Drawing.Size(76, 13);
-            this.label_Profile_AvailableSongs.TabIndex = 6;
-            this.label_Profile_AvailableSongs.Text = "All Your Songs";
-            // 
-            // label_Profile_SongsInSonglist
-            // 
-            this.label_Profile_SongsInSonglist.AutoSize = true;
-            this.label_Profile_SongsInSonglist.Location = new System.Drawing.Point(239, 170);
-            this.label_Profile_SongsInSonglist.Name = "label_Profile_SongsInSonglist";
-            this.label_Profile_SongsInSonglist.Size = new System.Drawing.Size(112, 13);
-            this.label_Profile_SongsInSonglist.TabIndex = 7;
-            this.label_Profile_SongsInSonglist.Text = "Songs In This Songlist";
-            this.label_Profile_SongsInSonglist.Visible = false;
-            // 
-            // label_Profile_AvailableProfiles
-            // 
-            this.label_Profile_AvailableProfiles.AutoSize = true;
-            this.label_Profile_AvailableProfiles.Location = new System.Drawing.Point(13, 28);
-            this.label_Profile_AvailableProfiles.Name = "label_Profile_AvailableProfiles";
-            this.label_Profile_AvailableProfiles.Size = new System.Drawing.Size(66, 13);
-            this.label_Profile_AvailableProfiles.TabIndex = 8;
-            this.label_Profile_AvailableProfiles.Text = "Your Profiles";
             // 
             // MainForm
             // 
@@ -4999,12 +5047,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).EndInit();
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
+            this.groupBox_Profile_SongLists.ResumeLayout(false);
+            this.groupBox_Profile_SongLists.PerformLayout();
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
-            this.groupBox_Profile_SongLists.ResumeLayout(false);
-            this.groupBox_Profile_SongLists.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5374,6 +5422,10 @@
         private System.Windows.Forms.Label label_Profile_AvailableSongs;
         private System.Windows.Forms.Label label_Profile_Songlists;
         private System.Windows.Forms.Label label_Profile_AvailableProfiles;
+        private System.Windows.Forms.Button button_Profiles_RemoveFromSonglist;
+        private System.Windows.Forms.Button button_Profiles_AddToSonglist;
+        private System.Windows.Forms.Button button_Profiles_ClearSonglist;
+        private System.Windows.Forms.Button button_Profile_SaveSonglist;
     }
 }
 
