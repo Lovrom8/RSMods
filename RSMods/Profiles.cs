@@ -533,25 +533,25 @@ namespace RSMods
             ScoreAttack
         }
 
-        public Mission Loaded_Missions;
-        public Playnexts Loaded_Playnexts;
-        public RecentlyPlayedVenues Loaded_RecentlyPlayedVenues;
-        public Chords Loaded_Chords;
-        public NSP_PlayListRoot2 Loaded_NSPPlaylistRoot2;
-        public Options Loaded_Options;
-        public Guitarcade Loaded_Guitarcade;
-        public SongListsRoot Loaded_Songlists;
-        public FavoritesListRoot Loaded_FavoritesList;
-        public DynamicDifficulty Loaded_DynamicDifficulty;
-        public Prizes Loaded_Prizes;
-        public Songs Loaded_LearnASong;
-        public SessionMode Loaded_SessionMode;
-        public Achievements Loaded_Achievements;
-        public Stats Loaded_Stats;
-        public SongsSA Loaded_ScoreAttack;
+        public static Mission Loaded_Missions;
+        public static Playnexts Loaded_Playnexts;
+        public static RecentlyPlayedVenues Loaded_RecentlyPlayedVenues;
+        public static Chords Loaded_Chords;
+        public static NSP_PlayListRoot2 Loaded_NSPPlaylistRoot2;
+        public static Options Loaded_Options;
+        public static Guitarcade Loaded_Guitarcade;
+        public static SongListsRoot Loaded_Songlists;
+        public static FavoritesListRoot Loaded_FavoritesList;
+        public static DynamicDifficulty Loaded_DynamicDifficulty;
+        public static Prizes Loaded_Prizes;
+        public static Songs Loaded_LearnASong;
+        public static SessionMode Loaded_SessionMode;
+        public static Achievements Loaded_Achievements;
+        public static Stats Loaded_Stats;
+        public static SongsSA Loaded_ScoreAttack;
 
 
-        public void LoadProfileSections(string profilePath)
+        public static void LoadProfileSections(string profilePath)
         {
             Loaded_Missions = Profiles.JSON_ToObject<Mission>(profilePath, Sections.Missions);
             Loaded_Playnexts = Profiles.JSON_ToObject<Playnexts>(profilePath, Sections.PlayNexts);

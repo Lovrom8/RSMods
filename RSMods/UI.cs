@@ -201,7 +201,10 @@ namespace RSMods
         private void LoadRocksmithProfiles()
         {
             foreach (KeyValuePair<string, string> profileData in Profiles.AvailableProfiles())
+            {
                 listBox_AutoLoadProfiles.Items.Add(profileData.Key);
+                listBox_Profile_AvailableProfiles.Items.Add(profileData.Key);
+            }    
         }
 
         private void DeleteOldBackups(int maxAmountOfBackups)
@@ -886,6 +889,10 @@ namespace RSMods
                         break;
                     };
                 }
+
+                listBox_Profile_Songlists.Items.Clear();
+                foreach (string songlistName in Dictionaries.SongListIndexToINISetting)
+                    listBox_Profile_Songlists.Items.Add(ReadSettings.ProcessSettings(songlistName));
             }
 
             // Mod Keybindings
@@ -2385,7 +2392,29 @@ namespace RSMods
         // Network Settings
         private void Rocksmith_UseProxy(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.UseProxyIdentifier, checkBox_Rocksmith_UseProxy.Checked.ToString().ToLower());
 
-#endregion
+        #endregion
+    #region Profiles
+
+        Dictionary<string, string> DLCKeyToSongName = new Dictionary<string, string>();
+
+        private void Profile_LoadSongs(object sender, EventArgs e)
+        {
+            listBox_Profile_AvailableSongs.Items.Clear();
+            listBox_Profile_Songlists.Items.Clear();
+
+            DLCKeyToSongName = SongManager.DLCKeyToSongName(progressBar_Profile_LoadPsarcs);
+
+            foreach (KeyValuePair<string, string> song in DLCKeyToSongName)
+                listBox_Profile_AvailableSongs.Items.Add(song.Value);
+
+            foreach (string songlistName in Dictionaries.SongListIndexToINISetting)
+                listBox_Profile_Songlists.Items.Add(ReadSettings.ProcessSettings(songlistName));
+
+            groupBox_Profile_SongLists.Visible = true;
+        }
+
+
+    #endregion
     #region Midi
 
         private void LoadMidiDeviceNames(object sender, EventArgs e)
@@ -2403,6 +2432,45 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+        }
+
+        private string profileName_Unpacked = String.Empty;
+
+        private void listBox_Profile_Songlists_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
+            {
+                MessageBox.Show("Make sure to select a songlist AND a profile.");
+                return;
+            }
+                
+            listBox_Profile_SongsInSelectedSonglist.Visible = true;
+            label_Profile_SongsInSonglist.Visible = true;
+
+            // Make sure we aren't unpacking the same profile over, and over, and over again.
+            if (profileName_Unpacked != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+            {
+                profileName_Unpacked = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+            }
+
+            string[] DLCKeysInSonglist = Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].ToArray();
+
+            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
+
+            foreach (string dlcKey in DLCKeysInSonglist)
+            {
+                if(DLCKeyToSongName.TryGetValue(dlcKey, out string songName)) // Only show the songs that are still in the user's game.
+                    listBox_Profile_SongsInSelectedSonglist.Items.Add(songName);
+            }
+        }
+
+        private void OpenProfileFromProfileName(string profileName)
+        {
+            string extension = "_PRFLDB";
+
+            Profile_Sections.LoadProfileSections(Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + extension));
         }
     }
 
