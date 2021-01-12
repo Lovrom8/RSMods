@@ -39,7 +39,7 @@ namespace RSMods
                     {
                         foreach(Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement arrangement in psarc.ExtractArrangementManifests())
                         {
-                            if (!allDLCKeys.Contains(arrangement.Attributes.SongKey) && arrangement.Attributes.ArrangementType != 0) // Prevent multiple arrangements from adding the same SongKey. ArrangementType of 0 report no song name / artist
+                            if (!allDLCKeys.Contains(arrangement.Attributes.SongKey) && arrangement.Attributes.ArrangementType != 0 && arrangement.Attributes.Shipping) // Prevent multiple arrangements from adding the same SongKey. ArrangementType of 0 report no song name / artist. Shipping removes hidden demo songs.
                             {
                                 allDLCKeys.Add(arrangement.Attributes.SongKey);
                                 allSongNames.Add($"{arrangement.Attributes.ArtistName} - {arrangement.Attributes.SongName}");
