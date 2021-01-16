@@ -342,12 +342,11 @@ namespace Midi {
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 		
-		// Account for A220 and it's offsets
-		if (TrueTuning_Hertz < 260)
-			TrueTuning_Hertz = TrueTuning_Hertz * 2;
-
-		// Find Target Hertz of combined True Tuning and Drop Tuning
-		Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
+		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+		if (TrueTuning_Hertz < 260.0f)
+		    Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
+		else
+		    Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
 		// Convert Target_Hertz to Semitones(relative to A440)
 		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
@@ -392,12 +391,11 @@ namespace Midi {
 		if (DIGITECH_CHORDS_MODE)
 			offset = 42;
 
-		// Account for A220 and it's offsets
-		if (TrueTuning_Hertz < 260)
-			TrueTuning_Hertz = TrueTuning_Hertz * 2;
-
-		// Find Target Hertz of combined True Tuning and Drop Tuning
-		Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
+		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+		if (TrueTuning_Hertz < 260.0f)
+		    Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
+		else
+		    Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
 		// Convert Target_Hertz to Semitones(relative to A440)
 		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
