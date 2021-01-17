@@ -3768,10 +3768,10 @@ namespace RSMods
         public class GC_ActiveChallengesCumulative
         {
             [JsonProperty("2")]
-            public double _2 { get; set; }
+            public object _2 { get; set; }
 
             [JsonProperty("1")]
-            public double _1 { get; set; }
+            public object _1 { get; set; }
 
             [JsonProperty("0")]
             public object _0 { get; set; }
