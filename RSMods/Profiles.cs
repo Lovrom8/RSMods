@@ -3777,7 +3777,7 @@ namespace RSMods
             public object _0 { get; set; }
         }
 
-        public class GC_Chordead
+        public class GC_LevelBasedGames
         {
             public double CurrentLevel { get; set; }
             public double LevelsUnlockedChapterScreen { get; set; }
@@ -3796,16 +3796,16 @@ namespace RSMods
             public GC_Instrument Bass { get; set; }
         }
 
-        public class GC_32925
+        public class GC_Chordead
         {
-            public GC_Chordead Guitar { get; set; }
-            public GC_Chordead Bass { get; set; }
+            public GC_LevelBasedGames Guitar { get; set; }
+            public GC_LevelBasedGames Bass { get; set; }
         }
 
-        public class GC_32926
+        public class GC_ScaleWarriors
         {
-            public GC_Chordead Guitar { get; set; }
-            public GC_Chordead Bass { get; set; }
+            public GC_LevelBasedGames Guitar { get; set; }
+            public GC_LevelBasedGames Bass { get; set; }
         }
 
         public class GC_DucksPlus
@@ -3855,9 +3855,9 @@ namespace RSMods
             public GC_TrackAndField GC_TrackAndField { get; set; }
             public GC_NinjaSlides GC_NinjaSlides { get; set; }
             [JsonProperty("$[32925]")]
-            public GC_32925 _32925 { get; set; }
+            public GC_Chordead _32925 { get; set; }
             [JsonProperty("$[32926]")]
-            public GC_32926 _32926 { get; set; }
+            public GC_ScaleWarriors _32926 { get; set; }
             public GC_DucksPlus GC_DucksPlus { get; set; }
             public GC_TempleOfBends GC_TempleOfBends { get; set; }
             public GC_ScaleRacer GC_ScaleRacer { get; set; }
