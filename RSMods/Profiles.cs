@@ -3757,12 +3757,24 @@ namespace RSMods
         {
             public double LastTimePlayed { get; set; }
             public double HighScore { get; set; }
-            public Dictionary<string, double> ActiveChallengesCumulative { get; set; }
+            public GC_ActiveChallengesCumulative ActiveChallengesCumulative { get; set; }
             public Dictionary<string, double> ActiveChallenges { get; set; }
             public Dictionary<string, double> ActiveChallengesRandomIndex { get; set; }
             public Dictionary<string, double> CompletedChallenges { get; set; }
             public double PlayCount { get; set; }
             public double SkillLevel { get; set; }
+        }
+
+        public class GC_ActiveChallengesCumulative
+        {
+            [JsonProperty("2")]
+            public double _2 { get; set; }
+
+            [JsonProperty("1")]
+            public double _1 { get; set; }
+
+            [JsonProperty("0")]
+            public object _0 { get; set; }
         }
 
         public class GC_Chordead
@@ -3770,28 +3782,6 @@ namespace RSMods
             public double CurrentLevel { get; set; }
             public double LevelsUnlockedChapterScreen { get; set; }
             public double LevelsUnlocked { get; set; }
-        }
-
-        public class GC_Bass_ScaleRacer
-        {
-            public double LastTimePlayed { get; set; }
-            public double HighScore { get; set; }
-            public GC_Bass_ScaleRacer_Fix ActiveChallengesCumulative { get; set; }
-            public Dictionary<string, double> ActiveChallenges { get; set; }
-            public Dictionary<string, double> ActiveChallengesRandomIndex { get; set; }
-            public Dictionary<string, double> CompletedChallenges { get; set; }
-            public double PlayCount { get; set; }
-            public double SkillLevel { get; set; }
-        }
-
-        public class GC_Bass_ScaleRacer_Fix
-        {
-            [JsonProperty("2")]
-            public double _2 { get; set; }
-            [JsonProperty("1")]
-            public double _1 { get; set; }
-            [JsonProperty("0")]
-            public Dictionary<string, double> _0 { get; set; }
         }
 
         public class GC_TrackAndField
@@ -3833,7 +3823,7 @@ namespace RSMods
         public class GC_ScaleRacer
         {
             public GC_Instrument Guitar { get; set; }
-            public GC_Bass_ScaleRacer Bass { get; set; }
+            public GC_Instrument Bass { get; set; }
         }
 
         public class GC_StarChords
