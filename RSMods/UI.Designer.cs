@@ -370,6 +370,8 @@
             this.tab_Profiles = new System.Windows.Forms.TabPage();
             this.label_Profiles_WIP = new System.Windows.Forms.Label();
             this.groupBox_HideProfiles = new System.Windows.Forms.GroupBox();
+            this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
+            this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.listBox_Profile_AvailableProfiles = new System.Windows.Forms.ListBox();
             this.groupBox_Profile_SongLists = new System.Windows.Forms.GroupBox();
             this.button_Profile_SaveSonglist = new System.Windows.Forms.Button();
@@ -4679,6 +4681,8 @@
             // 
             // groupBox_HideProfiles
             // 
+            this.groupBox_HideProfiles.Controls.Add(this.button_Profiles_LockAllRewards);
+            this.groupBox_HideProfiles.Controls.Add(this.button_Profiles_UnlockAllRewards);
             this.groupBox_HideProfiles.Controls.Add(this.listBox_Profile_AvailableProfiles);
             this.groupBox_HideProfiles.Controls.Add(this.groupBox_Profile_SongLists);
             this.groupBox_HideProfiles.Controls.Add(this.label_Profile_AvailableProfiles);
@@ -4690,6 +4694,26 @@
             this.groupBox_HideProfiles.TabIndex = 9;
             this.groupBox_HideProfiles.TabStop = false;
             this.groupBox_HideProfiles.Text = "Hide Profiles";
+            // 
+            // button_Profiles_LockAllRewards
+            // 
+            this.button_Profiles_LockAllRewards.Location = new System.Drawing.Point(137, 367);
+            this.button_Profiles_LockAllRewards.Name = "button_Profiles_LockAllRewards";
+            this.button_Profiles_LockAllRewards.Size = new System.Drawing.Size(98, 23);
+            this.button_Profiles_LockAllRewards.TabIndex = 10;
+            this.button_Profiles_LockAllRewards.Text = "Lock All Rewards";
+            this.button_Profiles_LockAllRewards.UseVisualStyleBackColor = true;
+            this.button_Profiles_LockAllRewards.Click += new System.EventHandler(this.Profiles_LockAllRewards);
+            // 
+            // button_Profiles_UnlockAllRewards
+            // 
+            this.button_Profiles_UnlockAllRewards.Location = new System.Drawing.Point(21, 367);
+            this.button_Profiles_UnlockAllRewards.Name = "button_Profiles_UnlockAllRewards";
+            this.button_Profiles_UnlockAllRewards.Size = new System.Drawing.Size(110, 23);
+            this.button_Profiles_UnlockAllRewards.TabIndex = 9;
+            this.button_Profiles_UnlockAllRewards.Text = "Unlock All Rewards";
+            this.button_Profiles_UnlockAllRewards.UseVisualStyleBackColor = true;
+            this.button_Profiles_UnlockAllRewards.Click += new System.EventHandler(this.Profiles_UnlockAllRewards);
             // 
             // listBox_Profile_AvailableProfiles
             // 
@@ -5454,6 +5478,8 @@
         private System.Windows.Forms.TabPage tabPage_ModSettings_DisableUI;
         private System.Windows.Forms.Label label_Profiles_WIP;
         private System.Windows.Forms.GroupBox groupBox_HideProfiles;
+        private System.Windows.Forms.Button button_Profiles_LockAllRewards;
+        private System.Windows.Forms.Button button_Profiles_UnlockAllRewards;
     }
 }
 

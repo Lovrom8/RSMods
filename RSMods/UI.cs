@@ -2482,9 +2482,46 @@ namespace RSMods
             MessageBox.Show("Your profile has been saved!");
         }
 
+        private void Profiles_UnlockAllRewards(object sender, EventArgs e)
+        {
+            if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
+            {
+                if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                {
+                    currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                    OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                }
 
-    #endregion
-    #region Midi
+                Profile_Sections.LockAndUnlockRewards();
+                SaveRewardsToProfile();
+            }
+        }
+
+        private void Profiles_LockAllRewards(object sender, EventArgs e)
+        {
+            if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
+            {
+                if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                {
+                    currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                    OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                }
+
+                Profile_Sections.LockAndUnlockRewards(false);
+                SaveRewardsToProfile();
+            }
+        }
+
+
+        private void SaveRewardsToProfile()
+        {
+            Profiles.EncryptProfiles<Profile_Sections.Prizes>(Profile_Sections.Loaded_Prizes, "Prizes", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profile_AvailableProfiles.SelectedItem.ToString()));
+            MessageBox.Show("Changes to Rewards have been saved!");
+        }
+
+
+        #endregion
+        #region Midi
 
         private void LoadMidiDeviceNames(object sender, EventArgs e)
         {
