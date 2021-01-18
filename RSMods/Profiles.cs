@@ -3912,111 +3912,409 @@ namespace RSMods
         #region Prizes
         public class Prizes
         {
+            // Points
             public double UnawardedPrizePoints { get; set; }
+            public double NumPrizePoints { get; set; }
+
+            // Uplay
+
+            public UPlayRewards UPlayRewards { get; set; }
+
+            public bool UplayAction1 { get; set; }
+            public bool UplayAction2 { get; set; }
+            public bool UplayAction3 { get; set; }
+            public bool UplayAction4 { get; set; }
+            public bool UplayDlg1 { get; set; }
+            public bool UplayDlg2 { get; set; }
+            public bool UplayDlg3 { get; set; }
+            public bool UplayDlg4 { get; set; }
+
+
+            // Have we awarded the prize (only exist if achieved).
+
+            public bool IsPrizeAwarded_1 { get; set; }
+            public bool IsPrizeAwarded_2 { get; set; }
+            public bool IsPrizeAwarded_3 { get; set; }
+            public bool IsPrizeAwarded_4 { get; set; }
+            public bool IsPrizeAwarded_5 { get; set; }
+            public bool IsPrizeAwarded_6 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_8 { get; set; }
+            public bool IsPrizeAwarded_9 { get; set; }
+            public bool IsPrizeAwarded_10 { get; set; }
+            public bool IsPrizeAwarded_11 { get; set; }
+            public bool IsPrizeAwarded_12 { get; set; }
+            public bool IsPrizeAwarded_13 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_15 { get; set; }
+            public bool IsPrizeAwarded_16 { get; set; }
+            public bool IsPrizeAwarded_17 { get; set; }
+            public bool IsPrizeAwarded_18 { get; set; }
+            public bool IsPrizeAwarded_19 { get; set; }
+            public bool IsPrizeAwarded_20 { get; set; }
+            public bool IsPrizeAwarded_21 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_23 { get; set; }
+            public bool IsPrizeAwarded_24 { get; set; }
+            public bool IsPrizeAwarded_25 { get; set; }
+            public bool IsPrizeAwarded_26 { get; set; }
+            public bool IsPrizeAwarded_27 { get; set; }
+            public bool IsPrizeAwarded_28 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_30 { get; set; }
+            public bool IsPrizeAwarded_31 { get; set; }
+            public bool IsPrizeAwarded_32 { get; set; }
+            public bool IsPrizeAwarded_33 { get; set; }
+            public bool IsPrizeAwarded_34 { get; set; }
+            public bool IsPrizeAwarded_35 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_37 { get; set; }
+            public bool IsPrizeAwarded_38 { get; set; }
+            public bool IsPrizeAwarded_39 { get; set; }
             public bool IsPrizeAwarded_40 { get; set; }
             public bool IsPrizeAwarded_41 { get; set; }
             public bool IsPrizeAwarded_42 { get; set; }
             public bool IsPrizeAwarded_43 { get; set; }
             public bool IsPrizeAwarded_44 { get; set; }
+            // Prize Gap
             public bool IsPrizeAwarded_46 { get; set; }
             public bool IsPrizeAwarded_47 { get; set; }
             public bool IsPrizeAwarded_48 { get; set; }
             public bool IsPrizeAwarded_49 { get; set; }
-            public bool IsPrizeAwarded_53 { get; set; }
-            public bool IsPrizeAwarded_52 { get; set; }
             public bool IsPrizeAwarded_50 { get; set; }
-            public bool IsPrizeAwarded_55 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_52 { get; set; }
+            public bool IsPrizeAwarded_53 { get; set; }
             public bool IsPrizeAwarded_54 { get; set; }
-            public bool IsPrizeAwarded_19 { get; set; }
-            public bool IsPrizeAwarded_18 { get; set; }
-            public bool IsPrizeAwarded_17 { get; set; }
-            public bool IsPrizeAwarded_16 { get; set; }
-            public bool IsPrizeAwarded_15 { get; set; }
-            public bool IsPrizeAwarded_13 { get; set; }
-            public bool IsPrizeAwarded_12 { get; set; }
-            public bool IsPrizeAwarded_11 { get; set; }
-            public bool IsPrizeAwarded_10 { get; set; }
-            public bool IsPrizeAwarded_23 { get; set; }
-            public bool IsPrizeAwarded_20 { get; set; }
-            public bool IsPrizeAwarded_21 { get; set; }
-            public bool IsPrizeAwarded_26 { get; set; }
-            public bool IsPrizeAwarded_27 { get; set; }
-            public bool IsPrizeAwarded_24 { get; set; }
-            public bool IsPrizeAwarded_25 { get; set; }
-            public bool IsPrizeAwarded_28 { get; set; }
-            public bool IsPrizeAwarded_35 { get; set; }
-            public bool IsPrizeAwarded_34 { get; set; }
-            public bool IsPrizeAwarded_37 { get; set; }
-            public bool IsPrizeAwarded_31 { get; set; }
-            public bool IsPrizeAwarded_30 { get; set; }
-            public bool IsPrizeAwarded_33 { get; set; }
-            public bool IsPrizeAwarded_32 { get; set; }
-            public bool IsPrizeAwarded_39 { get; set; }
-            public bool IsPrizeAwarded_38 { get; set; }
-            public bool IsPrizeAwarded_4 { get; set; }
-            public bool IsPrizeAwarded_5 { get; set; }
-            public bool IsPrizeAwarded_6 { get; set; }
-            public bool IsPrizeAwarded_1 { get; set; }
-            public bool IsPrizeAwarded_2 { get; set; }
-            public bool IsPrizeAwarded_3 { get; set; }
-            public bool IsPrizeAwarded_8 { get; set; }
-            public bool IsPrizeAwarded_9 { get; set; }
-            public UPlayRewards UPlayRewards { get; set; }
-            public bool HasPrizeDialogShown_50 { get; set; }
-            public bool HasPrizeDialogShown_52 { get; set; }
-            public bool HasPrizeDialogShown_53 { get; set; }
-            public bool HasPrizeDialogShown_54 { get; set; }
-            public bool HasPrizeDialogShown_55 { get; set; }
-            public bool HasPrizeDialogShown_43 { get; set; }
-            public bool HasPrizeDialogShown_42 { get; set; }
-            public bool HasPrizeDialogShown_41 { get; set; }
-            public bool HasPrizeDialogShown_40 { get; set; }
-            public bool HasPrizeDialogShown_47 { get; set; }
-            public bool HasPrizeDialogShown_46 { get; set; }
-            public bool HasPrizeDialogShown_44 { get; set; }
-            public bool HasPrizeDialogShown_49 { get; set; }
-            public bool HasPrizeDialogShown_48 { get; set; }
-            public bool HasPrizeDialogShown_18 { get; set; }
-            public bool HasPrizeDialogShown_19 { get; set; }
-            public bool HasPrizeDialogShown_15 { get; set; }
-            public bool HasPrizeDialogShown_16 { get; set; }
-            public bool HasPrizeDialogShown_17 { get; set; }
+            public bool IsPrizeAwarded_55 { get; set; }
+            public bool IsPrizeAwarded_56 { get; set; }
+            public bool IsPrizeAwarded_57 { get; set; }
+            public bool IsPrizeAwarded_58 { get; set; }
+            public bool IsPrizeAwarded_59 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_61 { get; set; }
+            public bool IsPrizeAwarded_62 { get; set; }
+            public bool IsPrizeAwarded_63 { get; set; }
+            public bool IsPrizeAwarded_64 { get; set; }
+            public bool IsPrizeAwarded_65 { get; set; }
+            public bool IsPrizeAwarded_66 { get; set; }
+            public bool IsPrizeAwarded_67 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_69 { get; set; }
+            public bool IsPrizeAwarded_70 { get; set; }
+            public bool IsPrizeAwarded_71 { get; set; }
+            public bool IsPrizeAwarded_72 { get; set; }
+            public bool IsPrizeAwarded_73 { get; set; }
+            public bool IsPrizeAwarded_74 { get; set; }
+            public bool IsPrizeAwarded_75 { get; set; }
+            public bool IsPrizeAwarded_76 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_78 { get; set; }
+            public bool IsPrizeAwarded_79 { get; set; }
+            public bool IsPrizeAwarded_80 { get; set; }
+            public bool IsPrizeAwarded_81 { get; set; }
+            public bool IsPrizeAwarded_82 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_84 { get; set; }
+            public bool IsPrizeAwarded_85 { get; set; }
+            public bool IsPrizeAwarded_86 { get; set; }
+            public bool IsPrizeAwarded_87 { get; set; }
+            public bool IsPrizeAwarded_88 { get; set; }
+            public bool IsPrizeAwarded_89 { get; set; }
+            public bool IsPrizeAwarded_90 { get; set; }
+            public bool IsPrizeAwarded_91 { get; set; }
+            public bool IsPrizeAwarded_92 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_94 { get; set; }
+            public bool IsPrizeAwarded_95 { get; set; }
+            public bool IsPrizeAwarded_96 { get; set; }
+            public bool IsPrizeAwarded_97 { get; set; }
+            public bool IsPrizeAwarded_98 { get; set; }
+            public bool IsPrizeAwarded_99 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_101 { get; set; }
+            public bool IsPrizeAwarded_102 { get; set; }
+            public bool IsPrizeAwarded_103 { get; set; }
+            public bool IsPrizeAwarded_104 { get; set; }
+            public bool IsPrizeAwarded_105 { get; set; }
+            public bool IsPrizeAwarded_106 { get; set; }
+            public bool IsPrizeAwarded_107 { get; set; }
+            public bool IsPrizeAwarded_108 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_110 { get; set; }
+            public bool IsPrizeAwarded_111 { get; set; }
+            public bool IsPrizeAwarded_112 { get; set; }
+            public bool IsPrizeAwarded_113 { get; set; }
+            public bool IsPrizeAwarded_114 { get; set; }
+            public bool IsPrizeAwarded_115 { get; set; }
+            public bool IsPrizeAwarded_116 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_118 { get; set; }
+            public bool IsPrizeAwarded_119 { get; set; }
+            public bool IsPrizeAwarded_120 { get; set; }
+            public bool IsPrizeAwarded_121 { get; set; }
+            public bool IsPrizeAwarded_122 { get; set; }
+            public bool IsPrizeAwarded_123 { get; set; }
+            public bool IsPrizeAwarded_124 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_126 { get; set; }
+            public bool IsPrizeAwarded_127 { get; set; }
+            public bool IsPrizeAwarded_128 { get; set; }
+            public bool IsPrizeAwarded_129 { get; set; }
+            public bool IsPrizeAwarded_130 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_132 { get; set; }
+            public bool IsPrizeAwarded_133 { get; set; }
+            public bool IsPrizeAwarded_134 { get; set; }
+            public bool IsPrizeAwarded_135 { get; set; }
+            public bool IsPrizeAwarded_136 { get; set; }
+            public bool IsPrizeAwarded_137 { get; set; }
+            public bool IsPrizeAwarded_138 { get; set; }
+            public bool IsPrizeAwarded_139 { get; set; }
+            public bool IsPrizeAwarded_140 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_142 { get; set; }
+            public bool IsPrizeAwarded_143 { get; set; }
+            public bool IsPrizeAwarded_144 { get; set; }
+            public bool IsPrizeAwarded_145 { get; set; }
+            public bool IsPrizeAwarded_146 { get; set; }
+            public bool IsPrizeAwarded_147 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_149 { get; set; }
+            public bool IsPrizeAwarded_150 { get; set; }
+            public bool IsPrizeAwarded_151 { get; set; }
+            public bool IsPrizeAwarded_152 { get; set; }
+            public bool IsPrizeAwarded_153 { get; set; }
+            // Prize Gap
+            // Prize Gap
+            public bool IsPrizeAwarded_156 { get; set; }
+            public bool IsPrizeAwarded_157 { get; set; }
+            public bool IsPrizeAwarded_158 { get; set; }
+            public bool IsPrizeAwarded_159 { get; set; }
+            public bool IsPrizeAwarded_160 { get; set; }
+            public bool IsPrizeAwarded_161 { get; set; }
+            public bool IsPrizeAwarded_162 { get; set; }
+            public bool IsPrizeAwarded_163 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_165 { get; set; }
+            public bool IsPrizeAwarded_166 { get; set; }
+            public bool IsPrizeAwarded_167 { get; set; }
+            public bool IsPrizeAwarded_168 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_170 { get; set; }
+            public bool IsPrizeAwarded_171 { get; set; }
+            public bool IsPrizeAwarded_172 { get; set; }
+            public bool IsPrizeAwarded_173 { get; set; }
+            public bool IsPrizeAwarded_174 { get; set; }
+            public bool IsPrizeAwarded_175 { get; set; }
+            public bool IsPrizeAwarded_176 { get; set; }
+            public bool IsPrizeAwarded_177 { get; set; }
+            public bool IsPrizeAwarded_178 { get; set; }
+            public bool IsPrizeAwarded_179 { get; set; }
+            public bool IsPrizeAwarded_180 { get; set; }
+            public bool IsPrizeAwarded_181 { get; set; }
+            public bool IsPrizeAwarded_182 { get; set; }
+            public bool IsPrizeAwarded_183 { get; set; }
+            // Prize Gap
+            public bool IsPrizeAwarded_185 { get; set; }
+            public bool IsPrizeAwarded_186 { get; set; }
+            
+
+            // Have we shown the user the prize they got (only exist if achieved).
+
+            public bool HasPrizeDialogShown_1 { get; set; }
+            public bool HasPrizeDialogShown_2 { get; set; }
+            public bool HasPrizeDialogShown_3 { get; set; }
+            public bool HasPrizeDialogShown_4 { get; set; }
+            public bool HasPrizeDialogShown_5 { get; set; }
+            public bool HasPrizeDialogShown_6 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_8 { get; set; }
+            public bool HasPrizeDialogShown_9 { get; set; }
             public bool HasPrizeDialogShown_10 { get; set; }
             public bool HasPrizeDialogShown_11 { get; set; }
             public bool HasPrizeDialogShown_12 { get; set; }
             public bool HasPrizeDialogShown_13 { get; set; }
-            public bool HasPrizeDialogShown_32 { get; set; }
-            public bool HasPrizeDialogShown_33 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_15 { get; set; }
+            public bool HasPrizeDialogShown_16 { get; set; }
+            public bool HasPrizeDialogShown_17 { get; set; }
+            public bool HasPrizeDialogShown_18 { get; set; }
+            public bool HasPrizeDialogShown_19 { get; set; }
+            public bool HasPrizeDialogShown_20 { get; set; }
+            public bool HasPrizeDialogShown_21 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_23 { get; set; }
+            public bool HasPrizeDialogShown_24 { get; set; }
+            public bool HasPrizeDialogShown_25 { get; set; }
+            public bool HasPrizeDialogShown_26 { get; set; }
+            public bool HasPrizeDialogShown_27 { get; set; }
+            public bool HasPrizeDialogShown_28 { get; set; }
+            // Prize Gap
             public bool HasPrizeDialogShown_30 { get; set; }
             public bool HasPrizeDialogShown_31 { get; set; }
-            public bool HasPrizeDialogShown_37 { get; set; }
+            public bool HasPrizeDialogShown_32 { get; set; }
+            public bool HasPrizeDialogShown_33 { get; set; }
             public bool HasPrizeDialogShown_34 { get; set; }
             public bool HasPrizeDialogShown_35 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_37 { get; set; }
             public bool HasPrizeDialogShown_38 { get; set; }
             public bool HasPrizeDialogShown_39 { get; set; }
-            public bool HasPrizeDialogShown_25 { get; set; }
-            public bool HasPrizeDialogShown_24 { get; set; }
-            public bool HasPrizeDialogShown_27 { get; set; }
-            public bool HasPrizeDialogShown_26 { get; set; }
-            public bool HasPrizeDialogShown_21 { get; set; }
-            public bool HasPrizeDialogShown_20 { get; set; }
-            public bool HasPrizeDialogShown_23 { get; set; }
-            public bool HasPrizeDialogShown_28 { get; set; }
-            public bool UplayAction3 { get; set; }
-            public bool UplayAction1 { get; set; }
-            public bool UplayAction4 { get; set; }
-            public bool UplayDlg4 { get; set; }
-            public bool UplayDlg1 { get; set; }
-            public bool UplayDlg3 { get; set; }
-            public double NumPrizePoints { get; set; }
-            public bool HasPrizeDialogShown_5 { get; set; }
-            public bool HasPrizeDialogShown_4 { get; set; }
-            public bool HasPrizeDialogShown_6 { get; set; }
-            public bool HasPrizeDialogShown_1 { get; set; }
-            public bool HasPrizeDialogShown_3 { get; set; }
-            public bool HasPrizeDialogShown_2 { get; set; }
-            public bool HasPrizeDialogShown_9 { get; set; }
-            public bool HasPrizeDialogShown_8 { get; set; }
+            public bool HasPrizeDialogShown_40 { get; set; }
+            public bool HasPrizeDialogShown_41 { get; set; }
+            public bool HasPrizeDialogShown_42 { get; set; }
+            public bool HasPrizeDialogShown_43 { get; set; }
+            public bool HasPrizeDialogShown_44 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_46 { get; set; }
+            public bool HasPrizeDialogShown_47 { get; set; }
+            public bool HasPrizeDialogShown_48 { get; set; }
+            public bool HasPrizeDialogShown_49 { get; set; }
+            public bool HasPrizeDialogShown_50 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_52 { get; set; }
+            public bool HasPrizeDialogShown_53 { get; set; }
+            public bool HasPrizeDialogShown_54 { get; set; }
+            public bool HasPrizeDialogShown_55 { get; set; }
+            public bool HasPrizeDialogShown_56 { get; set; }
+            public bool HasPrizeDialogShown_57 { get; set; }
+            public bool HasPrizeDialogShown_58 { get; set; }
+            public bool HasPrizeDialogShown_59 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_61 { get; set; }
+            public bool HasPrizeDialogShown_62 { get; set; }
+            public bool HasPrizeDialogShown_63 { get; set; }
+            public bool HasPrizeDialogShown_64 { get; set; }
+            public bool HasPrizeDialogShown_65 { get; set; }
+            public bool HasPrizeDialogShown_66 { get; set; }
+            public bool HasPrizeDialogShown_67 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_69 { get; set; }
+            public bool HasPrizeDialogShown_70 { get; set; }
+            public bool HasPrizeDialogShown_71 { get; set; }
+            public bool HasPrizeDialogShown_72 { get; set; }
+            public bool HasPrizeDialogShown_73 { get; set; }
+            public bool HasPrizeDialogShown_74 { get; set; }
+            public bool HasPrizeDialogShown_75 { get; set; }
+            public bool HasPrizeDialogShown_76 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_78 { get; set; }
+            public bool HasPrizeDialogShown_79 { get; set; }
+            public bool HasPrizeDialogShown_80 { get; set; }
+            public bool HasPrizeDialogShown_81 { get; set; }
+            public bool HasPrizeDialogShown_82 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_84 { get; set; }
+            public bool HasPrizeDialogShown_85 { get; set; }
+            public bool HasPrizeDialogShown_86 { get; set; }
+            public bool HasPrizeDialogShown_87 { get; set; }
+            public bool HasPrizeDialogShown_88 { get; set; }
+            public bool HasPrizeDialogShown_89 { get; set; }
+            public bool HasPrizeDialogShown_90 { get; set; }
+            public bool HasPrizeDialogShown_91 { get; set; }
+            public bool HasPrizeDialogShown_92 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_94 { get; set; }
+            public bool HasPrizeDialogShown_95 { get; set; }
+            public bool HasPrizeDialogShown_96 { get; set; }
+            public bool HasPrizeDialogShown_97 { get; set; }
+            public bool HasPrizeDialogShown_98 { get; set; }
+            public bool HasPrizeDialogShown_99 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_101 { get; set; }
+            public bool HasPrizeDialogShown_102 { get; set; }
+            public bool HasPrizeDialogShown_103 { get; set; }
+            public bool HasPrizeDialogShown_104 { get; set; }
+            public bool HasPrizeDialogShown_105 { get; set; }
+            public bool HasPrizeDialogShown_106 { get; set; }
+            public bool HasPrizeDialogShown_107 { get; set; }
+            public bool HasPrizeDialogShown_108 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_110 { get; set; }
+            public bool HasPrizeDialogShown_111 { get; set; }
+            public bool HasPrizeDialogShown_112 { get; set; }
+            public bool HasPrizeDialogShown_113 { get; set; }
+            public bool HasPrizeDialogShown_114 { get; set; }
+            public bool HasPrizeDialogShown_115 { get; set; }
+            public bool HasPrizeDialogShown_116 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_118 { get; set; }
+            public bool HasPrizeDialogShown_119 { get; set; }
+            public bool HasPrizeDialogShown_120 { get; set; }
+            public bool HasPrizeDialogShown_121 { get; set; }
+            public bool HasPrizeDialogShown_122 { get; set; }
+            public bool HasPrizeDialogShown_123 { get; set; }
+            public bool HasPrizeDialogShown_124 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_126 { get; set; }
+            public bool HasPrizeDialogShown_127 { get; set; }
+            public bool HasPrizeDialogShown_128 { get; set; }
+            public bool HasPrizeDialogShown_129 { get; set; }
+            public bool HasPrizeDialogShown_130 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_132 { get; set; }
+            public bool HasPrizeDialogShown_133 { get; set; }
+            public bool HasPrizeDialogShown_134 { get; set; }
+            public bool HasPrizeDialogShown_135 { get; set; }
+            public bool HasPrizeDialogShown_136 { get; set; }
+            public bool HasPrizeDialogShown_137 { get; set; }
+            public bool HasPrizeDialogShown_138 { get; set; }
+            public bool HasPrizeDialogShown_139 { get; set; }
+            public bool HasPrizeDialogShown_140 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_142 { get; set; }
+            public bool HasPrizeDialogShown_143 { get; set; }
+            public bool HasPrizeDialogShown_144 { get; set; }
+            public bool HasPrizeDialogShown_145 { get; set; }
+            public bool HasPrizeDialogShown_146 { get; set; }
+            public bool HasPrizeDialogShown_147 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_149 { get; set; }
+            public bool HasPrizeDialogShown_150 { get; set; }
+            public bool HasPrizeDialogShown_151 { get; set; }
+            public bool HasPrizeDialogShown_152 { get; set; }
+            public bool HasPrizeDialogShown_153 { get; set; }
+            // Prize Gap
+            // Prize Gap
+            public bool HasPrizeDialogShown_156 { get; set; }
+            public bool HasPrizeDialogShown_157 { get; set; }
+            public bool HasPrizeDialogShown_158 { get; set; }
+            public bool HasPrizeDialogShown_159 { get; set; }
+            public bool HasPrizeDialogShown_160 { get; set; }
+            public bool HasPrizeDialogShown_161 { get; set; }
+            public bool HasPrizeDialogShown_162 { get; set; }
+            public bool HasPrizeDialogShown_163 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_165 { get; set; }
+            public bool HasPrizeDialogShown_166 { get; set; }
+            public bool HasPrizeDialogShown_167 { get; set; }
+            public bool HasPrizeDialogShown_168 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_170 { get; set; }
+            public bool HasPrizeDialogShown_171 { get; set; }
+            public bool HasPrizeDialogShown_172 { get; set; }
+            public bool HasPrizeDialogShown_173 { get; set; }
+            public bool HasPrizeDialogShown_174 { get; set; }
+            public bool HasPrizeDialogShown_175 { get; set; }
+            public bool HasPrizeDialogShown_176 { get; set; }
+            public bool HasPrizeDialogShown_177 { get; set; }
+            public bool HasPrizeDialogShown_178 { get; set; }
+            public bool HasPrizeDialogShown_179 { get; set; }
+            public bool HasPrizeDialogShown_180 { get; set; }
+            public bool HasPrizeDialogShown_181 { get; set; }
+            public bool HasPrizeDialogShown_182 { get; set; }
+            public bool HasPrizeDialogShown_183 { get; set; }
+            // Prize Gap
+            public bool HasPrizeDialogShown_185 { get; set; }
+            public bool HasPrizeDialogShown_186 { get; set; }
+        }
+
+        public class UPlayRewards
+        {
+            public RS2Reward RS2REWARD04 { get; set; }
+            public RS2Reward RS2REWARD03 { get; set; }
+            public RS2Reward RS2REWARD02 { get; set; }
         }
 
         public class RS2Reward
@@ -4025,13 +4323,6 @@ namespace RSMods
             public bool purchased { get; set; }
             public string name { get; set; }
             public string description { get; set; }
-        }
-
-        public class UPlayRewards
-        {
-            public RS2Reward RS2REWARD04 { get; set; }
-            public RS2Reward RS2REWARD03 { get; set; }
-            public RS2Reward RS2REWARD02 { get; set; }
         }
 
         #endregion
