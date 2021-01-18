@@ -466,7 +466,7 @@ namespace RSMods
         #endregion
     }
 
-#region Tools
+    #region Tools
     class Tools
     {
         public static class CSharpArgumentInfo

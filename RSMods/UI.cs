@@ -2393,7 +2393,7 @@ namespace RSMods
         #endregion
         #region Profiles
 
-        Dictionary<string, string> DLCKeyToSongName = new Dictionary<string, string>();
+        List<SongData> Songs = new List<SongData>();
         private string currentUnpackedProfile = String.Empty;
 
         private void Profiles_RefreshSonglistNames()
@@ -2411,30 +2411,29 @@ namespace RSMods
         {
             listBox_Profiles_AvailableSongs.Items.Clear();
 
-            DLCKeyToSongName = SongManager.DLCKeyToSongName(progressBar_Profiles_LoadPsarcs);
+            Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
 
-            Profiles_HideUnOwnedRS1DLC();
-
-            foreach (KeyValuePair<string, string> song in DLCKeyToSongName)
-                listBox_Profiles_AvailableSongs.Items.Add(song.Value);
-
-            Profiles_RefreshSonglistNames();
-            Profiles_FillProfileSongLists();
-
-            groupBox_Profiles_SongLists.Visible = true;
-        }
-
-        private void Profiles_HideUnOwnedRS1DLC()
-        {
             UnpackProfile();
 
             List<string> ownedRS1DLC = Profile_Sections.Loaded_Stats.DLCTag.Keys.ToList();
 
-            foreach (string dlcKey in DLCKeyToSongName.Keys.ToList())
+            foreach (SongData song in Songs.ToList())
             {
-                if (SongManager.RS1DLCArray.ContainsKey(dlcKey) && !ownedRS1DLC.Contains(dlcKey)) // If song is a RS1 DLC && not owned
-                    DLCKeyToSongName.Remove(dlcKey);
+                if ((song.RS1AppID != 0 && !ownedRS1DLC.Contains(song.RS1AppID.ToString())) || song.Artist == String.Empty || song.Title == String.Empty || !song.Shipping)
+                {
+                    Songs.Remove(song);
+                    continue;
+                }
+
+                listBox_Profiles_AvailableSongs.Items.Add(song.CommonName);
             }
+
+            Profiles_RefreshSonglistNames();
+            Profiles_FillProfileSongLists();
+
+            MessageBox.Show(listBox_Profiles_AvailableSongs.Items.Count.ToString());
+
+            groupBox_Profiles_SongLists.Visible = true;
         }
 
         private void UnpackProfile()
@@ -2474,7 +2473,7 @@ namespace RSMods
             {
                 ProfileSonglistCheckboxes[dlcKeyArrayList.IndexOf(dlcKeyArray)].Checked = false;
 
-                if (dlcKeyArray.Contains(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key))
+                if (dlcKeyArray.Contains(Songs.FirstOrDefault(song => song.CommonName == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).DLCKey))
                     ProfileSonglistCheckboxes[dlcKeyArrayList.IndexOf(dlcKeyArray)].Checked = true;
             }
         }
@@ -2540,28 +2539,28 @@ namespace RSMods
 
         private void Profiles_AddSongToSonglist(int songlistNumber)
         {
-            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            string DLCKey = Songs.FirstOrDefault(song => song.CommonName == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).DLCKey;
             if (!Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
                 Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Add(DLCKey);
         }
 
         private void Profiles_RemoveSongFromSonglist(int songlistNumber)
         {
-            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            string DLCKey = Songs.FirstOrDefault(song => song.CommonName == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).DLCKey;
             if (Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
                 Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Remove(DLCKey);
         }
 
         private void Profiles_AddToFavorites()
         {
-            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            string DLCKey = Songs.FirstOrDefault(song => song.CommonName == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).DLCKey;
             if (!Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
                 Profile_Sections.Loaded_FavoritesList.FavoritesList.Add(DLCKey);
         }
 
         private void Profiles_RemoveFromFavorites()
         {
-            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            string DLCKey = Songs.FirstOrDefault(song => song.CommonName == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).DLCKey;
             if (Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
                 Profile_Sections.Loaded_FavoritesList.FavoritesList.Remove(DLCKey);
         }
