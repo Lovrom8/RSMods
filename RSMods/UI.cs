@@ -2486,30 +2486,40 @@ namespace RSMods
         {
             if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
             {
-                if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                    OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
-                }
+                    if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                    {
+                        currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                        OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                    }
 
-                Profile_Sections.LockAndUnlockRewards();
-                SaveRewardsToProfile();
+                    Profile_Sections.LockAndUnlockRewards();
+                    SaveRewardsToProfile();
+                }
             }
+            else
+                MessageBox.Show("Make sure you have a profile selected!");
         }
 
         private void Profiles_LockAllRewards(object sender, EventArgs e)
         {
             if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
             {
-                if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                    OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
-                }
+                    if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                    {
+                        currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
+                        OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                    }
 
-                Profile_Sections.LockAndUnlockRewards(false);
-                SaveRewardsToProfile();
+                    Profile_Sections.LockAndUnlockRewards(false);
+                    SaveRewardsToProfile();
+                }
             }
+            else
+                MessageBox.Show("Make sure you have a profile selected!");
         }
 
 
