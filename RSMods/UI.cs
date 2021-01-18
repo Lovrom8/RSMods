@@ -2468,6 +2468,7 @@ namespace RSMods
             dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[3].ToArray());
             dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[4].ToArray());
             dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[5].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_FavoritesList.FavoritesList.ToArray());
 
             foreach (string[] dlcKeyArray in dlcKeyArrayList)
             {
@@ -2494,7 +2495,8 @@ namespace RSMods
                 return;
 
             Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
-            MessageBox.Show("Your profile has been saved!");
+            Profiles.EncryptProfiles<Profile_Sections.FavoritesListRoot>(Profile_Sections.Loaded_FavoritesList, "FavoritesListRoot", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
+            MessageBox.Show("Your songlists and favorites have been saved!");
         }
 
         private void Profiles_UnlockAllRewards(object sender, EventArgs e)
@@ -2550,6 +2552,20 @@ namespace RSMods
                 Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Remove(DLCKey);
         }
 
+        private void Profiles_AddToFavorites()
+        {
+            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            if (!Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
+                Profile_Sections.Loaded_FavoritesList.FavoritesList.Add(DLCKey);
+        }
+
+        private void Profiles_RemoveFromFavorites()
+        {
+            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            if (Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
+                Profile_Sections.Loaded_FavoritesList.FavoritesList.Remove(DLCKey);
+        }
+
         private void Profiles_SongList1(object sender, EventArgs e)
         {
             if (checkBox_Profiles_SongList1.Checked)
@@ -2598,6 +2614,14 @@ namespace RSMods
                 Profiles_RemoveSongFromSonglist(6);
         }
 
+        private void Profiles_Favorites(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_Favorites.Checked)
+                Profiles_AddToFavorites();
+            else
+                Profiles_RemoveFromFavorites();
+        }
+
         #endregion
         #region Midi
 
@@ -2617,6 +2641,8 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
         }
+
+       
     }
 
     public class Midi

@@ -372,6 +372,7 @@
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
             this.groupBox_Profiles_SongLists = new System.Windows.Forms.GroupBox();
+            this.checkBox_Profiles_Favorites = new System.Windows.Forms.CheckBox();
             this.label_Profiles_Songlist_SelectedSong = new System.Windows.Forms.Label();
             this.checkBox_Profiles_SongList6 = new System.Windows.Forms.CheckBox();
             this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
@@ -4708,6 +4709,7 @@
             // 
             // groupBox_Profiles_SongLists
             // 
+            this.groupBox_Profiles_SongLists.Controls.Add(this.checkBox_Profiles_Favorites);
             this.groupBox_Profiles_SongLists.Controls.Add(this.label_Profiles_Songlist_SelectedSong);
             this.groupBox_Profiles_SongLists.Controls.Add(this.checkBox_Profiles_SongList6);
             this.groupBox_Profiles_SongLists.Controls.Add(this.button_Profiles_SaveSonglist);
@@ -4720,11 +4722,23 @@
             this.groupBox_Profiles_SongLists.Controls.Add(this.checkBox_Profiles_SongList2);
             this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(450, 56);
             this.groupBox_Profiles_SongLists.Name = "groupBox_Profiles_SongLists";
-            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(678, 304);
+            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(678, 230);
             this.groupBox_Profiles_SongLists.TabIndex = 6;
             this.groupBox_Profiles_SongLists.TabStop = false;
             this.groupBox_Profiles_SongLists.Text = "Songlists";
             this.groupBox_Profiles_SongLists.Visible = false;
+            // 
+            // checkBox_Profiles_Favorites
+            // 
+            this.checkBox_Profiles_Favorites.AutoSize = true;
+            this.checkBox_Profiles_Favorites.Location = new System.Drawing.Point(414, 178);
+            this.checkBox_Profiles_Favorites.Name = "checkBox_Profiles_Favorites";
+            this.checkBox_Profiles_Favorites.Size = new System.Drawing.Size(69, 17);
+            this.checkBox_Profiles_Favorites.TabIndex = 19;
+            this.checkBox_Profiles_Favorites.Text = "Favorites";
+            this.checkBox_Profiles_Favorites.UseVisualStyleBackColor = true;
+            this.checkBox_Profiles_Favorites.Visible = false;
+            this.checkBox_Profiles_Favorites.CheckedChanged += new System.EventHandler(this.Profiles_Favorites);
             // 
             // label_Profiles_Songlist_SelectedSong
             // 
@@ -4750,7 +4764,7 @@
             // 
             // button_Profiles_SaveSonglist
             // 
-            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(6, 275);
+            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(6, 198);
             this.button_Profiles_SaveSonglist.Name = "button_Profiles_SaveSonglist";
             this.button_Profiles_SaveSonglist.Size = new System.Drawing.Size(98, 23);
             this.button_Profiles_SaveSonglist.TabIndex = 11;
@@ -5496,6 +5510,7 @@
         private System.Windows.Forms.CheckBox checkBox_Profiles_SongList4;
         private System.Windows.Forms.CheckBox checkBox_Profiles_SongList3;
         private System.Windows.Forms.Label label_Profiles_Songlist_SelectedSong;
+        private System.Windows.Forms.CheckBox checkBox_Profiles_Favorites;
     }
 }
 

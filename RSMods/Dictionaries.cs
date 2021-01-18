@@ -215,6 +215,7 @@ namespace RSMods
             ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList4);
             ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList5);
             ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList6);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_Favorites);
         }
         #endregion
     };
