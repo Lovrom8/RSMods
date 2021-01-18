@@ -2456,7 +2456,7 @@ namespace RSMods
 
         private void Profiles_AddToSonglist(object sender, EventArgs e)
         {
-            if (listBox_Profile_AvailableSongs.SelectedIndex > -1 && listBox_Profile_AvailableProfiles.SelectedIndex > -1 && !listBox_Profile_SongsInSelectedSonglist.Items.Contains(listBox_Profile_AvailableSongs.SelectedItem.ToString()))
+            if (listBox_Profile_AvailableSongs.SelectedIndex > -1 && listBox_Profile_AvailableProfiles.SelectedIndex > -1 && listBox_Profile_Songlists.SelectedIndex > -1 && !listBox_Profile_SongsInSelectedSonglist.Items.Contains(listBox_Profile_AvailableSongs.SelectedItem.ToString()))
             {
                 Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Add(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profile_AvailableSongs.SelectedItem.ToString()).Key);
                 listBox_Profile_SongsInSelectedSonglist.Items.Add(listBox_Profile_AvailableSongs.SelectedItem.ToString());

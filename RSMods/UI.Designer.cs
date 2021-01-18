@@ -368,7 +368,9 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
-            this.label_Profile_AvailableProfiles = new System.Windows.Forms.Label();
+            this.label_Profiles_WIP = new System.Windows.Forms.Label();
+            this.groupBox_HideProfiles = new System.Windows.Forms.GroupBox();
+            this.listBox_Profile_AvailableProfiles = new System.Windows.Forms.ListBox();
             this.groupBox_Profile_SongLists = new System.Windows.Forms.GroupBox();
             this.button_Profile_SaveSonglist = new System.Windows.Forms.Button();
             this.button_Profiles_ClearSonglist = new System.Windows.Forms.Button();
@@ -380,7 +382,7 @@
             this.listBox_Profile_Songlists = new System.Windows.Forms.ListBox();
             this.listBox_Profile_AvailableSongs = new System.Windows.Forms.ListBox();
             this.listBox_Profile_SongsInSelectedSonglist = new System.Windows.Forms.ListBox();
-            this.listBox_Profile_AvailableProfiles = new System.Windows.Forms.ListBox();
+            this.label_Profile_AvailableProfiles = new System.Windows.Forms.Label();
             this.button_Profile_LoadSongs = new System.Windows.Forms.Button();
             this.progressBar_Profile_LoadPsarcs = new System.Windows.Forms.ProgressBar();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
@@ -393,8 +395,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.groupBox_HideProfiles = new System.Windows.Forms.GroupBox();
-            this.label_Profiles_WIP = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -471,10 +471,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_Profiles.SuspendLayout();
+            this.groupBox_HideProfiles.SuspendLayout();
             this.groupBox_Profile_SongLists.SuspendLayout();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
-            this.groupBox_HideProfiles.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -4667,14 +4667,37 @@
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
             // 
-            // label_Profile_AvailableProfiles
+            // label_Profiles_WIP
             // 
-            this.label_Profile_AvailableProfiles.AutoSize = true;
-            this.label_Profile_AvailableProfiles.Location = new System.Drawing.Point(18, 44);
-            this.label_Profile_AvailableProfiles.Name = "label_Profile_AvailableProfiles";
-            this.label_Profile_AvailableProfiles.Size = new System.Drawing.Size(66, 13);
-            this.label_Profile_AvailableProfiles.TabIndex = 8;
-            this.label_Profile_AvailableProfiles.Text = "Your Profiles";
+            this.label_Profiles_WIP.AutoSize = true;
+            this.label_Profiles_WIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Profiles_WIP.Location = new System.Drawing.Point(476, 22);
+            this.label_Profiles_WIP.Name = "label_Profiles_WIP";
+            this.label_Profiles_WIP.Size = new System.Drawing.Size(180, 18);
+            this.label_Profiles_WIP.TabIndex = 10;
+            this.label_Profiles_WIP.Text = "WORK IN PROGRESS";
+            // 
+            // groupBox_HideProfiles
+            // 
+            this.groupBox_HideProfiles.Controls.Add(this.listBox_Profile_AvailableProfiles);
+            this.groupBox_HideProfiles.Controls.Add(this.groupBox_Profile_SongLists);
+            this.groupBox_HideProfiles.Controls.Add(this.label_Profile_AvailableProfiles);
+            this.groupBox_HideProfiles.Controls.Add(this.button_Profile_LoadSongs);
+            this.groupBox_HideProfiles.Controls.Add(this.progressBar_Profile_LoadPsarcs);
+            this.groupBox_HideProfiles.Location = new System.Drawing.Point(41, 59);
+            this.groupBox_HideProfiles.Name = "groupBox_HideProfiles";
+            this.groupBox_HideProfiles.Size = new System.Drawing.Size(1049, 405);
+            this.groupBox_HideProfiles.TabIndex = 9;
+            this.groupBox_HideProfiles.TabStop = false;
+            this.groupBox_HideProfiles.Text = "Hide Profiles";
+            // 
+            // listBox_Profile_AvailableProfiles
+            // 
+            this.listBox_Profile_AvailableProfiles.FormattingEnabled = true;
+            this.listBox_Profile_AvailableProfiles.Location = new System.Drawing.Point(21, 72);
+            this.listBox_Profile_AvailableProfiles.Name = "listBox_Profile_AvailableProfiles";
+            this.listBox_Profile_AvailableProfiles.Size = new System.Drawing.Size(204, 160);
+            this.listBox_Profile_AvailableProfiles.TabIndex = 5;
             // 
             // groupBox_Profile_SongLists
             // 
@@ -4792,13 +4815,14 @@
             this.listBox_Profile_SongsInSelectedSonglist.TabIndex = 4;
             this.listBox_Profile_SongsInSelectedSonglist.Visible = false;
             // 
-            // listBox_Profile_AvailableProfiles
+            // label_Profile_AvailableProfiles
             // 
-            this.listBox_Profile_AvailableProfiles.FormattingEnabled = true;
-            this.listBox_Profile_AvailableProfiles.Location = new System.Drawing.Point(21, 72);
-            this.listBox_Profile_AvailableProfiles.Name = "listBox_Profile_AvailableProfiles";
-            this.listBox_Profile_AvailableProfiles.Size = new System.Drawing.Size(204, 160);
-            this.listBox_Profile_AvailableProfiles.TabIndex = 5;
+            this.label_Profile_AvailableProfiles.AutoSize = true;
+            this.label_Profile_AvailableProfiles.Location = new System.Drawing.Point(18, 44);
+            this.label_Profile_AvailableProfiles.Name = "label_Profile_AvailableProfiles";
+            this.label_Profile_AvailableProfiles.Size = new System.Drawing.Size(66, 13);
+            this.label_Profile_AvailableProfiles.TabIndex = 8;
+            this.label_Profile_AvailableProfiles.Text = "Your Profiles";
             // 
             // button_Profile_LoadSongs
             // 
@@ -4921,31 +4945,6 @@
             this.label_SettingsSaved.TabIndex = 52;
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
-            // 
-            // groupBox_HideProfiles
-            // 
-            this.groupBox_HideProfiles.Controls.Add(this.listBox_Profile_AvailableProfiles);
-            this.groupBox_HideProfiles.Controls.Add(this.groupBox_Profile_SongLists);
-            this.groupBox_HideProfiles.Controls.Add(this.label_Profile_AvailableProfiles);
-            this.groupBox_HideProfiles.Controls.Add(this.button_Profile_LoadSongs);
-            this.groupBox_HideProfiles.Controls.Add(this.progressBar_Profile_LoadPsarcs);
-            this.groupBox_HideProfiles.Location = new System.Drawing.Point(41, 59);
-            this.groupBox_HideProfiles.Name = "groupBox_HideProfiles";
-            this.groupBox_HideProfiles.Size = new System.Drawing.Size(1049, 405);
-            this.groupBox_HideProfiles.TabIndex = 9;
-            this.groupBox_HideProfiles.TabStop = false;
-            this.groupBox_HideProfiles.Text = "Hide Profiles";
-            this.groupBox_HideProfiles.Visible = false;
-            // 
-            // label_Profiles_WIP
-            // 
-            this.label_Profiles_WIP.AutoSize = true;
-            this.label_Profiles_WIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Profiles_WIP.Location = new System.Drawing.Point(476, 22);
-            this.label_Profiles_WIP.Name = "label_Profiles_WIP";
-            this.label_Profiles_WIP.Size = new System.Drawing.Size(180, 18);
-            this.label_Profiles_WIP.TabIndex = 10;
-            this.label_Profiles_WIP.Text = "WORK IN PROGRESS";
             // 
             // MainForm
             // 
@@ -5072,14 +5071,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).EndInit();
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
+            this.groupBox_HideProfiles.ResumeLayout(false);
+            this.groupBox_HideProfiles.PerformLayout();
             this.groupBox_Profile_SongLists.ResumeLayout(false);
             this.groupBox_Profile_SongLists.PerformLayout();
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
-            this.groupBox_HideProfiles.ResumeLayout(false);
-            this.groupBox_HideProfiles.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
