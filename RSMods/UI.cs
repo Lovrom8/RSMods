@@ -2413,6 +2413,8 @@ namespace RSMods
 
             DLCKeyToSongName = SongManager.DLCKeyToSongName(progressBar_Profiles_LoadPsarcs);
 
+            Profiles_HideUnOwnedRS1DLC();
+
             foreach (KeyValuePair<string, string> song in DLCKeyToSongName)
                 listBox_Profiles_AvailableSongs.Items.Add(song.Value);
 
@@ -2422,6 +2424,28 @@ namespace RSMods
             groupBox_Profiles_SongLists.Visible = true;
         }
 
+        private void Profiles_HideUnOwnedRS1DLC()
+        {
+            UnpackProfile();
+
+            List<string> ownedRS1DLC = Profile_Sections.Loaded_Stats.DLCTag.Keys.ToList();
+
+            foreach (string dlcKey in DLCKeyToSongName.Keys.ToList())
+            {
+                if (SongManager.RS1DLCArray.ContainsKey(dlcKey) && !ownedRS1DLC.Contains(dlcKey)) // If song is a RS1 DLC && not owned
+                    DLCKeyToSongName.Remove(dlcKey);
+            }
+        }
+
+        private void UnpackProfile()
+        {
+            if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
+            {
+                currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
+                OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString(), progressBar_Profiles_LoadPsarcs);
+            }
+        }
+
         private void Profile_SelectSong(object sender, EventArgs e)
         {
 
@@ -2429,13 +2453,6 @@ namespace RSMods
             {
                 MessageBox.Show("Make sure to select a profile");
                 return;
-            }
-
-            // Make sure we aren't unpacking the same profile over, and over, and over again.
-            if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
-            {
-                currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
-                OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
             }
 
             foreach(CheckBox checkBox in ProfileSonglistCheckboxes)
@@ -2467,7 +2484,7 @@ namespace RSMods
             groupBox_Profiles_Rewards.Visible = true;
         }
 
-        private void OpenProfileFromProfileName(string profileName) => Profile_Sections.LoadProfileSections(GetProfilePathFromName(profileName));
+        private void OpenProfileFromProfileName(string profileName, ProgressBar progressbar = null) => Profile_Sections.LoadProfileSections(GetProfilePathFromName(profileName), progressbar);
 
         private string GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
 
@@ -2486,11 +2503,7 @@ namespace RSMods
             {
                 if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
-                    {
-                        currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
-                        OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
-                    }
+                    UnpackProfile();
 
                     Profile_Sections.LockAndUnlockRewards();
                     SaveRewardsToProfile();
@@ -2506,11 +2519,7 @@ namespace RSMods
             {
                 if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
-                    {
-                        currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
-                        OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
-                    }
+                    UnpackProfile();
 
                     Profile_Sections.LockAndUnlockRewards(false);
                     SaveRewardsToProfile();

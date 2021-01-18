@@ -4796,7 +4796,7 @@
             this.listBox_Profiles_AvailableSongs.FormattingEnabled = true;
             this.listBox_Profiles_AvailableSongs.Location = new System.Drawing.Point(17, 39);
             this.listBox_Profiles_AvailableSongs.Name = "listBox_Profiles_AvailableSongs";
-            this.listBox_Profiles_AvailableSongs.Size = new System.Drawing.Size(329, 108);
+            this.listBox_Profiles_AvailableSongs.Size = new System.Drawing.Size(372, 134);
             this.listBox_Profiles_AvailableSongs.Sorted = true;
             this.listBox_Profiles_AvailableSongs.TabIndex = 2;
             this.listBox_Profiles_AvailableSongs.SelectedIndexChanged += new System.EventHandler(this.Profile_SelectSong);
@@ -4997,7 +4997,6 @@
             this.ClientSize = new System.Drawing.Size(1170, 576);
             this.Controls.Add(this.label_SettingsSaved);
             this.Controls.Add(this.TabController);
-            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";

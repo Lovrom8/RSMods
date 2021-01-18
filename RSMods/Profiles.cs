@@ -551,24 +551,65 @@ namespace RSMods
         public static SongsSA Loaded_ScoreAttack;
 
 
-        public static void LoadProfileSections(string profilePath)
+        public static void LoadProfileSections(string profilePath, ProgressBar progressBar = null)
         {
+            bool progressBarActive = progressBar != null;
+
+            if (progressBarActive)
+            {
+                progressBar.Visible = true;
+                progressBar.Value = progressBar.Minimum;
+                progressBar.Step = ((progressBar.Maximum - progressBar.Minimum) / 16);
+            }
+
             Loaded_Missions = Profiles.JSON_ToObject<Mission>(profilePath, Sections.Missions);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Playnexts = Profiles.JSON_ToObject<Playnexts>(profilePath, Sections.PlayNexts);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_RecentlyPlayedVenues = Profiles.JSON_ToObject<RecentlyPlayedVenues>(profilePath, Sections.RecentlyPlayedVenues);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Chords = Profiles.JSON_ToObject<Chords>(profilePath, Sections.Chords);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_NSPPlaylistRoot2 = Profiles.JSON_ToObject<NSP_PlayListRoot2>(profilePath, Sections.NSP_PlayListRoot2);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Options = Profiles.JSON_ToObject<Options>(profilePath, Sections.Options);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Guitarcade = Profiles.JSON_ToObject<Guitarcade>(profilePath, Sections.Guitarcade);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Songlists = Profiles.JSON_ToObject<SongListsRoot>(profilePath, Sections.SongLists);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_FavoritesList = Profiles.JSON_ToObject<FavoritesListRoot>(profilePath, Sections.FavoritesList);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_DynamicDifficulty = Profiles.JSON_ToObject<DynamicDifficulty>(profilePath, Sections.DD);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Prizes = Profiles.JSON_ToObject<Prizes>(profilePath, Sections.Prizes);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_LearnASong = Profiles.JSON_ToObject<Songs>(profilePath, Sections.LearnASong);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_SessionMode = Profiles.JSON_ToObject<SessionMode>(profilePath, Sections.SessionMode);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Achievements = Profiles.JSON_ToObject<Achievements>(profilePath, Sections.Achievements);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_Stats = Profiles.JSON_ToObject<Stats>(profilePath, Sections.Stats);
+            if (progressBarActive)
+                progressBar.PerformStep();
             Loaded_ScoreAttack = Profiles.JSON_ToObject<SongsSA>(profilePath, Sections.ScoreAttack);
+            if (progressBarActive)
+                progressBar.Visible = false;
         }
 
         #region Missions | NOT COMPLETE

@@ -13,6 +13,9 @@ namespace RSMods
     public class SongManager
     {
 
+        public static Dictionary<string, string> ODLCArray = new Dictionary<string, string>();
+        public static Dictionary<string, int> RS1DLCArray = new Dictionary<string, int>();
+
         public static Dictionary<string, string> DLCKeyToSongName(ProgressBar progressBar = null)
         {
             bool progressBarAvailable = progressBar != null;
@@ -39,10 +42,18 @@ namespace RSMods
                     {
                         foreach(Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement arrangement in psarc.ExtractArrangementManifests())
                         {
+
                             if (!allDLCKeys.Contains(arrangement.Attributes.SongKey) && arrangement.Attributes.ArrangementType != 0 && arrangement.Attributes.Shipping) // Prevent multiple arrangements from adding the same SongKey. ArrangementType of 0 report no song name / artist. Shipping removes hidden demo songs.
                             {
                                 allDLCKeys.Add(arrangement.Attributes.SongKey);
                                 allSongNames.Add($"{arrangement.Attributes.ArtistName} - {arrangement.Attributes.SongName}");
+                                
+                                if (psarc.ExtractToolkitInfo().PackageAuthor == "Ubisoft")
+                                {
+                                    ODLCArray.Add(arrangement.Attributes.SongKey, $"{arrangement.Attributes.ArtistName} - {arrangement.Attributes.SongName}");
+                                    if (arrangement.Attributes.SKU == "RS1" && arrangement.Attributes.DLCRS1Key != null) // Load all RS1 DLC and their ID so we can determine if the user owns it, and if we should display it accordingly.
+                                        RS1DLCArray.Add(arrangement.Attributes.SongKey, arrangement.Attributes.DLCRS1Key[0].WIN32);
+                                } 
                             }
                         } 
                     }
@@ -59,7 +70,11 @@ namespace RSMods
             }
 
             if (progressBarAvailable)
+            {
                 progressBar.Visible = false;
+                progressBar.Value = progressBar.Minimum;
+            }
+                
                 
 
             dlcKeyToSongName = allDLCKeys.Zip(allSongNames, (k, v) => new { Key = k, Value = v }).ToDictionary(x => x.Key, x => x.Value);
