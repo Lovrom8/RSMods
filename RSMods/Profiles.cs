@@ -571,7 +571,7 @@ namespace RSMods
             Loaded_ScoreAttack = Profiles.JSON_ToObject<SongsSA>(profilePath, Sections.ScoreAttack);
         }
 
-        #region Missions
+        #region Missions | NOT COMPLETE
         public class Mission
         {
             public bool SongMissionIntroShown_15 { get; set; }
@@ -726,7 +726,7 @@ namespace RSMods
         }
         #endregion
 
-        #region Play Nexts
+        #region Play Nexts | NOT COMPLETE
         public class Playnexts
         {
             public Histories Histories { get; set; }
@@ -760,7 +760,7 @@ namespace RSMods
             public Slot Slot1 { get; set; }
         }
         #endregion
-        #region Recently Played Venues
+        #region Recently Played Venues | NOT COMPLETE
         public class RecentlyPlayedVenues
         {
             public List<RecentlyPlayedVenues_Entry> Entries { get; set; }
@@ -775,7 +775,7 @@ namespace RSMods
         public class UI { }
         public class PlayListRoot2 { }
 
-        #region Chords
+        #region Chords | NOT COMPLETE
         public class Chords
         {
             [JsonProperty("6110c00")]
@@ -3568,7 +3568,7 @@ namespace RSMods
             public bool _419400 { get; set; }
         }
         #endregion
-        #region Lessons
+        #region Lessons | NOT COMPLETE
         public class GE
         {
             public double GE_LTapping_Lsn37_Started { get; set; }
@@ -3622,7 +3622,7 @@ namespace RSMods
             public double GE_LPicking_Lsn29_Stopped { get; set; }
         }
         #endregion
-        #region Nonstop Play
+        #region Nonstop Play | NOT COMPLETE
         public class NSP_PlayListRoot2
         {
             public double NSP_PlayListArrangements { get; set; }
@@ -3632,7 +3632,7 @@ namespace RSMods
             public double Duration { get; set; }
         }
         #endregion
-        #region Options
+        #region Options | NOT COMPLETE
         public class Tuning
         {
             public double CapoFret { get; set; }
@@ -3751,7 +3751,7 @@ namespace RSMods
             public bool LevellerLevelUp { get; set; }
         }
         #endregion
-        #region Guitarcade
+        #region Guitarcade | NOT COMPLETE
 
         public class GC_Instrument
         {
@@ -3889,7 +3889,7 @@ namespace RSMods
 
         public class EarnedRocksmithPointsKeys { };
 
-        #region Dynamic Difficulty
+        #region Dynamic Difficulty | NOT COMPLETE
         public class DynamicDifficulty
         {
             public DD_Path Combo { get; set; }
@@ -3909,7 +3909,7 @@ namespace RSMods
 
         public class Venues { }
 
-        #region Prizes
+        #region Prizes | COMPLETE
         public class Prizes
         {
             // Points
@@ -4385,7 +4385,7 @@ namespace RSMods
             public double Missed { get; set; }
         }
         #endregion
-        #region Session Mode
+        #region Session Mode | NOT COMPLETE
         public class SessionMode
         {
             public SessionMode_CustomBands CustomBands { get; set; }
@@ -4736,7 +4736,7 @@ namespace RSMods
             public double Scale { get; set; }
         }
         #endregion
-        #region Achievements
+        #region Achievements | NOT COMPLETE
         public class Achievements
         {
             public string SongStreakID { get; set; }
@@ -4820,7 +4820,7 @@ namespace RSMods
             public bool HitChord_8 { get; set; }
         }
         #endregion
-        #region Stats
+        #region Stats | NOT COMPLETE
         public class Stats
         {
             public double GuitarcadeTempleBendsHS { get; set; }
@@ -4933,7 +4933,7 @@ namespace RSMods
         }
 
         #endregion
-        #region Score Attack
+        #region Score Attack | NOT COMPLETE
         public class SongsSA : Dictionary<string, SA_SongDetails> { }
 
         public class SA_SongDetails
