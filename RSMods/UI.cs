@@ -103,7 +103,7 @@ namespace RSMods
             DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
         }
 
-    #region Startup Functions
+        #region Startup Functions
 
         private void InitWinForms()
         {
@@ -203,8 +203,8 @@ namespace RSMods
             foreach (KeyValuePair<string, string> profileData in Profiles.AvailableProfiles())
             {
                 listBox_AutoLoadProfiles.Items.Add(profileData.Key);
-                listBox_Profile_AvailableProfiles.Items.Add(profileData.Key);
-            }    
+                listBox_Profiles_AvailableProfiles.Items.Add(profileData.Key);
+            }
         }
 
         private void DeleteOldBackups(int maxAmountOfBackups)
@@ -229,14 +229,14 @@ namespace RSMods
 
                 if (Array.IndexOf(backups, backup.Name) < backups.Length - maxAmountOfBackups)
                 {
-                    foreach(string file in Directory.GetFiles(backup.FullName))
+                    foreach (string file in Directory.GetFiles(backup.FullName))
                     {
                         File.Delete(file);
                     }
                     Directory.Delete(backup.FullName);
                     foldersLeftToRemove--;
                 }
-                    
+
             }
         }
 
@@ -246,8 +246,8 @@ namespace RSMods
                 Profiles.SaveProfile();
         }
 
-#endregion
-    #region Show Prior Settings In GUI
+        #endregion
+        #region Show Prior Settings In GUI
         private void LoadModSettings()
         {
             if (ReadSettings.ProcessSettings(ReadSettings.ToggleLoftEnabledIdentifier) == "on") // Toggle Loft Enabled / Disabled
@@ -281,7 +281,7 @@ namespace RSMods
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerEnabledIdentifier) == "on") // Show Song Timer Enabled / Disabled
-            { 
+            {
                 checkBox_SongTimer.Checked = true;
                 groupBox_SongTimer.Visible = true;
                 if (ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerWhenIdentifier) == "automatic")
@@ -411,7 +411,7 @@ namespace RSMods
                     nUpDown_RiffRepeaterSpeed.Value = decimalVal;
                     SaveChanges(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, decimalVal.ToString());
                 }
-                    
+
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningIdentifier) == "on")
@@ -625,8 +625,8 @@ namespace RSMods
             checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(ASIO_InputMic_Disable);
         }
 
-#endregion
-    #region Custom Themes
+        #endregion
+        #region Custom Themes
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
         private List<Control> ControlList = new List<Control>(); // Don't make this readonly
@@ -739,8 +739,8 @@ namespace RSMods
 
         private void Apply_ThemeColors(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
 
-#endregion
-    #region Check For Keypresses (Keybindings)
+        #endregion
+        #region Check For Keypresses (Keybindings)
         private void CheckKeyPressesDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) // If enter is pressed
@@ -808,8 +808,8 @@ namespace RSMods
         private void LoadPreviousKeyAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment_MODS.Text = Dictionaries.refreshKeybindingList()[listBox_Modlist_MODS.SelectedIndex];
 
         private void LoadPreviousVolumeAssignment(object sender, EventArgs e) => textBox_NewKeyAssignment_AUDIO.Text = Dictionaries.refreshAudioKeybindingList()[listBox_Modlist_AUDIO.SelectedIndex];
-#endregion
-    #region Reset To Default
+        #endregion
+        #region Reset To Default
         private void ResetToDefaultSettings(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
@@ -829,8 +829,8 @@ namespace RSMods
             newForm.Closed += (s, args) => Close();
             newForm.Show();
         }
-#endregion
-    #region Save Settings
+        #endregion
+        #region Save Settings
         private void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
@@ -890,9 +890,7 @@ namespace RSMods
                     };
                 }
 
-                listBox_Profile_Songlists.Items.Clear();
-                foreach (string songlistName in Dictionaries.SongListIndexToINISetting)
-                    listBox_Profile_Songlists.Items.Add(ReadSettings.ProcessSettings(songlistName));
+                Profiles_RefreshSonglistNames();
             }
 
             // Mod Keybindings
@@ -954,8 +952,8 @@ namespace RSMods
             ShowSavedSettingsLabel();
         }
 
-#endregion
-    #region String Colors
+        #endregion
+        #region String Colors
 
         private void StringColors_ChangeStringColor(object sender, EventArgs e)
         {
@@ -1021,7 +1019,7 @@ namespace RSMods
         private void StringColors_ColorBlindStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors(true);
 
         #endregion
-    #region Noteway Colors
+        #region Noteway Colors
         private void NotewayColors_ChangeNotewayColor(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog
@@ -1066,8 +1064,8 @@ namespace RSMods
                 textBox_ShowFretNumber.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomFretNubmersIdentifier));
         }
 
-    #endregion
-    #region Prep Set And Forget Mods
+        #endregion
+        #region Prep Set And Forget Mods
         // SetAndForget Mods
 
         private void SetForget_FillUI()
@@ -1098,8 +1096,8 @@ namespace RSMods
             SetAndForgetMods.LoadDefaultFiles();
             SetForget_FillUI();
         }
-#endregion
-    #region Set And Forget UI Functions
+        #endregion
+        #region Set And Forget UI Functions
 
         private void SetForget_RestoreDefaults(object sender, EventArgs e)
         {
@@ -1252,12 +1250,12 @@ namespace RSMods
 
             int selectedToneType = -1;
 
-            var gaRadioControls = new List<RadioButton>() { 
-                radio_TempleOfBendsTone, radio_ScaleWarriorsTone, radio_StringsSkipSaloonTone, 
+            var gaRadioControls = new List<RadioButton>() {
+                radio_TempleOfBendsTone, radio_ScaleWarriorsTone, radio_StringsSkipSaloonTone,
                 radio_ScaleRacerTone, radio_NinjaSlideNTone, radio_HurtlinHurdlesTone, radio_HarmonicHeistTone,
                 radio_DucksReduxTone, radio_RainbowLaserTone, radio_GoneWailinTone};
 
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (gaRadioControls[i].Checked)
                 {
@@ -1265,14 +1263,14 @@ namespace RSMods
                     break;
                 }
             }
-                
+
             string selectedToneName = listBox_ProfileTones.SelectedItem.ToString();
 
             SetAndForgetMods.SetGuitarArcadeTone(selectedToneName, selectedToneType);
         }
 
-#endregion
-    #region Save Setting Middleware
+        #endregion
+        #region Save Setting Middleware
 
         private void Save_ToggleLoft(object sender, EventArgs e) // Toggle Loft Enabled/ Disabled
         {
@@ -1616,8 +1614,8 @@ namespace RSMods
                 SaveChanges(ReadSettings.ShowSelectedVolumeWhenIdentifier, "automatic");
         }
 
-    #endregion
-    #region Tooltips
+        #endregion
+        #region Tooltips
 
         bool CreatedToolTipYet = false;
 
@@ -1657,8 +1655,8 @@ namespace RSMods
             }
         }
 
-#endregion
-    #region Guitar Speak Functions
+        #endregion
+        #region Guitar Speak Functions
         private void GuitarSpeakSaveButton_Click(object sender, EventArgs e)
         {
             if (listBox_GuitarSpeakNote.SelectedIndex >= 0 && listBox_GuitarSpeakOctave.SelectedIndex >= 0 && listBox_GuitarSpeakKeypress.SelectedIndex >= 0)
@@ -1779,8 +1777,8 @@ namespace RSMods
             RefreshGuitarSpeakPresets();
         }
 
-    #endregion
-    #region Prep Twitch Tab
+        #endregion
+        #region Prep Twitch Tab
         private void EnableTwitchTab()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -1847,8 +1845,8 @@ namespace RSMods
             TwitchSettings.Get.LoadDefaultEffects();
             TwitchSettings.Get.LoadEnabledEffects();
         }
-#endregion
-    #region Twitch UI Functions
+        #endregion
+        #region Twitch UI Functions
         private void Twitch_ReAuthorize_Click(object sender, EventArgs e)
         {
             ImplicitAuth auth = new ImplicitAuth();
@@ -2118,12 +2116,12 @@ namespace RSMods
 
         private void Twitch_TestReward(object sender, EventArgs e)
         {
-            if(Process.GetProcessesByName("Rocksmith2014").Length == 0)
+            if (Process.GetProcessesByName("Rocksmith2014").Length == 0)
             {
                 TwitchSettings.Get.AddToLog("The game does not appear to be running!");
                 return;
             }
-            
+
             Twitch_SendFakeReward();
         }
         private void Twitch_ShowSolidNoteColorRelatedStuff(bool shouldWeShow)
@@ -2182,8 +2180,8 @@ namespace RSMods
 
            SaveEnabledRewardsToFile();
        }*/
-#endregion
-    #region Fonts
+        #endregion
+        #region Fonts
         private void LoadFonts() // Not modified from here: https://stackoverflow.com/a/8657854 :eyes:
         {
             InstalledFontCollection fontList = new InstalledFontCollection();
@@ -2207,8 +2205,8 @@ namespace RSMods
 
             SaveChanges(ReadSettings.OnScreenFontIdentifier, fontName);
         }
-#endregion
-    #region RS_ASIO
+        #endregion
+        #region RS_ASIO
 
         // Config
         private void ASIO_WASAPI_Output(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.EnableWasapiOutputsIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_WASAPI_Output.Checked).ToString());
@@ -2327,8 +2325,8 @@ namespace RSMods
         private void ASIO_Output_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_Output, ASIO_ListAvailableOutput, ASIO.ReadSettings.Sections.Output);
         private void ASIO_InputMic_ClearSelection(object sender, EventArgs e) => ASIO_ClearSelectedDevice(listBox_AvailableASIODevices_InputMic, ASIO_ListAvailableInputMic, ASIO.ReadSettings.Sections.InputMic);
 
-#endregion
-    #region Rocksmith Settings
+        #endregion
+        #region Rocksmith Settings
         // Audio Settings
         private void Rocksmith_EnableMicrophone(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnableMicrophoneIdentifier, checkBox_Rocksmith_EnableMicrophone.Checked.ToString().ToLower());
         private void Rocksmith_ExclusiveMode(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.ExclusiveModeIdentifier, checkBox_Rocksmith_ExclusiveMode.Checked.ToString().ToLower());
@@ -2393,105 +2391,105 @@ namespace RSMods
         private void Rocksmith_UseProxy(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.UseProxyIdentifier, checkBox_Rocksmith_UseProxy.Checked.ToString().ToLower());
 
         #endregion
-    #region Profiles
+        #region Profiles
 
         Dictionary<string, string> DLCKeyToSongName = new Dictionary<string, string>();
         private string currentUnpackedProfile = String.Empty;
 
-        private void Profile_LoadSongs(object sender, EventArgs e)
+        private void Profiles_RefreshSonglistNames()
         {
-            listBox_Profile_AvailableSongs.Items.Clear();
-            listBox_Profile_Songlists.Items.Clear();
-
-            DLCKeyToSongName = SongManager.DLCKeyToSongName(progressBar_Profile_LoadPsarcs);
-
-            foreach (KeyValuePair<string, string> song in DLCKeyToSongName)
-                listBox_Profile_AvailableSongs.Items.Add(song.Value);
-
-            foreach (string songlistName in Dictionaries.SongListIndexToINISetting)
-                listBox_Profile_Songlists.Items.Add(ReadSettings.ProcessSettings(songlistName));
-
-            groupBox_Profile_SongLists.Visible = true;
+            checkBox_Profiles_SongList1.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier);
+            checkBox_Profiles_SongList2.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier);
+            checkBox_Profiles_SongList3.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier);
+            checkBox_Profiles_SongList4.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier);
+            checkBox_Profiles_SongList5.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier);
+            checkBox_Profiles_SongList6.Text = ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier);
         }
 
-        private void Profile_SelectSongList(object sender, EventArgs e)
+
+        private void Profile_LoadSongs(object sender, EventArgs e)
+        {
+            listBox_Profiles_AvailableSongs.Items.Clear();
+
+            DLCKeyToSongName = SongManager.DLCKeyToSongName(progressBar_Profiles_LoadPsarcs);
+
+            foreach (KeyValuePair<string, string> song in DLCKeyToSongName)
+                listBox_Profiles_AvailableSongs.Items.Add(song.Value);
+
+            Profiles_RefreshSonglistNames();
+            Profiles_FillProfileSongLists();
+
+            groupBox_Profiles_SongLists.Visible = true;
+        }
+
+        private void Profile_SelectSong(object sender, EventArgs e)
         {
 
-            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex < 0)
             {
-                MessageBox.Show("Make sure to select a songlist AND a profile.");
+                MessageBox.Show("Make sure to select a profile");
                 return;
             }
 
-            listBox_Profile_SongsInSelectedSonglist.Visible = true;
-            label_Profile_SongsInSonglist.Visible = true;
-
             // Make sure we aren't unpacking the same profile over, and over, and over again.
-            if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+            if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
             {
-                currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
+                OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
             }
 
-            string[] DLCKeysInSonglist = Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].ToArray();
+            foreach(CheckBox checkBox in ProfileSonglistCheckboxes)
+                checkBox.Visible = true;
 
-            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
+            label_Profiles_Songlist_SelectedSong.Visible = true;
 
-            foreach (string dlcKey in DLCKeysInSonglist)
+            // Find new way
+            List<string[]> dlcKeyArrayList = new List<string[]>();
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[0].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[1].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[2].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[3].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[4].ToArray());
+            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[5].ToArray());
+
+            foreach (string[] dlcKeyArray in dlcKeyArrayList)
             {
-                if (DLCKeyToSongName.TryGetValue(dlcKey, out string songName)) // Only show the songs that are still in the user's game.
-                    listBox_Profile_SongsInSelectedSonglist.Items.Add(songName);
+                ProfileSonglistCheckboxes[dlcKeyArrayList.IndexOf(dlcKeyArray)].Checked = false;
+
+                if (dlcKeyArray.Contains(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key))
+                    ProfileSonglistCheckboxes[dlcKeyArrayList.IndexOf(dlcKeyArray)].Checked = true;
             }
+        }
+
+        private void Profiles_ChangeSelectedProfile(object sender, EventArgs e)
+        {
+            button_Profiles_LoadSongs.Visible = true;
+            groupBox_Profiles_Rewards.Visible = true;
         }
 
         private void OpenProfileFromProfileName(string profileName) => Profile_Sections.LoadProfileSections(GetProfilePathFromName(profileName));
 
         private string GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
 
-        private void Profiles_ClearSongList(object sender, EventArgs e)
-        {
-            Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Clear();
-            listBox_Profile_SongsInSelectedSonglist.Items.Clear();
-        }
-
-        private void Profiles_AddToSonglist(object sender, EventArgs e)
-        {
-            if (listBox_Profile_AvailableSongs.SelectedIndex > -1 && listBox_Profile_AvailableProfiles.SelectedIndex > -1 && listBox_Profile_Songlists.SelectedIndex > -1 && !listBox_Profile_SongsInSelectedSonglist.Items.Contains(listBox_Profile_AvailableSongs.SelectedItem.ToString()))
-            {
-                Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Add(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profile_AvailableSongs.SelectedItem.ToString()).Key);
-                listBox_Profile_SongsInSelectedSonglist.Items.Add(listBox_Profile_AvailableSongs.SelectedItem.ToString());
-            }
-                
-        }
-
-        private void Profiles_RemoeFromSonglist(object sender, EventArgs e)
-        {
-            if (listBox_Profile_SongsInSelectedSonglist.SelectedIndex < 0)
-                return;
-
-            Profile_Sections.Loaded_Songlists.SongLists[listBox_Profile_Songlists.SelectedIndex].Remove(DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profile_SongsInSelectedSonglist.SelectedItem.ToString()).Key);
-            listBox_Profile_SongsInSelectedSonglist.Items.Remove(listBox_Profile_SongsInSelectedSonglist.SelectedItem.ToString());
-        }
-
         private void Profiles_SaveSonglists(object sender, EventArgs e)
         {
-            if (listBox_Profile_Songlists.SelectedIndex < 0 || listBox_Profile_AvailableProfiles.SelectedIndex < 0)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex < 0)
                 return;
 
-            Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profile_AvailableProfiles.SelectedItem.ToString()));
+            Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
             MessageBox.Show("Your profile has been saved!");
         }
 
         private void Profiles_UnlockAllRewards(object sender, EventArgs e)
         {
-            if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
             {
                 if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                    if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
                     {
-                        currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                        OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                        currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
+                        OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
                     }
 
                     Profile_Sections.LockAndUnlockRewards();
@@ -2504,14 +2502,14 @@ namespace RSMods
 
         private void Profiles_LockAllRewards(object sender, EventArgs e)
         {
-            if (listBox_Profile_AvailableProfiles.SelectedIndex > -1)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
             {
                 if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    if (currentUnpackedProfile != listBox_Profile_AvailableProfiles.SelectedItem.ToString())
+                    if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
                     {
-                        currentUnpackedProfile = listBox_Profile_AvailableProfiles.SelectedItem.ToString();
-                        OpenProfileFromProfileName(listBox_Profile_AvailableProfiles.SelectedItem.ToString());
+                        currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
+                        OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString());
                     }
 
                     Profile_Sections.LockAndUnlockRewards(false);
@@ -2522,13 +2520,74 @@ namespace RSMods
                 MessageBox.Show("Make sure you have a profile selected!");
         }
 
-
         private void SaveRewardsToProfile()
         {
-            Profiles.EncryptProfiles<Profile_Sections.Prizes>(Profile_Sections.Loaded_Prizes, "Prizes", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profile_AvailableProfiles.SelectedItem.ToString()));
+            Profiles.EncryptProfiles<Profile_Sections.Prizes>(Profile_Sections.Loaded_Prizes, "Prizes", Profiles.DecryptProfiles(GetProfilePathFromName(currentUnpackedProfile)), GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
             MessageBox.Show("Changes to Rewards have been saved!");
         }
 
+
+        private void Profiles_AddSongToSonglist(int songlistNumber)
+        {
+            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            if (!Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
+                Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Add(DLCKey);
+        }
+
+        private void Profiles_RemoveSongFromSonglist(int songlistNumber)
+        {
+            string DLCKey = DLCKeyToSongName.FirstOrDefault(x => x.Value == listBox_Profiles_AvailableSongs.SelectedItem.ToString()).Key;
+            if (Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
+                Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Remove(DLCKey);
+        }
+
+        private void Profiles_SongList1(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList1.Checked)
+                Profiles_AddSongToSonglist(1);
+            else
+                Profiles_RemoveSongFromSonglist(1);
+        }
+
+        private void Profiles_SongList2(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList2.Checked)
+                Profiles_AddSongToSonglist(2);
+            else
+                Profiles_RemoveSongFromSonglist(2);
+        }
+
+        private void Profiles_SongList3(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList3.Checked)
+                Profiles_AddSongToSonglist(3);
+            else
+                Profiles_RemoveSongFromSonglist(3);
+        }
+
+        private void Profiles_SongList4(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList4.Checked)
+                Profiles_AddSongToSonglist(4);
+            else
+                Profiles_RemoveSongFromSonglist(4);
+        }
+
+        private void Profiles_SongList5(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList5.Checked)
+                Profiles_AddSongToSonglist(5);
+            else
+                Profiles_RemoveSongFromSonglist(5);
+        }
+
+        private void Profiles_SongList6(object sender, EventArgs e)
+        {
+            if (checkBox_Profiles_SongList6.Checked)
+                Profiles_AddSongToSonglist(6);
+            else
+                Profiles_RemoveSongFromSonglist(6);
+        }
 
         #endregion
         #region Midi

@@ -203,6 +203,19 @@ namespace RSMods
             notewayButtonToColorTextbox.Add(button_ChangeNotewayGutter, textBox_ShowNotewayGutter);
             notewayButtonToColorTextbox.Add(button_ChangeFretNumber, textBox_ShowFretNumber);
         }
+
+        private List<CheckBox> ProfileSonglistCheckboxes = new List<CheckBox>();
+        
+        private void Profiles_FillProfileSongLists()
+        {
+            ProfileSonglistCheckboxes.Clear();
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList1);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList2);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList3);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList4);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList5);
+            ProfileSonglistCheckboxes.Add(checkBox_Profiles_SongList6);
+        }
         #endregion
     };
 
