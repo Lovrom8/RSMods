@@ -2398,6 +2398,10 @@ namespace RSMods
         #region Profiles
 
         List<SongData> Songs = new List<SongData>();
+
+        // TODO: Add ODLC / CDLC Only buttons (radios maybe?)
+        List<SongData> ODLCOnly = new List<SongData>();
+        List<SongData> CDLCOnly = new List<SongData>();
         private string currentUnpackedProfile = String.Empty;
 
         private void Profiles_RefreshSonglistNames()
@@ -2410,11 +2414,12 @@ namespace RSMods
             dgv_Profiles_Songlists.Columns[7].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier);
         }
 
-
         private void Profiles_LoadSongs(object sender, EventArgs e)
         {
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
+            ODLCOnly = Songs.Where(song => song.ODLC == true).ToList();
+            CDLCOnly = Songs.Where(song => song.ODLC == false).ToList();
 
             Profiles_UnpackProfile();
 
