@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using RSMods.Util;
-using System.Windows.Forms;
 
 #pragma warning disable IDE0052
 

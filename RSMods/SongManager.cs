@@ -2,14 +2,11 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Rocksmith2014PsarcLib.Psarc;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using RSMods.Util;
 using System.Windows.Forms;
-using System.Collections.Concurrent;
-using System.Drawing;
 
 namespace RSMods
 {

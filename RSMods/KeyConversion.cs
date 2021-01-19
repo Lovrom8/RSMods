@@ -1,6 +1,7 @@
 ﻿using System;
 using static System.StringComparison;
 using System.Windows.Forms;
+
 namespace RSMods {
     class KeyConversion {
 

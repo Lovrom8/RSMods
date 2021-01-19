@@ -1,12 +1,8 @@
-﻿#pragma warning disable 0618
-
-using System;
-
-using System.Text;
-
+﻿using System.Text;
 using System.Runtime.InteropServices;
-
 using System.Security.Permissions;
+
+#pragma warning disable 0618 // Hide Obselete Warning
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, UnmanagedCode = true)]
 

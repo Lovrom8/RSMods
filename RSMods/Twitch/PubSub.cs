@@ -1,12 +1,8 @@
 ﻿using RSMods.Twitch.EffectServer;
-using RSMods.Util;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;
 
