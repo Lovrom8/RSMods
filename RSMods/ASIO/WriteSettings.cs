@@ -32,6 +32,7 @@ namespace RSMods.ASIO
             {
                 { ReadSettings.DriverIdentifier, ReadSettings.ProcessSettings(ReadSettings.DriverIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.BaseChannelIdentifier, ReadSettings.ProcessSettings(ReadSettings.BaseChannelIdentifier, ReadSettings.Sections.Output)},
+                { ReadSettings.AltBaseChannelIdentifier, ReadSettings.ProcessSettings(ReadSettings.AltBaseChannelIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.Output)},
@@ -59,7 +60,6 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.InputMic)},
-
             }},
         };
 

@@ -251,6 +251,8 @@
             this.listBox_AvailableASIODevices_InputMic = new System.Windows.Forms.ListBox();
             this.label_ASIO_Credits = new System.Windows.Forms.Label();
             this.groupBox_ASIO_Output = new System.Windows.Forms.GroupBox();
+            this.nUpDown_ASIO_Output_AltBaseChannel = new System.Windows.Forms.NumericUpDown();
+            this.label_ASIO_Output_AltBaseChannel = new System.Windows.Forms.Label();
             this.button_ASIO_Output_ClearSelection = new System.Windows.Forms.Button();
             this.checkBox_ASIO_Output_Disabled = new System.Windows.Forms.CheckBox();
             this.checkBox_ASIO_Output_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
@@ -373,6 +375,15 @@
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
             this.groupBox_Profiles_SongLists = new System.Windows.Forms.GroupBox();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
+            this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Song = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SongList1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.SongList2 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.SongList3 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.SongList4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.SongList5 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.SongList6 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Favorites = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
             this.label_Profiles_AvailableSongs = new System.Windows.Forms.Label();
             this.button_Profiles_LoadSongs = new System.Windows.Forms.Button();
@@ -391,15 +402,6 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Song = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SongList1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SongList2 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SongList3 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SongList4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SongList5 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SongList6 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Favorites = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -448,6 +450,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_MaxVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_Channel)).BeginInit();
             this.groupBox_ASIO_Output.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_AltBaseChannel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).BeginInit();
             this.groupBox_ASIO_Input1.SuspendLayout();
@@ -3241,6 +3244,8 @@
             // 
             // groupBox_ASIO_Output
             // 
+            this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_AltBaseChannel);
+            this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_AltBaseChannel);
             this.groupBox_ASIO_Output.Controls.Add(this.button_ASIO_Output_ClearSelection);
             this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_Disabled);
             this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_ControlEndpointVolume);
@@ -3257,6 +3262,29 @@
             this.groupBox_ASIO_Output.TabStop = false;
             this.groupBox_ASIO_Output.Text = "Output";
             this.groupBox_ASIO_Output.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // nUpDown_ASIO_Output_AltBaseChannel
+            // 
+            this.nUpDown_ASIO_Output_AltBaseChannel.Location = new System.Drawing.Point(338, 52);
+            this.nUpDown_ASIO_Output_AltBaseChannel.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.nUpDown_ASIO_Output_AltBaseChannel.Name = "nUpDown_ASIO_Output_AltBaseChannel";
+            this.nUpDown_ASIO_Output_AltBaseChannel.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_ASIO_Output_AltBaseChannel.TabIndex = 15;
+            this.nUpDown_ASIO_Output_AltBaseChannel.ValueChanged += new System.EventHandler(this.ASIO_Output_AltBaseChannel);
+            // 
+            // label_ASIO_Output_AltBaseChannel
+            // 
+            this.label_ASIO_Output_AltBaseChannel.AutoSize = true;
+            this.label_ASIO_Output_AltBaseChannel.Location = new System.Drawing.Point(247, 55);
+            this.label_ASIO_Output_AltBaseChannel.Name = "label_ASIO_Output_AltBaseChannel";
+            this.label_ASIO_Output_AltBaseChannel.Size = new System.Drawing.Size(91, 13);
+            this.label_ASIO_Output_AltBaseChannel.TabIndex = 14;
+            this.label_ASIO_Output_AltBaseChannel.Text = "Alt Base Channel:";
+            this.label_ASIO_Output_AltBaseChannel.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_ASIO_Output_ClearSelection
             // 
@@ -3305,7 +3333,7 @@
             // label_ASIO_Output_MaxVolume
             // 
             this.label_ASIO_Output_MaxVolume.AutoSize = true;
-            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(250, 69);
+            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(250, 80);
             this.label_ASIO_Output_MaxVolume.Name = "label_ASIO_Output_MaxVolume";
             this.label_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(68, 13);
             this.label_ASIO_Output_MaxVolume.TabIndex = 7;
@@ -3314,7 +3342,7 @@
             // 
             // nUpDown_ASIO_Output_MaxVolume
             // 
-            this.nUpDown_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(338, 67);
+            this.nUpDown_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(338, 78);
             this.nUpDown_ASIO_Output_MaxVolume.Name = "nUpDown_ASIO_Output_MaxVolume";
             this.nUpDown_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_Output_MaxVolume.TabIndex = 4;
@@ -4750,6 +4778,74 @@
             this.dgv_Profiles_Songlists.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.Profiles_Songlists_ChangedValue);
             this.dgv_Profiles_Songlists.CurrentCellDirtyStateChanged += new System.EventHandler(this.Profiles_Songlists_DirtyState);
             // 
+            // Artist
+            // 
+            this.Artist.HeaderText = "Artist";
+            this.Artist.Name = "Artist";
+            this.Artist.ReadOnly = true;
+            // 
+            // Song
+            // 
+            this.Song.HeaderText = "Song";
+            this.Song.Name = "Song";
+            this.Song.ReadOnly = true;
+            // 
+            // SongList1
+            // 
+            this.SongList1.HeaderText = "SongList1";
+            this.SongList1.Name = "SongList1";
+            this.SongList1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList1.Width = 80;
+            // 
+            // SongList2
+            // 
+            this.SongList2.HeaderText = "SongList2";
+            this.SongList2.Name = "SongList2";
+            this.SongList2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList2.Width = 80;
+            // 
+            // SongList3
+            // 
+            this.SongList3.HeaderText = "SongList3";
+            this.SongList3.Name = "SongList3";
+            this.SongList3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList3.Width = 80;
+            // 
+            // SongList4
+            // 
+            this.SongList4.HeaderText = "SongList4";
+            this.SongList4.Name = "SongList4";
+            this.SongList4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList4.Width = 80;
+            // 
+            // SongList5
+            // 
+            this.SongList5.HeaderText = "SongList5";
+            this.SongList5.Name = "SongList5";
+            this.SongList5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList5.Width = 80;
+            // 
+            // SongList6
+            // 
+            this.SongList6.HeaderText = "SongList6";
+            this.SongList6.Name = "SongList6";
+            this.SongList6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList6.Width = 80;
+            // 
+            // Favorites
+            // 
+            this.Favorites.HeaderText = "Favorites";
+            this.Favorites.Name = "Favorites";
+            this.Favorites.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Favorites.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Favorites.Width = 80;
+            // 
             // button_Profiles_SaveSonglist
             // 
             this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(6, 195);
@@ -4924,74 +5020,6 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // Artist
-            // 
-            this.Artist.HeaderText = "Artist";
-            this.Artist.Name = "Artist";
-            this.Artist.ReadOnly = true;
-            // 
-            // Song
-            // 
-            this.Song.HeaderText = "Song";
-            this.Song.Name = "Song";
-            this.Song.ReadOnly = true;
-            // 
-            // SongList1
-            // 
-            this.SongList1.HeaderText = "SongList1";
-            this.SongList1.Name = "SongList1";
-            this.SongList1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList1.Width = 80;
-            // 
-            // SongList2
-            // 
-            this.SongList2.HeaderText = "SongList2";
-            this.SongList2.Name = "SongList2";
-            this.SongList2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList2.Width = 80;
-            // 
-            // SongList3
-            // 
-            this.SongList3.HeaderText = "SongList3";
-            this.SongList3.Name = "SongList3";
-            this.SongList3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList3.Width = 80;
-            // 
-            // SongList4
-            // 
-            this.SongList4.HeaderText = "SongList4";
-            this.SongList4.Name = "SongList4";
-            this.SongList4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList4.Width = 80;
-            // 
-            // SongList5
-            // 
-            this.SongList5.HeaderText = "SongList5";
-            this.SongList5.Name = "SongList5";
-            this.SongList5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList5.Width = 80;
-            // 
-            // SongList6
-            // 
-            this.SongList6.HeaderText = "SongList6";
-            this.SongList6.Name = "SongList6";
-            this.SongList6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList6.Width = 80;
-            // 
-            // Favorites
-            // 
-            this.Favorites.HeaderText = "Favorites";
-            this.Favorites.Name = "Favorites";
-            this.Favorites.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Favorites.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Favorites.Width = 80;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5075,6 +5103,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_InputMic_Channel)).EndInit();
             this.groupBox_ASIO_Output.ResumeLayout(false);
             this.groupBox_ASIO_Output.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_AltBaseChannel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_MaxVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ASIO_Output_BaseChannel)).EndInit();
             this.groupBox_ASIO_Input1.ResumeLayout(false);
@@ -5505,6 +5534,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn SongList5;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SongList6;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Favorites;
+        private System.Windows.Forms.NumericUpDown nUpDown_ASIO_Output_AltBaseChannel;
+        private System.Windows.Forms.Label label_ASIO_Output_AltBaseChannel;
     }
 }
 

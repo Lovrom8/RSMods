@@ -15,7 +15,7 @@ namespace RSMods.ASIO
     {
         private static string EnableWasapiOutputs, EnableWasapiInputs, EnableAsio,
         BufferSizeMode, CustomBufferSize,
-        OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent,
+        OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_AltBaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent,
         INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent,
         INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent,
         INPUTMic_Driver, INPUTMic_Channel, INPUTMic_EnableSoftwareEndpointVolumeControl, INPUTMic_EnableSoftwareMasterVolumeControl, INPUTMic_SoftwareMasterVolumePercent;
@@ -31,6 +31,7 @@ namespace RSMods.ASIO
 
         DriverIdentifier = "Driver=",
         BaseChannelIdentifier = "BaseChannel=",
+        AltBaseChannelIdentifier = "AltBaseChannel=",
         ChannelIdentifier = "Channel=",
         EnableSoftwareEndpointVolumeControlIdentifier = "EnableSoftwareEndpointVolumeControl=",
         EnableSoftwareMasterVolumeControlIdentifier = "EnableSoftwareMasterVolumeControl=",
@@ -151,6 +152,8 @@ namespace RSMods.ASIO
                         return FillSettingVariable(DriverIdentifier, sectionToGrab, currentLine, out OUTPUT_Driver);
                     if (IdentifierIsFound(currentLine, BaseChannelIdentifier, identifierToGrab))
                         return FillSettingVariable(BaseChannelIdentifier, sectionToGrab, currentLine, out OUTPUT_BaseChannel);
+                    if (IdentifierIsFound(currentLine, AltBaseChannelIdentifier, identifierToGrab))
+                        return FillSettingVariable(AltBaseChannelIdentifier, sectionToGrab, currentLine, out OUTPUT_AltBaseChannel);
                     if (IdentifierIsFound(currentLine, EnableSoftwareEndpointVolumeControlIdentifier, identifierToGrab))
                         return FillSettingVariable(EnableSoftwareEndpointVolumeControlIdentifier, sectionToGrab, currentLine, out OUTPUT_EnableSoftwareEndpointVolumeControl);
                     if (IdentifierIsFound(currentLine, EnableSoftwareMasterVolumeControlIdentifier, identifierToGrab))

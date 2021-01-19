@@ -128,7 +128,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_ASIO_Output, "If your headphones support ASIO, this is where you would manage them.");
             TooltipDictionary.Add(groupBox_ASIO_Input0, "If you use an audio interface, this is where you would manage it.\nThis is meant for the Player 1 \"Cable\"");
             TooltipDictionary.Add(groupBox_ASIO_Input1, "If you use an audio interface, this is where you would manage it.\nThis is meant for the Player 2 \"Cable\"");
-            TooltipDictionary.Add(groupBox_ASIO_InputMic, "If you use an audio interface, this is where you would manage it.\nThis is meant for singing in game.\nThis section requires RS_ASIO version 0.5.5 or greater to work.");
+            TooltipDictionary.Add(groupBox_ASIO_InputMic, "This section requires RS_ASIO version 0.5.5 or greater to work.\nIf you use an audio interface, this is where you would manage it.\nThis is meant for singing in game.");
             TooltipDictionary.Add(groupBox_ASIO_BufferSize, "Use this to box to change how much latency there is.\nThe lower you go, you have a higher chance of getting crackling audio.");
             TooltipDictionary.Add(listBox_AvailableASIODevices_Output, "A list of all connected ASIO devices.\nClick to save the selected device as your Output device (headphones)");
             TooltipDictionary.Add(listBox_AvailableASIODevices_Input0, "A list of all connected ASIO devices.\nClick to save the selected device as your Input0 device (guitar / bass | Player 1)");
@@ -149,6 +149,7 @@ namespace RSMods
             TooltipDictionary.Add(label_ASIO_Input1_Channel, "This is what channel we look for audio on.\nA good way to find this value is to see how many inputs are before and subtract 1.\nEx: My cable is plugged into the 2nd input, so my channel is 1.");
             TooltipDictionary.Add(label_ASIO_InputMic_Channel, "This is what channel we look for audio on.\nA good way to find this value is to see how many inputs are before and subtract 1.\nEx: My cable is plugged into the 2nd input, so my channel is 1.");
             TooltipDictionary.Add(label_ASIO_Output_BaseChannel, "This is what channel we want to send the audio to.\nA good way to find this value is to see how many outputs are before and subtract 1.\nEx: My headphones is plugged into the 2nd output, so my base channel is 1.");
+            TooltipDictionary.Add(label_ASIO_Output_AltBaseChannel, "Requires RS_ASIO v0.5.6 or greater to work.\nThis is what channel we want to send mirrored audio to.\nA good way to find this value is to see how many outputs are before and subtract 1.\nEx: My headphones is plugged into the 2nd output, so my base channel is 1.");
 
             // Rocksmith Settings
             TooltipDictionary.Add(checkBox_Rocksmith_EnableMicrophone, "Check this box to enable singing.");
