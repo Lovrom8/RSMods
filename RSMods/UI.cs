@@ -2416,6 +2416,9 @@ namespace RSMods
 
         private void Profiles_LoadSongs(object sender, EventArgs e)
         {
+            dgv_Profiles_Songlists.ClearSelection();
+            dgv_Profiles_Songlists.Rows.Clear();
+
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
             ODLCOnly = Songs.Where(song => song.ODLC == true).ToList();
