@@ -556,21 +556,6 @@ namespace RSMods
                 default:
                     break;
             }
-            switch (GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.VisualQualityIdentifier), 0))
-            {
-                case 0:
-                    radio_Rocksmith_LowQuality.Checked = true;
-                    break;
-                case 1:
-                    radio_Rocksmith_MediumQuality.Checked = true;
-                    break;
-                case 2:
-                case 3:
-                    radio_Rocksmith_HighQuality.Checked = true;
-                    break;
-                default:
-                    break;
-            }
             nUpDown_Rocksmith_RenderWidth.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier), 0);
             nUpDown_Rocksmith_RenderHeight.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier), 0);
             checkBox_Rocksmith_PostEffects.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnablePostEffectsIdentifier), 0));
@@ -581,6 +566,24 @@ namespace RSMods
             checkBox_Rocksmith_MSAASamples.Checked = GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.MsaaSamplesIdentifier), 0) == 4;
             checkBox_Rocksmith_DisableBrowser.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.DisableBrowserIdentifier), 0));
             checkBox_Rocksmith_EnableRenderRes.Checked = (Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingWidthIdentifier) != "0" || Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.RenderingHeightIdentifier) != "0");
+
+            switch (GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.VisualQualityIdentifier), 0))
+            {
+                case 0:
+                    radio_Rocksmith_LowQuality.Checked = true;
+                    break;
+                case 1:
+                    radio_Rocksmith_MediumQuality.Checked = true;
+                    break;
+                case 2:
+                    radio_Rocksmith_HighQuality.Checked = true;
+                    break;
+                case 3:
+                    radio_Rocksmith_CustomQuality.Checked = true;
+                    break;
+                default:
+                    break;
+            }
 
             // Network Settings
             checkBox_Rocksmith_UseProxy.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.UseProxyIdentifier), 0));
@@ -2363,9 +2366,52 @@ namespace RSMods
         private void Rocksmith_Windowed(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "0");
         private void Rocksmith_NonExclusiveFullScreen(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "1");
         private void Rocksmith_ExclusiveFullScreen(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.FullscreenIdentifier, "2");
-        private void Rocksmith_LowQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "0");
-        private void Rocksmith_MediumQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "1");
-        private void Rocksmith_HighQuality(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "2");
+        private void Rocksmith_LowQuality(object sender, EventArgs e)
+        {
+            checkBox_Rocksmith_DepthOfField.Checked = false;
+            checkBox_Rocksmith_PostEffects.Checked = true;
+            checkBox_Rocksmith_HighResScope.Checked = true;
+
+            checkBox_Rocksmith_DepthOfField.Enabled = false;
+            checkBox_Rocksmith_PostEffects.Enabled = false;
+            checkBox_Rocksmith_HighResScope.Enabled = false;
+
+            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "0");
+        }
+        private void Rocksmith_MediumQuality(object sender, EventArgs e)
+        {
+            checkBox_Rocksmith_DepthOfField.Checked = true;
+            checkBox_Rocksmith_PostEffects.Checked = true;
+            checkBox_Rocksmith_HighResScope.Checked = true;
+
+            checkBox_Rocksmith_DepthOfField.Enabled = false;
+            checkBox_Rocksmith_PostEffects.Enabled = false;
+            checkBox_Rocksmith_HighResScope.Enabled = false;
+
+
+            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "1");
+        }
+        private void Rocksmith_HighQuality(object sender, EventArgs e)
+        {
+            checkBox_Rocksmith_DepthOfField.Checked = true;
+            checkBox_Rocksmith_PostEffects.Checked = true;
+            checkBox_Rocksmith_HighResScope.Checked = true;
+
+            checkBox_Rocksmith_DepthOfField.Enabled = false;
+            checkBox_Rocksmith_PostEffects.Enabled = false;
+            checkBox_Rocksmith_HighResScope.Enabled = false;
+
+            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "2");
+        }
+
+        private void Rocksmith_CustomQuality(object sender, EventArgs e)
+        {
+            checkBox_Rocksmith_DepthOfField.Enabled = true;
+            checkBox_Rocksmith_PostEffects.Enabled = true;
+            checkBox_Rocksmith_HighResScope.Enabled = true;
+
+            Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.VisualQualityIdentifier, "3");
+        }
         private void Rocksmith_RenderWidth(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.RenderingWidthIdentifier, nUpDown_Rocksmith_RenderWidth.Value.ToString());
         private void Rocksmith_RenderHeight(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.RenderingHeightIdentifier, nUpDown_Rocksmith_RenderHeight.Value.ToString());
         private void Rocksmith_PostEffects(object sender, EventArgs e) => Rocksmith_SaveChanges_Middleware(Rocksmith.ReadSettings.EnablePostEffectsIdentifier, checkBox_Rocksmith_PostEffects.Checked.ToString().ToLower());

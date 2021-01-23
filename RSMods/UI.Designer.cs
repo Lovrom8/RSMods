@@ -324,6 +324,7 @@
             this.radio_Rocksmith_NonExclusiveFullScreen = new System.Windows.Forms.RadioButton();
             this.radio_Rocksmith_Windowed = new System.Windows.Forms.RadioButton();
             this.groupBox_Rocksmith_VisualQuality = new System.Windows.Forms.GroupBox();
+            this.radio_Rocksmith_CustomQuality = new System.Windows.Forms.RadioButton();
             this.radio_Rocksmith_HighQuality = new System.Windows.Forms.RadioButton();
             this.radio_Rocksmith_MediumQuality = new System.Windows.Forms.RadioButton();
             this.radio_Rocksmith_LowQuality = new System.Windows.Forms.RadioButton();
@@ -4117,7 +4118,7 @@
             this.groupBox_Rocksmith_Fullscreen.Controls.Add(this.radio_Rocksmith_ExclusiveFullScreen);
             this.groupBox_Rocksmith_Fullscreen.Controls.Add(this.radio_Rocksmith_NonExclusiveFullScreen);
             this.groupBox_Rocksmith_Fullscreen.Controls.Add(this.radio_Rocksmith_Windowed);
-            this.groupBox_Rocksmith_Fullscreen.Location = new System.Drawing.Point(128, 186);
+            this.groupBox_Rocksmith_Fullscreen.Location = new System.Drawing.Point(128, 180);
             this.groupBox_Rocksmith_Fullscreen.Name = "groupBox_Rocksmith_Fullscreen";
             this.groupBox_Rocksmith_Fullscreen.Size = new System.Drawing.Size(161, 100);
             this.groupBox_Rocksmith_Fullscreen.TabIndex = 3;
@@ -4164,21 +4165,34 @@
             // 
             // groupBox_Rocksmith_VisualQuality
             // 
+            this.groupBox_Rocksmith_VisualQuality.Controls.Add(this.radio_Rocksmith_CustomQuality);
             this.groupBox_Rocksmith_VisualQuality.Controls.Add(this.radio_Rocksmith_HighQuality);
             this.groupBox_Rocksmith_VisualQuality.Controls.Add(this.radio_Rocksmith_MediumQuality);
             this.groupBox_Rocksmith_VisualQuality.Controls.Add(this.radio_Rocksmith_LowQuality);
-            this.groupBox_Rocksmith_VisualQuality.Location = new System.Drawing.Point(6, 186);
+            this.groupBox_Rocksmith_VisualQuality.Location = new System.Drawing.Point(6, 180);
             this.groupBox_Rocksmith_VisualQuality.Name = "groupBox_Rocksmith_VisualQuality";
-            this.groupBox_Rocksmith_VisualQuality.Size = new System.Drawing.Size(116, 100);
+            this.groupBox_Rocksmith_VisualQuality.Size = new System.Drawing.Size(116, 108);
             this.groupBox_Rocksmith_VisualQuality.TabIndex = 3;
             this.groupBox_Rocksmith_VisualQuality.TabStop = false;
             this.groupBox_Rocksmith_VisualQuality.Text = "Visual Quality";
             this.groupBox_Rocksmith_VisualQuality.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
+            // radio_Rocksmith_CustomQuality
+            // 
+            this.radio_Rocksmith_CustomQuality.AutoSize = true;
+            this.radio_Rocksmith_CustomQuality.Location = new System.Drawing.Point(6, 88);
+            this.radio_Rocksmith_CustomQuality.Name = "radio_Rocksmith_CustomQuality";
+            this.radio_Rocksmith_CustomQuality.Size = new System.Drawing.Size(60, 17);
+            this.radio_Rocksmith_CustomQuality.TabIndex = 3;
+            this.radio_Rocksmith_CustomQuality.TabStop = true;
+            this.radio_Rocksmith_CustomQuality.Text = "Custom";
+            this.radio_Rocksmith_CustomQuality.UseVisualStyleBackColor = true;
+            this.radio_Rocksmith_CustomQuality.CheckedChanged += new System.EventHandler(this.Rocksmith_CustomQuality);
+            // 
             // radio_Rocksmith_HighQuality
             // 
             this.radio_Rocksmith_HighQuality.AutoSize = true;
-            this.radio_Rocksmith_HighQuality.Location = new System.Drawing.Point(6, 69);
+            this.radio_Rocksmith_HighQuality.Location = new System.Drawing.Point(6, 65);
             this.radio_Rocksmith_HighQuality.Name = "radio_Rocksmith_HighQuality";
             this.radio_Rocksmith_HighQuality.Size = new System.Drawing.Size(82, 17);
             this.radio_Rocksmith_HighQuality.TabIndex = 2;
@@ -4190,7 +4204,7 @@
             // radio_Rocksmith_MediumQuality
             // 
             this.radio_Rocksmith_MediumQuality.AutoSize = true;
-            this.radio_Rocksmith_MediumQuality.Location = new System.Drawing.Point(6, 45);
+            this.radio_Rocksmith_MediumQuality.Location = new System.Drawing.Point(6, 42);
             this.radio_Rocksmith_MediumQuality.Name = "radio_Rocksmith_MediumQuality";
             this.radio_Rocksmith_MediumQuality.Size = new System.Drawing.Size(97, 17);
             this.radio_Rocksmith_MediumQuality.TabIndex = 1;
@@ -4202,7 +4216,7 @@
             // radio_Rocksmith_LowQuality
             // 
             this.radio_Rocksmith_LowQuality.AutoSize = true;
-            this.radio_Rocksmith_LowQuality.Location = new System.Drawing.Point(6, 22);
+            this.radio_Rocksmith_LowQuality.Location = new System.Drawing.Point(6, 19);
             this.radio_Rocksmith_LowQuality.Name = "radio_Rocksmith_LowQuality";
             this.radio_Rocksmith_LowQuality.Size = new System.Drawing.Size(80, 17);
             this.radio_Rocksmith_LowQuality.TabIndex = 0;
@@ -5536,6 +5550,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Favorites;
         private System.Windows.Forms.NumericUpDown nUpDown_ASIO_Output_AltBaseChannel;
         private System.Windows.Forms.Label label_ASIO_Output_AltBaseChannel;
+        private System.Windows.Forms.RadioButton radio_Rocksmith_CustomQuality;
     }
 }
 
