@@ -181,26 +181,35 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes)) && useNewSongSpeed) { // Song Speed (RR speed)
 				bool prepToTurnOff = false;
 
-				if (newSongSpeed >= 100.f)
+				if (realSongSpeed >= 100.f)
 					prepToTurnOff = true;
 
-				newSongSpeed = MemHelpers::RiffRepeaterSpeed();
+				// Convert UI Speed -> Real Speed
+				float UISpeed = MemHelpers::RiffRepeaterSpeed();
+				realSongSpeed = ((60 / (104.539 - (0.4393 * UISpeed))) * 100);
+
+				// Add / Subtract User's Interval
 
 				if (GetAsyncKeyState(VK_SHIFT) < 0)
-					newSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
+					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
 				else
-					newSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
+					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
 				
-				if (newSongSpeed > 205.f)
-					newSongSpeed = 205.f;
+				// Set Limits
+				if (realSongSpeed > 428.f)
+					realSongSpeed = 428.f;
 
-				if (newSongSpeed < 100.f)
-					newSongSpeed = 100.f;
+				if (realSongSpeed < 100.f)
+					realSongSpeed = 100.f;
 
-				MemHelpers::RiffRepeaterSpeed(newSongSpeed);
+				// Convert Real Speed -> UI Speed
+				UISpeed = ((60 / (realSongSpeed / 100) - 104.539) / -0.4393);
+
+				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
+				MemHelpers::RiffRepeaterSpeed(UISpeed);
 				saveNewRRSpeedToFile = true;
 
-				if (prepToTurnOff && newSongSpeed == 100.f) // Disable UI if we bug out of the mode.
+				if (prepToTurnOff && realSongSpeed == 100.f) // Disable UI if we bug out of the mode.
 					useNewSongSpeed = false;
 			}
 
@@ -436,11 +445,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes)) {
-			MemHelpers::RiffRepeaterSpeed(newSongSpeed);
-			float realSongSpeed = 100.f;
-
-			if (newSongSpeed > 100.f)
-				realSongSpeed = ((60 / (104.539 - (0.4393 * newSongSpeed))) * 100);
+			
+			// Set song speed every frame (approx) as the value continously falls down.
+			MemHelpers::RiffRepeaterSpeed(((60 / (realSongSpeed / 100) - 104.539) / -0.4393));
 
 			if (useNewSongSpeed)
 				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
@@ -452,7 +459,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			else
 				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
 		}
-			
 
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
@@ -647,7 +653,7 @@ unsigned WINAPI StreamerLogThread() {
 	while (!D3DHooks::GameClosing) {
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes) && saveNewRRSpeedToFile) {
 			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
-			rrText << std::to_string((int)newSongSpeed) << std::endl;
+			rrText << std::to_string((int)realSongSpeed) << std::endl;
 			saveNewRRSpeedToFile = false;
 		}
 		Sleep(50);
@@ -775,7 +781,7 @@ unsigned WINAPI MainThread() {
 
 			else {
 				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
-				newSongSpeed = 100.f;
+				realSongSpeed = 100.f;
 				
 				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
 				

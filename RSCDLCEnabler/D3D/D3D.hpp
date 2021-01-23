@@ -66,7 +66,7 @@ inline int StringChangeInterval = 50; // In ms
 inline bool RandomTexturesEnabled = false;
 inline int currentRandTexture = 0;
 
-inline float newSongSpeed;
+inline float realSongSpeed;
 inline bool useNewSongSpeed = false;
 inline bool automatedSongSpeedInThisSong = false;
 inline bool userWantsRRSpeedEnabled = false;
