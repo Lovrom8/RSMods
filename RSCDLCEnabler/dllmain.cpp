@@ -444,10 +444,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes)) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) {
 			
 			// Set song speed every frame (approx) as the value continously falls down.
-			MemHelpers::RiffRepeaterSpeed(((60 / (realSongSpeed / 100) - 104.539) / -0.4393));
+			if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
+				MemHelpers::RiffRepeaterSpeed(((60 / (realSongSpeed / 100) - 104.539) / -0.4393));
 
 			if (useNewSongSpeed)
 				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
@@ -780,8 +781,10 @@ unsigned WINAPI MainThread() {
 			/// If User Is Exiting A Song / In A Menu
 
 			else {
-				automatedSongSpeedInThisSong = false; // Riff Repeater Speed above 100%
-				realSongSpeed = 100.f;
+				if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) { // Riff Repeater Speed above 100%
+					automatedSongSpeedInThisSong = false; 
+					realSongSpeed = 100.f;
+				}
 				
 				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
 				
