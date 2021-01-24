@@ -1640,7 +1640,8 @@ namespace RSMods
             Rect guiLocation = new Rect();
             GetWindowRect(ptr, ref guiLocation);
 
-            SaveChanges(ReadSettings.SecondaryMonitorPositionIdentifier, (guiLocation.Left + 8).ToString());
+            SaveChanges(ReadSettings.SecondaryMonitorXPositionIdentifier, (guiLocation.Left + 8).ToString());
+            SaveChanges(ReadSettings.SecondaryMonitorYPositionIdentifier, (guiLocation.Top + 8).ToString());
         }
 
         private void Save_SecondaryMonitor(object sender, EventArgs e)

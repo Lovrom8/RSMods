@@ -29,8 +29,8 @@ namespace RSMods
                             String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                         
                              // Mod Settings
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval, SecondaryMonitorPosition,
-                        
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
+
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
                              GuitarSpeakClose, GuitarSpeakOBracket, GuitarSpeakCBracket, GuitarSpeakTildea, GuitarSpeakForSlash, GuitarSpeakAlt, GuitarSpeakWhileTuning,
@@ -127,7 +127,8 @@ namespace RSMods
             RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
             TuningPedalIdentifier = "TuningPedal = ",
             VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
-            SecondaryMonitorPositionIdentifier = "SecondaryMonitorPosition = ",
+            SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
+            SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -380,8 +381,10 @@ namespace RSMods
                     return FillSettingVariable(TuningPedalIdentifier, SettingType.STRING, currentLine, out TuningPedal);
                 if (IdentifierIsFound(currentLine, VolumeControlIntervalIdentifier, identifierToGrab))
                     return FillSettingVariable(VolumeControlIntervalIdentifier, SettingType.STRING, currentLine, out VolumeControlInterval);
-                if (IdentifierIsFound(currentLine, SecondaryMonitorPositionIdentifier, identifierToGrab))
-                    return FillSettingVariable(SecondaryMonitorPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorPosition);
+                if (IdentifierIsFound(currentLine, SecondaryMonitorXPositionIdentifier, identifierToGrab))
+                    return FillSettingVariable(SecondaryMonitorXPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorXPosition);
+                if (IdentifierIsFound(currentLine, SecondaryMonitorYPositionIdentifier, identifierToGrab))
+                    return FillSettingVariable(SecondaryMonitorYPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorYPosition);
                 #endregion
                 #region Guitar Speak
 

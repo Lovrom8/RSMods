@@ -106,7 +106,8 @@ namespace RSMods
                 { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "2") }, // The rate of how much one key press should gain the Riff Repeater speed.
                 { ReadSettings.TuningPedalIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningPedalIdentifier, "") }, // What tuning pedal does the user use?
                 { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") }, // By what number should we increase / decrease the volume.
-                { ReadSettings.SecondaryMonitorPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorPositionIdentifier, "0") } // Where should we place Rocksmith on their secondary monitor.
+                { ReadSettings.SecondaryMonitorXPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorXPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. X
+                { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") } // Where should we place Rocksmith on their secondary monitor. Y
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {
