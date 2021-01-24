@@ -3194,6 +3194,11 @@
             // nUpDown_ASIO_InputMic_MaxVolume
             // 
             this.nUpDown_ASIO_InputMic_MaxVolume.Location = new System.Drawing.Point(338, 67);
+            this.nUpDown_ASIO_InputMic_MaxVolume.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.nUpDown_ASIO_InputMic_MaxVolume.Name = "nUpDown_ASIO_InputMic_MaxVolume";
             this.nUpDown_ASIO_InputMic_MaxVolume.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_InputMic_MaxVolume.TabIndex = 4;
@@ -3344,6 +3349,11 @@
             // nUpDown_ASIO_Output_MaxVolume
             // 
             this.nUpDown_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(338, 78);
+            this.nUpDown_ASIO_Output_MaxVolume.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.nUpDown_ASIO_Output_MaxVolume.Name = "nUpDown_ASIO_Output_MaxVolume";
             this.nUpDown_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_Output_MaxVolume.TabIndex = 4;
@@ -3459,6 +3469,11 @@
             // nUpDown_ASIO_Input1_MaxVolume
             // 
             this.nUpDown_ASIO_Input1_MaxVolume.Location = new System.Drawing.Point(338, 67);
+            this.nUpDown_ASIO_Input1_MaxVolume.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.nUpDown_ASIO_Input1_MaxVolume.Name = "nUpDown_ASIO_Input1_MaxVolume";
             this.nUpDown_ASIO_Input1_MaxVolume.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_Input1_MaxVolume.TabIndex = 4;
@@ -3574,6 +3589,11 @@
             // nUpDown_ASIO_Input0_MaxVolume
             // 
             this.nUpDown_ASIO_Input0_MaxVolume.Location = new System.Drawing.Point(338, 63);
+            this.nUpDown_ASIO_Input0_MaxVolume.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.nUpDown_ASIO_Input0_MaxVolume.Name = "nUpDown_ASIO_Input0_MaxVolume";
             this.nUpDown_ASIO_Input0_MaxVolume.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_Input0_MaxVolume.TabIndex = 5;
