@@ -663,12 +663,15 @@ unsigned WINAPI StreamerLogThread() {
 	return 0;
 }
 
+
 unsigned WINAPI MainThread() {
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
 		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
 		RSModsFileOutput.close();
 	}
+
+	bool movedToExternalDisplay = false;
 
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
@@ -689,6 +692,11 @@ unsigned WINAPI MainThread() {
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
+
+		if (!movedToExternalDisplay && Settings::ReturnSettingValue("SecondaryMonitor") == "on") {
+			LaunchOnExternalMonitor::SendRocksmithToScreen(Settings::GetModSetting("SecondaryMonitorPosition")); // Change to setting
+			movedToExternalDisplay = true;
+		}
 
 		if (GameLoaded) {// If Game Is Loaded (No need to run these while the game is loading.)
 			currentMenu = MemHelpers::GetCurrentMenu(false); // This loads without checking if memory is safe... This can cause crashes if used else where.

@@ -29,6 +29,7 @@
 #include "Mods/DisableControllers.hpp"
 #include "Mods/Midi.hpp"
 #include "Mods/VolumeControl.hpp"
+#include "Mods/LaunchOnExternalMonitor.hpp"
 
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;

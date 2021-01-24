@@ -58,6 +58,7 @@ void Settings::Initialize()
 		{"ProfileToLoad", ""},
 		{"ShowSongTimerWhen", "manual"},
 		{"ShowSelectedVolumeWhen", "manual"},
+		{"SecondaryMonitor", "off"},
 	};
 
 	customSettings = {
@@ -66,6 +67,7 @@ void Settings::Initialize()
 		{"RRSpeedInterval", 0},
 		{"TuningPedal", 0},
 		{"VolumeControlInterval", 5},
+		{"SecondaryMonitorPosition", 0},
 		{"CustomStringColors", 0},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -157,6 +159,7 @@ void Settings::ReadModSettings() {
 		{"RRSpeedInterval", reader.GetLongValue("Mod Settings", "RRSpeedInterval", 0)},
 		{"TuningPedal", reader.GetLongValue("Mod Settings", "TuningPedal", 0)},
 		{"VolumeControlInterval", reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
+		{"SecondaryMonitorPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorPosition", 0)},
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -210,6 +213,7 @@ void Settings::ReadModSettings() {
 	modSettings["CustomHighwayColors"] = reader.GetValue("Highway Colors", "CustomHighwayColors", "");
 	modSettings["ShowSongTimerWhen"] = reader.GetValue("Toggle Switches", "ShowSongTimerWhen", "manual");
 	modSettings["ShowSelectedVolumeWhen"] = reader.GetValue("Toggle Switches", "ShowSelectedVolumeWhen", "manual");
+	modSettings["SecondaryMonitor"] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
 }
 
 void Settings::ReadStringColors() {

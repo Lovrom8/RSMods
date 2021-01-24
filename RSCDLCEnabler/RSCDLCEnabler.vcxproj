@@ -27,6 +27,7 @@
     <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
     <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
     <ClCompile Include="Lib\Midi\RtMidi.cpp" />
+    <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
     <ClCompile Include="Mods\VolumeControl.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Lib\Json\json.hpp" />
     <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Mods\DisableControllers.hpp" />
+    <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />

@@ -213,6 +213,9 @@
     <ClCompile Include="CC\Effects\RainbowStringsEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -421,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="CC\Effects\RainbowStringsEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp">
+      <Filter>Mods</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
