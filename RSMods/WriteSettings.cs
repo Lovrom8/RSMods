@@ -81,6 +81,7 @@ namespace RSMods
                 { ReadSettings.ProfileToLoadIdentifier, CreateDefaultOnOldINI(ReadSettings.ProfileToLoadIdentifier, "") }, // Default profile to load.
                 { ReadSettings.ShowSongTimerWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSongTimerWhenIdentifier, "manual") }, // Should we start the game with song timer on.
                 { ReadSettings.ShowSelectedVolumeWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual") }, // Should we always show the selected volume.
+                { ReadSettings.SecondaryMonitorIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorIdentifier, "off")} // Should we allow a secondary monitor to be used for Rocksmith?
             }},
             {"[String Colors]", new Dictionary<string, string>
             {
@@ -104,7 +105,8 @@ namespace RSMods
                 { ReadSettings.CheckForNewSongIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.CheckForNewSongIntervalIdentifier, "5000") }, // Enumerate new CDLC / ODLC every X ms
                 { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "2") }, // The rate of how much one key press should gain the Riff Repeater speed.
                 { ReadSettings.TuningPedalIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningPedalIdentifier, "") }, // What tuning pedal does the user use?
-                { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") } // By what number should we increase / decrease the volume.
+                { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") }, // By what number should we increase / decrease the volume.
+                { ReadSettings.SecondaryMonitorPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorPositionIdentifier, "0") } // Where should we place Rocksmith on their secondary monitor.
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {

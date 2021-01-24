@@ -163,7 +163,7 @@
             this.button_GuitarSpeakHelp = new System.Windows.Forms.Button();
             this.label_GuitarSpeakSaved = new System.Windows.Forms.Label();
             this.listBox_GuitarSpeakSaved = new System.Windows.Forms.ListBox();
-            this.checkbox_GuitarSpeakWhileTuning = new System.Windows.Forms.CheckBox();
+            this.checkBox_GuitarSpeakWhileTuning = new System.Windows.Forms.CheckBox();
             this.button_GuitarSpeakSave = new System.Windows.Forms.Button();
             this.label_GuitarSpeakKeypress = new System.Windows.Forms.Label();
             this.label_GuitarSpeakOctave = new System.Windows.Forms.Label();
@@ -402,6 +402,8 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.button_SecondaryMonitorStartPos = new System.Windows.Forms.Button();
+            this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
@@ -892,6 +894,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomHighway);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RainbowNotes);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BackupProfile);
@@ -2134,7 +2137,7 @@
             this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeakHelp);
             this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakSaved);
             this.groupBox_GuitarSpeak.Controls.Add(this.listBox_GuitarSpeakSaved);
-            this.groupBox_GuitarSpeak.Controls.Add(this.checkbox_GuitarSpeakWhileTuning);
+            this.groupBox_GuitarSpeak.Controls.Add(this.checkBox_GuitarSpeakWhileTuning);
             this.groupBox_GuitarSpeak.Controls.Add(this.button_GuitarSpeakSave);
             this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakKeypress);
             this.groupBox_GuitarSpeak.Controls.Add(this.label_GuitarSpeakOctave);
@@ -2189,18 +2192,18 @@
             this.listBox_GuitarSpeakSaved.Size = new System.Drawing.Size(144, 82);
             this.listBox_GuitarSpeakSaved.TabIndex = 10;
             // 
-            // checkbox_GuitarSpeakWhileTuning
+            // checkBox_GuitarSpeakWhileTuning
             // 
-            this.checkbox_GuitarSpeakWhileTuning.AutoSize = true;
-            this.checkbox_GuitarSpeakWhileTuning.Location = new System.Drawing.Point(111, 151);
-            this.checkbox_GuitarSpeakWhileTuning.Name = "checkbox_GuitarSpeakWhileTuning";
-            this.checkbox_GuitarSpeakWhileTuning.Size = new System.Drawing.Size(111, 17);
-            this.checkbox_GuitarSpeakWhileTuning.TabIndex = 9;
-            this.checkbox_GuitarSpeakWhileTuning.Text = "Use While Tuning";
-            this.checkbox_GuitarSpeakWhileTuning.UseVisualStyleBackColor = true;
-            this.checkbox_GuitarSpeakWhileTuning.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
-            this.checkbox_GuitarSpeakWhileTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkbox_GuitarSpeakWhileTuning.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_GuitarSpeakWhileTuning.AutoSize = true;
+            this.checkBox_GuitarSpeakWhileTuning.Location = new System.Drawing.Point(111, 151);
+            this.checkBox_GuitarSpeakWhileTuning.Name = "checkBox_GuitarSpeakWhileTuning";
+            this.checkBox_GuitarSpeakWhileTuning.Size = new System.Drawing.Size(111, 17);
+            this.checkBox_GuitarSpeakWhileTuning.TabIndex = 9;
+            this.checkBox_GuitarSpeakWhileTuning.Text = "Use While Tuning";
+            this.checkBox_GuitarSpeakWhileTuning.UseVisualStyleBackColor = true;
+            this.checkBox_GuitarSpeakWhileTuning.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
+            this.checkBox_GuitarSpeakWhileTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
+            this.checkBox_GuitarSpeakWhileTuning.MouseHover += new System.EventHandler(this.RunToolTips);
             // 
             // button_GuitarSpeakSave
             // 
@@ -2809,6 +2812,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.button_SecondaryMonitorStartPos);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_ResetModsToDefault);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_CustomHighway);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Backups);
@@ -5050,6 +5054,30 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // button_SecondaryMonitorStartPos
+            // 
+            this.button_SecondaryMonitorStartPos.Location = new System.Drawing.Point(21, 382);
+            this.button_SecondaryMonitorStartPos.Name = "button_SecondaryMonitorStartPos";
+            this.button_SecondaryMonitorStartPos.Size = new System.Drawing.Size(197, 23);
+            this.button_SecondaryMonitorStartPos.TabIndex = 52;
+            this.button_SecondaryMonitorStartPos.Text = "Set Secondary Monitor Start Position";
+            this.button_SecondaryMonitorStartPos.UseVisualStyleBackColor = true;
+            this.button_SecondaryMonitorStartPos.Visible = false;
+            this.button_SecondaryMonitorStartPos.Click += new System.EventHandler(this.Save_SecondaryMonitorStartPosition);
+            this.button_SecondaryMonitorStartPos.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
+            // checkBox_SecondaryMonitor
+            // 
+            this.checkBox_SecondaryMonitor.AutoSize = true;
+            this.checkBox_SecondaryMonitor.Location = new System.Drawing.Point(131, 266);
+            this.checkBox_SecondaryMonitor.Name = "checkBox_SecondaryMonitor";
+            this.checkBox_SecondaryMonitor.Size = new System.Drawing.Size(157, 17);
+            this.checkBox_SecondaryMonitor.TabIndex = 55;
+            this.checkBox_SecondaryMonitor.Text = "Start On Secondary Monitor";
+            this.checkBox_SecondaryMonitor.UseVisualStyleBackColor = true;
+            this.checkBox_SecondaryMonitor.CheckedChanged += new System.EventHandler(this.Save_SecondaryMonitor);
+            this.checkBox_SecondaryMonitor.MouseHover += new System.EventHandler(this.RunToolTips);
+            // 
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
@@ -5307,7 +5335,7 @@
         private System.Windows.Forms.Label label_Credits;
         private System.Windows.Forms.CheckBox checkBox_RainbowStrings;
         private System.Windows.Forms.CheckBox checkBox_ControlVolume;
-        private System.Windows.Forms.CheckBox checkbox_GuitarSpeakWhileTuning;
+        private System.Windows.Forms.CheckBox checkBox_GuitarSpeakWhileTuning;
         private System.Windows.Forms.Label label_GuitarSpeakSaved;
         private System.Windows.Forms.ListBox listBox_GuitarSpeakSaved;
         private System.Windows.Forms.Button button_GuitarSpeakHelp;
@@ -5571,6 +5599,8 @@
         private System.Windows.Forms.NumericUpDown nUpDown_ASIO_Output_AltBaseChannel;
         private System.Windows.Forms.Label label_ASIO_Output_AltBaseChannel;
         private System.Windows.Forms.RadioButton radio_Rocksmith_CustomQuality;
+        private System.Windows.Forms.Button button_SecondaryMonitorStartPos;
+        private System.Windows.Forms.CheckBox checkBox_SecondaryMonitor;
     }
 }
 

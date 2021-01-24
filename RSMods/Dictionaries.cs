@@ -36,6 +36,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_useMidiAutoTuning, "If you have a drop tuning pedal with a MIDI port, we will attempt to automatically tune.");
             TooltipDictionary.Add(checkBox_ShowCurrentNote, "Shows the note you are currently playing on screen.");
             TooltipDictionary.Add(checkBox_CustomHighway, "This setting lets you change the colors of the noteway in game.\nThis can be useful for streamers if they want to make the noteway invisible.");
+            TooltipDictionary.Add(checkBox_SecondaryMonitor, "Check this if you want Rocksmith to run on your second monitor.\nThis will only work in WINDOWED MODE inside of Rocksmith.\nSet Rocksmith to the full resolution of the monitor but keep it in windowed mode.\nYou will still need to set the location in the mod settings (Misc tab)\nPlease also read the tooltip there.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
@@ -46,7 +47,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_ToggleLyricsOffWhen, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
             TooltipDictionary.Add(radio_LyricsAlwaysOff, "Lyrics display will always be disabled in Learn-A-Song game mode.");
             TooltipDictionary.Add(radio_LyricsOffHotkey, "Lyrics can be toggled on or off by a defined hotkey.");
-            TooltipDictionary.Add(checkbox_GuitarSpeakWhileTuning, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
+            TooltipDictionary.Add(checkBox_GuitarSpeakWhileTuning, "For Advanced Users Only!\nUse Guitar Speak in tuning menus.\nThis can potentially stop you from tuning, or playing songs if setup improperly.");
             TooltipDictionary.Add(groupBox_MidiAutoTuneDevice, "Select the MIDI device that goes to your drop tuning pedal.\nWe will send a signal to the pedal to try to automatically tune it.");
             TooltipDictionary.Add(checkBox_WhammyChordsMode, "If you are using the Whammy or Whammy Bass.\nAre you using the pedal in Chords Mode or Classic Mode.\nClassic Mode = UnChecked, Chords Mode = Checked.");
             TooltipDictionary.Add(checkBox_ExtendedRangeDrop, "By default we require a song to be in standard to trigger Extended Range.\nTurn this on if you want drop tunings to also trigger Extended Range.\n(Ex: If you drop at B, but are playing Drop B, this checkbox will trigger Extended Range Mode)");
@@ -57,6 +58,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_Backups, "If you open the RSMods GUI a lot, and are low on disk space, this is the spot for you.\nThis section allows you to set how many backups we store before we start deleting older backups.\nSet this to 0 to allow us to store as many backups as possible.");
             TooltipDictionary.Add(checkBox_UnlimitedBackups, "If you have an insane amount of disk space, and want to save all your backups, check this box.\nWith this checked, we save every backup when you open RSMods and will never delete them.");
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
+            TooltipDictionary.Add(button_SecondaryMonitorStartPos, "PLEASE READ THIS!\nMove this window over to your secondary monitor and make it full screen.\nPress this button when it is full screen so we can save the resolution.\nAfter you press the button you can go back to windowed mode.");
             
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");

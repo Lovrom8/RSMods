@@ -22,7 +22,18 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
+        [DllImport("user32.dll")]
+        static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+        struct Rect
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Right { get; set; }
+            public int Bottom { get; set; }
+        }
         public MainForm()
         {
 
@@ -387,11 +398,11 @@ namespace RSMods
             {
                 checkBox_GuitarSpeak.Checked = true;
                 groupBox_GuitarSpeak.Visible = true;
-                checkbox_GuitarSpeakWhileTuning.Visible = true;
+                checkBox_GuitarSpeakWhileTuning.Visible = true;
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on")
-                checkbox_GuitarSpeakWhileTuning.Checked = true;
+                checkBox_GuitarSpeakWhileTuning.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on")
                 checkBox_ChangeTheme.Checked = true;
@@ -465,6 +476,9 @@ namespace RSMods
                 radio_ControlSongVolumeInSong.Checked = true;
             else
                 radio_ControlSongVolumeManual.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on")
+                checkBox_SecondaryMonitor.Checked = true;
         }
 
         private void LoadASIOSettings()
@@ -1619,6 +1633,22 @@ namespace RSMods
                 SaveChanges(ReadSettings.ShowSelectedVolumeWhenIdentifier, "automatic");
         }
 
+        private void Save_SecondaryMonitorStartPosition(object sender, EventArgs e)
+        {
+            Process guiProcess = Process.GetProcessesByName("RSMods")[0];
+            IntPtr ptr = guiProcess.MainWindowHandle;
+            Rect guiLocation = new Rect();
+            GetWindowRect(ptr, ref guiLocation);
+
+            SaveChanges(ReadSettings.SecondaryMonitorPositionIdentifier, (guiLocation.Left + 8).ToString());
+        }
+
+        private void Save_SecondaryMonitor(object sender, EventArgs e)
+        {
+            button_SecondaryMonitorStartPos.Visible = checkBox_SecondaryMonitor.Checked;
+            SaveChanges(ReadSettings.SecondaryMonitorIdentifier, checkBox_SecondaryMonitor.Checked.ToString().ToLower());
+        }
+
         #endregion
         #region Tooltips
 
@@ -1705,14 +1735,14 @@ namespace RSMods
             {
                 checkBox_GuitarSpeak.Checked = true;
                 groupBox_GuitarSpeak.Visible = true;
-                checkbox_GuitarSpeakWhileTuning.Visible = true;
+                checkBox_GuitarSpeakWhileTuning.Visible = true;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "on");
             }
             else
             {
                 checkBox_GuitarSpeak.Checked = false;
                 groupBox_GuitarSpeak.Visible = false;
-                checkbox_GuitarSpeakWhileTuning.Visible = false;
+                checkBox_GuitarSpeakWhileTuning.Visible = false;
                 SaveChanges(ReadSettings.GuitarSpeakIdentifier, "off");
             }
         }
@@ -1755,7 +1785,7 @@ namespace RSMods
 
 
 
-        private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkbox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
+        private void GuitarSpeakWhileTuningBox_CheckedChanged(object sender, EventArgs e) => SaveChanges(ReadSettings.GuitarSpeakTuningIdentifier, checkBox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
 
         private void GuitarSpeakHelpButton_Click(object sender, EventArgs e) => System.Diagnostics.Process.Start("https://pastebin.com/raw/PZ0FQTn0");
 
@@ -2297,8 +2327,7 @@ namespace RSMods
 
         // Output Settings
         private void ASIO_Output_BaseChannel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_BaseChannel.Value.ToString());
-        
-
+        private void ASIO_Output_AltBaseChannel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.AltBaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_AltBaseChannel.Value.ToString());
         private void ASIO_Output_MaxVolume(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_MaxVolume.Value.ToString());
         private void ASIO_Output_MasterVolume(object sender, EventArgs e)
         {
@@ -2681,8 +2710,6 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
         }
-
-        private void ASIO_Output_AltBaseChannel(object sender, EventArgs e) => ASIO_SaveChanges_Middleware(ASIO.ReadSettings.AltBaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_AltBaseChannel.Value.ToString());
     }
 
     public class Midi
