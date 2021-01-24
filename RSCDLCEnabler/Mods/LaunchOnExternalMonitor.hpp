@@ -6,5 +6,5 @@
 #include <iostream>
 
 namespace LaunchOnExternalMonitor {
-	void SendRocksmithToScreen(int startX);
+	void SendRocksmithToScreen(int startX, int startY);
 }
