@@ -1,6 +1,13 @@
 #include "D3DHooks.hpp"
 
-
+/// <summary>
+/// IDirect3DDevice9::DrawPrimitive Middleware. Mainly used for Note Tails
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="PrimType"> - Member of the D3DPRIMITIVETYPE enumerated type, describing the type of primitive to render.</param>
+/// <param name="StartIndex"> - Index of the first vertex to load.</param>
+/// <param name="PrimCount"> - Number of primitives to render.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) { // Mainly used for Note Tails
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
@@ -32,6 +39,12 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
 
+/// <summary>
+/// IDirect3DDevice9::SetVertexDeclaration Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="pdecl"> - Pointer to an IDirect3DVertexDeclaration9 object, which contains the vertex declaration.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. The return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexDeclaration9* pdecl) {
 	if (pdecl != NULL)
 		pdecl->GetDeclaration(decl, &NumElements);
@@ -39,6 +52,14 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, 
 	return oSetVertexDeclaration(pDevice, pdecl);
 }
 
+/// <summary>
+/// IDirect3DDevice9::SetVertexShaderConstantF Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="i_StartRegister"> - Register number that will contain the first constant value.</param>
+/// <param name="pConstantData"> - Pointer to an array of constants.</param>
+/// <param name="Vector4fCount"> - Number of four float vectors in the array of constants.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevice, UINT i_StartRegister, const float* pConstantData, UINT Vector4fCount) {
 	if (pConstantData != NULL) {
 		StartRegister = i_StartRegister;
@@ -48,6 +69,12 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevi
 	return oSetVertexShaderConstantF(pDevice, i_StartRegister, pConstantData, Vector4fCount);
 }
 
+/// <summary>
+/// IDirect3DDevice9::SetVertexShader Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="veShader"> - Vertex shader interface.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexShader9* veShader) {
 	if (veShader != NULL) {
 		vShader = veShader;
@@ -57,6 +84,12 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 	return oSetVertexShader(pDevice, veShader);
 }
 
+/// <summary>
+/// IDirect3DDevice9::SetPixelShader Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="piShader"> - Pixel shader interface.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelShader9* piShader) {
 	if (piShader != NULL) {
 		pShader = piShader;
@@ -66,6 +99,15 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 	return oSetPixelShader(pDevice, piShader);
 }
 
+/// <summary>
+/// IDirect3DDevice9::SetStreamSource Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="StreamNumber"> - Specifies the data stream, in the range from 0 to the maximum number of streams -1.</param>
+/// <param name="pStreamData"> - Pointer to an IDirect3DVertexBuffer9 interface, representing the vertex buffer to bind to the specified data stream.</param>
+/// <param name="OffsetInBytes"> - Offset from the beginning of the stream to the beginning of the vertex data, in bytes.</param>
+/// <param name="i_Stride"> - Stride of the component, in bytes.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT i_Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
@@ -78,7 +120,13 @@ HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT 
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, i_Stride);
 }
 
-HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) { // Gotta do this so that ALT+TAB-ing out of the game doesn't mess the whole thing up
+/// <summary>
+/// IDirect3DDevice9::Reset Middleware. Required so Alt+Tab won't break the game (ImGUI & UI Text).
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="pPresentationParameters"> - Pointer to a D3DPRESENT_PARAMETERS structure, describing the new presentation parameters. This value cannot be NULL.</param>
+/// <returns>Possible return values include: D3D_OK, D3DERR_DEVICELOST, D3DERR_DEVICEREMOVED, D3DERR_DRIVERINTERNALERROR, or D3DERR_OUTOFVIDEOMEMORY.</returns>
+HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) {
 	// Lost Device
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 
@@ -96,6 +144,17 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	return ResetReturn;
 }
 
+/// <summary>
+/// IDirect3DDevice9::DrawIndexedPrimitive Middleware. This is where most of our texture modifying mods are located.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="PrimType"> - Member of the D3DPRIMITIVETYPE enumerated type, describing the type of primitive to render.</param>
+/// <param name="BaseVertexIndex"> - Offset from the start of the vertex buffer to the first vertex.</param>
+/// <param name="MinVertexIndex"> - Minimum vertex index for vertices used during this call. This is a zero based index relative to BaseVertexIndex.</param>
+/// <param name="NumVertices"> - Number of vertices used during this call.</param>
+/// <param name="StartIndex"> - Index of the first index to use when accesssing the vertex buffer.</param>
+/// <param name="PrimCount"> - Number of primitives to render.</param>
+/// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be the following: D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) { // Draw things on screen
 	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
 
@@ -219,27 +278,27 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 		
 	//if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
-		// Need Lovro's Help With This :(
-		//if (DiscoModeInitialSetting.find(pDevice) == DiscoModeInitialSetting.end()) { // We haven't saved this pDevice's initial values yet
-		//	DWORD initialAlphaValue = (DWORD)pDevice, initialSeperateValue = (DWORD)pDevice;
-		//	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, (DWORD*)initialAlphaValue);
-		//	pDevice->GetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, (DWORD*)initialSeperateValue);
-		//	
-		//	DiscoModeInitialSetting.insert({ pDevice, std::make_pair(initialAlphaValue, initialSeperateValue) });
-		//}
-		//else { // We've seen this pDevice value before.
-		//	if (DiscoModeEnabled) { // Key was pressed to have Disco Mode on
-		//		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that makes things glitchy.
-		//		pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
-		//	}
+	//	 //Need Lovro's Help With This :(
+	//	if (DiscoModeInitialSetting.find(pDevice) == DiscoModeInitialSetting.end()) { // We haven't saved this pDevice's initial values yet
+	//		DWORD initialAlphaValue = (DWORD)pDevice, initialSeperateValue = (DWORD)pDevice;
+	//		pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, (DWORD*)initialAlphaValue);
+	//		pDevice->GetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, (DWORD*)initialSeperateValue);
+	//		
+	//		DiscoModeInitialSetting.insert({ pDevice, std::make_pair(initialAlphaValue, initialSeperateValue) });
+	//	}
+	//	else { // We've seen this pDevice value before.
+	//		if (DiscoModeEnabled) { // Key was pressed to have Disco Mode on
+	//			pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); // Make AMPS Semi-Transparent <- Is the one that makes things glitchy.
+	//			pDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE); // Sticky Colors
+	//		}
 
-		//	else { // Disco mode was turned off, we need to revert the settings so there is no trace of disco mode.
-		//		for (auto pDeviceList : DiscoModeInitialSetting) {
-		//			pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)pDeviceList.second.first); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
-		//			pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)pDeviceList.second.second); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
-		//		}
-		//	}
-		//}
+	//		else { // Disco mode was turned off, we need to revert the settings so there is no trace of disco mode.
+	//			for (auto pDeviceList : DiscoModeInitialSetting) {
+	//				pDeviceList.first->SetRenderState(D3DRS_ALPHABLENDENABLE, *(DWORD*)pDeviceList.second.first); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
+	//				pDeviceList.first->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, *(DWORD*)pDeviceList.second.second); // Needs to have *(DWORD*) since it only sets DWORD not DWORD*
+	//			}
+	//		}
+	//	}
 	//}
 
 	// Extended Range / Custom Colors
@@ -464,5 +523,5 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		RainbowNotes = false;
 	}
 
-	return SHOW_TEXTURE; // KEEP THIS LINE. It means for it to display the graphics!
+	return SHOW_TEXTURE; // KEEP THIS LINE. This translates to "Display Graphics".
 }

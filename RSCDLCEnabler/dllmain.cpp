@@ -6,6 +6,11 @@ bool debug = true;
 bool debug = false;
 #endif
 
+
+/// <summary>
+/// Handle Force Enumeration
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI EnumerationThread() {
 	while (!D3DHooks::GameLoaded) // We are in no hurry :)
 		Sleep(5000);
@@ -31,6 +36,10 @@ unsigned WINAPI EnumerationThread() {
 	return 0;
 }
 
+/// <summary>
+/// Send Midi Data Async
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {
 	while (!D3DHooks::GameClosing) {
 		if (Midi::sendPC)
@@ -43,7 +52,14 @@ unsigned WINAPI MidiThread() {
 	return 0;
 }
 
-
+/// <summary>
+/// Handle Keypress Inputs. Used to toggle mods on / off. WARNING: RUNS (almost) EVERY FRAME
+/// </summary>
+/// <param name="hWnd"> - ID of Rocksmith</param>
+/// <param name="msg"> - Reason Function was called. KEYUP = Keypress | COPYDATA = Settings Update | CLOSE = Game Closing.</param>
+/// <param name="keyPressed"> - Virtual Key of the key pressed. Reference here: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes </param>
+/// <param name="lParam"> - Data Sent</param>
+/// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	// Failsafe for mouse input falling through the menu
 	//if (D3DHooks::menuEnabled && (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP || msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP || msg == WM_MOUSEWHEEL || msg == WM_MOUSEMOVE))
@@ -263,6 +279,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 	return CallWindowProc(D3DHooks::oWndProc, hWnd, msg, keyPressed, lParam);
 }
 
+/// <summary>
+/// Hook on game boot. Initialize all our own UI elements (text on screen, and ImGUI).
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <returns>HRESULT of the official EndScene</returns>
 HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	HRESULT hRet = oEndScene(pDevice);
 	uint32_t returnAddress = (uint32_t)_ReturnAddress(); // EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
@@ -479,6 +500,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	return hRet;
 }
 
+/// <summary>
+/// Handle Twitch Toggle Message.
+/// </summary>
+/// <param name="currMsg"> - Mod to Trigger.</param>
+/// <param name="type"> - Should We Enable or Disable.</param>
+/// <returns>BOOL. If effects triggered.</returns>
 bool HandleMessage(std::string currMsg, std::string type) {
 	if (Contains(currMsg, "RainbowStrings")) {
 		if (type == "enable")
@@ -520,7 +547,10 @@ bool HandleMessage(std::string currMsg, std::string type) {
 	return true;
 }
 
-
+/// <summary>
+/// Trigger Twitch Effect
+/// </summary>
+/// <param name="currEffectMsg"> - Mod to Trigger.</param>
 void HandleEffect(std::string currEffectMsg) {
 	auto msgParts = Settings::SplitByWhitespace(currEffectMsg);
 	std::string effectName = msgParts[1];
@@ -544,6 +574,10 @@ void HandleEffect(std::string currEffectMsg) {
 	}
 }
 
+/// <summary>
+/// Manage Queue of Twitch Effects
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI HandleEffectQueueThread() { // TODO: This is fairly crude, so if it takes a while to get CC in place, improve synchronization of this (cond_variables, etc.)
 	while (!D3DHooks::GameClosing) {
 		if (effectQueue.size() > 0 && MemHelpers::IsInSong()) {
@@ -570,6 +604,9 @@ unsigned WINAPI HandleEffectQueueThread() { // TODO: This is fairly crude, so if
 	return 0;
 }
 
+/// <summary>
+/// Hook Game Functions For Our Own Uses (On Alt-Tab, Draw UI, etc).
+/// </summary>
 void GUI() {
 	uint32_t d3d9Base, adr, * vTable = NULL;
 	while ((d3d9Base = (uint32_t)GetModuleHandleA("d3d9.dll")) == NULL) //aight ffio ;)
@@ -606,13 +643,19 @@ void GUI() {
 	oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::DrawPrimitive_Index], (PBYTE)D3DHooks::Hook_DP, 7);
 }
 
-void AutoEnterGame() {	//very big brain || "Fork in the toaster"
+/// <summary>
+/// Press enter. Normally used in a loop to skip most of the login dialog. "Fork in the toaster" method
+/// </summary>
+void AutoEnterGame() {
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
 	Sleep(30);
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_RETURN, 0);
 }
 
-void TakeScreenshot() { // Simple Screenshot function (requires F12 to be the screenshot key | F12 is default for Steam Screenshots)
+/// <summary>
+/// Force a Steam screenshot. Requires the default "F12" screenshot key for Steam.
+/// </summary>
+void TakeScreenshot() {
 	if (!takenScreenshotOfThisScreen) {
 		takenScreenshotOfThisScreen = true;
 		Sleep(8000); // The menu title changes while the animation is running so we are giving it so time to show the actual results. (8 seconds)
@@ -623,6 +666,9 @@ void TakeScreenshot() { // Simple Screenshot function (requires F12 to be the sc
 	}
 }
 
+/// <summary>
+/// Update settings so users don't need to restart the game for every mod they want to toggle on / off.
+/// </summary>
 void UpdateSettings() { // Live updates from the INI
 	Settings::UpdateSettings();
 	Sleep(500);
@@ -632,6 +678,9 @@ void UpdateSettings() { // Live updates from the INI
 	Sleep(500);
 }
 
+/// <summary>
+/// Remove .mdmp dump files for when Rocksmith crashes. **ONLY EFFECTS DEBUG BUILDS**
+/// </summary>
 void ClearLogs() {
 	if (debug) { 
 		bool didWeDeleteFiles = false;
@@ -650,6 +699,10 @@ void ClearLogs() {
 	}
 }
 
+/// <summary>
+/// Write a log of Riff Repeater speed if it's above 100%. Mainly used for streamers who want to create their own UI for the RR Speed.
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI StreamerLogThread() {
 	while (!D3DHooks::GameClosing) {
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes) && saveNewRRSpeedToFile) {
@@ -663,7 +716,10 @@ unsigned WINAPI StreamerLogThread() {
 	return 0;
 }
 
-
+/// <summary>
+/// Main Thread where we trigger the mods to startup.
+/// </summary>
+/// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MainThread() {
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
@@ -671,7 +727,7 @@ unsigned WINAPI MainThread() {
 		RSModsFileOutput.close();
 	}
 
-	bool movedToExternalDisplay = false;
+	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
 
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
@@ -832,8 +888,6 @@ unsigned WINAPI MainThread() {
 						GuitarSpeakPresent = false;
 				}
 
-				//UpdateSettings(); // A little flaky right now, it likes to crash after a couple setting changes. | Disco mode skyline modification doesn't change back?
-
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu")) // Can we reset the headstock cache without the user noticing?
 					resetHeadstockCache = true;
 			}
@@ -891,6 +945,10 @@ unsigned WINAPI MainThread() {
 	return 0;
 }
 
+
+/// <summary>
+/// Unhook all threads to take advantage of multi-threading.
+/// </summary>
 void Initialize() {
 	std::thread(MainThread).detach();
 	std::thread(EnumerationThread).detach();
@@ -902,7 +960,14 @@ void Initialize() {
 	CrowdControl::StartServer();
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { // Do NOT remove the lpReserved parameter. We know it says it's unused, but keep it or the game won't open.
+/// <summary>
+/// Hook into the game for us to run our own code. **DISPLAYS DEBUG CONSOLE ON DEBUG BUILD**
+/// </summary>
+/// <param name="hModule"></param>
+/// <param name="dwReason"></param>
+/// <param name="lpReserved"></param>
+/// <returns>Always returns TRUE</returns>
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		if (debug) {
@@ -913,8 +978,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) { /
 		}
 		DisableThreadLibraryCalls(hModule);
 
-		D3DX9_42::InitProxy();
-		Initialize();
+		D3DX9_42::InitProxy(); // Run Middleware between us and the actual D3DX9_42.dll
+		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
 		D3DX9_42::ShutdownProxy();

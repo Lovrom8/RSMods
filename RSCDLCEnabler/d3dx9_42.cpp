@@ -7,10 +7,16 @@
 FARPROC p[329] = { 0 };
 HINSTANCE hL;
 
+/// <summary>
+/// Shutdown link to original D3DX9_42.dll
+/// </summary>
 void D3DX9_42::ShutdownProxy() {
 	FreeLibrary(hL);
 }
 
+/// <summary>
+/// Proxy to original D3DX9_42.dll
+/// </summary>
 bool D3DX9_42::InitProxy() {
 	char winpath[MAX_PATH];
 

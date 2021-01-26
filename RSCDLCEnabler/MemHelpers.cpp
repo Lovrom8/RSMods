@@ -1,5 +1,9 @@
 #include "MemHelpers.hpp"
 
+/// <summary>
+/// **DEPRECATED | USE GetCurrentTuning(false)**
+/// </summary>
+/// <returns>A-String Tuning</returns>
 byte MemHelpers::getLowestStringTuning() {
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
 
@@ -12,6 +16,11 @@ byte MemHelpers::getLowestStringTuning() {
 	return (*(Tuning*)addrTuning).strA;
 }
 
+/// <summary>
+/// Get Tuning of all 6 strings (even on bass)
+/// </summary>
+/// <param name="verbose"> - Should we show the tuning in the console **DEBUG BUILD ONLY**</param>
+/// <returns>Current Tuning in a Byte[6] array.</returns>
 byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
 
@@ -28,7 +37,10 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	return AllTunings;
 }
 
-// In the tuner menu only, the current tuning will be saved in the string which we can cross-reference to the JSON list of tunings 
+/// <summary>
+/// Gets Current Tuning in the tuner (based on the tuning name)
+/// </summary>
+/// <returns>Guess of Current Tuning</returns>
 Tuning MemHelpers::GetTuningAtTuner() {
 	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
 
@@ -83,6 +95,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 	return Tuning();
 }
 
+/// <returns>Should we Display The Extended Range Colors?</returns>
 bool MemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
@@ -137,6 +150,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 	return false;
 }
 
+/// <returns>Should we Display The Extended Range Colors In The Tuner?</returns>
 bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
@@ -171,7 +185,10 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	return false;
 }
 
-// [0] - Highest, [1] - Lowest
+/// <summary>
+/// Gets the highest tuned string, and the lowest tuned string.
+/// </summary>
+/// <returns>[0] - Highest, [1] - Lowest</returns>
 int* MemHelpers::GetHighestLowestString() {
 	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
 	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
@@ -210,16 +227,22 @@ int* MemHelpers::GetHighestLowestString() {
 	return returnValue;
 }
 
+
+/// <param name="tuning"> - Song Tuning</param>
+/// <returns>Are we playing in Drop tuning? ex: D Drop C</returns>
 bool MemHelpers::IsSongInDrop(Tuning tuning) {
 	int NEGATE_DROP = tuning.lowE + 2;
 	return tuning.strA == NEGATE_DROP && tuning.strD == NEGATE_DROP && tuning.strG == NEGATE_DROP && tuning.strB == NEGATE_DROP && tuning.highE == NEGATE_DROP;
 }
 
+/// <param name="tuning"> - Song Tuning</param>
+/// <returns>Are we playing in Standard tuning? ex: E Standard</returns>
 bool MemHelpers::IsSongInStandard(Tuning tuning) {
 	int COMMON_TUNING = tuning.lowE;
 	return tuning.strA == COMMON_TUNING && tuning.strD == COMMON_TUNING && tuning.strG == COMMON_TUNING && tuning.strB == COMMON_TUNING && tuning.highE == COMMON_TUNING;
 }
 
+/// <returns>True Tuning. ex: A440, A432</returns>
 int MemHelpers::GetTrueTuning() {
 	uintptr_t trueTunePointer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_trueTuning, Offsets::ptr_trueTuningOffsets);
 
@@ -231,6 +254,9 @@ int MemHelpers::GetTrueTuning() {
 	return trueTuning;
 }
 
+
+/// <param name="GameNotLoaded"> - Should we trust the pointer?</param>
+/// <returns>Internal Menu Name</returns>
 std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 	if (GameNotLoaded) { // It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen, but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay" (before you reach the login) or some gibberish that's always the same (after that) 
 		uintptr_t preMainMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_preMainMenuOffsets, GameNotLoaded);
@@ -262,6 +288,9 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 	return currentMenu;
 }
 
+/// <summary>
+/// Turn the background / "map" on or off.
+/// </summary>
 void MemHelpers::ToggleLoft() {
 
 	// Old Method (Works for most builds but bugged out for some)
@@ -279,6 +308,7 @@ void MemHelpers::ToggleLoft() {
 		*(float*)farAddr = 10000;
 }
 
+/// <returns>Current Time In Song</returns>
 std::string MemHelpers::ShowSongTimer() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
@@ -288,6 +318,10 @@ std::string MemHelpers::ShowSongTimer() {
 	return std::to_string(*(float*)addrTimer);
 }
 
+/// <summary>
+/// Should we turn on / off ColorBlind colors
+/// </summary>
+/// <param name="enabled"> - Should we turn on colors or turn off?</param>
 void MemHelpers::ToggleCB(bool enabled) {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
@@ -299,6 +333,9 @@ void MemHelpers::ToggleCB(bool enabled) {
 		*(byte*)cbEnabled = enabled;
 }
 
+/// <summary>
+/// Patch Game for CDLC.
+/// </summary>
 void MemHelpers::PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets::cdlcCheckAdr;
 
@@ -310,6 +347,8 @@ void MemHelpers::PatchCDLCCheck() {
 	}
 }
 
+
+/// <returns>Size of Rocksmith</returns>
 Resolution MemHelpers::GetWindowSize() {
 	RECT WindowSize;
 
@@ -322,6 +361,9 @@ Resolution MemHelpers::GetWindowSize() {
 		return currentSize;
 }
 
+/// <param name="stringToCheckIfInsideArray"> - Input</param>
+/// <param name="stringArray"> - Is input in list | ARRAY? (NULLABLE)</param>
+/// <param name="stringVector"> - Is input in list | VECTOR? (NULLABLE)</param>
 bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
 	if (stringArray != NULL) {
 		for (unsigned int i = 0; i < stringArray->length(); i++) {
@@ -339,7 +381,17 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::st
 	return false;
 }
 
-// textColorHex is Hex for AA,RR,GG,BB or FFFFFFFF (8 F's). If your text doesn't show up, make sure you lead with FF (or 255 in hex).
+/// <summary>
+/// Draw text on screen
+/// </summary>
+/// <param name="textToDraw"> - What text should be written?</param>
+/// <param name="textColorHex"> - What color? Given in hex in the AA,RR,GG,BB format.</param>
+/// <param name="topLeftX"> - top LEFT of textbox</param>
+/// <param name="topLeftY"> - TOP left of textbox</param>
+/// <param name="bottomRightX"> - bottom RIGHT of textbox</param>
+/// <param name="bottomRightY"> - BOTTOM right of textbox</param>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="setFontSize"> - Override font size</param>
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize)
 {
 	Resolution WindowSize = MemHelpers::GetWindowSize();
@@ -370,6 +422,10 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	}
 }
 
+/// <summary>
+/// Shake the camera around randomly.
+/// </summary>
+/// <param name="enable"> - Should we turn it on, or off?</param>
 void MemHelpers::ToggleDrunkMode(bool enable) {
 	uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
@@ -389,11 +445,18 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 	}
 }
 
+/// <summary>
+/// Are we in a song?
+/// </summary>
 bool MemHelpers::IsInSong() {
 	return IsInStringArray(GetCurrentMenu(), 0, songModes);
 }
 
-
+/// <summary>
+/// Get / Set Riff Repeater Speed
+/// </summary>
+/// <param name="newSpeed"> - Override current speed.</param>
+/// <returns>Riff Repeater Speed</returns>
 float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
 
@@ -405,6 +468,9 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	return *(float*)riffRepeaterSpeed;
 }
 
+/// <summary>
+/// Automate triggering the Riff Repeater above 100% mod.
+/// </summary>
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 	Sleep(5000); // Main animation from Tuner -> In game where we can control the menu
 
@@ -431,6 +497,10 @@ void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 	useNewSongSpeed = true; // Show RR Speed Text
 }
 
+/// <summary>
+/// Get the current selected profile name. **Only works on Profile Selection screen**
+/// </summary>
+/// <returns>Profile Name</returns>
 std::string MemHelpers::CurrentSelectedUser() {
 	uintptr_t badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
 

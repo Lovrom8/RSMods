@@ -1,5 +1,8 @@
 #include "MemUtil.hpp"
 
+/// <summary>
+/// Base to FindPattern
+/// </summary>
 bool MemUtil::bCompare(const BYTE* pData, const byte* bMask, const char* szMask) {
 	for (; *szMask; ++szMask, ++pData, ++bMask)
 		if (*szMask == 'x' && *pData != *bMask)
@@ -7,6 +10,13 @@ bool MemUtil::bCompare(const BYTE* pData, const byte* bMask, const char* szMask)
 	return (*szMask) == NULL;
 }
 
+/// <summary>
+/// Write x86 ASM (HEX) to address.
+/// </summary>
+/// <param name="dst"> - Pointer you want to edit</param>
+/// <param name="src"> - Edit you want to make</param>
+/// <param name="len"> - How long is the edit</param>
+/// <returns></returns>
 bool MemUtil::PatchAdr(LPVOID dst, LPVOID src, size_t len) {
 	DWORD dwOldProt, dwDummy;
 
@@ -22,6 +32,13 @@ bool MemUtil::PatchAdr(LPVOID dst, LPVOID src, size_t len) {
 	return true;
 }
 
+/// <summary>
+/// Place x86 ASM (__asm) hook
+/// </summary>
+/// <param name="hookSpot"> - Where should we hook?</param>
+/// <param name="ourFunct"> - What should we run (x86 ASM)</param>
+/// <param name="len"> - How long is the first command (x86 ASM length)</param>
+/// <returns>Can we place the hook</returns>
 bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 {
 	if (len < 5)
@@ -45,6 +62,13 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 	return true;
 }
 
+/// <summary>
+/// Hook DirectX Functions
+/// </summary>
+/// <param name="src"> - Where should we hook?</param>
+/// <param name="dst"> - What should we run (x86 ASM)</param>
+/// <param name="len"> - How long is the first command (x86 ASM length)</param>
+/// <returns></returns>
 PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 {
 	if (len < 5) return 0;
@@ -75,6 +99,11 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 		return nullptr;
 }
 
+/// <summary>
+/// Will reading this pointer kill the game?
+/// </summary>
+/// <param name="p"> - Pointer</param>
+/// <returns></returns>
 bool MemUtil::IsBadReadPtr(void* p) //NOTE: We are very aware this is not exactly the optimal (neither completely thread safe nor very fast) way to handle pointers to a non-initialized variable, but for now it will have to do the job until we figure out a better current menu check 
 {
 	MEMORY_BASIC_INFORMATION mbi = { 0 };
@@ -90,7 +119,13 @@ bool MemUtil::IsBadReadPtr(void* p) //NOTE: We are very aware this is not exactl
 	return true;
 }
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="ptr"> - Memory Pointer</param>
+/// <param name="offsets"> - Cheat Engine Offsets</param>
+/// <param name="safe"> - Should we trust this to not crash our game?</param>
+/// <returns>Memory Address</returns>
 uintptr_t MemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets, bool safe)
 {
 	uintptr_t addr = ptr;
@@ -114,6 +149,11 @@ uintptr_t MemUtil::FindDMAAddy(uintptr_t ptr, std::vector<unsigned int> offsets,
 	return addr;
 }
 
+/// <summary>
+/// Read Pointer
+/// </summary>
+/// <param name="adr"> - Pointer</param>
+/// <returns>Memory Address</returns>
 uintptr_t MemUtil::ReadPtr(uintptr_t adr) {
 	if (adr == NULL)
 		return NULL;

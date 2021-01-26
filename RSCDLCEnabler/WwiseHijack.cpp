@@ -1,5 +1,11 @@
 #include "WwiseHijack.hpp"
 
+// Yeah don't touch this file if you don't have to...
+
+
+/// <summary>
+/// Audio Engine Hijacks
+/// </summary>
 
 namespace WwiseVariables {
 	uintptr_t func_Wwise_Root_IsRestoreSinkRequested = 0x1f5bfd3;
