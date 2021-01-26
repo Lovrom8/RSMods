@@ -426,7 +426,7 @@
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp">
-      <Filter>Mods</Filter>
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
