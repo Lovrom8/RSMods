@@ -506,7 +506,7 @@
             this.listBox_Modlist_MODS.Name = "listBox_Modlist_MODS";
             this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 134);
             this.listBox_Modlist_MODS.TabIndex = 5;
-            this.listBox_Modlist_MODS.SelectedIndexChanged += new System.EventHandler(this.LoadPreviousKeyAssignment);
+            this.listBox_Modlist_MODS.SelectedIndexChanged += new System.EventHandler(this.Keypress_LoadKeys);
             // 
             // checkBox_ToggleLoft
             // 
@@ -518,8 +518,8 @@
             this.checkBox_ToggleLoft.Text = "Toggle Loft";
             this.checkBox_ToggleLoft.UseVisualStyleBackColor = true;
             this.checkBox_ToggleLoft.CheckedChanged += new System.EventHandler(this.Save_ToggleLoft);
-            this.checkBox_ToggleLoft.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_ToggleLoft.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ToggleLoft.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_ToggleLoft.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_SongTimer
             // 
@@ -531,8 +531,8 @@
             this.checkBox_SongTimer.Text = "Show Song Timer";
             this.checkBox_SongTimer.UseVisualStyleBackColor = true;
             this.checkBox_SongTimer.CheckedChanged += new System.EventHandler(this.Save_SongTimer);
-            this.checkBox_SongTimer.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_SongTimer.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_SongTimer.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_SongTimer.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ToggleLoftKey
             // 
@@ -569,9 +569,9 @@
             this.textBox_NewKeyAssignment_MODS.Size = new System.Drawing.Size(188, 20);
             this.textBox_NewKeyAssignment_MODS.TabIndex = 20;
             this.textBox_NewKeyAssignment_MODS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_NewKeyAssignment_MODS.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
-            this.textBox_NewKeyAssignment_MODS.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
-            this.textBox_NewKeyAssignment_MODS.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
+            this.textBox_NewKeyAssignment_MODS.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Keypress_CheckDown);
+            this.textBox_NewKeyAssignment_MODS.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Keypress_CheckUp);
+            this.textBox_NewKeyAssignment_MODS.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Keypress_CheckMouse);
             // 
             // label_NewKeyAssignment_MODS
             // 
@@ -598,7 +598,7 @@
             this.textBox_NewSonglistName.Size = new System.Drawing.Size(222, 20);
             this.textBox_NewSonglistName.TabIndex = 23;
             this.textBox_NewSonglistName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_NewSonglistName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
+            this.textBox_NewSonglistName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Keypress_CheckDown);
             // 
             // checkBox_ExtendedRange
             // 
@@ -610,8 +610,8 @@
             this.checkBox_ExtendedRange.Text = "Extended Range Support";
             this.checkBox_ExtendedRange.UseVisualStyleBackColor = true;
             this.checkBox_ExtendedRange.CheckedChanged += new System.EventHandler(this.Save_ExtendedRange);
-            this.checkBox_ExtendedRange.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_ExtendedRange.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ExtendedRange.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_ExtendedRange.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_RainbowStringsKey
             // 
@@ -654,8 +654,8 @@
             this.checkBox_ForceEnumeration.Text = "Force Enumeration";
             this.checkBox_ForceEnumeration.UseVisualStyleBackColor = true;
             this.checkBox_ForceEnumeration.CheckedChanged += new System.EventHandler(this.Save_ForceEnumeration);
-            this.checkBox_ForceEnumeration.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_ForceEnumeration.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ForceEnumeration.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_ForceEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveHeadstock
             // 
@@ -667,8 +667,8 @@
             this.checkBox_RemoveHeadstock.Text = "Remove Headstock";
             this.checkBox_RemoveHeadstock.UseVisualStyleBackColor = true;
             this.checkBox_RemoveHeadstock.CheckedChanged += new System.EventHandler(this.Save_RemoveHeadstockCheckbox);
-            this.checkBox_RemoveHeadstock.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveHeadstock.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveHeadstock.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RemoveHeadstock.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveSkyline
             // 
@@ -680,8 +680,8 @@
             this.checkBox_RemoveSkyline.Text = "Remove Skyline";
             this.checkBox_RemoveSkyline.UseVisualStyleBackColor = true;
             this.checkBox_RemoveSkyline.CheckedChanged += new System.EventHandler(this.Save_RemoveSkyline);
-            this.checkBox_RemoveSkyline.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveSkyline.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveSkyline.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RemoveSkyline.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_GreenScreen
             // 
@@ -693,8 +693,8 @@
             this.checkBox_GreenScreen.Text = "Greenscreen Wall";
             this.checkBox_GreenScreen.UseVisualStyleBackColor = true;
             this.checkBox_GreenScreen.CheckedChanged += new System.EventHandler(this.Save_GreenScreenWall);
-            this.checkBox_GreenScreen.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_GreenScreen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_GreenScreen.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_GreenScreen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_AutoLoadProfile
             // 
@@ -706,8 +706,8 @@
             this.checkBox_AutoLoadProfile.Text = "Autoload Last Used Profile";
             this.checkBox_AutoLoadProfile.UseVisualStyleBackColor = true;
             this.checkBox_AutoLoadProfile.CheckedChanged += new System.EventHandler(this.Save_AutoLoadLastProfile);
-            this.checkBox_AutoLoadProfile.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_AutoLoadProfile.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_AutoLoadProfile.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_AutoLoadProfile.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Fretless
             // 
@@ -719,8 +719,8 @@
             this.checkBox_Fretless.Text = "Fretless Mode";
             this.checkBox_Fretless.UseVisualStyleBackColor = true;
             this.checkBox_Fretless.CheckedChanged += new System.EventHandler(this.Save_Fretless);
-            this.checkBox_Fretless.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_Fretless.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Fretless.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_Fretless.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveInlays
             // 
@@ -732,8 +732,8 @@
             this.checkBox_RemoveInlays.Text = "Remove Inlays";
             this.checkBox_RemoveInlays.UseVisualStyleBackColor = true;
             this.checkBox_RemoveInlays.CheckedChanged += new System.EventHandler(this.Save_RemoveInlays);
-            this.checkBox_RemoveInlays.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveInlays.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveInlays.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RemoveInlays.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_LoftAlwaysOff
             // 
@@ -813,8 +813,8 @@
             this.groupBox_HowToEnumerate.TabStop = false;
             this.groupBox_HowToEnumerate.Text = "How Do You Want To Enumerate?";
             this.groupBox_HowToEnumerate.Visible = false;
-            this.groupBox_HowToEnumerate.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_HowToEnumerate.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_HowToEnumerate.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_HowToEnumerate.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ForceEnumerationXMS
             // 
@@ -863,8 +863,8 @@
             this.groupBox_LoftOffWhen.TabStop = false;
             this.groupBox_LoftOffWhen.Text = "Toggle Loft Off When";
             this.groupBox_LoftOffWhen.Visible = false;
-            this.groupBox_LoftOffWhen.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_LoftOffWhen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_LoftOffWhen.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_LoftOffWhen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ExtendedRangeWhen
             // 
@@ -877,8 +877,8 @@
             this.groupBox_ExtendedRangeWhen.TabStop = false;
             this.groupBox_ExtendedRangeWhen.Text = "Enable Extended Range When Low E Is";
             this.groupBox_ExtendedRangeWhen.Visible = false;
-            this.groupBox_ExtendedRangeWhen.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_ExtendedRangeWhen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ExtendedRangeWhen.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_ExtendedRangeWhen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ExtendedRangeDrop
             // 
@@ -890,7 +890,7 @@
             this.checkBox_ExtendedRangeDrop.Text = "In Drop Tuning";
             this.checkBox_ExtendedRangeDrop.UseVisualStyleBackColor = true;
             this.checkBox_ExtendedRangeDrop.CheckedChanged += new System.EventHandler(this.Save_ExtendedRangeDrop);
-            this.checkBox_ExtendedRangeDrop.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ExtendedRangeDrop.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_EnabledMods
             // 
@@ -935,7 +935,7 @@
             this.checkBox_CustomHighway.Text = "Custom Highway";
             this.checkBox_CustomHighway.UseVisualStyleBackColor = true;
             this.checkBox_CustomHighway.CheckedChanged += new System.EventHandler(this.Save_CustomHighway);
-            this.checkBox_CustomHighway.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_CustomHighway.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RainbowNotes
             // 
@@ -947,7 +947,7 @@
             this.checkBox_RainbowNotes.Text = "Rainbow Notes";
             this.checkBox_RainbowNotes.UseVisualStyleBackColor = true;
             this.checkBox_RainbowNotes.CheckedChanged += new System.EventHandler(this.Save_RainbowNotes);
-            this.checkBox_RainbowNotes.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RainbowNotes.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_BackupProfile
             // 
@@ -959,7 +959,7 @@
             this.checkBox_BackupProfile.Text = "Backup Profile";
             this.checkBox_BackupProfile.UseVisualStyleBackColor = true;
             this.checkBox_BackupProfile.CheckedChanged += new System.EventHandler(this.Save_BackupProfile);
-            this.checkBox_BackupProfile.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_BackupProfile.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ShowCurrentNote
             // 
@@ -971,7 +971,7 @@
             this.checkBox_ShowCurrentNote.Text = "Show Current Note";
             this.checkBox_ShowCurrentNote.UseVisualStyleBackColor = true;
             this.checkBox_ShowCurrentNote.CheckedChanged += new System.EventHandler(this.Save_ShowCurrentNote);
-            this.checkBox_ShowCurrentNote.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ShowCurrentNote.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_useMidiAutoTuning
             // 
@@ -983,7 +983,7 @@
             this.checkBox_useMidiAutoTuning.Text = "Auto Tune Song";
             this.checkBox_useMidiAutoTuning.UseVisualStyleBackColor = true;
             this.checkBox_useMidiAutoTuning.CheckedChanged += new System.EventHandler(this.Save_useMidiAutoTuning);
-            this.checkBox_useMidiAutoTuning.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_useMidiAutoTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RiffRepeaterSpeedAboveOneHundred
             // 
@@ -995,7 +995,7 @@
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Text = "Allow RR Speed Above 100";
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.UseVisualStyleBackColor = true;
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.CheckedChanged += new System.EventHandler(this.Save_RiffRepeaterSpeedAboveOneHundred);
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ScreenShotScores
             // 
@@ -1007,7 +1007,7 @@
             this.checkBox_ScreenShotScores.Text = "Screenshot Scores";
             this.checkBox_ScreenShotScores.UseVisualStyleBackColor = true;
             this.checkBox_ScreenShotScores.CheckedChanged += new System.EventHandler(this.Save_ScreenShotScores);
-            this.checkBox_ScreenShotScores.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ScreenShotScores.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ControlVolume
             // 
@@ -1019,8 +1019,8 @@
             this.checkBox_ControlVolume.Text = "Control Game Volume";
             this.checkBox_ControlVolume.UseVisualStyleBackColor = true;
             this.checkBox_ControlVolume.CheckedChanged += new System.EventHandler(this.Save_VolumeControls);
-            this.checkBox_ControlVolume.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_ControlVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ControlVolume.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_ControlVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_GuitarSpeak
             // 
@@ -1031,9 +1031,9 @@
             this.checkBox_GuitarSpeak.TabIndex = 46;
             this.checkBox_GuitarSpeak.Text = "Guitar Speak";
             this.checkBox_GuitarSpeak.UseVisualStyleBackColor = true;
-            this.checkBox_GuitarSpeak.CheckedChanged += new System.EventHandler(this.GuitarSpeakEnableCheckbox_CheckedChanged);
-            this.checkBox_GuitarSpeak.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_GuitarSpeak.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_GuitarSpeak.CheckedChanged += new System.EventHandler(this.GuitarSpeak_Enable);
+            this.checkBox_GuitarSpeak.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_GuitarSpeak.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveLyrics
             // 
@@ -1045,8 +1045,8 @@
             this.checkBox_RemoveLyrics.Text = "Remove Lyrics";
             this.checkBox_RemoveLyrics.UseVisualStyleBackColor = true;
             this.checkBox_RemoveLyrics.CheckedChanged += new System.EventHandler(this.Save_RemoveLyrics);
-            this.checkBox_RemoveLyrics.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveLyrics.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveLyrics.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RemoveLyrics.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_CustomColors
             // 
@@ -1058,8 +1058,8 @@
             this.checkBox_CustomColors.Text = "Custom String Colors";
             this.checkBox_CustomColors.UseVisualStyleBackColor = true;
             this.checkBox_CustomColors.CheckedChanged += new System.EventHandler(this.Save_CustomStringColors);
-            this.checkBox_CustomColors.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_CustomColors.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_CustomColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_CustomColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveLaneMarkers
             // 
@@ -1071,8 +1071,8 @@
             this.checkBox_RemoveLaneMarkers.Text = "Remove Lane Markers";
             this.checkBox_RemoveLaneMarkers.UseVisualStyleBackColor = true;
             this.checkBox_RemoveLaneMarkers.CheckedChanged += new System.EventHandler(this.Save_RemoveLaneMarkers);
-            this.checkBox_RemoveLaneMarkers.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RemoveLaneMarkers.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RemoveLaneMarkers.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RemoveLaneMarkers.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RainbowStrings
             // 
@@ -1084,8 +1084,8 @@
             this.checkBox_RainbowStrings.Text = "Rainbow Strings";
             this.checkBox_RainbowStrings.UseVisualStyleBackColor = true;
             this.checkBox_RainbowStrings.CheckedChanged += new System.EventHandler(this.Save_RainbowStrings);
-            this.checkBox_RainbowStrings.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_RainbowStrings.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RainbowStrings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_RainbowStrings.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Songlist
             // 
@@ -1099,8 +1099,8 @@
             this.groupBox_Songlist.TabIndex = 51;
             this.groupBox_Songlist.TabStop = false;
             this.groupBox_Songlist.Text = "Song Lists";
-            this.groupBox_Songlist.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_Songlist.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Songlist.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_Songlist.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_SonglistWarning
             // 
@@ -1133,8 +1133,8 @@
             this.groupBox_Keybindings_MODS.TabIndex = 52;
             this.groupBox_Keybindings_MODS.TabStop = false;
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
-            this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_RainbowNotesKey
             // 
@@ -1181,9 +1181,9 @@
             this.button_ResetModsToDefault.TabIndex = 100000;
             this.button_ResetModsToDefault.Text = "Reset Mods To Default";
             this.button_ResetModsToDefault.UseVisualStyleBackColor = true;
-            this.button_ResetModsToDefault.Click += new System.EventHandler(this.ResetToDefaultSettings);
-            this.button_ResetModsToDefault.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_ResetModsToDefault.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ResetModsToDefault.Click += new System.EventHandler(this.Reset_DefaultSettings);
+            this.button_ResetModsToDefault.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_ResetModsToDefault.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_String0ColorButton
             // 
@@ -1334,8 +1334,8 @@
             this.radio_colorBlindERColors.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
             this.radio_colorBlindERColors.UseVisualStyleBackColor = true;
             this.radio_colorBlindERColors.CheckedChanged += new System.EventHandler(this.StringColors_ColorBlindStringColors);
-            this.radio_colorBlindERColors.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_colorBlindERColors.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_colorBlindERColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_colorBlindERColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_DefaultStringColors
             // 
@@ -1421,8 +1421,8 @@
             this.button_ResetToDefaultCachePsarc.TabIndex = 125;
             this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
             this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
-            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.ResetCachePsarc);
-            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.SetForget_ResetCache);
+            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_GoneWailinTone
             // 
@@ -1553,7 +1553,7 @@
             this.button_AddDCInput.Text = "Add Direct Connect Mode";
             this.button_AddDCInput.UseVisualStyleBackColor = true;
             this.button_AddDCInput.Click += new System.EventHandler(this.SetForget_AddDCMode);
-            this.button_AddDCInput.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddDCInput.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ChangeTonesHeader
             // 
@@ -1562,8 +1562,8 @@
             this.label_ChangeTonesHeader.Size = new System.Drawing.Size(1132, 19);
             this.label_ChangeTonesHeader.TabIndex = 97;
             this.label_ChangeTonesHeader.Text = "Change Default Tones";
-            this.label_ChangeTonesHeader.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.label_ChangeTonesHeader.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ChangeTonesHeader.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.label_ChangeTonesHeader.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_HorizontalRuleSetAndForget
             // 
@@ -1664,8 +1664,8 @@
             this.radio_DefaultBassTone.TabIndex = 102;
             this.radio_DefaultBassTone.Text = "Set Highlighted Tone As New Default Bass Tone";
             this.radio_DefaultBassTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultBassTone.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_DefaultBassTone.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_DefaultBassTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultBassTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_DefaultLeadTone
             // 
@@ -1678,8 +1678,8 @@
             this.radio_DefaultLeadTone.TabStop = true;
             this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
             this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_DefaultLeadTone.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultLeadTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_DefaultRhythmTone
             // 
@@ -1690,8 +1690,8 @@
             this.radio_DefaultRhythmTone.TabIndex = 100;
             this.radio_DefaultRhythmTone.Text = "Set Highlighted Tone As New Default Rhythm Tone";
             this.radio_DefaultRhythmTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultRhythmTone.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_DefaultRhythmTone.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_DefaultRhythmTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultRhythmTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_LoadTones
             // 
@@ -1702,8 +1702,8 @@
             this.button_LoadTones.Text = "Load Tones From Profile";
             this.button_LoadTones.UseVisualStyleBackColor = true;
             this.button_LoadTones.Click += new System.EventHandler(this.SetForget_LoadTonesFromProfiles);
-            this.button_LoadTones.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_LoadTones.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_LoadTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_LoadTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_ProfileTones
             // 
@@ -1712,8 +1712,8 @@
             this.listBox_ProfileTones.Name = "listBox_ProfileTones";
             this.listBox_ProfileTones.Size = new System.Drawing.Size(184, 134);
             this.listBox_ProfileTones.TabIndex = 98;
-            this.listBox_ProfileTones.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.listBox_ProfileTones.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_ProfileTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.listBox_ProfileTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_AssignNewDefaultTone
             // 
@@ -1724,8 +1724,8 @@
             this.button_AssignNewDefaultTone.Text = "Assign Tone As New Default";
             this.button_AssignNewDefaultTone.UseVisualStyleBackColor = true;
             this.button_AssignNewDefaultTone.Click += new System.EventHandler(this.SetForget_SetDefaultTones);
-            this.button_AssignNewDefaultTone.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AssignNewDefaultTone.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AssignNewDefaultTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AssignNewDefaultTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_RemoveTemp
             // 
@@ -1736,8 +1736,8 @@
             this.button_RemoveTemp.Text = "Remove Temporary Folders";
             this.button_RemoveTemp.UseVisualStyleBackColor = true;
             this.button_RemoveTemp.Click += new System.EventHandler(this.SetForget_RemoveTempFolders);
-            this.button_RemoveTemp.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_RemoveTemp.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_RemoveTemp.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RemoveTemp.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_AddExitGame
             // 
@@ -1748,8 +1748,8 @@
             this.button_AddExitGame.Text = "Add EXIT GAME to Main Menu";
             this.button_AddExitGame.UseVisualStyleBackColor = true;
             this.button_AddExitGame.Click += new System.EventHandler(this.SetForget_AddCustomMenu);
-            this.button_AddExitGame.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AddExitGame.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddExitGame.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddExitGame.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_AddFastLoad
             // 
@@ -1760,8 +1760,8 @@
             this.button_AddFastLoad.Text = "Enable Fast Load";
             this.button_AddFastLoad.UseVisualStyleBackColor = true;
             this.button_AddFastLoad.Click += new System.EventHandler(this.SetForget_AddFastLoadMod);
-            this.button_AddFastLoad.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AddFastLoad.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddFastLoad.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddFastLoad.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_CleanUpUnpackedCache
             // 
@@ -1772,8 +1772,8 @@
             this.button_CleanUpUnpackedCache.Text = "Clean Up Unpacked Cache";
             this.button_CleanUpUnpackedCache.UseVisualStyleBackColor = true;
             this.button_CleanUpUnpackedCache.Click += new System.EventHandler(this.SetForget_UnpackCacheAgain);
-            this.button_CleanUpUnpackedCache.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_CleanUpUnpackedCache.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_CleanUpUnpackedCache.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_CleanUpUnpackedCache.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_RestoreCacheBackup
             // 
@@ -1784,8 +1784,8 @@
             this.button_RestoreCacheBackup.Text = "Restore Cache Backup";
             this.button_RestoreCacheBackup.UseVisualStyleBackColor = true;
             this.button_RestoreCacheBackup.Click += new System.EventHandler(this.SetForget_RestoreDefaults);
-            this.button_RestoreCacheBackup.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_RestoreCacheBackup.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_RestoreCacheBackup.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RestoreCacheBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_AddCustomTunings
             // 
@@ -1796,8 +1796,8 @@
             this.button_AddCustomTunings.Text = "Add Custom Tunings";
             this.button_AddCustomTunings.UseVisualStyleBackColor = true;
             this.button_AddCustomTunings.Click += new System.EventHandler(this.SetForget_AddCustomTunings);
-            this.button_AddCustomTunings.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AddCustomTunings.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddCustomTunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddCustomTunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_SaveTuningChanges
             // 
@@ -1808,8 +1808,8 @@
             this.button_SaveTuningChanges.Text = "Save Changes";
             this.button_SaveTuningChanges.UseVisualStyleBackColor = true;
             this.button_SaveTuningChanges.Click += new System.EventHandler(this.SetForget_SaveTuningChanges);
-            this.button_SaveTuningChanges.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_SaveTuningChanges.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_SaveTuningChanges.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_SaveTuningChanges.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_CustomStringTunings
             // 
@@ -1838,9 +1838,9 @@
             this.nUpDown_String0.Name = "nUpDown_String0";
             this.nUpDown_String0.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String0.TabIndex = 86;
-            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String0.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String0.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String0.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String0.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_UIIndex
             // 
@@ -1910,9 +1910,9 @@
             this.nUpDown_String1.Name = "nUpDown_String1";
             this.nUpDown_String1.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String1.TabIndex = 81;
-            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String1.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String1.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String1.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String1.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_String5
             // 
@@ -1931,9 +1931,9 @@
             this.nUpDown_String5.Name = "nUpDown_String5";
             this.nUpDown_String5.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String5.TabIndex = 80;
-            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String5.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String5.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String5.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String5.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_String4
             // 
@@ -1952,9 +1952,9 @@
             this.nUpDown_String4.Name = "nUpDown_String4";
             this.nUpDown_String4.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String4.TabIndex = 79;
-            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String4.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String4.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String4.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String4.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_String3
             // 
@@ -1973,9 +1973,9 @@
             this.nUpDown_String3.Name = "nUpDown_String3";
             this.nUpDown_String3.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String3.TabIndex = 78;
-            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String3.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String3.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String3.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String3.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_String2
             // 
@@ -1994,9 +1994,9 @@
             this.nUpDown_String2.Name = "nUpDown_String2";
             this.nUpDown_String2.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String2.TabIndex = 77;
-            this.nUpDown_String2.ValueChanged += new System.EventHandler(this.TuningOffsets);
-            this.nUpDown_String2.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.nUpDown_String2.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.nUpDown_String2.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String2.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String2.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // textBox_UIName
             // 
@@ -2021,8 +2021,8 @@
             this.button_AddTuning.Text = "Add Tuning";
             this.button_AddTuning.UseVisualStyleBackColor = true;
             this.button_AddTuning.Click += new System.EventHandler(this.SetForget_AddTuning);
-            this.button_AddTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_AddTuning.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AddTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_RemoveTuning
             // 
@@ -2033,8 +2033,8 @@
             this.button_RemoveTuning.Text = "Remove Tuning";
             this.button_RemoveTuning.UseVisualStyleBackColor = true;
             this.button_RemoveTuning.Click += new System.EventHandler(this.SetForget_RemoveTuning);
-            this.button_RemoveTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.button_RemoveTuning.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_RemoveTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RemoveTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_Tunings
             // 
@@ -2044,8 +2044,8 @@
             this.listBox_Tunings.Size = new System.Drawing.Size(185, 134);
             this.listBox_Tunings.TabIndex = 72;
             this.listBox_Tunings.SelectedIndexChanged += new System.EventHandler(this.SetForget_ListTunings);
-            this.listBox_Tunings.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.listBox_Tunings.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_Tunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.listBox_Tunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // ToolTip
             // 
@@ -2064,8 +2064,8 @@
             this.groupBox_ToggleSkylineWhen.TabStop = false;
             this.groupBox_ToggleSkylineWhen.Text = "Toggle Skyline Off When";
             this.groupBox_ToggleSkylineWhen.Visible = false;
-            this.groupBox_ToggleSkylineWhen.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.groupBox_ToggleSkylineWhen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ToggleSkylineWhen.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.groupBox_ToggleSkylineWhen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_SkylineOffInSong
             // 
@@ -2114,8 +2114,8 @@
             this.radio_LyricsOffHotkey.Text = "Lyrics Off Via Hotkey";
             this.radio_LyricsOffHotkey.UseVisualStyleBackColor = true;
             this.radio_LyricsOffHotkey.CheckedChanged += new System.EventHandler(this.Save_ToggleLyricsManual);
-            this.radio_LyricsOffHotkey.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_LyricsOffHotkey.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_LyricsOffHotkey.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_LyricsOffHotkey.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_LyricsAlwaysOff
             // 
@@ -2128,8 +2128,8 @@
             this.radio_LyricsAlwaysOff.Text = "Lyrics Always Off";
             this.radio_LyricsAlwaysOff.UseVisualStyleBackColor = true;
             this.radio_LyricsAlwaysOff.CheckedChanged += new System.EventHandler(this.Save_ToggleLyricsStartup);
-            this.radio_LyricsAlwaysOff.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.radio_LyricsAlwaysOff.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_LyricsAlwaysOff.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_LyricsAlwaysOff.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_GuitarSpeak
             // 
@@ -2173,7 +2173,7 @@
             this.button_GuitarSpeakHelp.TabIndex = 12;
             this.button_GuitarSpeakHelp.Text = "?";
             this.button_GuitarSpeakHelp.UseVisualStyleBackColor = true;
-            this.button_GuitarSpeakHelp.Click += new System.EventHandler(this.GuitarSpeakHelpButton_Click);
+            this.button_GuitarSpeakHelp.Click += new System.EventHandler(this.GuitarSpeak_Help);
             // 
             // label_GuitarSpeakSaved
             // 
@@ -2201,9 +2201,9 @@
             this.checkBox_GuitarSpeakWhileTuning.TabIndex = 9;
             this.checkBox_GuitarSpeakWhileTuning.Text = "Use While Tuning";
             this.checkBox_GuitarSpeakWhileTuning.UseVisualStyleBackColor = true;
-            this.checkBox_GuitarSpeakWhileTuning.CheckedChanged += new System.EventHandler(this.GuitarSpeakWhileTuningBox_CheckedChanged);
-            this.checkBox_GuitarSpeakWhileTuning.MouseLeave += new System.EventHandler(this.HideToolTips);
-            this.checkBox_GuitarSpeakWhileTuning.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_GuitarSpeakWhileTuning.CheckedChanged += new System.EventHandler(this.GuitarSpeak_WhileTuning);
+            this.checkBox_GuitarSpeakWhileTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_GuitarSpeakWhileTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_GuitarSpeakSave
             // 
@@ -2213,7 +2213,7 @@
             this.button_GuitarSpeakSave.TabIndex = 8;
             this.button_GuitarSpeakSave.Text = "Save Keybind";
             this.button_GuitarSpeakSave.UseVisualStyleBackColor = true;
-            this.button_GuitarSpeakSave.Click += new System.EventHandler(this.GuitarSpeakSaveButton_Click);
+            this.button_GuitarSpeakSave.Click += new System.EventHandler(this.GuitarSpeak_Save);
             // 
             // label_GuitarSpeakKeypress
             // 
@@ -2415,7 +2415,7 @@
             this.groupBox_Keybindings_AUDIO.TabStop = false;
             this.groupBox_Keybindings_AUDIO.Text = "Audio Key Bindings";
             this.groupBox_Keybindings_AUDIO.Visible = false;
-            this.groupBox_Keybindings_AUDIO.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Keybindings_AUDIO.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ChangeSelectedVolumeKey
             // 
@@ -2516,9 +2516,9 @@
             this.textBox_NewKeyAssignment_AUDIO.Size = new System.Drawing.Size(188, 20);
             this.textBox_NewKeyAssignment_AUDIO.TabIndex = 20;
             this.textBox_NewKeyAssignment_AUDIO.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox_NewKeyAssignment_AUDIO.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesDown);
-            this.textBox_NewKeyAssignment_AUDIO.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyPressesUp);
-            this.textBox_NewKeyAssignment_AUDIO.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckMouseInput);
+            this.textBox_NewKeyAssignment_AUDIO.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Keypress_CheckDown);
+            this.textBox_NewKeyAssignment_AUDIO.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Keypress_CheckUp);
+            this.textBox_NewKeyAssignment_AUDIO.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Keypress_CheckMouse);
             // 
             // listBox_Modlist_AUDIO
             // 
@@ -2527,7 +2527,7 @@
             this.listBox_Modlist_AUDIO.Name = "listBox_Modlist_AUDIO";
             this.listBox_Modlist_AUDIO.Size = new System.Drawing.Size(185, 134);
             this.listBox_Modlist_AUDIO.TabIndex = 5;
-            this.listBox_Modlist_AUDIO.SelectedIndexChanged += new System.EventHandler(this.LoadPreviousVolumeAssignment);
+            this.listBox_Modlist_AUDIO.SelectedIndexChanged += new System.EventHandler(this.Keypress_LoadVolumes);
             // 
             // tab_ModToggles
             // 
@@ -2691,7 +2691,7 @@
             this.groupBox_AutoLoadProfiles.TabStop = false;
             this.groupBox_AutoLoadProfiles.Text = "Auto Load Profile";
             this.groupBox_AutoLoadProfiles.Visible = false;
-            this.groupBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_AutoLoadProfile_ClearSelection
             // 
@@ -2702,7 +2702,7 @@
             this.button_AutoLoadProfile_ClearSelection.Text = "Clear Selection";
             this.button_AutoLoadProfile_ClearSelection.UseVisualStyleBackColor = true;
             this.button_AutoLoadProfile_ClearSelection.Click += new System.EventHandler(this.AutoLoadProfile_ClearSelection);
-            this.button_AutoLoadProfile_ClearSelection.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_AutoLoadProfile_ClearSelection.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_AutoLoadProfiles
             // 
@@ -2712,7 +2712,7 @@
             this.listBox_AutoLoadProfiles.Size = new System.Drawing.Size(166, 108);
             this.listBox_AutoLoadProfiles.TabIndex = 0;
             this.listBox_AutoLoadProfiles.SelectedIndexChanged += new System.EventHandler(this.Save_AutoLoadProfile);
-            this.listBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_MidiAutoTuneDevice
             // 
@@ -2731,7 +2731,7 @@
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
             this.groupBox_MidiAutoTuneDevice.Visible = false;
             this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.LoadMidiDeviceNames);
-            this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_Whammy
             // 
@@ -2756,7 +2756,7 @@
             this.checkBox_WhammyChordsMode.UseVisualStyleBackColor = true;
             this.checkBox_WhammyChordsMode.Visible = false;
             this.checkBox_WhammyChordsMode.CheckedChanged += new System.EventHandler(this.Save_WhammyChordsMode);
-            this.checkBox_WhammyChordsMode.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_WhammyChordsMode.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_WhammyBass
             // 
@@ -2843,7 +2843,7 @@
             this.groupBox_CustomHighway.TabStop = false;
             this.groupBox_CustomHighway.Text = "Custom Highway Colors";
             this.groupBox_CustomHighway.Visible = false;
-            this.groupBox_CustomHighway.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_CustomHighway.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ResetNotewayColors
             // 
@@ -2900,7 +2900,7 @@
             this.button_ChangeFretNumber.Text = "Change Fret Number";
             this.button_ChangeFretNumber.UseVisualStyleBackColor = true;
             this.button_ChangeFretNumber.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
-            this.button_ChangeFretNumber.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ChangeFretNumber.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ChangeNotewayGutter
             // 
@@ -2911,7 +2911,7 @@
             this.button_ChangeNotewayGutter.Text = "Change Noteway Sides";
             this.button_ChangeNotewayGutter.UseVisualStyleBackColor = true;
             this.button_ChangeNotewayGutter.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
-            this.button_ChangeNotewayGutter.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ChangeNotewayGutter.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ChangeUnNumberedFrets
             // 
@@ -2922,7 +2922,7 @@
             this.button_ChangeUnNumberedFrets.Text = "Change UnNumbered Frets";
             this.button_ChangeUnNumberedFrets.UseVisualStyleBackColor = true;
             this.button_ChangeUnNumberedFrets.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
-            this.button_ChangeUnNumberedFrets.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ChangeUnNumberedFrets.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ChangeNumberedFrets
             // 
@@ -2933,7 +2933,7 @@
             this.button_ChangeNumberedFrets.Text = "Change Numbered Frets";
             this.button_ChangeNumberedFrets.UseVisualStyleBackColor = true;
             this.button_ChangeNumberedFrets.Click += new System.EventHandler(this.NotewayColors_ChangeNotewayColor);
-            this.button_ChangeNumberedFrets.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_ChangeNumberedFrets.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Backups
             // 
@@ -2946,7 +2946,7 @@
             this.groupBox_Backups.TabStop = false;
             this.groupBox_Backups.Text = "How Many Backups";
             this.groupBox_Backups.Visible = false;
-            this.groupBox_Backups.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Backups.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_UnlimitedBackups
             // 
@@ -2958,7 +2958,7 @@
             this.checkBox_UnlimitedBackups.Text = "Unlimited Backups";
             this.checkBox_UnlimitedBackups.UseVisualStyleBackColor = true;
             this.checkBox_UnlimitedBackups.CheckedChanged += new System.EventHandler(this.UnlimitedBackups);
-            this.checkBox_UnlimitedBackups.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_UnlimitedBackups.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_NumberOfBackups
             // 
@@ -2990,7 +2990,7 @@
             this.groupBox_OnScreenFont.TabIndex = 100003;
             this.groupBox_OnScreenFont.TabStop = false;
             this.groupBox_OnScreenFont.Text = "On Screen Font";
-            this.groupBox_OnScreenFont.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_OnScreenFont.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_FontTestNumbers
             // 
@@ -3029,7 +3029,7 @@
             this.listBox_AvailableFonts.Name = "listBox_AvailableFonts";
             this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
             this.listBox_AvailableFonts.TabIndex = 0;
-            this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.ChangeOnScreenFont);
+            this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.Fonts_Change);
             // 
             // groupBox_RRSpeed
             // 
@@ -3041,7 +3041,7 @@
             this.groupBox_RRSpeed.TabStop = false;
             this.groupBox_RRSpeed.Text = "Riff Repeater Speed Increment";
             this.groupBox_RRSpeed.Visible = false;
-            this.groupBox_RRSpeed.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_RRSpeed.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_RiffRepeaterSpeed
             // 
@@ -3139,7 +3139,7 @@
             this.groupBox_ASIO_InputMic.TabIndex = 12;
             this.groupBox_ASIO_InputMic.TabStop = false;
             this.groupBox_ASIO_InputMic.Text = "Input Microphone";
-            this.groupBox_ASIO_InputMic.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_InputMic.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ASIO_InputMic_ClearSelection
             // 
@@ -3172,7 +3172,7 @@
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_InputMic_EndpointVolume);
-            this.checkBox_ASIO_InputMic_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_InputMic_ControlMasterVolume
             // 
@@ -3230,7 +3230,7 @@
             this.label_ASIO_InputMic_Channel.Size = new System.Drawing.Size(49, 13);
             this.label_ASIO_InputMic_Channel.TabIndex = 2;
             this.label_ASIO_InputMic_Channel.Text = "Channel:";
-            this.label_ASIO_InputMic_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_InputMic_Channel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_AvailableASIODevices_InputMic
             // 
@@ -3240,7 +3240,7 @@
             this.listBox_AvailableASIODevices_InputMic.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_InputMic.TabIndex = 0;
             this.listBox_AvailableASIODevices_InputMic.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInputMic);
-            this.listBox_AvailableASIODevices_InputMic.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_AvailableASIODevices_InputMic.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ASIO_Credits
             // 
@@ -3271,7 +3271,7 @@
             this.groupBox_ASIO_Output.TabIndex = 10;
             this.groupBox_ASIO_Output.TabStop = false;
             this.groupBox_ASIO_Output.Text = "Output";
-            this.groupBox_ASIO_Output.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_ASIO_Output_AltBaseChannel
             // 
@@ -3294,7 +3294,7 @@
             this.label_ASIO_Output_AltBaseChannel.Size = new System.Drawing.Size(91, 13);
             this.label_ASIO_Output_AltBaseChannel.TabIndex = 14;
             this.label_ASIO_Output_AltBaseChannel.Text = "Alt Base Channel:";
-            this.label_ASIO_Output_AltBaseChannel.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_Output_AltBaseChannel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ASIO_Output_ClearSelection
             // 
@@ -3327,7 +3327,7 @@
             this.checkBox_ASIO_Output_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Output_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Output_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Output_EndpointVolume);
-            this.checkBox_ASIO_Output_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_Output_ControlEndpointVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_Output_ControlMasterVolume
             // 
@@ -3385,7 +3385,7 @@
             this.label_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(76, 13);
             this.label_ASIO_Output_BaseChannel.TabIndex = 2;
             this.label_ASIO_Output_BaseChannel.Text = "Base Channel:";
-            this.label_ASIO_Output_BaseChannel.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_Output_BaseChannel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_AvailableASIODevices_Output
             // 
@@ -3395,7 +3395,7 @@
             this.listBox_AvailableASIODevices_Output.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Output.TabIndex = 0;
             this.listBox_AvailableASIODevices_Output.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableOutput);
-            this.listBox_AvailableASIODevices_Output.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_AvailableASIODevices_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ASIO_Input1
             // 
@@ -3414,7 +3414,7 @@
             this.groupBox_ASIO_Input1.TabIndex = 4;
             this.groupBox_ASIO_Input1.TabStop = false;
             this.groupBox_ASIO_Input1.Text = "Input 2";
-            this.groupBox_ASIO_Input1.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_Input1.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ASIO_Input1_ClearSelection
             // 
@@ -3447,7 +3447,7 @@
             this.checkBox_ASIO_Input1_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Input1_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Input1_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Input1_EndpointVolume);
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_Input1_ControlMasterVolume
             // 
@@ -3505,7 +3505,7 @@
             this.label_ASIO_Input1_Channel.Size = new System.Drawing.Size(49, 13);
             this.label_ASIO_Input1_Channel.TabIndex = 2;
             this.label_ASIO_Input1_Channel.Text = "Channel:";
-            this.label_ASIO_Input1_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_Input1_Channel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_AvailableASIODevices_Input1
             // 
@@ -3515,7 +3515,7 @@
             this.listBox_AvailableASIODevices_Input1.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input1.TabIndex = 0;
             this.listBox_AvailableASIODevices_Input1.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput1);
-            this.listBox_AvailableASIODevices_Input1.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_AvailableASIODevices_Input1.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ASIO_Input0
             // 
@@ -3534,7 +3534,7 @@
             this.groupBox_ASIO_Input0.TabIndex = 3;
             this.groupBox_ASIO_Input0.TabStop = false;
             this.groupBox_ASIO_Input0.Text = "Input 1";
-            this.groupBox_ASIO_Input0.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_Input0.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ASIO_Input0_ClearSelection
             // 
@@ -3567,7 +3567,7 @@
             this.checkBox_ASIO_Input0_ControlEndpointVolume.Text = "Control Endpoint Volume";
             this.checkBox_ASIO_Input0_ControlEndpointVolume.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_Input0_ControlEndpointVolume.CheckedChanged += new System.EventHandler(this.ASIO_Input0_EndpointVolume);
-            this.checkBox_ASIO_Input0_ControlEndpointVolume.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_Input0_ControlEndpointVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_Input0_ControlMasterVolume
             // 
@@ -3625,7 +3625,7 @@
             this.label_ASIO_Input0_Channel.Size = new System.Drawing.Size(49, 13);
             this.label_ASIO_Input0_Channel.TabIndex = 1;
             this.label_ASIO_Input0_Channel.Text = "Channel:";
-            this.label_ASIO_Input0_Channel.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_Input0_Channel.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_AvailableASIODevices_Input0
             // 
@@ -3635,7 +3635,7 @@
             this.listBox_AvailableASIODevices_Input0.Size = new System.Drawing.Size(193, 147);
             this.listBox_AvailableASIODevices_Input0.TabIndex = 0;
             this.listBox_AvailableASIODevices_Input0.SelectedIndexChanged += new System.EventHandler(this.ASIO_ListAvailableInput0);
-            this.listBox_AvailableASIODevices_Input0.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.listBox_AvailableASIODevices_Input0.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ASIO_Config
             // 
@@ -3648,7 +3648,7 @@
             this.groupBox_ASIO_Config.TabIndex = 2;
             this.groupBox_ASIO_Config.TabStop = false;
             this.groupBox_ASIO_Config.Text = "Config";
-            this.groupBox_ASIO_Config.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_Config.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_ASIO
             // 
@@ -3660,7 +3660,7 @@
             this.checkBox_ASIO_ASIO.Text = "Use ASIO";
             this.checkBox_ASIO_ASIO.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_ASIO.CheckedChanged += new System.EventHandler(this.ASIO_ASIO);
-            this.checkBox_ASIO_ASIO.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_ASIO.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_WASAPI_Input
             // 
@@ -3672,7 +3672,7 @@
             this.checkBox_ASIO_WASAPI_Input.Text = "Use WASAPI Input";
             this.checkBox_ASIO_WASAPI_Input.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_WASAPI_Input.CheckedChanged += new System.EventHandler(this.ASIO_WASAPI_Input);
-            this.checkBox_ASIO_WASAPI_Input.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_WASAPI_Input.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ASIO_WASAPI_Output
             // 
@@ -3684,7 +3684,7 @@
             this.checkBox_ASIO_WASAPI_Output.Text = "Use WASAPI Output";
             this.checkBox_ASIO_WASAPI_Output.UseVisualStyleBackColor = true;
             this.checkBox_ASIO_WASAPI_Output.CheckedChanged += new System.EventHandler(this.ASIO_WASAPI_Output);
-            this.checkBox_ASIO_WASAPI_Output.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ASIO_WASAPI_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ASIO_BufferSize
             // 
@@ -3699,7 +3699,7 @@
             this.groupBox_ASIO_BufferSize.TabIndex = 1;
             this.groupBox_ASIO_BufferSize.TabStop = false;
             this.groupBox_ASIO_BufferSize.Text = "Buffer Size";
-            this.groupBox_ASIO_BufferSize.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_ASIO_BufferSize.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_ASIO_CustomBufferSize
             // 
@@ -3710,7 +3710,7 @@
             this.label_ASIO_CustomBufferSize.TabIndex = 4;
             this.label_ASIO_CustomBufferSize.Text = "Custom Buffer Size";
             this.label_ASIO_CustomBufferSize.Visible = false;
-            this.label_ASIO_CustomBufferSize.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_ASIO_CustomBufferSize.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_ASIO_CustomBufferSize
             // 
@@ -3752,7 +3752,7 @@
             this.radio_ASIO_BufferSize_Custom.Text = "Custom";
             this.radio_ASIO_BufferSize_Custom.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Custom.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Custom);
-            this.radio_ASIO_BufferSize_Custom.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_ASIO_BufferSize_Custom.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_ASIO_BufferSize_Host
             // 
@@ -3765,7 +3765,7 @@
             this.radio_ASIO_BufferSize_Host.Text = "Host";
             this.radio_ASIO_BufferSize_Host.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Host.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Host);
-            this.radio_ASIO_BufferSize_Host.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_ASIO_BufferSize_Host.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_ASIO_BufferSize_Driver
             // 
@@ -3778,7 +3778,7 @@
             this.radio_ASIO_BufferSize_Driver.Text = "Driver";
             this.radio_ASIO_BufferSize_Driver.UseVisualStyleBackColor = true;
             this.radio_ASIO_BufferSize_Driver.CheckedChanged += new System.EventHandler(this.ASIO_BufferSize_Driver);
-            this.radio_ASIO_BufferSize_Driver.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_ASIO_BufferSize_Driver.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // tab_Rocksmith
             // 
@@ -3835,7 +3835,7 @@
             this.checkBox_Rocksmith_LowLatencyMode.Text = "Low Latency Mode";
             this.checkBox_Rocksmith_LowLatencyMode.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_LowLatencyMode.CheckedChanged += new System.EventHandler(this.Rocksmith_LowLatencyMode);
-            this.checkBox_Rocksmith_LowLatencyMode.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_LowLatencyMode.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_RTCOnly
             // 
@@ -3847,7 +3847,7 @@
             this.checkBox_Rocksmith_RTCOnly.Text = "Real Tone Cable Only";
             this.checkBox_Rocksmith_RTCOnly.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_RTCOnly.CheckedChanged += new System.EventHandler(this.Rocksmith_RTCOnly);
-            this.checkBox_Rocksmith_RTCOnly.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_RTCOnly.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_DumpAudioLog
             // 
@@ -3859,7 +3859,7 @@
             this.checkBox_Rocksmith_DumpAudioLog.Text = "Dump Audio Log";
             this.checkBox_Rocksmith_DumpAudioLog.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_DumpAudioLog.CheckedChanged += new System.EventHandler(this.Rocksmith_DumpAudioLog);
-            this.checkBox_Rocksmith_DumpAudioLog.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_DumpAudioLog.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_ForceDirextXSink
             // 
@@ -3871,7 +3871,7 @@
             this.checkBox_Rocksmith_ForceDirextXSink.Text = "Force DirectXSink";
             this.checkBox_Rocksmith_ForceDirextXSink.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_ForceDirextXSink.CheckedChanged += new System.EventHandler(this.Rocksmith_ForceDirextXSink);
-            this.checkBox_Rocksmith_ForceDirextXSink.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_ForceDirextXSink.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_ForceWDM
             // 
@@ -3883,7 +3883,7 @@
             this.checkBox_Rocksmith_ForceWDM.Text = "Force WDM";
             this.checkBox_Rocksmith_ForceWDM.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_ForceWDM.CheckedChanged += new System.EventHandler(this.Rocksmith_ForceWDM);
-            this.checkBox_Rocksmith_ForceWDM.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_ForceWDM.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_ExclusiveMode
             // 
@@ -3895,7 +3895,7 @@
             this.checkBox_Rocksmith_ExclusiveMode.Text = "Exclusive Mode";
             this.checkBox_Rocksmith_ExclusiveMode.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_ExclusiveMode.CheckedChanged += new System.EventHandler(this.Rocksmith_ExclusiveMode);
-            this.checkBox_Rocksmith_ExclusiveMode.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_ExclusiveMode.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_EnableMicrophone
             // 
@@ -3907,7 +3907,7 @@
             this.checkBox_Rocksmith_EnableMicrophone.Text = "Enable Microphone";
             this.checkBox_Rocksmith_EnableMicrophone.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_EnableMicrophone.CheckedChanged += new System.EventHandler(this.Rocksmith_EnableMicrophone);
-            this.checkBox_Rocksmith_EnableMicrophone.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_EnableMicrophone.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_Override_MaxOutputBufferSize
             // 
@@ -3928,7 +3928,7 @@
             this.label_Rocksmith_MaxOutputBuffer.Size = new System.Drawing.Size(99, 13);
             this.label_Rocksmith_MaxOutputBuffer.TabIndex = 7;
             this.label_Rocksmith_MaxOutputBuffer.Text = "Max Output Buffer: ";
-            this.label_Rocksmith_MaxOutputBuffer.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_MaxOutputBuffer.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_Rocksmith_LatencyBuffer
             // 
@@ -3938,7 +3938,7 @@
             this.label_Rocksmith_LatencyBuffer.Size = new System.Drawing.Size(79, 13);
             this.label_Rocksmith_LatencyBuffer.TabIndex = 6;
             this.label_Rocksmith_LatencyBuffer.Text = "Latency Buffer:";
-            this.label_Rocksmith_LatencyBuffer.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_LatencyBuffer.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_Rocksmith_MaxOutputBuffer
             // 
@@ -4039,7 +4039,7 @@
             this.checkBox_Rocksmith_UseProxy.Text = "Use Proxy";
             this.checkBox_Rocksmith_UseProxy.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_UseProxy.CheckedChanged += new System.EventHandler(this.Rocksmith_UseProxy);
-            this.checkBox_Rocksmith_UseProxy.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_UseProxy.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_MSAASamples
             // 
@@ -4051,7 +4051,7 @@
             this.checkBox_Rocksmith_MSAASamples.Text = "Anti-Aliasing";
             this.checkBox_Rocksmith_MSAASamples.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_MSAASamples.CheckedChanged += new System.EventHandler(this.Rocksmith_MSAA);
-            this.checkBox_Rocksmith_MSAASamples.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_MSAASamples.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_PostEffects
             // 
@@ -4063,7 +4063,7 @@
             this.checkBox_Rocksmith_PostEffects.Text = "Post Processing Effects";
             this.checkBox_Rocksmith_PostEffects.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_PostEffects.CheckedChanged += new System.EventHandler(this.Rocksmith_PostEffects);
-            this.checkBox_Rocksmith_PostEffects.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_PostEffects.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_PerPixelLighting
             // 
@@ -4075,7 +4075,7 @@
             this.checkBox_Rocksmith_PerPixelLighting.Text = "Pixel Perfect Lighting";
             this.checkBox_Rocksmith_PerPixelLighting.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_PerPixelLighting.CheckedChanged += new System.EventHandler(this.Rocksmith_PerPixelLighting);
-            this.checkBox_Rocksmith_PerPixelLighting.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_PerPixelLighting.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_DepthOfField
             // 
@@ -4087,7 +4087,7 @@
             this.checkBox_Rocksmith_DepthOfField.Text = "Depth of Field";
             this.checkBox_Rocksmith_DepthOfField.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_DepthOfField.CheckedChanged += new System.EventHandler(this.Rocksmith_DepthOfField);
-            this.checkBox_Rocksmith_DepthOfField.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_DepthOfField.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_HighResScope
             // 
@@ -4099,7 +4099,7 @@
             this.checkBox_Rocksmith_HighResScope.Text = "High Resolution Audio Visualizer";
             this.checkBox_Rocksmith_HighResScope.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_HighResScope.CheckedChanged += new System.EventHandler(this.Rocksmith_HighResScope);
-            this.checkBox_Rocksmith_HighResScope.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_HighResScope.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_Shadows
             // 
@@ -4111,7 +4111,7 @@
             this.checkBox_Rocksmith_Shadows.Text = "Realtime Shadows";
             this.checkBox_Rocksmith_Shadows.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_Shadows.CheckedChanged += new System.EventHandler(this.Rocksmith_Shadows);
-            this.checkBox_Rocksmith_Shadows.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_Shadows.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_GamepadUI
             // 
@@ -4123,7 +4123,7 @@
             this.checkBox_Rocksmith_GamepadUI.Text = "Show Gamepad UI";
             this.checkBox_Rocksmith_GamepadUI.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_GamepadUI.CheckedChanged += new System.EventHandler(this.Rocksmith_GamepadUI);
-            this.checkBox_Rocksmith_GamepadUI.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_GamepadUI.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_Rocksmith_DisableBrowser
             // 
@@ -4135,7 +4135,7 @@
             this.checkBox_Rocksmith_DisableBrowser.Text = "Disable Browser";
             this.checkBox_Rocksmith_DisableBrowser.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_DisableBrowser.CheckedChanged += new System.EventHandler(this.Rocksmith_DisableBrowser);
-            this.checkBox_Rocksmith_DisableBrowser.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_Rocksmith_DisableBrowser.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Rocksmith_Fullscreen
             // 
@@ -4148,7 +4148,7 @@
             this.groupBox_Rocksmith_Fullscreen.TabIndex = 3;
             this.groupBox_Rocksmith_Fullscreen.TabStop = false;
             this.groupBox_Rocksmith_Fullscreen.Text = "Fullscreen";
-            this.groupBox_Rocksmith_Fullscreen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Rocksmith_Fullscreen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_Rocksmith_ExclusiveFullScreen
             // 
@@ -4173,7 +4173,7 @@
             this.radio_Rocksmith_NonExclusiveFullScreen.Text = "Non-Exclusive Fullscreen";
             this.radio_Rocksmith_NonExclusiveFullScreen.UseVisualStyleBackColor = true;
             this.radio_Rocksmith_NonExclusiveFullScreen.CheckedChanged += new System.EventHandler(this.Rocksmith_NonExclusiveFullScreen);
-            this.radio_Rocksmith_NonExclusiveFullScreen.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.radio_Rocksmith_NonExclusiveFullScreen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_Rocksmith_Windowed
             // 
@@ -4199,7 +4199,7 @@
             this.groupBox_Rocksmith_VisualQuality.TabIndex = 3;
             this.groupBox_Rocksmith_VisualQuality.TabStop = false;
             this.groupBox_Rocksmith_VisualQuality.Text = "Visual Quality";
-            this.groupBox_Rocksmith_VisualQuality.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.groupBox_Rocksmith_VisualQuality.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_Rocksmith_CustomQuality
             // 
@@ -4275,7 +4275,7 @@
             this.label_Rocksmith_RenderHeight.TabIndex = 7;
             this.label_Rocksmith_RenderHeight.Text = "Render Height:";
             this.label_Rocksmith_RenderHeight.Visible = false;
-            this.label_Rocksmith_RenderHeight.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_RenderHeight.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_Rocksmith_RenderWidth
             // 
@@ -4286,7 +4286,7 @@
             this.label_Rocksmith_RenderWidth.TabIndex = 6;
             this.label_Rocksmith_RenderWidth.Text = "Render Width:";
             this.label_Rocksmith_RenderWidth.Visible = false;
-            this.label_Rocksmith_RenderWidth.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_RenderWidth.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_Rocksmith_ScreenHeight
             // 
@@ -4296,7 +4296,7 @@
             this.label_Rocksmith_ScreenHeight.Size = new System.Drawing.Size(78, 13);
             this.label_Rocksmith_ScreenHeight.TabIndex = 5;
             this.label_Rocksmith_ScreenHeight.Text = "Screen Height:";
-            this.label_Rocksmith_ScreenHeight.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_ScreenHeight.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_Rocksmith_ScreenWidth
             // 
@@ -4306,7 +4306,7 @@
             this.label_Rocksmith_ScreenWidth.Size = new System.Drawing.Size(75, 13);
             this.label_Rocksmith_ScreenWidth.TabIndex = 4;
             this.label_Rocksmith_ScreenWidth.Text = "Screen Width:";
-            this.label_Rocksmith_ScreenWidth.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_Rocksmith_ScreenWidth.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // nUpDown_Rocksmith_RenderHeight
             // 
@@ -4405,7 +4405,7 @@
             this.checkBox_RevealTwitchAuthToken.TabIndex = 126;
             this.checkBox_RevealTwitchAuthToken.Text = "Reveal";
             this.checkBox_RevealTwitchAuthToken.UseVisualStyleBackColor = true;
-            this.checkBox_RevealTwitchAuthToken.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_RevealTwitchAuthToken.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_SaveLogToFile
             // 
@@ -4416,7 +4416,7 @@
             this.button_SaveLogToFile.Text = "Save log to file";
             this.button_SaveLogToFile.UseVisualStyleBackColor = true;
             this.button_SaveLogToFile.Visible = false;
-            this.button_SaveLogToFile.Click += new System.EventHandler(this.Twitch_SaveLogToFile);
+            this.button_SaveLogToFile.Click += new System.EventHandler(this.Twitch_SaveLog);
             // 
             // checkBox_TwitchForceReauth
             // 
@@ -4427,7 +4427,7 @@
             this.checkBox_TwitchForceReauth.TabIndex = 124;
             this.checkBox_TwitchForceReauth.Text = "Force reauth";
             this.checkBox_TwitchForceReauth.UseVisualStyleBackColor = true;
-            this.checkBox_TwitchForceReauth.CheckedChanged += new System.EventHandler(this.Twitch_ForceReauth_CheckedChanged);
+            this.checkBox_TwitchForceReauth.CheckedChanged += new System.EventHandler(this.Twitch_ForceReauth);
             // 
             // button_TestTwitchReward
             // 
@@ -4449,7 +4449,7 @@
             this.button_SolidNoteColorRandom.Text = "Random Color";
             this.button_SolidNoteColorRandom.UseVisualStyleBackColor = true;
             this.button_SolidNoteColorRandom.Visible = false;
-            this.button_SolidNoteColorRandom.Click += new System.EventHandler(this.Twitch_SolidNoteColorRandom_Click);
+            this.button_SolidNoteColorRandom.Click += new System.EventHandler(this.Twitch_SolidNoteColor_Random);
             // 
             // textBox_SolidNoteColorPicker
             // 
@@ -4469,7 +4469,7 @@
             this.button_SolidNoteColorPicker.Text = "Change Solid Note Color";
             this.button_SolidNoteColorPicker.UseVisualStyleBackColor = true;
             this.button_SolidNoteColorPicker.Visible = false;
-            this.button_SolidNoteColorPicker.Click += new System.EventHandler(this.Twitch_SolidNoteColorPicker_Click);
+            this.button_SolidNoteColorPicker.Click += new System.EventHandler(this.Twitch_SolidNoteColor_Pick);
             // 
             // button_RemoveReward
             // 
@@ -4480,7 +4480,7 @@
             this.button_RemoveReward.Text = "Remove reward";
             this.button_RemoveReward.UseVisualStyleBackColor = true;
             this.button_RemoveReward.Visible = false;
-            this.button_RemoveReward.Click += new System.EventHandler(this.Twitch_RemoveReward_Click);
+            this.button_RemoveReward.Click += new System.EventHandler(this.Twitch_RemoveReward);
             // 
             // button_AddSelectedReward
             // 
@@ -4491,7 +4491,7 @@
             this.button_AddSelectedReward.Text = "Add reward";
             this.button_AddSelectedReward.UseVisualStyleBackColor = true;
             this.button_AddSelectedReward.Visible = false;
-            this.button_AddSelectedReward.Click += new System.EventHandler(this.Twitch_AddSelectedReward_Click);
+            this.button_AddSelectedReward.Click += new System.EventHandler(this.Twitch_AddReward);
             // 
             // dgv_EnabledRewards
             // 
@@ -4517,7 +4517,7 @@
             this.dgv_EnabledRewards.Visible = false;
             this.dgv_EnabledRewards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.Twitch_EnabledRewards_CellEndEdit);
             this.dgv_EnabledRewards.CurrentCellDirtyStateChanged += new System.EventHandler(this.Twitch_EnabledRewards_CurrentCellDirtyStateChanged);
-            this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.Twitch_EnabledRewards_SelectionChanged);
+            this.dgv_EnabledRewards.SelectionChanged += new System.EventHandler(this.Twitch_SelectEnabledReward);
             // 
             // colEnabledRewardsEnabled
             // 
@@ -4586,7 +4586,7 @@
             this.textBox_TwitchLog.Size = new System.Drawing.Size(256, 221);
             this.textBox_TwitchLog.TabIndex = 114;
             this.textBox_TwitchLog.Visible = false;
-            this.textBox_TwitchLog.TextChanged += new System.EventHandler(this.Twitch_scrollLog);
+            this.textBox_TwitchLog.TextChanged += new System.EventHandler(this.Twitch_AutoScrollLog);
             // 
             // label_IsListeningToEvents
             // 
@@ -4652,8 +4652,8 @@
             this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchAccessTokenVal.TabIndex = 8;
             this.label_TwitchAccessTokenVal.TextChanged += new System.EventHandler(this.Twitch_NewAccessToken);
-            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
-            this.label_TwitchAccessTokenVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
+            this.label_TwitchAccessTokenVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchChannelIDVal
             // 
@@ -4662,8 +4662,8 @@
             this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
             this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchChannelIDVal.TabIndex = 7;
-            this.label_TwitchChannelIDVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
-            this.label_TwitchChannelIDVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchChannelIDVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
+            this.label_TwitchChannelIDVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchUsernameVal
             // 
@@ -4672,8 +4672,8 @@
             this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
             this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchUsernameVal.TabIndex = 6;
-            this.label_TwitchUsernameVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyOnClick);
-            this.label_TwitchUsernameVal.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.label_TwitchUsernameVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
+            this.label_TwitchUsernameVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchAccessToken
             // 
@@ -4727,7 +4727,7 @@
             this.button_TwitchReAuthorize.TabIndex = 0;
             this.button_TwitchReAuthorize.Text = "(Re)authorize\r\n\r\nFor streamers only!";
             this.button_TwitchReAuthorize.UseVisualStyleBackColor = true;
-            this.button_TwitchReAuthorize.Click += new System.EventHandler(this.Twitch_ReAuthorize_Click);
+            this.button_TwitchReAuthorize.Click += new System.EventHandler(this.Twitch_ReAuthorize);
             // 
             // tab_Profiles
             // 
@@ -4986,7 +4986,7 @@
             this.button_ApplyThemeColors.TabIndex = 4;
             this.button_ApplyThemeColors.Text = "Apply Theme Colors";
             this.button_ApplyThemeColors.UseVisualStyleBackColor = true;
-            this.button_ApplyThemeColors.Click += new System.EventHandler(this.Apply_ThemeColors);
+            this.button_ApplyThemeColors.Click += new System.EventHandler(this.CustomTheme_Apply);
             // 
             // textBox_ChangeTextColor
             // 
@@ -5036,12 +5036,12 @@
             this.checkBox_ChangeTheme.Text = "Change Theme";
             this.checkBox_ChangeTheme.UseVisualStyleBackColor = true;
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.CustomTheme_ChangeTheme);
-            this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // timerValidateTwitch
             // 
             this.timerValidateTwitch.Interval = 150000;
-            this.timerValidateTwitch.Tick += new System.EventHandler(this.Twitch_timerValidate_Tick);
+            this.timerValidateTwitch.Tick += new System.EventHandler(this.Twitch_timerValidate);
             // 
             // label_SettingsSaved
             // 
@@ -5064,7 +5064,7 @@
             this.button_SecondaryMonitorStartPos.UseVisualStyleBackColor = true;
             this.button_SecondaryMonitorStartPos.Visible = false;
             this.button_SecondaryMonitorStartPos.Click += new System.EventHandler(this.Save_SecondaryMonitorStartPosition);
-            this.button_SecondaryMonitorStartPos.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.button_SecondaryMonitorStartPos.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_SecondaryMonitor
             // 
@@ -5076,7 +5076,7 @@
             this.checkBox_SecondaryMonitor.Text = "Start On Secondary Monitor";
             this.checkBox_SecondaryMonitor.UseVisualStyleBackColor = true;
             this.checkBox_SecondaryMonitor.CheckedChanged += new System.EventHandler(this.Save_SecondaryMonitor);
-            this.checkBox_SecondaryMonitor.MouseHover += new System.EventHandler(this.RunToolTips);
+            this.checkBox_SecondaryMonitor.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // songManagerBindingSource
             // 
