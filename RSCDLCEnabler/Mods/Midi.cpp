@@ -6,6 +6,9 @@ namespace Midi {
 	int SelectedMidiDevice = 0, MidiCC = 0, MidiPC = 666;
 	unsigned int NumberOfPorts;
 
+	/// <summary>
+	/// Startup MIDI processing
+	/// </summary>
 	void InitMidi() {
 		try {
 			RtMidiIn midiin;
@@ -16,6 +19,9 @@ namespace Midi {
 		}
 	}
 
+	/// <summary>
+	/// Get all MIDI devices connected.
+	/// </summary>
 	void GetMidiDeviceNames() {
 		NumberOfPorts = midiOutGetNumDevs();
 		for (int device = 0; device < NumberOfPorts; device++) {
@@ -23,9 +29,14 @@ namespace Midi {
 			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
 			midiOutDevices.push_back(temp);
 		}
-		
 	}
 
+	/// <summary>
+	/// Look through all MIDI devices to hook the one specified by the user.
+	/// </summary>
+	/// <param name="ChordsMode"> - Does the user have a pedal with Chorus Mode, and is it being used?</param>
+	/// <param name="PedalToUse"> - What pedal is the user using?</param>
+	/// <param name="AutoTuneForSongDevice"> - MIDI Name of pedal.</param>
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice) {
 		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
 			DIGITECH_CHORDS_MODE = true;
@@ -47,6 +58,11 @@ namespace Midi {
 		}
 	}
 
+	/// <summary>
+	/// Send PC to pedal.
+	/// </summary>
+	/// <param name="programChange"> - Value of PC</param>
+	/// <returns>Message was sent or not.</returns>
 	bool SendProgramChange(char programChange) {
 		RtMidiOut* midiout = new RtMidiOut();
 		std::vector<unsigned char> message;
@@ -81,6 +97,11 @@ namespace Midi {
 		return true;
 	}
 
+	/// <summary>
+	/// Send CC to pedal
+	/// </summary>
+	/// <param name="toePosition"> - Value of CC</param>
+	/// <returns>Message wwas sent or not.</returns>
 	bool SendControlChange(char toePosition) {
 
 		if (pedalToUse == 0 || pedalToCC_Channel.find(pedalToUse) == pedalToCC_Channel.end())
@@ -121,6 +142,9 @@ namespace Midi {
 		return true;
 	}
 
+	/// <summary>
+	/// Send a command to the pedal to change to a specific setting based on the current song's tuning.
+	/// </summary>
 	void AutomateDownTuning() {
 		if (!alreadyAutomatedTuningInThisSong) {
 			alreadyAutomatedTuningInThisSong = true;
@@ -165,6 +189,9 @@ namespace Midi {
 		}
 	}
 
+	/// <summary>
+	/// Send a command to the pedal to change to a specific setting based on the current song's true tuning (non-concert pitch).
+	/// </summary>
 	void AutomateTrueTuning() {
 		if (!alreadyAutomatedTrueTuningInThisSong && userWantsToUseAutoTuning) {
 			alreadyAutomatedTrueTuningInThisSong = true;
@@ -190,6 +217,9 @@ namespace Midi {
 		}
 	}
 
+	/// <summary>
+	/// Send a command to the pedal to turn off the modifications we did for the current song's tuning, and true-tuning.
+	/// </summary>
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 
 		if (pedalToUse == 0 || pedalToActiveBypassMap.find(pedalToUse) == pedalToActiveBypassMap.end() || !userWantsToUseAutoTuning)
@@ -218,10 +248,21 @@ namespace Midi {
 		lastPC_TUNING = 0;
 	}
 
+	/// <summary>
+	/// Send PC Value Async
+	/// </summary>
+	/// <param name="program"> - Value of PC</param>
+	/// <param name="shouldWeSendPC"> - Should we stop sending PC values?</param>
 	void SendDataToThread_PC(char program, bool shouldWeSendPC) {
 		sendPC = shouldWeSendPC;
 		dataToSendPC = program;
 	}
+
+	/// <summary>
+	/// Send CC Value Async
+	/// </summary>
+	/// <param name="toePosition"> - Value of CC</param>
+	/// <param name="shouldWeSendCC"> - Should we stop sending CC values?</param>
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
 		sendCC = shouldWeSendCC;
 		dataToSendCC = toePosition;
@@ -229,6 +270,10 @@ namespace Midi {
 
 	// Pedal Specific Functions
 
+	/// <summary>
+	/// Auto Tune with the pedal "Digitech Whammy DT"
+	/// </summary>
+	/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
 	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning) {
 
 		switch (highestTuning) {
@@ -314,6 +359,10 @@ namespace Midi {
 		}
 	}
 
+	/// <summary>
+	/// Auto True-Tune with the pedal "Digitech Whammy DT"
+	/// </summary>
+	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz) {
 
 		// A440 / A220
@@ -332,8 +381,12 @@ namespace Midi {
 			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
 		}
 	}
-
-	// Based on the work done by PoizenJam
+	
+	/// <summary>
+	/// Auto Tune and True-Tune with the pedal "Digitech Whammy". Based on the work done by PoizenJam
+	/// </summary>
+	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
+	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 	void Digitech_Whammy_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
 		int temp_PC, temp_CC, offset = 0;
 		float Target_Hertz, Target_Semitones;
@@ -382,7 +435,11 @@ namespace Midi {
 		}
 	}
 
-	// Based on the work done by PoizenJam
+	/// <summary>
+	/// Auto Tune and True-Tune with the pedal "Digitech Whammy Bass". Based on the work done by PoizenJam
+	/// </summary>
+	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
+	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
 		int temp_PC, temp_CC, offset = 0;
 		float Target_Hertz, Target_Semitones;
@@ -429,6 +486,5 @@ namespace Midi {
 			SendProgramChange(temp_PC + offset - 1);
 			SendControlChange(temp_CC);
 		}
-		
 	}
 }

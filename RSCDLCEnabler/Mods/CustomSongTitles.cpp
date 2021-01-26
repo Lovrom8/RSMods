@@ -4,9 +4,11 @@
 // TODO: Fix the dark magic of ASM in here (if possible).
 
 std::vector<std::string> songTitles(6);
+
+/// <summary>
+/// Hook to grab songlists. EAX = char* str "$[36969]SONG LIST". ESI = SongList Index
+/// </summary>
 void __declspec(naked) hook_fakeTitles() {
-	//ESI = INDEX
-	//EAX = char* str "$[36969]SONG LIST"
 	__asm {
 		mov ecx, dword ptr ds : [0x135CB7C]
 		pushad
@@ -20,9 +22,12 @@ void __declspec(naked) hook_fakeTitles() {
 	}
 }
 
-/*Koko's version - hijacks the format string for printf & discards the parameters and then returns our (kkomrade) versions of the names
-Quite likely, this one is better in our use case, since we want to grab titles from a file, which is done more conveniently in a regular CPP function without the ASM
-*/
+/// <summary>
+/// Hijacks the format string for printf and discards the parameters and then returns our (kkomrade) versions of the names. Perfected by Koko.
+/// </summary>
+/// <param name="number"> - MainGame.csv string ID number [EAX]</param>
+/// <param name="text"> - Song List Name [ESP + 0x10] **DISCARDED**</param>
+/// <returns>New songlist name</returns>
 const char* __stdcall missingLocalization(int number, char* text) {
 	text = "";
 	sprintf_s(&string_buffer[0], buffer_size, "%d", number);
@@ -47,6 +52,9 @@ const char* __stdcall missingLocalization(int number, char* text) {
 	}
 }
 
+/// <summary>
+/// Hook to place new songlist names
+/// </summary>
 void __declspec(naked) missingLocalizationHookFunc() {
 	__asm {
 		push ecx
@@ -67,12 +75,17 @@ void __declspec(naked) missingLocalizationHookFunc() {
 	}
 }
 
-
+/// <summary>
+/// Remove spaces and numbers. "SONG LIST 1" -> "SONGLIST"
+/// </summary>
 void CustomSongTitles::PatchSongListAppendages() {
 	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedSpaces, (UINT*)Offsets::patch_ListSpaces, 5); //MemUtil out " "
 	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedNumbers, (UINT*)Offsets::patch_ListNumbers, 5); //MemUtil 1-6
 }
 
+/// <summary>
+/// Place Songlist Remove Hooks
+/// </summary>
 void CustomSongTitles::SetFakeListNames() {
 	PatchSongListAppendages();
 
@@ -82,6 +95,9 @@ void CustomSongTitles::SetFakeListNames() {
 	MemUtil::PlaceHook((void*)Offsets::hookAddr_ModifyLocalized, hook_fakeTitles, len);
 }
 
+/// <summary>
+/// Place Songlist Removal Hooks and New Songlist Name Hooks
+/// </summary>
 void CustomSongTitles::HookSongListsKoko() {
 	SetFakeListNames();
 
@@ -94,6 +110,9 @@ void CustomSongTitles::HookSongListsKoko() {
 	MemUtil::PlaceHook((void*)Offsets::hookAddr_MissingLocalization, missingLocalizationHookFunc, len);
 }
 
+/// <summary>
+/// Load song list names from INI.
+/// </summary>
 void CustomSongTitles::LoadSettings() {
 	songTitles = Settings::GetCustomSongTitles();
 }

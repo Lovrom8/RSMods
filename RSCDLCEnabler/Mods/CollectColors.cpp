@@ -7,6 +7,12 @@ https://docs.google.com/spreadsheets/d/1X3UjY68Z5oOuZpV_UpckOy-G-XZe7lWaskc31C7F
 Feel free to modify this pile of shit, I don't know how we wanted it formatted.
 */
 
+
+/// <summary>
+/// Convert input color (from INI) to Ambient String Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 4;
@@ -19,6 +25,13 @@ Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode)
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Disabled String Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="stringSaturation"> - Saturation of input color</param>
+/// <param name="stringLightness"> - Lightness of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		S = stringSaturation - (float).144;
@@ -34,6 +47,10 @@ Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturatio
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Glow String Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
 Color CollectColors::GetGlowStringColor(int stringHue) {
 	H = stringHue - 4;
 	S = 1.0f;
@@ -42,6 +59,11 @@ Color CollectColors::GetGlowStringColor(int stringHue) {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Tuning Peg Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue - 4;
@@ -57,6 +79,10 @@ Color CollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Peg Reset Color
+/// </summary>
+/// <returns>Always returns black</returns>
 Color CollectColors::GetPegResetColor() {
 	H = (int)0.0f;
 	S = 0.0f;
@@ -65,6 +91,11 @@ Color CollectColors::GetPegResetColor() {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Peg Success Color
+/// </summary>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
+/// <returns>Returns white if ColorBlind, black if not.</returns>
 Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		L = 0.0f;
@@ -76,6 +107,11 @@ Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Peg In-Tune Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 4;
@@ -88,6 +124,10 @@ Color CollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Peg Out-Tune Color
+/// </summary>
+/// <returns>Always returns white</returns>
 Color CollectColors::GetPegOutTuneColor() {
 	H = (int)0.0f;
 	S = (int)0.0f;
@@ -96,6 +136,11 @@ Color CollectColors::GetPegOutTuneColor() {
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Reg Text Indicator Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 3;
@@ -111,6 +156,11 @@ Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMo
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Fork Particles Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		L = 0.625f;
@@ -123,6 +173,13 @@ Color CollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMo
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Noteway Normal Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="stringSaturation"> - Saturation of input color</param>
+/// <param name="stringLightness"> - Lightness of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 5;
@@ -138,6 +195,11 @@ Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Noteway Accent Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue + 3;
@@ -153,6 +215,11 @@ Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode)
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Noteway Preview Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
 	if (!isColorBlindMode) {
 		H = stringHue - 1;
@@ -168,6 +235,12 @@ Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Guitarcade Main Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
@@ -178,7 +251,7 @@ Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, boo
 
 	if (stringNumber == 4) // B string (Normally lime green)
 		L = 0.429f;
-	else if (stringNumber == 5) // e string (normally purple-ish)
+	else if (stringNumber == 5) // e string (Normally purple-ish)
 		L = 0.375f;
 	else // E, A, D, & G strings
 		L = 0.50f;
@@ -186,6 +259,12 @@ Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, boo
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Guitarcade Additive Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
@@ -196,7 +275,7 @@ Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber,
 
 	if (stringNumber == 4) // B string (Normally lime green)
 		L = 0.429f;
-	else if (stringNumber == 5) // e string (normally purple-ish)
+	else if (stringNumber == 5) // e string (Normally purple-ish)
 		L = 0.375f;
 	else // E, A, D, & G strings
 		L = 0.50f;
@@ -204,6 +283,12 @@ Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber,
 	return GetColor();
 }
 
+/// <summary>
+/// Convert input color (from INI) to Guitarcade UI Color
+/// </summary>
+/// <param name="stringHue"> - Hue of input color</param>
+/// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
+/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
 	if (!isColorBlindMode)
 		H = stringHue + 12;
@@ -214,7 +299,7 @@ Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool 
 
 	if (stringNumber == 4) // B string (Normally lime green)
 		L = 0.429f;
-	else if (stringNumber == 5) // e string (normally purple-ish)
+	else if (stringNumber == 5) // e string (Normally purple-ish)
 		L = 0.375f;
 	else // E, A, D, & G strings
 		L = 0.50f;
@@ -222,8 +307,12 @@ Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool 
 	return GetColor();
 }
 
-// This section about Min, & Max, was totally not stolen off StackOverflow :)
+// Functions
 
+/// <param name="fR"> - Red</param>
+/// <param name="fG"> - Green</param>
+/// <param name="fB"> - Blue</param>
+/// <returns>Lowest value</returns>
 float CollectColors::Min(float fR, float fG, float fB) {
 	float fMin = fR;
 	if (fG < fMin)
@@ -237,7 +326,10 @@ float CollectColors::Min(float fR, float fG, float fB) {
 	return fMin;
 }
 
-
+/// <param name="fR"> - Red</param>
+/// <param name="fG"> - Green</param>
+/// <param name="fB"> - Blue</param>
+/// <returns>Highest value</returns>
 float CollectColors::Max(float fR, float fG, float fB) {
 	float fMax = fR;
 	if (fG > fMax)
@@ -251,7 +343,15 @@ float CollectColors::Max(float fR, float fG, float fB) {
 	return fMax;
 }
 
-// From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms - so not totally stolen :P 
+/// <summary>
+/// Convert RGB to HSL. From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms
+/// </summary>
+/// <param name="R"> - Red **INPUT**</param>
+/// <param name="G"> - Green **INPUT**</param>
+/// <param name="B"> - Blue **INPUT**</param>
+/// <param name="H"> - Hue **OUTPUT**</param>
+/// <param name="S"> - Saturation **OUTPUT**</param>
+/// <param name="L"> - Lightness **OUTPUT**</param>
 void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& L) { //R,G,B [0,1], H [0,360], S,L [0,1] 
 	float min = Min(R, G, B);
 	float max = Max(R, G, B);
@@ -280,6 +380,15 @@ void CollectColors::RGB2HSL(float R, float G, float B, int& H, float& S, float& 
 	}
 }
 
+/// <summary>
+/// Convert HSL to RGB.  From pseudocode in Agoston's Computer Graphics and Geometric Modeling: Implementation and Algorithms
+/// </summary>
+/// <param name="H"> - Hue **INPUT**</param>
+/// <param name="S"> - Saturation **INPUT**</param>
+/// <param name="L"> - Lightness **INPUT**</param>
+/// <param name="R"> - Red **OUTPUT**</param>
+/// <param name="G"> - Green **OUTPUT**</param>
+/// <param name="B"> - Blue **OUTPUT**</param>
 void CollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float& B) {
 	float v, min, sv, fract, vsf, mid1, mid2;
 	int sextant;
@@ -314,11 +423,17 @@ void CollectColors::HSL2RGB(float H, float S, float L, float& R, float& G, float
 	}
 }
 
+/// <summary>
+/// Convert HSL to RGB
+/// </summary>
 Color CollectColors::GetColor() {
 	HSL2RGB((float)H, S, L, R, G, B);
 	return Color(R, G, B);
 }
 
+/// <summary>
+/// Set Global Color
+/// </summary>
 void CollectColors::SetColors(RSColor color) {
 	R = color.r;
 	G = color.g;

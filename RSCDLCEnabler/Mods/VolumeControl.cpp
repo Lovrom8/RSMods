@@ -1,5 +1,10 @@
 #include "VolumeControl.hpp"
 
+/// <summary>
+/// Increase Volume of Mixer's Backend
+/// </summary>
+/// <param name="amountToIncrease"> - How much should we increase by?</param>
+/// <param name="mixerToIncrease"> - Name of Mixer Value</param>
 void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncrease) {
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
@@ -21,6 +26,11 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
 }
 
+/// <summary>
+/// Decrease Volume of Mixer's Backend
+/// </summary>
+/// <param name="amountToDecrease"> - How much show we decrease by?</param>
+/// <param name="mixerToDecrease"> - Name of Mixer Value</param>
 void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecrease) {
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;

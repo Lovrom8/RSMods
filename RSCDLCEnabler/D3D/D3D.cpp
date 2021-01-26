@@ -2,6 +2,9 @@
 #include "../Mods/ExtendedRangeMode.hpp"
 #include "../Mods/CollectColors.hpp"
 
+/// <summary>
+/// Apply Custom String Colors
+/// </summary>
 void D3D::SetCustomColors() {
 	for (int strIdx = 0; strIdx < 6;strIdx++) {
 		ColorMap customColorsFull;
@@ -17,6 +20,9 @@ void D3D::SetCustomColors() {
 	}
 }
 
+/// <param name="strIdx"> - Current String thickest to thinnest (zero-indexed)</param>
+/// <param name="CB"> - Are we using colorblind colors?</param>
+/// <returns>List of All Potential Colors for a String</returns>
 ColorMap D3D::GetCustomColors(int strIdx, bool CB) {
 	RSColor iniColor;
 	std::string ext;
@@ -54,6 +60,7 @@ ColorMap D3D::GetCustomColors(int strIdx, bool CB) {
 	return customColors;
 }
 
+/// <returns>Random Color</returns>
 RSColor GenerateRandomColor() {
 	RSColor rndColor;
 
@@ -65,6 +72,16 @@ RSColor GenerateRandomColor() {
 	return rndColor;
 }
 
+/// <summary>
+/// Generate a texture to later be used to override a texture.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="ppTexture"> - Output Texture</param>
+/// <param name="colorSet"> - List of colors to jam into the texture</param>
+/// <param name="in_width"> - How wide should the texture be?</param>
+/// <param name="in_height"> - How tall should the texture be?</param>
+/// <param name="in_lineHeight"> - How thick should each line be?</param>
+/// <param name="howManyLines"> - How many lines should there be?</param>
 void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width, UINT in_height, int in_lineHeight, int howManyLines) {
 	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
 		Sleep(500);
@@ -138,6 +155,11 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	D3D::SetCustomColors();
 }
 
+/// <summary>
+/// Generate Texture Middleware.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="type"> - What type of texture should be created? (enum D3D::TextureType)</param>
 void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 	ColorList colorSet;
 
@@ -231,6 +253,13 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 	}
 }
 
+/// <summary>
+/// Generate a texture with one color.
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="ppD3Dtex"> - Output Texture</param>
+/// <param name="colour32"> - Color for Texture</param>
+/// <returns>E_FAIL if a texture can't be created, S_OK if it was created.</returns>
 HRESULT D3D::GenerateSolidTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32) {
 	if (FAILED(pDevice->CreateTexture(8, 8, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED, ppD3Dtex, NULL)))
 		return E_FAIL;

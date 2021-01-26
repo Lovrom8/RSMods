@@ -5,6 +5,10 @@ Modified / Translated from the Visual Basic code provided by UKLooney
 Open source here: https://cdn.discordapp.com/attachments/711634414240530462/735574443035721798/G2RS_v0.3_source.zip
 */
 
+/// <summary>
+/// Gets the current note being played in MIDI.
+/// </summary>
+/// <returns>Current Note (MIDI Number)</returns>
 byte GuitarSpeak::GetCurrentNote() {
 	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets);
 
@@ -16,6 +20,10 @@ byte GuitarSpeak::GetCurrentNote() {
 	return *(byte*)noteAdr;
 }
 
+/// <summary>
+/// Convert MIDI Note to NoteOctave format (ex: 40 -> E2)
+/// </summary>
+/// <returns>NoteOctave (ex: E2)</returns>
 std::string GuitarSpeak::GetCurrentNoteName() {
 	byte currentNote = GetCurrentNote();
 
@@ -28,6 +36,10 @@ std::string GuitarSpeak::GetCurrentNoteName() {
 	return noteLetters.at(note) + std::to_string(octave);
 }
 
+/// <summary>
+/// Listen to all notes being played and press keys when specific notes are being played.
+/// </summary>
+/// <returns>Looped, but returns false if loop is broken.</returns>
 bool GuitarSpeak::RunGuitarSpeak() {
 	FillKeyList();
 
@@ -121,6 +133,9 @@ bool GuitarSpeak::RunGuitarSpeak() {
 	return false;
 }
 
+/// <summary>
+/// Add available keybinds
+/// </summary>
 void GuitarSpeak::FillKeyList() {
 	strKeyList[Settings::GetModSetting("GuitarSpeakDelete")] = "DELETE";
 	strKeyList[Settings::GetModSetting("GuitarSpeakSpace")] = "SPACE";

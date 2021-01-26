@@ -1,6 +1,12 @@
 #include "LaunchOnExternalMonitor.hpp"
 
 namespace LaunchOnExternalMonitor {
+
+	/// <summary>
+	/// Move Rocksmith to a seperate monitor on boot.
+	/// </summary>
+	/// <param name="startX"> - top LEFT of the screen</param>
+	/// <param name="startY"> - TOP left of the screen</param>
 	void SendRocksmithToScreen(int startX, int startY) {
 		HWND hWnd = FindWindow(NULL, L"Rocksmith 2014");
 

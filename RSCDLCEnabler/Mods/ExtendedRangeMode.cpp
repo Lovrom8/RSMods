@@ -1,5 +1,8 @@
 #include "ExtendedRangeMode.hpp"
 
+/// <param name="stringnum"> - Number of string</param>
+/// <param name="state"> - Structs::string_state</param>
+/// <returns>Pointer to String Color</returns>
 uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	uintptr_t currentStringNum = stringnum; // EDX
 	uintptr_t currentStringColor = 0; // EAX
@@ -23,12 +26,22 @@ uintptr_t GetStringColor(uintptr_t stringnum, int state) {
 	return currentStringColor;
 }
 
+/// <summary>
+/// Store backup of original string color.
+/// </summary>
+/// <param name="strings"> - Pointers to string colors</param>
+/// <param name="state"> - Structs::string_state</param>
 void ERMode::InitStrings(std::vector<uintptr_t>& strings, int state) {
 	strings.clear();
 	for (int strIndex = 0; strIndex < 6;strIndex++)
 		strings.push_back(GetStringColor(strIndex, state));
 }
 
+/// <summary>
+/// Set strings to their respective colors
+/// </summary>
+/// <param name="strings"> - Pointers to string colors</param>
+/// <param name="colors"> - New String Colors</param>
 void ERMode::SetColors(std::vector<uintptr_t> strings, std::vector<Color> colors) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		if (strings[strIndex] == NULL)
@@ -48,6 +61,11 @@ void ERMode::SetCustomColors(int strIdx, ColorMap customColorMap) {
 	customColors[strIdx] = customColorMap;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="strings"> - Pointers to string colors</param>
+/// <param name="colorType"> - String of color type</param>
 void ERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 	for (int strIndex = 0; strIndex < 6;strIndex++) {
 		if (strings[strIndex] == NULL)
@@ -57,8 +75,12 @@ void ERMode::SetColors(std::vector<uintptr_t> strings, std::string colorType) {
 	}
 }
 
+
 std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 
+/// <summary>
+/// Run ResetString on all six strings.
+/// </summary>
 void ERMode::ResetAllStrings() {
 	if (!ColorsSaved)
 		return;
@@ -67,6 +89,10 @@ void ERMode::ResetAllStrings() {
 		ResetString(str);
 }
 
+/// <summary>
+/// Reset a string back to the original color
+/// </summary>
+/// <param name="strIndex"> - Current String (zero indexed)</param>
 void ERMode::ResetString(int strIndex) {
 	std::vector<uintptr_t> stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
@@ -85,6 +111,9 @@ void ERMode::ResetString(int strIndex) {
 
 std::vector<std::vector<Color>> defaultColors;
 
+/// <summary>
+/// Set colors of strings depending on INI settings.
+/// </summary>
 void ERMode::Toggle7StringMode() {
 	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
@@ -236,22 +265,37 @@ void ERMode::Toggle7StringMode() {
 	}
 }
 
+/// <summary>
+/// Toggle RainbowEnabled on / off.
+/// </summary>
 void ERMode::ToggleRainbowMode() {
 	RainbowEnabled = !RainbowEnabled;
 }
 
+/// <summary>
+/// Toggle RainbowNotesEnabled on / off.
+/// </summary>
 void ERMode::ToggleRainbowNotes() {
 	RainbowNotesEnabled = !RainbowNotesEnabled;
 }
 
+/// <summary>
+/// RainbowEnabled Middleware.
+/// </summary>
 bool ERMode::IsRainbowEnabled() {
 	return RainbowEnabled;
 }
 
+/// <summary>
+/// RainbowNotesEnabled Middleware.
+/// </summary>
 bool ERMode::IsRainbowNotesEnabled() {
 	return RainbowNotesEnabled;
 }
 
+/// <summary>
+/// Toggle on Rainbow Strings / Rainbow Notes
+/// </summary>
 void ERMode::DoRainbow() {
 	if (!RainbowEnabled && !RainbowNotesEnabled)
 		return;
@@ -320,6 +364,15 @@ void ERMode::DoRainbow() {
 
 
 /* IN CASE THIS IS EVER NEEDED */
+
+/// <summary>
+/// Do these colors match
+/// </summary>
+/// <param name="strings"> - List of strings</param>
+/// <param name="R"> - Red (Color to look for)</param>
+/// <param name="G"> - Green (Color to look for)</param>
+/// <param name="B"> - Blue (Color to look for)</param>
+/// <returns></returns>
 bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
 	if (strings[0] == NULL)
 		return false;
