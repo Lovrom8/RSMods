@@ -61,6 +61,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
             this.checkBox_CustomHighway = new System.Windows.Forms.CheckBox();
             this.checkBox_RainbowNotes = new System.Windows.Forms.CheckBox();
             this.checkBox_BackupProfile = new System.Windows.Forms.CheckBox();
@@ -215,6 +216,7 @@
             this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.button_SecondaryMonitorStartPos = new System.Windows.Forms.Button();
             this.groupBox_CustomHighway = new System.Windows.Forms.GroupBox();
             this.button_ResetNotewayColors = new System.Windows.Forms.Button();
             this.textBox_ShowFretNumber = new System.Windows.Forms.TextBox();
@@ -402,8 +404,6 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.button_SecondaryMonitorStartPos = new System.Windows.Forms.Button();
-            this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
@@ -924,6 +924,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_SecondaryMonitor
+            // 
+            this.checkBox_SecondaryMonitor.AutoSize = true;
+            this.checkBox_SecondaryMonitor.Location = new System.Drawing.Point(131, 266);
+            this.checkBox_SecondaryMonitor.Name = "checkBox_SecondaryMonitor";
+            this.checkBox_SecondaryMonitor.Size = new System.Drawing.Size(157, 17);
+            this.checkBox_SecondaryMonitor.TabIndex = 55;
+            this.checkBox_SecondaryMonitor.Text = "Start On Secondary Monitor";
+            this.checkBox_SecondaryMonitor.UseVisualStyleBackColor = true;
+            this.checkBox_SecondaryMonitor.CheckedChanged += new System.EventHandler(this.Save_SecondaryMonitor);
+            this.checkBox_SecondaryMonitor.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_CustomHighway
             // 
@@ -2824,6 +2836,18 @@
             this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
+            // button_SecondaryMonitorStartPos
+            // 
+            this.button_SecondaryMonitorStartPos.Location = new System.Drawing.Point(21, 382);
+            this.button_SecondaryMonitorStartPos.Name = "button_SecondaryMonitorStartPos";
+            this.button_SecondaryMonitorStartPos.Size = new System.Drawing.Size(197, 23);
+            this.button_SecondaryMonitorStartPos.TabIndex = 52;
+            this.button_SecondaryMonitorStartPos.Text = "Set Secondary Monitor Start Position";
+            this.button_SecondaryMonitorStartPos.UseVisualStyleBackColor = true;
+            this.button_SecondaryMonitorStartPos.Visible = false;
+            this.button_SecondaryMonitorStartPos.Click += new System.EventHandler(this.Save_SecondaryMonitorStartPosition);
+            this.button_SecondaryMonitorStartPos.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_CustomHighway
             // 
@@ -4733,6 +4757,7 @@
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
+            this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
             this.tab_Profiles.Controls.Add(this.button_Profiles_LoadSongs);
             this.tab_Profiles.Controls.Add(this.label_Profiles_WIP);
@@ -4780,11 +4805,10 @@
             // groupBox_Profiles_SongLists
             // 
             this.groupBox_Profiles_SongLists.Controls.Add(this.dgv_Profiles_Songlists);
-            this.groupBox_Profiles_SongLists.Controls.Add(this.button_Profiles_SaveSonglist);
             this.groupBox_Profiles_SongLists.Controls.Add(this.label_Profiles_AvailableSongs);
-            this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(253, 56);
+            this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(253, 3);
             this.groupBox_Profiles_SongLists.Name = "groupBox_Profiles_SongLists";
-            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(875, 226);
+            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(875, 495);
             this.groupBox_Profiles_SongLists.TabIndex = 6;
             this.groupBox_Profiles_SongLists.TabStop = false;
             this.groupBox_Profiles_SongLists.Text = "Songlists";
@@ -4811,7 +4835,7 @@
             this.dgv_Profiles_Songlists.Name = "dgv_Profiles_Songlists";
             this.dgv_Profiles_Songlists.RowHeadersVisible = false;
             this.dgv_Profiles_Songlists.RowHeadersWidth = 20;
-            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(813, 150);
+            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(813, 442);
             this.dgv_Profiles_Songlists.TabIndex = 12;
             this.dgv_Profiles_Songlists.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.Profiles_Songlists_ChangedValue);
             this.dgv_Profiles_Songlists.CurrentCellDirtyStateChanged += new System.EventHandler(this.Profiles_Songlists_DirtyState);
@@ -4886,7 +4910,7 @@
             // 
             // button_Profiles_SaveSonglist
             // 
-            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(6, 195);
+            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(120, 245);
             this.button_Profiles_SaveSonglist.Name = "button_Profiles_SaveSonglist";
             this.button_Profiles_SaveSonglist.Size = new System.Drawing.Size(98, 23);
             this.button_Profiles_SaveSonglist.TabIndex = 11;
@@ -4905,7 +4929,7 @@
             // 
             // button_Profiles_LoadSongs
             // 
-            this.button_Profiles_LoadSongs.Location = new System.Drawing.Point(1072, 458);
+            this.button_Profiles_LoadSongs.Location = new System.Drawing.Point(14, 245);
             this.button_Profiles_LoadSongs.Name = "button_Profiles_LoadSongs";
             this.button_Profiles_LoadSongs.Size = new System.Drawing.Size(75, 23);
             this.button_Profiles_LoadSongs.TabIndex = 1;
@@ -4918,7 +4942,7 @@
             // 
             this.label_Profiles_WIP.AutoSize = true;
             this.label_Profiles_WIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Profiles_WIP.Location = new System.Drawing.Point(476, 22);
+            this.label_Profiles_WIP.Location = new System.Drawing.Point(11, 19);
             this.label_Profiles_WIP.Name = "label_Profiles_WIP";
             this.label_Profiles_WIP.Size = new System.Drawing.Size(180, 18);
             this.label_Profiles_WIP.TabIndex = 10;
@@ -4926,9 +4950,9 @@
             // 
             // progressBar_Profiles_LoadPsarcs
             // 
-            this.progressBar_Profiles_LoadPsarcs.Location = new System.Drawing.Point(899, 487);
+            this.progressBar_Profiles_LoadPsarcs.Location = new System.Drawing.Point(14, 274);
             this.progressBar_Profiles_LoadPsarcs.Name = "progressBar_Profiles_LoadPsarcs";
-            this.progressBar_Profiles_LoadPsarcs.Size = new System.Drawing.Size(248, 23);
+            this.progressBar_Profiles_LoadPsarcs.Size = new System.Drawing.Size(204, 23);
             this.progressBar_Profiles_LoadPsarcs.TabIndex = 0;
             this.progressBar_Profiles_LoadPsarcs.Visible = false;
             // 
@@ -5053,30 +5077,6 @@
             this.label_SettingsSaved.TabIndex = 52;
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
-            // 
-            // button_SecondaryMonitorStartPos
-            // 
-            this.button_SecondaryMonitorStartPos.Location = new System.Drawing.Point(21, 382);
-            this.button_SecondaryMonitorStartPos.Name = "button_SecondaryMonitorStartPos";
-            this.button_SecondaryMonitorStartPos.Size = new System.Drawing.Size(197, 23);
-            this.button_SecondaryMonitorStartPos.TabIndex = 52;
-            this.button_SecondaryMonitorStartPos.Text = "Set Secondary Monitor Start Position";
-            this.button_SecondaryMonitorStartPos.UseVisualStyleBackColor = true;
-            this.button_SecondaryMonitorStartPos.Visible = false;
-            this.button_SecondaryMonitorStartPos.Click += new System.EventHandler(this.Save_SecondaryMonitorStartPosition);
-            this.button_SecondaryMonitorStartPos.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // checkBox_SecondaryMonitor
-            // 
-            this.checkBox_SecondaryMonitor.AutoSize = true;
-            this.checkBox_SecondaryMonitor.Location = new System.Drawing.Point(131, 266);
-            this.checkBox_SecondaryMonitor.Name = "checkBox_SecondaryMonitor";
-            this.checkBox_SecondaryMonitor.Size = new System.Drawing.Size(157, 17);
-            this.checkBox_SecondaryMonitor.TabIndex = 55;
-            this.checkBox_SecondaryMonitor.Text = "Start On Secondary Monitor";
-            this.checkBox_SecondaryMonitor.UseVisualStyleBackColor = true;
-            this.checkBox_SecondaryMonitor.CheckedChanged += new System.EventHandler(this.Save_SecondaryMonitor);
-            this.checkBox_SecondaryMonitor.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // songManagerBindingSource
             // 
