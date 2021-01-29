@@ -1032,12 +1032,14 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 			freopen_s(&streamWrite, "CONOUT$", "w", stdout);
 		}
 
-		DisableThreadLibraryCalls(hModule);
-		D3DX9_42::InitProxy(); // Run Middleware between us and the actual D3DX9_42.dll
+		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
+		D3DX9_42::InitProxy(); // Proxy all real D3DX9_42.dll commands to the actual D3DX9_42.dll.
 		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
-		D3DX9_42::ShutdownProxy();
+		D3DX9_42::ShutdownProxy(); // Kill Proxy to D3DX9_42.dll
+
+		// Shutdown ImGUI
 		ImGui_ImplWin32_Shutdown();
 		ImGui_ImplDX9_Shutdown();
 		ImGui::DestroyContext();

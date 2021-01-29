@@ -1,9 +1,12 @@
 #include "Settings.hpp"
 #include <regex>
 
+/// <summary>
+/// Load Default Settings
+/// </summary>
 void Settings::Initialize()
 {
-	modSettings = {  // Default values incase the INI doesn't load
+	modSettings = {  
 
 		{"CustomSongListTitles", "K"},
 		{"ToggleLoftKey", "T"},
@@ -100,6 +103,10 @@ void Settings::Initialize()
 
 // Read INI
 
+/// <summary>
+/// Parse INI for SongLists
+/// </summary>
+/// <returns>List of Custom Songlist Names</returns>
 std::vector<std::string> Settings::GetCustomSongTitles() {
 	std::vector<std::string> retList(6);
 	CSimpleIniA reader;
@@ -115,6 +122,9 @@ std::vector<std::string> Settings::GetCustomSongTitles() {
 	return retList;
 }
 
+/// <summary>
+/// Parse Mod / Volume Keybind Toggles
+/// </summary>
 void Settings::ReadKeyBinds() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
@@ -147,6 +157,9 @@ void Settings::ReadKeyBinds() {
 	//std::cout << "Read " << modSettings["ToggleLoftKey"] << std::endl;
 }
 
+/// <summary>
+/// Parse Settings For Mods
+/// </summary>
 void Settings::ReadModSettings() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
@@ -218,6 +231,9 @@ void Settings::ReadModSettings() {
 	modSettings["SecondaryMonitor"] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
 }
 
+/// <summary>
+/// Parse String Colors From INI -> Color List
+/// </summary>
 void Settings::ReadStringColors() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
@@ -247,6 +263,9 @@ void Settings::ReadStringColors() {
 	}
 }
 
+/// <summary>
+/// Parse Noteway Colors From INI
+/// </summary>
 void Settings::ReadNotewayColors() {
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
@@ -263,20 +282,46 @@ void Settings::ReadNotewayColors() {
 }
 
 
-// Return INI Settings
-
+/// <summary>
+/// Read Keybind From INI
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <returns>Virtual Key | uint</returns>
 unsigned int Settings::GetKeyBind(std::string name) {
 	return GetVKCodeForString(modSettings[name]);
 }
 
+/// <summary>
+/// Read Mod Setting (internally called customSettings)
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <returns>Int for mod setting</returns>
 int Settings::GetModSetting(std::string name) {
 	return customSettings[name];
 }
 
+/// <summary>
+/// Read Mod Toggle On / Off (internally modSettings)
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <returns>Value of mod toggle</returns>
 std::string Settings::ReturnSettingValue(std::string name) {
 	return modSettings[name];
 }
 
+/// <summary>
+/// Get Virtual Key code for input string
+/// </summary>
+/// <param name="vkString"> - std::map[key]</param>
+/// <returns></returns>
+int Settings::GetVKCodeForString(std::string vkString) {
+	return keyMap[vkString];
+}
+
+/// <summary>
+/// Is the twitch effect on
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
 bool Settings::IsTwitchSettingEnabled(std::string name) {
 	if (twitchSettings.count(name) == 0) // JIC
 		return false;
@@ -284,33 +329,59 @@ bool Settings::IsTwitchSettingEnabled(std::string name) {
 	return twitchSettings[name] == "on";
 }
 
+/// <summary>
+/// Read Noteway Color
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <returns>HEX color</returns>
 std::string Settings::ReturnNotewayColor(std::string name) {
 	return notewayColors[name];
 }
 
-// Misc Functions
-
+/// <summary>
+/// Split input into list of strings, based on spaces
+/// </summary>
+/// <param name="input"> - Input string</param>
+/// <returns>List of strings taken from input, that were seperated by spaces.</returns>
 std::vector<std::string> Settings::SplitByWhitespace(const std::string& input) {
 	std::regex re("\\s+");
 	std::sregex_token_iterator first{ input.begin(), input.end(), re, -1 }, last;
 	return { first, last };
 }
 
+/// <summary>
+/// Change mod setting to new value
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <param name="newValue"> - new setting value</param>
 void Settings::UpdateModSetting(std::string name, std::string newValue) {
 	modSettings[name] = newValue;
 }
 
+/// <summary>
+/// Change custom setting to new value
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <param name="newValue"> - new setting value</param>
 void Settings::UpdateCustomSetting(std::string name, int newValue) {
 	customSettings[name] = newValue;
 }
 
-
+/// <summary>
+/// Change mod setting to new value
+/// </summary>
+/// <param name="name"> - std::map[key]</param>
+/// <param name="newValue"> - new setting value</param>
 void Settings::UpdateTwitchSetting(std::string name, std::string newValue) {
 	twitchSettings[name] = newValue;
 }
 
+/// <summary>
+/// Trigger single setting update.
+/// </summary>
+/// <param name="updateMessage"> - Format: update (custom|mod) name newValue</param>
 void Settings::ParseSettingUpdate(std::string updateMessage) {
-	auto msgParts = SplitByWhitespace(updateMessage); // Format: update (custom|mod) <entryName> <value>
+	auto msgParts = SplitByWhitespace(updateMessage);
 
 	if (msgParts.size() < 4)
 		return;
@@ -328,6 +399,11 @@ void Settings::ParseSettingUpdate(std::string updateMessage) {
 		UpdateModSetting(entry, value);
 }
 
+/// <summary>
+/// Read twitch message and edit effect
+/// </summary>
+/// <param name="twitchMsg"> - twitch message with mod</param>
+/// <param name="toggleType"> - "enable" / "disable"</param>
 void Settings::ParseTwitchToggle(std::string twitchMsg, std::string toggleType) {
 	auto msgParts = SplitByWhitespace(twitchMsg);
 
@@ -339,6 +415,10 @@ void Settings::ParseTwitchToggle(std::string twitchMsg, std::string toggleType) 
 	twitchSettings[effectName] = toggleType == "enable" ? "on" : "off";
 }
 
+/// <summary>
+/// Twitch: Solid note color
+/// </summary>
+/// <param name="twitchMsg"> - twitch message with new color</param>
 void Settings::ParseSolidColorsMessage(std::string twitchMsg) {
 	auto msgParts = SplitByWhitespace(twitchMsg);
 
@@ -348,16 +428,17 @@ void Settings::ParseSolidColorsMessage(std::string twitchMsg) {
 	UpdateModSetting("SolidNoteColor", msgParts[2]);
 }
 
-int Settings::GetVKCodeForString(std::string vkString) {
-	return keyMap[vkString];
-}
-
 /*
 float cSettings::GetStringColor(std::string string) {
 	return stringColors[string];
 }
 */
 
+/// <summary>
+/// Get color list of strings
+/// </summary>
+/// <param name="CB"> - colorblind or not</param>
+/// <returns>List of all string colors</returns>
 std::vector<Color> Settings::GetCustomColors(bool CB) {
 	if (CB)
 		return customStringColorsCB;
@@ -365,6 +446,12 @@ std::vector<Color> Settings::GetCustomColors(bool CB) {
 		return customStringColorsNormal;
 }
 
+/// <summary>
+/// Change string color in color list
+/// </summary>
+/// <param name="strIndex"> - string number (zero-indexed)</param>
+/// <param name="c"> - new color</param>
+/// <param name="CB"> - colorblind or not</param>
 void Settings::SetStringColors(int strIndex, Color c, bool CB) {
 	if (CB)
 		customStringColorsCB[strIndex] = c;
@@ -372,6 +459,9 @@ void Settings::SetStringColors(int strIndex, Color c, bool CB) {
 		customStringColorsNormal[strIndex] = c;
 }
 
+/// <summary>
+/// Re-Parse INI
+/// </summary>
 void Settings::UpdateSettings() {
 	ReadKeyBinds();
 	ReadModSettings();
@@ -382,6 +472,11 @@ void Settings::UpdateSettings() {
 
 // Misc
 
+/// <summary>
+/// Convert HEX -> Color struct
+/// </summary>
+/// <param name="hexStr"> - String of hex, without #</param>
+/// <returns>Color struct</returns>
 Color Settings::ConvertHexToColor(std::string hexStr) {
 	int r, g, b;
 	if (sscanf_s(hexStr.c_str(), "%02x%02x%02x", &r, &g, &b) != EOF) {

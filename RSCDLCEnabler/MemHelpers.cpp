@@ -3,10 +3,11 @@
 /// <summary>
 /// **DEPRECATED | USE GetCurrentTuning(false)**
 /// </summary>
-/// <returns>A-String Tuning</returns>
+/// <returns>NULL if invalid address, else if ExtendedRangeDropTuning == true LowE-String Tuning else A-String Tuning.</returns>
 byte MemHelpers::getLowestStringTuning() {
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
 
+	// Null Pointer Check
 	if (!addrTuning)
 		return NULL;
 
@@ -24,11 +25,13 @@ byte MemHelpers::getLowestStringTuning() {
 byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
 
+	// Null Pointer Check
 	if (!addrTuning)
 		return NULL;
 
 	byte* AllTunings = new byte[6]{ (*(Tuning*)addrTuning).lowE, (*(Tuning*)addrTuning).strA, (*(Tuning*)addrTuning).strD, (*(Tuning*)addrTuning).strG, (*(Tuning*)addrTuning).strB, (*(Tuning*)addrTuning).highE };
 
+	// Print tuning to console. **DEBUG BUILD ONLY**
 	if (verbose) {
 		for (int i = 0; i < 6; i++)
 			std::cout << "String" << i << " - " << (int)AllTunings[i] << std::endl;
@@ -49,11 +52,13 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
+	// Null Pointer Check
 	if (!addrTuningText)
 		return Tuning();
 
 	std::string unsanitized_tuningText = std::string((const char*)addrTuningText);
 
+	// Rocksmith converts all ASCII "#" to the unicode version. Since we have to use std::string (and can't use std::wstring) with nlohmann, we convert the corrupt character combination to an ASCII "#".
 	while (unsanitized_tuningText.find("\xe2\x99\xaf") != std::string::npos) { // Unicode # (sharp)
 		size_t badHash = unsanitized_tuningText.find("\xe2\x99\xaf");
 		std::string partOne = unsanitized_tuningText.substr(0, badHash);
@@ -61,6 +66,9 @@ Tuning MemHelpers::GetTuningAtTuner() {
 		unsanitized_tuningText = partOne + partTwo;
 		unsanitized_tuningText.at(badHash) = '#';
 	}
+
+	// Rocksmith converts all ASCII "b" to the unicode version. Since we have to use std::string (and can't use std::wstring) with nlohmann, we convert the corrupt character combination to an ASCII "b".
+	// Note "b" is capitalized at the end because we later assume all tunings are capital since Rocksmith will parse tuning names as uppercase. Since we use the non-UTF value we have to convert the "b" to a "B" for our later comparison to work.
 	while (unsanitized_tuningText.find('\xe2\x99\xad') != std::string::npos) { // Unicode b (flat)
 		size_t badFlat = unsanitized_tuningText.find("\xe2\x99\xad");
 		std::string partOne = unsanitized_tuningText.substr(0, badFlat);
@@ -71,22 +79,26 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 	std::string tuningText = unsanitized_tuningText;
 
+	// If it's a custom tuning we don't know the tuning, so we might as well stop here.
 	if (tuningText == (std::string)"CUSTOM TUNING")
 		return Tuning();
 
-	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());  // In the JSON, tunings have no whitespaces, so get rid of them
+	// In the JSON, tunings have no whitespaces, so get rid of them
+	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());
 
+	// Parse RSMods unpacked tuning definition file.
 	std::ifstream jsonFile(pathToTuningList);
 	nlohmann::json tuningJson;
 	jsonFile >> tuningJson;
-
 	jsonFile.close();
-	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in 
+	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in
+
+
 	for (auto& tuning : tuningJson.items()) { // Unforunately we can't use json.contains due to difference in formatting
 		std::string jsonKeyUpper = tuning.key(), jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
 		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
 
-		if (jsonKeyOriginal == tuningText || jsonKeyUpper == tuningText) {
+		if (jsonKeyOriginal == tuningText || jsonKeyUpper == tuningText) { // If the tuning is all uppercase or if standard-case matches
 			tuningJson = tuningJson[jsonKeyOriginal]["Strings"];
 			return Tuning(tuningJson["string0"], tuningJson["string1"], tuningJson["string2"], tuningJson["string3"], tuningJson["string4"], tuningJson["string5"]);
 		}
@@ -99,6 +111,8 @@ Tuning MemHelpers::GetTuningAtTuner() {
 bool MemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
+
+	// Null Pointer Check
 	if (!addrTimer)
 		return false;
 
@@ -114,23 +128,24 @@ bool MemHelpers::IsExtendedRangeSong() {
 	Below is the new method
 	*/
 
+	// Get lowest tuned string
 	int* highestLowest = MemHelpers::GetHighestLowestString();
-
 	int lowestTuning = highestLowest[1];
 
+	// Get the current tuning if available
 	byte* currentTuning = MemHelpers::GetCurrentTuning();
 	Tuning tuning = Tuning();
 	if (currentTuning)
 		tuning = Tuning(currentTuning[0], currentTuning[1], currentTuning[2], currentTuning[3], currentTuning[4], currentTuning[5]);
 
+	// Cleanup Duty
 	delete[] highestLowest;
-
 	if (currentTuning)
 		delete[] currentTuning;
 
 	bool dropTuning = IsSongInDrop(tuning);
 
-	// Pointer is invalid
+	// HighestLowest Tuning Pointer is invalid
 	if (lowestTuning == 666)
 		return false;
 
@@ -143,7 +158,6 @@ bool MemHelpers::IsExtendedRangeSong() {
 		return true;
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
-	
 	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!dropTuning || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2))
 		return true;
 
@@ -154,15 +168,17 @@ bool MemHelpers::IsExtendedRangeSong() {
 bool MemHelpers::IsExtendedRangeTuner() {
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
+	// Null Pointer Check or not in a pre-song tuner
 	if (!addrTuningText || !IsInStringArray(GetCurrentMenu(), NULL, preSongTuners))
 		return false;
 	
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
-	if (tuner_songTuning.lowE == 69) // Nice... Means empty tuning
+	// Tuning Not Found
+	if (tuner_songTuning.lowE == 69)
 		return false;
-		
-	int lowestTuning = tuner_songTuning.lowE, NEGATE_DROP = lowestTuning + 2;
+	
+	int lowestTuning = tuner_songTuning.lowE;
 
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
@@ -179,7 +195,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		return true;
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
-	if (!inDrop && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode"))
+	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!inDrop || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2))
 		return true;
 
 	return false;
@@ -193,6 +209,7 @@ int* MemHelpers::GetHighestLowestString() {
 	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
 	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 
+	// Null Pointer Check
 	if (!songTuning) {
 		int* fakeReturns = new int[2]{ 666, 666 };
 		return fakeReturns;
@@ -246,8 +263,9 @@ bool MemHelpers::IsSongInStandard(Tuning tuning) {
 int MemHelpers::GetTrueTuning() {
 	uintptr_t trueTunePointer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_trueTuning, Offsets::ptr_trueTuningOffsets);
 
+	// Null Pointer Check
 	if (!trueTunePointer)
-		return 440; // Just to be sure, it's 440 most of the time.
+		return 440;
 
 	int trueTuning = floor(*(float*)trueTunePointer);
 
@@ -280,11 +298,11 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 	//if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
 	//	return "pre_enter_prompt";
 
+	// Null Pointer Check
 	if (!currentMenuAdr)
 		return "where are we actually";
 
 	std::string currentMenu((char*)currentMenuAdr);
-	//std::cout << currentMenu << std::endl;
 	return currentMenu;
 }
 
@@ -303,15 +321,16 @@ void MemHelpers::ToggleLoft() {
 	uintptr_t farAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
 	if (*(float*)farAddr == 10000)
-		*(float*)farAddr = 1;
+		*(float*)farAddr = 1; // Loft Off
 	else
-		*(float*)farAddr = 10000;
+		*(float*)farAddr = 10000; // Loft On
 }
 
 /// <returns>Current Time In Song</returns>
 std::string MemHelpers::ShowSongTimer() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
+	// Null Pointer Check
 	if (!addrTimer)
 		return "";
 
@@ -326,6 +345,7 @@ void MemHelpers::ToggleCB(bool enabled) {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
 
+	// Null Pointers Check
 	if (!addrTimer || !cbEnabled)
 		return;
 
@@ -348,7 +368,7 @@ void MemHelpers::PatchCDLCCheck() {
 }
 
 
-/// <returns>Size of Rocksmith</returns>
+/// <returns>Size of Rocksmith Window</returns>
 Resolution MemHelpers::GetWindowSize() {
 	RECT WindowSize;
 
@@ -358,7 +378,8 @@ Resolution MemHelpers::GetWindowSize() {
 		currentSize.width = WindowSize.right - WindowSize.left;
 		currentSize.height = WindowSize.bottom - WindowSize.top;
 	}
-		return currentSize;
+	
+	return currentSize;
 }
 
 /// <param name="stringToCheckIfInsideArray"> - Input</param>
@@ -396,6 +417,7 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 {
 	Resolution WindowSize = MemHelpers::GetWindowSize();
 
+	// Allow Font Size Declaration
 	bool useInputFontSize = (setFontSize.width != NULL && setFontSize.height != NULL);
 
 	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
@@ -430,7 +452,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 	uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
 	if (enable) {
-		if (*(float*)noLoft == 1) {
+		if (*(float*)noLoft == 1) { // Turn on loft so the effects of the mod are actually shown.
 			D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
 			MemHelpers::ToggleLoft();
 		}
@@ -460,11 +482,14 @@ bool MemHelpers::IsInSong() {
 float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
 
+	// Null Pointer Check
 	if (!riffRepeaterSpeed)
 		return 100.f;
 
-	if (newSpeed != NULL) // If we aren't just trying to see the current speed.
+	// Set the speed, if sent.
+	if (newSpeed != NULL) 
 		*(float*)riffRepeaterSpeed = newSpeed;
+
 	return *(float*)riffRepeaterSpeed;
 }
 
@@ -504,10 +529,13 @@ void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 std::string MemHelpers::CurrentSelectedUser() {
 	uintptr_t badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
 
+	// If we aren't just trying to see the current speed.
 	if (!badValue)
 		return (std::string)"";
 
 	int i = 0;
+
+	// This value 90% of the time starts with an invalid pointer. We must wait ~2.5 seconds to guarantee that it is correct, or until the pointer changes (whichever comes first).
 	while (badValue < 0x10000000 && i < 25) {
 		Sleep(100);
 		badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
