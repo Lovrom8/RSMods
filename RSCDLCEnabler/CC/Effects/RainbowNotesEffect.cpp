@@ -11,6 +11,12 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Makes note heads continously shift their colors 
+	/// All note head changing is handled in ERMode, so it just toggles the switch in there
+	/// Does not affect the strings!
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RainbowNotesEffect::Start(Request request)
 	{
 		std::cout << "RainbowNotesEffect::Start()" << std::endl;

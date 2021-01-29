@@ -11,6 +11,10 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Kills the player's current note streak for a certain duration
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
 	EffectResult FYourFCEffect::Start(Request request)
 	{
 		std::cout << "FYourFC::Start()" << std::endl;

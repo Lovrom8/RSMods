@@ -11,6 +11,10 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Sets the scale of each object related to note heads to 0, hence making it temporarily invisble 
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RemoveNotesEffect::Start(Request request)
 	{
 		std::cout << "RemoveNotesEffect::Start()" << std::endl;

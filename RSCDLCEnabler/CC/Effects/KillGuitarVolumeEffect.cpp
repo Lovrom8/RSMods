@@ -11,6 +11,12 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// We can individually set volumes of the WWise objects the game uses
+	/// The current volume is read by using Wwise_Sound_Query_GetRTPCValue_Char
+	/// New volume is set using Wwise_Sound_Query_SetRTPCValue_Char, the game calls it with both 0xffffffff and 0x00001234 as object IDs 
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult KillGuitarVolumeEffect::Start(Request request)
 	{
 		std::cout << "KillGuitarVolumeEffect::Start()" << std::endl;
@@ -43,6 +49,10 @@ namespace CrowdControl::Effects {
 		}
 	}
 
+	/// <summary>
+	/// Restore the volume back to it's original values
+	/// </summary>
+	/// <returns> EffectResult::Success</returns>
 	EffectResult KillGuitarVolumeEffect::Stop()
 	{
 		std::cout << "KillGuitarVolumeEffect::Stop()" << std::endl;

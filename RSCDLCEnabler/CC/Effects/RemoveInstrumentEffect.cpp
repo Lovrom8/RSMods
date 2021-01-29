@@ -8,6 +8,10 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Sets the scale of each instrument related object (headstock, inlays, fretbars, ...) to 0, hence making it temporarily invisble 
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RemoveInstrumentEffect::Start(Request request)
 	{
 		std::cout << "RemoveInstrumentEffect::Start()" << std::endl;

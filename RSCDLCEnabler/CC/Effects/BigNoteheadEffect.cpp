@@ -50,6 +50,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Sets the scale only for objects which are of note meshe type
+	/// </summary>
 	void BigNoteheadEffect::SetNoteHeadScale(float scale) {
 		std::cout << "BigNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl;
 

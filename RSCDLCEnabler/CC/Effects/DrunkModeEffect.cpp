@@ -13,6 +13,11 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Drunk mode is achieved by writing different continously values to a variable controlling the horiztonal position of the camera
+	/// Loft needs to be enabled for it to have the full effect, so we also call ToggleDrunkMode
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
 	EffectResult DrunkModeEffect::Start(Request request)
 	{
 		std::cout << "DrunkModeEffect::Start()" << std::endl;

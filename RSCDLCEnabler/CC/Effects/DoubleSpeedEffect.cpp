@@ -13,6 +13,11 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// The scroll speed has special memory PAGE flags sets, which prevent it from being written over, so first they need to be set to PAGE_READWRITE
+	/// Afterwards, the speed is set to double the original speed
+	/// </summary>
+	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
 	EffectResult DoubleSpeedEffect::Start(Request request)
 	{
 		std::cout << "DoubleSpeedEffect::Start()" << std::endl;
@@ -44,6 +49,10 @@ namespace CrowdControl::Effects {
 		}
 	}
 
+	/// <summary>
+	/// Reapply the original PAGE flags and set the original speed
+	/// </summary>
+	/// <returns>EffectResult::Sucess</returns>
 	EffectResult DoubleSpeedEffect::Stop()
 	{ 
 		std::cout << "DoubleSpeedEffect::Stop()" << std::endl;

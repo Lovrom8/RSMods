@@ -13,6 +13,7 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+
 	EffectResult ZoomInEffect::Start(Request request)
 	{
 		std::cout << "ZoomInEffect::Start()" << std::endl;

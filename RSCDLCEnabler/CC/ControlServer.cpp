@@ -24,6 +24,10 @@ namespace CrowdControl {
 	int sock;
 	bool serverStarted = false;
 
+	/// <summary>
+	/// Runs/stops the current effect
+	/// Effects are started externally (from CC or RSMods GUI), but each effect stops itself by running the Run method, which in turn calls Stop when the effect's duration runs out
+	/// </summary>
 	Response RunCommand(Request request) {
 		Response resp{
 			request.id,
@@ -56,6 +60,10 @@ namespace CrowdControl {
 		return resp;
 	}
 
+	/// <summary>
+	/// Sends a response through the same socket it recieved the request from
+	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
+	/// </summary>
 	void SendResponse(Response response) {
 		//Serialize response
 		json j = response;
@@ -71,6 +79,12 @@ namespace CrowdControl {
 		send(sock, buffer, sizeof(buffer), NULL);
 	}
 
+	/// <summary>
+	/// Waits for incoming requests, which are null terminated
+	/// If the client's connection is closed, the current message length will be -1, hence the server can be stopped
+	/// When a request is recieved, parse it as JSON, run the corresponding effect if no incompatible effects are currently running 
+	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
+	/// </summary>
 	void ClientLoop() {
 		std::cout << "Starting crowd control client loop" << std::endl;
 
@@ -124,8 +138,13 @@ namespace CrowdControl {
 		}
 	}
 
+	/// <summary>
+	/// Opens a TCP socket on localhost, port 45659
+	/// If a socket has been succesfully opened, it connects to the effect client (CrowdControl or RSMods GUI)
+	/// </summary>
+	/// <returns>NULL. Loops while the game is open</returns>
 	unsigned WINAPI CrowdControlThread() {
-		while (!D3DHooks::GameLoaded) // We are in no hurry :)
+		while (!D3DHooks::GameLoaded) 
 			Sleep(5000);
 
 		std::cout << "Crowd control server starting" << std::endl;
@@ -172,8 +191,14 @@ namespace CrowdControl {
 		return 0;
 	}
 
+	/// <summary>
+	/// Continously keep the effects running by calling the Run() method in their classes
+	/// Calls all the effects in the list (AllEffects)
+	/// If the current effect isn't enabled, there will be no visible effects 
+	/// </summary>
+	/// <returns>NULL. Loops while the game is open</returns>
 	unsigned WINAPI EffectRunThread() {
-		while (!D3DHooks::GameLoaded) // We are in no hurry :)
+		while (!D3DHooks::GameLoaded)
 			Sleep(5000);
 
 		while (!D3DHooks::GameClosing) {
@@ -189,8 +214,13 @@ namespace CrowdControl {
 		return 0;
 	}
 
+	/// <summary>
+	/// Object scaling effects need to be reapplied, because they are applied for each object separately 
+	/// These effects cannot be used in Guitarcade modes
+	/// </summary>
+	/// <returns>NULL. Loops while the game is open</returns>
 	unsigned WINAPI ObjectUtilUpdateThread() {
-		while (!D3DHooks::GameLoaded) // We are in no hurry :)
+		while (!D3DHooks::GameLoaded) 
 			Sleep(5000);
 
 		while (!D3DHooks::GameClosing) {
@@ -203,11 +233,19 @@ namespace CrowdControl {
 		return 0;
 	}
 
+	/// <summary>
+	/// Starts the main server loop
+	/// If it has been stopped (or hasn't ever been started), it restarts it
+	/// </summary>
+	/// <returns>Nothing</returns>
 	void StartServerLoop() {
 		if (!serverStarted)
 			std::thread(CrowdControlThread).detach();
 	}
 
+	/// <summary>
+	/// Starts the necessary threads to listen and respond to Crowd Control requests
+	/// </summary>
 	void StartServer() {
 		// Main TCP socket thread
 		StartServerLoop();

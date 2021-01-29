@@ -27,6 +27,10 @@ namespace CrowdControl::Effects {
 		virtual void Run() = 0;
 		virtual EffectResult Stop() = 0;
 
+		/// <summary>
+		/// Sets duration for the current effect
+		/// Manually loops through the JSON members of the struct and sets the value of the member called "duration"
+		/// </summary>
 		void SetDuration(Request req) {
 			for (auto& el : req.parameters.items()) {
 				if (el.value().contains("duration")) {

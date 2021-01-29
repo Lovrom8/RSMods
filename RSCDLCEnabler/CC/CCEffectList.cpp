@@ -51,6 +51,11 @@ namespace CrowdControl::EffectList {
 		{ "turbospeed", new TurboSpeedEffect(20) }
 	};
 
+	/// <summary>
+	/// Check if the selected effect is running
+	/// </summary>
+	/// <param name="effectName"> - Internal name of the effect </param>
+	/// <returns>True if the effect is running (only one effect of the same type can be running in the same time)</returns>
 	bool IsEffectEnabled(std::string effectName) {
 		if (AllEffects.count(effectName) == 0)
 			return false;
@@ -58,6 +63,11 @@ namespace CrowdControl::EffectList {
 		return AllEffects[effectName]->running;
 	}
 
+	/// <summary>
+	/// Check if there's any running effects that are in the list of effects that aren't compatible with the effect you are trying to enable
+	/// </summary>
+	/// <param name="incompatibleEffects"> - List of incompatible effects for the current effect</param>
+	/// <returns>True if any of the effects that are mutually incompatible with this effects are currently running</returns>
 	bool AreIncompatibleEffectsEnabled(std::vector<std::string> incompatibleEffects) {
 		for (auto effectName : incompatibleEffects)
 			if (AllEffects[effectName]->running)
