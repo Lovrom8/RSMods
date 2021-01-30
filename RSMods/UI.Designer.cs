@@ -376,6 +376,7 @@
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
+            this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
             this.groupBox_Profiles_SongLists = new System.Windows.Forms.GroupBox();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -387,7 +388,6 @@
             this.SongList5 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.SongList6 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Favorites = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
             this.label_Profiles_AvailableSongs = new System.Windows.Forms.Label();
             this.button_Profiles_LoadSongs = new System.Windows.Forms.Button();
             this.label_Profiles_WIP = new System.Windows.Forms.Label();
@@ -4802,6 +4802,17 @@
             this.button_Profiles_LockAllRewards.UseVisualStyleBackColor = true;
             this.button_Profiles_LockAllRewards.Click += new System.EventHandler(this.Profiles_LockAllRewards);
             // 
+            // button_Profiles_SaveSonglist
+            // 
+            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(120, 245);
+            this.button_Profiles_SaveSonglist.Name = "button_Profiles_SaveSonglist";
+            this.button_Profiles_SaveSonglist.Size = new System.Drawing.Size(98, 23);
+            this.button_Profiles_SaveSonglist.TabIndex = 11;
+            this.button_Profiles_SaveSonglist.Text = "Save Songlists";
+            this.button_Profiles_SaveSonglist.UseVisualStyleBackColor = true;
+            this.button_Profiles_SaveSonglist.Visible = false;
+            this.button_Profiles_SaveSonglist.Click += new System.EventHandler(this.Profiles_SaveSonglists);
+            // 
             // groupBox_Profiles_SongLists
             // 
             this.groupBox_Profiles_SongLists.Controls.Add(this.dgv_Profiles_Songlists);
@@ -4907,16 +4918,6 @@
             this.Favorites.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Favorites.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.Favorites.Width = 80;
-            // 
-            // button_Profiles_SaveSonglist
-            // 
-            this.button_Profiles_SaveSonglist.Location = new System.Drawing.Point(120, 245);
-            this.button_Profiles_SaveSonglist.Name = "button_Profiles_SaveSonglist";
-            this.button_Profiles_SaveSonglist.Size = new System.Drawing.Size(98, 23);
-            this.button_Profiles_SaveSonglist.TabIndex = 11;
-            this.button_Profiles_SaveSonglist.Text = "Save Songlists";
-            this.button_Profiles_SaveSonglist.UseVisualStyleBackColor = true;
-            this.button_Profiles_SaveSonglist.Click += new System.EventHandler(this.Profiles_SaveSonglists);
             // 
             // label_Profiles_AvailableSongs
             // 

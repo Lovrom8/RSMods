@@ -2555,6 +2555,7 @@ namespace RSMods
             Profiles_RefreshSonglistNames();
 
             groupBox_Profiles_SongLists.Visible = true;
+            button_Profiles_SaveSonglist.Visible = true;
         }
 
         private void Profiles_UnpackProfile()
