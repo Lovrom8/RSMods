@@ -121,7 +121,7 @@ namespace RSMods
 
         public static string GetSaveDirectory()
         {
-            string fullProfileFolder = string.Empty;
+            string fullProfileFolder = String.Empty;
 
             try
             {
@@ -134,14 +134,20 @@ namespace RSMods
 
                 foreach (string user in availableUser.GetSubKeyNames())
                 {
-                    if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                    try
                     {
-                        fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
-                        break;
+                        if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                        {
+                            fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
+                            break;
+                        }
+                        else
+                            continue;
                     }
-
-                    else
+                    catch (ArgumentException) // Directory doesn't exist and shoots an error.
+                    {
                         continue;
+                    }
                 }
             }
             catch (NullReferenceException) // If for whatever reason the key doesn't exist, let's not crash the whole application
