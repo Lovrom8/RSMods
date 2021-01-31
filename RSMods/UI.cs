@@ -1561,6 +1561,12 @@ namespace RSMods
         {
             SaveSettings_Save(ReadSettings.BackupProfileIdentifier, checkBox_BackupProfile.Checked.ToString().ToLower());
             groupBox_Backups.Visible = checkBox_BackupProfile.Checked;
+
+            if (checkBox_BackupProfile.Checked && Profiles.GetSaveDirectory() == String.Empty)
+            {
+                MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
+                checkBox_BackupProfile.Checked = false;
+            }
         }
 
         private void UnlimitedBackups(object sender, EventArgs e)

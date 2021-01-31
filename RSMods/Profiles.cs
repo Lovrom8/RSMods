@@ -104,6 +104,10 @@ namespace RSMods
         public static Dictionary<string, string> AvailableProfiles()
         {
             Dictionary<string, string> profiles = new Dictionary<string, string>();
+
+            if (Profiles.GetSaveDirectory() == String.Empty)
+                return new Dictionary<string, string>();
+
             DirectoryInfo directory = new DirectoryInfo(Profiles.GetSaveDirectory());
             try
             {
@@ -144,7 +148,7 @@ namespace RSMods
                         else
                             continue;
                     }
-                    catch (ArgumentException) // Directory doesn't exist and shoots an error.
+                    catch (Exception) // Directory doesn't exist and shoots an error.
                     {
                         continue;
                     }
@@ -164,11 +168,8 @@ namespace RSMods
         {
             string profileFolder = GetSaveDirectory();
 
-            if (profileFolder == "")
-            {
-                MessageBox.Show("We can't find your profiles to backup");
+            if (profileFolder == String.Empty)
                 return;
-            }
 
             string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
             DateTime now = DateTime.Now;
