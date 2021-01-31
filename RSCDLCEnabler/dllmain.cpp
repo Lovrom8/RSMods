@@ -346,6 +346,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		D3D::GenerateTextures(pDevice, D3D::Noteway);
 		D3D::GenerateTextures(pDevice, D3D::Gutter);
 		D3D::GenerateTextures(pDevice, D3D::FretNums);
+
+		D3DXCreateTextureFromFile(pDevice, L"headstock.png", &customHeadstockTexture); // Custom Headstock
 	}
 
 	// Start new ImGUI Frame

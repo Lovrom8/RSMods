@@ -50,6 +50,7 @@ inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
 inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture, notewayTexture, gutterTexture, fretNumTexture;
+inline LPDIRECT3DTEXTURE9 customHeadstockTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
 inline std::vector<ColorList> randomTextureColors;
@@ -144,8 +145,16 @@ inline std::vector<ThiccMesh> leftyFix{
 	{ 44, 538, 406, 0, 0, 4, 2, 9, 4}, // Strings past tuner 3+3
 };
 
-inline std::vector<ThiccMesh> noteway{
+inline std::vector<ThiccMesh> headstonks{
 
+	{ 76, 3284, 1787, 0, 0, 4, 2, 8, 3 }, // 3+3
+	{ 76, 2311, 1268, 0, 0, 4, 2, 9, 7 }, // 6-inline
+	{ 84, 1232, 699, 0, 0, 4, 2, 9, 7 }, // 2+2
+	{ 84, 1067, 869, 0, 0, 4, 2, 9, 7 }, // 4-inline
+
+	{ 76, 3284, 1787, 0, 0, 4, 2, 9, 7 }, // 3+3 LEFTY
+	{ 84, 1232, 699, 0, 0, 4, 2, 8, 3 }, // 2+2 LEFTY
+	{ 68, 1067, 612, 0, 0, 4, 2, 9, 7}, // 4-inline LEFTY
 };
 
 // All the single (thicc) ladies

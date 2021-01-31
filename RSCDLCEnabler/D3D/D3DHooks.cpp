@@ -253,6 +253,16 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	//if (IsExtraRemoved(headstonks, currentThicc)) {
+
+	//	// Export Texture (gets laggy | quit game after a couple frames, then recomment this. Use this to get the template of the headstock.)
+	//	pDevice->GetTexture(1, &pBaseTextures[1]);
+	//	D3DXSaveTextureToFile(L"headstock.png", D3DXIFF_PNG, pBaseTextures[1], NULL);
+
+	//	// Set Texture
+	//	pDevice->SetTexture(1, customHeadstockTexture);
+	//}
+
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
 	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0) { 
 
