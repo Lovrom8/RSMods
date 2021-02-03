@@ -339,7 +339,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		Settings::UpdateSettings();
 
 		// Generate textures to be called later
-		D3D::GenerateTextures(pDevice, D3D::Custom);
+		D3D::GenerateTextures(pDevice, D3D::Strings);
+		D3D::GenerateTextures(pDevice, D3D::Notes);
 		D3D::GenerateTextures(pDevice, D3D::Rainbow);
 		//GenerateTextures(pDevice, Random);
 		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
@@ -443,7 +444,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	ImGui::CaptureMouseFromApp(false);
 
 	if (generateTexture) {
-		D3D::GenerateTextures(pDevice, D3D::Custom);
+		D3D::GenerateTextures(pDevice, D3D::Strings);
 		generateTexture = false;
 	}
 

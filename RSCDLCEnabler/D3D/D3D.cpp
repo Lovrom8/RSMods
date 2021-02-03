@@ -32,7 +32,7 @@ ColorMap D3D::GetCustomColors(int strIdx, bool CB) {
 	else
 		ext = "_N";
 
-	iniColor = Settings::GetCustomColors(CB)[strIdx];
+	iniColor = Settings::GetStringColors(CB)[strIdx];
 	int H;
 	float S, L;
 	CollectColors::RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
@@ -228,14 +228,23 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			//h += rainbowSpeed;
 		}
 	}
-	else if (type == Custom) {
-		ColorList colorsN = Settings::GetCustomColors(false);
-		ColorList colorsCB = Settings::GetCustomColors(true);
+	else if (type == Strings) {
+		ColorList colorsN = Settings::GetStringColors(false);
+		ColorList colorsCB = Settings::GetStringColors(true);
 
 		colorSet.insert(colorSet.begin(), colorsN.begin(), colorsN.end());
 		colorSet.insert(colorSet.end(), colorsCB.begin(), colorsCB.end());
 
-		GenerateTexture(pDevice, &ourTexture, colorSet);
+		GenerateTexture(pDevice, &customStringColorTexture, colorSet);
+	}
+	else if (type == Notes) {
+		ColorList colorsN = Settings::GetNoteColors(false);
+		ColorList colorsCB = Settings::GetNoteColors(true);
+
+		colorSet.insert(colorSet.begin(), colorsN.begin(), colorsN.end());
+		colorSet.insert(colorSet.end(), colorsCB.begin(), colorsCB.end());
+
+		GenerateTexture(pDevice, &customNoteColorTexture, colorSet);
 	}
 	else if (type == Noteway) {
 		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayNumbered")));

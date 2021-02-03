@@ -25,8 +25,10 @@ namespace Settings {
 	// Functions
 	int GetVKCodeForString(std::string vkString);
 	// float GetStringColor(std::string);
-	std::vector<Color> GetCustomColors(bool CB);
+	std::vector<Color> GetStringColors(bool CB);
+	std::vector<Color> GetNoteColors(bool CB);
 	void SetStringColors(int strIndex, Color c, bool CB);
+	void SetNoteColors(int strIndex, Color c, bool CB);
 	void UpdateSettings();
 	void UpdateModSetting(std::string name, std::string newValue);
 	void UpdateCustomSetting(std::string name, int newValue);
@@ -227,6 +229,8 @@ namespace Settings {
 
 	inline std::vector<Color> customStringColorsNormal;
 	inline std::vector<Color> customStringColorsCB;
+	inline std::vector<Color> customNoteColorsNormal;
+	inline std::vector<Color> customNoteColorsCB;
 
 	inline std::vector<std::string> defaultStrColors = {
 		"FF4F5A", "E2C102", "1DACF9", "FF9216", "3FCC0C", "C825ED", "0ABCB9", "909090"

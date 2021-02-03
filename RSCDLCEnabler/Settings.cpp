@@ -243,6 +243,8 @@ void Settings::ReadStringColors() {
 
 	customStringColorsNormal.clear();
 	customStringColorsCB.clear();
+	customNoteColorsNormal.clear();
+	customNoteColorsCB.clear();
 
 	for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
 		std::string strKey = "";
@@ -250,18 +252,26 @@ void Settings::ReadStringColors() {
 
 		strKey = "string" + std::to_string(stringIdx) + "_N";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
-
 		customStringColorsNormal.push_back(ConvertHexToColor(val));
 
 		strKey = "string" + std::to_string(stringIdx) + "_CB";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
-
 		customStringColorsCB.push_back(ConvertHexToColor(val));
+
+		strKey = "note" + std::to_string(stringIdx) + "_N";
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
+		customNoteColorsNormal.push_back(ConvertHexToColor(val));
+
+		strKey = "note" + std::to_string(stringIdx) + "_CB";
+		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
+		customNoteColorsCB.push_back(ConvertHexToColor(val));
 	}
 
 	for (int stringIdx = 6; stringIdx < 8; stringIdx++) {
 		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
 		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
+		customNoteColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
+		customNoteColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));
 	}
 }
 
@@ -441,12 +451,25 @@ float cSettings::GetStringColor(std::string string) {
 /// </summary>
 /// <param name="CB"> - colorblind or not</param>
 /// <returns>List of all string colors</returns>
-std::vector<Color> Settings::GetCustomColors(bool CB) {
+std::vector<Color> Settings::GetStringColors(bool CB) {
 	if (CB)
 		return customStringColorsCB;
 	else
 		return customStringColorsNormal;
 }
+
+/// <summary>
+/// Get color list of notes
+/// </summary>
+/// <param name="CB"> - colorblind or not</param>
+/// <returns>List of all note colors</returns>
+std::vector<Color> Settings::GetNoteColors(bool CB) {
+	if (CB)
+		return customNoteColorsCB;
+	else
+		return customNoteColorsNormal;
+}
+
 
 /// <summary>
 /// Change string color in color list
@@ -459,6 +482,19 @@ void Settings::SetStringColors(int strIndex, Color c, bool CB) {
 		customStringColorsCB[strIndex] = c;
 	else
 		customStringColorsNormal[strIndex] = c;
+}
+
+/// <summary>
+/// Change note color in color list
+/// </summary>
+/// <param name="strIndex"> - string number (zero-indexed)</param>
+/// <param name="c"> - new color</param>
+/// <param name="CB"> - colorblind or not</param>
+void Settings::SetNoteColors(int strIndex, Color c, bool CB) {
+	if (CB)
+		customNoteColorsCB[strIndex] = c;
+	else
+		customNoteColorsNormal[strIndex] = c;
 }
 
 /// <summary>

@@ -16,7 +16,12 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) {
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 		if (Settings::GetModSetting("SeparateNoteColors") == 0) // Use same color scheme on notes as we do on strings
-			pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
+			pDevice->SetTexture(1, customStringColorTexture);
+
+		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
+
+		else if (Settings::GetModSetting("SeparateNoteColors") == 2) // Use Custom Note Color Scheme
+			pDevice->SetTexture(1, customNoteColorTexture);
 	}
 
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes") && NOTE_TAILS)
@@ -165,7 +170,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled").length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
 		Settings::UpdateSettings();
-		D3D::GenerateTextures(pDevice, D3D::Custom);
+		D3D::GenerateTextures(pDevice, D3D::Strings);
+		D3D::GenerateTextures(pDevice, D3D::Notes);
 		std::cout << "Reloaded settings" << std::endl;
 	}
 
@@ -316,10 +322,17 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
+		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
 
-		if (Settings::GetModSetting("SeparateNoteColors") == 0) { // Use same color scheme on notes as we do on strings
+		if (Settings::GetModSetting("SeparateNoteColors") == 0 || Settings::GetModSetting("SeparateNoteColors") == 2) { // Use same color scheme on notes as we do on strings (0) || Use Custom Note Color Scheme (2)
+
+			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture; // Color notes like string colors
+
+			if (Settings::GetModSetting("SeparateNoteColors") == 2)
+				textureToUseOnNotes = customNoteColorTexture;
+
 			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
-				pDevice->SetTexture(1, ourTexture);
+				pDevice->SetTexture(1, textureToUseOnNotes);
 
 			else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
 				pDevice->GetTexture(1, &pBaseTexture);
@@ -333,7 +346,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 					//	Log("0x%08x", crc);
 
 					if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
-						pDevice->SetTexture(1, ourTexture);
+						pDevice->SetTexture(1, textureToUseOnNotes);
 				}
 
 				return SHOW_TEXTURE;

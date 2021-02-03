@@ -18,10 +18,11 @@ namespace D3D {
 		Random = 0,
 		Random_Solid = 1,
 		Rainbow = 2,
-		Custom = 3,
-		Noteway = 4,
-		Gutter = 5,
-		FretNums = 6,
+		Strings = 3,
+		Notes = 4,
+		Noteway = 5,
+		Gutter = 6,
+		FretNums = 7,
 	};
 
 	ColorMap GetCustomColors(int strIdx, bool CB);
@@ -49,7 +50,7 @@ inline float rainbowSpeed = 2.f;
 inline const int randomTextureCount = 10;
 inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
 inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
-inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, ourTexture, twitchUserDefinedTexture, notewayTexture, gutterTexture, fretNumTexture;
+inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, customStringColorTexture, customNoteColorTexture, twitchUserDefinedTexture, notewayTexture, gutterTexture, fretNumTexture;
 inline LPDIRECT3DTEXTURE9 customHeadstockTexture;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
