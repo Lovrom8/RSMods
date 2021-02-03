@@ -15,7 +15,8 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	// Extended Range / Custom Colors
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) {
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
-		pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
+		if (Settings::GetModSetting("SeparateNoteColors") == 0) // Use same color scheme on notes as we do on strings
+			pDevice->SetTexture(1, ourTexture); // For random textures, use randomTextures[currentRandTexture]
 	}
 
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes") && NOTE_TAILS)
@@ -315,25 +316,28 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
-		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
-			pDevice->SetTexture(1, ourTexture);
 
-		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
-			pDevice->GetTexture(1, &pBaseTexture);
-			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
+		if (Settings::GetModSetting("SeparateNoteColors") == 0) { // Use same color scheme on notes as we do on strings
+			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
+				pDevice->SetTexture(1, ourTexture);
 
-			if (!pBaseTexture)
+			else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+				pDevice->GetTexture(1, &pBaseTexture);
+				pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
+
+				if (!pBaseTexture)
+					return SHOW_TEXTURE;
+
+				if (CRCForTexture(pCurrTexture, crc)) {
+					//if (startLogging)
+					//	Log("0x%08x", crc);
+
+					if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+						pDevice->SetTexture(1, ourTexture);
+				}
+
 				return SHOW_TEXTURE;
-
-			if (CRCForTexture(pCurrTexture, crc)) {
-				//if (startLogging)
-				//	Log("0x%08x", crc);
-
-				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
-					pDevice->SetTexture(1, ourTexture);
 			}
-
-			return SHOW_TEXTURE;
 		}
 	}
 
