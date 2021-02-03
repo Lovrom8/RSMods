@@ -96,7 +96,8 @@
             this.textBox_String5Color = new System.Windows.Forms.TextBox();
             this.button_String5ColorButton = new System.Windows.Forms.Button();
             this.groupBox_StringColors = new System.Windows.Forms.GroupBox();
-            this.radio_colorBlindERColors = new System.Windows.Forms.RadioButton();
+            this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
+            this.radio_colorBlindERStringColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
             this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
@@ -195,6 +196,21 @@
             this.tab_ModToggles = new System.Windows.Forms.TabPage();
             this.TabController_ModSettings = new System.Windows.Forms.TabControl();
             this.tabPage_ModSettings_ER = new System.Windows.Forms.TabPage();
+            this.groupBox_NoteColors = new System.Windows.Forms.GroupBox();
+            this.radio_colorBlindERNoteColors = new System.Windows.Forms.RadioButton();
+            this.radio_DefaultNoteColors = new System.Windows.Forms.RadioButton();
+            this.textBox_Note5Color = new System.Windows.Forms.TextBox();
+            this.button_Note5ColorButton = new System.Windows.Forms.Button();
+            this.textBox_Note4Color = new System.Windows.Forms.TextBox();
+            this.button_Note4ColorButton = new System.Windows.Forms.Button();
+            this.textBox_Note3Color = new System.Windows.Forms.TextBox();
+            this.button_Note3ColorButton = new System.Windows.Forms.Button();
+            this.textBox_Note2Color = new System.Windows.Forms.TextBox();
+            this.button_Note2ColorButton = new System.Windows.Forms.Button();
+            this.textBox_Note1Color = new System.Windows.Forms.TextBox();
+            this.button_Note1ColorButton = new System.Windows.Forms.Button();
+            this.textBox_Note0Color = new System.Windows.Forms.TextBox();
+            this.button_Note0ColorButton = new System.Windows.Forms.Button();
             this.tabPage_ModSettings_DisableUI = new System.Windows.Forms.TabPage();
             this.groupBox_ControlSongVolumeWhen = new System.Windows.Forms.GroupBox();
             this.radio_ControlSongVolumeManual = new System.Windows.Forms.RadioButton();
@@ -405,7 +421,6 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -433,6 +448,7 @@
             this.tab_ModToggles.SuspendLayout();
             this.TabController_ModSettings.SuspendLayout();
             this.tabPage_ModSettings_ER.SuspendLayout();
+            this.groupBox_NoteColors.SuspendLayout();
             this.tabPage_ModSettings_DisableUI.SuspendLayout();
             this.groupBox_ControlSongVolumeWhen.SuspendLayout();
             this.groupBox_SongTimer.SuspendLayout();
@@ -638,7 +654,7 @@
             "F#",
             "F",
             "Octave Down"});
-            this.listBox_ExtendedRangeTunings.Location = new System.Drawing.Point(60, 27);
+            this.listBox_ExtendedRangeTunings.Location = new System.Drawing.Point(33, 45);
             this.listBox_ExtendedRangeTunings.Name = "listBox_ExtendedRangeTunings";
             this.listBox_ExtendedRangeTunings.Size = new System.Drawing.Size(79, 147);
             this.listBox_ExtendedRangeTunings.TabIndex = 29;
@@ -871,9 +887,9 @@
             // 
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_ExtendedRangeDrop);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
-            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(15, 20);
+            this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(610, 16);
             this.groupBox_ExtendedRangeWhen.Name = "groupBox_ExtendedRangeWhen";
-            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(214, 205);
+            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(153, 256);
             this.groupBox_ExtendedRangeWhen.TabIndex = 49;
             this.groupBox_ExtendedRangeWhen.TabStop = false;
             this.groupBox_ExtendedRangeWhen.Text = "Enable Extended Range When Low E Is";
@@ -884,7 +900,7 @@
             // checkBox_ExtendedRangeDrop
             // 
             this.checkBox_ExtendedRangeDrop.AutoSize = true;
-            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(51, 180);
+            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(33, 221);
             this.checkBox_ExtendedRangeDrop.Name = "checkBox_ExtendedRangeDrop";
             this.checkBox_ExtendedRangeDrop.Size = new System.Drawing.Size(97, 17);
             this.checkBox_ExtendedRangeDrop.TabIndex = 30;
@@ -1315,7 +1331,7 @@
             // groupBox_StringColors
             // 
             this.groupBox_StringColors.Controls.Add(this.checkBox_ER_SeparateNoteColors);
-            this.groupBox_StringColors.Controls.Add(this.radio_colorBlindERColors);
+            this.groupBox_StringColors.Controls.Add(this.radio_colorBlindERStringColors);
             this.groupBox_StringColors.Controls.Add(this.radio_DefaultStringColors);
             this.groupBox_StringColors.Controls.Add(this.textBox_String5Color);
             this.groupBox_StringColors.Controls.Add(this.button_String5ColorButton);
@@ -1329,7 +1345,7 @@
             this.groupBox_StringColors.Controls.Add(this.button_String1ColorButton);
             this.groupBox_StringColors.Controls.Add(this.textBox_String0Color);
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
-            this.groupBox_StringColors.Location = new System.Drawing.Point(257, 20);
+            this.groupBox_StringColors.Location = new System.Drawing.Point(20, 16);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
             this.groupBox_StringColors.Size = new System.Drawing.Size(289, 273);
             this.groupBox_StringColors.TabIndex = 65;
@@ -1337,19 +1353,30 @@
             this.groupBox_StringColors.Text = "Change String Colors";
             this.groupBox_StringColors.Visible = false;
             // 
-            // radio_colorBlindERColors
+            // checkBox_ER_SeparateNoteColors
             // 
-            this.radio_colorBlindERColors.AutoSize = true;
-            this.radio_colorBlindERColors.Location = new System.Drawing.Point(138, 14);
-            this.radio_colorBlindERColors.Name = "radio_colorBlindERColors";
-            this.radio_colorBlindERColors.Size = new System.Drawing.Size(138, 43);
-            this.radio_colorBlindERColors.TabIndex = 66;
-            this.radio_colorBlindERColors.TabStop = true;
-            this.radio_colorBlindERColors.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
-            this.radio_colorBlindERColors.UseVisualStyleBackColor = true;
-            this.radio_colorBlindERColors.CheckedChanged += new System.EventHandler(this.StringColors_ColorBlindStringColors);
-            this.radio_colorBlindERColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.radio_colorBlindERColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.checkBox_ER_SeparateNoteColors.AutoSize = true;
+            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(26, 243);
+            this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
+            this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
+            this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
+            this.checkBox_ER_SeparateNoteColors.Text = "Separate Note Colors";
+            this.checkBox_ER_SeparateNoteColors.UseVisualStyleBackColor = true;
+            this.checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(this.Save_ER_SeparateNoteColors);
+            // 
+            // radio_colorBlindERStringColors
+            // 
+            this.radio_colorBlindERStringColors.AutoSize = true;
+            this.radio_colorBlindERStringColors.Location = new System.Drawing.Point(138, 14);
+            this.radio_colorBlindERStringColors.Name = "radio_colorBlindERStringColors";
+            this.radio_colorBlindERStringColors.Size = new System.Drawing.Size(138, 43);
+            this.radio_colorBlindERStringColors.TabIndex = 66;
+            this.radio_colorBlindERStringColors.TabStop = true;
+            this.radio_colorBlindERStringColors.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
+            this.radio_colorBlindERStringColors.UseVisualStyleBackColor = true;
+            this.radio_colorBlindERStringColors.CheckedChanged += new System.EventHandler(this.StringColors_ColorBlindStringColors);
+            this.radio_colorBlindERStringColors.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_colorBlindERStringColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_DefaultStringColors
             // 
@@ -2570,6 +2597,7 @@
             // tabPage_ModSettings_ER
             // 
             this.tabPage_ModSettings_ER.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_ER.Controls.Add(this.groupBox_NoteColors);
             this.tabPage_ModSettings_ER.Controls.Add(this.groupBox_ExtendedRangeWhen);
             this.tabPage_ModSettings_ER.Controls.Add(this.groupBox_StringColors);
             this.tabPage_ModSettings_ER.Location = new System.Drawing.Point(4, 22);
@@ -2578,6 +2606,169 @@
             this.tabPage_ModSettings_ER.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_ER.TabIndex = 0;
             this.tabPage_ModSettings_ER.Text = "Extended Range";
+            // 
+            // groupBox_NoteColors
+            // 
+            this.groupBox_NoteColors.Controls.Add(this.radio_colorBlindERNoteColors);
+            this.groupBox_NoteColors.Controls.Add(this.radio_DefaultNoteColors);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note5Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note5ColorButton);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note4Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note4ColorButton);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note3Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note3ColorButton);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note2Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note2ColorButton);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note1Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note1ColorButton);
+            this.groupBox_NoteColors.Controls.Add(this.textBox_Note0Color);
+            this.groupBox_NoteColors.Controls.Add(this.button_Note0ColorButton);
+            this.groupBox_NoteColors.Location = new System.Drawing.Point(315, 16);
+            this.groupBox_NoteColors.Name = "groupBox_NoteColors";
+            this.groupBox_NoteColors.Size = new System.Drawing.Size(289, 256);
+            this.groupBox_NoteColors.TabIndex = 66;
+            this.groupBox_NoteColors.TabStop = false;
+            this.groupBox_NoteColors.Text = "Change Note Colors";
+            this.groupBox_NoteColors.Visible = false;
+            // 
+            // radio_colorBlindERNoteColors
+            // 
+            this.radio_colorBlindERNoteColors.AutoSize = true;
+            this.radio_colorBlindERNoteColors.Location = new System.Drawing.Point(138, 14);
+            this.radio_colorBlindERNoteColors.Name = "radio_colorBlindERNoteColors";
+            this.radio_colorBlindERNoteColors.Size = new System.Drawing.Size(138, 43);
+            this.radio_colorBlindERNoteColors.TabIndex = 66;
+            this.radio_colorBlindERNoteColors.TabStop = true;
+            this.radio_colorBlindERNoteColors.Text = "Colorblind and \r\nExtended Range Mode \r\nColors";
+            this.radio_colorBlindERNoteColors.UseVisualStyleBackColor = true;
+            this.radio_colorBlindERNoteColors.CheckedChanged += new System.EventHandler(this.StringColors_ColorBlindNoteColors);
+            // 
+            // radio_DefaultNoteColors
+            // 
+            this.radio_DefaultNoteColors.AutoSize = true;
+            this.radio_DefaultNoteColors.Checked = true;
+            this.radio_DefaultNoteColors.Location = new System.Drawing.Point(26, 27);
+            this.radio_DefaultNoteColors.Name = "radio_DefaultNoteColors";
+            this.radio_DefaultNoteColors.Size = new System.Drawing.Size(91, 17);
+            this.radio_DefaultNoteColors.TabIndex = 65;
+            this.radio_DefaultNoteColors.TabStop = true;
+            this.radio_DefaultNoteColors.Text = "Default Colors";
+            this.radio_DefaultNoteColors.UseVisualStyleBackColor = true;
+            this.radio_DefaultNoteColors.CheckedChanged += new System.EventHandler(this.StringColors_DefaultNoteColors);
+            // 
+            // textBox_Note5Color
+            // 
+            this.textBox_Note5Color.Enabled = false;
+            this.textBox_Note5Color.Location = new System.Drawing.Point(152, 215);
+            this.textBox_Note5Color.Name = "textBox_Note5Color";
+            this.textBox_Note5Color.ReadOnly = true;
+            this.textBox_Note5Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note5Color.TabIndex = 64;
+            // 
+            // button_Note5ColorButton
+            // 
+            this.button_Note5ColorButton.Location = new System.Drawing.Point(26, 215);
+            this.button_Note5ColorButton.Name = "button_Note5ColorButton";
+            this.button_Note5ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note5ColorButton.TabIndex = 63;
+            this.button_Note5ColorButton.Text = "e String";
+            this.button_Note5ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note5ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
+            // 
+            // textBox_Note4Color
+            // 
+            this.textBox_Note4Color.Enabled = false;
+            this.textBox_Note4Color.Location = new System.Drawing.Point(152, 185);
+            this.textBox_Note4Color.Name = "textBox_Note4Color";
+            this.textBox_Note4Color.ReadOnly = true;
+            this.textBox_Note4Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note4Color.TabIndex = 62;
+            // 
+            // button_Note4ColorButton
+            // 
+            this.button_Note4ColorButton.Location = new System.Drawing.Point(26, 185);
+            this.button_Note4ColorButton.Name = "button_Note4ColorButton";
+            this.button_Note4ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note4ColorButton.TabIndex = 61;
+            this.button_Note4ColorButton.Text = "B String";
+            this.button_Note4ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note4ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
+            // 
+            // textBox_Note3Color
+            // 
+            this.textBox_Note3Color.Enabled = false;
+            this.textBox_Note3Color.Location = new System.Drawing.Point(152, 153);
+            this.textBox_Note3Color.Name = "textBox_Note3Color";
+            this.textBox_Note3Color.ReadOnly = true;
+            this.textBox_Note3Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note3Color.TabIndex = 60;
+            // 
+            // button_Note3ColorButton
+            // 
+            this.button_Note3ColorButton.Location = new System.Drawing.Point(26, 153);
+            this.button_Note3ColorButton.Name = "button_Note3ColorButton";
+            this.button_Note3ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note3ColorButton.TabIndex = 59;
+            this.button_Note3ColorButton.Text = "G String";
+            this.button_Note3ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note3ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
+            // 
+            // textBox_Note2Color
+            // 
+            this.textBox_Note2Color.Enabled = false;
+            this.textBox_Note2Color.Location = new System.Drawing.Point(152, 122);
+            this.textBox_Note2Color.Name = "textBox_Note2Color";
+            this.textBox_Note2Color.ReadOnly = true;
+            this.textBox_Note2Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note2Color.TabIndex = 58;
+            // 
+            // button_Note2ColorButton
+            // 
+            this.button_Note2ColorButton.Location = new System.Drawing.Point(26, 122);
+            this.button_Note2ColorButton.Name = "button_Note2ColorButton";
+            this.button_Note2ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note2ColorButton.TabIndex = 57;
+            this.button_Note2ColorButton.Text = "D String";
+            this.button_Note2ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note2ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
+            // 
+            // textBox_Note1Color
+            // 
+            this.textBox_Note1Color.Enabled = false;
+            this.textBox_Note1Color.Location = new System.Drawing.Point(152, 93);
+            this.textBox_Note1Color.Name = "textBox_Note1Color";
+            this.textBox_Note1Color.ReadOnly = true;
+            this.textBox_Note1Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note1Color.TabIndex = 56;
+            // 
+            // button_Note1ColorButton
+            // 
+            this.button_Note1ColorButton.Location = new System.Drawing.Point(26, 93);
+            this.button_Note1ColorButton.Name = "button_Note1ColorButton";
+            this.button_Note1ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note1ColorButton.TabIndex = 55;
+            this.button_Note1ColorButton.Text = "A String";
+            this.button_Note1ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note1ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
+            // 
+            // textBox_Note0Color
+            // 
+            this.textBox_Note0Color.Enabled = false;
+            this.textBox_Note0Color.Location = new System.Drawing.Point(152, 63);
+            this.textBox_Note0Color.Name = "textBox_Note0Color";
+            this.textBox_Note0Color.ReadOnly = true;
+            this.textBox_Note0Color.Size = new System.Drawing.Size(108, 20);
+            this.textBox_Note0Color.TabIndex = 54;
+            // 
+            // button_Note0ColorButton
+            // 
+            this.button_Note0ColorButton.Location = new System.Drawing.Point(26, 63);
+            this.button_Note0ColorButton.Name = "button_Note0ColorButton";
+            this.button_Note0ColorButton.Size = new System.Drawing.Size(120, 21);
+            this.button_Note0ColorButton.TabIndex = 53;
+            this.button_Note0ColorButton.Text = "E String";
+            this.button_Note0ColorButton.UseVisualStyleBackColor = true;
+            this.button_Note0ColorButton.Click += new System.EventHandler(this.StringColors_ChangeNoteColor);
             // 
             // tabPage_ModSettings_DisableUI
             // 
@@ -5085,17 +5276,6 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // checkBox_ER_SeparateNoteColors
-            // 
-            this.checkBox_ER_SeparateNoteColors.AutoSize = true;
-            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(26, 245);
-            this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
-            this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
-            this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
-            this.checkBox_ER_SeparateNoteColors.Text = "Separate Note Colors";
-            this.checkBox_ER_SeparateNoteColors.UseVisualStyleBackColor = true;
-            this.checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(this.Save_ER_SeparateNoteColors);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5149,6 +5329,8 @@
             this.tab_ModToggles.ResumeLayout(false);
             this.TabController_ModSettings.ResumeLayout(false);
             this.tabPage_ModSettings_ER.ResumeLayout(false);
+            this.groupBox_NoteColors.ResumeLayout(false);
+            this.groupBox_NoteColors.PerformLayout();
             this.tabPage_ModSettings_DisableUI.ResumeLayout(false);
             this.groupBox_ControlSongVolumeWhen.ResumeLayout(false);
             this.groupBox_ControlSongVolumeWhen.PerformLayout();
@@ -5285,7 +5467,7 @@
         private System.Windows.Forms.TextBox textBox_String5Color;
         private System.Windows.Forms.Button button_String5ColorButton;
         private System.Windows.Forms.GroupBox groupBox_StringColors;
-        private System.Windows.Forms.RadioButton radio_colorBlindERColors;
+        private System.Windows.Forms.RadioButton radio_colorBlindERStringColors;
         private System.Windows.Forms.RadioButton radio_DefaultStringColors;
         private System.Windows.Forms.NumericUpDown nUpDown_ForceEnumerationXMS;
         private System.Windows.Forms.Label label_ForceEnumerationXMS;
@@ -5616,6 +5798,21 @@
         private System.Windows.Forms.Button button_SecondaryMonitorStartPos;
         private System.Windows.Forms.CheckBox checkBox_SecondaryMonitor;
         private System.Windows.Forms.CheckBox checkBox_ER_SeparateNoteColors;
+        private System.Windows.Forms.GroupBox groupBox_NoteColors;
+        private System.Windows.Forms.RadioButton radio_colorBlindERNoteColors;
+        private System.Windows.Forms.RadioButton radio_DefaultNoteColors;
+        private System.Windows.Forms.TextBox textBox_Note5Color;
+        private System.Windows.Forms.Button button_Note5ColorButton;
+        private System.Windows.Forms.TextBox textBox_Note4Color;
+        private System.Windows.Forms.Button button_Note4ColorButton;
+        private System.Windows.Forms.TextBox textBox_Note3Color;
+        private System.Windows.Forms.Button button_Note3ColorButton;
+        private System.Windows.Forms.TextBox textBox_Note2Color;
+        private System.Windows.Forms.Button button_Note2ColorButton;
+        private System.Windows.Forms.TextBox textBox_Note1Color;
+        private System.Windows.Forms.Button button_Note1ColorButton;
+        private System.Windows.Forms.TextBox textBox_Note0Color;
+        private System.Windows.Forms.Button button_Note0ColorButton;
     }
 }
 

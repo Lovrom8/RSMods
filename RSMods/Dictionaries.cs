@@ -42,7 +42,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
             TooltipDictionary.Add(groupBox_ExtendedRangeWhen, "Mod is enabled when the lowest string is tuned to the note defined here.\nSee the Custom Colors - Color Blind mode for the colors that will be used while in ER mode.");
             TooltipDictionary.Add(groupBox_LoftOffWhen, "Turn the loft off via hotkey, as soon as the game starts up or only when in a song.");
-            TooltipDictionary.Add(radio_colorBlindERColors, "When ER mode is enabled, these are the colors that the strings will be changed to.");
+            TooltipDictionary.Add(radio_colorBlindERStringColors, "When ER mode is enabled, these are the colors that the strings will be changed to.");
             TooltipDictionary.Add(groupBox_ToggleSkylineWhen, "Turn the skyline (Purple and Orange DD level bars) as soon as the game starts up, or only when in a song.");
             TooltipDictionary.Add(groupBox_ToggleLyricsOffWhen, "How or when do you want the lyric display disabled, always, or toggled by a hotkey only?");
             TooltipDictionary.Add(radio_LyricsAlwaysOff, "Lyrics display will always be disabled in Learn-A-Song game mode.");
@@ -206,6 +206,18 @@ namespace RSMods
             notewayButtonToColorTextbox.Add(button_ChangeNotewayGutter, textBox_ShowNotewayGutter);
             notewayButtonToColorTextbox.Add(button_ChangeFretNumber, textBox_ShowFretNumber);
         }
+
+        private void StringColors_FillNoteNumberToColorDictionary()
+        {
+            stringNumberToColorTextBox.Clear();
+
+            stringNumberToColorTextBox.Add(0, textBox_Note0Color);
+            stringNumberToColorTextBox.Add(1, textBox_Note1Color);
+            stringNumberToColorTextBox.Add(2, textBox_Note2Color);
+            stringNumberToColorTextBox.Add(3, textBox_Note3Color);
+            stringNumberToColorTextBox.Add(4, textBox_Note4Color);
+            stringNumberToColorTextBox.Add(5, textBox_Note5Color);
+        }
         #endregion
     };
 
@@ -330,6 +342,29 @@ namespace RSMods
                 {"G String", ReadSettings.String3Color_CB_Identifier},
                 {"B String", ReadSettings.String4Color_CB_Identifier},
                 {"e String", ReadSettings.String5Color_CB_Identifier}
+            }}
+        };
+
+        public static Dictionary<bool, Dictionary<string, string>> noteColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
+        {
+            { true, new Dictionary<string, string> { // Normal Colors
+            
+                {"E String", ReadSettings.Note0Color_N_Identifier},
+                {"A String", ReadSettings.Note1Color_N_Identifier},
+                {"D String", ReadSettings.Note2Color_N_Identifier},
+                {"G String", ReadSettings.Note3Color_N_Identifier},
+                {"B String", ReadSettings.Note4Color_N_Identifier},
+                {"e String", ReadSettings.Note5Color_N_Identifier}
+            }},
+
+            { false,  new Dictionary<string, string> { // Colorblind Colors
+            
+                {"E String", ReadSettings.Note0Color_CB_Identifier},
+                {"A String", ReadSettings.Note1Color_CB_Identifier},
+                {"D String", ReadSettings.Note2Color_CB_Identifier},
+                {"G String", ReadSettings.Note3Color_CB_Identifier},
+                {"B String", ReadSettings.Note4Color_CB_Identifier},
+                {"e String", ReadSettings.Note5Color_CB_Identifier}
             }}
         };
 

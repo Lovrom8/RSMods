@@ -29,8 +29,10 @@ namespace RSMods
                             String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N,
                             String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
                             SeparateNoteColors,
-                            
-                        
+                            Note0Color_N, Note1Color_N, Note2Color_N, Note3Color_N, Note4Color_N, Note5Color_N,
+                            Note0Color_CB, Note1Color_CB, Note2Color_CB, Note3Color_CB, Note4Color_CB, Note5Color_CB,
+
+
                              // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
 
@@ -124,9 +126,22 @@ namespace RSMods
                 String4Color_CB_Identifier = "string4_CB = ",
                 String5Color_CB_Identifier = "string5_CB = ",
 
-                // Separate Note Colors
+                // Note Colors (Normal {N} & Colorblind {CB})
+                // Normal Note Colors
+                Note0Color_N_Identifier = "note0_N = ",
+                Note1Color_N_Identifier = "note1_N = ",
+                Note2Color_N_Identifier = "note2_N = ",
+                Note3Color_N_Identifier = "note3_N = ",
+                Note4Color_N_Identifier = "note4_N = ",
+                Note5Color_N_Identifier = "note5_N = ",
+                // Colorblind Note Colors
+                Note0Color_CB_Identifier = "note0_CB = ",
+                Note1Color_CB_Identifier = "note1_CB = ",
+                Note2Color_CB_Identifier = "note2_CB = ",
+                Note3Color_CB_Identifier = "note3_CB = ",
+                Note4Color_CB_Identifier = "note4_CB = ",
+                Note5Color_CB_Identifier = "note5_CB = ",
 
-                SeparateNoteColorsIdentifier = "SeparateNoteColors = ",
 
             // Mod Settings
             ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
@@ -136,6 +151,7 @@ namespace RSMods
             VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
             SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
             SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
+            SeparateNoteColorsIdentifier = "SeparateNoteColors = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -374,9 +390,39 @@ namespace RSMods
                     return FillSettingVariable(String4Color_CB_Identifier, SettingType.STRING, currentLine, out String4Color_CB);
                 if (IdentifierIsFound(currentLine, String5Color_CB_Identifier, identifierToGrab))
                     return FillSettingVariable(String5Color_CB_Identifier, SettingType.STRING, currentLine, out String5Color_CB);
+
+                // Note Colors (Normal {N} & Colorblind {CB})
+
+                // Normal Colors
+                if (IdentifierIsFound(currentLine, Note0Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note0Color_N_Identifier, SettingType.STRING, currentLine, out Note0Color_N);
+                if (IdentifierIsFound(currentLine, Note1Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note1Color_N_Identifier, SettingType.STRING, currentLine, out Note1Color_N);
+                if (IdentifierIsFound(currentLine, Note2Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note2Color_N_Identifier, SettingType.STRING, currentLine, out Note2Color_N);
+                if (IdentifierIsFound(currentLine, Note3Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note3Color_N_Identifier, SettingType.STRING, currentLine, out Note3Color_N);
+                if (IdentifierIsFound(currentLine, Note4Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note4Color_N_Identifier, SettingType.STRING, currentLine, out Note4Color_N);
+                if (IdentifierIsFound(currentLine, Note5Color_N_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note5Color_N_Identifier, SettingType.STRING, currentLine, out Note5Color_N);
+
+                // Color Blind Colors
+                if (IdentifierIsFound(currentLine, Note0Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note0Color_CB_Identifier, SettingType.STRING, currentLine, out Note0Color_CB);
+                if (IdentifierIsFound(currentLine, Note1Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note1Color_CB_Identifier, SettingType.STRING, currentLine, out Note1Color_CB);
+                if (IdentifierIsFound(currentLine, Note2Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note2Color_CB_Identifier, SettingType.STRING, currentLine, out Note2Color_CB);
+                if (IdentifierIsFound(currentLine, Note3Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note3Color_CB_Identifier, SettingType.STRING, currentLine, out Note3Color_CB);
+                if (IdentifierIsFound(currentLine, Note4Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note4Color_CB_Identifier, SettingType.STRING, currentLine, out Note4Color_CB);
+                if (IdentifierIsFound(currentLine, Note5Color_CB_Identifier, identifierToGrab))
+                    return FillSettingVariable(Note5Color_CB_Identifier, SettingType.STRING, currentLine, out Note5Color_CB);
                 #endregion
-                    #region Mod Settings
-                    // Mod Settings
+                #region Mod Settings
+                // Mod Settings
 
                 if (IdentifierIsFound(currentLine, ExtendedRangeTuningIdentifier, identifierToGrab))
                     return FillSettingVariable(ExtendedRangeTuningIdentifier, SettingType.STRING, currentLine, out ExtendedRangeTuning);

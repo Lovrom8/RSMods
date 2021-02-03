@@ -77,6 +77,9 @@ namespace RSMods
             // Load Default String Colors
             StringColors_LoadDefaultStringColors();
 
+            // Load Default Note Colors
+            StringColors_LoadDefaultNoteColors();
+
             // Load Default Noteway Colors
             NotewayColors_LoadDefaultStringColors();
 
@@ -480,9 +483,6 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on")
                 checkBox_SecondaryMonitor.Checked = true;
-
-            if (ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2")
-                checkBox_ER_SeparateNoteColors.Checked = true;
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -620,6 +620,7 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input0_Disable);
             checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged -= new System.EventHandler(ASIO_InputMic_Disable);
+            checkBox_ER_SeparateNoteColors.CheckedChanged -= new System.EventHandler(Save_ER_SeparateNoteColors);
 
 
             // Now we can change things without saving.
@@ -633,6 +634,8 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
+            checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
+            groupBox_NoteColors.Visible = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -645,6 +648,7 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input0_Disable);
             checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(ASIO_InputMic_Disable);
+            checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(Save_ER_SeparateNoteColors);
         }
 
         #endregion
@@ -1009,6 +1013,39 @@ namespace RSMods
             }
         }
 
+        private void StringColors_ChangeNoteColor(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false
+            };
+            bool isNormalNotes = radio_DefaultNoteColors.Checked; // True = Normal, False = Colorblind
+            string noteColorButtonIdentifier = String.Empty;
+            int noteNumber = 0;
+
+            StringColors_FillNoteNumberToColorDictionary();
+
+            foreach (KeyValuePair<string, string> noteColorButton in Dictionaries.noteColorButtonsToSettingIdentifiers[isNormalNotes])
+            {
+                if (sender.ToString().Contains(noteColorButton.Key.ToString()))
+                {
+                    noteColorButtonIdentifier = noteColorButton.Value.ToString();
+                    break; // We have the one value we need, so we can leave.
+                }
+                noteNumber++;
+            }
+
+            colorDialog.Color = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(noteColorButtonIdentifier));
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, "2"); // Tell the game to use custom note colors
+                SaveSettings_Save(noteColorButtonIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                stringNumberToColorTextBox[noteNumber].BackColor = colorDialog.Color;
+            }
+        }
+
         private void StringColors_LoadDefaultStringColors(bool colorBlind = false)
         {
             if (ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier) != String.Empty) // Fixes a small use case where the GUI moves faster than the writing of the INI.
@@ -1036,9 +1073,40 @@ namespace RSMods
                 WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults);
         }
 
+        private void StringColors_LoadDefaultNoteColors(bool colorBlind = false)
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.Note0Color_N_Identifier) != String.Empty) // Fixes a small use case where the GUI moves faster than the writing of the INI.
+            {
+                if (!colorBlind)
+                {
+                    textBox_Note0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note0Color_N_Identifier));
+                    textBox_Note1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note1Color_N_Identifier));
+                    textBox_Note2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note2Color_N_Identifier));
+                    textBox_Note3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note3Color_N_Identifier));
+                    textBox_Note4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note4Color_N_Identifier));
+                    textBox_Note5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note5Color_N_Identifier));
+                }
+                else
+                {
+                    textBox_Note0Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note0Color_CB_Identifier));
+                    textBox_Note1Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note1Color_CB_Identifier));
+                    textBox_Note2Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note2Color_CB_Identifier));
+                    textBox_Note3Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note3Color_CB_Identifier));
+                    textBox_Note4Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note4Color_CB_Identifier));
+                    textBox_Note5Color.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.Note5Color_CB_Identifier));
+                }
+            }
+            else
+                WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults);
+        }
+
         private void StringColors_DefaultStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors();
 
         private void StringColors_ColorBlindStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors(true);
+
+        private void StringColors_DefaultNoteColors(object sender, EventArgs e) => StringColors_LoadDefaultNoteColors();
+
+        private void StringColors_ColorBlindNoteColors(object sender, EventArgs e) => StringColors_LoadDefaultNoteColors(true);
 
         #endregion
         #region Noteway Colors
@@ -1659,7 +1727,12 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.SecondaryMonitorIdentifier, checkBox_SecondaryMonitor.Checked.ToString().ToLower());
         }
 
-        private void Save_ER_SeparateNoteColors(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, Convert.ToInt32(checkBox_ER_SeparateNoteColors.Checked).ToString());
+        private void Save_ER_SeparateNoteColors(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, Convert.ToInt32(checkBox_ER_SeparateNoteColors.Checked).ToString());
+
+            groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
+        }
 
         #endregion
         #region ToolTips

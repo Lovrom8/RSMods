@@ -99,6 +99,20 @@ namespace RSMods
                 { ReadSettings.String4Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.String4Color_CB_Identifier, "ff9216") }, // Colorblind B String Color (HEX) | Green
                 { ReadSettings.String5Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.String5Color_CB_Identifier, "3fcc0c") }, // Colorblind High E String Color (HEX) | Purple
 
+                { ReadSettings.Note0Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note0Color_N_Identifier, "ff4f5a") }, // Default Low E Note Color (HEX) | Red
+                { ReadSettings.Note1Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note1Color_N_Identifier, "e2c102") }, // Default A Note Color (HEX) | Yellow
+                { ReadSettings.Note2Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note2Color_N_Identifier, "1dacf9") }, // Default D Note Color (HEX) | Blue
+                { ReadSettings.Note3Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note3Color_N_Identifier, "ff9216") }, // Default G Note Color (HEX) | Orange
+                { ReadSettings.Note4Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note4Color_N_Identifier, "3fcc0c") }, // Default B Note Color (HEX) | Green
+                { ReadSettings.Note5Color_N_Identifier, CreateDefaultOnOldINI(ReadSettings.Note5Color_N_Identifier, "c825ed") }, // Default High E Note Color (HEX) | Purple
+
+                { ReadSettings.Note0Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note0Color_CB_Identifier, "00c68e") }, // Colorblind Low E Note Color (HEX) | Red
+                { ReadSettings.Note1Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note1Color_CB_Identifier, "ff4f5a") }, // Colorblind A Note Color (HEX) | Yellow
+                { ReadSettings.Note2Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note2Color_CB_Identifier, "e2c102") }, // Colorblind D Note Color (HEX) | Blue
+                { ReadSettings.Note3Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note3Color_CB_Identifier, "1dacf9") }, // Colorblind G Note Color (HEX) | Orange
+                { ReadSettings.Note4Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note4Color_CB_Identifier, "ff9216") }, // Colorblind B Note Color (HEX) | Green
+                { ReadSettings.Note5Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.Note5Color_CB_Identifier, "3fcc0c") }, // Colorblind High E Note Color (HEX) | Purple
+
             }},
             {"[Mod Settings]", new Dictionary<string, string>
             {
