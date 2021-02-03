@@ -98,6 +98,7 @@ namespace RSMods
                 { ReadSettings.String3Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.String3Color_CB_Identifier, "1dacf9") }, // Colorblind G String Color (HEX) | Orange
                 { ReadSettings.String4Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.String4Color_CB_Identifier, "ff9216") }, // Colorblind B String Color (HEX) | Green
                 { ReadSettings.String5Color_CB_Identifier, CreateDefaultOnOldINI(ReadSettings.String5Color_CB_Identifier, "3fcc0c") }, // Colorblind High E String Color (HEX) | Purple
+
             }},
             {"[Mod Settings]", new Dictionary<string, string>
             {
@@ -107,7 +108,8 @@ namespace RSMods
                 { ReadSettings.TuningPedalIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningPedalIdentifier, "") }, // What tuning pedal does the user use?
                 { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") }, // By what number should we increase / decrease the volume.
                 { ReadSettings.SecondaryMonitorXPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorXPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. X
-                { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") } // Where should we place Rocksmith on their secondary monitor. Y
+                { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. Y
+                { ReadSettings.SeparateNoteColorsIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {

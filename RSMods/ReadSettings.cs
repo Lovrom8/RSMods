@@ -26,7 +26,10 @@ namespace RSMods
                              ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
 
                              // String Colors
-                            String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N, String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
+                            String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N,
+                            String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
+                            SeparateNoteColors,
+                            
                         
                              // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
@@ -120,6 +123,10 @@ namespace RSMods
                 String3Color_CB_Identifier = "string3_CB = ",
                 String4Color_CB_Identifier = "string4_CB = ",
                 String5Color_CB_Identifier = "string5_CB = ",
+
+                // Separate Note Colors
+
+                SeparateNoteColorsIdentifier = "SeparateNoteColors = ",
 
             // Mod Settings
             ExtendedRangeTuningIdentifier = "ExtendedRangeModeAt = ",
@@ -368,8 +375,8 @@ namespace RSMods
                 if (IdentifierIsFound(currentLine, String5Color_CB_Identifier, identifierToGrab))
                     return FillSettingVariable(String5Color_CB_Identifier, SettingType.STRING, currentLine, out String5Color_CB);
                 #endregion
-                #region Mod Settings
-                // Mod Settings
+                    #region Mod Settings
+                    // Mod Settings
 
                 if (IdentifierIsFound(currentLine, ExtendedRangeTuningIdentifier, identifierToGrab))
                     return FillSettingVariable(ExtendedRangeTuningIdentifier, SettingType.STRING, currentLine, out ExtendedRangeTuning);
@@ -385,6 +392,8 @@ namespace RSMods
                     return FillSettingVariable(SecondaryMonitorXPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorXPosition);
                 if (IdentifierIsFound(currentLine, SecondaryMonitorYPositionIdentifier, identifierToGrab))
                     return FillSettingVariable(SecondaryMonitorYPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorYPosition);
+                if (IdentifierIsFound(currentLine, SeparateNoteColorsIdentifier, identifierToGrab))
+                    return FillSettingVariable(SeparateNoteColorsIdentifier, SettingType.STRING, currentLine, out SeparateNoteColors);
                 #endregion
                 #region Guitar Speak
 

@@ -480,6 +480,9 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on")
                 checkBox_SecondaryMonitor.Checked = true;
+
+            if (ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2")
+                checkBox_ER_SeparateNoteColors.Checked = true;
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -1655,6 +1658,8 @@ namespace RSMods
             button_SecondaryMonitorStartPos.Visible = checkBox_SecondaryMonitor.Checked;
             SaveSettings_Save(ReadSettings.SecondaryMonitorIdentifier, checkBox_SecondaryMonitor.Checked.ToString().ToLower());
         }
+
+        private void Save_ER_SeparateNoteColors(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, Convert.ToInt32(checkBox_ER_SeparateNoteColors.Checked).ToString());
 
         #endregion
         #region ToolTips

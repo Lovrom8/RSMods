@@ -405,6 +405,7 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1313,6 +1314,7 @@
             // 
             // groupBox_StringColors
             // 
+            this.groupBox_StringColors.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_StringColors.Controls.Add(this.radio_colorBlindERColors);
             this.groupBox_StringColors.Controls.Add(this.radio_DefaultStringColors);
             this.groupBox_StringColors.Controls.Add(this.textBox_String5Color);
@@ -1327,9 +1329,9 @@
             this.groupBox_StringColors.Controls.Add(this.button_String1ColorButton);
             this.groupBox_StringColors.Controls.Add(this.textBox_String0Color);
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
-            this.groupBox_StringColors.Location = new System.Drawing.Point(273, 20);
+            this.groupBox_StringColors.Location = new System.Drawing.Point(257, 20);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
-            this.groupBox_StringColors.Size = new System.Drawing.Size(282, 250);
+            this.groupBox_StringColors.Size = new System.Drawing.Size(289, 273);
             this.groupBox_StringColors.TabIndex = 65;
             this.groupBox_StringColors.TabStop = false;
             this.groupBox_StringColors.Text = "Change String Colors";
@@ -5083,6 +5085,17 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
+            // checkBox_ER_SeparateNoteColors
+            // 
+            this.checkBox_ER_SeparateNoteColors.AutoSize = true;
+            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(26, 245);
+            this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
+            this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
+            this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
+            this.checkBox_ER_SeparateNoteColors.Text = "Separate Note Colors";
+            this.checkBox_ER_SeparateNoteColors.UseVisualStyleBackColor = true;
+            this.checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(this.Save_ER_SeparateNoteColors);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5602,6 +5615,7 @@
         private System.Windows.Forms.RadioButton radio_Rocksmith_CustomQuality;
         private System.Windows.Forms.Button button_SecondaryMonitorStartPos;
         private System.Windows.Forms.CheckBox checkBox_SecondaryMonitor;
+        private System.Windows.Forms.CheckBox checkBox_ER_SeparateNoteColors;
     }
 }
 
