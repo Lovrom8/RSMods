@@ -35,6 +35,9 @@ namespace RSMods
             public int Bottom { get; set; }
         }
 
+        TabPage ProfileEditsTab;
+        int ProfileEditsTabIndex;
+
         public MainForm()
         {
 
@@ -115,6 +118,9 @@ namespace RSMods
 
             // Delete Old Backups To Save Space (if user specifies)
             Startup_DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
+
+            // Lock the profile edits tab if backups are disabled
+            Startup_LockProfileEdits();
         }
 
         #region Startup Functions
@@ -258,6 +264,15 @@ namespace RSMods
         {
             if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
                 Profiles.SaveProfile();
+        }
+
+        private void Startup_LockProfileEdits()
+        {
+            ProfileEditsTab = tab_Profiles;
+            ProfileEditsTabIndex = TabController.TabPages.IndexOf(ProfileEditsTab);
+
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on")
+                TabController.TabPages.Remove(tab_Profiles);
         }
 
         #endregion
@@ -466,10 +481,7 @@ namespace RSMods
                 checkBox_ShowCurrentNote.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
-            {
-                checkBox_BackupProfile.Checked = true;
                 nUpDown_NumberOfBackups.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50);
-            }
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on")
                 checkBox_CustomHighway.Checked = true;
@@ -621,6 +633,7 @@ namespace RSMods
             checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged -= new System.EventHandler(ASIO_InputMic_Disable);
             checkBox_ER_SeparateNoteColors.CheckedChanged -= new System.EventHandler(Save_ER_SeparateNoteColors);
+            checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
 
 
             // Now we can change things without saving.
@@ -636,6 +649,7 @@ namespace RSMods
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
             groupBox_NoteColors.Visible = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
+            checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -649,6 +663,7 @@ namespace RSMods
             checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(ASIO_InputMic_Disable);
             checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(Save_ER_SeparateNoteColors);
+            checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
         }
 
         #endregion
@@ -1632,12 +1647,23 @@ namespace RSMods
         {
             SaveSettings_Save(ReadSettings.BackupProfileIdentifier, checkBox_BackupProfile.Checked.ToString().ToLower());
             groupBox_Backups.Visible = checkBox_BackupProfile.Checked;
+            
 
-            if (checkBox_BackupProfile.Checked && Profiles.GetSaveDirectory() == String.Empty)
+            if (checkBox_BackupProfile.Checked)
             {
-                MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
-                checkBox_BackupProfile.Checked = false;
+                Profiles.SaveProfile();
+
+                TabController.TabPages.Insert(ProfileEditsTabIndex, ProfileEditsTab);
+
+                if (Profiles.GetSaveDirectory() == String.Empty)
+                {
+                    MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
+                    checkBox_BackupProfile.Checked = false;
+                }
             }
+
+            else
+                TabController.TabPages.Remove(ProfileEditsTab);
         }
 
         private void UnlimitedBackups(object sender, EventArgs e)

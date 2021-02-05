@@ -184,9 +184,9 @@ namespace RSMods
                 sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
             }
 
-            foreach (var file in Directory.GetFiles(profileFolder))
+            foreach (string file in Directory.GetFiles(profileFolder))
             {
-                File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)));
+                File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)), true); 
             }
         }
 
