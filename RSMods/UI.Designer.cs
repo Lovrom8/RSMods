@@ -61,6 +61,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
             this.checkBox_CustomHighway = new System.Windows.Forms.CheckBox();
             this.checkBox_RainbowNotes = new System.Windows.Forms.CheckBox();
@@ -96,7 +97,6 @@
             this.textBox_String5Color = new System.Windows.Forms.TextBox();
             this.button_String5ColorButton = new System.Windows.Forms.Button();
             this.groupBox_StringColors = new System.Windows.Forms.GroupBox();
-            this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.radio_colorBlindERStringColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
@@ -421,6 +421,7 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox_NoteColors_UseRocksmithColors = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -889,7 +890,7 @@
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
             this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(610, 16);
             this.groupBox_ExtendedRangeWhen.Name = "groupBox_ExtendedRangeWhen";
-            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(153, 256);
+            this.groupBox_ExtendedRangeWhen.Size = new System.Drawing.Size(153, 268);
             this.groupBox_ExtendedRangeWhen.TabIndex = 49;
             this.groupBox_ExtendedRangeWhen.TabStop = false;
             this.groupBox_ExtendedRangeWhen.Text = "Enable Extended Range When Low E Is";
@@ -900,7 +901,7 @@
             // checkBox_ExtendedRangeDrop
             // 
             this.checkBox_ExtendedRangeDrop.AutoSize = true;
-            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(33, 221);
+            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(33, 245);
             this.checkBox_ExtendedRangeDrop.Name = "checkBox_ExtendedRangeDrop";
             this.checkBox_ExtendedRangeDrop.Size = new System.Drawing.Size(97, 17);
             this.checkBox_ExtendedRangeDrop.TabIndex = 30;
@@ -911,6 +912,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomHighway);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RainbowNotes);
@@ -937,10 +939,21 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 298);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 311);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_ER_SeparateNoteColors
+            // 
+            this.checkBox_ER_SeparateNoteColors.AutoSize = true;
+            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(131, 243);
+            this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
+            this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
+            this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
+            this.checkBox_ER_SeparateNoteColors.Text = "Separate Note Colors";
+            this.checkBox_ER_SeparateNoteColors.UseVisualStyleBackColor = true;
+            this.checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(this.Save_ER_SeparateNoteColors);
             // 
             // checkBox_SecondaryMonitor
             // 
@@ -993,7 +1006,7 @@
             // checkBox_ShowCurrentNote
             // 
             this.checkBox_ShowCurrentNote.AutoSize = true;
-            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(131, 243);
+            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(10, 289);
             this.checkBox_ShowCurrentNote.Name = "checkBox_ShowCurrentNote";
             this.checkBox_ShowCurrentNote.Size = new System.Drawing.Size(116, 17);
             this.checkBox_ShowCurrentNote.TabIndex = 51;
@@ -1330,7 +1343,6 @@
             // 
             // groupBox_StringColors
             // 
-            this.groupBox_StringColors.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_StringColors.Controls.Add(this.radio_colorBlindERStringColors);
             this.groupBox_StringColors.Controls.Add(this.radio_DefaultStringColors);
             this.groupBox_StringColors.Controls.Add(this.textBox_String5Color);
@@ -1347,22 +1359,11 @@
             this.groupBox_StringColors.Controls.Add(this.button_String0ColorButton);
             this.groupBox_StringColors.Location = new System.Drawing.Point(20, 16);
             this.groupBox_StringColors.Name = "groupBox_StringColors";
-            this.groupBox_StringColors.Size = new System.Drawing.Size(289, 273);
+            this.groupBox_StringColors.Size = new System.Drawing.Size(289, 268);
             this.groupBox_StringColors.TabIndex = 65;
             this.groupBox_StringColors.TabStop = false;
             this.groupBox_StringColors.Text = "Change String Colors";
             this.groupBox_StringColors.Visible = false;
-            // 
-            // checkBox_ER_SeparateNoteColors
-            // 
-            this.checkBox_ER_SeparateNoteColors.AutoSize = true;
-            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(26, 243);
-            this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
-            this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
-            this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
-            this.checkBox_ER_SeparateNoteColors.Text = "Separate Note Colors";
-            this.checkBox_ER_SeparateNoteColors.UseVisualStyleBackColor = true;
-            this.checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(this.Save_ER_SeparateNoteColors);
             // 
             // radio_colorBlindERStringColors
             // 
@@ -2609,6 +2610,7 @@
             // 
             // groupBox_NoteColors
             // 
+            this.groupBox_NoteColors.Controls.Add(this.checkBox_NoteColors_UseRocksmithColors);
             this.groupBox_NoteColors.Controls.Add(this.radio_colorBlindERNoteColors);
             this.groupBox_NoteColors.Controls.Add(this.radio_DefaultNoteColors);
             this.groupBox_NoteColors.Controls.Add(this.textBox_Note5Color);
@@ -2625,7 +2627,7 @@
             this.groupBox_NoteColors.Controls.Add(this.button_Note0ColorButton);
             this.groupBox_NoteColors.Location = new System.Drawing.Point(315, 16);
             this.groupBox_NoteColors.Name = "groupBox_NoteColors";
-            this.groupBox_NoteColors.Size = new System.Drawing.Size(289, 256);
+            this.groupBox_NoteColors.Size = new System.Drawing.Size(289, 268);
             this.groupBox_NoteColors.TabIndex = 66;
             this.groupBox_NoteColors.TabStop = false;
             this.groupBox_NoteColors.Text = "Change Note Colors";
@@ -5276,6 +5278,18 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
+            // checkBox_NoteColors_UseRocksmithColors
+            // 
+            this.checkBox_NoteColors_UseRocksmithColors.AutoSize = true;
+            this.checkBox_NoteColors_UseRocksmithColors.Location = new System.Drawing.Point(76, 245);
+            this.checkBox_NoteColors_UseRocksmithColors.Name = "checkBox_NoteColors_UseRocksmithColors";
+            this.checkBox_NoteColors_UseRocksmithColors.Size = new System.Drawing.Size(130, 17);
+            this.checkBox_NoteColors_UseRocksmithColors.TabIndex = 67;
+            this.checkBox_NoteColors_UseRocksmithColors.Text = "Use Rocksmith Colors";
+            this.checkBox_NoteColors_UseRocksmithColors.UseVisualStyleBackColor = true;
+            this.checkBox_NoteColors_UseRocksmithColors.CheckedChanged += new System.EventHandler(this.Save_NoteColors_UseRocksmithColors);
+            this.checkBox_NoteColors_UseRocksmithColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5813,6 +5827,7 @@
         private System.Windows.Forms.Button button_Note1ColorButton;
         private System.Windows.Forms.TextBox textBox_Note0Color;
         private System.Windows.Forms.Button button_Note0ColorButton;
+        private System.Windows.Forms.CheckBox checkBox_NoteColors_UseRocksmithColors;
     }
 }
 

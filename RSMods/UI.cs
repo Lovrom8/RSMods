@@ -495,6 +495,9 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on")
                 checkBox_SecondaryMonitor.Checked = true;
+
+            checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1";
+
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -648,7 +651,7 @@ namespace RSMods
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
-            groupBox_NoteColors.Visible = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
+            groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
 
             // Re-enable the saving of the values now that we've done our work.
@@ -1758,6 +1761,34 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, Convert.ToInt32(checkBox_ER_SeparateNoteColors.Checked).ToString());
 
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
+            checkBox_NoteColors_UseRocksmithColors.Checked = checkBox_ER_SeparateNoteColors.Checked;
+        }
+
+        private void Save_NoteColors_UseRocksmithColors(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, (2 - Convert.ToInt32(checkBox_NoteColors_UseRocksmithColors.Checked)).ToString());
+
+            button_Note0ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            button_Note1ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            button_Note2ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            button_Note3ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            button_Note4ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            button_Note5ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+
+            if (checkBox_NoteColors_UseRocksmithColors.Checked)
+            {
+                textBox_Note0Color.BackColor = DefaultBackColor;
+                textBox_Note1Color.BackColor = DefaultBackColor;
+                textBox_Note2Color.BackColor = DefaultBackColor;
+                textBox_Note3Color.BackColor = DefaultBackColor;
+                textBox_Note4Color.BackColor = DefaultBackColor;
+                textBox_Note5Color.BackColor = DefaultBackColor;
+            }
+            else
+                StringColors_LoadDefaultNoteColors(radio_colorBlindERNoteColors.Checked);
+
+            radio_DefaultNoteColors.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+            radio_colorBlindERNoteColors.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
         }
 
         #endregion

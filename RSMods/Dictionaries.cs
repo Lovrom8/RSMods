@@ -59,7 +59,8 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_UnlimitedBackups, "If you have an insane amount of disk space, and want to save all your backups, check this box.\nWith this checked, we save every backup when you open RSMods and will never delete them.");
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
             TooltipDictionary.Add(button_SecondaryMonitorStartPos, "PLEASE READ THIS!\nMove this window over to your secondary monitor and make it full screen.\nPress this button when it is full screen so we can save the resolution.\nAfter you press the button you can go back to windowed mode.");
-            
+            TooltipDictionary.Add(checkBox_NoteColors_UseRocksmithColors, "Check this box if you want normal Rocksmith colored notes.");
+
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
             TooltipDictionary.Add(groupBox_Keybindings_MODS, "Set keybindings for the toggle on / off by keypress modifications.\nYou need to press ENTER after setting the key for it to be saved.");
