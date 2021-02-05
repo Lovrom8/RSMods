@@ -319,7 +319,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	//}
 
 	// Extended Range / Custom Colors
-	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2) { // Extended Range Mode
+	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2 || Settings::GetModSetting("CustomStringColors") != 1) { // Extended Range Mode / Separate Note Colors
 		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
 
 		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
@@ -329,7 +329,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture; // Color notes like string colors
 
 			if (Settings::GetModSetting("SeparateNoteColors") == 2)
-				textureToUseOnNotes = customNoteColorTexture;
+				textureToUseOnNotes = customNoteColorTexture; // Custom colored notes
 
 			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
 				pDevice->SetTexture(1, textureToUseOnNotes);
