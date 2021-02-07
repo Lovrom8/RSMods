@@ -37,6 +37,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_ShowCurrentNote, "Shows the note you are currently playing on screen.");
             TooltipDictionary.Add(checkBox_CustomHighway, "This setting lets you change the colors of the noteway in game.\nThis can be useful for streamers if they want to make the noteway invisible.");
             TooltipDictionary.Add(checkBox_SecondaryMonitor, "Check this if you want Rocksmith to run on your second monitor.\nThis will only work in WINDOWED MODE inside of Rocksmith.\nSet Rocksmith to the full resolution of the monitor but keep it in windowed mode.\nYou will still need to set the location in the mod settings (Misc tab)\nPlease also read the tooltip there.");
+            TooltipDictionary.Add(checkBox_ModsLog, "Having an issue with a mod?\nNeed to ask the devs a question about a mod turning on / off when it shouldn't?\nTurn this on, and reproduce the issue.\nSend the RSMods devs your \"RSMods_debug.txt\" after you close the game.\nIt is recommended to not leave this on.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");

@@ -197,6 +197,7 @@
             this.TabController_ModSettings = new System.Windows.Forms.TabControl();
             this.tabPage_ModSettings_ER = new System.Windows.Forms.TabPage();
             this.groupBox_NoteColors = new System.Windows.Forms.GroupBox();
+            this.checkBox_NoteColors_UseRocksmithColors = new System.Windows.Forms.CheckBox();
             this.radio_colorBlindERNoteColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultNoteColors = new System.Windows.Forms.RadioButton();
             this.textBox_Note5Color = new System.Windows.Forms.TextBox();
@@ -421,7 +422,7 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox_NoteColors_UseRocksmithColors = new System.Windows.Forms.CheckBox();
+            this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -912,6 +913,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomHighway);
@@ -2632,6 +2634,18 @@
             this.groupBox_NoteColors.TabStop = false;
             this.groupBox_NoteColors.Text = "Change Note Colors";
             this.groupBox_NoteColors.Visible = false;
+            // 
+            // checkBox_NoteColors_UseRocksmithColors
+            // 
+            this.checkBox_NoteColors_UseRocksmithColors.AutoSize = true;
+            this.checkBox_NoteColors_UseRocksmithColors.Location = new System.Drawing.Point(76, 245);
+            this.checkBox_NoteColors_UseRocksmithColors.Name = "checkBox_NoteColors_UseRocksmithColors";
+            this.checkBox_NoteColors_UseRocksmithColors.Size = new System.Drawing.Size(130, 17);
+            this.checkBox_NoteColors_UseRocksmithColors.TabIndex = 67;
+            this.checkBox_NoteColors_UseRocksmithColors.Text = "Use Rocksmith Colors";
+            this.checkBox_NoteColors_UseRocksmithColors.UseVisualStyleBackColor = true;
+            this.checkBox_NoteColors_UseRocksmithColors.CheckedChanged += new System.EventHandler(this.Save_NoteColors_UseRocksmithColors);
+            this.checkBox_NoteColors_UseRocksmithColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_colorBlindERNoteColors
             // 
@@ -5278,17 +5292,17 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // checkBox_NoteColors_UseRocksmithColors
+            // checkBox_ModsLog
             // 
-            this.checkBox_NoteColors_UseRocksmithColors.AutoSize = true;
-            this.checkBox_NoteColors_UseRocksmithColors.Location = new System.Drawing.Point(76, 245);
-            this.checkBox_NoteColors_UseRocksmithColors.Name = "checkBox_NoteColors_UseRocksmithColors";
-            this.checkBox_NoteColors_UseRocksmithColors.Size = new System.Drawing.Size(130, 17);
-            this.checkBox_NoteColors_UseRocksmithColors.TabIndex = 67;
-            this.checkBox_NoteColors_UseRocksmithColors.Text = "Use Rocksmith Colors";
-            this.checkBox_NoteColors_UseRocksmithColors.UseVisualStyleBackColor = true;
-            this.checkBox_NoteColors_UseRocksmithColors.CheckedChanged += new System.EventHandler(this.Save_NoteColors_UseRocksmithColors);
-            this.checkBox_NoteColors_UseRocksmithColors.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.checkBox_ModsLog.AutoSize = true;
+            this.checkBox_ModsLog.Location = new System.Drawing.Point(131, 289);
+            this.checkBox_ModsLog.Name = "checkBox_ModsLog";
+            this.checkBox_ModsLog.Size = new System.Drawing.Size(125, 17);
+            this.checkBox_ModsLog.TabIndex = 68;
+            this.checkBox_ModsLog.Text = "Dump RS_Mods Log";
+            this.checkBox_ModsLog.UseVisualStyleBackColor = true;
+            this.checkBox_ModsLog.CheckedChanged += new System.EventHandler(this.Save_DumpRSModsLogToFile);
+            this.checkBox_ModsLog.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
@@ -5828,6 +5842,7 @@
         private System.Windows.Forms.TextBox textBox_Note0Color;
         private System.Windows.Forms.Button button_Note0ColorButton;
         private System.Windows.Forms.CheckBox checkBox_NoteColors_UseRocksmithColors;
+        private System.Windows.Forms.CheckBox checkBox_ModsLog;
     }
 }
 

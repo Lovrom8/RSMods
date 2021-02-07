@@ -498,6 +498,7 @@ namespace RSMods
 
             checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1";
 
+            checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -1789,6 +1790,21 @@ namespace RSMods
 
             radio_DefaultNoteColors.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
             radio_colorBlindERNoteColors.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
+        }
+
+        private void Save_DumpRSModsLogToFile(object sender, EventArgs e)
+        {
+           if (checkBox_ModsLog.Checked)
+               File.Create(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
+            else
+            {
+                // First we have to do garbage cleanup since it keeps the file in use way too long.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                // We can finally delete the file :)
+                File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
+            }
         }
 
         #endregion
