@@ -84,7 +84,7 @@
 * **EXIT GAME in the menu** - **GUI Only**
   * As useful of a device your mouse is, it is not really the most convenient option when you want to exit the game. And until now, you had to use the said mouse to do that, but fret no more. It took only six and a half years, but now you can exit the game by pressing EXIT GAME in the menu (which replaces the UPLAY button, and let's be honest, no-one used that). This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   
-* **Enable Direct Connect Mode** - **GUI Only**
+* **Enable Direct Connect Mode** - **GUI Only** - https://youtu.be/H6nAB5ogfeU
   * This mod enables a hidden input mode that UbiSoft made - but for unknown reasons disabled for release. It is basically Microphone Mode - but with the tone simulations enabled. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   ** Known issues; Some interfaces report the guitar input channel as one that the game isn't expecting, in this case - Direct Connected mode may not work for you particularly well. If you want to test before applying - go into Microphone Mode and see if your interface lets you have some note detection. If it does - then DC mode should work for you once enabled.
   
