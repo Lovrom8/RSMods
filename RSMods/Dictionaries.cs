@@ -68,6 +68,9 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_Keybindings_AUDIO, "Set keybindings for changing the volume in game.\nPress the keybinding to increase the volume.\nPress control and the keybinding to decrease the volume.\nYou need to press ENTER after setting the key for it to be saved.");
             TooltipDictionary.Add(button_ResetModsToDefault, "Resets all RSMods values to defaults");
             TooltipDictionary.Add(button_AutoLoadProfile_ClearSelection, "Clears out profile field of \"Autoload Last Used Profile\" to always open the profile you ended on last play session");
+            TooltipDictionary.Add(groupBox_Profiles_RevertBackup, "Use this section if your profile gets corrupted.\nThis will revert to a backup of your profile(s), so some newer data may be lost.\nMake sure to always make backups :)");
+            TooltipDictionary.Add(button_Profiles_RevertBackup, "Click this button with a date selected to revert to that backup.\nThe above dates are of all the backups we've taken.");
+            TooltipDictionary.Add(listBox_Profiles_ListBackups, "This is a list of all the backups of your profile(s) we've taken.\nWe enable backups by default to lower the risk of \"bricking\" a profile.\nIt is always good to make backups, just in-case the inevitable happens.");
 
             // Set & Forget Mods (Cache.psarc Modifications)
             // Tones

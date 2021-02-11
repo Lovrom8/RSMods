@@ -61,6 +61,7 @@
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
             this.checkBox_CustomHighway = new System.Windows.Forms.CheckBox();
@@ -390,6 +391,9 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
+            this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
+            this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
+            this.listBox_Profiles_ListBackups = new System.Windows.Forms.ListBox();
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
@@ -421,8 +425,8 @@
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -501,11 +505,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_Profiles.SuspendLayout();
+            this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
             this.groupBox_Profiles_SongLists.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -945,6 +951,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_ModsLog
+            // 
+            this.checkBox_ModsLog.AutoSize = true;
+            this.checkBox_ModsLog.Location = new System.Drawing.Point(131, 289);
+            this.checkBox_ModsLog.Name = "checkBox_ModsLog";
+            this.checkBox_ModsLog.Size = new System.Drawing.Size(125, 17);
+            this.checkBox_ModsLog.TabIndex = 68;
+            this.checkBox_ModsLog.Text = "Dump RS_Mods Log";
+            this.checkBox_ModsLog.UseVisualStyleBackColor = true;
+            this.checkBox_ModsLog.CheckedChanged += new System.EventHandler(this.Save_DumpRSModsLogToFile);
+            this.checkBox_ModsLog.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ER_SeparateNoteColors
             // 
@@ -2951,7 +2969,7 @@
             this.groupBox_MidiAutoTuneDevice.TabStop = false;
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
             this.groupBox_MidiAutoTuneDevice.Visible = false;
-            this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.LoadMidiDeviceNames);
+            this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.Midi_LoadDevices);
             this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_Whammy
@@ -4965,6 +4983,7 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
+            this.tab_Profiles.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
             this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
@@ -4979,11 +4998,43 @@
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
             // 
+            // groupBox_Profiles_RevertBackup
+            // 
+            this.groupBox_Profiles_RevertBackup.Controls.Add(this.button_Profiles_RevertBackup);
+            this.groupBox_Profiles_RevertBackup.Controls.Add(this.listBox_Profiles_ListBackups);
+            this.groupBox_Profiles_RevertBackup.Location = new System.Drawing.Point(14, 375);
+            this.groupBox_Profiles_RevertBackup.Name = "groupBox_Profiles_RevertBackup";
+            this.groupBox_Profiles_RevertBackup.Size = new System.Drawing.Size(327, 123);
+            this.groupBox_Profiles_RevertBackup.TabIndex = 12;
+            this.groupBox_Profiles_RevertBackup.TabStop = false;
+            this.groupBox_Profiles_RevertBackup.Text = "Fix Corrupt Profile";
+            this.groupBox_Profiles_RevertBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_Profiles_RevertBackup
+            // 
+            this.button_Profiles_RevertBackup.Location = new System.Drawing.Point(91, 94);
+            this.button_Profiles_RevertBackup.Name = "button_Profiles_RevertBackup";
+            this.button_Profiles_RevertBackup.Size = new System.Drawing.Size(146, 23);
+            this.button_Profiles_RevertBackup.TabIndex = 1;
+            this.button_Profiles_RevertBackup.Text = "Revert To Backup";
+            this.button_Profiles_RevertBackup.UseVisualStyleBackColor = true;
+            this.button_Profiles_RevertBackup.Click += new System.EventHandler(this.Profiles_RevertToBackup);
+            this.button_Profiles_RevertBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // listBox_Profiles_ListBackups
+            // 
+            this.listBox_Profiles_ListBackups.FormattingEnabled = true;
+            this.listBox_Profiles_ListBackups.Location = new System.Drawing.Point(6, 19);
+            this.listBox_Profiles_ListBackups.Name = "listBox_Profiles_ListBackups";
+            this.listBox_Profiles_ListBackups.Size = new System.Drawing.Size(314, 69);
+            this.listBox_Profiles_ListBackups.TabIndex = 0;
+            this.listBox_Profiles_ListBackups.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // groupBox_Profiles_Rewards
             // 
             this.groupBox_Profiles_Rewards.Controls.Add(this.button_Profiles_UnlockAllRewards);
             this.groupBox_Profiles_Rewards.Controls.Add(this.button_Profiles_LockAllRewards);
-            this.groupBox_Profiles_Rewards.Location = new System.Drawing.Point(8, 442);
+            this.groupBox_Profiles_Rewards.Location = new System.Drawing.Point(5, 313);
             this.groupBox_Profiles_Rewards.Name = "groupBox_Profiles_Rewards";
             this.groupBox_Profiles_Rewards.Size = new System.Drawing.Size(246, 56);
             this.groupBox_Profiles_Rewards.TabIndex = 11;
@@ -5026,9 +5077,9 @@
             // 
             this.groupBox_Profiles_SongLists.Controls.Add(this.dgv_Profiles_Songlists);
             this.groupBox_Profiles_SongLists.Controls.Add(this.label_Profiles_AvailableSongs);
-            this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(253, 3);
+            this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(347, 3);
             this.groupBox_Profiles_SongLists.Name = "groupBox_Profiles_SongLists";
-            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(875, 495);
+            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(800, 495);
             this.groupBox_Profiles_SongLists.TabIndex = 6;
             this.groupBox_Profiles_SongLists.TabStop = false;
             this.groupBox_Profiles_SongLists.Text = "Songlists";
@@ -5055,7 +5106,7 @@
             this.dgv_Profiles_Songlists.Name = "dgv_Profiles_Songlists";
             this.dgv_Profiles_Songlists.RowHeadersVisible = false;
             this.dgv_Profiles_Songlists.RowHeadersWidth = 20;
-            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(813, 442);
+            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(764, 442);
             this.dgv_Profiles_Songlists.TabIndex = 12;
             this.dgv_Profiles_Songlists.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.Profiles_Songlists_ChangedValue);
             this.dgv_Profiles_Songlists.CurrentCellDirtyStateChanged += new System.EventHandler(this.Profiles_Songlists_DirtyState);
@@ -5152,11 +5203,11 @@
             // 
             this.label_Profiles_WIP.AutoSize = true;
             this.label_Profiles_WIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Profiles_WIP.Location = new System.Drawing.Point(11, 19);
+            this.label_Profiles_WIP.Location = new System.Drawing.Point(11, 10);
             this.label_Profiles_WIP.Name = "label_Profiles_WIP";
-            this.label_Profiles_WIP.Size = new System.Drawing.Size(180, 18);
+            this.label_Profiles_WIP.Size = new System.Drawing.Size(180, 36);
             this.label_Profiles_WIP.TabIndex = 10;
-            this.label_Profiles_WIP.Text = "WORK IN PROGRESS";
+            this.label_Profiles_WIP.Text = "WORK IN PROGRESS\r\nMAY CORRUPT SAVE\r\n";
             // 
             // progressBar_Profiles_LoadPsarcs
             // 
@@ -5178,7 +5229,7 @@
             // label_Profiles_AvailableProfiles
             // 
             this.label_Profiles_AvailableProfiles.AutoSize = true;
-            this.label_Profiles_AvailableProfiles.Location = new System.Drawing.Point(11, 46);
+            this.label_Profiles_AvailableProfiles.Location = new System.Drawing.Point(11, 63);
             this.label_Profiles_AvailableProfiles.Name = "label_Profiles_AvailableProfiles";
             this.label_Profiles_AvailableProfiles.Size = new System.Drawing.Size(66, 13);
             this.label_Profiles_AvailableProfiles.TabIndex = 8;
@@ -5288,21 +5339,14 @@
             this.label_SettingsSaved.Text = "Settings Saved";
             this.label_SettingsSaved.Visible = false;
             // 
+            // fileSystemWatcher1
+            // 
+            this.fileSystemWatcher1.EnableRaisingEvents = true;
+            this.fileSystemWatcher1.SynchronizingObject = this;
+            // 
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
-            // 
-            // checkBox_ModsLog
-            // 
-            this.checkBox_ModsLog.AutoSize = true;
-            this.checkBox_ModsLog.Location = new System.Drawing.Point(131, 289);
-            this.checkBox_ModsLog.Name = "checkBox_ModsLog";
-            this.checkBox_ModsLog.Size = new System.Drawing.Size(125, 17);
-            this.checkBox_ModsLog.TabIndex = 68;
-            this.checkBox_ModsLog.Text = "Dump RS_Mods Log";
-            this.checkBox_ModsLog.UseVisualStyleBackColor = true;
-            this.checkBox_ModsLog.CheckedChanged += new System.EventHandler(this.Save_DumpRSModsLogToFile);
-            this.checkBox_ModsLog.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
@@ -5431,6 +5475,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).EndInit();
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
+            this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
             this.groupBox_Profiles_SongLists.ResumeLayout(false);
             this.groupBox_Profiles_SongLists.PerformLayout();
@@ -5439,6 +5484,7 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -5843,6 +5889,10 @@
         private System.Windows.Forms.Button button_Note0ColorButton;
         private System.Windows.Forms.CheckBox checkBox_NoteColors_UseRocksmithColors;
         private System.Windows.Forms.CheckBox checkBox_ModsLog;
+        private System.Windows.Forms.GroupBox groupBox_Profiles_RevertBackup;
+        private System.Windows.Forms.ListBox listBox_Profiles_ListBackups;
+        private System.IO.FileSystemWatcher fileSystemWatcher1;
+        private System.Windows.Forms.Button button_Profiles_RevertBackup;
     }
 }
 

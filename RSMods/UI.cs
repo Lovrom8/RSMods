@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Data;
+using System.Globalization;
 
 namespace RSMods
 {
@@ -121,6 +122,9 @@ namespace RSMods
 
             // Lock the profile edits tab if backups are disabled
             Startup_LockProfileEdits();
+
+            // Get list of all backups so we can revert to one if needed
+            Startup_ListAllBackups();
         }
 
         #region Startup Functions
@@ -273,6 +277,31 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on")
                 TabController.TabPages.Remove(tab_Profiles);
+        }
+
+        private void Startup_ListAllBackups()
+        {
+            try
+            {
+                foreach (string backup in Directory.GetDirectories(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups")))
+                {
+                    string folderName = Path.GetFileNameWithoutExtension(backup);
+                    string date = folderName.Split('_')[0];
+                    string time = folderName.Split('_')[1];
+
+                    int month = Convert.ToInt32(date.Split('-')[0]);
+                    int day = Convert.ToInt32(date.Split('-')[1]);
+                    int year = Convert.ToInt32(date.Split('-')[2]);
+
+                    string userFriendlyName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month) + " " + day + " " + year + " @ " + time.Replace('-', ':');
+
+                    listBox_Profiles_ListBackups.Items.Add(userFriendlyName);
+                }
+                    
+            }
+            catch // Folder doesn't exist
+            {
+            }
         }
 
         #endregion
@@ -481,7 +510,10 @@ namespace RSMods
                 checkBox_ShowCurrentNote.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
+            {
                 nUpDown_NumberOfBackups.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50);
+                groupBox_Backups.Visible = true;
+            }
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on")
                 checkBox_CustomHighway.Checked = true;
@@ -2838,10 +2870,39 @@ namespace RSMods
             }
         }
 
+        private void Profiles_RevertToBackup(object sender, EventArgs e)
+        {
+            if (listBox_Profiles_ListBackups.SelectedIndex < 0)
+                return;
+
+            string localizedName = listBox_Profiles_ListBackups.SelectedItem.ToString();
+
+            int monthNumber = DateTime.ParseExact(localizedName.Split(' ')[0], "MMM", CultureInfo.CurrentCulture).Month;
+
+            string[] localizedSplit = localizedName.Split(' ');
+
+            string time = localizedSplit[4];
+
+            time = time.Replace(':', '-');
+
+            string month = monthNumber.ToString();
+
+            if (monthNumber < 10)
+                month = "0" + monthNumber.ToString();
+
+            string backupName = month + '-' + localizedSplit[1] + '-' + localizedSplit[2] + '_' + time;
+
+            foreach (string profile in Directory.GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups", backupName)))
+                File.Copy(profile, Path.Combine(Profiles.GetSaveDirectory(), Path.GetFileName(profile)), true);
+
+
+            MessageBox.Show($"Reverted to the backup: {localizedName}");
+        }
+
         #endregion
         #region Midi
 
-        private void LoadMidiDeviceNames(object sender, EventArgs e)
+        private void Midi_LoadDevices(object sender, EventArgs e)
         {
             this.listBox_ListMidiDevices.Items.Clear();
 
