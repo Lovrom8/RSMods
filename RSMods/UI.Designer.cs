@@ -765,10 +765,10 @@
             this.radio_LoftAlwaysOff.AutoSize = true;
             this.radio_LoftAlwaysOff.Location = new System.Drawing.Point(11, 19);
             this.radio_LoftAlwaysOff.Name = "radio_LoftAlwaysOff";
-            this.radio_LoftAlwaysOff.Size = new System.Drawing.Size(96, 17);
+            this.radio_LoftAlwaysOff.Size = new System.Drawing.Size(58, 17);
             this.radio_LoftAlwaysOff.TabIndex = 44;
             this.radio_LoftAlwaysOff.TabStop = true;
-            this.radio_LoftAlwaysOff.Text = "Loft Always Off";
+            this.radio_LoftAlwaysOff.Text = "Always";
             this.radio_LoftAlwaysOff.UseVisualStyleBackColor = true;
             this.radio_LoftAlwaysOff.Visible = false;
             this.radio_LoftAlwaysOff.CheckedChanged += new System.EventHandler(this.Save_ToggleLoftWhenStartup);
@@ -778,10 +778,10 @@
             this.radio_LoftOffHotkey.AutoSize = true;
             this.radio_LoftOffHotkey.Location = new System.Drawing.Point(11, 42);
             this.radio_LoftOffHotkey.Name = "radio_LoftOffHotkey";
-            this.radio_LoftOffHotkey.Size = new System.Drawing.Size(115, 17);
+            this.radio_LoftOffHotkey.Size = new System.Drawing.Size(59, 17);
             this.radio_LoftOffHotkey.TabIndex = 45;
             this.radio_LoftOffHotkey.TabStop = true;
-            this.radio_LoftOffHotkey.Text = "Loft Off Via Hotkey";
+            this.radio_LoftOffHotkey.Text = "Hotkey";
             this.radio_LoftOffHotkey.UseVisualStyleBackColor = true;
             this.radio_LoftOffHotkey.Visible = false;
             this.radio_LoftOffHotkey.CheckedChanged += new System.EventHandler(this.Save_ToggleLoftWhenManual);
@@ -791,10 +791,10 @@
             this.radio_LoftOffInSong.AutoSize = true;
             this.radio_LoftOffInSong.Location = new System.Drawing.Point(11, 65);
             this.radio_LoftOffInSong.Name = "radio_LoftOffInSong";
-            this.radio_LoftOffInSong.Size = new System.Drawing.Size(100, 17);
+            this.radio_LoftOffInSong.Size = new System.Drawing.Size(69, 17);
             this.radio_LoftOffInSong.TabIndex = 46;
             this.radio_LoftOffInSong.TabStop = true;
-            this.radio_LoftOffInSong.Text = "Loft Off In Song";
+            this.radio_LoftOffInSong.Text = "In a song";
             this.radio_LoftOffInSong.UseVisualStyleBackColor = true;
             this.radio_LoftOffInSong.Visible = false;
             this.radio_LoftOffInSong.CheckedChanged += new System.EventHandler(this.Save_ToggleLoftWhenSong);
@@ -881,7 +881,7 @@
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffInSong);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftOffHotkey);
             this.groupBox_LoftOffWhen.Controls.Add(this.radio_LoftAlwaysOff);
-            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(186, 92);
+            this.groupBox_LoftOffWhen.Location = new System.Drawing.Point(186, 90);
             this.groupBox_LoftOffWhen.Name = "groupBox_LoftOffWhen";
             this.groupBox_LoftOffWhen.Size = new System.Drawing.Size(145, 86);
             this.groupBox_LoftOffWhen.TabIndex = 48;
@@ -2119,7 +2119,7 @@
             // 
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineOffInSong);
             this.groupBox_ToggleSkylineWhen.Controls.Add(this.radio_SkylineAlwaysOff);
-            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(186, 18);
+            this.groupBox_ToggleSkylineWhen.Location = new System.Drawing.Point(186, 16);
             this.groupBox_ToggleSkylineWhen.Name = "groupBox_ToggleSkylineWhen";
             this.groupBox_ToggleSkylineWhen.Size = new System.Drawing.Size(145, 68);
             this.groupBox_ToggleSkylineWhen.TabIndex = 69;
@@ -2134,10 +2134,10 @@
             this.radio_SkylineOffInSong.AutoSize = true;
             this.radio_SkylineOffInSong.Location = new System.Drawing.Point(11, 40);
             this.radio_SkylineOffInSong.Name = "radio_SkylineOffInSong";
-            this.radio_SkylineOffInSong.Size = new System.Drawing.Size(116, 17);
+            this.radio_SkylineOffInSong.Size = new System.Drawing.Size(69, 17);
             this.radio_SkylineOffInSong.TabIndex = 46;
             this.radio_SkylineOffInSong.TabStop = true;
-            this.radio_SkylineOffInSong.Text = "Skyline Off In Song";
+            this.radio_SkylineOffInSong.Text = "In a song";
             this.radio_SkylineOffInSong.UseVisualStyleBackColor = true;
             this.radio_SkylineOffInSong.CheckedChanged += new System.EventHandler(this.Save_ToggleSkylineSong);
             // 
@@ -2146,10 +2146,10 @@
             this.radio_SkylineAlwaysOff.AutoSize = true;
             this.radio_SkylineAlwaysOff.Location = new System.Drawing.Point(11, 19);
             this.radio_SkylineAlwaysOff.Name = "radio_SkylineAlwaysOff";
-            this.radio_SkylineAlwaysOff.Size = new System.Drawing.Size(112, 17);
+            this.radio_SkylineAlwaysOff.Size = new System.Drawing.Size(58, 17);
             this.radio_SkylineAlwaysOff.TabIndex = 44;
             this.radio_SkylineAlwaysOff.TabStop = true;
-            this.radio_SkylineAlwaysOff.Text = "Skyline Always Off";
+            this.radio_SkylineAlwaysOff.Text = "Always";
             this.radio_SkylineAlwaysOff.UseVisualStyleBackColor = true;
             this.radio_SkylineAlwaysOff.CheckedChanged += new System.EventHandler(this.Save_ToggleSkylineStartup);
             // 
@@ -2157,7 +2157,7 @@
             // 
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsOffHotkey);
             this.groupBox_ToggleLyricsOffWhen.Controls.Add(this.radio_LyricsAlwaysOff);
-            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(8, 18);
+            this.groupBox_ToggleLyricsOffWhen.Location = new System.Drawing.Point(8, 16);
             this.groupBox_ToggleLyricsOffWhen.Name = "groupBox_ToggleLyricsOffWhen";
             this.groupBox_ToggleLyricsOffWhen.Size = new System.Drawing.Size(166, 68);
             this.groupBox_ToggleLyricsOffWhen.TabIndex = 70;
@@ -2170,10 +2170,10 @@
             this.radio_LyricsOffHotkey.AutoSize = true;
             this.radio_LyricsOffHotkey.Location = new System.Drawing.Point(11, 42);
             this.radio_LyricsOffHotkey.Name = "radio_LyricsOffHotkey";
-            this.radio_LyricsOffHotkey.Size = new System.Drawing.Size(124, 17);
+            this.radio_LyricsOffHotkey.Size = new System.Drawing.Size(59, 17);
             this.radio_LyricsOffHotkey.TabIndex = 46;
             this.radio_LyricsOffHotkey.TabStop = true;
-            this.radio_LyricsOffHotkey.Text = "Lyrics Off Via Hotkey";
+            this.radio_LyricsOffHotkey.Text = "Hotkey";
             this.radio_LyricsOffHotkey.UseVisualStyleBackColor = true;
             this.radio_LyricsOffHotkey.CheckedChanged += new System.EventHandler(this.Save_ToggleLyricsManual);
             this.radio_LyricsOffHotkey.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
@@ -2184,10 +2184,10 @@
             this.radio_LyricsAlwaysOff.AutoSize = true;
             this.radio_LyricsAlwaysOff.Location = new System.Drawing.Point(11, 19);
             this.radio_LyricsAlwaysOff.Name = "radio_LyricsAlwaysOff";
-            this.radio_LyricsAlwaysOff.Size = new System.Drawing.Size(105, 17);
+            this.radio_LyricsAlwaysOff.Size = new System.Drawing.Size(58, 17);
             this.radio_LyricsAlwaysOff.TabIndex = 44;
             this.radio_LyricsAlwaysOff.TabStop = true;
-            this.radio_LyricsAlwaysOff.Text = "Lyrics Always Off";
+            this.radio_LyricsAlwaysOff.Text = "Always";
             this.radio_LyricsAlwaysOff.UseVisualStyleBackColor = true;
             this.radio_LyricsAlwaysOff.CheckedChanged += new System.EventHandler(this.Save_ToggleLyricsStartup);
             this.radio_LyricsAlwaysOff.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
@@ -2382,9 +2382,9 @@
             // 
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockOffInSong);
             this.groupBox_ToggleHeadstockOffWhen.Controls.Add(this.radio_HeadstockAlwaysOff);
-            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(8, 275);
+            this.groupBox_ToggleHeadstockOffWhen.Location = new System.Drawing.Point(186, 179);
             this.groupBox_ToggleHeadstockOffWhen.Name = "groupBox_ToggleHeadstockOffWhen";
-            this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(166, 77);
+            this.groupBox_ToggleHeadstockOffWhen.Size = new System.Drawing.Size(166, 71);
             this.groupBox_ToggleHeadstockOffWhen.TabIndex = 73;
             this.groupBox_ToggleHeadstockOffWhen.TabStop = false;
             this.groupBox_ToggleHeadstockOffWhen.Text = "Toggle Headstock Off When";
@@ -2393,24 +2393,24 @@
             // radio_HeadstockOffInSong
             // 
             this.radio_HeadstockOffInSong.AutoSize = true;
-            this.radio_HeadstockOffInSong.Location = new System.Drawing.Point(11, 50);
+            this.radio_HeadstockOffInSong.Location = new System.Drawing.Point(11, 42);
             this.radio_HeadstockOffInSong.Name = "radio_HeadstockOffInSong";
-            this.radio_HeadstockOffInSong.Size = new System.Drawing.Size(134, 17);
+            this.radio_HeadstockOffInSong.Size = new System.Drawing.Size(69, 17);
             this.radio_HeadstockOffInSong.TabIndex = 1;
             this.radio_HeadstockOffInSong.TabStop = true;
-            this.radio_HeadstockOffInSong.Text = "Headstock Off In Song";
+            this.radio_HeadstockOffInSong.Text = "In a song";
             this.radio_HeadstockOffInSong.UseVisualStyleBackColor = true;
             this.radio_HeadstockOffInSong.CheckedChanged += new System.EventHandler(this.Save_HeadstockOffInSongOnlyButton);
             // 
             // radio_HeadstockAlwaysOff
             // 
             this.radio_HeadstockAlwaysOff.AutoSize = true;
-            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(11, 27);
+            this.radio_HeadstockAlwaysOff.Location = new System.Drawing.Point(11, 19);
             this.radio_HeadstockAlwaysOff.Name = "radio_HeadstockAlwaysOff";
-            this.radio_HeadstockAlwaysOff.Size = new System.Drawing.Size(130, 17);
+            this.radio_HeadstockAlwaysOff.Size = new System.Drawing.Size(58, 17);
             this.radio_HeadstockAlwaysOff.TabIndex = 0;
             this.radio_HeadstockAlwaysOff.TabStop = true;
-            this.radio_HeadstockAlwaysOff.Text = "Headstock Always Off";
+            this.radio_HeadstockAlwaysOff.Text = "Always";
             this.radio_HeadstockAlwaysOff.UseVisualStyleBackColor = true;
             this.radio_HeadstockAlwaysOff.CheckedChanged += new System.EventHandler(this.Save_HeadStockAlwaysOffButton);
             // 
@@ -2825,7 +2825,7 @@
             this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeManual);
             this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeInSong);
             this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeAlways);
-            this.groupBox_ControlSongVolumeWhen.Location = new System.Drawing.Point(8, 177);
+            this.groupBox_ControlSongVolumeWhen.Location = new System.Drawing.Point(8, 164);
             this.groupBox_ControlSongVolumeWhen.Name = "groupBox_ControlSongVolumeWhen";
             this.groupBox_ControlSongVolumeWhen.Size = new System.Drawing.Size(166, 92);
             this.groupBox_ControlSongVolumeWhen.TabIndex = 100008;
@@ -2838,10 +2838,10 @@
             this.radio_ControlSongVolumeManual.AutoSize = true;
             this.radio_ControlSongVolumeManual.Location = new System.Drawing.Point(11, 69);
             this.radio_ControlSongVolumeManual.Name = "radio_ControlSongVolumeManual";
-            this.radio_ControlSongVolumeManual.Size = new System.Drawing.Size(112, 17);
+            this.radio_ControlSongVolumeManual.Size = new System.Drawing.Size(59, 17);
             this.radio_ControlSongVolumeManual.TabIndex = 2;
             this.radio_ControlSongVolumeManual.TabStop = true;
-            this.radio_ControlSongVolumeManual.Text = "Manual (Keypress)";
+            this.radio_ControlSongVolumeManual.Text = "Hotkey";
             this.radio_ControlSongVolumeManual.UseVisualStyleBackColor = true;
             this.radio_ControlSongVolumeManual.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeManual);
             // 
@@ -2850,10 +2850,10 @@
             this.radio_ControlSongVolumeInSong.AutoSize = true;
             this.radio_ControlSongVolumeInSong.Location = new System.Drawing.Point(11, 46);
             this.radio_ControlSongVolumeInSong.Name = "radio_ControlSongVolumeInSong";
-            this.radio_ControlSongVolumeInSong.Size = new System.Drawing.Size(72, 17);
+            this.radio_ControlSongVolumeInSong.Size = new System.Drawing.Size(69, 17);
             this.radio_ControlSongVolumeInSong.TabIndex = 1;
             this.radio_ControlSongVolumeInSong.TabStop = true;
-            this.radio_ControlSongVolumeInSong.Text = "In A Song";
+            this.radio_ControlSongVolumeInSong.Text = "In a song";
             this.radio_ControlSongVolumeInSong.UseVisualStyleBackColor = true;
             this.radio_ControlSongVolumeInSong.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeInSong);
             // 
@@ -2873,9 +2873,9 @@
             // 
             this.groupBox_SongTimer.Controls.Add(this.radio_SongTimerManual);
             this.groupBox_SongTimer.Controls.Add(this.radio_SongTimerAlways);
-            this.groupBox_SongTimer.Location = new System.Drawing.Point(8, 94);
+            this.groupBox_SongTimer.Location = new System.Drawing.Point(8, 90);
             this.groupBox_SongTimer.Name = "groupBox_SongTimer";
-            this.groupBox_SongTimer.Size = new System.Drawing.Size(166, 77);
+            this.groupBox_SongTimer.Size = new System.Drawing.Size(166, 68);
             this.groupBox_SongTimer.TabIndex = 100007;
             this.groupBox_SongTimer.TabStop = false;
             this.groupBox_SongTimer.Text = "Toggle Song Timer When";
@@ -2884,24 +2884,24 @@
             // radio_SongTimerManual
             // 
             this.radio_SongTimerManual.AutoSize = true;
-            this.radio_SongTimerManual.Location = new System.Drawing.Point(11, 50);
+            this.radio_SongTimerManual.Location = new System.Drawing.Point(11, 42);
             this.radio_SongTimerManual.Name = "radio_SongTimerManual";
-            this.radio_SongTimerManual.Size = new System.Drawing.Size(112, 17);
+            this.radio_SongTimerManual.Size = new System.Drawing.Size(59, 17);
             this.radio_SongTimerManual.TabIndex = 1;
             this.radio_SongTimerManual.TabStop = true;
-            this.radio_SongTimerManual.Text = "Manual (Keypress)";
+            this.radio_SongTimerManual.Text = "Hotkey";
             this.radio_SongTimerManual.UseVisualStyleBackColor = true;
             this.radio_SongTimerManual.CheckedChanged += new System.EventHandler(this.Save_SongTimerManual);
             // 
             // radio_SongTimerAlways
             // 
             this.radio_SongTimerAlways.AutoSize = true;
-            this.radio_SongTimerAlways.Location = new System.Drawing.Point(11, 27);
+            this.radio_SongTimerAlways.Location = new System.Drawing.Point(11, 19);
             this.radio_SongTimerAlways.Name = "radio_SongTimerAlways";
-            this.radio_SongTimerAlways.Size = new System.Drawing.Size(98, 17);
+            this.radio_SongTimerAlways.Size = new System.Drawing.Size(69, 17);
             this.radio_SongTimerAlways.TabIndex = 0;
             this.radio_SongTimerAlways.TabStop = true;
-            this.radio_SongTimerAlways.Text = "Always In Song";
+            this.radio_SongTimerAlways.Text = "In a song";
             this.radio_SongTimerAlways.UseVisualStyleBackColor = true;
             this.radio_SongTimerAlways.CheckedChanged += new System.EventHandler(this.Save_SongTimerAlways);
             // 
