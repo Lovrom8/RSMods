@@ -531,8 +531,6 @@ namespace RSMods
                 checkBox_SecondaryMonitor.Checked = true;
 
             checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1";
-
-            checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -674,6 +672,7 @@ namespace RSMods
             checkBox_ASIO_InputMic_Disabled.CheckedChanged -= new System.EventHandler(ASIO_InputMic_Disable);
             checkBox_ER_SeparateNoteColors.CheckedChanged -= new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
+            checkBox_ModsLog.CheckedChanged -= new System.EventHandler(Save_DumpRSModsLogToFile);
 
 
             // Now we can change things without saving.
@@ -690,6 +689,7 @@ namespace RSMods
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
+            checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -704,6 +704,7 @@ namespace RSMods
             checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(ASIO_InputMic_Disable);
             checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
+            checkBox_ModsLog.CheckedChanged += new System.EventHandler(Save_DumpRSModsLogToFile);
         }
 
         #endregion
