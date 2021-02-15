@@ -23,6 +23,8 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        bool shipProfileEdits = false;
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
@@ -275,7 +277,7 @@ namespace RSMods
             ProfileEditsTab = tab_Profiles;
             ProfileEditsTabIndex = TabController.TabPages.IndexOf(ProfileEditsTab);
 
-            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on")
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on" || !shipProfileEdits)
                 TabController.TabPages.Remove(tab_Profiles);
         }
 
