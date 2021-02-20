@@ -18,6 +18,9 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Data;
 using System.Globalization;
+using System.Net;
+using System.Net.Http;
+using System.ComponentModel;
 
 namespace RSMods
 {
@@ -127,6 +130,9 @@ namespace RSMods
 
             // Get list of all backups so we can revert to one if needed
             Startup_ListAllBackups();
+
+            // Check for Updates
+            // Startup_CheckForUpdates();
         }
 
         #region Startup Functions
@@ -304,6 +310,45 @@ namespace RSMods
             catch // Folder doesn't exist
             {
             }
+        }
+
+        private async void Startup_CheckForUpdates()
+        {
+            HttpClient checkForUpdates_Client = new HttpClient();
+
+            HttpResponseMessage checkForUpdates_Response = await checkForUpdates_Client.GetAsync("https://github.com/Lovrom8/RSMods/releases/latest");
+
+            string latestRelease_GithubLink = checkForUpdates_Response.RequestMessage.RequestUri.ToString();
+            string versionTXT = "RS2014-Mod-Installer.exe";
+
+            latestRelease_GithubLink = latestRelease_GithubLink.Replace("tag", "download");
+
+            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, versionTXT));
+
+            Clipboard.SetText(Path.Combine(latestRelease_GithubLink, versionTXT));
+
+            checkForUpdates_Client.Dispose();
+
+
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
+                webClient.DownloadFileAsync(downloadVersion, versionTXT);
+                
+            }
+        }
+
+        private async void Startup_CheckForUpdates_RunInstaller(object sender, AsyncCompletedEventArgs e)
+        {
+            // Download was canceled.
+            if (e.Cancelled) 
+                return;
+
+            if (e.Error == null)
+                await Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
+            else
+                MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
+
         }
 
         #endregion
