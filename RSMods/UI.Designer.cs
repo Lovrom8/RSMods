@@ -3502,6 +3502,7 @@
             this.label_ASIO_Credits.Size = new System.Drawing.Size(163, 34);
             this.label_ASIO_Credits.TabIndex = 11;
             this.label_ASIO_Credits.Text = "Big Thank You To Mdias\r\nFor Creating RS_ASIO";
+            this.label_ASIO_Credits.Click += new System.EventHandler(this.ASIO_OpenGithub);
             // 
             // groupBox_ASIO_Output
             // 
