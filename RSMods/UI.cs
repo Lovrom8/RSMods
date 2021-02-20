@@ -314,27 +314,23 @@ namespace RSMods
 
         private async void Startup_CheckForUpdates()
         {
+            // Startup HTTP Client
             HttpClient checkForUpdates_Client = new HttpClient();
-
             HttpResponseMessage checkForUpdates_Response = await checkForUpdates_Client.GetAsync("https://github.com/Lovrom8/RSMods/releases/latest");
 
-            string latestRelease_GithubLink = checkForUpdates_Response.RequestMessage.RequestUri.ToString();
-            string versionTXT = "RS2014-Mod-Installer.exe";
+            // Get link ready for download
+            string latestRelease_GithubLink = checkForUpdates_Response.RequestMessage.RequestUri.ToString().Replace("/tag/", "/download/");
+            string fileToDownload = "RS2014-Mod-Installer.exe";
+            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, fileToDownload));
 
-            latestRelease_GithubLink = latestRelease_GithubLink.Replace("tag", "download");
-
-            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, versionTXT));
-
-            Clipboard.SetText(Path.Combine(latestRelease_GithubLink, versionTXT));
-
+            // Dispose of HTTP Client
             checkForUpdates_Client.Dispose();
 
-
+            // Retrieve Installer
             using (WebClient webClient = new WebClient())
             {
                 webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
-                webClient.DownloadFileAsync(downloadVersion, versionTXT);
-                
+                webClient.DownloadFileAsync(downloadVersion, fileToDownload);
             }
         }
 
@@ -344,9 +340,9 @@ namespace RSMods
             if (e.Cancelled) 
                 return;
 
-            if (e.Error == null)
+            if (e.Error == null) // Run Installer
                 await Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
-            else
+            else // Error detected
                 MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
 
         }
