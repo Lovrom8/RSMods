@@ -24,6 +24,7 @@ using System.ComponentModel;
 
 namespace RSMods
 {
+
     public partial class MainForm : Form
     {
         bool shipProfileEdits = false;
@@ -131,8 +132,8 @@ namespace RSMods
             // Get list of all backups so we can revert to one if needed
             Startup_ListAllBackups();
 
-            // Check for Updates
-            // Startup_CheckForUpdates();
+            // Check for Updates | IDEALLY ON BUTTON PRESS (just here for testing)
+            //Startup_CheckForUpdates();
         }
 
         #region Startup Functions
@@ -314,14 +315,23 @@ namespace RSMods
 
         private async void Startup_CheckForUpdates()
         {
+            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
+            string currentVersionName = $"{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build}.{currentVersion.Revision}";
+
+            // Create / Update Version.txt
+            File.WriteAllText("version.txt", currentVersionName);
+
             // Startup HTTP Client
             HttpClient checkForUpdates_Client = new HttpClient();
             HttpResponseMessage checkForUpdates_Response = await checkForUpdates_Client.GetAsync("https://github.com/Lovrom8/RSMods/releases/latest");
 
             // Get link ready for download
             string latestRelease_GithubLink = checkForUpdates_Response.RequestMessage.RequestUri.ToString().Replace("/tag/", "/download/");
-            string fileToDownload = "RS2014-Mod-Installer.exe";
-            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, fileToDownload));
+            string createdVersionFile = "version.txt";
+            string downloadedVersionFile = "latest_version.txt";
+            string installerName = "RS2014-Mod-Installer.exe";
+            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, createdVersionFile));
+            Uri downloadInstaller = new Uri(Path.Combine(latestRelease_GithubLink, installerName));
 
             // Dispose of HTTP Client
             checkForUpdates_Client.Dispose();
@@ -329,8 +339,34 @@ namespace RSMods
             // Retrieve Installer
             using (WebClient webClient = new WebClient())
             {
-                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
-                webClient.DownloadFileAsync(downloadVersion, fileToDownload);
+                // Remove old downloaded version file, just in case.
+                if (File.Exists(downloadedVersionFile))
+                    File.Delete(downloadedVersionFile);
+
+                // Download new version file
+                try
+                {
+                    webClient.DownloadFile(downloadVersion, downloadedVersionFile);
+                }
+                catch (WebException) // Version file can't be found.
+                { 
+                }
+                
+
+                // Compare versions, and download install if necessary.
+                try
+                {
+                    if (File.ReadAllText(downloadedVersionFile) != currentVersionName) // New version available.
+                    {
+                        MessageBox.Show("Old Version Detected");
+                        webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
+                        webClient.DownloadFileAsync(downloadInstaller, installerName);
+                    }
+                }
+                catch // file couldn't be found for some reason.
+                {
+                    MessageBox.Show("Version.txt didn't download fast enough. Report to devs. (it's literally 7 bytes)");
+                }
             }
         }
 
@@ -344,7 +380,6 @@ namespace RSMods
                 await Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
             else // Error detected
                 MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
-
         }
 
         #endregion
