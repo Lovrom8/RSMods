@@ -270,6 +270,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	//	pDevice->SetTexture(1, customHeadstockTexture);
 	//}
 
+	//
+	//if (IsExtraRemoved(greenScreenWallMesh, currentThicc) && (GetAsyncKeyState(VK_CONTROL) & 1)) {
+	//  // Save Loft Texture To File
+	//	pDevice->GetTexture(8, &pBaseTextures[1]);
+	//	D3DXSaveTextureToFile(L"loft_las.png", D3DXIFF_PNG, pBaseTextures[1], NULL);
+	//  // TODO: Use Texture
+	//}
+
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
 	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0) { 
 
@@ -445,7 +453,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Greenscreen Wall
-	if (GreenScreenWall && IsExtraRemoved(greenScreenWallMesh, currentThicc))
+	if ((Settings::ReturnSettingValue("GreenScreenWallEnabled") == "on" || GreenScreenWall) && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return REMOVE_TEXTURE;
 
 	// Thicc Mesh Mods
