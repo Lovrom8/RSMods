@@ -260,22 +260,43 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	//if (IsExtraRemoved(headstonks, currentThicc)) {
+	//if (IsExtraRemoved(headstonks, currentThicc) && (GetAsyncKeyState(VK_CONTROL) & 1)) {
 
-	//	// Export Texture (gets laggy | quit game after a couple frames, then recomment this. Use this to get the template of the headstock.)
+	//	// Save Headstock Texture to file
 	//	pDevice->GetTexture(1, &pBaseTextures[1]);
 	//	D3DXSaveTextureToFile(L"headstock.png", D3DXIFF_PNG, pBaseTextures[1], NULL);
 
-	//	// Set Texture
+	//	// Use Custom Texture
 	//	pDevice->SetTexture(1, customHeadstockTexture);
 	//}
 
-	//
-	//if (IsExtraRemoved(greenScreenWallMesh, currentThicc) && (GetAsyncKeyState(VK_CONTROL) & 1)) {
-	//  // Save Loft Texture To File
-	//	pDevice->GetTexture(8, &pBaseTextures[1]);
-	//	D3DXSaveTextureToFile(L"loft_las.png", D3DXIFF_PNG, pBaseTextures[1], NULL);
-	//  // TODO: Use Texture
+
+	// // Custom Loft Gameplay Wall / Narnia / Portal / Venue wall
+	//if (IsExtraRemoved(greenScreenWallMesh, currentThicc)) {
+	//	//// Save Loft Texture To File
+	//	//for (int i = 0; i < 7; i++) {
+	//	//	pDevice->GetTexture(i, &pBaseTextures[1]);
+	//	//	D3DXSaveTextureToFileW(std::wstring(L"greenscreenwall_stage" + std::to_wstring(i) + L".png").c_str() , D3DXIFF_PNG, pBaseTextures[1], NULL);
+	//	//}
+	//	
+
+	//	// Use Custom Texture (File names can be found in venues/loft01.psarc/assets/generic/env/the_loft/
+	//  // Files sent in currently require the name "stage#.png" where # is the number attached to the texture variable. Ex: customGreenScreenWall_Stage3 would need a file named "stage3.png"
+
+	//	// Background tile displays as follows:
+	//	// Top 512 of Background Tile are shown at the bottom of the screen, repeated 1-1/2 times.
+	//	// Bottom 512 of Background Tile are shown at the top of the screen, repeated 2-1/2 times.
+
+	//	// Example: What is shown - https://cdn.discordapp.com/attachments/711634485388771439/813523398587711488/unknown.png vs What is sent - https://cdn.discordapp.com/attachments/711634485388771439/813523420947152916/stage0.png
+	//	// Example: Full wall (which you will never see for more than a second or so) - https://cdn.discordapp.com/attachments/711634485388771439/813524110390460436/unknown.png
+
+	//	pDevice->SetTexture(0, customGreenScreenWall_Stage0); // Background Tile | loft_concrete_wall_b.dds | 1024x1024 | Can be modified. Used for the background.
+	//	//pDevice->SetTexture(1, customGreenScreenWall_Stage1); // Noise | noise03.dds | 256x256 | Doesn't have any effect
+	//	//pDevice->SetTexture(2, customGreenScreenWall_Stage2); // Caustic (Indirect) | caustic_indirect01.dds | 256x256 | Doesn't have any effect
+	//	//pDevice->SetTexture(3, customGreenScreenWall_Stage3); // Narnia / Venue Fade In Mask | fade_shape.dds | 512x512 | Can be modified. If you use a single colored square, you can make an almost "movie like" flashback.
+	//	//pDevice->SetTexture(4, customGreenScreenWall_Stage4); // White square (Unknown) | 1024x1024 | Doesn't have any effect
+	//	//pDevice->SetTexture(5, customGreenScreenWall_Stage5); // Pipes and wall trim | portal_wall_ao.dds | 1024x1024 | Can be modified.
+	//	//pDevice->SetTexture(6, customGreenScreenWall_Stage6); // N Mask of Background tile | loft_concrete_wall_b_n.dds | 1024x1024 | Don't modify
 	//}
 
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
