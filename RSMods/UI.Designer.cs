@@ -225,6 +225,9 @@
             this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
+            this.tabPage_ModSettings_AutoTuning = new System.Windows.Forms.TabPage();
+            this.groupBox_MidiAutoTuningOffset = new System.Windows.Forms.GroupBox();
+            this.listBox_MidiAutoTuningOffset = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
             this.radio_Whammy = new System.Windows.Forms.RadioButton();
             this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
@@ -460,6 +463,8 @@
             this.groupBox_SongTimer.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
+            this.tabPage_ModSettings_AutoTuning.SuspendLayout();
+            this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
             this.groupBox_CustomHighway.SuspendLayout();
@@ -2608,6 +2613,7 @@
             this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_ER);
             this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_DisableUI);
             this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_Automation);
+            this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_AutoTuning);
             this.TabController_ModSettings.Controls.Add(this.tabPage_ModSettings_Misc);
             this.TabController_ModSettings.Location = new System.Drawing.Point(343, 23);
             this.TabController_ModSettings.Name = "TabController_ModSettings";
@@ -2911,7 +2917,6 @@
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_GuitarSpeak);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_HowToEnumerate);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_AutoLoadProfiles);
-            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tabPage_ModSettings_Automation.Location = new System.Drawing.Point(4, 22);
             this.tabPage_ModSettings_Automation.Name = "tabPage_ModSettings_Automation";
             this.tabPage_ModSettings_Automation.Padding = new System.Windows.Forms.Padding(3);
@@ -2953,6 +2958,54 @@
             this.listBox_AutoLoadProfiles.SelectedIndexChanged += new System.EventHandler(this.Save_AutoLoadProfile);
             this.listBox_AutoLoadProfiles.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // tabPage_ModSettings_AutoTuning
+            // 
+            this.tabPage_ModSettings_AutoTuning.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningOffset);
+            this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuneDevice);
+            this.tabPage_ModSettings_AutoTuning.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_ModSettings_AutoTuning.Name = "tabPage_ModSettings_AutoTuning";
+            this.tabPage_ModSettings_AutoTuning.Size = new System.Drawing.Size(777, 426);
+            this.tabPage_ModSettings_AutoTuning.TabIndex = 4;
+            this.tabPage_ModSettings_AutoTuning.Text = "Auto Tuning";
+            // 
+            // groupBox_MidiAutoTuningOffset
+            // 
+            this.groupBox_MidiAutoTuningOffset.Controls.Add(this.listBox_MidiAutoTuningOffset);
+            this.groupBox_MidiAutoTuningOffset.Location = new System.Drawing.Point(346, 16);
+            this.groupBox_MidiAutoTuningOffset.Name = "groupBox_MidiAutoTuningOffset";
+            this.groupBox_MidiAutoTuningOffset.Size = new System.Drawing.Size(193, 253);
+            this.groupBox_MidiAutoTuningOffset.TabIndex = 100003;
+            this.groupBox_MidiAutoTuningOffset.TabStop = false;
+            this.groupBox_MidiAutoTuningOffset.Text = "What tuning do you want to stay in?";
+            this.groupBox_MidiAutoTuningOffset.Visible = false;
+            // 
+            // listBox_MidiAutoTuningOffset
+            // 
+            this.listBox_MidiAutoTuningOffset.FormattingEnabled = true;
+            this.listBox_MidiAutoTuningOffset.Items.AddRange(new object[] {
+            "G Standard / Drop F",
+            "F# Standard / Drop E",
+            "F Standard / Drop Eb",
+            "E Standard / Drop D",
+            "Eb Standard / Drop C#",
+            "D Standard / Drop C",
+            "C# Standard / Drop B",
+            "C Standard / Drop A#",
+            "B Standard / Drop A",
+            "A# Standard / Drop G#",
+            "A Standard / Drop G",
+            "G# Standard / Drop F#",
+            "G Standard / Drop F (Octave)",
+            "F# Standard / Drop E (Octave)",
+            "F Standard / Drop Eb (Octave)",
+            "E Standard / Drop D (Octave)"});
+            this.listBox_MidiAutoTuningOffset.Location = new System.Drawing.Point(8, 23);
+            this.listBox_MidiAutoTuningOffset.Name = "listBox_MidiAutoTuningOffset";
+            this.listBox_MidiAutoTuningOffset.Size = new System.Drawing.Size(176, 212);
+            this.listBox_MidiAutoTuningOffset.TabIndex = 0;
+            this.listBox_MidiAutoTuningOffset.SelectedIndexChanged += new System.EventHandler(this.Save_MidiAutoTuningOffset);
+            // 
             // groupBox_MidiAutoTuneDevice
             // 
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_Whammy);
@@ -2962,7 +3015,7 @@
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
-            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(450, 18);
+            this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(16, 16);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
             this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 206);
             this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
@@ -5411,6 +5464,8 @@
             this.groupBox_SongTimer.PerformLayout();
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
+            this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
+            this.groupBox_MidiAutoTuningOffset.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
@@ -5894,6 +5949,9 @@
         private System.Windows.Forms.ListBox listBox_Profiles_ListBackups;
         private System.IO.FileSystemWatcher fileSystemWatcher1;
         private System.Windows.Forms.Button button_Profiles_RevertBackup;
+        private System.Windows.Forms.TabPage tabPage_ModSettings_AutoTuning;
+        private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningOffset;
+        private System.Windows.Forms.ListBox listBox_MidiAutoTuningOffset;
     }
 }
 

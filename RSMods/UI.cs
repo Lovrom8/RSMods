@@ -556,6 +556,8 @@ namespace RSMods
                 checkBox_useMidiAutoTuning.Checked = true;
                 groupBox_MidiAutoTuneDevice.Visible = true;
                 label_SelectedMidiDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+                groupBox_MidiAutoTuningOffset.Visible = true;
+                listBox_MidiAutoTuningOffset.SelectedIndex = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.MidiTuningOffsetIdentifier), 0) + 3;
 
                 if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
                 {
@@ -1711,6 +1713,7 @@ namespace RSMods
         {
             SaveSettings_Save(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
             groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
+            groupBox_MidiAutoTuningOffset.Visible = checkBox_useMidiAutoTuning.Checked;
         }
         private void Save_AutoTuneDevice(object sender, EventArgs e)
         {
@@ -1918,6 +1921,12 @@ namespace RSMods
                 // We can finally delete the file :)
                 File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             }
+        }
+
+        private void Save_MidiAutoTuningOffset(object sender, EventArgs e)
+        {
+            if (listBox_MidiAutoTuningOffset.SelectedIndex > -1)
+                SaveSettings_Save(ReadSettings.MidiTuningOffsetIdentifier, (listBox_MidiAutoTuningOffset.SelectedIndex - 3).ToString());
         }
 
         #endregion

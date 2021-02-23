@@ -22,7 +22,7 @@ namespace RSMods
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                             RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, TuningPedal, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
+                             RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
                              ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
 
                              // String Colors
@@ -34,7 +34,7 @@ namespace RSMods
 
 
                              // Mod Settings
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -148,6 +148,7 @@ namespace RSMods
             CheckForNewSongIntervalIdentifier = "CheckForNewSongsInterval = ",
             RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
             TuningPedalIdentifier = "TuningPedal = ",
+            MidiTuningOffsetIdentifier = "TuningOffset = ",
             VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
             SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
             SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
@@ -432,6 +433,8 @@ namespace RSMods
                     return FillSettingVariable(RiffRepeaterSpeedIntervalIdentifier, SettingType.STRING, currentLine, out RiffRepeaterSpeedInterval);
                 if (IdentifierIsFound(currentLine, TuningPedalIdentifier, identifierToGrab))
                     return FillSettingVariable(TuningPedalIdentifier, SettingType.STRING, currentLine, out TuningPedal);
+                if (IdentifierIsFound(currentLine, MidiTuningOffsetIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiTuningOffsetIdentifier, SettingType.STRING, currentLine, out MidiTuningOffset);
                 if (IdentifierIsFound(currentLine, VolumeControlIntervalIdentifier, identifierToGrab))
                     return FillSettingVariable(VolumeControlIntervalIdentifier, SettingType.STRING, currentLine, out VolumeControlInterval);
                 if (IdentifierIsFound(currentLine, SecondaryMonitorXPositionIdentifier, identifierToGrab))
