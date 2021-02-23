@@ -175,7 +175,7 @@ namespace Midi {
 			switch (pedalToUse) {
 			 
 			case 1:
-				Digitech_Whammy_DT_Auto_Tuning(highestTuning);
+				Digitech_Whammy_DT_Auto_Tuning(highestTuning + Settings::GetModSetting("TuningOffset"));
 				break;
 			case 2:
 				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
@@ -271,7 +271,7 @@ namespace Midi {
 	// Pedal Specific Functions
 
 	/// <summary>
-	/// Auto Tune with the pedal "Digitech Whammy DT"
+	/// Auto Tune with the pedal "Digitech Whammy DT". Tuning names (in comments) are based off a guitar in E Standard.
 	/// </summary>
 	/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
 	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning) {
@@ -283,6 +283,10 @@ namespace Midi {
 			SendProgramChange(49); // E Standard +OCT
 			lastPC_TUNING = 49;
 			break;
+		case 11:
+		case 10:
+		case 9:
+		case 8:
 		case 7:
 			SendProgramChange(48); // B Standard
 			lastPC_TUNING = 48;
@@ -344,6 +348,10 @@ namespace Midi {
 			lastPC_TUNING = 54;
 			break;
 		case -7:
+		case -8:
+		case -9:
+		case -10:
+		case -11:
 			SendProgramChange(53); // A Standard
 			lastPC_TUNING = 53;
 			break;
