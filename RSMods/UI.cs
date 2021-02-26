@@ -3001,8 +3001,8 @@ namespace RSMods
 
             for (uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
             {
-                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS { };
-                Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
+                Midi.MIDIOUTCAPSW temp = new Midi.MIDIOUTCAPSW { };
+                Midi.midiOutGetDevCapsW(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPSW)));
                 this.listBox_ListMidiDevices.Items.Add(temp.szPname);
             }
 
@@ -3041,8 +3041,8 @@ namespace RSMods
             WAVERR_UNPREPARED = 34
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MIDIOUTCAPS
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct MIDIOUTCAPSW
         {
             public ushort wMid;
             public ushort wPid;
@@ -3057,7 +3057,7 @@ namespace RSMods
         }
 
         [DllImport("winmm.dll", SetLastError = true)]
-        public static extern MMRESULT midiOutGetDevCaps(uint uDeviceID, ref MIDIOUTCAPS lpMidiOutCaps, uint cbMidiOutCaps);
+        public static extern MMRESULT midiOutGetDevCapsW(uint uDeviceID, ref MIDIOUTCAPSW lpMidiOutCaps, uint cbMidiOutCaps);
 
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiOutGetNumDevs();
