@@ -49,12 +49,24 @@ namespace Midi {
 		GetMidiDeviceNames();
 
 		for (int device = 0; device < NumberOfPorts; device++) {
-			if ((std::string)midiOutDevices.at(device).szPname == AutoTuneForSongDevice) {
-				std::cout << "(MIDI) Found MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
+
+			std::string deviceName = "";
+
+			// Parse Char Buffer, since the name is a null-terminated string, we need to terminate it ourselves in a string.
+			for (int i = 0; i < 32; i++) {
+				if (midiOutDevices.at(device).szPname[i] == (char)0)
+					break;
+				deviceName.push_back(midiOutDevices.at(device).szPname[i]);
+			}
+
+			if (deviceName.find(AutoTuneForSongDevice) != std::string::npos) {
+				std::cout << "(MIDI) Connecting To Midi Device: " << midiOutDevices.at(device).szPname << std::endl;
 				SelectedMidiDevice = device;
 				break;
 			}
-			std::cout << "(MIDI) Available MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
+			else
+				std::cout << "(MIDI) Available MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
+			
 		}
 	}
 
