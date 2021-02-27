@@ -193,10 +193,10 @@ namespace Midi {
 				Digitech_Whammy_DT_Auto_Tuning(highestTuning + Settings::GetModSetting("TuningOffset"));
 				break;
 			case 2:
-				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
+				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
 				break;
 			case 3:
-				Digitech_Whammy_Auto_Tuning_And_TrueTuning(highestTuning, TrueTuning_Hertz);
+				Digitech_Whammy_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
 				break;
 			default:
 				break;
