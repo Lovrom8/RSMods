@@ -15,8 +15,8 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
 	// Current Tuning
-	uintptr_t ptr_tuning = 0x00F5C4D8;
-	std::vector<unsigned int> ptr_tuningOffsets{ 0x44, 0x4C, 0x8, 0xC, 0x30, 0x8, 0x44 };
+	uintptr_t ptr_tuning = 0x00F5C4FC;
+	std::vector<unsigned int> ptr_tuningOffsets{ 0x10, 0x8, 0x44 };
 	
 	// True Tuning
 	uintptr_t ptr_trueTuning = 0x00F5C4FC;

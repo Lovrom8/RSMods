@@ -174,8 +174,11 @@ namespace Midi {
 			int lowestTuning = highestLowestTuning[1];
 
 			// Invalid pointer check
-			if (highestTuning == 666 && lowestTuning == 666)
+			if (highestTuning == 666 && lowestTuning == 666) {
+				std::cout << "(MIDI) Invalid H_L_Tuning Pointer" << std::endl;
 				return;
+			}
+				
 			
 			delete[] highestLowestTuning;
 
