@@ -394,13 +394,13 @@ namespace Midi {
 
 		// Above A440
 		else if (TrueTuning_Hertz > 440) {
-			SendProgramChange(5);
+			SendProgramChange(3); // Leave at +4th
 			SendControlChange((char)(TrueTuning_Hertz - 440));
 		}
 
 		// Below A440
 		else {
-			SendProgramChange(4);
+			SendProgramChange(4); // Leave at -2nd
 			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
 		}
 	}
