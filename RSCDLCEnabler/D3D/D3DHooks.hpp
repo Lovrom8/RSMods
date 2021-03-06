@@ -136,3 +136,24 @@ inline tSetTexture oSetTexture;
 
 typedef HRESULT(APIENTRY* tPresent) (IDirect3DDevice9*, const RECT*, const RECT*, HWND, const RGNDATA*);
 inline tPresent oPresent;
+
+/// <summary>
+/// Dump stages 0-7 of texture. https://docs.microsoft.com/en-us/windows/win32/direct3d9/texture-blending
+/// </summary>
+/// <param name="pDevice"> - Device Pointer</param>
+/// <param name="file_prefix"> - Prefix for file name. "_stage#.png" is appended to this to end up with the file name.</param>
+inline void DumpTextureStages(IDirect3DDevice9* pDevice, std::string file_prefix) {
+	LPDIRECT3DBASETEXTURE9 baseTexture;
+	D3DCAPS9 deviceCaps;
+	pDevice->GetDeviceCaps(&deviceCaps);
+
+	file_prefix += "_stage";
+
+	// The reason we get Device Caps is because some devices don't support 8 stages (0-7), so we have to account for that.
+
+	for (DWORD i = 0; i < deviceCaps.MaxTextureBlendStages; i++) {
+		std::string filename = std::string(file_prefix + std::to_string(i) + ".png").c_str();
+		pDevice->GetTexture(i, &baseTexture);
+		D3DXSaveTextureToFileA(filename.c_str(), D3DXIFF_PNG, baseTexture, NULL);
+	}
+}

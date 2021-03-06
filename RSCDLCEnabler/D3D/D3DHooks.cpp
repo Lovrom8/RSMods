@@ -273,15 +273,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	// // Custom Loft Gameplay Wall / Narnia / Portal / Venue wall
 	//if (IsExtraRemoved(greenScreenWallMesh, currentThicc)) {
-	//	//// Save Loft Texture To File
-	//	//for (int i = 0; i < 7; i++) {
-	//	//	pDevice->GetTexture(i, &pBaseTextures[1]);
-	//	//	D3DXSaveTextureToFileW(std::wstring(L"greenscreenwall_stage" + std::to_wstring(i) + L".png").c_str() , D3DXIFF_PNG, pBaseTextures[1], NULL);
-	//	//}
-	//	
+	//		//// Save Loft Texture To File
+	//	//DumpTextureStages(pDevice, "greenscreenwall");
 
 	//	// Use Custom Texture (File names can be found in venues/loft01.psarc/assets/generic/env/the_loft/
-	//  // Files sent in currently require the name "stage#.png" where # is the number attached to the texture variable. Ex: customGreenScreenWall_Stage3 would need a file named "stage3.png"
+	//	// Files sent in currently require the name "stage#.png" where # is the number attached to the texture variable. Ex: customGreenScreenWall_Stage3 would need a file named "stage3.png"
 
 	//	// Background tile displays as follows:
 	//	// Top 512 of Background Tile are shown at the bottom of the screen, repeated 1-1/2 times.
