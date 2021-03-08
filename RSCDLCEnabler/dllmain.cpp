@@ -650,8 +650,7 @@ void GUI() {
 
 	bool runningThroughWine = adr == (uint32_t)2;
 
-	std::cout << adr << std::endl;
-	std::cout << std::boolalpha << runningThroughWine << std::endl;
+	std::cout << "Running in Wine: " << std::boolalpha << runningThroughWine << std::endl;
 
 	// Proton / Wine Check
 	if (runningThroughWine) {
@@ -673,8 +672,6 @@ void GUI() {
 	}
 
 	vTable = *(uint32_t**)adr;
-	
-	std::cout << "Set VTable" << std::endl;
 
 	// Third times the charm?
 	if (!vTable || vTable < (uint32_t*)Offsets::baseHandle) {

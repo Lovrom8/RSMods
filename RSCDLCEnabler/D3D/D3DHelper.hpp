@@ -70,9 +70,19 @@ inline std::vector<std::string> songModes = { // These are all the menus where y
 	"NonStopPlay_Pause",
 	"ScoreAttack_Pause",
 
+	// Riff Repeater (RR)
 	"RiffRepeater",
+	"LearnASong_RiffRepeater",
 	"RiffRepeater_AdvancedSettings",
 	"RiffRepeater_Pause",
+
+	// Misc menus
+	"Tuner",
+	"MixerMenu",
+	"HelpList",
+	"SideList",
+	"CalibrationMeter",
+
 };
 
 inline std::vector<std::string> multiplayerTuners = {
