@@ -76,6 +76,9 @@ namespace D3DHooks {
 	inline bool RainbowNotes = false; // If true, the notes will turn rainbow along with the stems.
 	inline bool AutomatedSongTimer = false; // If true, we will always show the song timer.
 	inline bool AutomatedSelectedVolume = false; // If true, we will always show the selected volume.
+	inline bool AttemptedERInThisSong = false; // If true, than we are safe to look for the ER variable.
+	inline bool UseEROrColorsInThisSong = false; // If true, ER Mode will toggle on (includes custom colors).
+	inline bool UseERExclusivelyInThisSong = false; // If true, ER Mode will toggle on.
 
 	// Dev Functions
 	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory

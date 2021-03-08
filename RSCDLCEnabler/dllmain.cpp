@@ -904,6 +904,14 @@ unsigned WINAPI MainThread() {
 					currentVolumeIndex = 1;
 					AutomatedSelectedVolume = true;
 				}
+
+				// Attempt to turn on Extended Range
+				if (!AttemptedERInThisSong) {
+					Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
+					UseERExclusivelyInThisSong = MemHelpers::IsExtendedRangeSong();
+					UseEROrColorsInThisSong = (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && UseERExclusivelyInThisSong || Settings::GetModSetting("CustomStringColors") == 2 || Settings::GetModSetting("SeparateNoteColors") != 1);
+					AttemptedERInThisSong = true;
+				}
 					
 			}
 
@@ -914,6 +922,13 @@ unsigned WINAPI MainThread() {
 				if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) {
 					automatedSongSpeedInThisSong = false; 
 					realSongSpeed = 100.f;
+				}
+
+				// Turn off Extended Range
+				if (AttemptedERInThisSong) {
+					UseERExclusivelyInThisSong = false;
+					UseEROrColorsInThisSong = false;
+					AttemptedERInThisSong = false;
 				}
 				
 				// Turn off Show Song Timer (In Song)

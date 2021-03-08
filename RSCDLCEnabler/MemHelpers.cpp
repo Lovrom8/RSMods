@@ -126,7 +126,6 @@ Tuning MemHelpers::GetTuningAtTuner() {
 bool MemHelpers::IsExtendedRangeSong() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
-
 	// Null Pointer Check
 	if (!addrTimer) {
 		std::cout << "Invalid Pointer: IsExtendedRangeSong" << std::endl;
@@ -167,7 +166,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	// HighestLowest Tuning Pointer is invalid
 	if (lowestTuning == 666) {
-		// std::cout << "Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << std::endl; // Disabled because it causes log to get huge real quick
+		 std::cout << "Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << std::endl;
 		return false;
 	}
 
@@ -177,17 +176,17 @@ bool MemHelpers::IsExtendedRangeSong() {
 	
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && dropTuning) {
-		// std::cout << "Successful: IsExtendedRangeSong in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << std::endl; // Disabled because it causes log to get huge real quick
+		 std::cout << "Successful: IsExtendedRangeSong in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
 		return true;
 	}
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
 	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!dropTuning || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2)) {
-		// std::cout << "Successful: IsExtendedRangeSong in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << dropTuning << std::endl; // Disabled because it causes log to get huge real quick
+		 std::cout << "Successful: IsExtendedRangeSong in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << dropTuning << std::endl;
 		return true;
 	}
 		
-	// std::cout << "Failed: IsExtendedRangeSong because tuning doesn't deserve to be Extended Range. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl; // Disabled because it causes log to get huge real quick
+	 std::cout << "Failed: IsExtendedRangeSong. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl;
 	return false;
 }
 

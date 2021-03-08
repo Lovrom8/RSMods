@@ -13,8 +13,8 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		Stream_Data->Release();
 
 	// Extended Range / Custom Colors
-	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && NOTE_TAILS) {
-		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
+	if (AttemptedERInThisSong && UseEROrColorsInThisSong && NOTE_TAILS) {
+		MemHelpers::ToggleCB(UseERExclusivelyInThisSong);
 		if (Settings::GetModSetting("SeparateNoteColors") == 0) // Use same color scheme on notes as we do on strings
 			pDevice->SetTexture(1, customStringColorTexture);
 
@@ -343,9 +343,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	//	}
 	//}
 
-	// Extended Range / Custom Colors
-	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && MemHelpers::IsExtendedRangeSong() || Settings::GetModSetting("CustomStringColors") == 2 || Settings::GetModSetting("SeparateNoteColors") != 1) { // Extended Range Mode / Separate Note Colors
-		MemHelpers::ToggleCB(MemHelpers::IsExtendedRangeSong());
+	// Extended Range / Custom Colors (includes separate note colors)
+	if (AttemptedERInThisSong && UseEROrColorsInThisSong) {
+		MemHelpers::ToggleCB(UseERExclusivelyInThisSong);
 
 		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
 

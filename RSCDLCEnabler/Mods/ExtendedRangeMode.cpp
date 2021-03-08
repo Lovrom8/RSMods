@@ -141,7 +141,7 @@ void ERMode::Toggle7StringMode() {
 		return;
 	}
 
-	if (MemHelpers::IsExtendedRangeSong() || MemHelpers::IsExtendedRangeTuner()) {
+	if ((D3DHooks::AttemptedERInThisSong && D3DHooks::UseERExclusivelyInThisSong) || MemHelpers::IsExtendedRangeTuner()) {
 		if (Settings::GetModSetting("CustomStringColors") == 1) { //Zag's colors
 			// Zags custom low B color values manually entered; Normal
 			//SetColors(stringsNormal, colorsNormal);
