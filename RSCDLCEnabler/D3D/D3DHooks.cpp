@@ -15,13 +15,19 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	// Extended Range / Custom Colors
 	if (AttemptedERInThisSong && UseEROrColorsInThisSong && NOTE_TAILS) {
 		MemHelpers::ToggleCB(UseERExclusivelyInThisSong);
-		if (Settings::GetModSetting("SeparateNoteColors") == 0) // Use same color scheme on notes as we do on strings
-			pDevice->SetTexture(1, customStringColorTexture);
 
-		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
-
-		else if (Settings::GetModSetting("SeparateNoteColors") == 2) // Use Custom Note Color Scheme
-			pDevice->SetTexture(1, customNoteColorTexture);
+		switch (Settings::GetModSetting("SeparateNoteColors")) {
+			case 0: // Use same color scheme on notes as we do on strings
+				pDevice->SetTexture(1, customStringColorTexture);
+				break;
+			case 1: // Default Colors, so don't do anything.
+				break;
+			case 2: // Use Custom Note Color Scheme
+				pDevice->SetTexture(1, customNoteColorTexture);
+				break;
+			default:
+				break;
+		}
 	}
 
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes") && NOTE_TAILS)

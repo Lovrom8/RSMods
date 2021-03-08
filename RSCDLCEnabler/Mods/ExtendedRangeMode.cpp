@@ -141,63 +141,35 @@ void ERMode::Toggle7StringMode() {
 		return;
 	}
 
-	if ((D3DHooks::AttemptedERInThisSong && D3DHooks::UseERExclusivelyInThisSong) || MemHelpers::IsExtendedRangeTuner()) {
-		if (Settings::GetModSetting("CustomStringColors") == 1) { //Zag's colors
-			// Zags custom low B color values manually entered; Normal
-			//SetColors(stringsNormal, colorsNormal);
-
-			//std::cout << std::hex << stringsEnabled[0] << std::endl;
-
-			// Zags custom low B color values manually entered; Glowed
-			SetColors(stringsGlow, colorsGlow);
-
-			// Zags custom low B color values manually entered; Disabled
-			SetColors(stringsDisabled, colorsDisabled);
-
-			//name = "GuitarStringsAmbientColorBlind" id = "3175458924" source = "GameColorManager" >
-		//	SetColors(stringsAmb, colorsAmbient);
-
-			//name="GuitarStringsEnabledColorBlind" id="237528906"
-			SetColors(stringsEnabled, colorsStrEna);
-
-			//name="GuitarPegsTuningBlind" id="1806691030"
-			SetColors(stringsPegNotInTune, colorsPegNotInTune);
-
-			//name="GuitarPegsInTuneBlind" id="2547441015"
-			SetColors(stringsPegInTune, colorsPegInTune);
-
-			//name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
-			SetColors(stringsText, colorsText);
-
-			//name="GuitarRegistrarForkParticlesBlind" id="3239612871"
-			//SetColors(stringsPart, colorsPart);
-
-			// name="NotewayBodyPartsBodyNormBlind" id="3629363565"
-			SetColors(stringsBodyNorm, colorsNormal);
-
-			// = name = "NotewayBodyPartsAccentBlind" id = "47948252"
-			SetColors(stringsBodyAcc, colorsBodyAcc);
-
-			//= name = "NotewayBodyPartsPreviewBlind" id = "338656387"
-			//SetColors(stringsBodyPrev, colorsBodyPrev);
-		}
-		else if (Settings::GetModSetting("CustomStringColors") == 0) { // Default colors 
-			//do we even need to do anything in this case?
-		}
-		else if (Settings::GetModSetting("CustomStringColors") == 2) { // CB user-defined colors
-			SetColors(stringsEnabled, "Enabled_CB");
-			SetColors(stringsGlow, "Glow_CB");
-			SetColors(stringsDisabled, "Disabled_CB");
-			SetColors(stringsText, "TextIndicator_CB");
-			SetColors(stringsPegInTune, "PegInTune_CB");
-			SetColors(stringsPegNotInTune, "PegOutTune_CB");
-			SetColors(stringsBodyNorm, "BodyNorm_CB");
-			SetColors(stringsBodyAcc, "BodyAcc_CB");
-			//etc.
+	if ((D3DHooks::AttemptedERInThisSong && D3DHooks::UseERExclusivelyInThisSong) || (D3DHooks::AttemptedERInTuner && D3DHooks::UseERInTuner)) {
+		switch (Settings::GetModSetting("CustomStringColors")) {
+			case 0: // User wants original Rocksmith colors
+				break;
+			case 1: // User wants ZZ / Zag's colors (normal colors, but shifted down one string with a dark green on the top for Extended Range).
+				SetColors(stringsGlow, colorsGlow); // Zags custom low B color values manually entered; Glowed
+				SetColors(stringsDisabled, colorsDisabled); // Zags custom low B color values manually entered; Disabled
+				SetColors(stringsEnabled, colorsStrEna); // name="GuitarStringsEnabledColorBlind" id="237528906"
+				SetColors(stringsPegNotInTune, colorsPegNotInTune); // name="GuitarPegsTuningBlind" id="1806691030"
+				SetColors(stringsPegInTune, colorsPegInTune); // name="GuitarPegsInTuneBlind" id="2547441015"
+				SetColors(stringsText, colorsText); // name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
+				SetColors(stringsBodyNorm, colorsNormal); // name="NotewayBodyPartsBodyNormBlind" id="3629363565"
+				SetColors(stringsBodyAcc, colorsBodyAcc); // name="NotewayBodyPartsAccentBlind" id = "47948252"
+				break;
+			case 2: // User wants their own custom (ER) colors
+				SetColors(stringsEnabled, "Enabled_CB");
+				SetColors(stringsGlow, "Glow_CB");
+				SetColors(stringsDisabled, "Disabled_CB");
+				SetColors(stringsText, "TextIndicator_CB");
+				SetColors(stringsPegInTune, "PegInTune_CB");
+				SetColors(stringsPegNotInTune, "PegOutTune_CB");
+				SetColors(stringsBodyNorm, "BodyNorm_CB");
+				SetColors(stringsBodyAcc, "BodyAcc_CB");
+				break;
+			default:
+				break;
 		}
 	}
 	else {
-
 		if (!ColorsSaved && MemHelpers::GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
 			for (int i = 0; i < 6; i++) {
 				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
@@ -209,7 +181,7 @@ void ERMode::Toggle7StringMode() {
 			ColorsSaved = true;
 		}
 
-		if (Settings::GetModSetting("CustomStringColors") == 2) { // User defined colors
+		if (Settings::GetModSetting("CustomStringColors") == 2) { // User wants their own custom (non-ER) colors
 			SetColors(stringsEnabled, "Enabled_N");
 			SetColors(stringsGlow, "Glow_N");
 			SetColors(stringsDisabled, "Disabled_N");

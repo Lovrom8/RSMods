@@ -865,9 +865,10 @@ unsigned WINAPI MainThread() {
 				MemHelpers::AutomatedOpenRRSpeedAbuse();
 
 			/// If User Is Entering Song
-
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
 				GuitarSpeakPresent = false;
+				AttemptedERInTuner = false;
+				UseERInTuner = false;
 
 				// Remove Headstock (In Song)
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
@@ -929,6 +930,19 @@ unsigned WINAPI MainThread() {
 					UseERExclusivelyInThisSong = false;
 					UseEROrColorsInThisSong = false;
 					AttemptedERInThisSong = false;
+				}
+
+				/// Turn on Extended Range In Tuner
+				if (MemHelpers::IsInStringArray(currentMenu, NULL, preSongTuners)) {
+					if (!AttemptedERInTuner) { // The reason this is a separate if statement is so that the else statement isn't voiding the correct menu.
+						Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
+						AttemptedERInTuner = true;
+						UseERInTuner = MemHelpers::IsExtendedRangeTuner();
+					}
+				}
+				else {
+					AttemptedERInTuner = false;
+					UseERInTuner = false;
 				}
 				
 				// Turn off Show Song Timer (In Song)
