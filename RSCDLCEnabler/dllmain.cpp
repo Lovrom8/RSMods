@@ -889,10 +889,8 @@ unsigned WINAPI MainThread() {
 				}
 
 				// MIDI Auto Tuning / Auto True-Tuning
-				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning) {
-					Midi::AutomateDownTuning();
-					Midi::AutomateTrueTuning();
-				}
+				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning)
+					Midi::AutomateTuning();
 
 				// Show Song Timer (In Song)
 				if (!AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.

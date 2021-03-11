@@ -157,7 +157,7 @@ namespace Midi {
 	/// <summary>
 	/// Send a command to the pedal to change to a specific setting based on the current song's tuning.
 	/// </summary>
-	void AutomateDownTuning() {
+	void AutomateTuning() {
 		if (!alreadyAutomatedTuningInThisSong) {
 			alreadyAutomatedTuningInThisSong = true;
 
@@ -190,41 +190,13 @@ namespace Midi {
 			switch (pedalToUse) {
 			 
 			case 1:
-				Digitech_Whammy_DT_Auto_Tuning(highestTuning + Settings::GetModSetting("TuningOffset"));
+				Digitech_Whammy_DT_Auto_Tuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
 				break;
 			case 2:
 				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
 				break;
 			case 3:
 				Digitech_Whammy_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	/// <summary>
-	/// Send a command to the pedal to change to a specific setting based on the current song's true tuning (non-concert pitch).
-	/// </summary>
-	void AutomateTrueTuning() {
-		if (!alreadyAutomatedTrueTuningInThisSong && userWantsToUseAutoTuning) {
-			alreadyAutomatedTrueTuningInThisSong = true;
-
-			if (!pedalCanUseMap.find(pedalToUse)->second.second) {
-				std::cout << "Your pedal doesn't support true tuning." << std::endl;
-				return;
-			}
-
-			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
-
-			if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
-				return;
-
-			
-			switch (pedalToUse) {
-			case 1:
-				Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
 				break;
 			default:
 				break;
@@ -245,13 +217,9 @@ namespace Midi {
 			
 			std::map<char, char> activeBypassMap = pedalToActiveBypassMap.find(pedalToUse)->second;
 			
-			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC) {  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
-				std::cout << "Attmepting to turn off drop tuning" << std::endl;
+			std::cout << "Attmepting to turn off automatic tuning" << std::endl;
+			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
-				std::cout << "Attmepting to turn off true tuning" << std::endl;
-			}
-			else
-				std::cout << "Attmepting to turn off drop tuning" << std::endl;
 
 			if (activeBypassMap.find(cache) != activeBypassMap.end())
 				SendProgramChange(activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
@@ -289,7 +257,9 @@ namespace Midi {
 	/// Auto Tune with the pedal "Digitech Whammy DT". Tuning names (in comments) are based off a guitar in E Standard.
 	/// </summary>
 	/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
-	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning) {
+	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning, float TrueTuning_Hertz) {
+		bool alreadyAttemptedTrueTune = false;
+
 
 		switch (highestTuning) {
 
@@ -303,6 +273,12 @@ namespace Midi {
 		case 9:
 		case 8:
 		case 7:
+
+			if (highestTuning > 7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;)
+				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning - 7, TrueTuning_Hertz);
+				alreadyAttemptedTrueTune = true;
+			}
+
 			SendProgramChange(48); // B Standard
 			lastPC_TUNING = 48;
 			break;
@@ -367,6 +343,12 @@ namespace Midi {
 		case -9:
 		case -10:
 		case -11:
+
+			if (highestTuning < -7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;)
+				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning + 7, TrueTuning_Hertz);
+				alreadyAttemptedTrueTune = true;
+			}
+
 			SendProgramChange(53); // A Standard
 			lastPC_TUNING = 53;
 			break;
@@ -375,10 +357,67 @@ namespace Midi {
 			lastPC_TUNING = 52;
 			break;
 
-			// The pedal can't handle the tuning.
 		default:
-			lastPC = 666; // Doesn't do anything, just sets the proper lastPC.
+
+			if (highestTuning <= 24.0f || highestTuning >= -36.0f) { // Attempt to fake it, and maybe we'll make it.
+				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning, TrueTuning_Hertz);
+				alreadyAttemptedTrueTune = true;
+			}
+			else
+				lastPC = 666; // Doesn't do anything, just sets the proper lastPC.
 			break;
+		}
+
+		if (!alreadyAttemptedTrueTune && TrueTuning_Hertz != 440.f && TrueTuning_Hertz != 220.f)
+			Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
+	}
+
+	/// <summary>
+	/// Auto Tuning (past limits of pedal) and True-Tune with the pedal "Digitech Whammy DT". Based on the work done by PoizenJam
+	/// </summary>
+	/// <param name="relativeTuning"> - Tuning from song minus what has already been tuned</param>
+	/// <param name="TrueTuning_Hertz"> - True tuning (non-concert pitch)</param>
+	void Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(int relativeTuning, float TrueTuning_Hertz) {
+		int temp_PC, temp_CC;
+		float Target_Hertz, Target_Semitones;
+
+		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+		if (TrueTuning_Hertz < 260.0f)
+			Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (relativeTuning / 12.0f)));
+		else
+			Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (relativeTuning / 12.0f)));
+
+		// Convert Target_Hertz to Semitones(relative to A440)
+		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
+
+		// Calculate PC needed to achieve target Semitones. If-Else block :(
+		if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
+			temp_PC = 9;
+		else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
+			temp_PC = 8;
+		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
+			temp_PC = 7;
+		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
+			temp_PC = 6;
+		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
+			temp_PC = 5;
+		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
+			temp_PC = 4;
+		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
+			temp_PC = 3;
+		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
+			temp_PC = 2;
+		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
+			temp_PC = 1;
+		else
+			temp_PC = 0;
+
+		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_DT_semiTones.at(temp_PC)));
+
+		// Does the song actually NEED us to do any changes?
+		if (temp_CC != 0) {
+			SendProgramChange(temp_PC);
+			SendControlChange(temp_CC);
 		}
 	}
 

@@ -15,15 +15,15 @@ namespace Midi {
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice);
 	bool SendProgramChange(char programChange = '\000');
 	bool SendControlChange(char toePosition = '\000');
-	void AutomateDownTuning();
-	void AutomateTrueTuning();
+	void AutomateTuning();
 	void RevertAutomatedTuning();
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 
 	// Digitech Whammy DT
-	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning);
-	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz); 
+	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning, float TrueTuning_Hertz);
+	void Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(int relativeTuning, float TrueTuning_Hertz);
+	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz);
 
 	// Digitech Whammy Bass
 	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz);
@@ -221,6 +221,10 @@ inline std::map<char, char> DIGITECH_WHAMMY_activeBypassMap = {
 	{61, 82}, // -OCT || +OCT
 	{62, 83}, // +OCT || +10th
 	{63, 84}, // +1 OCT || +2 OCT
+};
+
+inline std::vector<float> DIGITECH_WHAMMY_DT_semiTones = {
+	24.0f, 12.0f, 7.0f, 5.0f, 2.0f, -5.0f, -7.0f, -12.0f, -24.0f, -36.0f,
 };
 
 inline std::vector<float> DIGITECH_WHAMMY_BASS_semiTones = {
