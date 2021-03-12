@@ -274,13 +274,13 @@ namespace Midi {
 		case 8:
 		case 7:
 
-			if (highestTuning > 7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;)
+			SendProgramChange(48); // B Standard
+			lastPC_TUNING = 48;
+
+			if (highestTuning > 7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy Side
 				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning - 7, TrueTuning_Hertz);
 				alreadyAttemptedTrueTune = true;
 			}
-
-			SendProgramChange(48); // B Standard
-			lastPC_TUNING = 48;
 			break;
 		case 6:
 			SendProgramChange(47); // Bb Standard
@@ -344,13 +344,13 @@ namespace Midi {
 		case -10:
 		case -11:
 
-			if (highestTuning < -7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;)
+			SendProgramChange(53); // A Standard
+			lastPC_TUNING = 53;
+
+			if (highestTuning < -7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy Side
 				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning + 7, TrueTuning_Hertz);
 				alreadyAttemptedTrueTune = true;
 			}
-
-			SendProgramChange(53); // A Standard
-			lastPC_TUNING = 53;
 			break;
 		case -12:
 			SendProgramChange(52); // E Standard -OCT
