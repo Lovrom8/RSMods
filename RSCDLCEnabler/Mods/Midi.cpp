@@ -97,8 +97,7 @@ namespace Midi {
 			// Send MIDI message
 			message.push_back(programChangeStatus); // It's a Program Change
 			message.push_back(programChange); // What program we changing?
-			if (programChange != 78)
-				std::cout << "Sending Midi Message: " << "PC: " << (int)message.back() << std::endl;
+			std::cout << "Sending Midi Message: " << "PC: " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
@@ -190,7 +189,7 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
 				highestTuning -= 12;
 
-			selectedPedal.autoTuneFunction(highestTuning, TrueTuning_Hertz);
+			selectedPedal.autoTuneFunction(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
 
 		}
 	}
@@ -244,300 +243,307 @@ namespace Midi {
 
 	// Pedal Specific Functions
 
-	/// <summary>
-	/// Auto Tune with the pedal "Digitech Whammy DT". Tuning names (in comments) are based off a guitar in E Standard.
-	/// </summary>
-	/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
-	void Digitech_Whammy_DT_Auto_Tuning(int highestTuning, float TrueTuning_Hertz) {
-		bool alreadyAttemptedTrueTune = false;
+	// Digitech
+	namespace Digitech {
+		namespace WhammyDT {
+			/// <summary>
+			/// Auto Tune with the pedal "Digitech Whammy DT". Tuning names (in comments) are based off a guitar in E Standard.
+			/// </summary>
+			/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
+			void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
+				bool alreadyAttemptedTrueTune = false;
 
 
-		switch (highestTuning) {
+				switch (highestTuning) {
 
-				// Above E Standard
-		case 12:
-			SendProgramChange(49); // E Standard +OCT
-			lastPC_TUNING = 49;
-			break;
-		case 11:
-		case 10:
-		case 9:
-		case 8:
-		case 7:
+					// Above E Standard
+				case 12:
+					SendProgramChange(49); // E Standard +OCT
+					lastPC_TUNING = 49;
+					break;
+				case 11:
+				case 10:
+				case 9:
+				case 8:
+				case 7:
 
-			SendProgramChange(48); // B Standard
-			lastPC_TUNING = 48;
+					SendProgramChange(48); // B Standard
+					lastPC_TUNING = 48;
 
-			if (highestTuning > 7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy Side
-				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning - 7, TrueTuning_Hertz);
-				alreadyAttemptedTrueTune = true;
+					if (highestTuning > 7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy side
+						AutoTrueTuningPastLimits(highestTuning - 7, TrueTuning_Hertz);
+						alreadyAttemptedTrueTune = true;
+					}
+					break;
+				case 6:
+					SendProgramChange(47); // Bb Standard
+					lastPC_TUNING = 47;
+					break;
+				case 5:
+					SendProgramChange(46); // A Standard
+					lastPC_TUNING = 46;
+					break;
+				case 4:
+					SendProgramChange(45); // Ab Standard
+					lastPC_TUNING = 45;
+					break;
+				case 3:
+					SendProgramChange(44); // G Standard
+					lastPC_TUNING = 44;
+					break;
+				case 2:
+					SendProgramChange(43); // F# Standard
+					lastPC_TUNING = 43;
+					break;
+				case 1:
+					SendProgramChange(42); // F Standard
+					lastPC_TUNING = 42;
+					break;
+
+					// E Standard
+				case 0:
+					lastPC = 666; // E Standard. Doesn't do anything, just sets the proper lastPC.
+					lastPC_TUNING = 0;
+					break;
+
+					// Below E Standard
+				case -1:
+					SendProgramChange(59); // Eb Standard
+					lastPC_TUNING = 59;
+					break;
+				case -2:
+					SendProgramChange(58); // D Standard
+					lastPC_TUNING = 58;
+					break;
+				case -3:
+					SendProgramChange(57); // C# Standard
+					lastPC_TUNING = 57;
+					break;
+				case -4:
+					SendProgramChange(56); // C Standard
+					lastPC_TUNING = 56;
+					break;
+				case -5:
+					SendProgramChange(55); // B Standard
+					lastPC_TUNING = 55;
+					break;
+				case -6:
+					SendProgramChange(54); // Bb Standard
+					lastPC_TUNING = 54;
+					break;
+				case -7:
+				case -8:
+				case -9:
+				case -10:
+				case -11:
+
+					SendProgramChange(53); // A Standard
+					lastPC_TUNING = 53;
+
+					if (highestTuning < -7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy side
+						AutoTrueTuningPastLimits(highestTuning + 7, TrueTuning_Hertz);
+						alreadyAttemptedTrueTune = true;
+					}
+					break;
+				case -12:
+					SendProgramChange(52); // E Standard -OCT
+					lastPC_TUNING = 52;
+					break;
+
+				default:
+
+					if (highestTuning <= 24.0f || highestTuning >= -36.0f) { // Attempt to fake it, and maybe we'll make it.
+						AutoTrueTuningPastLimits(highestTuning, TrueTuning_Hertz);
+						alreadyAttemptedTrueTune = true;
+					}
+					else
+						lastPC = 666; // Doesn't do anything, just sets the proper lastPC.
+					break;
+				}
+
+				if (!alreadyAttemptedTrueTune && TrueTuning_Hertz != 440.f && TrueTuning_Hertz != 220.f)
+					AutoTrueTuning(TrueTuning_Hertz);
 			}
-			break;
-		case 6:
-			SendProgramChange(47); // Bb Standard
-			lastPC_TUNING = 47;
-			break;
-		case 5:
-			SendProgramChange(46); // A Standard
-			lastPC_TUNING = 46;
-			break;
-		case 4:
-			SendProgramChange(45); // Ab Standard
-			lastPC_TUNING = 45;
-			break;
-		case 3:
-			SendProgramChange(44); // G Standard
-			lastPC_TUNING = 44;
-			break;
-		case 2:
-			SendProgramChange(43); // F# Standard
-			lastPC_TUNING = 43;
-			break;
-		case 1:
-			SendProgramChange(42); // F Standard
-			lastPC_TUNING = 42;
-			break;
 
-			// E Standard
-		case 0:
-			lastPC = 666; // E Standard. Doesn't do anything, just sets the proper lastPC.
-			lastPC_TUNING = 0;
-			break;
+			/// <summary>
+			/// Auto Tuning (past limits of pedal) and True-Tune with the pedal "Digitech Whammy DT". Based on the work done by PoizenJam.
+			/// </summary>
+			/// <param name="relativeTuning"> - Tuning from song minus what has already been tuned</param>
+			/// <param name="TrueTuning_Hertz"> - True tuning (non-concert pitch)</param>
+			void AutoTrueTuningPastLimits(int relativeTuning, float TrueTuning_Hertz) {
+				int temp_PC, temp_CC;
+				float Target_Hertz, Target_Semitones;
 
-			// Below E Standard
-		case -1:
-			SendProgramChange(59); // Eb Standard
-			lastPC_TUNING = 59;
-			break;
-		case -2:
-			SendProgramChange(58); // D Standard
-			lastPC_TUNING = 58;
-			break;
-		case -3:
-			SendProgramChange(57); // C# Standard
-			lastPC_TUNING = 57;
-			break;
-		case -4:
-			SendProgramChange(56); // C Standard
-			lastPC_TUNING = 56;
-			break;
-		case -5:
-			SendProgramChange(55); // B Standard
-			lastPC_TUNING = 55;
-			break;
-		case -6:
-			SendProgramChange(54); // Bb Standard
-			lastPC_TUNING = 54;
-			break;
-		case -7:
-		case -8:
-		case -9:
-		case -10:
-		case -11:
+				// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+				if (TrueTuning_Hertz < 260.0f)
+					Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (relativeTuning / 12.0f)));
+				else
+					Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (relativeTuning / 12.0f)));
 
-			SendProgramChange(53); // A Standard
-			lastPC_TUNING = 53;
+				// Convert Target_Hertz to Semitones(relative to A440)
+				Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
 
-			if (highestTuning < -7) { // If the pedal doesn't have a dedicated setting, let's force it to work ;) | Needs to be below SendPC or it will not turn off the Whammy Side
-				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning + 7, TrueTuning_Hertz);
-				alreadyAttemptedTrueTune = true;
+				// Calculate PC needed to achieve target Semitones. If-Else block :(
+				if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
+					temp_PC = 9;
+				else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
+					temp_PC = 8;
+				else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
+					temp_PC = 7;
+				else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
+					temp_PC = 6;
+				else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
+					temp_PC = 5;
+				else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
+					temp_PC = 4;
+				else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
+					temp_PC = 3;
+				else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
+					temp_PC = 2;
+				else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
+					temp_PC = 1;
+				else
+					temp_PC = 0;
+
+				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::WhammyDT::semiTones.at(temp_PC)));
+
+				// Does the song actually NEED us to do any changes?
+				if (temp_CC != 0) {
+					SendProgramChange(temp_PC);
+					SendControlChange(temp_CC);
+				}
 			}
-			break;
-		case -12:
-			SendProgramChange(52); // E Standard -OCT
-			lastPC_TUNING = 52;
-			break;
 
-		default:
+			/// <summary>
+			/// Auto True-Tune with the pedal "Digitech Whammy DT"
+			/// </summary>
+			/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
+			void AutoTrueTuning(int TrueTuning_Hertz) {
 
-			if (highestTuning <= 24.0f || highestTuning >= -36.0f) { // Attempt to fake it, and maybe we'll make it.
-				Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(highestTuning, TrueTuning_Hertz);
-				alreadyAttemptedTrueTune = true;
+				// A440 / A220
+				if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+					return;
+
+				// Above A440
+				else if (TrueTuning_Hertz > 440) {
+					SendProgramChange(3); // Leave at +4th
+					SendControlChange((char)(TrueTuning_Hertz - 440));
+				}
+
+				// Below A440
+				else {
+					SendProgramChange(4); // Leave at -2nd
+					SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
+				}
 			}
-			else
-				lastPC = 666; // Doesn't do anything, just sets the proper lastPC.
-			break;
 		}
+		namespace BassWhammy {
+			/// <summary>
+			/// Auto Tune and True-Tune with the pedal "Digitech Whammy Bass". Made by PoizenJam.
+			/// </summary>
+			/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
+			/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
+			void AutoTuningAndTrueTuning(int highestTuning, float TrueTuning_Hertz) {
+				int temp_PC, temp_CC, offset = 0;
+				float Target_Hertz, Target_Semitones;
 
-		if (!alreadyAttemptedTrueTune && TrueTuning_Hertz != 440.f && TrueTuning_Hertz != 220.f)
-			Digitech_Whammy_DT_Auto_TrueTune(TrueTuning_Hertz);
-	}
+				// Chords Mode Offset
+				if (Digitech::DIGITECH_CHORDS_MODE)
+					offset = 42;
 
-	/// <summary>
-	/// Auto Tuning (past limits of pedal) and True-Tune with the pedal "Digitech Whammy DT". Based on the work done by PoizenJam
-	/// </summary>
-	/// <param name="relativeTuning"> - Tuning from song minus what has already been tuned</param>
-	/// <param name="TrueTuning_Hertz"> - True tuning (non-concert pitch)</param>
-	void Digitech_Whammy_DT_Auto_TrueTune_And_Past_Limits(int relativeTuning, float TrueTuning_Hertz) {
-		int temp_PC, temp_CC;
-		float Target_Hertz, Target_Semitones;
+				// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+				if (TrueTuning_Hertz < 260.0f)
+					Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
+				else
+					Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
-		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
-		if (TrueTuning_Hertz < 260.0f)
-			Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (relativeTuning / 12.0f)));
-		else
-			Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (relativeTuning / 12.0f)));
+				// Convert Target_Hertz to Semitones(relative to A440)
+				Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
 
-		// Convert Target_Hertz to Semitones(relative to A440)
-		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
+				// Calculate PC (pre-digitech offset) needed to achieve target Semitones. If-Else block :(
+				if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
+					temp_PC = 10;
+				else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
+					temp_PC = 9;
+				else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
+					temp_PC = 8;
+				else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
+					temp_PC = 7;
+				else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
+					temp_PC = 6;
+				else if ((roundf(Target_Semitones * 100) / 100) < 2.00f)
+					temp_PC = 5;
+				else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
+					temp_PC = 4;
+				else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
+					temp_PC = 3;
+				else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
+					temp_PC = 2;
+				else
+					temp_PC = 1;
 
-		// Calculate PC needed to achieve target Semitones. If-Else block :(
-		if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
-			temp_PC = 9;
-		else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
-			temp_PC = 8;
-		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
-			temp_PC = 7;
-		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
-			temp_PC = 6;
-		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
-			temp_PC = 5;
-		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
-			temp_PC = 4;
-		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
-			temp_PC = 3;
-		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
-			temp_PC = 2;
-		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
-			temp_PC = 1;
-		else
-			temp_PC = 0;
+				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::BassWhammy::semiTones.at(temp_PC - 1)));
 
-		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_DT_semiTones.at(temp_PC)));
-
-		// Does the song actually NEED us to do any changes?
-		if (temp_CC != 0) {
-			SendProgramChange(temp_PC);
-			SendControlChange(temp_CC);
+				// Does the song actually NEED us to do any changes?
+				if (temp_CC != 0) {
+					SendProgramChange(temp_PC + offset - 1);
+					SendControlChange(temp_CC);
+				}
+			}
 		}
-	}
+		namespace Whammy {
+			/// <summary>
+			/// Auto Tune and True-Tune with the pedal "Digitech Whammy". Made by PoizenJam.
+			/// </summary>
+			/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
+			/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
+			void AutoTuningAndTrueTuning(int highestTuning, float TrueTuning_Hertz) {
+				int temp_PC, temp_CC, offset = 0;
+				float Target_Hertz, Target_Semitones;
 
-	/// <summary>
-	/// Auto True-Tune with the pedal "Digitech Whammy DT"
-	/// </summary>
-	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
-	void Digitech_Whammy_DT_Auto_TrueTune(int TrueTuning_Hertz) {
+				// Chords Mode Offset
+				if (Digitech::DIGITECH_CHORDS_MODE)
+					offset = 42;
 
-		// A440 / A220
-		if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
-			return;
+				// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
+				if (TrueTuning_Hertz < 260.0f)
+					Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
+				else
+					Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
 
-		// Above A440
-		else if (TrueTuning_Hertz > 440) {
-			SendProgramChange(3); // Leave at +4th
-			SendControlChange((char)(TrueTuning_Hertz - 440));
-		}
+				// Convert Target_Hertz to Semitones(relative to A440)
+				Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
 
-		// Below A440
-		else {
-			SendProgramChange(4); // Leave at -2nd
-			SendControlChange((char)round(1127.43 - (2.56667 * TrueTuning_Hertz)));
-		}
-	}
-	
-	/// <summary>
-	/// Auto Tune and True-Tune with the pedal "Digitech Whammy". Based on the work done by PoizenJam
-	/// </summary>
-	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
-	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
-	void Digitech_Whammy_Auto_Tuning_And_TrueTuning(int highestTuning, float TrueTuning_Hertz) {
-		int temp_PC, temp_CC, offset = 0;
-		float Target_Hertz, Target_Semitones;
+				// Calculate PC needed to achieve target Semitones. If-Else block :(
+				if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
+					temp_PC = 10;
+				else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
+					temp_PC = 9;
+				else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
+					temp_PC = 8;
+				else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
+					temp_PC = 7;
+				else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
+					temp_PC = 6;
+				else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
+					temp_PC = 5;
+				else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
+					temp_PC = 4;
+				else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
+					temp_PC = 3;
+				else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
+					temp_PC = 2;
+				else
+					temp_PC = 1;
 
-		// Chords Mode Offset
-		if (Digitech::DIGITECH_CHORDS_MODE)
-			offset = 42;
-		
-		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
-		if (TrueTuning_Hertz < 260.0f)
-		    Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
-		else
-		    Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
+				temp_CC = roundf(Target_Semitones * (127.0f / Digitech::Whammy::semiTones.at(temp_PC - 1)));
 
-		// Convert Target_Hertz to Semitones(relative to A440)
-		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
-
-		// Calculate PC needed to achieve target Semitones. If-Else block :(
-		if ((roundf(Target_Semitones * 100) / 100) < -24.00f)
-			temp_PC = 10;
-		else if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
-			temp_PC = 9;
-		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
-			temp_PC = 8;
-		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
-			temp_PC = 7;
-		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
-			temp_PC = 6;
-		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
-			temp_PC = 5;
-		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
-			temp_PC = 4;
-		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
-			temp_PC = 3;
-		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
-			temp_PC = 2;
-		else
-			temp_PC = 1;
-
-		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
-
-		// Does the song actually NEED us to do any changes?
-		if (temp_CC != 0) {
-			SendProgramChange(temp_PC + offset - 1);
-			SendControlChange(temp_CC);
-		}
-	}
-
-	/// <summary>
-	/// Auto Tune and True-Tune with the pedal "Digitech Whammy Bass". Based on the work done by PoizenJam
-	/// </summary>
-	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
-	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
-	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, float TrueTuning_Hertz) {
-		int temp_PC, temp_CC, offset = 0;
-		float Target_Hertz, Target_Semitones;
-
-		// Chords Mode Offset
-		if (Digitech::DIGITECH_CHORDS_MODE)
-			offset = 42;
-
-		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
-		if (TrueTuning_Hertz < 260.0f)
-		    Target_Hertz = (float)(TrueTuning_Hertz * 2.0f * powf(2.0f, (highestTuning / 12.0f)));
-		else
-		    Target_Hertz = (float)(TrueTuning_Hertz * powf(2.0f, (highestTuning / 12.0f)));
-
-		// Convert Target_Hertz to Semitones(relative to A440)
-		Target_Semitones = (float)(12.0f * log2(Target_Hertz / 440.0f));
-
-		// Calculate PC (pre-digitech offset) needed to achieve target Semitones. If-Else block :(
-		if ((roundf(Target_Semitones * 100) / 100) < -12.00f)
-			temp_PC = 10;
-		else if ((roundf(Target_Semitones * 100) / 100) < -7.00f)
-			temp_PC = 9;
-		else if ((roundf(Target_Semitones * 100) / 100) < -5.00f)
-			temp_PC = 8;
-		else if ((roundf(Target_Semitones * 100) / 100) < -2.00f)
-			temp_PC = 7;
-		else if ((roundf(Target_Semitones * 100) / 100) < 0.00f)
-			temp_PC = 6;
-		else if ((roundf(Target_Semitones * 100) / 100) < 2.00f)
-			temp_PC = 5;
-		else if ((roundf(Target_Semitones * 100) / 100) < 5.00f)
-			temp_PC = 4;
-		else if ((roundf(Target_Semitones * 100) / 100) < 7.00f)
-			temp_PC = 3;
-		else if ((roundf(Target_Semitones * 100) / 100) < 12.00f)
-			temp_PC = 2;
-		else
-			temp_PC = 1;
-
-		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_BASS_semiTones.at(temp_PC - 1)));
-
-		// Does the song actually NEED us to do any changes?
-		if (temp_CC != 0) {
-			SendProgramChange(temp_PC + offset - 1);
-			SendControlChange(temp_CC);
+				// Does the song actually NEED us to do any changes?
+				if (temp_CC != 0) {
+					SendProgramChange(temp_PC + offset - 1);
+					SendControlChange(temp_CC);
+				}
+			}
 		}
 	}
 }
