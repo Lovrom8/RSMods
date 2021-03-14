@@ -39,12 +39,16 @@ namespace Midi {
 	/// <param name="AutoTuneForSongDevice"> - MIDI Name of pedal.</param>
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice) {
 		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
-			DIGITECH_CHORDS_MODE = true;
+			Digitech::DIGITECH_CHORDS_MODE = true;
 			std::cout << "(MIDI) Chords Mode: Enabled" << std::endl;
 		}
+		
+		if (PedalToUse > 0)
+			selectedPedal = supportedPedals.at(PedalToUse - 1);
+		else
+			return;
 
-		pedalToUse = PedalToUse; // What pedal they're using
-		std::cout << "(MIDI) Pedal To Use: " << pedalToUse << std::endl;
+		std::cout << "(MIDI) Pedal To Use: " << selectedPedal.pedalName << std::endl;
 
 		GetMidiDeviceNames();
 
@@ -66,7 +70,6 @@ namespace Midi {
 			}
 			else
 				std::cout << "(MIDI) Available MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
-			
 		}
 	}
 
@@ -116,7 +119,7 @@ namespace Midi {
 	/// <returns>Message wwas sent or not.</returns>
 	bool SendControlChange(char toePosition) {
 
-		if (pedalToUse == 0 || pedalToCC_Channel.find(pedalToUse) == pedalToCC_Channel.end())
+		if (selectedPedal.pedalName != MidiPedal().pedalName)
 			return false;
 		
 
@@ -138,7 +141,7 @@ namespace Midi {
 
 			// Send MIDI Message
 			message.push_back(controlChangeStatus); // Say it's a Control Change
-			message.push_back(pedalToCC_Channel.find(pedalToUse)->second); // Control to change
+			message.push_back(selectedPedal.CC_Channel); // Control to change
 			message.push_back(toePosition); // New Control Value || 0 = off, 127 = on
 			std::cout << "Sending Midi Message: " << "CC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
@@ -161,7 +164,7 @@ namespace Midi {
 		if (!alreadyAutomatedTuningInThisSong) {
 			alreadyAutomatedTuningInThisSong = true;
 
-			if (!pedalCanUseMap.find(pedalToUse)->second.first) {
+			if (!selectedPedal.supportsDropTuning) {
 				std::cout << "Your pedal doesn't support drop tuning." << std::endl;
 				return;
 			}
@@ -187,20 +190,8 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
 				highestTuning -= 12;
 
-			switch (pedalToUse) {
-			 
-			case 1:
-				Digitech_Whammy_DT_Auto_Tuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
-				break;
-			case 2:
-				Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
-				break;
-			case 3:
-				Digitech_Whammy_Auto_Tuning_And_TrueTuning(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
-				break;
-			default:
-				break;
-			}
+			selectedPedal.autoTuneFunction(highestTuning, TrueTuning_Hertz);
+
 		}
 	}
 
@@ -209,13 +200,13 @@ namespace Midi {
 	/// </summary>
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 
-		if (pedalToUse == 0 || pedalToActiveBypassMap.find(pedalToUse) == pedalToActiveBypassMap.end() || !userWantsToUseAutoTuning)
+		if (selectedPedal.pedalName == MidiPedal().pedalName || !userWantsToUseAutoTuning)
 			return;
 
 		if (lastPC != 666) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
 			int cache = lastPC;
 			
-			std::map<char, char> activeBypassMap = pedalToActiveBypassMap.find(pedalToUse)->second;
+			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
 			
 			std::cout << "Attmepting to turn off automatic tuning" << std::endl;
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
@@ -412,7 +403,7 @@ namespace Midi {
 		else
 			temp_PC = 0;
 
-		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_DT_semiTones.at(temp_PC)));
+		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_DT_semiTones.at(temp_PC)));
 
 		// Does the song actually NEED us to do any changes?
 		if (temp_CC != 0) {
@@ -449,12 +440,12 @@ namespace Midi {
 	/// </summary>
 	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
 	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
-	void Digitech_Whammy_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
+	void Digitech_Whammy_Auto_Tuning_And_TrueTuning(int highestTuning, float TrueTuning_Hertz) {
 		int temp_PC, temp_CC, offset = 0;
 		float Target_Hertz, Target_Semitones;
 
 		// Chords Mode Offset
-		if (DIGITECH_CHORDS_MODE)
+		if (Digitech::DIGITECH_CHORDS_MODE)
 			offset = 42;
 		
 		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
@@ -488,7 +479,7 @@ namespace Midi {
 		else
 			temp_PC = 1;
 
-		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
+		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_semiTones.at(temp_PC - 1)));
 
 		// Does the song actually NEED us to do any changes?
 		if (temp_CC != 0) {
@@ -502,12 +493,12 @@ namespace Midi {
 	/// </summary>
 	/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
 	/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
-	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, int TrueTuning_Hertz) { 
+	void Digitech_Whammy_Bass_Auto_Tuning_And_TrueTuning(int highestTuning, float TrueTuning_Hertz) {
 		int temp_PC, temp_CC, offset = 0;
 		float Target_Hertz, Target_Semitones;
 
 		// Chords Mode Offset
-		if (DIGITECH_CHORDS_MODE)
+		if (Digitech::DIGITECH_CHORDS_MODE)
 			offset = 42;
 
 		// Find Target Hertz of combined True Tuning and Drop Tuning. If A < 260, double it before calculation.
@@ -541,7 +532,7 @@ namespace Midi {
 		else
 			temp_PC = 1;
 
-		temp_CC = roundf(Target_Semitones * (127.0f / DIGITECH_WHAMMY_BASS_semiTones.at(temp_PC - 1)));
+		temp_CC = roundf(Target_Semitones * (127.0f / Digitech::DIGITECH_WHAMMY_BASS_semiTones.at(temp_PC - 1)));
 
 		// Does the song actually NEED us to do any changes?
 		if (temp_CC != 0) {

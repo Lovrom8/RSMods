@@ -144,7 +144,7 @@ struct Tuning {
 	char pad_0009[1]; //0x0009
 	byte highE; //0x000A 
 
-	Tuning() { // Aboslutely unrealistic default values
+	Tuning() { // Absolutely unrealistic default values
 		lowE = 69;
 		strA = 69;
 		strD = 69;
@@ -175,6 +175,37 @@ struct Resolution {
 	Resolution(UINT W, UINT H) {
 		width = W;
 		height = H;
+	}
+};
+
+typedef void (*tuningFunction)(int highestTuning, float TrueTuning_Hertz);
+
+struct MidiPedal {
+	std::string pedalName;
+	char CC_Channel;
+	bool supportsDropTuning, supportsTrueTuning;
+	std::vector<float> semiTones;
+	std::map<char, char> activeBypassMap;
+	tuningFunction autoTuneFunction;
+
+
+	MidiPedal() {
+		pedalName = "DUMMY PEDAL";
+		CC_Channel = 0;
+		supportsDropTuning = false;
+		supportsTrueTuning = false;
+		semiTones = {};
+		activeBypassMap = {};
+	}
+
+	MidiPedal(std::string _pedalName, char _CC_Channel, bool _supportsDropTuning, bool _supportsTrueTuning, std::vector<float> _semiTones, std::map<char, char> _activeBypassMap, tuningFunction _tuningFunction) {
+		pedalName = _pedalName;
+		CC_Channel = _CC_Channel;
+		supportsDropTuning = _supportsDropTuning;
+		supportsTrueTuning = _supportsTrueTuning;
+		semiTones = _semiTones;
+		activeBypassMap = _activeBypassMap;
+		autoTuneFunction = _tuningFunction;
 	}
 };
 
