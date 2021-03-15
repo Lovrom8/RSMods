@@ -83,15 +83,15 @@ namespace D3DHooks {
 	inline bool UseERInTuner = false; // If true, ER Mode will toggle on in the tuner.
 
 	// Dev Functions
-	inline bool startLogging = false; // Should we log what's happening in Hook_DIP?
+	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
 
 	// ImGUI Settings
 	inline bool menuEnabled = false; // Do we show the user the ImGUI settings menu?
-	inline bool enableColorBlindCheckboxGUI = false; // Do we allow the user to change Colorblind mode in the ImGUI menu?
+	inline bool enableColorBlindCheckboxGUI = false; // Do we allow the user to change Colorblind mode in the imGUI menu?
+	inline std::vector<std::string> GuitarSpeakStartingTexts;
 
 	// Menus
-	inline std::string currentMenu; // Current Menu Name
-	inline std::string previousMenu; // Last Menu Name
+	inline std::string previousMenu, currentMenu; // What is the last menu, and the current menu?
 	inline bool GameLoaded = false; // Has the game gotten to the main menu where you can pick the gamemodes?
 	inline bool LessonMode = false; // Is the user in LessonMode?
 
