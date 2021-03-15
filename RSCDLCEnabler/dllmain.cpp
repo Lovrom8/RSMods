@@ -783,6 +783,7 @@ unsigned WINAPI MainThread() {
 	}
 
 	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
+	bool skipERSleep = false; // If using RR past 100%, remove the 1.5s sleep on ER mode, to stop flickering colors.
 
 	// Initialize Functions
 	D3DHooks::debug = debug;
@@ -861,8 +862,10 @@ unsigned WINAPI MainThread() {
 
 			// Riff Repeater above 100%
 			userWantsRRSpeedEnabled = (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on"); // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) // This won't work in SA so we need to exclude it.
+			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) { // This won't work in SA so we need to exclude it.
 				MemHelpers::AutomatedOpenRRSpeedAbuse();
+				skipERSleep = true;
+			}
 
 			/// If User Is Entering Song
 			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
@@ -906,7 +909,8 @@ unsigned WINAPI MainThread() {
 
 				// Attempt to turn on Extended Range
 				if (!AttemptedERInThisSong) {
-					Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
+					if (!skipERSleep)
+						Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
 					UseERExclusivelyInThisSong = MemHelpers::IsExtendedRangeSong();
 					UseEROrColorsInThisSong = (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && UseERExclusivelyInThisSong || Settings::GetModSetting("CustomStringColors") == 2 || Settings::GetModSetting("SeparateNoteColors") != 1);
 					AttemptedERInThisSong = true;
@@ -917,10 +921,12 @@ unsigned WINAPI MainThread() {
 			/// If User Is Exiting A Song / In A Menu
 
 			else {
+
 				// Turn off Riff Repeater Speed above 100%
 				if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) {
 					automatedSongSpeedInThisSong = false; 
 					realSongSpeed = 100.f;
+					skipERSleep = false;
 				}
 
 				// Turn off Extended Range
