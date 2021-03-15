@@ -492,7 +492,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) { // Riff Repeater over 100%
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))) { // Riff Repeater over 100%
 			
 			// Set song speed every frame (approx) as the value continously falls down.
 			if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
