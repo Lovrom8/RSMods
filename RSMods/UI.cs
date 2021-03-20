@@ -135,7 +135,7 @@ namespace RSMods
             Startup_ListAllBackups();
 
             // Check for Updates | IDEALLY ON BUTTON PRESS (just here for testing)
-            Startup_CheckForUpdates();
+            //Startup_CheckForUpdates();
         }
 
         #region Startup Functions
