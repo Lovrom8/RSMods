@@ -1667,12 +1667,6 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.VolumeControlEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
         }
 
-        private void Save_HeadstockOffInSongOnlyButton(object sender, EventArgs e)
-        {
-            if (radio_HeadstockOffInSong.Checked)
-                SaveSettings_Save(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
-        }
-
         private void Save_RiffRepeaterSpeedInterval(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, nUpDown_RiffRepeaterSpeed.Value.ToString());
 
         private void Save_RiffRepeaterSpeedAboveOneHundred(object sender, EventArgs e)
@@ -1681,7 +1675,7 @@ namespace RSMods
             groupBox_RRSpeed.Visible = checkBox_RiffRepeaterSpeedAboveOneHundred.Checked;
         }
 
-        private void Save_useMidiAutoTuning(object sender, EventArgs e)
+        private void Save_UseMidiAutoTuning(object sender, EventArgs e)
         {
             SaveSettings_Save(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
             groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
@@ -1722,6 +1716,11 @@ namespace RSMods
         {
             if (radio_HeadstockAlwaysOff.Checked)
                 SaveSettings_Save(ReadSettings.RemoveHeadstockWhenIdentifier, "startup");
+        }
+        private void Save_HeadstockOffInSongOnlyButton(object sender, EventArgs e)
+        {
+            if (radio_HeadstockOffInSong.Checked)
+                SaveSettings_Save(ReadSettings.RemoveHeadstockWhenIdentifier, "song");
         }
 
         private void Save_VolumeInterval(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.VolumeControlIntervalIdentifier, Convert.ToInt32(nUpDown_VolumeInterval.Value).ToString());

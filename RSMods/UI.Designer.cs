@@ -1053,7 +1053,7 @@
             this.checkBox_useMidiAutoTuning.TabIndex = 50;
             this.checkBox_useMidiAutoTuning.Text = "Auto Tune Song";
             this.checkBox_useMidiAutoTuning.UseVisualStyleBackColor = true;
-            this.checkBox_useMidiAutoTuning.CheckedChanged += new System.EventHandler(this.Save_useMidiAutoTuning);
+            this.checkBox_useMidiAutoTuning.CheckedChanged += new System.EventHandler(this.Save_UseMidiAutoTuning);
             this.checkBox_useMidiAutoTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RiffRepeaterSpeedAboveOneHundred
