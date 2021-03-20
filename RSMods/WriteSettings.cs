@@ -13,6 +13,7 @@ namespace RSMods
         // Default Colors
         public static Color defaultBackgroundColor = Color.Azure;
         public static Color defaultTextColor = Color.Black;
+        public static Color defaultButtonColor = SystemColors.ControlLight;
 
         #region Save Settings
 
@@ -158,6 +159,7 @@ namespace RSMods
                 { ReadSettings.CustomGUIThemeIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIThemeIdentifier, "off") }, // Use a Custom GUI theme.
                 { ReadSettings.CustomGUIBackgroundColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIBackgroundColorIdentifier, "F0FFFF") }, // Custom Theme Background Color
                 { ReadSettings.CustomGUITextColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUITextColorIdentifier, "000000") }, // Custom Theme Text Color
+                { ReadSettings.CustomGUIButtonColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIButtonColorIdentifier, "E3E3E3") }, // Custom Button Background Color
                 { ReadSettings.BackupProfileIdentifier, CreateDefaultOnOldINI(ReadSettings.BackupProfileIdentifier, "on") }, // Should we backup profiles
                 { ReadSettings.NumberOfBackupsIdentifier, CreateDefaultOnOldINI(ReadSettings.NumberOfBackupsIdentifier, "50") }, // How many backups should we store before we start deleting them.
             }},

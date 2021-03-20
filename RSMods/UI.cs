@@ -730,12 +730,12 @@ namespace RSMods
             foreach (Control c in container.Controls)
             {
                 GetAllControls(c);
-                if (c is ListBox || c is GroupBox || c is TabPage)
+                if (c is ListBox || c is GroupBox || c is TabPage || c is Button)
                     ControlList.Add(c);
             }
         }
 
-        private void CustomTheme_ChangeTheme(Color backgroundColor, Color textColor)
+        private void CustomTheme_ChangeTheme(Color backgroundColor, Color textColor, Color buttonColor)
         {
             GetAllControls(TabController);
             BackColor = backgroundColor; // MainForm BackColor
@@ -744,7 +744,11 @@ namespace RSMods
             foreach (Control controlToChange in ControlList)
             {
                 controlToChange.ForeColor = textColor;
-                controlToChange.BackColor = backgroundColor;
+                
+                if (controlToChange is Button)
+                    controlToChange.BackColor = buttonColor;
+                else
+                    controlToChange.BackColor = backgroundColor;
             }
 
             CustomTheme_DataGridView(dgv_DefaultRewards, backgroundColor, textColor);
@@ -775,7 +779,7 @@ namespace RSMods
 
         private void CustomTheme_LoadCustomColors()
         {
-            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor;
+            Color backColor = WriteSettings.defaultBackgroundColor, foreColor = WriteSettings.defaultTextColor, buttonColor = WriteSettings.defaultButtonColor;
 
             if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on") // Users uses a custom theme.
             {
@@ -784,12 +788,16 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier) != String.Empty)
                     foreColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUITextColorIdentifier));
+
+                if (ReadSettings.ProcessSettings(ReadSettings.CustomGUIButtonColorIdentifier) != String.Empty)
+                    buttonColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.CustomGUIButtonColorIdentifier));
             }
 
             textBox_ChangeBackgroundColor.BackColor = backColor;
             textBox_ChangeTextColor.BackColor = foreColor;
+            textBox_ChangeButtonColor.BackColor = buttonColor;
 
-            CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+            CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor, textBox_ChangeButtonColor.BackColor);
         }
 
         private void CustomTheme_ChangeTheme(object sender, EventArgs e)
@@ -798,7 +806,7 @@ namespace RSMods
             groupBox_ChangeTheme.Visible = checkBox_ChangeTheme.Checked;
 
             if (!checkBox_ChangeTheme.Checked) // Turning off custom themes
-                CustomTheme_ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor);
+                CustomTheme_ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor, WriteSettings.defaultButtonColor);
         }
 
         private void CustomTheme_ChangeBackgroundColor(object sender, EventArgs e)
@@ -833,7 +841,23 @@ namespace RSMods
             }
         }
 
-        private void CustomTheme_Apply(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor);
+        private void CustomTheme_ChangeButtonColor(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                ShowHelp = false,
+                Color = WriteSettings.defaultButtonColor
+            };
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveSettings_Save(ReadSettings.CustomGUIButtonColorIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
+                textBox_ChangeButtonColor.BackColor = colorDialog.Color;
+            }
+        }
+
+        private void CustomTheme_Apply(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor, textBox_ChangeButtonColor.BackColor);
 
         #endregion
         #region Check For Keypresses (Keybindings)
@@ -3020,6 +3044,8 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
         }
+
+        
     }
 
     public class Midi

@@ -44,7 +44,7 @@ namespace RSMods
                              CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers,
 
                              // GUI Settings
-                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, BackupProfile, NumberOfBackups;
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, CustomGUIButtonColor, BackupProfile, NumberOfBackups;
 
         public static string
             // Song List Identifiers
@@ -183,6 +183,7 @@ namespace RSMods
             CustomGUIThemeIdentifier = "CustomTheme = ",
             CustomGUIBackgroundColorIdentifier = "ThemeBackgroundColor = ",
             CustomGUITextColorIdentifier = "ThemeTextColor = ",
+            CustomGUIButtonColorIdentifier = "ThemeButtonColor = ",
             BackupProfileIdentifier = "BackupProfile = ",
             NumberOfBackupsIdentifier = "NumberOfBackups = ";
 
@@ -504,6 +505,8 @@ namespace RSMods
                     return FillSettingVariable(CustomGUIBackgroundColorIdentifier, SettingType.STRING, currentLine, out CustomGUIBackgroundColor);
                 if (IdentifierIsFound(currentLine, CustomGUITextColorIdentifier, identifierToGrab))
                     return FillSettingVariable(CustomGUITextColorIdentifier, SettingType.STRING, currentLine, out CustomGUITextColor);
+                if (IdentifierIsFound(currentLine, CustomGUIButtonColorIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomGUIButtonColorIdentifier, SettingType.STRING, currentLine, out CustomGUIButtonColor);
                 if (IdentifierIsFound(currentLine, BackupProfileIdentifier, identifierToGrab))
                     return FillSettingVariable(BackupProfileIdentifier, SettingType.ON_OFF, currentLine, out BackupProfile);
                 if (IdentifierIsFound(currentLine, NumberOfBackupsIdentifier, identifierToGrab))
