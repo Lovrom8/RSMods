@@ -2982,9 +2982,12 @@ namespace RSMods
             if (e.Cancelled)
                 return;
 
-            // Run Installer
+            // Run Installer and close GUI so we don't cause conflicts / errors.
             if (e.Error == null)
+            {
                 Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
+                Application.Exit();
+            }
 
             // Error detected
             else
