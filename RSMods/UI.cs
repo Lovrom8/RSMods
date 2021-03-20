@@ -2960,6 +2960,12 @@ namespace RSMods
             return github_versionNumber != currentVersionNumber;
         }
 
+        private string CheckForUpdates_GetPatchNotes()
+        {
+            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+            return JToken.Parse(jsonResponse).SelectToken("body").ToString();
+        }
+
         private void CheckForUpdates_GetInstaller()
         {
             string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
