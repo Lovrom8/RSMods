@@ -105,6 +105,7 @@ namespace RSMods
             TooltipDictionary.Add(button_RestoreCacheBackup, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
             TooltipDictionary.Add(button_CleanUpUnpackedCache, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
             TooltipDictionary.Add(button_ResetToDefaultCachePsarc, "Woah, hang on there!\nHave you tried pressing the \"Restore Cache Backup\" button?\nThis should be a last resort.\nWe call home to Steam to redownload all modified files.\nThis will only break the mods in this section, nothing else.");
+            TooltipDictionary.Add(button_UpdateRSMods, "Update RSMods to the newest version.\nPatch Notes: " + CheckForUpdates_GetPatchNotes());
 
             // Twitch Bot
             TooltipDictionary.Add(button_TwitchReAuthorize, "Click this to get the authorisation key needed to let these mods listen to your twitch alerts.\nIt is possible this button may need to be clicked to re-anable the triggers.");
