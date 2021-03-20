@@ -5409,7 +5409,6 @@
             this.button_UpdateRSMods.UseVisualStyleBackColor = true;
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
-            this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // songManagerBindingSource
             // 
