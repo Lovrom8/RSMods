@@ -420,6 +420,8 @@
             this.label_Profiles_AvailableProfiles = new System.Windows.Forms.Label();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
             this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
+            this.textBox_ChangeButtonColor = new System.Windows.Forms.TextBox();
+            this.button_ChangeButtonColor = new System.Windows.Forms.Button();
             this.button_ApplyThemeColors = new System.Windows.Forms.Button();
             this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
             this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
@@ -431,8 +433,7 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.button_ChangeButtonColor = new System.Windows.Forms.Button();
-            this.textBox_ChangeButtonColor = new System.Windows.Forms.TextBox();
+            this.button_ResetCustomColors = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5307,6 +5308,7 @@
             // 
             // groupBox_ChangeTheme
             // 
+            this.groupBox_ChangeTheme.Controls.Add(this.button_ResetCustomColors);
             this.groupBox_ChangeTheme.Controls.Add(this.textBox_ChangeButtonColor);
             this.groupBox_ChangeTheme.Controls.Add(this.button_ChangeButtonColor);
             this.groupBox_ChangeTheme.Controls.Add(this.button_ApplyThemeColors);
@@ -5322,9 +5324,28 @@
             this.groupBox_ChangeTheme.Text = "Change Theme Colors";
             this.groupBox_ChangeTheme.Visible = false;
             // 
+            // textBox_ChangeButtonColor
+            // 
+            this.textBox_ChangeButtonColor.Enabled = false;
+            this.textBox_ChangeButtonColor.Location = new System.Drawing.Point(172, 117);
+            this.textBox_ChangeButtonColor.Name = "textBox_ChangeButtonColor";
+            this.textBox_ChangeButtonColor.ReadOnly = true;
+            this.textBox_ChangeButtonColor.Size = new System.Drawing.Size(74, 20);
+            this.textBox_ChangeButtonColor.TabIndex = 6;
+            // 
+            // button_ChangeButtonColor
+            // 
+            this.button_ChangeButtonColor.Location = new System.Drawing.Point(6, 117);
+            this.button_ChangeButtonColor.Name = "button_ChangeButtonColor";
+            this.button_ChangeButtonColor.Size = new System.Drawing.Size(145, 23);
+            this.button_ChangeButtonColor.TabIndex = 5;
+            this.button_ChangeButtonColor.Text = "Change Button Color";
+            this.button_ChangeButtonColor.UseVisualStyleBackColor = true;
+            this.button_ChangeButtonColor.Click += new System.EventHandler(this.CustomTheme_ChangeButtonColor);
+            // 
             // button_ApplyThemeColors
             // 
-            this.button_ApplyThemeColors.Location = new System.Drawing.Point(60, 156);
+            this.button_ApplyThemeColors.Location = new System.Drawing.Point(6, 156);
             this.button_ApplyThemeColors.Name = "button_ApplyThemeColors";
             this.button_ApplyThemeColors.Size = new System.Drawing.Size(133, 23);
             this.button_ApplyThemeColors.TabIndex = 4;
@@ -5419,24 +5440,15 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // button_ChangeButtonColor
+            // button_ResetCustomColors
             // 
-            this.button_ChangeButtonColor.Location = new System.Drawing.Point(6, 117);
-            this.button_ChangeButtonColor.Name = "button_ChangeButtonColor";
-            this.button_ChangeButtonColor.Size = new System.Drawing.Size(145, 23);
-            this.button_ChangeButtonColor.TabIndex = 5;
-            this.button_ChangeButtonColor.Text = "Change Button Color";
-            this.button_ChangeButtonColor.UseVisualStyleBackColor = true;
-            this.button_ChangeButtonColor.Click += new System.EventHandler(this.CustomTheme_ChangeButtonColor);
-            // 
-            // textBox_ChangeButtonColor
-            // 
-            this.textBox_ChangeButtonColor.Enabled = false;
-            this.textBox_ChangeButtonColor.Location = new System.Drawing.Point(172, 117);
-            this.textBox_ChangeButtonColor.Name = "textBox_ChangeButtonColor";
-            this.textBox_ChangeButtonColor.ReadOnly = true;
-            this.textBox_ChangeButtonColor.Size = new System.Drawing.Size(74, 20);
-            this.textBox_ChangeButtonColor.TabIndex = 6;
+            this.button_ResetCustomColors.Location = new System.Drawing.Point(157, 156);
+            this.button_ResetCustomColors.Name = "button_ResetCustomColors";
+            this.button_ResetCustomColors.Size = new System.Drawing.Size(108, 23);
+            this.button_ResetCustomColors.TabIndex = 7;
+            this.button_ResetCustomColors.Text = "Reset Colors";
+            this.button_ResetCustomColors.UseVisualStyleBackColor = true;
+            this.button_ResetCustomColors.Click += new System.EventHandler(this.CustomTheme_Reset);
             // 
             // MainForm
             // 
@@ -5992,6 +6004,7 @@
         private System.Windows.Forms.Button button_UpdateRSMods;
         private System.Windows.Forms.TextBox textBox_ChangeButtonColor;
         private System.Windows.Forms.Button button_ChangeButtonColor;
+        private System.Windows.Forms.Button button_ResetCustomColors;
     }
 }
 

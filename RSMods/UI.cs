@@ -859,6 +859,19 @@ namespace RSMods
 
         private void CustomTheme_Apply(object sender, EventArgs e) => CustomTheme_ChangeTheme(textBox_ChangeBackgroundColor.BackColor, textBox_ChangeTextColor.BackColor, textBox_ChangeButtonColor.BackColor);
 
+        private void CustomTheme_Reset(object sender, EventArgs e)
+        {
+            CustomTheme_ChangeTheme(WriteSettings.defaultBackgroundColor, WriteSettings.defaultTextColor, WriteSettings.defaultButtonColor);
+
+            SaveSettings_Save(ReadSettings.CustomGUIBackgroundColorIdentifier, (WriteSettings.defaultBackgroundColor.ToArgb() & 0x00ffffff).ToString("X6"));
+            SaveSettings_Save(ReadSettings.CustomGUITextColorIdentifier, (WriteSettings.defaultTextColor.ToArgb() & 0x00ffffff).ToString("X6"));
+            SaveSettings_Save(ReadSettings.CustomGUIButtonColorIdentifier, (WriteSettings.defaultButtonColor.ToArgb() & 0x00ffffff).ToString("X6"));
+
+            textBox_ChangeBackgroundColor.BackColor = WriteSettings.defaultBackgroundColor;
+            textBox_ChangeTextColor.BackColor = WriteSettings.defaultTextColor;
+            textBox_ChangeButtonColor.BackColor = WriteSettings.defaultButtonColor;
+        }
+
         #endregion
         #region Check For Keypresses (Keybindings)
         private void Keypress_CheckDown(object sender, KeyEventArgs e)
@@ -3044,8 +3057,6 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
                 listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
         }
-
-        
     }
 
     public class Midi
