@@ -134,8 +134,8 @@ namespace RSMods
             // Get list of all backups so we can revert to one if needed
             Startup_ListAllBackups();
 
-            // Check for Updates | IDEALLY ON BUTTON PRESS (just here for testing)
-            //Startup_CheckForUpdates();
+            // Should we show the Update button?
+            Startup_ShowUpdateButton();
         }
 
         #region Startup Functions
@@ -315,66 +315,7 @@ namespace RSMods
             }
         }
 
-        private async void Startup_CheckForUpdates()
-        {
-            // Setup HTTP Client
-            string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
-            HttpClient client = new HttpClient();
-
-            // Get current version number to compare against the Github API.
-            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
-            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
-
-            // Github API won't let us through without a User-Agent.
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", currentVersionNumber));
-
-            try
-            {
-                // Read latest release from Github API.
-                HttpResponseMessage response = await client.GetAsync(latestRelease_API);
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-
-                // Get Version Number From Github API.
-                string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
-
-                // Are they the same release? If yes, stop checking for update.
-                if (github_versionNumber == currentVersionNumber)
-                    return;
-
-                // Get Download Link For New Installer.
-                string github_newRelease = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("browser_download_url").ToString();
-                string github_installerName = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("name").ToString();
-
-                // Download New Installer And Run It
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
-                    webClient.DownloadFileAsync(new Uri(github_newRelease), github_installerName);
-                }
-
-                client.Dispose();
-            }
-            catch (HttpRequestException e)
-            {
-                MessageBox.Show("Check for updates error: "  + e.Message + '\n' + e.StackTrace);
-                return;
-            }
-        }
-
-        private async void Startup_CheckForUpdates_RunInstaller(object sender, AsyncCompletedEventArgs e)
-        {
-            // Download was canceled.
-            if (e.Cancelled)
-                return;
-
-            // Run Installer
-            if (e.Error == null) 
-                await Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
-
-            // Error detected
-            else
-                MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
-        }
+        private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
 
         #endregion
         #region Show Prior Settings In GUI
@@ -2984,6 +2925,73 @@ namespace RSMods
             MessageBox.Show($"Reverted to the backup: {localizedName}");
         }
 
+        #endregion
+        #region Check For Updates
+        private Task<string> CheckForUpdates_CallGithubAPI()
+        {
+            // Setup HTTP Client
+            string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
+            HttpClient client = new HttpClient();
+
+            // Get current version number to compare against the Github API.
+            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
+            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
+
+            // Github API won't let us through without a User-Agent.
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", currentVersionNumber));
+
+            // Read latest release from Github API.
+            HttpResponseMessage response = client.GetAsync(latestRelease_API).Result;
+            return response.Content.ReadAsStringAsync();
+        }
+
+        private bool CheckForUpdates_IsUpdateAvailable()
+        {
+            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+
+            // Get current version number to compare against the Github API.
+            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
+            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
+
+            // Get Version Number From Github API.
+            string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
+
+            // Return true if an update is available, and false if it isn't.
+            return github_versionNumber != currentVersionNumber;
+        }
+
+        private void CheckForUpdates_GetInstaller()
+        {
+            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+
+            // Get Download Link For New Installer.
+            string github_newRelease = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("browser_download_url").ToString();
+            string github_installerName = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("name").ToString();
+
+            // Download New Installer And Run It
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CheckForUpdates_RunInstaller);
+                webClient.DownloadFileAsync(new Uri(github_newRelease), github_installerName);
+            }
+        }
+
+        private void CheckForUpdates_RunInstaller(object sender, AsyncCompletedEventArgs e)
+        {
+            // Download was canceled.
+            if (e.Cancelled)
+                return;
+
+            // Run Installer
+            if (e.Error == null)
+                Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
+
+            // Error detected
+            else
+                MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
+        }
+
+        private void CheckForUpdates_UpdateRSMods(object sender, EventArgs e) => CheckForUpdates_GetInstaller();
         #endregion
         #region Midi
 

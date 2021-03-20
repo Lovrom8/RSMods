@@ -429,6 +429,7 @@
             this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
@@ -2430,7 +2431,7 @@
             this.TabController.Controls.Add(this.tab_Twitch);
             this.TabController.Controls.Add(this.tab_Profiles);
             this.TabController.Controls.Add(this.tab_GUISettings);
-            this.TabController.Location = new System.Drawing.Point(3, 7);
+            this.TabController.Location = new System.Drawing.Point(3, 16);
             this.TabController.Margin = new System.Windows.Forms.Padding(0);
             this.TabController.Name = "TabController";
             this.TabController.Padding = new System.Drawing.Point(0, 0);
@@ -5386,7 +5387,7 @@
             // 
             this.label_SettingsSaved.AutoSize = true;
             this.label_SettingsSaved.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_SettingsSaved.Location = new System.Drawing.Point(4, 549);
+            this.label_SettingsSaved.Location = new System.Drawing.Point(12, 560);
             this.label_SettingsSaved.Name = "label_SettingsSaved";
             this.label_SettingsSaved.Size = new System.Drawing.Size(120, 18);
             this.label_SettingsSaved.TabIndex = 52;
@@ -5398,6 +5399,17 @@
             this.fileSystemWatcher1.EnableRaisingEvents = true;
             this.fileSystemWatcher1.SynchronizingObject = this;
             // 
+            // button_UpdateRSMods
+            // 
+            this.button_UpdateRSMods.Location = new System.Drawing.Point(991, 7);
+            this.button_UpdateRSMods.Name = "button_UpdateRSMods";
+            this.button_UpdateRSMods.Size = new System.Drawing.Size(137, 25);
+            this.button_UpdateRSMods.TabIndex = 100002;
+            this.button_UpdateRSMods.Text = "Update RSMods";
+            this.button_UpdateRSMods.UseVisualStyleBackColor = true;
+            this.button_UpdateRSMods.Visible = false;
+            this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
+            // 
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
@@ -5408,7 +5420,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1170, 576);
+            this.ClientSize = new System.Drawing.Size(1170, 587);
+            this.Controls.Add(this.button_UpdateRSMods);
             this.Controls.Add(this.label_SettingsSaved);
             this.Controls.Add(this.TabController);
             this.ForeColor = System.Drawing.Color.Black;
@@ -5952,6 +5965,7 @@
         private System.Windows.Forms.TabPage tabPage_ModSettings_AutoTuning;
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningOffset;
         private System.Windows.Forms.ListBox listBox_MidiAutoTuningOffset;
+        private System.Windows.Forms.Button button_UpdateRSMods;
     }
 }
 
