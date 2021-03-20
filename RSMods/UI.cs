@@ -21,6 +21,8 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.ComponentModel;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 
 namespace RSMods
 {
@@ -133,7 +135,7 @@ namespace RSMods
             Startup_ListAllBackups();
 
             // Check for Updates | IDEALLY ON BUTTON PRESS (just here for testing)
-            //Startup_CheckForUpdates();
+            Startup_CheckForUpdates();
         }
 
         #region Startup Functions
@@ -315,70 +317,62 @@ namespace RSMods
 
         private async void Startup_CheckForUpdates()
         {
+            // Setup HTTP Client
+            string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
+            HttpClient client = new HttpClient();
+
+            // Get current version number to compare against the Github API.
             Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
-            string currentVersionName = $"{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build}.{currentVersion.Revision}";
+            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
 
-            // Create / Update Version.txt
-            File.WriteAllText("version.txt", currentVersionName);
+            // Github API won't let us through without a User-Agent.
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", currentVersionNumber));
 
-            // Startup HTTP Client
-            HttpClient checkForUpdates_Client = new HttpClient();
-            HttpResponseMessage checkForUpdates_Response = await checkForUpdates_Client.GetAsync("https://github.com/Lovrom8/RSMods/releases/latest");
-
-            // Get link ready for download
-            string latestRelease_GithubLink = checkForUpdates_Response.RequestMessage.RequestUri.ToString().Replace("/tag/", "/download/");
-            string createdVersionFile = "version.txt";
-            string downloadedVersionFile = "latest_version.txt";
-            string installerName = "RS2014-Mod-Installer.exe";
-            Uri downloadVersion = new Uri(Path.Combine(latestRelease_GithubLink, createdVersionFile));
-            Uri downloadInstaller = new Uri(Path.Combine(latestRelease_GithubLink, installerName));
-
-            // Dispose of HTTP Client
-            checkForUpdates_Client.Dispose();
-
-            // Retrieve Installer
-            using (WebClient webClient = new WebClient())
+            try
             {
-                // Remove old downloaded version file, just in case.
-                if (File.Exists(downloadedVersionFile))
-                    File.Delete(downloadedVersionFile);
+                // Read latest release from Github API.
+                HttpResponseMessage response = await client.GetAsync(latestRelease_API);
+                string jsonResponse = await response.Content.ReadAsStringAsync();
 
-                // Download new version file
-                try
-                {
-                    webClient.DownloadFile(downloadVersion, downloadedVersionFile);
-                }
-                catch (WebException) // Version file can't be found.
-                { 
-                }
-                
+                // Get Version Number From Github API.
+                string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
 
-                // Compare versions, and download install if necessary.
-                try
+                // Are they the same release? If yes, stop checking for update.
+                if (github_versionNumber == currentVersionNumber)
+                    return;
+
+                // Get Download Link For New Installer.
+                string github_newRelease = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("browser_download_url").ToString();
+                string github_installerName = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("name").ToString();
+
+                // Download New Installer And Run It
+                using (WebClient webClient = new WebClient())
                 {
-                    if (File.ReadAllText(downloadedVersionFile) != currentVersionName) // New version available.
-                    {
-                        MessageBox.Show("Old Version Detected");
-                        webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
-                        webClient.DownloadFileAsync(downloadInstaller, installerName);
-                    }
+                    webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Startup_CheckForUpdates_RunInstaller);
+                    webClient.DownloadFileAsync(new Uri(github_newRelease), github_installerName);
                 }
-                catch // file couldn't be found for some reason.
-                {
-                    MessageBox.Show("Version.txt didn't download fast enough. Report to devs. (it's literally 7 bytes)");
-                }
+
+                client.Dispose();
+            }
+            catch (HttpRequestException e)
+            {
+                MessageBox.Show("Check for updates error: "  + e.Message + '\n' + e.StackTrace);
+                return;
             }
         }
 
         private async void Startup_CheckForUpdates_RunInstaller(object sender, AsyncCompletedEventArgs e)
         {
             // Download was canceled.
-            if (e.Cancelled) 
+            if (e.Cancelled)
                 return;
 
-            if (e.Error == null) // Run Installer
+            // Run Installer
+            if (e.Error == null) 
                 await Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
-            else // Error detected
+
+            // Error detected
+            else
                 MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
         }
 
