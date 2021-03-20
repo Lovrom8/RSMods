@@ -420,6 +420,7 @@
             this.label_Profiles_AvailableProfiles = new System.Windows.Forms.Label();
             this.tab_GUISettings = new System.Windows.Forms.TabPage();
             this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
+            this.button_ResetCustomColors = new System.Windows.Forms.Button();
             this.textBox_ChangeButtonColor = new System.Windows.Forms.TextBox();
             this.button_ChangeButtonColor = new System.Windows.Forms.Button();
             this.button_ApplyThemeColors = new System.Windows.Forms.Button();
@@ -433,7 +434,6 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.button_ResetCustomColors = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5324,6 +5324,16 @@
             this.groupBox_ChangeTheme.Text = "Change Theme Colors";
             this.groupBox_ChangeTheme.Visible = false;
             // 
+            // button_ResetCustomColors
+            // 
+            this.button_ResetCustomColors.Location = new System.Drawing.Point(157, 156);
+            this.button_ResetCustomColors.Name = "button_ResetCustomColors";
+            this.button_ResetCustomColors.Size = new System.Drawing.Size(108, 23);
+            this.button_ResetCustomColors.TabIndex = 7;
+            this.button_ResetCustomColors.Text = "Discard Theme";
+            this.button_ResetCustomColors.UseVisualStyleBackColor = true;
+            this.button_ResetCustomColors.Click += new System.EventHandler(this.CustomTheme_Reset);
+            // 
             // textBox_ChangeButtonColor
             // 
             this.textBox_ChangeButtonColor.Enabled = false;
@@ -5439,16 +5449,6 @@
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
-            // 
-            // button_ResetCustomColors
-            // 
-            this.button_ResetCustomColors.Location = new System.Drawing.Point(157, 156);
-            this.button_ResetCustomColors.Name = "button_ResetCustomColors";
-            this.button_ResetCustomColors.Size = new System.Drawing.Size(108, 23);
-            this.button_ResetCustomColors.TabIndex = 7;
-            this.button_ResetCustomColors.Text = "Reset Colors";
-            this.button_ResetCustomColors.UseVisualStyleBackColor = true;
-            this.button_ResetCustomColors.Click += new System.EventHandler(this.CustomTheme_Reset);
             // 
             // MainForm
             // 
