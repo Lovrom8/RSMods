@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace RSMods.Util
 {
@@ -173,12 +172,12 @@ namespace RSMods.Util
                         if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
                         {
                             MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!", "Your help is required!");
-                            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+                            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
                             {
-                                dialog.IsFolderPicker = true;
-                                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                                DialogResult result = dialog.ShowDialog();
+                                if (result == DialogResult.OK)
                                 {
-                                    string rsFolder = dialog.FileName;
+                                    string rsFolder = dialog.SelectedPath;
 
                                     if (rsFolder.IsRSFolder())
                                         return rsFolder;
