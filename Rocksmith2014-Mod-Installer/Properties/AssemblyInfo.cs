@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Rocksmith2014-CDLC-Injector")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 // 
-[assembly: AssemblyVersion("1.2.3")]
-[assembly: AssemblyFileVersion("1.2.3")]
+[assembly: AssemblyVersion("1.2.4")]
+[assembly: AssemblyFileVersion("1.2.4")]
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 
 namespace RS2014_Mod_Installer
@@ -13,10 +12,18 @@ namespace RS2014_Mod_Installer
     }
     class DLLStuff
     {
-        public static void InjectDLL(string rocksmithLocation)
+        public static bool InjectDLL(string rocksmithLocation)
         {
-            File.WriteAllBytes(Path.Combine(@rocksmithLocation, "D3DX9_42.dll"), Properties.Resources.D3DX9_42);
-            Environment.Exit(1);
+            try
+            {
+                File.WriteAllBytes(Path.Combine(@rocksmithLocation, "D3DX9_42.dll"), Properties.Resources.D3DX9_42);
+                return true;
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Please close Rocksmith, then press this button again.\nWe cannot create the necessary files while the game is open.", "Error: Rocksmith is open", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         public static bool InjectGUI(string rocksmithLocation)

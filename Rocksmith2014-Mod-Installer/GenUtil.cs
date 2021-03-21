@@ -4,15 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-
-#pragma warning disable IDE0059 // "You made this variable and didn't use it". It's called future proofing.
-#pragma warning disable IDE0029 // "Null Check can be simplified"... Yeah we know, but it works so why should we mess with it.
 
 namespace RSMods.Util
 {
@@ -28,9 +22,7 @@ namespace RSMods.Util
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-            string[] names = resourceAssembly.GetManifestResourceNames();
-
-            string resourcePath = String.Empty;
+            string resourcePath;
             foreach (string file in files)
             {
                 resourcePath = Path.Combine(outputDir, file);
@@ -63,11 +55,11 @@ namespace RSMods.Util
             try
             {
                 var retValue = (string)Registry.GetValue(keyName, valueName, "");
-                return retValue == null ? String.Empty : retValue;
+                return retValue ?? string.Empty;
             }
             catch (Exception)
             {
-                return String.Empty;
+                return string.Empty;
             }
         }
         private static List<string> GetCustomSteamappsFolders(string mainSteamPath)
@@ -104,7 +96,7 @@ namespace RSMods.Util
         private static string GetCustomRSFolder(string mainSteamPath)
         {
             var customSteamppsFolders = GetCustomSteamappsFolders(mainSteamPath);
-            string finalPath = string.Empty;
+            string finalPath;
             string rsFolderPath = string.Empty;
             bool found = false;
 
