@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace RSMods.Util
 {
@@ -322,12 +321,12 @@ namespace RSMods.Util
 
         public static string AskUserForRSFolder()
         {
-            using (CommonOpenFileDialog dialog = new CommonOpenFileDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
             {
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
                 {
-                    string rsFolder = dialog.FileName;
+                    string rsFolder = dialog.SelectedPath;
 
                     if (rsFolder.IsRSFolder())
                     {
