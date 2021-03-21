@@ -163,12 +163,6 @@
   <data name="Microsoft_Extensions_Logging_Abstractions" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\rsmodsgui\microsoft.extensions.logging.abstractions.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Microsoft_WindowsAPICodePack" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Microsoft_WindowsAPICodePack_Shell" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="MiscUtil" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RSModsGUI\MiscUtil.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
