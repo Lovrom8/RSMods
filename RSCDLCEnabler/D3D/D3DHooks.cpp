@@ -93,6 +93,10 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 		vShader->GetFunction(NULL, &vSize);
 	}
 
+	//// Thicc fretboard note indicators.
+	//if (vSize == 480)
+	//	return D3D_OK;
+	
 	return oSetVertexShader(pDevice, veShader);
 }
 
