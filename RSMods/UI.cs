@@ -2969,12 +2969,8 @@ namespace RSMods
             string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
             HttpClient client = new HttpClient();
 
-            // Get current version number to compare against the Github API.
-            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
-            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
-
             // Github API won't let us through without a User-Agent.
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", currentVersionNumber));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", Application.ProductVersion));
 
             // Read latest release from Github API.
             HttpResponseMessage response = client.GetAsync(latestRelease_API).Result;
@@ -2985,15 +2981,11 @@ namespace RSMods
         {
             string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
 
-            // Get current version number to compare against the Github API.
-            Version currentVersion = typeof(MainForm).Assembly.GetName().Version;
-            string currentVersionNumber = currentVersion.Major + "." + currentVersion.Minor + "." + currentVersion.Build;
-
             // Get Version Number From Github API.
             string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
 
             // Return true if an update is available, and false if it isn't.
-            return github_versionNumber != currentVersionNumber;
+            return github_versionNumber != Application.ProductVersion;
         }
 
         private string CheckForUpdates_GetPatchNotes()
