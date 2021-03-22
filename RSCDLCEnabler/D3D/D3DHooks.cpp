@@ -94,7 +94,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 	}
 
 	//// Thicc fretboard note indicators.
-	//if (vSize == 480)
+	//if (vSize == 480 && MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
 	//	return D3D_OK;
 	
 	return oSetVertexShader(pDevice, veShader);
