@@ -47,6 +47,8 @@ namespace RSMods
         TabPage ProfileEditsTab;
         int ProfileEditsTabIndex;
 
+        string github_UpdateResponse;
+
         public MainForm()
         {
 
@@ -133,6 +135,9 @@ namespace RSMods
 
             // Get list of all backups so we can revert to one if needed
             Startup_ListAllBackups();
+
+            // Check For Updates
+            CheckForUpdates_CallGithubAPI();
 
             // Should we show the Update button?
             Startup_ShowUpdateButton();
@@ -2963,23 +2968,44 @@ namespace RSMods
 
         #endregion
         #region Check For Updates
-        private Task<string> CheckForUpdates_CallGithubAPI()
+        private async void CheckForUpdates_CallGithubAPI()
         {
-            // Setup HTTP Client
-            string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
-            HttpClient client = new HttpClient();
+            try
+            {
+                // Setup HTTP Client
+                string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
+                HttpClient client = new HttpClient();
 
-            // Github API won't let us through without a User-Agent.
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", Application.ProductVersion));
+                // Github API won't let us through without a User-Agent.
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", Application.ProductVersion));
 
-            // Read latest release from Github API.
-            HttpResponseMessage response = client.GetAsync(latestRelease_API).Result;
-            return response.Content.ReadAsStringAsync();
+                // Read latest release from Github API.
+                HttpResponseMessage response = client.GetAsync(latestRelease_API).Result;
+
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (jsonResponse.Contains("limit exceeded"))
+                {
+                    github_UpdateResponse = "null";
+                    return;
+                }
+
+                github_UpdateResponse = jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("CheckForUpdates_GithubAPI.\n" + ex.Message + "\n" + ex.StackTrace);
+                github_UpdateResponse = "null";
+            }
         }
 
         private bool CheckForUpdates_IsUpdateAvailable()
         {
-            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+            string jsonResponse = github_UpdateResponse;
+
+            // Couldn't connect to Github API.
+            if (jsonResponse == "null")
+                return false;
 
             // Get Version Number From Github API.
             string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
@@ -2990,13 +3016,21 @@ namespace RSMods
 
         private string CheckForUpdates_GetPatchNotes()
         {
-            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+            string jsonResponse = github_UpdateResponse;
+
+            // Couldn't connect to Github API.
+            if (jsonResponse == "null")
+                return "";
+
             return JToken.Parse(jsonResponse).SelectToken("body").ToString();
         }
 
-        private void CheckForUpdates_GetInstaller()
+        private async void CheckForUpdates_GetInstaller()
         {
-            string jsonResponse = CheckForUpdates_CallGithubAPI().Result;
+            string jsonResponse = github_UpdateResponse;
+
+            if (jsonResponse == "null")
+                return;
 
             // Get Download Link For New Installer.
             string github_newRelease = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("browser_download_url").ToString();
