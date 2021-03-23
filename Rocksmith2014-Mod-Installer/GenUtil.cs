@@ -32,6 +32,8 @@ namespace RSMods.Util
             }
         }
 
+        //
+
         private static bool IsRSFolder(this string folderPath)
         {
             if (!Directory.Exists(folderPath))
