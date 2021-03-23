@@ -3025,7 +3025,7 @@ namespace RSMods
             return JToken.Parse(jsonResponse).SelectToken("body").ToString();
         }
 
-        private async void CheckForUpdates_GetInstaller()
+        private void CheckForUpdates_GetInstaller()
         {
             string jsonResponse = github_UpdateResponse;
 
