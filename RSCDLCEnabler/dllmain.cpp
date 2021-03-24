@@ -444,20 +444,19 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::Begin("Voicelines");
 
 		static std::string previewVoiceline = "Select a voiceline";
-
+		static std::vector<VoiceOver> selectedVoiceOverList = VoiceOverControl::VO_ResultsScreens;
 
 		if (ImGui::BeginCombo("Voicelines", previewVoiceline.c_str())) {
-			for (int n = 0; n < VoiceOverControl::VO_ResultsScreens.size(); n++)
+			for (int n = 0; n < selectedVoiceOverList.size(); n++)
 			{
-				const bool is_selected = (VoiceOverControl::selectedVoiceOver.EventName == VoiceOverControl::VO_ResultsScreens.at(n).EventName);
-				if (ImGui::Selectable(VoiceOverControl::VO_ResultsScreens.at(n).Text.c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
-					VoiceOverControl::selectedVoiceOver = VoiceOverControl::VO_ResultsScreens.at(n);
+				const bool is_selected = (VoiceOverControl::selectedVoiceOver.EventName == selectedVoiceOverList.at(n).EventName);
+				if (ImGui::Selectable(selectedVoiceOverList.at(n).Text.c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+					VoiceOverControl::selectedVoiceOver = selectedVoiceOverList.at(n);
 
 				if (is_selected) {
-					previewVoiceline = VoiceOverControl::VO_ResultsScreens.at(n).Text;
-					VoiceOverControl::selectedVoiceOver = VoiceOverControl::VO_ResultsScreens.at(n);
+					previewVoiceline = selectedVoiceOverList.at(n).Text;
+					VoiceOverControl::selectedVoiceOver = selectedVoiceOverList.at(n);
 				}
-					
 			}
 			ImGui::EndCombo();
 		}
