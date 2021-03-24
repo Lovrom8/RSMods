@@ -165,11 +165,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
-			else if (keyPressed == VK_F9) {
-				WwiseVariables::Wwise_Sound_PostEvent_Char("play_VO_RESULTSSCREEN_001_23NARRATOR_DRY_26345", 0xffffffff, 0, NULL, NULL, 0, NULL, 0);
-				WwiseVariables::Wwise_Sound_PostEvent_Char("play_VO_RESULTSSCREEN_001_23NARRATOR_DRY_26345", 0x00001234, 0, NULL, NULL, 0, NULL, 0);
-			}
-
 			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
 			//	DisableControllers::DisableControllers();
 
