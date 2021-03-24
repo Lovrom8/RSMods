@@ -212,6 +212,23 @@ struct MidiPedal {
 	}
 };
 
+/// <summary>
+/// EventName, Text.
+/// </summary>
+struct VoiceOver {
+	std::string EventName, Text;
+
+	VoiceOver(std::string _EventName, std::string _Text) {
+		EventName = _EventName;
+		Text = _Text;
+	}
+
+	VoiceOver() {
+		EventName = "";
+		Text = "";
+	}
+};
+
 /*------------------D3D | FOR REFERENCE---------------------------------*/
 
 class D3DInfo

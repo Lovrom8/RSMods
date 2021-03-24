@@ -30,6 +30,7 @@
 #include "Mods/Midi.hpp"
 #include "Mods/VolumeControl.hpp"
 #include "Mods/LaunchOnExternalMonitor.hpp"
+#include "Mods/VoiceOverControl.hpp"
 
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;

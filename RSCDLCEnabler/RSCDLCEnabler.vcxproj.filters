@@ -216,6 +216,9 @@
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControl.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -426,6 +429,9 @@
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VoiceOverControl.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>

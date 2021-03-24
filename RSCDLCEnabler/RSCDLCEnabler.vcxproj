@@ -29,6 +29,7 @@
     <ClCompile Include="Lib\Midi\RtMidi.cpp" />
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
+    <ClCompile Include="Mods\VoiceOverControl.cpp" />
     <ClCompile Include="Mods\VolumeControl.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />
+    <ClInclude Include="Mods\VoiceOverControl.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />

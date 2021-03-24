@@ -165,6 +165,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					currentVolumeIndex = 0;
 			}
 
+			else if (keyPressed == VK_F9) {
+				WwiseVariables::Wwise_Sound_PostEvent_Char("play_VO_RESULTSSCREEN_001_23NARRATOR_DRY_26345", 0xffffffff, 0, NULL, NULL, 0, NULL, 0);
+				WwiseVariables::Wwise_Sound_PostEvent_Char("play_VO_RESULTSSCREEN_001_23NARRATOR_DRY_26345", 0x00001234, 0, NULL, NULL, 0, NULL, 0);
+			}
+
 			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
 			//	DisableControllers::DisableControllers();
 
@@ -371,8 +376,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		ImGui::Begin("RS Modz");
 
 		// Stop mouse and keyboard in game
-		ImGui::CaptureKeyboardFromApp(true);
-		ImGui::CaptureMouseFromApp(true);
+		//ImGui::CaptureKeyboardFromApp(true);
+		//ImGui::CaptureMouseFromApp(true);
 
 		static std::string previewValue = "Select a device";
 		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
@@ -438,6 +443,33 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ERMode::ResetString(selectedString);
 
 		*/
+
+		ImGui::End();
+
+		ImGui::Begin("Voicelines");
+
+		static std::string previewVoiceline = "Select a voiceline";
+
+
+		if (ImGui::BeginCombo("Voicelines", previewVoiceline.c_str())) {
+			for (int n = 0; n < VoiceOverControl::VO_ResultsScreens.size(); n++)
+			{
+				const bool is_selected = (VoiceOverControl::selectedVoiceOver.EventName == VoiceOverControl::VO_ResultsScreens.at(n).EventName);
+				if (ImGui::Selectable(VoiceOverControl::VO_ResultsScreens.at(n).Text.c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+					VoiceOverControl::selectedVoiceOver = VoiceOverControl::VO_ResultsScreens.at(n);
+
+				if (is_selected) {
+					previewVoiceline = VoiceOverControl::VO_ResultsScreens.at(n).Text;
+					VoiceOverControl::selectedVoiceOver = VoiceOverControl::VO_ResultsScreens.at(n);
+				}
+					
+			}
+			ImGui::EndCombo();
+		}
+
+		// Play Button
+		if (ImGui::Button("Play selected voiceline"))
+			VoiceOverControl::PlayVoiceOver(VoiceOverControl::selectedVoiceOver);
 
 		ImGui::End();
 	}
