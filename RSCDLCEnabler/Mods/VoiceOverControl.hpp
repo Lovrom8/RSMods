@@ -120,6 +120,131 @@ namespace VoiceOverControl {
 		VoiceOver("play_VO_GLOBAL_007_08NARRATOR_DRY_13166", "You Wanna Be On The G String (Guitar)"),
 		VoiceOver("play_VO_GLOBAL_007_09NARRATOR_DRY_13167", "You Wanna Be On The B String (Guitar)"),
 		VoiceOver("play_VO_GLOBAL_007_10NARRATOR_DRY_13168", "You Wanna Be On The High E String (Guitar)"),
+
+
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERBL_001_01NARRATOR_DRY_24003", "Get Ready"),
+		VoiceOver("play_VO_GLOBAL_001_07NARRATOR_DRY_12918", "Awesome"),
+		VoiceOver("Play_VO_ONLYRECORD_GLOBA1_003_06NARRATOR_DRY_27911", "Let's Move On"),
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERBL_001_02NARRATOR_DRY_24004", "Now Make Some Noise"),
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERBL_001_03NARRATOR_DRY_24005", "Remember, Keep Strumming HARDER Until You Hit The Target Bar On The Calibration Meter At The Top Of The Screen"),
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERER_001_01NARRATOR_DRY_23763", "If You're Having Trouble With Anything, Or Just Wanna Go More In-Depth, Check Out The Help Topics"),
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERER_001_02NARRATOR_DRY_23764", "There You'll Find Videos, Diagrams, And Tips On Pretty Much Everything You Need To Know To Get Started"),
+		VoiceOver("Play_VO_FIRSTENCOUNTER_FIRSTENCOUNTERBL_001_05NARRATOR_DRY_24007", "Great Job"),
+		VoiceOver("Play_VO_STARTUPFLOW_002_01NARRATOR_DRY_24071", "Well Then, Welcome Aboard. Now, How Experienced Would You Say You Are At Playing Guitar Or Bass"),
+		VoiceOver("play_VO_STARTUPFLOW_002_03NARRATOR_DRY_24072", "Think Mostly About The One You Want To Play First, Today"),
+		VoiceOver("Play_VO_GLOBAL_006_48NARRATOR_DRY_26277", "You're Ready For The Practice Track Now. Here It Goes"),
+		VoiceOver("Play_VO_GLOBAL_006_50NARRATOR_DRY_26279", "You're Ready To Apply This To A Practice Track Now. Here It Goes"),
+		VoiceOver("Play_VO_GLOBAL_006_52NARRATOR_DRY_26281", "Okay, Now Let's Put It All Together In A Song. Here It Goes"),
+		VoiceOver("Play_VO_STARTUPFLOW_007_01NARRATOR_DRY_24098", "Do You Plan On Playing Right Handed Or Left Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_008_01NARRATOR_DRY_24104", "Do You Plan On Playing Right Handed Or Left Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_009_01NARRATOR_DRY_24107", "Do You Plan On Playing Righty Or Lefty"),
+		VoiceOver("Play_VO_STARTUPFLOW_010_01NARRATOR_DRY_24111", "Do You Plan On Playing Righty Or Lefty"),
+		VoiceOver("Play_VO_STARTUPFLOW_007_02NARRATOR_DRY_24099", "If You Want To Hold The Pick And Strum With Your Right Hand, Choose Right Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_007_03NARRATOR_DRY_24100", "If You Want To Hold The Pick And Strum With Your Left Hand, Choose Left Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_008_02NARRATOR_DRY_24102", "If You Want To Hold The Neck Of The Bass With Your Left Hand, And Play The String With Your Right, Then Choose Right Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_008_03NARRATOR_DRY_24103", "If You Want To Hold The Neck Of The Bass With Your Right Hand, And Play The String With Your Left, Then Choose Left Handed"),
+		VoiceOver("Play_VO_STARTUPFLOW_009_02NARRATOR_DRY_24108", "If You Want To Hold The Pick And Strum With Your Right Hand, Choose Righty"),
+		VoiceOver("Play_VO_STARTUPFLOW_009_03NARRATOR_DRY_24109", "If You Want To Hold The Pick And Strum With Your Left Hand, Choose Lefty"),
+		VoiceOver("Play_VO_STARTUPFLOW_010_02NARRATOR_DRY_24112", "If You Want To Hold The Neck Of The Bass With Your Left Hand, And Play The String With Your Right, Then Choose Righty"),
+		VoiceOver("Play_VO_STARTUPFLOW_010_03NARRATOR_DRY_24113", "If You Want To Hold The Neck Of The Bass With Your Right Hand, And Play The String With Your Left, Then Choose Lefty"),
+		VoiceOver("Play_VO_MENUMISC_004_14NARRATOR_DRY_26583", "Give This One A Shot"),
+	};
+
+	inline std::vector<VoiceOver> VO_SFX{
+		VoiceOver("Play_InGame_Click", "Drummer Count-in"),
+		VoiceOver("Play_InGame_Click_Accent", "Accented Drummer Count-in"),
+
+		VoiceOver("RR_RewindStart", "Riff Repeater Rewind (Infinite)"),
+		VoiceOver("RR_RewindStop", "Riff Repeater Rewind Stop"),
+
+		VoiceOver("RR_AutoContinue", "Riff Repeater Auto-Continue"),
+		VoiceOver("RR_Select_FromSong", "Riff Repeater Select"),
+
+		VoiceOver("Play_Select", "Select Song"),
+		VoiceOver("Play_SongDeSelect", "Deselect Song"),
+
+		VoiceOver("Nav_Up", "Up"),
+		VoiceOver("Nav_Down", "Down"),
+		VoiceOver("Nav_Mouse_Focus", "Highlight"),
+		VoiceOver("Nav_Select", "Select"),
+
+		VoiceOver("Gcade_Nav_Up", "Up (Guitarcade)"),
+		VoiceOver("Gcade_Nav_Down", "Down(Guitarcade)"),
+		VoiceOver("Gcade_Nav_Mouse_Focus", "Highlight (Guitarcade)"),
+		VoiceOver("Gcade_Nav_Select", "Select (Guitarcade)"),
+
+		VoiceOver("Play_mg_UI_SA_GameOver", "Score Attack Game Over"),
+		VoiceOver("Play_mg_UI_SA_Cheer_Platinum", "Score Attack Platinum"),
+		VoiceOver("Play_mg_UI_SA_Cheer_Strikes_0", "Score Attack Zero Strikes"),
+		VoiceOver("Play_mg_UI_SA_Cheer_Strikes_1", "Score Attack One Strike"),
+		VoiceOver("Play_mg_UI_SA_Cheer_Strikes_2", "Score Attack Two Strikes"),
+
+		VoiceOver("LSN_Nav_Select", "Lesson Mode Select"),
+		VoiceOver("LSN_Nav_Left", "Lesson Mode Left"),
+		VoiceOver("LSN_Nav_Right", "Lesson Mode Right"),
+
+		VoiceOver("Slider_Nav_Left", "Slider Left"),
+		VoiceOver("Slider_Nav_Right", "Slider Right"),
+		VoiceOver("Slider_Mouse_Move", "Slider Move"),
+		VoiceOver("Slider_Mouse_Select", "Slider Select"),
+
+		VoiceOver("GearChangeStarted", "Gear Change Start"),
+		VoiceOver("GearChangeComplete", "Gear Change End"),
+
+		VoiceOver("Dialog_TransitionIn", "Dialog Opening"),
+		VoiceOver("Enter_Dialog_MissionComp", "Mission Complete"),
+		VoiceOver("Enter_Dialog_RewardUnlock", "Unlock Reward"),
+		VoiceOver("Enter_Dialog_NewMission", "New Mission"),
+	};
+
+	inline std::vector<VoiceOver> VO_Crowd{
+		VoiceOver("Play_Crowd", "Play_Crowd"),
+		VoiceOver("Stop_Crowd", "Stop_Crowd"),
+
+		VoiceOver("Play_CrowdBookEnds_Start_0", "Play_CrowdBookEnds_Start_0"),
+		VoiceOver("Play_CrowdBookEnds_Start_1", "Play_CrowdBookEnds_Start_1"),
+		VoiceOver("Play_CrowdBookEnds_Start_2", "Play_CrowdBookEnds_Start_2"),
+		VoiceOver("Play_CrowdBookEnds_Start_3", "Play_CrowdBookEnds_Start_3"),
+		VoiceOver("Play_CrowdBookEnds_Stop", "Play_CrowdBookEnds_Stop"),
+
+		VoiceOver("Play_VR_Start_0", "Play_VR_Start_0"),
+		VoiceOver("Play_VR_Start_1", "Play_VR_Start_1"),
+		VoiceOver("Play_VR_Start_2", "Play_VR_Start_2"),
+		VoiceOver("Play_VR_Start_3", "Play_VR_Start_3"),
+		VoiceOver("Stop_VR", "Stop_VR"),
+
+		VoiceOver("Play_GenericCheer_0", "Play_GenericCheer_0"),
+		VoiceOver("Play_GenericCheer_1", "Play_GenericCheer_1"),
+		VoiceOver("Play_GenericCheer_2", "Play_GenericCheer_2"),
+		VoiceOver("Play_GenericCheer_3", "Play_GenericCheer_3"),
+
+		VoiceOver("Play_ShoutOut_0", "Play_ShoutOut_0"),
+		VoiceOver("Play_ShoutOut_1", "Play_ShoutOut_1"),
+		VoiceOver("Play_ShoutOut_2", "Play_ShoutOut_2"),
+		VoiceOver("Play_ShoutOut_3", "Play_ShoutOut_3"),
+
+		VoiceOver("Play_Ambience_0", "Play_Ambience_0"),
+		VoiceOver("Play_Ambience_1", "Play_Ambience_1"),
+		VoiceOver("Play_Ambience_2", "Play_Ambience_2"),
+		VoiceOver("Play_Ambience_3", "Play_Ambience_3"),
+		VoiceOver("Stop_Ambience_CT", "Stop_Ambience_CT"),
+
+		VoiceOver("Play_Misc1_0", "Play_Misc1_0"),
+		VoiceOver("Play_Misc1_1", "Play_Misc1_1"),
+		VoiceOver("Play_Misc1_2", "Play_Misc1_2"),
+		VoiceOver("Play_Misc1_3", "Play_Misc1_3"),
+		VoiceOver("Play_Misc2_0", "Play_Misc2_0"),
+		VoiceOver("Play_Misc2_1", "Play_Misc2_1"),
+		VoiceOver("Play_Misc2_2", "Play_Misc2_2"),
+		VoiceOver("Play_Misc2_3", "Play_Misc2_3"),
+		VoiceOver("Play_Misc3_0", "Play_Misc3_0"),
+		VoiceOver("Play_Misc3_1", "Play_Misc3_1"),
+		VoiceOver("Play_Misc3_2", "Play_Misc3_2"),
+		VoiceOver("Play_Misc3_3", "Play_Misc3_3"),
+		VoiceOver("Play_Misc4_0", "Play_Misc4_0"),
+		VoiceOver("Play_Misc4_1", "Play_Misc4_1"),
+		VoiceOver("Play_Misc4_2", "Play_Misc4_2"),
+		VoiceOver("Play_Misc4_3", "Play_Misc4_3"),
 	};
 
 	inline VoiceOver selectedVoiceOver;
