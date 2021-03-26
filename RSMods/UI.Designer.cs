@@ -434,6 +434,7 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox_TurnOffAllMods = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -3108,6 +3109,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.checkBox_TurnOffAllMods);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_SecondaryMonitorStartPos);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_ResetModsToDefault);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_CustomHighway);
@@ -5450,6 +5452,17 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
+            // checkBox_TurnOffAllMods
+            // 
+            this.checkBox_TurnOffAllMods.AutoSize = true;
+            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(637, 238);
+            this.checkBox_TurnOffAllMods.Name = "checkBox_TurnOffAllMods";
+            this.checkBox_TurnOffAllMods.Size = new System.Drawing.Size(108, 17);
+            this.checkBox_TurnOffAllMods.TabIndex = 100008;
+            this.checkBox_TurnOffAllMods.Text = "Turn Off All Mods";
+            this.checkBox_TurnOffAllMods.UseVisualStyleBackColor = true;
+            this.checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(this.Save_TurnOffAllMods);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5518,6 +5531,7 @@
             this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
+            this.tabPage_ModSettings_Misc.PerformLayout();
             this.groupBox_CustomHighway.ResumeLayout(false);
             this.groupBox_CustomHighway.PerformLayout();
             this.groupBox_Backups.ResumeLayout(false);
@@ -6005,6 +6019,7 @@
         private System.Windows.Forms.TextBox textBox_ChangeButtonColor;
         private System.Windows.Forms.Button button_ChangeButtonColor;
         private System.Windows.Forms.Button button_ResetCustomColors;
+        private System.Windows.Forms.CheckBox checkBox_TurnOffAllMods;
     }
 }
 

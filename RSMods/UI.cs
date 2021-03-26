@@ -691,6 +691,7 @@ namespace RSMods
             checkBox_ER_SeparateNoteColors.CheckedChanged -= new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged -= new System.EventHandler(Save_DumpRSModsLogToFile);
+            checkBox_TurnOffAllMods.CheckedChanged -= new System.EventHandler(Save_TurnOffAllMods);
 
 
             // Now we can change things without saving.
@@ -708,6 +709,7 @@ namespace RSMods
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
+            checkBox_TurnOffAllMods.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -723,6 +725,7 @@ namespace RSMods
             checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged += new System.EventHandler(Save_DumpRSModsLogToFile);
+            checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(Save_TurnOffAllMods);
         }
 
         #endregion
@@ -1903,6 +1906,14 @@ namespace RSMods
         {
             if (listBox_MidiAutoTuningOffset.SelectedIndex > -1)
                 SaveSettings_Save(ReadSettings.MidiTuningOffsetIdentifier, (listBox_MidiAutoTuningOffset.SelectedIndex - 3).ToString());
+        }
+
+        private void Save_TurnOffAllMods(object sender, EventArgs e)
+        {
+            if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")))
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off")))
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"));
         }
 
         #endregion
