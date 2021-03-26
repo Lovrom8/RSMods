@@ -5462,6 +5462,7 @@
             this.checkBox_TurnOffAllMods.Text = "Turn Off All Mods";
             this.checkBox_TurnOffAllMods.UseVisualStyleBackColor = true;
             this.checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(this.Save_TurnOffAllMods);
+            this.checkBox_TurnOffAllMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
