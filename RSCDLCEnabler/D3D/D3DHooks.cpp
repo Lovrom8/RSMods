@@ -259,7 +259,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		pCurrNotewayTexture = (IDirect3DTexture9*)pBaseNotewayTexture;
 
 		if (pBaseNotewayTexture) {
-			if (CRCForTexture(pCurrNotewayTexture, crc)) {
+			if (CRCForTexture(pCurrNotewayTexture, pDevice, crc)) {
 				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
 					pDevice->SetTexture(1, notewayTexture);
 				else if (crc == crcNotewayFretNumbers && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
@@ -319,7 +319,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (!pBaseRainbowTexture)
 				return SHOW_TEXTURE;
 
-			if (CRCForTexture(pCurrRainbowTexture, crc)) {
+			if (CRCForTexture(pCurrRainbowTexture, pDevice, crc)) {
 				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)
 					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 			}
@@ -353,6 +353,23 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	//	}
 	//}
 
+	/*if (IsExtraRemoved(lyrics, currentThicc)) { // Move Lyrics to different file. Current State: CRC never updates, BUT does pass CRCForTexture().
+		pDevice->GetTexture(0, &pBaseTexture);
+
+		D3DXSaveTextureToFile(L"lyrics_temp.png", D3DXIFF_PNG, pBaseTexture, NULL);
+
+		D3DXCreateTextureFromFile(pDevice, L"lyrics_temp.png", &pCurrTexture);
+
+		if (CRCForTexture(pCurrTexture, pDevice, crc)) {
+			if (crc != crcLyrics) {
+				D3DXSaveTextureToFile(L"lyrics.png", D3DXIFF_PNG, pBaseTexture, NULL);
+				crcLyrics = crc;
+				std::cout << "new lyric posted to lyrics.png" << std::endl;
+			}
+			std::cout << std::hex << crcLyrics << " = " << std::hex << crc << std::endl;
+		}
+	}*/
+
 	// Extended Range / Custom Colors (includes separate note colors)
 	if (AttemptedERInThisSong && UseEROrColorsInThisSong) {
 		MemHelpers::ToggleCB(UseERExclusivelyInThisSong);
@@ -376,7 +393,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				if (!pBaseTexture)
 					return SHOW_TEXTURE;
 
-				if (CRCForTexture(pCurrTexture, crc)) {
+				if (CRCForTexture(pCurrTexture, pDevice, crc)) {
 					//if (startLogging)
 					//	Log("0x%08x", crc);
 
@@ -400,7 +417,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (!pBaseTexture)
 				return REMOVE_TEXTURE;
 
-			if (CRCForTexture(pCurrTexture, crc)) {
+			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
 				//if (startLogging)
 				//	Log("0x%08x", crc);
 
@@ -421,7 +438,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (!pBaseTexture)
 				return SHOW_TEXTURE;
 
-			if (CRCForTexture(pCurrTexture, crc)) {
+			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
 				//if (startLogging)
 				//	Log("0x%08x", crc);
 
@@ -446,7 +463,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (!pBaseTexture)
 				return SHOW_TEXTURE;
 
-			if (CRCForTexture(pCurrTexture, crc)) {
+			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
 				//if (startLogging)
 				//	Log("0x%08x", crc);
 
@@ -517,7 +534,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
 		if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
-			if (CRCForTexture(pCurrTextures[1], crc)) {
+			if (CRCForTexture(pCurrTextures[1], pDevice, crc)) {
 				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { // Purple rectangles + orange line beneath them
 					SkylineOff = true;
 					return REMOVE_TEXTURE;
@@ -529,7 +546,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		pCurrTextures[0] = (IDirect3DTexture9*)pBaseTextures[0];
 
 		if (pBaseTextures[0]) {
-			if (CRCForTexture(pCurrTextures[0], crc)) {
+			if (CRCForTexture(pCurrTextures[0], pDevice, crc)) {
 				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
 					SkylineOff = true;
 					return REMOVE_TEXTURE;
@@ -551,7 +568,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				if (!pBaseTextures[1]) //if there's no texture for Stage 1
 					return REMOVE_TEXTURE;
 
-				if (CRCForTexture(pCurrTextures[1], crc)) {
+				if (CRCForTexture(pCurrTextures[1], pDevice, crc)) {
 					if (crc == crcHeadstock0 || crc == crcHeadstock1 || crc == crcHeadstock2 || crc == crcHeadstock3 || crc == crcHeadstock4)
 						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
 				}

@@ -45,6 +45,7 @@ inline unsigned long crc;
 inline unsigned long crcNotewayFretNumbers = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLanes = 0x35193, crcNotewayGutters = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
+inline unsigned long crcLyrics = 0x00000000;
 
 inline float rainbowSpeed = 2.f;
 inline const int randomTextureCount = 10;
@@ -220,7 +221,7 @@ inline DWORD QuickCheckSum(DWORD* BufferData, size_t Size) // Yes, we are aware 
 	return Sum;
 }
 
-inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, DWORD& o_crc) {
+inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, DWORD& o_crc) {
 	D3DLOCKED_RECT lockedRect;
 
 	if (texture->LockRect(0, &lockedRect, NULL, D3DLOCK_NOOVERWRITE | D3DLOCK_READONLY) == D3D_OK) {
@@ -232,7 +233,64 @@ inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, DWORD& o_crc) {
 			texture->UnlockRect(0);
 			return true;
 		}
+		else {
+			std::cout << "CRCForTexture: FAILED. lockedRect.pBits == NULL" << std::endl;
+			return false;
+		}
 	}
-	return false;
+	else {
+		std::cout << "CRCForTexture: FAILED. LockRect == D3DERR_INVALIDCALL" << std::endl;
+
+		D3DCAPS9 pDeviceCaps;
+		IDirect3DSurface9* pRenderTarget, *newRenderTarget;
+		D3DSURFACE_DESC surfaceDesc;
+
+		pDevice->GetDeviceCaps(&pDeviceCaps);
+
+		for (int i = 0; i < pDeviceCaps.NumSimultaneousRTs - 1; i++) {
+			std::cout << "CRCForTexture: Trying RenderTarget(" << i << ")" << std::endl;
+
+			HRESULT rRenderTarget = pDevice->GetRenderTarget(i, &pRenderTarget);
+			
+			if (rRenderTarget == D3D_OK) {
+				pRenderTarget->GetDesc(&surfaceDesc);
+				std::string poolType;
+
+				short pool = surfaceDesc.Pool;
+
+				switch (pool) {
+					case D3DPOOL_DEFAULT:
+						poolType = "D3DPOOL_DEFAULT";
+						break;
+					case D3DPOOL_MANAGED:
+						poolType = "D3DPOOL_MANAGED";
+						break;
+					case D3DPOOL_SYSTEMMEM:
+						poolType = "D3DPOOL_SYSTEMMEM";
+						break;
+					case D3DPOOL_SCRATCH:
+						poolType = "D3DPOOL_SCRATCH";
+						break;
+					case D3DPOOL_FORCE_DWORD:
+						poolType = "D3DPOOL_FORCE_DWORD";
+						break;
+
+					default:
+							poolType = "UNKNOWN";
+				}
+
+				std::cout << "CRCForTexture: RenderTarget(" << i << ")->Pool == " << poolType << std::endl;
+			}
+			else if (rRenderTarget == D3DERR_NOTFOUND)
+				std::cout << "CRCForTexture: No Render Target At Index: " << i << std::endl;
+			else
+				std::cout << "CRCForTexure: pDevice->GetRenderTarget(" << i << ") has an invalid argument" << std::endl;
+
+			if (pRenderTarget != nullptr)
+				pRenderTarget->Release(); // Gotta release it or it'll leak everywhere.
+		}
+		std::cout << "CRCForTexture: END" << std::endl;
+		return false;
+	}
 }
 
