@@ -237,6 +237,7 @@
             this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.checkBox_TurnOffAllMods = new System.Windows.Forms.CheckBox();
             this.button_SecondaryMonitorStartPos = new System.Windows.Forms.Button();
             this.groupBox_CustomHighway = new System.Windows.Forms.GroupBox();
             this.button_ResetNotewayColors = new System.Windows.Forms.Button();
@@ -393,6 +394,11 @@
             this.label_AuthorizedAs = new System.Windows.Forms.Label();
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
+            this.tab_SoundPacks = new System.Windows.Forms.TabPage();
+            this.button_RepackAudioPsarc = new System.Windows.Forms.Button();
+            this.button_ReplaceBadPerformance = new System.Windows.Forms.Button();
+            this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
+            this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
             this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
             this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
@@ -434,7 +440,6 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox_TurnOffAllMods = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -514,6 +519,7 @@
             this.tab_Twitch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
+            this.tab_SoundPacks.SuspendLayout();
             this.tab_Profiles.SuspendLayout();
             this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
@@ -2433,6 +2439,7 @@
             this.TabController.Controls.Add(this.tab_RSASIO);
             this.TabController.Controls.Add(this.tab_Rocksmith);
             this.TabController.Controls.Add(this.tab_Twitch);
+            this.TabController.Controls.Add(this.tab_SoundPacks);
             this.TabController.Controls.Add(this.tab_Profiles);
             this.TabController.Controls.Add(this.tab_GUISettings);
             this.TabController.Location = new System.Drawing.Point(3, 16);
@@ -3122,6 +3129,18 @@
             this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
+            // checkBox_TurnOffAllMods
+            // 
+            this.checkBox_TurnOffAllMods.AutoSize = true;
+            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(637, 238);
+            this.checkBox_TurnOffAllMods.Name = "checkBox_TurnOffAllMods";
+            this.checkBox_TurnOffAllMods.Size = new System.Drawing.Size(108, 17);
+            this.checkBox_TurnOffAllMods.TabIndex = 100008;
+            this.checkBox_TurnOffAllMods.Text = "Turn Off All Mods";
+            this.checkBox_TurnOffAllMods.UseVisualStyleBackColor = true;
+            this.checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(this.Save_TurnOffAllMods);
+            this.checkBox_TurnOffAllMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_SecondaryMonitorStartPos
             // 
@@ -5040,6 +5059,63 @@
             this.button_TwitchReAuthorize.UseVisualStyleBackColor = true;
             this.button_TwitchReAuthorize.Click += new System.EventHandler(this.Twitch_ReAuthorize);
             // 
+            // tab_SoundPacks
+            // 
+            this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.button_RepackAudioPsarc);
+            this.tab_SoundPacks.Controls.Add(this.button_ReplaceBadPerformance);
+            this.tab_SoundPacks.Controls.Add(this.label_AudioPsarcPleaseWait);
+            this.tab_SoundPacks.Controls.Add(this.button_UnpackAudioPsarc);
+            this.tab_SoundPacks.Location = new System.Drawing.Point(4, 22);
+            this.tab_SoundPacks.Name = "tab_SoundPacks";
+            this.tab_SoundPacks.Padding = new System.Windows.Forms.Padding(3);
+            this.tab_SoundPacks.Size = new System.Drawing.Size(1150, 513);
+            this.tab_SoundPacks.TabIndex = 10;
+            this.tab_SoundPacks.Text = "Sound Packs";
+            // 
+            // button_RepackAudioPsarc
+            // 
+            this.button_RepackAudioPsarc.Location = new System.Drawing.Point(951, 467);
+            this.button_RepackAudioPsarc.Name = "button_RepackAudioPsarc";
+            this.button_RepackAudioPsarc.Size = new System.Drawing.Size(170, 23);
+            this.button_RepackAudioPsarc.TabIndex = 3;
+            this.button_RepackAudioPsarc.Text = "Repack Audio Psarc";
+            this.button_RepackAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_RepackAudioPsarc.Visible = false;
+            this.button_RepackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RepackAudioPsarc);
+            // 
+            // button_ReplaceBadPerformance
+            // 
+            this.button_ReplaceBadPerformance.Location = new System.Drawing.Point(35, 247);
+            this.button_ReplaceBadPerformance.Name = "button_ReplaceBadPerformance";
+            this.button_ReplaceBadPerformance.Size = new System.Drawing.Size(223, 23);
+            this.button_ReplaceBadPerformance.TabIndex = 2;
+            this.button_ReplaceBadPerformance.Text = "Replace \"Bad Performance\"";
+            this.button_ReplaceBadPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceBadPerformance.Visible = false;
+            this.button_ReplaceBadPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceBadPerformance);
+            // 
+            // label_AudioPsarcPleaseWait
+            // 
+            this.label_AudioPsarcPleaseWait.AutoSize = true;
+            this.label_AudioPsarcPleaseWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label_AudioPsarcPleaseWait.Location = new System.Drawing.Point(449, 35);
+            this.label_AudioPsarcPleaseWait.Name = "label_AudioPsarcPleaseWait";
+            this.label_AudioPsarcPleaseWait.Size = new System.Drawing.Size(267, 40);
+            this.label_AudioPsarcPleaseWait.TabIndex = 1;
+            this.label_AudioPsarcPleaseWait.Text = "Please wait as we get the files ready.\r\nThis can take a little bit.\r\n";
+            this.label_AudioPsarcPleaseWait.Visible = false;
+            // 
+            // button_UnpackAudioPsarc
+            // 
+            this.button_UnpackAudioPsarc.Location = new System.Drawing.Point(35, 52);
+            this.button_UnpackAudioPsarc.Name = "button_UnpackAudioPsarc";
+            this.button_UnpackAudioPsarc.Size = new System.Drawing.Size(142, 23);
+            this.button_UnpackAudioPsarc.TabIndex = 0;
+            this.button_UnpackAudioPsarc.Text = "Unpack Audio Psarc";
+            this.button_UnpackAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_UnpackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_UnpackAudioPsarc);
+            // 
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
@@ -5452,18 +5528,6 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // checkBox_TurnOffAllMods
-            // 
-            this.checkBox_TurnOffAllMods.AutoSize = true;
-            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(637, 238);
-            this.checkBox_TurnOffAllMods.Name = "checkBox_TurnOffAllMods";
-            this.checkBox_TurnOffAllMods.Size = new System.Drawing.Size(108, 17);
-            this.checkBox_TurnOffAllMods.TabIndex = 100008;
-            this.checkBox_TurnOffAllMods.Text = "Turn Off All Mods";
-            this.checkBox_TurnOffAllMods.UseVisualStyleBackColor = true;
-            this.checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(this.Save_TurnOffAllMods);
-            this.checkBox_TurnOffAllMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5593,6 +5657,8 @@
             this.tab_Twitch.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).EndInit();
+            this.tab_SoundPacks.ResumeLayout(false);
+            this.tab_SoundPacks.PerformLayout();
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
             this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
@@ -6021,6 +6087,11 @@
         private System.Windows.Forms.Button button_ChangeButtonColor;
         private System.Windows.Forms.Button button_ResetCustomColors;
         private System.Windows.Forms.CheckBox checkBox_TurnOffAllMods;
+        private System.Windows.Forms.TabPage tab_SoundPacks;
+        private System.Windows.Forms.Button button_UnpackAudioPsarc;
+        private System.Windows.Forms.Label label_AudioPsarcPleaseWait;
+        private System.Windows.Forms.Button button_ReplaceBadPerformance;
+        private System.Windows.Forms.Button button_RepackAudioPsarc;
     }
 }
 

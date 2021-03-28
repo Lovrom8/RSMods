@@ -23,6 +23,8 @@ using System.Net.Http;
 using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using RocksmithToolkitLib.DLCPackage;
+using RocksmithToolkitLib;
 
 namespace RSMods
 {
@@ -48,6 +50,8 @@ namespace RSMods
         int ProfileEditsTabIndex;
 
         string github_UpdateResponse;
+
+        bool unpackedAudioPsarc = false;
 
         public MainForm()
         {
@@ -141,6 +145,9 @@ namespace RSMods
 
             // Should we show the Update button?
             Startup_ShowUpdateButton();
+
+            // Is Audio.psarc unpacked?
+            Startup_CheckStatusAudioPsarc();
         }
 
         #region Startup Functions
@@ -321,6 +328,15 @@ namespace RSMods
         }
 
         private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
+
+        private void Startup_CheckStatusAudioPsarc()
+        {
+            unpackedAudioPsarc = Directory.Exists("audio_psarc");
+
+            button_UnpackAudioPsarc.Visible = !unpackedAudioPsarc;
+            button_ReplaceBadPerformance.Visible = unpackedAudioPsarc;
+            button_RepackAudioPsarc.Visible = unpackedAudioPsarc;
+        }
 
         #endregion
         #region Show Prior Settings In GUI
@@ -3075,6 +3091,54 @@ namespace RSMods
 
         private void CheckForUpdates_UpdateRSMods(object sender, EventArgs e) => CheckForUpdates_GetInstaller();
         #endregion
+        #region Sound Packs
+        private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+                return;
+
+            label_AudioPsarcPleaseWait.Visible = true;
+
+            string audioPsarcLocation = Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc");
+            try
+            {
+                await Task.Run(() => Packer.Unpack(audioPsarcLocation, "audio_psarc/")); // Broken as of now. English folder doesn't get unpacked because of the stupid broken data chunk. smh.
+            }
+            catch { } // Required because of a corrupted datachunk in one of the french voice-lines.
+            label_AudioPsarcPleaseWait.Visible = false;
+
+            MessageBox.Show("You may now mess around with custom song packs");
+
+            button_UnpackAudioPsarc.Visible = false;
+            button_RepackAudioPsarc.Visible = true;
+            button_ReplaceBadPerformance.Visible = true;
+        }
+
+        private async void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
+        {
+            label_AudioPsarcPleaseWait.Visible = true;
+            await Task.Run(() => Packer.Pack("audio_psarc", Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc")));
+            label_AudioPsarcPleaseWait.Visible = false;
+            MessageBox.Show("Open your game, and see if the sound works!");
+        }
+
+        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) // TODO: Add Ogg -> Wwise support since supplying a Wem file sucks.
+        {
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.InitialDirectory = Application.StartupPath;
+                fileDialog.Filter = "Wem Files|*.wem";
+                fileDialog.RestoreDirectory = true;
+
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, "audio_psarc\\audio.psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
+                    MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+                }
+            }
+        }
+        #endregion
+
         #region Midi
 
         private void Midi_LoadDevices(object sender, EventArgs e)
