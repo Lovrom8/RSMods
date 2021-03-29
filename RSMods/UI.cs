@@ -3082,7 +3082,7 @@ namespace RSMods
         #region Sound Packs
         private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
-            if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+            if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
                 return;
 
             SoundPacks_PleaseWaitMessage(true);
@@ -3103,7 +3103,9 @@ namespace RSMods
         private async void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
             SoundPacks_PleaseWaitMessage(true);
-            await Task.Run(() => Packer.Pack("audio_psarc", Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc")));
+            GlobalExtension.UpdateProgress.Maximum = 1000000;
+            await Task.Run(() => Packer.Pack(Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc"), Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc")));
+            GlobalExtension.UpdateProgress.Maximum = 100;
             SoundPacks_PleaseWaitMessage(false);
             MessageBox.Show("Open your game, and see if the sound works!");
         }
@@ -3134,7 +3136,9 @@ namespace RSMods
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, "audio_psarc\\audio.psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
+                    File.Delete(Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
+                    GC.Collect(); // Need to take out the garbage or it'll crash
+                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
                     MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
                 }
             }
