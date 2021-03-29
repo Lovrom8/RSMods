@@ -24,6 +24,8 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
+using RocksmithToolkitLib.Ogg;
+
 namespace RSMods
 {
     public partial class MainForm : Form
@@ -3093,10 +3095,10 @@ namespace RSMods
             
             SoundPacks_PleaseWaitMessage(false);
             SoundPacks_ChangeUIForUnpackedFolder(true);
-            if (Directory.Exists("audio_psarc\\audio.psarc_RS2014_Pc\\audio\\windows\\english(us)\\"))
-                MessageBox.Show("IT WORKS!!!!");
-            //MessageBox.Show("You may now mess around with custom song packs");
+            MessageBox.Show("You may now mess around with custom sound packs");
         }
+
+        private void SoundPacks_DownloadWwise(object sender, EventArgs e) => Process.Start("https://ignition4.customsforge.com/cfsm/wwise/");
 
         private void SoundPacks_PleaseWaitMessage(bool show) => label_AudioPsarcPleaseWait.Visible = show;
 
@@ -3126,22 +3128,62 @@ namespace RSMods
             button_RemoveUnpackedAudioPsarc.Visible = isUnpacked;
         }
 
-        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) // TODO: Add Ogg -> Wwise support since supplying a Wem file sucks.
+        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound("audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem");
+
+        private void SoundPacks_ReplaceSound(string soundToReplace)
         {
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.InitialDirectory = Application.StartupPath;
-                fileDialog.Filter = "Wem Files|*.wem";
+                fileDialog.Filter = "Ogg Files|*.ogg|Wem Files|*.wem";
                 fileDialog.RestoreDirectory = true;
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    File.Delete(Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
+                    if (Path.GetExtension(fileDialog.FileName) == ".ogg")
+                        fileDialog.FileName = SoundPacks_ConvertOGGToWem(fileDialog.FileName);
+
+                    File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
                     GC.Collect(); // Need to take out the garbage or it'll crash
-                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem"));
+                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
                     MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
                 }
             }
+        }
+
+        private string SoundPacks_ConvertOGGToWem(string oggFile)
+        {
+            SoundPacks_PleaseWaitMessage(true);
+            string wemFile = "null";
+            try
+            {
+                string oggFileName = Path.GetFileNameWithoutExtension(oggFile);
+                string oggFullPath = Path.Combine(Path.GetDirectoryName(oggFile), oggFileName);
+                string directory = Path.GetDirectoryName(oggFile);
+                string oggPreviewName = oggFullPath + "_preview";
+
+                wemFile = OggFile.Convert2Wem(oggFile);
+
+                File.Delete(oggFullPath + ".wav");
+                File.Delete(oggPreviewName + ".ogg");
+                File.Delete(oggPreviewName + ".wav");
+                File.Delete(oggPreviewName + ".wem");
+
+                if (File.Exists(Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wemFile) + ".wem")))
+                    File.Delete(Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wemFile) + ".wem"));
+
+                GC.Collect(); // Gotta clean up the garbage or it'll try to crash.
+
+                File.Move(wemFile, Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wemFile) + ".wem"));
+                wemFile = Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wemFile) + ".wem");
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                MessageBox.Show($"Your WWISEROOT environment variable can't be found.\nPlease change it to a folder that exists.\nThe error is: {ex.Message}.\nPlease reboot your computer after you fix this.");
+            }
+
+            SoundPacks_PleaseWaitMessage(false);
+            return wemFile;
         }
         #endregion
 

@@ -395,6 +395,7 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_SoundPacks = new System.Windows.Forms.TabPage();
+            this.button_RemoveUnpackedAudioPsarc = new System.Windows.Forms.Button();
             this.button_RepackAudioPsarc = new System.Windows.Forms.Button();
             this.button_ReplaceBadPerformance = new System.Windows.Forms.Button();
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
@@ -440,7 +441,7 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.button_RemoveUnpackedAudioPsarc = new System.Windows.Forms.Button();
+            this.label_DownloadWwise = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5063,6 +5064,7 @@
             // tab_SoundPacks
             // 
             this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.label_DownloadWwise);
             this.tab_SoundPacks.Controls.Add(this.button_RemoveUnpackedAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.button_RepackAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.button_ReplaceBadPerformance);
@@ -5074,6 +5076,16 @@
             this.tab_SoundPacks.Size = new System.Drawing.Size(1150, 513);
             this.tab_SoundPacks.TabIndex = 10;
             this.tab_SoundPacks.Text = "Sound Packs";
+            // 
+            // button_RemoveUnpackedAudioPsarc
+            // 
+            this.button_RemoveUnpackedAudioPsarc.Location = new System.Drawing.Point(948, 127);
+            this.button_RemoveUnpackedAudioPsarc.Name = "button_RemoveUnpackedAudioPsarc";
+            this.button_RemoveUnpackedAudioPsarc.Size = new System.Drawing.Size(173, 23);
+            this.button_RemoveUnpackedAudioPsarc.TabIndex = 4;
+            this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
+            this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
             // 
             // button_RepackAudioPsarc
             // 
@@ -5088,7 +5100,7 @@
             // 
             // button_ReplaceBadPerformance
             // 
-            this.button_ReplaceBadPerformance.Location = new System.Drawing.Point(35, 247);
+            this.button_ReplaceBadPerformance.Location = new System.Drawing.Point(35, 307);
             this.button_ReplaceBadPerformance.Name = "button_ReplaceBadPerformance";
             this.button_ReplaceBadPerformance.Size = new System.Drawing.Size(223, 23);
             this.button_ReplaceBadPerformance.TabIndex = 2;
@@ -5110,7 +5122,7 @@
             // 
             // button_UnpackAudioPsarc
             // 
-            this.button_UnpackAudioPsarc.Location = new System.Drawing.Point(35, 52);
+            this.button_UnpackAudioPsarc.Location = new System.Drawing.Point(35, 189);
             this.button_UnpackAudioPsarc.Name = "button_UnpackAudioPsarc";
             this.button_UnpackAudioPsarc.Size = new System.Drawing.Size(142, 23);
             this.button_UnpackAudioPsarc.TabIndex = 0;
@@ -5530,15 +5542,16 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // button_RemoveUnpackedAudioPsarc
+            // label_DownloadWwise
             // 
-            this.button_RemoveUnpackedAudioPsarc.Location = new System.Drawing.Point(948, 127);
-            this.button_RemoveUnpackedAudioPsarc.Name = "button_RemoveUnpackedAudioPsarc";
-            this.button_RemoveUnpackedAudioPsarc.Size = new System.Drawing.Size(173, 23);
-            this.button_RemoveUnpackedAudioPsarc.TabIndex = 4;
-            this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
-            this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
-            this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
+            this.label_DownloadWwise.AutoSize = true;
+            this.label_DownloadWwise.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label_DownloadWwise.Location = new System.Drawing.Point(31, 35);
+            this.label_DownloadWwise.Name = "label_DownloadWwise";
+            this.label_DownloadWwise.Size = new System.Drawing.Size(260, 40);
+            this.label_DownloadWwise.TabIndex = 5;
+            this.label_DownloadWwise.Text = "Requires Wwise 2013.2 <-> 2017.1.\r\nClick to Download.";
+            this.label_DownloadWwise.Click += new System.EventHandler(this.SoundPacks_DownloadWwise);
             // 
             // MainForm
             // 
@@ -6105,6 +6118,7 @@
         private System.Windows.Forms.Button button_ReplaceBadPerformance;
         private System.Windows.Forms.Button button_RepackAudioPsarc;
         private System.Windows.Forms.Button button_RemoveUnpackedAudioPsarc;
+        private System.Windows.Forms.Label label_DownloadWwise;
     }
 }
 

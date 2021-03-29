@@ -161,6 +161,12 @@
     <None Include="Lib\tools\OpenCmd.bat" />
     <None Include="Lib\tools\packed_codebooks.bin" />
     <None Include="Lib\tools\packed_codebooks_aoTuV_603.bin" />
+    <Content Include="Lib\Wwise2010.tar.bz2" />
+    <Content Include="Lib\Wwise2013.tar.bz2" />
+    <Content Include="Lib\Wwise2014.tar.bz2" />
+    <Content Include="Lib\Wwise2015.tar.bz2" />
+    <Content Include="Lib\Wwise2016.tar.bz2" />
+    <Content Include="Lib\Wwise2017.tar.bz2" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
