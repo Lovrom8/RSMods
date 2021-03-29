@@ -83,7 +83,7 @@ namespace Midi {
 		std::vector<unsigned char> message;
 
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
-			std::cout << "(MIDI) SendCC: DUMMY PEDAL" << std::endl;
+			std::cout << "(MIDI) SendPC: DUMMY PEDAL" << std::endl;
 			return false;
 		}
 
