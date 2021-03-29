@@ -120,7 +120,7 @@ bool MemUtil::IsBadReadPtr(void* p) //NOTE: We are very aware this is not exactl
 }
 
 /// <summary>
-/// 
+/// Get memory address from pointer w/ offsets
 /// </summary>
 /// <param name="ptr"> - Memory Pointer</param>
 /// <param name="offsets"> - Cheat Engine Offsets</param>
