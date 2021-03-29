@@ -24,11 +24,8 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
-using RocksmithToolkitLib;
-
 namespace RSMods
 {
-
     public partial class MainForm : Form
     {
         bool shipProfileEdits = false;
@@ -50,8 +47,6 @@ namespace RSMods
         int ProfileEditsTabIndex;
 
         string github_UpdateResponse;
-
-        bool unpackedAudioPsarc = false;
 
         public MainForm()
         {
@@ -329,14 +324,7 @@ namespace RSMods
 
         private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
 
-        private void Startup_CheckStatusAudioPsarc()
-        {
-            unpackedAudioPsarc = Directory.Exists("audio_psarc");
-
-            button_UnpackAudioPsarc.Visible = !unpackedAudioPsarc;
-            button_ReplaceBadPerformance.Visible = unpackedAudioPsarc;
-            button_RepackAudioPsarc.Visible = unpackedAudioPsarc;
-        }
+        private void Startup_CheckStatusAudioPsarc() => SoundPacks_ChangeUIForUnpackedFolder(Directory.Exists("audio_psarc"));
 
         #endregion
         #region Show Prior Settings In GUI
@@ -3097,29 +3085,43 @@ namespace RSMods
             if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
                 return;
 
-            label_AudioPsarcPleaseWait.Visible = true;
+            SoundPacks_PleaseWaitMessage(true);
 
             string audioPsarcLocation = Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc");
-            try
-            {
-                await Task.Run(() => Packer.Unpack(audioPsarcLocation, "audio_psarc/")); // Broken as of now. English folder doesn't get unpacked because of the stupid broken data chunk. smh.
-            }
-            catch { } // Required because of a corrupted datachunk in one of the french voice-lines.
-            label_AudioPsarcPleaseWait.Visible = false;
 
-            MessageBox.Show("You may now mess around with custom song packs");
-
-            button_UnpackAudioPsarc.Visible = false;
-            button_RepackAudioPsarc.Visible = true;
-            button_ReplaceBadPerformance.Visible = true;
+            await Task.Run(() => Packer.Unpack(audioPsarcLocation, "audio_psarc/"));
+            
+            SoundPacks_PleaseWaitMessage(false);
+            SoundPacks_ChangeUIForUnpackedFolder(true);
+            if (Directory.Exists("audio_psarc\\audio.psarc_RS2014_Pc\\audio\\windows\\english(us)\\"))
+                MessageBox.Show("IT WORKS!!!!");
+            //MessageBox.Show("You may now mess around with custom song packs");
         }
+
+        private void SoundPacks_PleaseWaitMessage(bool show) => label_AudioPsarcPleaseWait.Visible = show;
 
         private async void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
-            label_AudioPsarcPleaseWait.Visible = true;
+            SoundPacks_PleaseWaitMessage(true);
             await Task.Run(() => Packer.Pack("audio_psarc", Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc")));
-            label_AudioPsarcPleaseWait.Visible = false;
+            SoundPacks_PleaseWaitMessage(false);
             MessageBox.Show("Open your game, and see if the sound works!");
+        }
+
+        private void SoundPacks_RemoveUnpackedAudioPsarc(object sender, EventArgs e)
+        {
+            SoundPacks_PleaseWaitMessage(true);
+            Directory.Delete("audio_psarc", true);
+            SoundPacks_ChangeUIForUnpackedFolder(false);
+            SoundPacks_PleaseWaitMessage(false);
+        }
+
+        private void SoundPacks_ChangeUIForUnpackedFolder(bool isUnpacked)
+        {
+            button_UnpackAudioPsarc.Visible = !isUnpacked;
+            button_RepackAudioPsarc.Visible = isUnpacked;
+            button_ReplaceBadPerformance.Visible = isUnpacked;
+            button_RemoveUnpackedAudioPsarc.Visible = isUnpacked;
         }
 
         private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) // TODO: Add Ogg -> Wwise support since supplying a Wem file sucks.

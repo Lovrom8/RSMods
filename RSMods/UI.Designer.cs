@@ -440,6 +440,7 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.button_RemoveUnpackedAudioPsarc = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5062,6 +5063,7 @@
             // tab_SoundPacks
             // 
             this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.button_RemoveUnpackedAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.button_RepackAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.button_ReplaceBadPerformance);
             this.tab_SoundPacks.Controls.Add(this.label_AudioPsarcPleaseWait);
@@ -5527,6 +5529,16 @@
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
+            // 
+            // button_RemoveUnpackedAudioPsarc
+            // 
+            this.button_RemoveUnpackedAudioPsarc.Location = new System.Drawing.Point(948, 127);
+            this.button_RemoveUnpackedAudioPsarc.Name = "button_RemoveUnpackedAudioPsarc";
+            this.button_RemoveUnpackedAudioPsarc.Size = new System.Drawing.Size(173, 23);
+            this.button_RemoveUnpackedAudioPsarc.TabIndex = 4;
+            this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
+            this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
             // 
             // MainForm
             // 
@@ -6092,6 +6104,7 @@
         private System.Windows.Forms.Label label_AudioPsarcPleaseWait;
         private System.Windows.Forms.Button button_ReplaceBadPerformance;
         private System.Windows.Forms.Button button_RepackAudioPsarc;
+        private System.Windows.Forms.Button button_RemoveUnpackedAudioPsarc;
     }
 }
 
