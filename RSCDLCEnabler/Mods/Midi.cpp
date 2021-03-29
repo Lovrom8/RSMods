@@ -82,6 +82,11 @@ namespace Midi {
 		RtMidiOut* midiout = new RtMidiOut();
 		std::vector<unsigned char> message;
 
+		if (selectedPedal.pedalName == MidiPedal().pedalName) {
+			std::cout << "(MIDI) SendCC: DUMMY PEDAL" << std::endl;
+			return false;
+		}
+
 		// Check available ports.
 		NumberOfPorts = midiOutGetNumDevs();
 		if (NumberOfPorts == 0) {
@@ -118,9 +123,10 @@ namespace Midi {
 	/// <returns>Message wwas sent or not.</returns>
 	bool SendControlChange(char toePosition) {
 
-		if (selectedPedal.pedalName != MidiPedal().pedalName)
+		if (selectedPedal.pedalName == MidiPedal().pedalName) {
+			std::cout << "(MIDI) SendCC: DUMMY PEDAL" << std::endl;
 			return false;
-		
+		}
 
 		RtMidiOut* midiout = new RtMidiOut();
 		std::vector<unsigned char> message;
