@@ -3083,6 +3083,8 @@ namespace RSMods
         private void CheckForUpdates_UpdateRSMods(object sender, EventArgs e) => CheckForUpdates_GetInstaller();
         #endregion
         #region Sound Packs
+
+        string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\";
         private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
             if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
@@ -3129,7 +3131,8 @@ namespace RSMods
             button_RemoveUnpackedAudioPsarc.Visible = isUnpacked;
         }
 
-        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound("audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\2066953778.wem");
+        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + "2066953778.wem");
+        private void SoundPacks_ReplaceWonderfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + "2067154245.wem");
 
         private void SoundPacks_ReplaceSound(string soundToReplace)
         {
@@ -3152,7 +3155,7 @@ namespace RSMods
                     {
                         File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
                         GC.Collect(); // Need to take out the garbage or it'll crash
-                        File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
+                        File.Move(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
                         MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
                     }
                     else
@@ -3179,11 +3182,12 @@ namespace RSMods
             string wemFile = "null";
             try
             {
-                string previewFile = Path.Combine(Path.GetDirectoryName(wavFile), Path.GetFileNameWithoutExtension(wavFile) + "_preview.wav"); // Previw needs to be made or Wav2Wem crashes.
-                File.Copy(wavFile, previewFile);
+                string previewWav = Path.Combine(Path.GetDirectoryName(wavFile), Path.GetFileNameWithoutExtension(wavFile) + "_preview.wav"); // Previw needs to be made or Wav2Wem crashes.
+                File.Copy(wavFile, previewWav);
                 Wwise.Wav2Wem(wavFile, Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem"), 4);
                 wemFile = Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem");
-                File.Delete(previewFile);
+                File.Delete(previewWav);
+                File.Delete(Path.Combine(Path.GetDirectoryName(wemFile), Path.GetFileNameWithoutExtension(wemFile) + "_preview.wem"));
             }
             catch (DirectoryNotFoundException ex)
             {
