@@ -26,6 +26,8 @@ using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
+using System.IO.Compression;
+using SevenZip;
 
 namespace RSMods
 {
@@ -3231,6 +3233,58 @@ namespace RSMods
             SoundPacks_PleaseWaitMessage(false);
             return wemFile;
         }
+
+        private void SoundPacks_Export(object sender, EventArgs e)
+        {
+            SevenZipCompressor.SetLibraryPath("7z.dll");
+
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                SevenZipCompressor compressor = new SevenZipCompressor
+                {
+                    CompressionMethod = CompressionMethod.Deflate,
+                    CompressionLevel = SevenZip.CompressionLevel.Normal,
+                    CompressionMode = SevenZip.CompressionMode.Create,
+                    DirectoryStructure = true,
+                    PreserveDirectoryRoot = false,
+                    ArchiveFormat = OutArchiveFormat.Zip
+                };
+
+                Dictionary<string, string> exportedFiles = new Dictionary<string, string>()
+                {
+                    { "2066953778.wem", soundPackLocationPrefix + "2066953778.wem"}, // Bad Performance
+                    { "2067154245.wem", soundPackLocationPrefix + "2067154245.wem"} // Wonderful Performance
+                };
+
+                compressor.CompressFileDictionary(exportedFiles, fileDialog.FileName);
+            }
+        }
+
+        private void SoundPacks_Import(object sender, EventArgs e)
+        {
+            SevenZipExtractor.SetLibraryPath("7z.dll");
+
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.RestoreDirectory = true;
+                fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
+
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    using (SevenZipExtractor extractor = new SevenZipExtractor(fileDialog.FileName))
+                    {
+                        extractor.ExtractArchive(soundPackLocationPrefix);
+                        MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+                    }
+                }
+            }
+        }
+
+
         #endregion
 
         #region Midi
