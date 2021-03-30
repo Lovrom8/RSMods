@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.Ogg;
+using NAudio.Wave;
 
 namespace RSMods
 {
@@ -3135,20 +3136,61 @@ namespace RSMods
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.InitialDirectory = Application.StartupPath;
-                fileDialog.Filter = "Ogg Files|*.ogg|Wem Files|*.wem";
+                fileDialog.Filter = "Mp3 Files|*.mp3|Ogg Files|*.ogg|Wav Files|*.wav|Wem Files|*.wem";
                 fileDialog.RestoreDirectory = true;
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    if (Path.GetExtension(fileDialog.FileName) == ".mp3")
+                        fileDialog.FileName = SoundPacks_ConvertMP3ToWav(fileDialog.FileName);
                     if (Path.GetExtension(fileDialog.FileName) == ".ogg")
                         fileDialog.FileName = SoundPacks_ConvertOGGToWem(fileDialog.FileName);
+                    if (Path.GetExtension(fileDialog.FileName) == ".wav")
+                        fileDialog.FileName = SoundPacks_ConvertWAVToWem(fileDialog.FileName);
 
-                    File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
-                    GC.Collect(); // Need to take out the garbage or it'll crash
-                    File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
-                    MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+                    if (fileDialog.FileName != "null")
+                    {
+                        File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
+                        GC.Collect(); // Need to take out the garbage or it'll crash
+                        File.Copy(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
+                        MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+                    }
+                    else
+                        MessageBox.Show("An error occured when converting your file.\nPlease contact the RSMods devs.");
+                   
                 }
             }
+        }
+
+        private string SoundPacks_ConvertMP3ToWav(string mp3File)
+        {
+            string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
+
+            using(Mp3FileReader mp3FileReader = new Mp3FileReader(mp3File))
+            {
+                WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
+            }
+
+            return wavFile;
+        }
+
+        private string SoundPacks_ConvertWAVToWem(string wavFile)
+        {
+            string wemFile = "null";
+            try
+            {
+                string previewFile = Path.Combine(Path.GetDirectoryName(wavFile), Path.GetFileNameWithoutExtension(wavFile) + "_preview.wav"); // Previw needs to be made or Wav2Wem crashes.
+                File.Copy(wavFile, previewFile);
+                Wwise.Wav2Wem(wavFile, Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem"), 4);
+                wemFile = Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem");
+                File.Delete(previewFile);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                MessageBox.Show($"Your WWISEROOT environment variable can't be found.\nPlease change it to a folder that exists.\nThe error is: {ex.Message}.\nPlease reboot your computer after you fix this.");
+            }
+
+            return wemFile;
         }
 
         private string SoundPacks_ConvertOGGToWem(string oggFile)
