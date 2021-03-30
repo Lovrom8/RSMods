@@ -3089,7 +3089,7 @@ namespace RSMods
         string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\";
         private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
-            if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabyte.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+            if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabytes.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
                 return;
 
             SoundPacks_PleaseWaitMessage(true);
@@ -3128,9 +3128,7 @@ namespace RSMods
         private void SoundPacks_ChangeUIForUnpackedFolder(bool isUnpacked)
         {
             button_UnpackAudioPsarc.Visible = !isUnpacked;
-            button_RepackAudioPsarc.Visible = isUnpacked;
-            button_ReplaceBadPerformance.Visible = isUnpacked;
-            button_RemoveUnpackedAudioPsarc.Visible = isUnpacked;
+            groupBox_SoundPacks.Visible = isUnpacked;
         }
 
         private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + "2066953778.wem");
@@ -3284,6 +3282,10 @@ namespace RSMods
             }
         }
 
+        private void SoundPacks_Reset(object sender, EventArgs e)
+        {
+            MessageBox.Show("WORK IN PROGRESS! End goal is to embed the soundpack, and import it.");
+        }
 
         #endregion
 
