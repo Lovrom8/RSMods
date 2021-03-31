@@ -395,6 +395,7 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_SoundPacks = new System.Windows.Forms.TabPage();
+            this.progressBar_RepackAudioPsarc = new System.Windows.Forms.ProgressBar();
             this.label_SoundPacksBETA = new System.Windows.Forms.Label();
             this.groupBox_SoundPacks = new System.Windows.Forms.GroupBox();
             this.button_ReplaceFlawlessPerformance = new System.Windows.Forms.Button();
@@ -463,7 +464,6 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.progressBar_RepackAudioPsarc = new System.Windows.Forms.ProgressBar();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5100,17 +5100,25 @@
             this.tab_SoundPacks.TabIndex = 10;
             this.tab_SoundPacks.Text = "Sound Packs";
             // 
+            // progressBar_RepackAudioPsarc
+            // 
+            this.progressBar_RepackAudioPsarc.Location = new System.Drawing.Point(497, 112);
+            this.progressBar_RepackAudioPsarc.Name = "progressBar_RepackAudioPsarc";
+            this.progressBar_RepackAudioPsarc.Size = new System.Drawing.Size(263, 23);
+            this.progressBar_RepackAudioPsarc.TabIndex = 11;
+            this.progressBar_RepackAudioPsarc.Visible = false;
+            // 
             // label_SoundPacksBETA
             // 
             this.label_SoundPacksBETA.AutoSize = true;
             this.label_SoundPacksBETA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.label_SoundPacksBETA.Location = new System.Drawing.Point(840, 35);
             this.label_SoundPacksBETA.Name = "label_SoundPacksBETA";
-            this.label_SoundPacksBETA.Size = new System.Drawing.Size(296, 100);
+            this.label_SoundPacksBETA.Size = new System.Drawing.Size(292, 100);
             this.label_SoundPacksBETA.TabIndex = 10;
-            this.label_SoundPacksBETA.Text = "- The options in this tab, are still in BETA.\r\n- The voice lines will only work w" +
-    "hen\r\nset to the English version of Rocksmith.\r\n\r\n- Please click here to report a" +
-    "n issue.";
+            this.label_SoundPacksBETA.Text = "- The options in this tab are still in BETA.\r\n- The voice lines will only work wh" +
+    "en\r\nset to the English version of Rocksmith.\r\n\r\n- Please click here to report an" +
+    " issue.";
             this.label_SoundPacksBETA.Click += new System.EventHandler(this.SoundPacks_Beta);
             // 
             // groupBox_SoundPacks
@@ -5153,6 +5161,7 @@
             this.button_ReplaceFlawlessPerformance.TabIndex = 24;
             this.button_ReplaceFlawlessPerformance.Text = "Replace 100% \"Flawless Performance\"";
             this.button_ReplaceFlawlessPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceFlawlessPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceFlawlessPerformance);
             // 
             // button_ReplaceMasterfulPerformance
             // 
@@ -5162,6 +5171,7 @@
             this.button_ReplaceMasterfulPerformance.TabIndex = 23;
             this.button_ReplaceMasterfulPerformance.Text = "Replace 98-99% \"Masterful Performance\"";
             this.button_ReplaceMasterfulPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceMasterfulPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceMasterfulPerformance);
             // 
             // button_ReplaceExemplaryPerformance
             // 
@@ -5171,6 +5181,7 @@
             this.button_ReplaceExemplaryPerformance.TabIndex = 22;
             this.button_ReplaceExemplaryPerformance.Text = "Replace 97% \"Exemplary Performance\"";
             this.button_ReplaceExemplaryPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceExemplaryPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceExemplaryPerformance);
             // 
             // button_ReplaceAmazingPerformance
             // 
@@ -5180,6 +5191,7 @@
             this.button_ReplaceAmazingPerformance.TabIndex = 21;
             this.button_ReplaceAmazingPerformance.Text = "Replace 96% \"Amazing Performance\"";
             this.button_ReplaceAmazingPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceAmazingPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceAmazingPerformance);
             // 
             // button_ReplaceExceptionalPerformance
             // 
@@ -5189,6 +5201,7 @@
             this.button_ReplaceExceptionalPerformance.TabIndex = 20;
             this.button_ReplaceExceptionalPerformance.Text = "Replace 95% \"Exceptional Performance\"";
             this.button_ReplaceExceptionalPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceExceptionalPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceExceptionalPerformance);
             // 
             // button_ReplaceSuperstar
             // 
@@ -5198,6 +5211,7 @@
             this.button_ReplaceSuperstar.TabIndex = 19;
             this.button_ReplaceSuperstar.Text = "Replace 93% \"You\'re Gonna Be A Superstar\"";
             this.button_ReplaceSuperstar.UseVisualStyleBackColor = true;
+            this.button_ReplaceSuperstar.Click += new System.EventHandler(this.SoundPacks_ReplaceSuperstar);
             // 
             // button_ReplaceDazzlingPerformance
             // 
@@ -5207,6 +5221,7 @@
             this.button_ReplaceDazzlingPerformance.TabIndex = 18;
             this.button_ReplaceDazzlingPerformance.Text = "Replace 92% \"Dazzling Performance\"";
             this.button_ReplaceDazzlingPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceDazzlingPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceDazzlingPerformance);
             // 
             // button_ReplaceSuperbPerformance
             // 
@@ -5216,6 +5231,7 @@
             this.button_ReplaceSuperbPerformance.TabIndex = 17;
             this.button_ReplaceSuperbPerformance.Text = "Replace 90-91% \"Superb Performance\"";
             this.button_ReplaceSuperbPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceSuperbPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceSuperbPerformance);
             // 
             // button_ReplaceTopNotchPerformance
             // 
@@ -5225,6 +5241,7 @@
             this.button_ReplaceTopNotchPerformance.TabIndex = 16;
             this.button_ReplaceTopNotchPerformance.Text = "Replace 86-89% \"Top Notch Performance\"";
             this.button_ReplaceTopNotchPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceTopNotchPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceTopNotchPerformance);
             // 
             // button_ReplaceExcellentPerformance
             // 
@@ -5234,6 +5251,7 @@
             this.button_ReplaceExcellentPerformance.TabIndex = 15;
             this.button_ReplaceExcellentPerformance.Text = "Replace 82-85% \"Excellent Performance\"";
             this.button_ReplaceExcellentPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceExcellentPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceExcellentPerformance);
             // 
             // button_ReplaceAlrightPerformance
             // 
@@ -5243,6 +5261,7 @@
             this.button_ReplaceAlrightPerformance.TabIndex = 14;
             this.button_ReplaceAlrightPerformance.Text = "Replace 81% \"Alright Performance\"";
             this.button_ReplaceAlrightPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceAlrightPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceAlrightPerformance);
             // 
             // button_ReplaceDecentPerformance
             // 
@@ -5252,6 +5271,7 @@
             this.button_ReplaceDecentPerformance.TabIndex = 13;
             this.button_ReplaceDecentPerformance.Text = "Replace 73-80% \"Decent Performance\"";
             this.button_ReplaceDecentPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceDecentPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceDecentPerformance);
             // 
             // button_ReplaceCouldBeBetter
             // 
@@ -5261,6 +5281,7 @@
             this.button_ReplaceCouldBeBetter.TabIndex = 12;
             this.button_ReplaceCouldBeBetter.Text = "Replace 66-72% \"Could Be Better\"";
             this.button_ReplaceCouldBeBetter.UseVisualStyleBackColor = true;
+            this.button_ReplaceCouldBeBetter.Click += new System.EventHandler(this.SoundPacks_ReplaceCouldBeBetter);
             // 
             // button_ReplaceSubparPerformance
             // 
@@ -5270,6 +5291,7 @@
             this.button_ReplaceSubparPerformance.TabIndex = 11;
             this.button_ReplaceSubparPerformance.Text = "Replace 60-65% \"Subpar Performance\"";
             this.button_ReplaceSubparPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceSubparPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceSubparPerformance);
             // 
             // button_ReplaceDisappointingPerformance
             // 
@@ -5309,7 +5331,7 @@
             this.button_ExportSoundPack.TabIndex = 7;
             this.button_ExportSoundPack.Text = "Export Soundpack";
             this.button_ExportSoundPack.UseVisualStyleBackColor = true;
-            this.button_ExportSoundPack.Click += new System.EventHandler(this.SoundPacks_Export);
+            this.button_ExportSoundPack.Click += new System.EventHandler(this.SoundPacks_Export_Dialog);
             // 
             // button_RemoveUnpackedAudioPsarc
             // 
@@ -5329,7 +5351,7 @@
             this.button_ImportSoundPack.TabIndex = 8;
             this.button_ImportSoundPack.Text = "Import Soundpack";
             this.button_ImportSoundPack.UseVisualStyleBackColor = true;
-            this.button_ImportSoundPack.Click += new System.EventHandler(this.SoundPacks_Import);
+            this.button_ImportSoundPack.Click += new System.EventHandler(this.SoundPacks_Import_Dialog);
             // 
             // button_RepackAudioPsarc
             // 
@@ -5794,14 +5816,6 @@
             // songManagerBindingSource
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
-            // 
-            // progressBar_RepackAudioPsarc
-            // 
-            this.progressBar_RepackAudioPsarc.Location = new System.Drawing.Point(497, 112);
-            this.progressBar_RepackAudioPsarc.Name = "progressBar_RepackAudioPsarc";
-            this.progressBar_RepackAudioPsarc.Size = new System.Drawing.Size(263, 23);
-            this.progressBar_RepackAudioPsarc.TabIndex = 11;
-            this.progressBar_RepackAudioPsarc.Visible = false;
             // 
             // MainForm
             // 

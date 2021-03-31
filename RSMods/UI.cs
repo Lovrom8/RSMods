@@ -3089,8 +3089,23 @@ namespace RSMods
         static string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\";
         static string soundPackEnglishPrefix = "english(us)\\";
         string voiceLine_BadPerformance = "2066953778.wem";
-        string voiceLine_WonderfulPerformance = "2067154245.wem";
         string voiceLine_DisappointingPerformance = "2067218742.wem";
+        string voiceLine_SubparPerformance = "2066826048.wem";
+        string voiceLine_CouldBeBetter = "2068001585.wem";
+        string voiceLine_DecentPerformance = "2068133176.wem";
+        string voiceLine_AlrightPerformance = "2068002869.wem";
+        string voiceLine_ExcellentPerformance = "2067285052.wem";
+        string voiceLine_TopNotchPerformance = "2067281979.wem";
+        string voiceLine_SuperbPerformance = "2067350856.wem";
+        string voiceLine_DazzlingPerformance = "2068132687.wem";
+        string voiceLine_YoureGonnaBeASuperstar = "2068199486.wem";
+        string voiceLine_WonderfulPerformance = "2067154245.wem";
+        string voiceLine_ExceptionalPerformance = "2067153482.wem";
+        string voiceLine_AmazingPerformance = "2067871807.wem";
+        string voiceLine_ExemplaryPerformance = "2067022644.wem";
+        string voiceLine_MasterfulPerformance = "2068137287.wem";
+        string voiceLine_FlawlessPerformance = "2068002100.wem";
+
 
         private void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
@@ -3135,6 +3150,7 @@ namespace RSMods
             GlobalExtension.UpdateProgress.Maximum = 100;
             SoundPacks_PleaseWaitMessage(false);
             MessageBox.Show("Open your game, and see if the sound works!");
+            GC.Collect(); // We use a lot of memory here, so let's take out the garbage.
         }
 
         private void SoundPacks_RemoveUnpackedAudioPsarc(object sender, EventArgs e)
@@ -3161,7 +3177,6 @@ namespace RSMods
 
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
-                fileDialog.InitialDirectory = Application.StartupPath;
                 fileDialog.Filter = "Mp3 Files|*.mp3|Ogg Files|*.ogg|Wav Files|*.wav|Wem Files|*.wem";
                 fileDialog.RestoreDirectory = true;
 
@@ -3257,54 +3272,74 @@ namespace RSMods
             return wemFile;
         }
 
-        private void SoundPacks_Export(object sender, EventArgs e)
+        private void SoundPacks_Import_Dialog(object sender, EventArgs e)
         {
-            SevenZipCompressor.SetLibraryPath("7z.dll");
-
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
-            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                SevenZipCompressor compressor = new SevenZipCompressor
-                {
-                    CompressionMethod = CompressionMethod.Deflate,
-                    CompressionLevel = SevenZip.CompressionLevel.Normal,
-                    CompressionMode = SevenZip.CompressionMode.Create,
-                    DirectoryStructure = true,
-                    PreserveDirectoryRoot = false,
-                    ArchiveFormat = OutArchiveFormat.Zip
-                };
-
-                Dictionary<string, string> exportedFiles = new Dictionary<string, string>()
-                {
-                    { soundPackEnglishPrefix + "2066953778.wem", soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance},
-                    { soundPackEnglishPrefix + "2067154245.wem", soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance}, // Wonderful Performance
-                };
-
-                compressor.CompressFileDictionary(exportedFiles, fileDialog.FileName);
-            }
-        }
-
-        private void SoundPacks_Import(object sender, EventArgs e)
-        {
-            SevenZipExtractor.SetLibraryPath("7z.dll");
-
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.RestoreDirectory = true;
                 fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    using (SevenZipExtractor extractor = new SevenZipExtractor(fileDialog.FileName))
-                    {
-                        extractor.ExtractArchive(soundPackLocationPrefix + soundPackEnglishPrefix);
-                        MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
-                    }
-                }
+                    SoundPacks_Import_File(fileDialog.FileName);
             }
+        }
+
+        private void SoundPacks_Import_File(string fileName)
+        {
+            SevenZipExtractor.SetLibraryPath("7z.dll");
+            using (SevenZipExtractor extractor = new SevenZipExtractor(fileName))
+            {
+                extractor.ExtractArchive(soundPackLocationPrefix + soundPackEnglishPrefix);
+                MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+            }
+        }
+
+        private void SoundPacks_Export_Dialog(object sender, EventArgs e)
+        {
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+                SoundPacks_Export_File(fileDialog.FileName);
+        }
+        
+        private void SoundPacks_Export_File(string fileName)
+        {
+            SevenZipCompressor.SetLibraryPath("7z.dll");
+
+            SevenZipCompressor compressor = new SevenZipCompressor
+            {
+                CompressionMethod = CompressionMethod.Deflate,
+                CompressionLevel = SevenZip.CompressionLevel.Normal,
+                CompressionMode = SevenZip.CompressionMode.Create,
+                DirectoryStructure = true,
+                PreserveDirectoryRoot = false,
+                ArchiveFormat = OutArchiveFormat.Zip
+            };
+
+            Dictionary<string, string> exportedFiles = new Dictionary<string, string>()
+                {
+                    { soundPackEnglishPrefix + voiceLine_BadPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance},
+                    { soundPackEnglishPrefix + voiceLine_DisappointingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DisappointingPerformance},
+                    { soundPackEnglishPrefix + voiceLine_SubparPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SubparPerformance},
+                    { soundPackEnglishPrefix + voiceLine_CouldBeBetter, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_CouldBeBetter},
+                    { soundPackEnglishPrefix + voiceLine_DecentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DecentPerformance},
+                    { soundPackEnglishPrefix + voiceLine_AlrightPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AlrightPerformance},
+                    { soundPackEnglishPrefix + voiceLine_ExcellentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExcellentPerformance},
+                    { soundPackEnglishPrefix + voiceLine_TopNotchPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_TopNotchPerformance},
+                    { soundPackEnglishPrefix + voiceLine_SuperbPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SuperbPerformance},
+                    { soundPackEnglishPrefix + voiceLine_DazzlingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DazzlingPerformance},
+                    { soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar},
+                    { soundPackEnglishPrefix + voiceLine_WonderfulPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance},
+                    { soundPackEnglishPrefix + voiceLine_ExceptionalPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExceptionalPerformance},
+                    { soundPackEnglishPrefix + voiceLine_AmazingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance},
+                    { soundPackEnglishPrefix + voiceLine_ExemplaryPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance},
+                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance},
+                    { soundPackEnglishPrefix + voiceLine_FlawlessPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance},
+                };
+
+            compressor.CompressFileDictionary(exportedFiles, fileName);
         }
 
         private void SoundPacks_Reset(object sender, EventArgs e)
@@ -3312,10 +3347,23 @@ namespace RSMods
             MessageBox.Show("WORK IN PROGRESS! End goal is to embed the soundpack, and import it.");
         }
 
-
         private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance);
-        private void SoundPacks_ReplaceWonderfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance);
         private void SoundPacks_ReplaceDisappointingPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DisappointingPerformance);
+        private void SoundPacks_ReplaceSubparPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SubparPerformance);
+        private void SoundPacks_ReplaceCouldBeBetter(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_CouldBeBetter);
+        private void SoundPacks_ReplaceDecentPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DecentPerformance);
+        private void SoundPacks_ReplaceAlrightPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AlrightPerformance);
+        private void SoundPacks_ReplaceExcellentPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExcellentPerformance);
+        private void SoundPacks_ReplaceTopNotchPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_TopNotchPerformance);
+        private void SoundPacks_ReplaceSuperbPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SuperbPerformance);
+        private void SoundPacks_ReplaceDazzlingPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DazzlingPerformance);
+        private void SoundPacks_ReplaceSuperstar(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar);
+        private void SoundPacks_ReplaceWonderfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance);
+        private void SoundPacks_ReplaceExceptionalPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExceptionalPerformance);
+        private void SoundPacks_ReplaceAmazingPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance);
+        private void SoundPacks_ReplaceExemplaryPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance);
+        private void SoundPacks_ReplaceMasterfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance);
+        private void SoundPacks_ReplaceFlawlessPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance);
         #endregion
 
         #region Midi
