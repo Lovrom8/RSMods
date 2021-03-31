@@ -395,13 +395,31 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_SoundPacks = new System.Windows.Forms.TabPage();
-            this.button_ImportSoundPack = new System.Windows.Forms.Button();
+            this.label_SoundPacksBETA = new System.Windows.Forms.Label();
+            this.groupBox_SoundPacks = new System.Windows.Forms.GroupBox();
+            this.button_ReplaceFlawlessPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceMasterfulPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceExemplaryPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceAmazingPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceExceptionalPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceSuperstar = new System.Windows.Forms.Button();
+            this.button_ReplaceDazzlingPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceSuperbPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceTopNotchPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceExcellentPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceAlrightPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceDecentPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceCouldBeBetter = new System.Windows.Forms.Button();
+            this.button_ReplaceSubparPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceDisappointingPerformance = new System.Windows.Forms.Button();
+            this.button_ResetSoundpack = new System.Windows.Forms.Button();
+            this.button_ReplaceBadPerformance = new System.Windows.Forms.Button();
             this.button_ExportSoundPack = new System.Windows.Forms.Button();
+            this.button_RemoveUnpackedAudioPsarc = new System.Windows.Forms.Button();
+            this.button_ImportSoundPack = new System.Windows.Forms.Button();
+            this.button_RepackAudioPsarc = new System.Windows.Forms.Button();
             this.button_ReplaceWonderfulPerformance = new System.Windows.Forms.Button();
             this.label_DownloadWwise = new System.Windows.Forms.Label();
-            this.button_RemoveUnpackedAudioPsarc = new System.Windows.Forms.Button();
-            this.button_RepackAudioPsarc = new System.Windows.Forms.Button();
-            this.button_ReplaceBadPerformance = new System.Windows.Forms.Button();
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
@@ -445,8 +463,6 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.groupBox_SoundPacks = new System.Windows.Forms.GroupBox();
-            this.button_ResetSoundpack = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -527,6 +543,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EnabledRewards)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).BeginInit();
             this.tab_SoundPacks.SuspendLayout();
+            this.groupBox_SoundPacks.SuspendLayout();
             this.tab_Profiles.SuspendLayout();
             this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
@@ -536,7 +553,6 @@
             this.groupBox_ChangeTheme.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).BeginInit();
-            this.groupBox_SoundPacks.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -5070,6 +5086,7 @@
             // tab_SoundPacks
             // 
             this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.label_SoundPacksBETA);
             this.tab_SoundPacks.Controls.Add(this.groupBox_SoundPacks);
             this.tab_SoundPacks.Controls.Add(this.label_DownloadWwise);
             this.tab_SoundPacks.Controls.Add(this.label_AudioPsarcPleaseWait);
@@ -5081,15 +5098,206 @@
             this.tab_SoundPacks.TabIndex = 10;
             this.tab_SoundPacks.Text = "Sound Packs";
             // 
-            // button_ImportSoundPack
+            // label_SoundPacksBETA
             // 
-            this.button_ImportSoundPack.Location = new System.Drawing.Point(489, 241);
-            this.button_ImportSoundPack.Name = "button_ImportSoundPack";
-            this.button_ImportSoundPack.Size = new System.Drawing.Size(108, 23);
-            this.button_ImportSoundPack.TabIndex = 8;
-            this.button_ImportSoundPack.Text = "Import Soundpack";
-            this.button_ImportSoundPack.UseVisualStyleBackColor = true;
-            this.button_ImportSoundPack.Click += new System.EventHandler(this.SoundPacks_Import);
+            this.label_SoundPacksBETA.AutoSize = true;
+            this.label_SoundPacksBETA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label_SoundPacksBETA.Location = new System.Drawing.Point(840, 35);
+            this.label_SoundPacksBETA.Name = "label_SoundPacksBETA";
+            this.label_SoundPacksBETA.Size = new System.Drawing.Size(296, 100);
+            this.label_SoundPacksBETA.TabIndex = 10;
+            this.label_SoundPacksBETA.Text = "- The options in this tab, are still in BETA.\r\n- The voice lines will only work w" +
+    "hen\r\nset to the English version of Rocksmith.\r\n\r\n- Please click here to report a" +
+    "n issue.";
+            this.label_SoundPacksBETA.Click += new System.EventHandler(this.SoundPacks_Beta);
+            // 
+            // groupBox_SoundPacks
+            // 
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceFlawlessPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceMasterfulPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceExemplaryPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceAmazingPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceExceptionalPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceSuperstar);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceDazzlingPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceSuperbPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceTopNotchPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceExcellentPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceAlrightPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceDecentPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceCouldBeBetter);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceSubparPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceDisappointingPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ResetSoundpack);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceBadPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ExportSoundPack);
+            this.groupBox_SoundPacks.Controls.Add(this.button_RemoveUnpackedAudioPsarc);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ImportSoundPack);
+            this.groupBox_SoundPacks.Controls.Add(this.button_RepackAudioPsarc);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceWonderfulPerformance);
+            this.groupBox_SoundPacks.Location = new System.Drawing.Point(8, 240);
+            this.groupBox_SoundPacks.Name = "groupBox_SoundPacks";
+            this.groupBox_SoundPacks.Size = new System.Drawing.Size(1125, 270);
+            this.groupBox_SoundPacks.TabIndex = 9;
+            this.groupBox_SoundPacks.TabStop = false;
+            this.groupBox_SoundPacks.Text = "Sound Packs";
+            this.groupBox_SoundPacks.Visible = false;
+            // 
+            // button_ReplaceFlawlessPerformance
+            // 
+            this.button_ReplaceFlawlessPerformance.Location = new System.Drawing.Point(529, 136);
+            this.button_ReplaceFlawlessPerformance.Name = "button_ReplaceFlawlessPerformance";
+            this.button_ReplaceFlawlessPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceFlawlessPerformance.TabIndex = 24;
+            this.button_ReplaceFlawlessPerformance.Text = "Replace 100% \"Flawless Performance\"";
+            this.button_ReplaceFlawlessPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceMasterfulPerformance
+            // 
+            this.button_ReplaceMasterfulPerformance.Location = new System.Drawing.Point(529, 106);
+            this.button_ReplaceMasterfulPerformance.Name = "button_ReplaceMasterfulPerformance";
+            this.button_ReplaceMasterfulPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceMasterfulPerformance.TabIndex = 23;
+            this.button_ReplaceMasterfulPerformance.Text = "Replace 98-99% \"Masterful Performance\"";
+            this.button_ReplaceMasterfulPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceExemplaryPerformance
+            // 
+            this.button_ReplaceExemplaryPerformance.Location = new System.Drawing.Point(529, 77);
+            this.button_ReplaceExemplaryPerformance.Name = "button_ReplaceExemplaryPerformance";
+            this.button_ReplaceExemplaryPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceExemplaryPerformance.TabIndex = 22;
+            this.button_ReplaceExemplaryPerformance.Text = "Replace 97% \"Exemplary Performance\"";
+            this.button_ReplaceExemplaryPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceAmazingPerformance
+            // 
+            this.button_ReplaceAmazingPerformance.Location = new System.Drawing.Point(529, 48);
+            this.button_ReplaceAmazingPerformance.Name = "button_ReplaceAmazingPerformance";
+            this.button_ReplaceAmazingPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceAmazingPerformance.TabIndex = 21;
+            this.button_ReplaceAmazingPerformance.Text = "Replace 96% \"Amazing Performance\"";
+            this.button_ReplaceAmazingPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceExceptionalPerformance
+            // 
+            this.button_ReplaceExceptionalPerformance.Location = new System.Drawing.Point(529, 19);
+            this.button_ReplaceExceptionalPerformance.Name = "button_ReplaceExceptionalPerformance";
+            this.button_ReplaceExceptionalPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceExceptionalPerformance.TabIndex = 20;
+            this.button_ReplaceExceptionalPerformance.Text = "Replace 95% \"Exceptional Performance\"";
+            this.button_ReplaceExceptionalPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceSuperstar
+            // 
+            this.button_ReplaceSuperstar.Location = new System.Drawing.Point(272, 136);
+            this.button_ReplaceSuperstar.Name = "button_ReplaceSuperstar";
+            this.button_ReplaceSuperstar.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceSuperstar.TabIndex = 19;
+            this.button_ReplaceSuperstar.Text = "Replace 93% \"You\'re Gonna Be A Superstar\"";
+            this.button_ReplaceSuperstar.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceDazzlingPerformance
+            // 
+            this.button_ReplaceDazzlingPerformance.Location = new System.Drawing.Point(272, 106);
+            this.button_ReplaceDazzlingPerformance.Name = "button_ReplaceDazzlingPerformance";
+            this.button_ReplaceDazzlingPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceDazzlingPerformance.TabIndex = 18;
+            this.button_ReplaceDazzlingPerformance.Text = "Replace 92% \"Dazzling Performance\"";
+            this.button_ReplaceDazzlingPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceSuperbPerformance
+            // 
+            this.button_ReplaceSuperbPerformance.Location = new System.Drawing.Point(272, 77);
+            this.button_ReplaceSuperbPerformance.Name = "button_ReplaceSuperbPerformance";
+            this.button_ReplaceSuperbPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceSuperbPerformance.TabIndex = 17;
+            this.button_ReplaceSuperbPerformance.Text = "Replace 90-91% \"Superb Performance\"";
+            this.button_ReplaceSuperbPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceTopNotchPerformance
+            // 
+            this.button_ReplaceTopNotchPerformance.Location = new System.Drawing.Point(272, 48);
+            this.button_ReplaceTopNotchPerformance.Name = "button_ReplaceTopNotchPerformance";
+            this.button_ReplaceTopNotchPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceTopNotchPerformance.TabIndex = 16;
+            this.button_ReplaceTopNotchPerformance.Text = "Replace 86-89% \"Top Notch Performance\"";
+            this.button_ReplaceTopNotchPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceExcellentPerformance
+            // 
+            this.button_ReplaceExcellentPerformance.Location = new System.Drawing.Point(272, 19);
+            this.button_ReplaceExcellentPerformance.Name = "button_ReplaceExcellentPerformance";
+            this.button_ReplaceExcellentPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceExcellentPerformance.TabIndex = 15;
+            this.button_ReplaceExcellentPerformance.Text = "Replace 82-85% \"Excellent Performance\"";
+            this.button_ReplaceExcellentPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceAlrightPerformance
+            // 
+            this.button_ReplaceAlrightPerformance.Location = new System.Drawing.Point(15, 165);
+            this.button_ReplaceAlrightPerformance.Name = "button_ReplaceAlrightPerformance";
+            this.button_ReplaceAlrightPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceAlrightPerformance.TabIndex = 14;
+            this.button_ReplaceAlrightPerformance.Text = "Replace 81% \"Alright Performance\"";
+            this.button_ReplaceAlrightPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceDecentPerformance
+            // 
+            this.button_ReplaceDecentPerformance.Location = new System.Drawing.Point(15, 135);
+            this.button_ReplaceDecentPerformance.Name = "button_ReplaceDecentPerformance";
+            this.button_ReplaceDecentPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceDecentPerformance.TabIndex = 13;
+            this.button_ReplaceDecentPerformance.Text = "Replace 73-80% \"Decent Performance\"";
+            this.button_ReplaceDecentPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceCouldBeBetter
+            // 
+            this.button_ReplaceCouldBeBetter.Location = new System.Drawing.Point(15, 106);
+            this.button_ReplaceCouldBeBetter.Name = "button_ReplaceCouldBeBetter";
+            this.button_ReplaceCouldBeBetter.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceCouldBeBetter.TabIndex = 12;
+            this.button_ReplaceCouldBeBetter.Text = "Replace 66-72% \"Could Be Better\"";
+            this.button_ReplaceCouldBeBetter.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceSubparPerformance
+            // 
+            this.button_ReplaceSubparPerformance.Location = new System.Drawing.Point(15, 77);
+            this.button_ReplaceSubparPerformance.Name = "button_ReplaceSubparPerformance";
+            this.button_ReplaceSubparPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceSubparPerformance.TabIndex = 11;
+            this.button_ReplaceSubparPerformance.Text = "Replace 60-65% \"Subpar Performance\"";
+            this.button_ReplaceSubparPerformance.UseVisualStyleBackColor = true;
+            // 
+            // button_ReplaceDisappointingPerformance
+            // 
+            this.button_ReplaceDisappointingPerformance.Location = new System.Drawing.Point(15, 48);
+            this.button_ReplaceDisappointingPerformance.Name = "button_ReplaceDisappointingPerformance";
+            this.button_ReplaceDisappointingPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceDisappointingPerformance.TabIndex = 10;
+            this.button_ReplaceDisappointingPerformance.Text = "Replace 50-59% \"Disappointing Performance\"";
+            this.button_ReplaceDisappointingPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceDisappointingPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceDisappointingPerformance);
+            // 
+            // button_ResetSoundpack
+            // 
+            this.button_ResetSoundpack.Location = new System.Drawing.Point(15, 241);
+            this.button_ResetSoundpack.Name = "button_ResetSoundpack";
+            this.button_ResetSoundpack.Size = new System.Drawing.Size(116, 23);
+            this.button_ResetSoundpack.TabIndex = 9;
+            this.button_ResetSoundpack.Text = "Reset To Default";
+            this.button_ResetSoundpack.UseVisualStyleBackColor = true;
+            this.button_ResetSoundpack.Click += new System.EventHandler(this.SoundPacks_Reset);
+            // 
+            // button_ReplaceBadPerformance
+            // 
+            this.button_ReplaceBadPerformance.Location = new System.Drawing.Point(15, 19);
+            this.button_ReplaceBadPerformance.Name = "button_ReplaceBadPerformance";
+            this.button_ReplaceBadPerformance.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceBadPerformance.TabIndex = 2;
+            this.button_ReplaceBadPerformance.Text = "Replace 0-49% \"Bad Performance\"";
+            this.button_ReplaceBadPerformance.UseVisualStyleBackColor = true;
+            this.button_ReplaceBadPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceBadPerformance);
             // 
             // button_ExportSoundPack
             // 
@@ -5101,13 +5309,43 @@
             this.button_ExportSoundPack.UseVisualStyleBackColor = true;
             this.button_ExportSoundPack.Click += new System.EventHandler(this.SoundPacks_Export);
             // 
+            // button_RemoveUnpackedAudioPsarc
+            // 
+            this.button_RemoveUnpackedAudioPsarc.Location = new System.Drawing.Point(946, 19);
+            this.button_RemoveUnpackedAudioPsarc.Name = "button_RemoveUnpackedAudioPsarc";
+            this.button_RemoveUnpackedAudioPsarc.Size = new System.Drawing.Size(173, 23);
+            this.button_RemoveUnpackedAudioPsarc.TabIndex = 4;
+            this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
+            this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
+            // 
+            // button_ImportSoundPack
+            // 
+            this.button_ImportSoundPack.Location = new System.Drawing.Point(489, 241);
+            this.button_ImportSoundPack.Name = "button_ImportSoundPack";
+            this.button_ImportSoundPack.Size = new System.Drawing.Size(108, 23);
+            this.button_ImportSoundPack.TabIndex = 8;
+            this.button_ImportSoundPack.Text = "Import Soundpack";
+            this.button_ImportSoundPack.UseVisualStyleBackColor = true;
+            this.button_ImportSoundPack.Click += new System.EventHandler(this.SoundPacks_Import);
+            // 
+            // button_RepackAudioPsarc
+            // 
+            this.button_RepackAudioPsarc.Location = new System.Drawing.Point(946, 241);
+            this.button_RepackAudioPsarc.Name = "button_RepackAudioPsarc";
+            this.button_RepackAudioPsarc.Size = new System.Drawing.Size(170, 23);
+            this.button_RepackAudioPsarc.TabIndex = 3;
+            this.button_RepackAudioPsarc.Text = "Repack Audio Psarc";
+            this.button_RepackAudioPsarc.UseVisualStyleBackColor = true;
+            this.button_RepackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RepackAudioPsarc);
+            // 
             // button_ReplaceWonderfulPerformance
             // 
-            this.button_ReplaceWonderfulPerformance.Location = new System.Drawing.Point(15, 61);
+            this.button_ReplaceWonderfulPerformance.Location = new System.Drawing.Point(272, 165);
             this.button_ReplaceWonderfulPerformance.Name = "button_ReplaceWonderfulPerformance";
-            this.button_ReplaceWonderfulPerformance.Size = new System.Drawing.Size(185, 23);
+            this.button_ReplaceWonderfulPerformance.Size = new System.Drawing.Size(251, 23);
             this.button_ReplaceWonderfulPerformance.TabIndex = 6;
-            this.button_ReplaceWonderfulPerformance.Text = "Replace \"Wonderful Performance\"";
+            this.button_ReplaceWonderfulPerformance.Text = "Replace 94% \"Wonderful Performance\"";
             this.button_ReplaceWonderfulPerformance.UseVisualStyleBackColor = true;
             this.button_ReplaceWonderfulPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceWonderfulPerformance);
             // 
@@ -5122,41 +5360,11 @@
             this.label_DownloadWwise.Text = "Requires Wwise 2013.2 <-> 2017.1.\r\nClick to Download.";
             this.label_DownloadWwise.Click += new System.EventHandler(this.SoundPacks_DownloadWwise);
             // 
-            // button_RemoveUnpackedAudioPsarc
-            // 
-            this.button_RemoveUnpackedAudioPsarc.Location = new System.Drawing.Point(946, 19);
-            this.button_RemoveUnpackedAudioPsarc.Name = "button_RemoveUnpackedAudioPsarc";
-            this.button_RemoveUnpackedAudioPsarc.Size = new System.Drawing.Size(173, 23);
-            this.button_RemoveUnpackedAudioPsarc.TabIndex = 4;
-            this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
-            this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
-            this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
-            // 
-            // button_RepackAudioPsarc
-            // 
-            this.button_RepackAudioPsarc.Location = new System.Drawing.Point(946, 241);
-            this.button_RepackAudioPsarc.Name = "button_RepackAudioPsarc";
-            this.button_RepackAudioPsarc.Size = new System.Drawing.Size(170, 23);
-            this.button_RepackAudioPsarc.TabIndex = 3;
-            this.button_RepackAudioPsarc.Text = "Repack Audio Psarc";
-            this.button_RepackAudioPsarc.UseVisualStyleBackColor = true;
-            this.button_RepackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RepackAudioPsarc);
-            // 
-            // button_ReplaceBadPerformance
-            // 
-            this.button_ReplaceBadPerformance.Location = new System.Drawing.Point(15, 19);
-            this.button_ReplaceBadPerformance.Name = "button_ReplaceBadPerformance";
-            this.button_ReplaceBadPerformance.Size = new System.Drawing.Size(185, 23);
-            this.button_ReplaceBadPerformance.TabIndex = 2;
-            this.button_ReplaceBadPerformance.Text = "Replace \"Bad Performance\"";
-            this.button_ReplaceBadPerformance.UseVisualStyleBackColor = true;
-            this.button_ReplaceBadPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceBadPerformance);
-            // 
             // label_AudioPsarcPleaseWait
             // 
             this.label_AudioPsarcPleaseWait.AutoSize = true;
             this.label_AudioPsarcPleaseWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label_AudioPsarcPleaseWait.Location = new System.Drawing.Point(449, 35);
+            this.label_AudioPsarcPleaseWait.Location = new System.Drawing.Point(493, 35);
             this.label_AudioPsarcPleaseWait.Name = "label_AudioPsarcPleaseWait";
             this.label_AudioPsarcPleaseWait.Size = new System.Drawing.Size(267, 40);
             this.label_AudioPsarcPleaseWait.TabIndex = 1;
@@ -5585,33 +5793,6 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
-            // groupBox_SoundPacks
-            // 
-            this.groupBox_SoundPacks.Controls.Add(this.button_ResetSoundpack);
-            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceBadPerformance);
-            this.groupBox_SoundPacks.Controls.Add(this.button_ExportSoundPack);
-            this.groupBox_SoundPacks.Controls.Add(this.button_RemoveUnpackedAudioPsarc);
-            this.groupBox_SoundPacks.Controls.Add(this.button_ImportSoundPack);
-            this.groupBox_SoundPacks.Controls.Add(this.button_RepackAudioPsarc);
-            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceWonderfulPerformance);
-            this.groupBox_SoundPacks.Location = new System.Drawing.Point(8, 240);
-            this.groupBox_SoundPacks.Name = "groupBox_SoundPacks";
-            this.groupBox_SoundPacks.Size = new System.Drawing.Size(1125, 270);
-            this.groupBox_SoundPacks.TabIndex = 9;
-            this.groupBox_SoundPacks.TabStop = false;
-            this.groupBox_SoundPacks.Text = "Sound Packs";
-            this.groupBox_SoundPacks.Visible = false;
-            // 
-            // button_ResetSoundpack
-            // 
-            this.button_ResetSoundpack.Location = new System.Drawing.Point(15, 241);
-            this.button_ResetSoundpack.Name = "button_ResetSoundpack";
-            this.button_ResetSoundpack.Size = new System.Drawing.Size(116, 23);
-            this.button_ResetSoundpack.TabIndex = 9;
-            this.button_ResetSoundpack.Text = "Reset To Default";
-            this.button_ResetSoundpack.UseVisualStyleBackColor = true;
-            this.button_ResetSoundpack.Click += new System.EventHandler(this.SoundPacks_Reset);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5743,6 +5924,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_DefaultRewards)).EndInit();
             this.tab_SoundPacks.ResumeLayout(false);
             this.tab_SoundPacks.PerformLayout();
+            this.groupBox_SoundPacks.ResumeLayout(false);
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
             this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
@@ -5756,7 +5938,6 @@
             this.groupBox_ChangeTheme.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).EndInit();
-            this.groupBox_SoundPacks.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -6184,6 +6365,22 @@
         private System.Windows.Forms.Button button_ImportSoundPack;
         private System.Windows.Forms.GroupBox groupBox_SoundPacks;
         private System.Windows.Forms.Button button_ResetSoundpack;
+        private System.Windows.Forms.Label label_SoundPacksBETA;
+        private System.Windows.Forms.Button button_ReplaceDisappointingPerformance;
+        private System.Windows.Forms.Button button_ReplaceCouldBeBetter;
+        private System.Windows.Forms.Button button_ReplaceSubparPerformance;
+        private System.Windows.Forms.Button button_ReplaceAlrightPerformance;
+        private System.Windows.Forms.Button button_ReplaceDecentPerformance;
+        private System.Windows.Forms.Button button_ReplaceExcellentPerformance;
+        private System.Windows.Forms.Button button_ReplaceDazzlingPerformance;
+        private System.Windows.Forms.Button button_ReplaceSuperbPerformance;
+        private System.Windows.Forms.Button button_ReplaceTopNotchPerformance;
+        private System.Windows.Forms.Button button_ReplaceAmazingPerformance;
+        private System.Windows.Forms.Button button_ReplaceExceptionalPerformance;
+        private System.Windows.Forms.Button button_ReplaceSuperstar;
+        private System.Windows.Forms.Button button_ReplaceExemplaryPerformance;
+        private System.Windows.Forms.Button button_ReplaceMasterfulPerformance;
+        private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
     }
 }
 

@@ -3086,7 +3086,12 @@ namespace RSMods
         #endregion
         #region Sound Packs
 
-        string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\english(us)\\";
+        static string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\";
+        static string soundPackEnglishPrefix = "english(us)\\";
+        string voiceLine_BadPerformance = "2066953778.wem";
+        string voiceLine_WonderfulPerformance = "2067154245.wem";
+        string voiceLine_DisappointingPerformance = "2067218742.wem";
+
         private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
             if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabytes.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
@@ -3131,11 +3136,16 @@ namespace RSMods
             groupBox_SoundPacks.Visible = isUnpacked;
         }
 
-        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + "2066953778.wem");
-        private void SoundPacks_ReplaceWonderfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + "2067154245.wem");
-
         private void SoundPacks_ReplaceSound(string soundToReplace)
         {
+
+            if (!Directory.Exists("audio_psarc"))
+            {
+                MessageBox.Show("Audio PSARC not unpacked");
+                SoundPacks_ChangeUIForUnpackedFolder(false);
+                return;
+            }
+
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.InitialDirectory = Application.StartupPath;
@@ -3176,6 +3186,8 @@ namespace RSMods
 
             return wavFile;
         }
+
+        private void SoundPacks_Beta(object sender, EventArgs e) => Process.Start("https://github.com/Lovrom8/RSMods/issues/new");
 
         private string SoundPacks_ConvertWAVToWem(string wavFile)
         {
@@ -3254,8 +3266,8 @@ namespace RSMods
 
                 Dictionary<string, string> exportedFiles = new Dictionary<string, string>()
                 {
-                    { "2066953778.wem", soundPackLocationPrefix + "2066953778.wem"}, // Bad Performance
-                    { "2067154245.wem", soundPackLocationPrefix + "2067154245.wem"} // Wonderful Performance
+                    { soundPackEnglishPrefix + "2066953778.wem", soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance},
+                    { soundPackEnglishPrefix + "2067154245.wem", soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance}, // Wonderful Performance
                 };
 
                 compressor.CompressFileDictionary(exportedFiles, fileDialog.FileName);
@@ -3275,7 +3287,7 @@ namespace RSMods
                 {
                     using (SevenZipExtractor extractor = new SevenZipExtractor(fileDialog.FileName))
                     {
-                        extractor.ExtractArchive(soundPackLocationPrefix);
+                        extractor.ExtractArchive(soundPackLocationPrefix + soundPackEnglishPrefix);
                         MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
                     }
                 }
@@ -3287,6 +3299,10 @@ namespace RSMods
             MessageBox.Show("WORK IN PROGRESS! End goal is to embed the soundpack, and import it.");
         }
 
+
+        private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance);
+        private void SoundPacks_ReplaceWonderfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance);
+        private void SoundPacks_ReplaceDisappointingPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DisappointingPerformance);
         #endregion
 
         #region Midi
