@@ -3092,7 +3092,7 @@ namespace RSMods
         string voiceLine_WonderfulPerformance = "2067154245.wem";
         string voiceLine_DisappointingPerformance = "2067218742.wem";
 
-        private async void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
+        private void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
             if (MessageBox.Show("For us to do song packs we need to unpack a huge game file. This will take up about 1.3 gigabytes.\nPress OK if you are fine with that, or Cancel if you are not.", "Please Read!!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
                 return;
@@ -3101,7 +3101,10 @@ namespace RSMods
 
             string audioPsarcLocation = Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc");
 
-            await Task.Run(() => Packer.Unpack(audioPsarcLocation, "audio_psarc/"));
+            GlobalExtension.UpdateProgress = progressBar_RepackAudioPsarc;
+            GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
+
+            Packer.Unpack(audioPsarcLocation, "audio_psarc/");
             
             SoundPacks_PleaseWaitMessage(false);
             SoundPacks_ChangeUIForUnpackedFolder(true);
@@ -3110,13 +3113,25 @@ namespace RSMods
 
         private void SoundPacks_DownloadWwise(object sender, EventArgs e) => Process.Start("https://ignition4.customsforge.com/cfsm/wwise/");
 
-        private void SoundPacks_PleaseWaitMessage(bool show) => label_AudioPsarcPleaseWait.Visible = show;
+        private bool SoundPacks_PleaseWaitMessage(bool show)
+        {
+            label_AudioPsarcPleaseWait.Visible = show;
+            progressBar_RepackAudioPsarc.Visible = show;
 
-        private async void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
+            if (show)
+                progressBar_RepackAudioPsarc.Value = 0;
+
+            return show;
+        }
+
+        private void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
             SoundPacks_PleaseWaitMessage(true);
-            GlobalExtension.UpdateProgress.Maximum = 1000000;
-            await Task.Run(() => Packer.Pack(Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc"), Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc")));
+            GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
+            GlobalExtension.UpdateProgress = progressBar_RepackAudioPsarc;
+            GlobalExtension.UpdateProgress.Maximum = 110;
+            Packer.Pack(Path.Combine(Application.StartupPath, "audio_psarc\\audio_psarc_RS2014_Pc"), Path.Combine(GenUtil.GetRSDirectory(), "audio.psarc"));
+            GlobalExtension.UpdateProgress.Value = 0;
             GlobalExtension.UpdateProgress.Maximum = 100;
             SoundPacks_PleaseWaitMessage(false);
             MessageBox.Show("Open your game, and see if the sound works!");
@@ -3124,10 +3139,8 @@ namespace RSMods
 
         private void SoundPacks_RemoveUnpackedAudioPsarc(object sender, EventArgs e)
         {
-            SoundPacks_PleaseWaitMessage(true);
             Directory.Delete("audio_psarc", true);
             SoundPacks_ChangeUIForUnpackedFolder(false);
-            SoundPacks_PleaseWaitMessage(false);
         }
 
         private void SoundPacks_ChangeUIForUnpackedFolder(bool isUnpacked)

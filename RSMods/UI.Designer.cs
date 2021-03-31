@@ -463,6 +463,7 @@
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.progressBar_RepackAudioPsarc = new System.Windows.Forms.ProgressBar();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -5086,6 +5087,7 @@
             // tab_SoundPacks
             // 
             this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.progressBar_RepackAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.label_SoundPacksBETA);
             this.tab_SoundPacks.Controls.Add(this.groupBox_SoundPacks);
             this.tab_SoundPacks.Controls.Add(this.label_DownloadWwise);
@@ -5793,6 +5795,14 @@
             // 
             this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
             // 
+            // progressBar_RepackAudioPsarc
+            // 
+            this.progressBar_RepackAudioPsarc.Location = new System.Drawing.Point(497, 112);
+            this.progressBar_RepackAudioPsarc.Name = "progressBar_RepackAudioPsarc";
+            this.progressBar_RepackAudioPsarc.Size = new System.Drawing.Size(263, 23);
+            this.progressBar_RepackAudioPsarc.TabIndex = 11;
+            this.progressBar_RepackAudioPsarc.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6381,6 +6391,7 @@
         private System.Windows.Forms.Button button_ReplaceExemplaryPerformance;
         private System.Windows.Forms.Button button_ReplaceMasterfulPerformance;
         private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
+        private System.Windows.Forms.ProgressBar progressBar_RepackAudioPsarc;
     }
 }
 
