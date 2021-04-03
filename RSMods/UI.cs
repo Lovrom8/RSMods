@@ -1866,6 +1866,9 @@ namespace RSMods
         {
             SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, checkBox_ER_SeparateNoteColors.Checked.ToString().ToLower());
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
+
+            if (!checkBox_ER_SeparateNoteColors.Checked)
+                SaveSettings_Save(ReadSettings.SeparateNoteColorsModeIdentifier, (0).ToString());
         }
 
         private void Save_NoteColors_UseRocksmithColors(object sender, EventArgs e)
