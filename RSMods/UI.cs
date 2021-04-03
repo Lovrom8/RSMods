@@ -557,7 +557,7 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on")
                 checkBox_SecondaryMonitor.Checked = true;
 
-            checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1";
+            checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsModeIdentifier) == "1";
             checkBox_FixBadBassTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
         }
 
@@ -715,7 +715,7 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
-            checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1" || ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "2";
+            checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
@@ -1164,7 +1164,7 @@ namespace RSMods
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, "2"); // Tell the game to use custom note colors
+                SaveSettings_Save(ReadSettings.SeparateNoteColorsModeIdentifier, "2"); // Tell the game to use custom note colors
                 SaveSettings_Save(noteColorButtonIdentifier, (colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
                 stringNumberToColorTextBox[noteNumber].BackColor = colorDialog.Color;
             }
@@ -1864,15 +1864,13 @@ namespace RSMods
 
         private void Save_ER_SeparateNoteColors(object sender, EventArgs e)
         {
-            SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, Convert.ToInt32(checkBox_ER_SeparateNoteColors.Checked).ToString());
-
+            SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, checkBox_ER_SeparateNoteColors.Checked.ToString().ToLower());
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
-            checkBox_NoteColors_UseRocksmithColors.Checked = checkBox_ER_SeparateNoteColors.Checked;
         }
 
         private void Save_NoteColors_UseRocksmithColors(object sender, EventArgs e)
         {
-            SaveSettings_Save(ReadSettings.SeparateNoteColorsIdentifier, (2 - Convert.ToInt32(checkBox_NoteColors_UseRocksmithColors.Checked)).ToString());
+            SaveSettings_Save(ReadSettings.SeparateNoteColorsModeIdentifier, (2 - Convert.ToInt32(checkBox_NoteColors_UseRocksmithColors.Checked)).ToString());
 
             button_Note0ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;
             button_Note1ColorButton.Enabled = !checkBox_NoteColors_UseRocksmithColors.Checked;

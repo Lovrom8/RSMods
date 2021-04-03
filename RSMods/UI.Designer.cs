@@ -59,6 +59,7 @@
             this.nUpDown_ForceEnumerationXMS = new System.Windows.Forms.NumericUpDown();
             this.groupBox_LoftOffWhen = new System.Windows.Forms.GroupBox();
             this.groupBox_ExtendedRangeWhen = new System.Windows.Forms.GroupBox();
+            this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
@@ -463,7 +464,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -946,6 +946,17 @@
             this.groupBox_ExtendedRangeWhen.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_ExtendedRangeWhen.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_FixBadBassTuning
+            // 
+            this.checkBox_FixBadBassTuning.AutoSize = true;
+            this.checkBox_FixBadBassTuning.Location = new System.Drawing.Point(6, 228);
+            this.checkBox_FixBadBassTuning.Name = "checkBox_FixBadBassTuning";
+            this.checkBox_FixBadBassTuning.Size = new System.Drawing.Size(101, 17);
+            this.checkBox_FixBadBassTuning.TabIndex = 31;
+            this.checkBox_FixBadBassTuning.Text = "Fix Bass Tuning";
+            this.checkBox_FixBadBassTuning.UseVisualStyleBackColor = true;
+            this.checkBox_FixBadBassTuning.CheckedChanged += new System.EventHandler(this.Save_ERFixBadBassTuning);
+            // 
             // checkBox_ExtendedRangeDrop
             // 
             this.checkBox_ExtendedRangeDrop.AutoSize = true;
@@ -988,7 +999,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 311);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 312);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -5812,17 +5823,6 @@
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // checkBox_FixBadBassTuning
-            // 
-            this.checkBox_FixBadBassTuning.AutoSize = true;
-            this.checkBox_FixBadBassTuning.Location = new System.Drawing.Point(7, 228);
-            this.checkBox_FixBadBassTuning.Name = "checkBox_FixBadBassTuning";
-            this.checkBox_FixBadBassTuning.Size = new System.Drawing.Size(101, 17);
-            this.checkBox_FixBadBassTuning.TabIndex = 31;
-            this.checkBox_FixBadBassTuning.Text = "Fix Bass Tuning";
-            this.checkBox_FixBadBassTuning.UseVisualStyleBackColor = true;
-            this.checkBox_FixBadBassTuning.CheckedChanged += new System.EventHandler(this.Save_ERFixBadBassTuning);
             // 
             // MainForm
             // 

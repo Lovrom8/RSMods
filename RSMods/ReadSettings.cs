@@ -19,18 +19,19 @@ namespace RSMods
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
                     
                              // Mod On / Off
-                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber,
+                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, 
+                             ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
                              ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
 
                              // String Colors
-                            String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N,
-                            String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
-                            SeparateNoteColors,
-                            Note0Color_N, Note1Color_N, Note2Color_N, Note3Color_N, Note4Color_N, Note5Color_N,
-                            Note0Color_CB, Note1Color_CB, Note2Color_CB, Note3Color_CB, Note4Color_CB, Note5Color_CB,
+                             String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N,
+                             String0Color_CB, String1Color_CB, String2Color_CB, String3Color_CB, String4Color_CB, String5Color_CB,
+                             SeparateNoteColorsMode,
+                             Note0Color_N, Note1Color_N, Note2Color_N, Note3Color_N, Note4Color_N, Note5Color_N,
+                             Note0Color_CB, Note1Color_CB, Note2Color_CB, Note3Color_CB, Note4Color_CB, Note5Color_CB,
 
 
                              // Mod Settings
@@ -85,6 +86,7 @@ namespace RSMods
             ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
             ExtendedRangeFixBassTuningIdentifier = "ExtendedRangeFixBassTuning = ",
             CustomStringColorNumberIndetifier = "CustomStringColors = ",
+            SeparateNoteColorsIdentifier = "SeparateNoteColors = ",
             DiscoModeIdentifier = "DiscoMode = ",
             RemoveHeadstockIdentifier = "Headstock = ",
             RemoveSkylineIdentifier = "Skyline = ",
@@ -153,7 +155,7 @@ namespace RSMods
             VolumeControlIntervalIdentifier = "VolumeControlInterval = ",
             SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
             SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
-            SeparateNoteColorsIdentifier = "SeparateNoteColors = ",
+            SeparateNoteColorsModeIdentifier = "SeparateNoteColorsMode = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier = "GuitarSpeakDeleteWhen = ",
@@ -313,6 +315,8 @@ namespace RSMods
                     return FillSettingVariable(ExtendedRangeFixBassTuningIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeFixBassTuning);
                 if (IdentifierIsFound(currentLine, CustomStringColorNumberIndetifier, identifierToGrab))
                     return FillSettingVariable(CustomStringColorNumberIndetifier, SettingType.STRING, currentLine, out CustomStringColorsNumber);
+                if (IdentifierIsFound(currentLine, SeparateNoteColorsIdentifier, identifierToGrab))
+                    return FillSettingVariable(SeparateNoteColorsIdentifier, SettingType.STRING, currentLine, out SeparateNoteColors);
                 if (IdentifierIsFound(currentLine, DiscoModeIdentifier, identifierToGrab))
                     return FillSettingVariable(DiscoModeIdentifier, SettingType.ON_OFF, currentLine, out DiscoModeEnabled);
                 if (IdentifierIsFound(currentLine, RemoveHeadstockIdentifier, identifierToGrab))
@@ -445,8 +449,8 @@ namespace RSMods
                     return FillSettingVariable(SecondaryMonitorXPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorXPosition);
                 if (IdentifierIsFound(currentLine, SecondaryMonitorYPositionIdentifier, identifierToGrab))
                     return FillSettingVariable(SecondaryMonitorYPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorYPosition);
-                if (IdentifierIsFound(currentLine, SeparateNoteColorsIdentifier, identifierToGrab))
-                    return FillSettingVariable(SeparateNoteColorsIdentifier, SettingType.STRING, currentLine, out SeparateNoteColors);
+                if (IdentifierIsFound(currentLine, SeparateNoteColorsModeIdentifier, identifierToGrab))
+                    return FillSettingVariable(SeparateNoteColorsModeIdentifier, SettingType.STRING, currentLine, out SeparateNoteColorsMode);
                 #endregion
                 #region Guitar Speak
 

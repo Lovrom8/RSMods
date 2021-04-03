@@ -59,6 +59,7 @@ namespace RSMods
                 { ReadSettings.ExtendedRangeDropTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeDropTuningIdentifier, "off") }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
                 { ReadSettings.ExtendedRangeFixBassTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeFixBassTuningIdentifier, "off") }, // Fix bad chart's tuning being wrong for strings 4 and 5.
                 { ReadSettings.CustomStringColorNumberIndetifier, CreateDefaultOnOldINI(ReadSettings.CustomStringColorNumberIndetifier, "0") }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
+                { ReadSettings.SeparateNoteColorsIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsIdentifier, "off") }, // Should we use Separate Note Colors?
                 //{ ReadSettings.DiscoModeIdentifier, CreateDefaultOnOldINI(ReadSettings.DiscoModeIdentifier, "off") }, // Disco Mode Enabled / Disabled
                 { ReadSettings.RemoveHeadstockIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveHeadstockIdentifier, "off") }, // Remove Headstock Enabled / Disabled
                 { ReadSettings.RemoveSkylineIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSkylineIdentifier, "off") }, // Remove Skyline Enabled / Disabled
@@ -126,7 +127,7 @@ namespace RSMods
                 { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") }, // By what number should we increase / decrease the volume.
                 { ReadSettings.SecondaryMonitorXPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorXPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. X
                 { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. Y
-                { ReadSettings.SeparateNoteColorsIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
+                { ReadSettings.SeparateNoteColorsModeIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsModeIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
             }},
             {"[Guitar Speak]", new Dictionary<string, string>
             {
