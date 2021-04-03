@@ -1869,6 +1869,8 @@ namespace RSMods
 
             if (!checkBox_ER_SeparateNoteColors.Checked)
                 SaveSettings_Save(ReadSettings.SeparateNoteColorsModeIdentifier, (0).ToString());
+            else
+                SaveSettings_Save(ReadSettings.SeparateNoteColorsModeIdentifier, (2).ToString());
         }
 
         private void Save_NoteColors_UseRocksmithColors(object sender, EventArgs e)
