@@ -19,7 +19,7 @@ namespace RSMods
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
                     
                              // Mod On / Off
-                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, CustomStringColorsNumber,
+                             ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled, ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
@@ -83,6 +83,7 @@ namespace RSMods
             RainbowNotesEnabledIdentifier = "RainbowNotes = ",
             ExtendedRangeEnabledIdentifier = "ExtendedRange = ",
             ExtendedRangeDropTuningIdentifier = "ExtendedRangeDropTuning = ",
+            ExtendedRangeFixBassTuningIdentifier = "ExtendedRangeFixBassTuning = ",
             CustomStringColorNumberIndetifier = "CustomStringColors = ",
             DiscoModeIdentifier = "DiscoMode = ",
             RemoveHeadstockIdentifier = "Headstock = ",
@@ -308,6 +309,8 @@ namespace RSMods
                     return FillSettingVariable(ExtendedRangeEnabledIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeEnabled);
                 if (IdentifierIsFound(currentLine, ExtendedRangeDropTuningIdentifier, identifierToGrab))
                     return FillSettingVariable(ExtendedRangeDropTuningIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeDropTuning);
+                if (IdentifierIsFound(currentLine, ExtendedRangeFixBassTuningIdentifier, identifierToGrab))
+                    return FillSettingVariable(ExtendedRangeFixBassTuningIdentifier, SettingType.ON_OFF, currentLine, out ExtendedRangeFixBassTuning);
                 if (IdentifierIsFound(currentLine, CustomStringColorNumberIndetifier, identifierToGrab))
                     return FillSettingVariable(CustomStringColorNumberIndetifier, SettingType.STRING, currentLine, out CustomStringColorsNumber);
                 if (IdentifierIsFound(currentLine, DiscoModeIdentifier, identifierToGrab))

@@ -463,7 +463,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.songManagerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -553,7 +553,6 @@
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox_Songlist
@@ -934,6 +933,7 @@
             // 
             // groupBox_ExtendedRangeWhen
             // 
+            this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_FixBadBassTuning);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.checkBox_ExtendedRangeDrop);
             this.groupBox_ExtendedRangeWhen.Controls.Add(this.listBox_ExtendedRangeTunings);
             this.groupBox_ExtendedRangeWhen.Location = new System.Drawing.Point(610, 16);
@@ -949,7 +949,7 @@
             // checkBox_ExtendedRangeDrop
             // 
             this.checkBox_ExtendedRangeDrop.AutoSize = true;
-            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(33, 245);
+            this.checkBox_ExtendedRangeDrop.Location = new System.Drawing.Point(6, 205);
             this.checkBox_ExtendedRangeDrop.Name = "checkBox_ExtendedRangeDrop";
             this.checkBox_ExtendedRangeDrop.Size = new System.Drawing.Size(97, 17);
             this.checkBox_ExtendedRangeDrop.TabIndex = 30;
@@ -5813,9 +5813,16 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // songManagerBindingSource
+            // checkBox_FixBadBassTuning
             // 
-            this.songManagerBindingSource.DataSource = typeof(RSMods.SongManager);
+            this.checkBox_FixBadBassTuning.AutoSize = true;
+            this.checkBox_FixBadBassTuning.Location = new System.Drawing.Point(7, 228);
+            this.checkBox_FixBadBassTuning.Name = "checkBox_FixBadBassTuning";
+            this.checkBox_FixBadBassTuning.Size = new System.Drawing.Size(101, 17);
+            this.checkBox_FixBadBassTuning.TabIndex = 31;
+            this.checkBox_FixBadBassTuning.Text = "Fix Bass Tuning";
+            this.checkBox_FixBadBassTuning.UseVisualStyleBackColor = true;
+            this.checkBox_FixBadBassTuning.CheckedChanged += new System.EventHandler(this.Save_ERFixBadBassTuning);
             // 
             // MainForm
             // 
@@ -5961,7 +5968,6 @@
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.songManagerBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -6331,7 +6337,6 @@
         private System.Windows.Forms.Button button_Profiles_UnlockAllRewards;
         private System.Windows.Forms.GroupBox groupBox_Profiles_Rewards;
         private System.Windows.Forms.DataGridView dgv_Profiles_Songlists;
-        private System.Windows.Forms.BindingSource songManagerBindingSource;
         private System.Windows.Forms.Label label_Profiles_AvailableSongs;
         private System.Windows.Forms.DataGridViewTextBoxColumn Artist;
         private System.Windows.Forms.DataGridViewTextBoxColumn Song;
@@ -6406,6 +6411,7 @@
         private System.Windows.Forms.Button button_ReplaceMasterfulPerformance;
         private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
         private System.Windows.Forms.ProgressBar progressBar_RepackAudioPsarc;
+        private System.Windows.Forms.CheckBox checkBox_FixBadBassTuning;
     }
 }
 

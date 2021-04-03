@@ -558,6 +558,7 @@ namespace RSMods
                 checkBox_SecondaryMonitor.Checked = true;
 
             checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "1";
+            checkBox_FixBadBassTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -1924,6 +1925,8 @@ namespace RSMods
             else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off")))
                 File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"));
         }
+
+        private void Save_ERFixBadBassTuning(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.ExtendedRangeFixBassTuningIdentifier, checkBox_FixBadBassTuning.Checked.ToString().ToLower());
 
         #endregion
         #region ToolTips

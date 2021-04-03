@@ -57,6 +57,7 @@ namespace RSMods
                 { ReadSettings.RainbowNotesEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.RainbowNotesEnabledIdentifier, "off") }, // Rainbow Notes Enabled / Disabled
                 { ReadSettings.ExtendedRangeEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeEnabledIdentifier, "off") }, // Extended Range Enabled / Disabled
                 { ReadSettings.ExtendedRangeDropTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeDropTuningIdentifier, "off") }, // Extended Range on Drop Tunings (Drop A, Drop B, etc)
+                { ReadSettings.ExtendedRangeFixBassTuningIdentifier, CreateDefaultOnOldINI(ReadSettings.ExtendedRangeFixBassTuningIdentifier, "off") }, // Fix bad chart's tuning being wrong for strings 4 and 5.
                 { ReadSettings.CustomStringColorNumberIndetifier, CreateDefaultOnOldINI(ReadSettings.CustomStringColorNumberIndetifier, "0") }, // Custom String Colors (0 - Default, 1 - ZZ, 2 - Custom Colors)
                 //{ ReadSettings.DiscoModeIdentifier, CreateDefaultOnOldINI(ReadSettings.DiscoModeIdentifier, "off") }, // Disco Mode Enabled / Disabled
                 { ReadSettings.RemoveHeadstockIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveHeadstockIdentifier, "off") }, // Remove Headstock Enabled / Disabled
