@@ -376,11 +376,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
 
-		if (Settings::GetModSetting("SeparateNoteColors") == 0 || Settings::GetModSetting("SeparateNoteColors") == 2) { // Use same color scheme on notes as we do on strings (0) || Use Custom Note Color Scheme (2)
+		if (Settings::GetModSetting("SeparateNoteColorsMode") == 0 || (Settings::ReturnSettingValue("SeparateNoteColors") == "on" && Settings::GetModSetting("SeparateNoteColorsMode") == 2)) { // Use same color scheme on notes as we do on strings (0) || Use Custom Note Color Scheme (2)
 
 			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture; // Color notes like string colors
 
-			if (Settings::GetModSetting("SeparateNoteColors") == 2)
+			if (Settings::GetModSetting("SeparateNoteColorsMode") == 2)
 				textureToUseOnNotes = customNoteColorTexture; // Custom colored notes
 
 			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures

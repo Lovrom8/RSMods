@@ -36,6 +36,8 @@ void Settings::Initialize()
 		{"RainbowStringsEnabled", "off"},
 		{"ExtendedRangeEnabled", "on"},
 		{"ExtendedRangeDropTuning", "off"},
+		{"ExtendedRangeFixBassTuning", "off"},
+		{"SeparateNoteColors", "off"},
 		{"DiscoModeEnabled", "off"},
 		{"RemoveHeadstockEnabled", "off"},
 		{"RemoveSkylineEnabled", "off"},
@@ -73,7 +75,7 @@ void Settings::Initialize()
 		{"VolumeControlInterval", 5},
 		{"SecondaryMonitorXPosition", 0},
 		{"SecondaryMonitorYPosition", 0},
-		{"SeparateNoteColors", 0},
+		{"SeparateNoteColorsMode", 0},
 		{"CustomStringColors", 0},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -178,7 +180,7 @@ void Settings::ReadModSettings() {
 		{"VolumeControlInterval", reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
 		{"SecondaryMonitorXPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorXPosition", 0)},
 		{"SecondaryMonitorYPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorYPosition", 0)},
-		{"SeparateNoteColors", reader.GetLongValue("Mod Settings", "SeparateNoteColors", 0)}, // 0 = same as strings, 1 = default, 2 = custom
+		{"SeparateNoteColorsMode", reader.GetLongValue("Mod Settings", "SeparateNoteColors", 0)}, // 0 = same as strings, 1 = default, 2 = custom
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -206,6 +208,8 @@ void Settings::ReadModSettings() {
 	modSettings["RainbowNotesEnabled"] = reader.GetValue("Toggle Switches", "RainbowNotes", "off");
 	modSettings["ExtendedRangeEnabled"] = reader.GetValue("Toggle Switches", "ExtendedRange", "off");
 	modSettings["ExtendedRangeDropTuning"] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
+	modSettings["ExtendedRangeFixBassTuning"] = reader.GetValue("Toggle Switches", "ExtendedRangeFixBassTuning", "off");
+	modSettings["SeparateNoteColors"] = reader.GetValue("Toggle Switches", "SeparateNoteColors", "off");
 	modSettings["DiscoModeEnabled"] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings["RemoveHeadstockEnabled"] = reader.GetValue("Toggle Switches", "Headstock", "off");
 	modSettings["RemoveSkylineEnabled"] = reader.GetValue("Toggle Switches", "Skyline", "off");

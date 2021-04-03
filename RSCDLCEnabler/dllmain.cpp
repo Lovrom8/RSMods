@@ -938,10 +938,9 @@ unsigned WINAPI MainThread() {
 					if (!skipERSleep)
 						Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
 					UseERExclusivelyInThisSong = MemHelpers::IsExtendedRangeSong();
-					UseEROrColorsInThisSong = (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && UseERExclusivelyInThisSong || Settings::GetModSetting("CustomStringColors") == 2 || Settings::GetModSetting("SeparateNoteColors") != 1);
+					UseEROrColorsInThisSong = (Settings::ReturnSettingValue("ExtendedRangeEnabled") == "on" && UseERExclusivelyInThisSong || Settings::GetModSetting("CustomStringColors") == 2 || (Settings::ReturnSettingValue("SeparateNoteColors") == "on" && Settings::GetModSetting("SeparateNoteColorsMode") != 1));
 					AttemptedERInThisSong = true;
 				}
-					
 			}
 
 			/// If User Is Exiting A Song / In A Menu

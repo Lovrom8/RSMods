@@ -162,6 +162,11 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (currentTuning)
 		delete[] currentTuning;
 
+	if (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on") { // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+		tuning.strB = tuning.strG;
+		tuning.highE = tuning.strG;
+	}
+
 	bool dropTuning = IsSongInDrop(tuning);
 
 	// HighestLowest Tuning Pointer is invalid
@@ -210,8 +215,6 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		std::cout << "Invalid Tuning: IsExtendedRangeTuner" << std::endl;
 		return false;
 	}
-	
-	
 
 	int lowestTuning = tuner_songTuning.lowE;
 
@@ -257,11 +260,18 @@ int* MemHelpers::GetHighestLowestString() {
 		return fakeReturns;
 	}
 
+	int numberOfStrings = (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on" && (songTuning[4] == 0 || songTuning[4] == 12) && (songTuning[5] == 0 || songTuning[5] == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+
+	bool bassOctaveEffect = GetTrueTuning() == 220;
+
 	// Get Highest And Lowest Strings
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < numberOfStrings; i++) {
 
 		// Create a buffer so we can work on a value near 256, and not worry about the tunings at, and above, E Standard that start at 0 because the tuning number breaks the 256 limit of a unsigned char.
 		currentStringTuning = (int)songTuning[i];
+
+		if (bassOctaveEffect) // Is the song done in A220? If so, we need to lower the tunings so our math will still work.
+			currentStringTuning -= 12;
 
 		// 24 would be 2 octaves above E standard which is where RSMods cuts the tuning numbers at. Anything above maybe +3 should never be used, but for consistency we allow it.
 		if (currentStringTuning <= 24)
@@ -274,6 +284,11 @@ int* MemHelpers::GetHighestLowestString() {
 		// Find the lowest tuned string.
 		if (currentStringTuning < lowestTuning)
 			lowestTuning = currentStringTuning;
+	}
+
+	if (bassOctaveEffect) { // Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.
+		highestTuning += 12;
+		lowestTuning += 12;
 	}
 
 	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
