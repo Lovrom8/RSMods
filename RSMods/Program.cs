@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Security.Principal;
 
 namespace RSMods
 {
@@ -15,7 +16,13 @@ namespace RSMods
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new MainForm());
+
+                bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
+                if (!isAdmin)
+                    Application.Run(new MainForm());
+                else
+                    Application.Run(new AdminForm());
             }
             catch (Exception ex)
             {

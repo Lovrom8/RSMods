@@ -61,6 +61,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
             TooltipDictionary.Add(button_SecondaryMonitorStartPos, "PLEASE READ THIS!\nMove this window over to your secondary monitor and make it full screen.\nPress this button when it is full screen so we can save the resolution.\nAfter you press the button you can go back to windowed mode.");
             TooltipDictionary.Add(checkBox_NoteColors_UseRocksmithColors, "Check this box if you want normal Rocksmith colored notes.");
+            TooltipDictionary.Add(checkBox_SpeedUpEnumeration, "THIS MOD REQUIRES ADMIN PRIVILEGES!\nThis might make your songs enumerate faster, but removes scoreboards, and Uplay.");
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");

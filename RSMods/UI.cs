@@ -702,7 +702,7 @@ namespace RSMods
             checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged -= new System.EventHandler(Save_DumpRSModsLogToFile);
             checkBox_TurnOffAllMods.CheckedChanged -= new System.EventHandler(Save_TurnOffAllMods);
-
+            checkBox_SpeedUpEnumeration.CheckedChanged -= new System.EventHandler(Save_SpeedUpEnumeration);
 
             // Now we can change things without saving.
             nUpDown_ForceEnumerationXMS.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
@@ -720,6 +720,7 @@ namespace RSMods
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             checkBox_TurnOffAllMods.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            checkBox_SpeedUpEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.SpeedUpLoadupIdentifier) == "on";
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -736,6 +737,7 @@ namespace RSMods
             checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged += new System.EventHandler(Save_DumpRSModsLogToFile);
             checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(Save_TurnOffAllMods);
+            checkBox_SpeedUpEnumeration.CheckedChanged += new System.EventHandler(Save_SpeedUpEnumeration);
         }
 
         #endregion
@@ -1930,6 +1932,15 @@ namespace RSMods
         }
 
         private void Save_ERFixBadBassTuning(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.ExtendedRangeFixBassTuningIdentifier, checkBox_FixBadBassTuning.Checked.ToString().ToLower());
+
+        private void Save_SpeedUpEnumeration(object sender, EventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = Application.ExecutablePath;
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.Verb = "runas";
+            process.Start();
+        }
 
         #endregion
         #region ToolTips

@@ -45,7 +45,7 @@ namespace RSMods
                              CustomHighwayColors, CustomHighwayNumbered, CustomHighwayUnNumbered, CustomHighwayGutter, CustomFretNubmers,
 
                              // GUI Settings
-                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, CustomGUIButtonColor, BackupProfile, NumberOfBackups;
+                             CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, CustomGUIButtonColor, BackupProfile, NumberOfBackups, SpeedUpLoadup;
 
         public static string
             // Song List Identifiers
@@ -188,7 +188,8 @@ namespace RSMods
             CustomGUITextColorIdentifier = "ThemeTextColor = ",
             CustomGUIButtonColorIdentifier = "ThemeButtonColor = ",
             BackupProfileIdentifier = "BackupProfile = ",
-            NumberOfBackupsIdentifier = "NumberOfBackups = ";
+            NumberOfBackupsIdentifier = "NumberOfBackups = ",
+            SpeedUpLoadupIdentifier = "SpeedUpLoadup = ";
 
         #endregion
         #region Functions to make things look nicer
@@ -518,6 +519,10 @@ namespace RSMods
                     return FillSettingVariable(BackupProfileIdentifier, SettingType.ON_OFF, currentLine, out BackupProfile);
                 if (IdentifierIsFound(currentLine, NumberOfBackupsIdentifier, identifierToGrab))
                     return FillSettingVariable(NumberOfBackupsIdentifier, SettingType.STRING, currentLine, out NumberOfBackups);
+                if (IdentifierIsFound(currentLine, SpeedUpLoadupIdentifier, identifierToGrab))
+                    return FillSettingVariable(SpeedUpLoadupIdentifier, SettingType.STRING, currentLine, out SpeedUpLoadup);
+
+                
                 #endregion
             }
             return ""; // Yeah, we don't know what you're looking for...

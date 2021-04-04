@@ -464,6 +464,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.checkBox_SpeedUpEnumeration = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -971,6 +972,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_SpeedUpEnumeration);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
@@ -999,7 +1001,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 312);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 333);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -5824,6 +5826,18 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_SpeedUpEnumeration
+            // 
+            this.checkBox_SpeedUpEnumeration.AutoSize = true;
+            this.checkBox_SpeedUpEnumeration.Location = new System.Drawing.Point(10, 310);
+            this.checkBox_SpeedUpEnumeration.Name = "checkBox_SpeedUpEnumeration";
+            this.checkBox_SpeedUpEnumeration.Size = new System.Drawing.Size(136, 17);
+            this.checkBox_SpeedUpEnumeration.TabIndex = 100008;
+            this.checkBox_SpeedUpEnumeration.Text = "Speed Up Enumeration";
+            this.checkBox_SpeedUpEnumeration.UseVisualStyleBackColor = true;
+            this.checkBox_SpeedUpEnumeration.CheckedChanged += new System.EventHandler(this.Save_SpeedUpEnumeration);
+            this.checkBox_SpeedUpEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6412,6 +6426,7 @@
         private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
         private System.Windows.Forms.ProgressBar progressBar_RepackAudioPsarc;
         private System.Windows.Forms.CheckBox checkBox_FixBadBassTuning;
+        private System.Windows.Forms.CheckBox checkBox_SpeedUpEnumeration;
     }
 }
 
