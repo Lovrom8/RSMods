@@ -3303,10 +3303,10 @@ namespace RSMods
 
         private void SoundPacks_Import_File(string fileName)
         {
-            SevenZipExtractor.SetLibraryPath("7z.dll");
+            SevenZipExtractor.SetLibraryPath("7z64.dll");
             using (SevenZipExtractor extractor = new SevenZipExtractor(fileName))
             {
-                extractor.ExtractArchive(soundPackLocationPrefix + soundPackEnglishPrefix);
+                extractor.ExtractArchive(soundPackLocationPrefix);
                 MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
             }
         }
@@ -3323,7 +3323,7 @@ namespace RSMods
         
         private void SoundPacks_Export_File(string fileName)
         {
-            SevenZipCompressor.SetLibraryPath("7z.dll");
+            SevenZipCompressor.SetLibraryPath("7z64.dll");
 
             SevenZipCompressor compressor = new SevenZipCompressor
             {
@@ -3357,6 +3357,7 @@ namespace RSMods
                 };
 
             compressor.CompressFileDictionary(exportedFiles, fileName);
+            MessageBox.Show("You can now share your sound pack with your friends!\nTell them to open this menu and click \"Import Soundpack\" button, and point to this file.");
         }
 
         private void SoundPacks_Reset(object sender, EventArgs e)
