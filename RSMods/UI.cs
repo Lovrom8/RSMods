@@ -3364,7 +3364,9 @@ namespace RSMods
 
         private void SoundPacks_Reset(object sender, EventArgs e)
         {
-            MessageBox.Show("WORK IN PROGRESS! End goal is to embed the soundpack, and import it.");
+            GenUtil.ExtractEmbeddedResource(Application.StartupPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "original.rs_soundpack" });
+            SoundPacks_Import_File("original.rs_soundpack");
+            File.Delete("original.rs_soundpack");
         }
 
         private void SoundPacks_ReplaceBadPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance);
