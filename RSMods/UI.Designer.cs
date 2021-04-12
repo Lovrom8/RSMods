@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_SpeedUpEnumeration = new System.Windows.Forms.CheckBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
@@ -399,8 +400,9 @@
             this.progressBar_RepackAudioPsarc = new System.Windows.Forms.ProgressBar();
             this.label_SoundPacksBETA = new System.Windows.Forms.Label();
             this.groupBox_SoundPacks = new System.Windows.Forms.GroupBox();
+            this.button_ReplaceMasterfulPerformance_99 = new System.Windows.Forms.Button();
             this.button_ReplaceFlawlessPerformance = new System.Windows.Forms.Button();
-            this.button_ReplaceMasterfulPerformance = new System.Windows.Forms.Button();
+            this.button_ReplaceMasterfulPerformance_98 = new System.Windows.Forms.Button();
             this.button_ReplaceExemplaryPerformance = new System.Windows.Forms.Button();
             this.button_ReplaceAmazingPerformance = new System.Windows.Forms.Button();
             this.button_ReplaceExceptionalPerformance = new System.Windows.Forms.Button();
@@ -464,7 +466,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_SpeedUpEnumeration = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1005,6 +1006,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_SpeedUpEnumeration
+            // 
+            this.checkBox_SpeedUpEnumeration.AutoSize = true;
+            this.checkBox_SpeedUpEnumeration.Location = new System.Drawing.Point(10, 310);
+            this.checkBox_SpeedUpEnumeration.Name = "checkBox_SpeedUpEnumeration";
+            this.checkBox_SpeedUpEnumeration.Size = new System.Drawing.Size(136, 17);
+            this.checkBox_SpeedUpEnumeration.TabIndex = 100008;
+            this.checkBox_SpeedUpEnumeration.Text = "Speed Up Enumeration";
+            this.checkBox_SpeedUpEnumeration.UseVisualStyleBackColor = true;
+            this.checkBox_SpeedUpEnumeration.CheckedChanged += new System.EventHandler(this.Save_SpeedUpEnumeration);
+            this.checkBox_SpeedUpEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ModsLog
             // 
@@ -5136,8 +5149,9 @@
             // 
             // groupBox_SoundPacks
             // 
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceMasterfulPerformance_99);
             this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceFlawlessPerformance);
-            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceMasterfulPerformance);
+            this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceMasterfulPerformance_98);
             this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceExemplaryPerformance);
             this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceAmazingPerformance);
             this.groupBox_SoundPacks.Controls.Add(this.button_ReplaceExceptionalPerformance);
@@ -5166,9 +5180,19 @@
             this.groupBox_SoundPacks.Text = "Sound Packs";
             this.groupBox_SoundPacks.Visible = false;
             // 
+            // button_ReplaceMasterfulPerformance_99
+            // 
+            this.button_ReplaceMasterfulPerformance_99.Location = new System.Drawing.Point(529, 135);
+            this.button_ReplaceMasterfulPerformance_99.Name = "button_ReplaceMasterfulPerformance_99";
+            this.button_ReplaceMasterfulPerformance_99.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceMasterfulPerformance_99.TabIndex = 25;
+            this.button_ReplaceMasterfulPerformance_99.Text = "Replace 99% \"Masterful Performance\"";
+            this.button_ReplaceMasterfulPerformance_99.UseVisualStyleBackColor = true;
+            this.button_ReplaceMasterfulPerformance_99.Click += new System.EventHandler(this.SoundPacks_ReplaceMasterfulPerformance_99);
+            // 
             // button_ReplaceFlawlessPerformance
             // 
-            this.button_ReplaceFlawlessPerformance.Location = new System.Drawing.Point(529, 136);
+            this.button_ReplaceFlawlessPerformance.Location = new System.Drawing.Point(529, 165);
             this.button_ReplaceFlawlessPerformance.Name = "button_ReplaceFlawlessPerformance";
             this.button_ReplaceFlawlessPerformance.Size = new System.Drawing.Size(251, 23);
             this.button_ReplaceFlawlessPerformance.TabIndex = 24;
@@ -5176,15 +5200,15 @@
             this.button_ReplaceFlawlessPerformance.UseVisualStyleBackColor = true;
             this.button_ReplaceFlawlessPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceFlawlessPerformance);
             // 
-            // button_ReplaceMasterfulPerformance
+            // button_ReplaceMasterfulPerformance_98
             // 
-            this.button_ReplaceMasterfulPerformance.Location = new System.Drawing.Point(529, 106);
-            this.button_ReplaceMasterfulPerformance.Name = "button_ReplaceMasterfulPerformance";
-            this.button_ReplaceMasterfulPerformance.Size = new System.Drawing.Size(251, 23);
-            this.button_ReplaceMasterfulPerformance.TabIndex = 23;
-            this.button_ReplaceMasterfulPerformance.Text = "Replace 98-99% \"Masterful Performance\"";
-            this.button_ReplaceMasterfulPerformance.UseVisualStyleBackColor = true;
-            this.button_ReplaceMasterfulPerformance.Click += new System.EventHandler(this.SoundPacks_ReplaceMasterfulPerformance);
+            this.button_ReplaceMasterfulPerformance_98.Location = new System.Drawing.Point(529, 106);
+            this.button_ReplaceMasterfulPerformance_98.Name = "button_ReplaceMasterfulPerformance_98";
+            this.button_ReplaceMasterfulPerformance_98.Size = new System.Drawing.Size(251, 23);
+            this.button_ReplaceMasterfulPerformance_98.TabIndex = 23;
+            this.button_ReplaceMasterfulPerformance_98.Text = "Replace 98% \"Masterful Performance\"";
+            this.button_ReplaceMasterfulPerformance_98.UseVisualStyleBackColor = true;
+            this.button_ReplaceMasterfulPerformance_98.Click += new System.EventHandler(this.SoundPacks_ReplaceMasterfulPerformance_98);
             // 
             // button_ReplaceExemplaryPerformance
             // 
@@ -5826,18 +5850,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // checkBox_SpeedUpEnumeration
-            // 
-            this.checkBox_SpeedUpEnumeration.AutoSize = true;
-            this.checkBox_SpeedUpEnumeration.Location = new System.Drawing.Point(10, 310);
-            this.checkBox_SpeedUpEnumeration.Name = "checkBox_SpeedUpEnumeration";
-            this.checkBox_SpeedUpEnumeration.Size = new System.Drawing.Size(136, 17);
-            this.checkBox_SpeedUpEnumeration.TabIndex = 100008;
-            this.checkBox_SpeedUpEnumeration.Text = "Speed Up Enumeration";
-            this.checkBox_SpeedUpEnumeration.UseVisualStyleBackColor = true;
-            this.checkBox_SpeedUpEnumeration.CheckedChanged += new System.EventHandler(this.Save_SpeedUpEnumeration);
-            this.checkBox_SpeedUpEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6422,11 +6434,12 @@
         private System.Windows.Forms.Button button_ReplaceExceptionalPerformance;
         private System.Windows.Forms.Button button_ReplaceSuperstar;
         private System.Windows.Forms.Button button_ReplaceExemplaryPerformance;
-        private System.Windows.Forms.Button button_ReplaceMasterfulPerformance;
+        private System.Windows.Forms.Button button_ReplaceMasterfulPerformance_98;
         private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
         private System.Windows.Forms.ProgressBar progressBar_RepackAudioPsarc;
         private System.Windows.Forms.CheckBox checkBox_FixBadBassTuning;
         private System.Windows.Forms.CheckBox checkBox_SpeedUpEnumeration;
+        private System.Windows.Forms.Button button_ReplaceMasterfulPerformance_99;
     }
 }
 

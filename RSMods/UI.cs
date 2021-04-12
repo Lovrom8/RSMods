@@ -3120,7 +3120,8 @@ namespace RSMods
         string voiceLine_ExceptionalPerformance = "2067153482.wem";
         string voiceLine_AmazingPerformance = "2067871807.wem";
         string voiceLine_ExemplaryPerformance = "2067022644.wem";
-        string voiceLine_MasterfulPerformance = "2068137287.wem";
+        string voiceLine_MasterfulPerformance_98 = "2068137287.wem";
+        string voiceLine_MasterfulPerformance_99 = "2067870540.wem";
         string voiceLine_FlawlessPerformance = "2068002100.wem";
 
 
@@ -3337,23 +3338,24 @@ namespace RSMods
 
             Dictionary<string, string> exportedFiles = new Dictionary<string, string>()
                 {
-                    { soundPackEnglishPrefix + voiceLine_BadPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance},
-                    { soundPackEnglishPrefix + voiceLine_DisappointingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DisappointingPerformance},
-                    { soundPackEnglishPrefix + voiceLine_SubparPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SubparPerformance},
-                    { soundPackEnglishPrefix + voiceLine_CouldBeBetter, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_CouldBeBetter},
-                    { soundPackEnglishPrefix + voiceLine_DecentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DecentPerformance},
-                    { soundPackEnglishPrefix + voiceLine_AlrightPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AlrightPerformance},
-                    { soundPackEnglishPrefix + voiceLine_ExcellentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExcellentPerformance},
-                    { soundPackEnglishPrefix + voiceLine_TopNotchPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_TopNotchPerformance},
-                    { soundPackEnglishPrefix + voiceLine_SuperbPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SuperbPerformance},
-                    { soundPackEnglishPrefix + voiceLine_DazzlingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DazzlingPerformance},
-                    { soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar},
-                    { soundPackEnglishPrefix + voiceLine_WonderfulPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance},
-                    { soundPackEnglishPrefix + voiceLine_ExceptionalPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExceptionalPerformance},
-                    { soundPackEnglishPrefix + voiceLine_AmazingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance},
-                    { soundPackEnglishPrefix + voiceLine_ExemplaryPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance},
-                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance},
-                    { soundPackEnglishPrefix + voiceLine_FlawlessPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance},
+                    { soundPackEnglishPrefix + voiceLine_BadPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_BadPerformance },
+                    { soundPackEnglishPrefix + voiceLine_DisappointingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DisappointingPerformance },
+                    { soundPackEnglishPrefix + voiceLine_SubparPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SubparPerformance },
+                    { soundPackEnglishPrefix + voiceLine_CouldBeBetter, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_CouldBeBetter },
+                    { soundPackEnglishPrefix + voiceLine_DecentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DecentPerformance },
+                    { soundPackEnglishPrefix + voiceLine_AlrightPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AlrightPerformance },
+                    { soundPackEnglishPrefix + voiceLine_ExcellentPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExcellentPerformance },
+                    { soundPackEnglishPrefix + voiceLine_TopNotchPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_TopNotchPerformance },
+                    { soundPackEnglishPrefix + voiceLine_SuperbPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_SuperbPerformance },
+                    { soundPackEnglishPrefix + voiceLine_DazzlingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_DazzlingPerformance },
+                    { soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_YoureGonnaBeASuperstar },
+                    { soundPackEnglishPrefix + voiceLine_WonderfulPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_WonderfulPerformance },
+                    { soundPackEnglishPrefix + voiceLine_ExceptionalPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExceptionalPerformance },
+                    { soundPackEnglishPrefix + voiceLine_AmazingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance },
+                    { soundPackEnglishPrefix + voiceLine_ExemplaryPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance },
+                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98 },
+                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99, soundPackEnglishPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99 },
+                    { soundPackEnglishPrefix + voiceLine_FlawlessPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance },
                 };
 
             compressor.CompressFileDictionary(exportedFiles, fileName);
@@ -3380,7 +3382,8 @@ namespace RSMods
         private void SoundPacks_ReplaceExceptionalPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExceptionalPerformance);
         private void SoundPacks_ReplaceAmazingPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance);
         private void SoundPacks_ReplaceExemplaryPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance);
-        private void SoundPacks_ReplaceMasterfulPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance);
+        private void SoundPacks_ReplaceMasterfulPerformance_98(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98);
+        private void SoundPacks_ReplaceMasterfulPerformance_99(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99);
         private void SoundPacks_ReplaceFlawlessPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance);
         #endregion
 
