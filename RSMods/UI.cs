@@ -3354,7 +3354,7 @@ namespace RSMods
                     { soundPackEnglishPrefix + voiceLine_AmazingPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_AmazingPerformance },
                     { soundPackEnglishPrefix + voiceLine_ExemplaryPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_ExemplaryPerformance },
                     { soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98 },
-                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99, soundPackEnglishPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99 },
+                    { soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99 },
                     { soundPackEnglishPrefix + voiceLine_FlawlessPerformance, soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance },
                 };
 
