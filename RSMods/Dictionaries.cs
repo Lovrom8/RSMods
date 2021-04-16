@@ -75,7 +75,6 @@ namespace RSMods
 
             // Set & Forget Mods (Cache.psarc Modifications)
             // Tones
-            TooltipDictionary.Add(label_ChangeTonesHeader, "This section lets you change the default menu tone for Lead, Rhythm Or Bass.\nYou need to have the tone you want to set saved in your profile first,\nthen you can load it here and set it as the default tone that will be used when you start up Rocksmith.");
             TooltipDictionary.Add(button_LoadTones, "Step 1.\nClick this to load the tones that are saved in your profile.");
             TooltipDictionary.Add(listBox_ProfileTones, "Step2.\n Highlight a tone name.");
             TooltipDictionary.Add(radio_DefaultRhythmTone, "Set Highlighted Tone As New Default Rhythm Tone.");

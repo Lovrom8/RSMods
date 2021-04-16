@@ -67,24 +67,38 @@ namespace RSMods
                                     song.RS1AppID = song.arrangement.Attributes.DLCRS1Key[0].WIN32;
                             }
 
+                            Songs.RemoveAll(songData => songData == null); // If this isn't run then we can end up with some blank songs getting passed in and crashing the app.
+
                             // If Song Name Exists -> Add To Current Values -> Return Updated Song
                             if (Songs.Exists(songData => Equals(songData.DLCKey, song.DLCKey)))
                             {
                                 int index = Songs.IndexOf(new SongData { DLCKey = song.DLCKey });
 
-                                if (index > -1)
+                                if (index != -1)
                                 {
                                     SongData previousIteration = Songs[index];
+                                    previousIteration.arrangements.Add(arrangement);
                                     previousIteration.ArrangementTypes.AddRange(song.ArrangementTypes);
                                     previousIteration.Tunings.AddRange(song.Tunings);
                                     Songs[index] = previousIteration;
                                 }
+                                else
+                                {
+                                    song.ArrangementTypes = arrangementTypes;
+                                    song.Tunings = tunings;
+                                    song.arrangements = new List<SongArrangement>();
+                                    song.arrangements.Add(song.arrangement);
+                                    Songs.Add(song);
+                                }
                             }
+
                             // Song Doesn't Exist In Our List
                             else
                             {
                                 song.ArrangementTypes = arrangementTypes;
                                 song.Tunings = tunings;
+                                song.arrangements = new List<SongArrangement>();
+                                song.arrangements.Add(song.arrangement);
                                 Songs.Add(song);
                             }
                         }
@@ -110,6 +124,7 @@ namespace RSMods
     public class SongData
     {
         public SongArrangement arrangement { get; set; } // Raw arrangment, just in-case we need to mess with it.
+        public List<SongArrangement> arrangements { get; set; } // List of arrangements
         public string DLCKey { get; set; }
         public string Artist { get; set; }
         public string Title { get; set; }

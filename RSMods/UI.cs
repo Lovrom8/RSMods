@@ -28,6 +28,8 @@ using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
 using System.IO.Compression;
 using SevenZip;
+using Rocksmith2014PsarcLib.Psarc.Models.Json;
+using Newtonsoft.Json;
 
 namespace RSMods
 {
@@ -320,7 +322,7 @@ namespace RSMods
 
                     listBox_Profiles_ListBackups.Items.Add(userFriendlyName);
                 }
-                    
+
             }
             catch // Folder doesn't exist
             {
@@ -764,7 +766,7 @@ namespace RSMods
             foreach (Control controlToChange in ControlList)
             {
                 controlToChange.ForeColor = textColor;
-                
+
                 if (controlToChange is Button)
                     controlToChange.BackColor = buttonColor;
                 else
@@ -1359,7 +1361,7 @@ namespace RSMods
             textBox_UIName.Text = uiName.Item2;
 
             for (int strIdx = 0; strIdx < 6; strIdx++) // If you are lazy and don't want to list each string separately, just do this sexy two-liner
-                ((NumericUpDown)groupBox_SetAndForget.Controls[$"nUpDown_String{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
+                ((NumericUpDown)tabPage_SetAndForget_CustomTunings.Controls[$"nUpDown_String{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
         }
 
         private void SetForget_SaveTuningChanges(object sender, EventArgs e)
@@ -1483,6 +1485,80 @@ namespace RSMods
             string selectedToneName = listBox_ProfileTones.SelectedItem.ToString();
 
             SetAndForgetMods.SetGuitarArcadeTone(selectedToneName, selectedToneType);
+        }
+
+        List<SongArrangement.ArrangementAttributes.ArrangementTuning> customTunings = new List<SongArrangement.ArrangementAttributes.ArrangementTuning>();
+
+        private void SetAndForget_FillCustomTuningList(object sender, EventArgs e)
+        {
+            List<SongArrangement.ArrangementAttributes.ArrangementTuning> definedTunings = new List<SongArrangement.ArrangementAttributes.ArrangementTuning>();
+
+            foreach (TuningDefinitionInfo tuningDefinition in SetAndForgetMods.TuningsCollection.Values)
+            {
+                SongArrangement.ArrangementAttributes.ArrangementTuning arrangementTuning = new SongArrangement.ArrangementAttributes.ArrangementTuning();
+
+                foreach (KeyValuePair<string, int> tuning in tuningDefinition.Strings)
+                {
+                    switch (tuning.Key)
+                    {
+                        case "string0":
+                            arrangementTuning.String0 = tuning.Value;
+                            break;
+                        case "string1":
+                            arrangementTuning.String1 = tuning.Value;
+                            break;
+                        case "string2":
+                            arrangementTuning.String2 = tuning.Value;
+                            break;
+                        case "string3":
+                            arrangementTuning.String3 = tuning.Value;
+                            break;
+                        case "string4":
+                            arrangementTuning.String4 = tuning.Value;
+                            break;
+                        case "string5":
+                            arrangementTuning.String5 = tuning.Value;
+                            break;
+                    }
+                }
+
+                definedTunings.Add(arrangementTuning);
+            }
+
+            Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings);
+            List<string> songsToDisplay = new List<string>();
+
+            foreach (SongData song in Songs)
+            {
+                foreach (SongArrangement arrangement in song.arrangements)
+                {
+                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+                    if (!definedTunings.Contains(arrangement.Attributes.Tuning))
+                    {
+                        songsToDisplay.Add(formatting);
+                        customTunings.Add(arrangement.Attributes.Tuning);
+                    }
+                }
+            }
+            listBox_SetAndForget_SongsWithCustomTuning.Items.Clear();
+            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(songsToDisplay.ToArray());
+        }
+
+        private void SetAndForget_LoadCustomTuningFromSong(object sender, EventArgs e)
+        {
+            if (listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex < 0)
+                return;
+
+            SongArrangement.ArrangementAttributes.ArrangementTuning customTuning = customTunings[listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex];
+
+            nUpDown_String0.Value = customTuning.String0;
+            nUpDown_String1.Value = customTuning.String1;
+            nUpDown_String2.Value = customTuning.String2;
+            nUpDown_String3.Value = customTuning.String3;
+            nUpDown_String4.Value = customTuning.String4;
+            nUpDown_String5.Value = customTuning.String5;
+
+            listBox_Tunings.SelectedIndex = 0; // "<New>"
         }
 
         #endregion
@@ -1758,7 +1834,7 @@ namespace RSMods
         {
             SaveSettings_Save(ReadSettings.BackupProfileIdentifier, checkBox_BackupProfile.Checked.ToString().ToLower());
             groupBox_Backups.Visible = checkBox_BackupProfile.Checked;
-            
+
 
             if (checkBox_BackupProfile.Checked)
             {
@@ -1904,8 +1980,8 @@ namespace RSMods
 
         private void Save_DumpRSModsLogToFile(object sender, EventArgs e)
         {
-           if (checkBox_ModsLog.Checked)
-               File.Create(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
+            if (checkBox_ModsLog.Checked)
+                File.Create(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             else
             {
                 // First we have to do garbage cleanup since it keeps the file in use way too long.
@@ -3138,7 +3214,7 @@ namespace RSMods
             GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
 
             Packer.Unpack(audioPsarcLocation, "audio_psarc/");
-            
+
             SoundPacks_PleaseWaitMessage(false);
             SoundPacks_ChangeUIForUnpackedFolder(true);
             MessageBox.Show("You may now mess around with custom sound packs");
@@ -3216,7 +3292,7 @@ namespace RSMods
                     }
                     else
                         MessageBox.Show("An error occured when converting your file.\nPlease contact the RSMods devs.");
-                   
+
                 }
             }
         }
@@ -3225,7 +3301,7 @@ namespace RSMods
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
 
-            using(Mp3FileReader mp3FileReader = new Mp3FileReader(mp3File))
+            using (Mp3FileReader mp3FileReader = new Mp3FileReader(mp3File))
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
             }
@@ -3321,7 +3397,7 @@ namespace RSMods
             if (fileDialog.ShowDialog() == DialogResult.OK)
                 SoundPacks_Export_File(fileDialog.FileName);
         }
-        
+
         private void SoundPacks_Export_File(string fileName)
         {
             SevenZipCompressor.SetLibraryPath("7z64.dll");

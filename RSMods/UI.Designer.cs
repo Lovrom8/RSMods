@@ -103,59 +103,64 @@
             this.radio_colorBlindERStringColors = new System.Windows.Forms.RadioButton();
             this.radio_DefaultStringColors = new System.Windows.Forms.RadioButton();
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
-            this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
-            this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
-            this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
-            this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
-            this.radio_HarmonicHeistTone = new System.Windows.Forms.RadioButton();
-            this.radio_HurtlinHurdlesTone = new System.Windows.Forms.RadioButton();
-            this.radio_NinjaSlideNTone = new System.Windows.Forms.RadioButton();
-            this.radio_ScaleRacerTone = new System.Windows.Forms.RadioButton();
-            this.radio_StringsSkipSaloonTone = new System.Windows.Forms.RadioButton();
-            this.radio_ScaleWarriorsTone = new System.Windows.Forms.RadioButton();
-            this.radio_TempleOfBendsTone = new System.Windows.Forms.RadioButton();
-            this.button_AssignNewGuitarArcadeTone = new System.Windows.Forms.Button();
-            this.label_SetAndForgetGuitarArcade = new System.Windows.Forms.Label();
-            this.button_AddDCInput = new System.Windows.Forms.Button();
-            this.label_ChangeTonesHeader = new System.Windows.Forms.Label();
-            this.label_HorizontalRuleSetAndForget = new System.Windows.Forms.Label();
-            this.label_HorizontalRulerGuitarArcade = new System.Windows.Forms.Label();
-            this.button_ImportExistingSettings = new System.Windows.Forms.Button();
+            this.tabControl_SetAndForget = new System.Windows.Forms.TabControl();
+            this.tabPage_SetAndForget_CustomTunings = new System.Windows.Forms.TabPage();
+            this.progressBar_FillSongsWithCustomTunings = new System.Windows.Forms.ProgressBar();
+            this.button_FillCustomTuningList = new System.Windows.Forms.Button();
+            this.listBox_SetAndForget_SongsWithCustomTuning = new System.Windows.Forms.ListBox();
+            this.listBox_Tunings = new System.Windows.Forms.ListBox();
+            this.label_UITuningName = new System.Windows.Forms.Label();
+            this.textBox_InternalTuningName = new System.Windows.Forms.TextBox();
+            this.textBox_UIName = new System.Windows.Forms.TextBox();
             this.label_CustomTuningHighEStringLetter = new System.Windows.Forms.Label();
+            this.label_InternalTuningName = new System.Windows.Forms.Label();
             this.label_CustomTuningBStringLetter = new System.Windows.Forms.Label();
+            this.nUpDown_UIIndex = new System.Windows.Forms.NumericUpDown();
             this.label_CustomTuningGStringLetter = new System.Windows.Forms.Label();
+            this.button_AddCustomTunings = new System.Windows.Forms.Button();
+            this.label_UIIndex = new System.Windows.Forms.Label();
+            this.button_RemoveTuning = new System.Windows.Forms.Button();
+            this.button_SaveTuningChanges = new System.Windows.Forms.Button();
             this.label_CustomTuningDStringLetter = new System.Windows.Forms.Label();
+            this.button_AddTuning = new System.Windows.Forms.Button();
+            this.nUpDown_String0 = new System.Windows.Forms.NumericUpDown();
             this.label_CustomTuningAStringLetter = new System.Windows.Forms.Label();
+            this.nUpDown_String2 = new System.Windows.Forms.NumericUpDown();
             this.label_CustomTuningLowEStringLetter = new System.Windows.Forms.Label();
-            this.radio_DefaultBassTone = new System.Windows.Forms.RadioButton();
+            this.nUpDown_String3 = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_String4 = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_String5 = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_String1 = new System.Windows.Forms.NumericUpDown();
+            this.label_CustomStringTunings = new System.Windows.Forms.Label();
+            this.tabPage_SetAndForget_CustomTones = new System.Windows.Forms.TabPage();
+            this.listBox_ProfileTones = new System.Windows.Forms.ListBox();
+            this.groupBox_CustomGuitarcadeTones = new System.Windows.Forms.GroupBox();
+            this.radio_TempleOfBendsTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleWarriorsTone = new System.Windows.Forms.RadioButton();
+            this.radio_GoneWailinTone = new System.Windows.Forms.RadioButton();
+            this.radio_StringsSkipSaloonTone = new System.Windows.Forms.RadioButton();
+            this.radio_RainbowLaserTone = new System.Windows.Forms.RadioButton();
+            this.radio_ScaleRacerTone = new System.Windows.Forms.RadioButton();
+            this.radio_DucksReduxTone = new System.Windows.Forms.RadioButton();
+            this.radio_NinjaSlideNTone = new System.Windows.Forms.RadioButton();
+            this.radio_HarmonicHeistTone = new System.Windows.Forms.RadioButton();
+            this.button_AssignNewGuitarArcadeTone = new System.Windows.Forms.Button();
+            this.radio_HurtlinHurdlesTone = new System.Windows.Forms.RadioButton();
+            this.button_LoadTones = new System.Windows.Forms.Button();
+            this.groupBox_CustomProfileTones = new System.Windows.Forms.GroupBox();
             this.radio_DefaultLeadTone = new System.Windows.Forms.RadioButton();
             this.radio_DefaultRhythmTone = new System.Windows.Forms.RadioButton();
-            this.button_LoadTones = new System.Windows.Forms.Button();
-            this.listBox_ProfileTones = new System.Windows.Forms.ListBox();
+            this.radio_DefaultBassTone = new System.Windows.Forms.RadioButton();
             this.button_AssignNewDefaultTone = new System.Windows.Forms.Button();
-            this.button_RemoveTemp = new System.Windows.Forms.Button();
-            this.button_AddExitGame = new System.Windows.Forms.Button();
+            this.tabPage_SetAndForget_Misc = new System.Windows.Forms.TabPage();
             this.button_AddFastLoad = new System.Windows.Forms.Button();
+            this.button_AddExitGame = new System.Windows.Forms.Button();
+            this.button_RemoveTemp = new System.Windows.Forms.Button();
+            this.button_ImportExistingSettings = new System.Windows.Forms.Button();
             this.button_CleanUpUnpackedCache = new System.Windows.Forms.Button();
+            this.button_AddDCInput = new System.Windows.Forms.Button();
             this.button_RestoreCacheBackup = new System.Windows.Forms.Button();
-            this.button_AddCustomTunings = new System.Windows.Forms.Button();
-            this.button_SaveTuningChanges = new System.Windows.Forms.Button();
-            this.label_CustomStringTunings = new System.Windows.Forms.Label();
-            this.nUpDown_String0 = new System.Windows.Forms.NumericUpDown();
-            this.label_UIIndex = new System.Windows.Forms.Label();
-            this.nUpDown_UIIndex = new System.Windows.Forms.NumericUpDown();
-            this.label_UITuningName = new System.Windows.Forms.Label();
-            this.label_InternalTuningName = new System.Windows.Forms.Label();
-            this.nUpDown_String1 = new System.Windows.Forms.NumericUpDown();
-            this.nUpDown_String5 = new System.Windows.Forms.NumericUpDown();
-            this.nUpDown_String4 = new System.Windows.Forms.NumericUpDown();
-            this.nUpDown_String3 = new System.Windows.Forms.NumericUpDown();
-            this.nUpDown_String2 = new System.Windows.Forms.NumericUpDown();
-            this.textBox_UIName = new System.Windows.Forms.TextBox();
-            this.textBox_InternalTuningName = new System.Windows.Forms.TextBox();
-            this.button_AddTuning = new System.Windows.Forms.Button();
-            this.button_RemoveTuning = new System.Windows.Forms.Button();
-            this.listBox_Tunings = new System.Windows.Forms.ListBox();
+            this.button_ResetToDefaultCachePsarc = new System.Windows.Forms.Button();
             this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox_ToggleSkylineWhen = new System.Windows.Forms.GroupBox();
             this.radio_SkylineOffInSong = new System.Windows.Forms.RadioButton();
@@ -466,6 +471,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.label_SetAndForget_MayShowUpAsCustomTuning = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -475,13 +481,19 @@
             this.groupBox_Keybindings_MODS.SuspendLayout();
             this.groupBox_StringColors.SuspendLayout();
             this.groupBox_SetAndForget.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String0)).BeginInit();
+            this.tabControl_SetAndForget.SuspendLayout();
+            this.tabPage_SetAndForget_CustomTunings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_UIIndex)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String1)).BeginInit();
+            this.tabPage_SetAndForget_CustomTones.SuspendLayout();
+            this.groupBox_CustomGuitarcadeTones.SuspendLayout();
+            this.groupBox_CustomProfileTones.SuspendLayout();
+            this.tabPage_SetAndForget_Misc.SuspendLayout();
             this.groupBox_ToggleSkylineWhen.SuspendLayout();
             this.groupBox_ToggleLyricsOffWhen.SuspendLayout();
             this.groupBox_GuitarSpeak.SuspendLayout();
@@ -1482,59 +1494,8 @@
             // groupBox_SetAndForget
             // 
             this.groupBox_SetAndForget.BackColor = System.Drawing.Color.Azure;
+            this.groupBox_SetAndForget.Controls.Add(this.tabControl_SetAndForget);
             this.groupBox_SetAndForget.Controls.Add(this.button_ResetToDefaultCachePsarc);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_GoneWailinTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_RainbowLaserTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_DucksReduxTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_HarmonicHeistTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_HurtlinHurdlesTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_NinjaSlideNTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_ScaleRacerTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_StringsSkipSaloonTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_ScaleWarriorsTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_TempleOfBendsTone);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AssignNewGuitarArcadeTone);
-            this.groupBox_SetAndForget.Controls.Add(this.label_SetAndForgetGuitarArcade);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddDCInput);
-            this.groupBox_SetAndForget.Controls.Add(this.label_ChangeTonesHeader);
-            this.groupBox_SetAndForget.Controls.Add(this.label_HorizontalRuleSetAndForget);
-            this.groupBox_SetAndForget.Controls.Add(this.label_HorizontalRulerGuitarArcade);
-            this.groupBox_SetAndForget.Controls.Add(this.button_ImportExistingSettings);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningHighEStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningBStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningGStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningDStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningAStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomTuningLowEStringLetter);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_DefaultBassTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_DefaultLeadTone);
-            this.groupBox_SetAndForget.Controls.Add(this.radio_DefaultRhythmTone);
-            this.groupBox_SetAndForget.Controls.Add(this.button_LoadTones);
-            this.groupBox_SetAndForget.Controls.Add(this.listBox_ProfileTones);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AssignNewDefaultTone);
-            this.groupBox_SetAndForget.Controls.Add(this.button_RemoveTemp);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddExitGame);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddFastLoad);
-            this.groupBox_SetAndForget.Controls.Add(this.button_CleanUpUnpackedCache);
-            this.groupBox_SetAndForget.Controls.Add(this.button_RestoreCacheBackup);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddCustomTunings);
-            this.groupBox_SetAndForget.Controls.Add(this.button_SaveTuningChanges);
-            this.groupBox_SetAndForget.Controls.Add(this.label_CustomStringTunings);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String0);
-            this.groupBox_SetAndForget.Controls.Add(this.label_UIIndex);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_UIIndex);
-            this.groupBox_SetAndForget.Controls.Add(this.label_UITuningName);
-            this.groupBox_SetAndForget.Controls.Add(this.label_InternalTuningName);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String1);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String5);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String4);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String3);
-            this.groupBox_SetAndForget.Controls.Add(this.nUpDown_String2);
-            this.groupBox_SetAndForget.Controls.Add(this.textBox_UIName);
-            this.groupBox_SetAndForget.Controls.Add(this.textBox_InternalTuningName);
-            this.groupBox_SetAndForget.Controls.Add(this.button_AddTuning);
-            this.groupBox_SetAndForget.Controls.Add(this.button_RemoveTuning);
-            this.groupBox_SetAndForget.Controls.Add(this.listBox_Tunings);
             this.groupBox_SetAndForget.Location = new System.Drawing.Point(6, 11);
             this.groupBox_SetAndForget.Name = "groupBox_SetAndForget";
             this.groupBox_SetAndForget.Size = new System.Drawing.Size(1131, 499);
@@ -1542,448 +1503,149 @@
             this.groupBox_SetAndForget.TabStop = false;
             this.groupBox_SetAndForget.Text = "Set-and-forget mods";
             // 
-            // button_ResetToDefaultCachePsarc
+            // tabControl_SetAndForget
             // 
-            this.button_ResetToDefaultCachePsarc.Location = new System.Drawing.Point(944, 473);
-            this.button_ResetToDefaultCachePsarc.Name = "button_ResetToDefaultCachePsarc";
-            this.button_ResetToDefaultCachePsarc.Size = new System.Drawing.Size(181, 23);
-            this.button_ResetToDefaultCachePsarc.TabIndex = 125;
-            this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
-            this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
-            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.SetForget_ResetCache);
-            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.tabControl_SetAndForget.Controls.Add(this.tabPage_SetAndForget_CustomTunings);
+            this.tabControl_SetAndForget.Controls.Add(this.tabPage_SetAndForget_CustomTones);
+            this.tabControl_SetAndForget.Controls.Add(this.tabPage_SetAndForget_Misc);
+            this.tabControl_SetAndForget.Location = new System.Drawing.Point(27, 19);
+            this.tabControl_SetAndForget.Name = "tabControl_SetAndForget";
+            this.tabControl_SetAndForget.SelectedIndex = 0;
+            this.tabControl_SetAndForget.Size = new System.Drawing.Size(810, 389);
+            this.tabControl_SetAndForget.TabIndex = 127;
             // 
-            // radio_GoneWailinTone
+            // tabPage_SetAndForget_CustomTunings
             // 
-            this.radio_GoneWailinTone.AutoSize = true;
-            this.radio_GoneWailinTone.Location = new System.Drawing.Point(702, 424);
-            this.radio_GoneWailinTone.Name = "radio_GoneWailinTone";
-            this.radio_GoneWailinTone.Size = new System.Drawing.Size(256, 17);
-            this.radio_GoneWailinTone.TabIndex = 124;
-            this.radio_GoneWailinTone.Text = "Set Highlighted Tone As New Gone Wailin\' Tone";
-            this.radio_GoneWailinTone.UseVisualStyleBackColor = true;
+            this.tabPage_SetAndForget_CustomTunings.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_SetAndForget_CustomTunings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_SetAndForget_MayShowUpAsCustomTuning);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.progressBar_FillSongsWithCustomTunings);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.button_FillCustomTuningList);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.listBox_SetAndForget_SongsWithCustomTuning);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.listBox_Tunings);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_UITuningName);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.textBox_InternalTuningName);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.textBox_UIName);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningHighEStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_InternalTuningName);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningBStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_UIIndex);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningGStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.button_AddCustomTunings);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_UIIndex);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.button_RemoveTuning);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.button_SaveTuningChanges);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningDStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.button_AddTuning);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String0);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningAStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String2);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomTuningLowEStringLetter);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String3);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String4);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String5);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.nUpDown_String1);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_CustomStringTunings);
+            this.tabPage_SetAndForget_CustomTunings.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_SetAndForget_CustomTunings.Name = "tabPage_SetAndForget_CustomTunings";
+            this.tabPage_SetAndForget_CustomTunings.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_SetAndForget_CustomTunings.Size = new System.Drawing.Size(802, 363);
+            this.tabPage_SetAndForget_CustomTunings.TabIndex = 0;
+            this.tabPage_SetAndForget_CustomTunings.Text = "Custom Tunings";
             // 
-            // radio_RainbowLaserTone
+            // progressBar_FillSongsWithCustomTunings
             // 
-            this.radio_RainbowLaserTone.AutoSize = true;
-            this.radio_RainbowLaserTone.Location = new System.Drawing.Point(702, 401);
-            this.radio_RainbowLaserTone.Name = "radio_RainbowLaserTone";
-            this.radio_RainbowLaserTone.Size = new System.Drawing.Size(267, 17);
-            this.radio_RainbowLaserTone.TabIndex = 123;
-            this.radio_RainbowLaserTone.Text = "Set Highlighted Tone As New Rainbow Laser Tone";
-            this.radio_RainbowLaserTone.UseVisualStyleBackColor = true;
+            this.progressBar_FillSongsWithCustomTunings.Location = new System.Drawing.Point(310, 324);
+            this.progressBar_FillSongsWithCustomTunings.Name = "progressBar_FillSongsWithCustomTunings";
+            this.progressBar_FillSongsWithCustomTunings.Size = new System.Drawing.Size(188, 23);
+            this.progressBar_FillSongsWithCustomTunings.TabIndex = 111;
+            this.progressBar_FillSongsWithCustomTunings.Visible = false;
             // 
-            // radio_DucksReduxTone
+            // button_FillCustomTuningList
             // 
-            this.radio_DucksReduxTone.AutoSize = true;
-            this.radio_DucksReduxTone.Location = new System.Drawing.Point(702, 378);
-            this.radio_DucksReduxTone.Name = "radio_DucksReduxTone";
-            this.radio_DucksReduxTone.Size = new System.Drawing.Size(261, 17);
-            this.radio_DucksReduxTone.TabIndex = 122;
-            this.radio_DucksReduxTone.Text = "Set Highlighted Tone As New Ducks Redux Tone";
-            this.radio_DucksReduxTone.UseVisualStyleBackColor = true;
+            this.button_FillCustomTuningList.Location = new System.Drawing.Point(310, 295);
+            this.button_FillCustomTuningList.Name = "button_FillCustomTuningList";
+            this.button_FillCustomTuningList.Size = new System.Drawing.Size(188, 23);
+            this.button_FillCustomTuningList.TabIndex = 110;
+            this.button_FillCustomTuningList.Text = "Find Songs With \"Custom Tuning\"";
+            this.button_FillCustomTuningList.UseVisualStyleBackColor = true;
+            this.button_FillCustomTuningList.Click += new System.EventHandler(this.SetAndForget_FillCustomTuningList);
             // 
-            // radio_HarmonicHeistTone
+            // listBox_SetAndForget_SongsWithCustomTuning
             // 
-            this.radio_HarmonicHeistTone.AutoSize = true;
-            this.radio_HarmonicHeistTone.Location = new System.Drawing.Point(702, 355);
-            this.radio_HarmonicHeistTone.Name = "radio_HarmonicHeistTone";
-            this.radio_HarmonicHeistTone.Size = new System.Drawing.Size(268, 17);
-            this.radio_HarmonicHeistTone.TabIndex = 121;
-            this.radio_HarmonicHeistTone.Text = "Set Highlighted Tone As New Harmonic Heist Tone";
-            this.radio_HarmonicHeistTone.UseVisualStyleBackColor = true;
+            this.listBox_SetAndForget_SongsWithCustomTuning.FormattingEnabled = true;
+            this.listBox_SetAndForget_SongsWithCustomTuning.Location = new System.Drawing.Point(6, 213);
+            this.listBox_SetAndForget_SongsWithCustomTuning.Name = "listBox_SetAndForget_SongsWithCustomTuning";
+            this.listBox_SetAndForget_SongsWithCustomTuning.Size = new System.Drawing.Size(298, 134);
+            this.listBox_SetAndForget_SongsWithCustomTuning.TabIndex = 109;
+            this.listBox_SetAndForget_SongsWithCustomTuning.SelectedIndexChanged += new System.EventHandler(this.SetAndForget_LoadCustomTuningFromSong);
             // 
-            // radio_HurtlinHurdlesTone
+            // listBox_Tunings
             // 
-            this.radio_HurtlinHurdlesTone.AutoSize = true;
-            this.radio_HurtlinHurdlesTone.Location = new System.Drawing.Point(702, 332);
-            this.radio_HurtlinHurdlesTone.Name = "radio_HurtlinHurdlesTone";
-            this.radio_HurtlinHurdlesTone.Size = new System.Drawing.Size(267, 17);
-            this.radio_HurtlinHurdlesTone.TabIndex = 120;
-            this.radio_HurtlinHurdlesTone.Text = "Set Highlighted Tone As New Hurtlin\' Hurdles Tone";
-            this.radio_HurtlinHurdlesTone.UseVisualStyleBackColor = true;
+            this.listBox_Tunings.FormattingEnabled = true;
+            this.listBox_Tunings.Location = new System.Drawing.Point(6, 6);
+            this.listBox_Tunings.Name = "listBox_Tunings";
+            this.listBox_Tunings.Size = new System.Drawing.Size(185, 134);
+            this.listBox_Tunings.TabIndex = 72;
+            this.listBox_Tunings.SelectedIndexChanged += new System.EventHandler(this.SetForget_ListTunings);
+            this.listBox_Tunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.listBox_Tunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // radio_NinjaSlideNTone
+            // label_UITuningName
             // 
-            this.radio_NinjaSlideNTone.AutoSize = true;
-            this.radio_NinjaSlideNTone.Location = new System.Drawing.Point(398, 424);
-            this.radio_NinjaSlideNTone.Name = "radio_NinjaSlideNTone";
-            this.radio_NinjaSlideNTone.Size = new System.Drawing.Size(257, 17);
-            this.radio_NinjaSlideNTone.TabIndex = 119;
-            this.radio_NinjaSlideNTone.Text = "Set Highlighted Tone As New Ninja Slide N Tone";
-            this.radio_NinjaSlideNTone.UseVisualStyleBackColor = true;
+            this.label_UITuningName.AutoSize = true;
+            this.label_UITuningName.Location = new System.Drawing.Point(214, 35);
+            this.label_UITuningName.Name = "label_UITuningName";
+            this.label_UITuningName.Size = new System.Drawing.Size(52, 13);
+            this.label_UITuningName.TabIndex = 83;
+            this.label_UITuningName.Text = "UI Name:";
             // 
-            // radio_ScaleRacerTone
+            // textBox_InternalTuningName
             // 
-            this.radio_ScaleRacerTone.AutoSize = true;
-            this.radio_ScaleRacerTone.Location = new System.Drawing.Point(398, 401);
-            this.radio_ScaleRacerTone.Name = "radio_ScaleRacerTone";
-            this.radio_ScaleRacerTone.Size = new System.Drawing.Size(255, 17);
-            this.radio_ScaleRacerTone.TabIndex = 118;
-            this.radio_ScaleRacerTone.Text = "Set Highlighted Tone As New Scale Racer Tone";
-            this.radio_ScaleRacerTone.UseVisualStyleBackColor = true;
+            this.textBox_InternalTuningName.Location = new System.Drawing.Point(296, 6);
+            this.textBox_InternalTuningName.Name = "textBox_InternalTuningName";
+            this.textBox_InternalTuningName.Size = new System.Drawing.Size(100, 20);
+            this.textBox_InternalTuningName.TabIndex = 75;
             // 
-            // radio_StringsSkipSaloonTone
+            // textBox_UIName
             // 
-            this.radio_StringsSkipSaloonTone.AutoSize = true;
-            this.radio_StringsSkipSaloonTone.Location = new System.Drawing.Point(398, 378);
-            this.radio_StringsSkipSaloonTone.Name = "radio_StringsSkipSaloonTone";
-            this.radio_StringsSkipSaloonTone.Size = new System.Drawing.Size(283, 17);
-            this.radio_StringsSkipSaloonTone.TabIndex = 117;
-            this.radio_StringsSkipSaloonTone.Text = "Set Highlighted Tone As New String Skip Saloon Tone";
-            this.radio_StringsSkipSaloonTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_ScaleWarriorsTone
-            // 
-            this.radio_ScaleWarriorsTone.AutoSize = true;
-            this.radio_ScaleWarriorsTone.Location = new System.Drawing.Point(398, 355);
-            this.radio_ScaleWarriorsTone.Name = "radio_ScaleWarriorsTone";
-            this.radio_ScaleWarriorsTone.Size = new System.Drawing.Size(265, 17);
-            this.radio_ScaleWarriorsTone.TabIndex = 116;
-            this.radio_ScaleWarriorsTone.Text = "Set Highlighted Tone As New Scale Warriors Tone";
-            this.radio_ScaleWarriorsTone.UseVisualStyleBackColor = true;
-            // 
-            // radio_TempleOfBendsTone
-            // 
-            this.radio_TempleOfBendsTone.AutoSize = true;
-            this.radio_TempleOfBendsTone.Checked = true;
-            this.radio_TempleOfBendsTone.Location = new System.Drawing.Point(398, 332);
-            this.radio_TempleOfBendsTone.Name = "radio_TempleOfBendsTone";
-            this.radio_TempleOfBendsTone.Size = new System.Drawing.Size(276, 17);
-            this.radio_TempleOfBendsTone.TabIndex = 115;
-            this.radio_TempleOfBendsTone.TabStop = true;
-            this.radio_TempleOfBendsTone.Text = "Set Highlighted Tone As New Temple of Bends Tone";
-            this.radio_TempleOfBendsTone.UseVisualStyleBackColor = true;
-            // 
-            // button_AssignNewGuitarArcadeTone
-            // 
-            this.button_AssignNewGuitarArcadeTone.Location = new System.Drawing.Point(398, 458);
-            this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
-            this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
-            this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
-            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
-            this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
-            this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetAndForget_AssignNewGuitarArcadeTone);
-            // 
-            // label_SetAndForgetGuitarArcade
-            // 
-            this.label_SetAndForgetGuitarArcade.Location = new System.Drawing.Point(3, 316);
-            this.label_SetAndForgetGuitarArcade.Name = "label_SetAndForgetGuitarArcade";
-            this.label_SetAndForgetGuitarArcade.Size = new System.Drawing.Size(1132, 18);
-            this.label_SetAndForgetGuitarArcade.TabIndex = 112;
-            this.label_SetAndForgetGuitarArcade.Text = "Change GuitarArcade tones";
-            // 
-            // button_AddDCInput
-            // 
-            this.button_AddDCInput.Location = new System.Drawing.Point(723, 135);
-            this.button_AddDCInput.Name = "button_AddDCInput";
-            this.button_AddDCInput.Size = new System.Drawing.Size(187, 20);
-            this.button_AddDCInput.TabIndex = 111;
-            this.button_AddDCInput.Text = "Add Direct Connect Mode";
-            this.button_AddDCInput.UseVisualStyleBackColor = true;
-            this.button_AddDCInput.Click += new System.EventHandler(this.SetForget_AddDCMode);
-            this.button_AddDCInput.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // label_ChangeTonesHeader
-            // 
-            this.label_ChangeTonesHeader.Location = new System.Drawing.Point(5, 158);
-            this.label_ChangeTonesHeader.Name = "label_ChangeTonesHeader";
-            this.label_ChangeTonesHeader.Size = new System.Drawing.Size(1132, 19);
-            this.label_ChangeTonesHeader.TabIndex = 97;
-            this.label_ChangeTonesHeader.Text = "Change Default Tones";
-            this.label_ChangeTonesHeader.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.label_ChangeTonesHeader.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // label_HorizontalRuleSetAndForget
-            // 
-            this.label_HorizontalRuleSetAndForget.AutoSize = true;
-            this.label_HorizontalRuleSetAndForget.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_HorizontalRuleSetAndForget.Location = new System.Drawing.Point(8, 156);
-            this.label_HorizontalRuleSetAndForget.Name = "label_HorizontalRuleSetAndForget";
-            this.label_HorizontalRuleSetAndForget.Size = new System.Drawing.Size(1119, 15);
-            this.label_HorizontalRuleSetAndForget.TabIndex = 110;
-            this.label_HorizontalRuleSetAndForget.Text = resources.GetString("label_HorizontalRuleSetAndForget.Text");
-            // 
-            // label_HorizontalRulerGuitarArcade
-            // 
-            this.label_HorizontalRulerGuitarArcade.AutoSize = true;
-            this.label_HorizontalRulerGuitarArcade.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_HorizontalRulerGuitarArcade.Location = new System.Drawing.Point(6, 314);
-            this.label_HorizontalRulerGuitarArcade.Name = "label_HorizontalRulerGuitarArcade";
-            this.label_HorizontalRulerGuitarArcade.Size = new System.Drawing.Size(1119, 15);
-            this.label_HorizontalRulerGuitarArcade.TabIndex = 113;
-            this.label_HorizontalRulerGuitarArcade.Text = resources.GetString("label_HorizontalRulerGuitarArcade.Text");
-            // 
-            // button_ImportExistingSettings
-            // 
-            this.button_ImportExistingSettings.Location = new System.Drawing.Point(916, 14);
-            this.button_ImportExistingSettings.Name = "button_ImportExistingSettings";
-            this.button_ImportExistingSettings.Size = new System.Drawing.Size(190, 40);
-            this.button_ImportExistingSettings.TabIndex = 109;
-            this.button_ImportExistingSettings.Text = "Import Existing Settings";
-            this.button_ImportExistingSettings.UseVisualStyleBackColor = true;
-            this.button_ImportExistingSettings.Click += new System.EventHandler(this.SetForget_ImportExistingSettings);
+            this.textBox_UIName.Location = new System.Drawing.Point(296, 32);
+            this.textBox_UIName.Name = "textBox_UIName";
+            this.textBox_UIName.Size = new System.Drawing.Size(100, 20);
+            this.textBox_UIName.TabIndex = 76;
             // 
             // label_CustomTuningHighEStringLetter
             // 
             this.label_CustomTuningHighEStringLetter.AutoSize = true;
             this.label_CustomTuningHighEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningHighEStringLetter.Location = new System.Drawing.Point(674, 41);
+            this.label_CustomTuningHighEStringLetter.Location = new System.Drawing.Point(740, 30);
             this.label_CustomTuningHighEStringLetter.Name = "label_CustomTuningHighEStringLetter";
             this.label_CustomTuningHighEStringLetter.Size = new System.Drawing.Size(21, 13);
             this.label_CustomTuningHighEStringLetter.TabIndex = 108;
             this.label_CustomTuningHighEStringLetter.Text = "e4";
             // 
+            // label_InternalTuningName
+            // 
+            this.label_InternalTuningName.AutoSize = true;
+            this.label_InternalTuningName.Location = new System.Drawing.Point(214, 9);
+            this.label_InternalTuningName.Name = "label_InternalTuningName";
+            this.label_InternalTuningName.Size = new System.Drawing.Size(76, 13);
+            this.label_InternalTuningName.TabIndex = 82;
+            this.label_InternalTuningName.Text = "Internal Name:";
+            // 
             // label_CustomTuningBStringLetter
             // 
             this.label_CustomTuningBStringLetter.AutoSize = true;
             this.label_CustomTuningBStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningBStringLetter.Location = new System.Drawing.Point(627, 41);
+            this.label_CustomTuningBStringLetter.Location = new System.Drawing.Point(693, 30);
             this.label_CustomTuningBStringLetter.Name = "label_CustomTuningBStringLetter";
             this.label_CustomTuningBStringLetter.Size = new System.Drawing.Size(22, 13);
             this.label_CustomTuningBStringLetter.TabIndex = 107;
             this.label_CustomTuningBStringLetter.Text = "B3";
             // 
-            // label_CustomTuningGStringLetter
-            // 
-            this.label_CustomTuningGStringLetter.AutoSize = true;
-            this.label_CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningGStringLetter.Location = new System.Drawing.Point(582, 41);
-            this.label_CustomTuningGStringLetter.Name = "label_CustomTuningGStringLetter";
-            this.label_CustomTuningGStringLetter.Size = new System.Drawing.Size(23, 13);
-            this.label_CustomTuningGStringLetter.TabIndex = 106;
-            this.label_CustomTuningGStringLetter.Text = "G3";
-            // 
-            // label_CustomTuningDStringLetter
-            // 
-            this.label_CustomTuningDStringLetter.AutoSize = true;
-            this.label_CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningDStringLetter.Location = new System.Drawing.Point(537, 41);
-            this.label_CustomTuningDStringLetter.Name = "label_CustomTuningDStringLetter";
-            this.label_CustomTuningDStringLetter.Size = new System.Drawing.Size(23, 13);
-            this.label_CustomTuningDStringLetter.TabIndex = 105;
-            this.label_CustomTuningDStringLetter.Text = "D3";
-            // 
-            // label_CustomTuningAStringLetter
-            // 
-            this.label_CustomTuningAStringLetter.AutoSize = true;
-            this.label_CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningAStringLetter.Location = new System.Drawing.Point(494, 41);
-            this.label_CustomTuningAStringLetter.Name = "label_CustomTuningAStringLetter";
-            this.label_CustomTuningAStringLetter.Size = new System.Drawing.Size(22, 13);
-            this.label_CustomTuningAStringLetter.TabIndex = 104;
-            this.label_CustomTuningAStringLetter.Text = "A2";
-            // 
-            // label_CustomTuningLowEStringLetter
-            // 
-            this.label_CustomTuningLowEStringLetter.AutoSize = true;
-            this.label_CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_CustomTuningLowEStringLetter.Location = new System.Drawing.Point(448, 41);
-            this.label_CustomTuningLowEStringLetter.Name = "label_CustomTuningLowEStringLetter";
-            this.label_CustomTuningLowEStringLetter.Size = new System.Drawing.Size(22, 13);
-            this.label_CustomTuningLowEStringLetter.TabIndex = 103;
-            this.label_CustomTuningLowEStringLetter.Text = "E2";
-            // 
-            // radio_DefaultBassTone
-            // 
-            this.radio_DefaultBassTone.AutoSize = true;
-            this.radio_DefaultBassTone.Location = new System.Drawing.Point(398, 225);
-            this.radio_DefaultBassTone.Name = "radio_DefaultBassTone";
-            this.radio_DefaultBassTone.Size = new System.Drawing.Size(256, 17);
-            this.radio_DefaultBassTone.TabIndex = 102;
-            this.radio_DefaultBassTone.Text = "Set Highlighted Tone As New Default Bass Tone";
-            this.radio_DefaultBassTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultBassTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.radio_DefaultBassTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // radio_DefaultLeadTone
-            // 
-            this.radio_DefaultLeadTone.AutoSize = true;
-            this.radio_DefaultLeadTone.Checked = true;
-            this.radio_DefaultLeadTone.Location = new System.Drawing.Point(398, 179);
-            this.radio_DefaultLeadTone.Name = "radio_DefaultLeadTone";
-            this.radio_DefaultLeadTone.Size = new System.Drawing.Size(257, 17);
-            this.radio_DefaultLeadTone.TabIndex = 101;
-            this.radio_DefaultLeadTone.TabStop = true;
-            this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
-            this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.radio_DefaultLeadTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // radio_DefaultRhythmTone
-            // 
-            this.radio_DefaultRhythmTone.AutoSize = true;
-            this.radio_DefaultRhythmTone.Location = new System.Drawing.Point(398, 202);
-            this.radio_DefaultRhythmTone.Name = "radio_DefaultRhythmTone";
-            this.radio_DefaultRhythmTone.Size = new System.Drawing.Size(269, 17);
-            this.radio_DefaultRhythmTone.TabIndex = 100;
-            this.radio_DefaultRhythmTone.Text = "Set Highlighted Tone As New Default Rhythm Tone";
-            this.radio_DefaultRhythmTone.UseVisualStyleBackColor = true;
-            this.radio_DefaultRhythmTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.radio_DefaultRhythmTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_LoadTones
-            // 
-            this.button_LoadTones.Location = new System.Drawing.Point(5, 179);
-            this.button_LoadTones.Name = "button_LoadTones";
-            this.button_LoadTones.Size = new System.Drawing.Size(187, 35);
-            this.button_LoadTones.TabIndex = 99;
-            this.button_LoadTones.Text = "Load Tones From Profile";
-            this.button_LoadTones.UseVisualStyleBackColor = true;
-            this.button_LoadTones.Click += new System.EventHandler(this.SetForget_LoadTonesFromProfiles);
-            this.button_LoadTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_LoadTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // listBox_ProfileTones
-            // 
-            this.listBox_ProfileTones.FormattingEnabled = true;
-            this.listBox_ProfileTones.Location = new System.Drawing.Point(201, 179);
-            this.listBox_ProfileTones.Name = "listBox_ProfileTones";
-            this.listBox_ProfileTones.Size = new System.Drawing.Size(184, 134);
-            this.listBox_ProfileTones.TabIndex = 98;
-            this.listBox_ProfileTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.listBox_ProfileTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_AssignNewDefaultTone
-            // 
-            this.button_AssignNewDefaultTone.Location = new System.Drawing.Point(394, 276);
-            this.button_AssignNewDefaultTone.Name = "button_AssignNewDefaultTone";
-            this.button_AssignNewDefaultTone.Size = new System.Drawing.Size(187, 35);
-            this.button_AssignNewDefaultTone.TabIndex = 96;
-            this.button_AssignNewDefaultTone.Text = "Assign Tone As New Default";
-            this.button_AssignNewDefaultTone.UseVisualStyleBackColor = true;
-            this.button_AssignNewDefaultTone.Click += new System.EventHandler(this.SetForget_SetDefaultTones);
-            this.button_AssignNewDefaultTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_AssignNewDefaultTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_RemoveTemp
-            // 
-            this.button_RemoveTemp.Location = new System.Drawing.Point(916, 135);
-            this.button_RemoveTemp.Name = "button_RemoveTemp";
-            this.button_RemoveTemp.Size = new System.Drawing.Size(190, 20);
-            this.button_RemoveTemp.TabIndex = 95;
-            this.button_RemoveTemp.Text = "Remove Temporary Folders";
-            this.button_RemoveTemp.UseVisualStyleBackColor = true;
-            this.button_RemoveTemp.Click += new System.EventHandler(this.SetForget_RemoveTempFolders);
-            this.button_RemoveTemp.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_RemoveTemp.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_AddExitGame
-            // 
-            this.button_AddExitGame.Location = new System.Drawing.Point(723, 113);
-            this.button_AddExitGame.Name = "button_AddExitGame";
-            this.button_AddExitGame.Size = new System.Drawing.Size(187, 20);
-            this.button_AddExitGame.TabIndex = 93;
-            this.button_AddExitGame.Text = "Add EXIT GAME to Main Menu";
-            this.button_AddExitGame.UseVisualStyleBackColor = true;
-            this.button_AddExitGame.Click += new System.EventHandler(this.SetForget_AddCustomMenu);
-            this.button_AddExitGame.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_AddExitGame.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_AddFastLoad
-            // 
-            this.button_AddFastLoad.Location = new System.Drawing.Point(723, 64);
-            this.button_AddFastLoad.Name = "button_AddFastLoad";
-            this.button_AddFastLoad.Size = new System.Drawing.Size(187, 40);
-            this.button_AddFastLoad.TabIndex = 92;
-            this.button_AddFastLoad.Text = "Enable Fast Load";
-            this.button_AddFastLoad.UseVisualStyleBackColor = true;
-            this.button_AddFastLoad.Click += new System.EventHandler(this.SetForget_AddFastLoadMod);
-            this.button_AddFastLoad.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_AddFastLoad.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_CleanUpUnpackedCache
-            // 
-            this.button_CleanUpUnpackedCache.Location = new System.Drawing.Point(916, 113);
-            this.button_CleanUpUnpackedCache.Name = "button_CleanUpUnpackedCache";
-            this.button_CleanUpUnpackedCache.Size = new System.Drawing.Size(190, 20);
-            this.button_CleanUpUnpackedCache.TabIndex = 91;
-            this.button_CleanUpUnpackedCache.Text = "Clean Up Unpacked Cache";
-            this.button_CleanUpUnpackedCache.UseVisualStyleBackColor = true;
-            this.button_CleanUpUnpackedCache.Click += new System.EventHandler(this.SetForget_UnpackCacheAgain);
-            this.button_CleanUpUnpackedCache.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_CleanUpUnpackedCache.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_RestoreCacheBackup
-            // 
-            this.button_RestoreCacheBackup.Location = new System.Drawing.Point(916, 64);
-            this.button_RestoreCacheBackup.Name = "button_RestoreCacheBackup";
-            this.button_RestoreCacheBackup.Size = new System.Drawing.Size(190, 40);
-            this.button_RestoreCacheBackup.TabIndex = 90;
-            this.button_RestoreCacheBackup.Text = "Restore Cache Backup";
-            this.button_RestoreCacheBackup.UseVisualStyleBackColor = true;
-            this.button_RestoreCacheBackup.Click += new System.EventHandler(this.SetForget_RestoreDefaults);
-            this.button_RestoreCacheBackup.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_RestoreCacheBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_AddCustomTunings
-            // 
-            this.button_AddCustomTunings.Location = new System.Drawing.Point(723, 14);
-            this.button_AddCustomTunings.Name = "button_AddCustomTunings";
-            this.button_AddCustomTunings.Size = new System.Drawing.Size(187, 40);
-            this.button_AddCustomTunings.TabIndex = 89;
-            this.button_AddCustomTunings.Text = "Add Custom Tunings";
-            this.button_AddCustomTunings.UseVisualStyleBackColor = true;
-            this.button_AddCustomTunings.Click += new System.EventHandler(this.SetForget_AddCustomTunings);
-            this.button_AddCustomTunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_AddCustomTunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_SaveTuningChanges
-            // 
-            this.button_SaveTuningChanges.Location = new System.Drawing.Point(518, 102);
-            this.button_SaveTuningChanges.Name = "button_SaveTuningChanges";
-            this.button_SaveTuningChanges.Size = new System.Drawing.Size(85, 22);
-            this.button_SaveTuningChanges.TabIndex = 88;
-            this.button_SaveTuningChanges.Text = "Save Changes";
-            this.button_SaveTuningChanges.UseVisualStyleBackColor = true;
-            this.button_SaveTuningChanges.Click += new System.EventHandler(this.SetForget_SaveTuningChanges);
-            this.button_SaveTuningChanges.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_SaveTuningChanges.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // label_CustomStringTunings
-            // 
-            this.label_CustomStringTunings.AutoSize = true;
-            this.label_CustomStringTunings.Location = new System.Drawing.Point(390, 22);
-            this.label_CustomStringTunings.Name = "label_CustomStringTunings";
-            this.label_CustomStringTunings.Size = new System.Drawing.Size(42, 13);
-            this.label_CustomStringTunings.TabIndex = 87;
-            this.label_CustomStringTunings.Text = "Strings:";
-            // 
-            // nUpDown_String0
-            // 
-            this.nUpDown_String0.BackColor = System.Drawing.Color.Tomato;
-            this.nUpDown_String0.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.nUpDown_String0.Location = new System.Drawing.Point(448, 20);
-            this.nUpDown_String0.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.nUpDown_String0.Minimum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            -2147483648});
-            this.nUpDown_String0.Name = "nUpDown_String0";
-            this.nUpDown_String0.Size = new System.Drawing.Size(39, 20);
-            this.nUpDown_String0.TabIndex = 86;
-            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
-            this.nUpDown_String0.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.nUpDown_String0.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // label_UIIndex
-            // 
-            this.label_UIIndex.AutoSize = true;
-            this.label_UIIndex.Location = new System.Drawing.Point(197, 74);
-            this.label_UIIndex.Name = "label_UIIndex";
-            this.label_UIIndex.Size = new System.Drawing.Size(50, 13);
-            this.label_UIIndex.TabIndex = 85;
-            this.label_UIIndex.Text = "UI Index:";
-            this.label_UIIndex.Visible = false;
-            // 
             // nUpDown_UIIndex
             // 
-            this.nUpDown_UIIndex.Location = new System.Drawing.Point(279, 72);
+            this.nUpDown_UIIndex.Location = new System.Drawing.Point(296, 59);
             this.nUpDown_UIIndex.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -2004,112 +1666,120 @@
             0});
             this.nUpDown_UIIndex.Visible = false;
             // 
-            // label_UITuningName
+            // label_CustomTuningGStringLetter
             // 
-            this.label_UITuningName.AutoSize = true;
-            this.label_UITuningName.Location = new System.Drawing.Point(197, 48);
-            this.label_UITuningName.Name = "label_UITuningName";
-            this.label_UITuningName.Size = new System.Drawing.Size(52, 13);
-            this.label_UITuningName.TabIndex = 83;
-            this.label_UITuningName.Text = "UI Name:";
+            this.label_CustomTuningGStringLetter.AutoSize = true;
+            this.label_CustomTuningGStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_CustomTuningGStringLetter.Location = new System.Drawing.Point(648, 30);
+            this.label_CustomTuningGStringLetter.Name = "label_CustomTuningGStringLetter";
+            this.label_CustomTuningGStringLetter.Size = new System.Drawing.Size(23, 13);
+            this.label_CustomTuningGStringLetter.TabIndex = 106;
+            this.label_CustomTuningGStringLetter.Text = "G3";
             // 
-            // label_InternalTuningName
+            // button_AddCustomTunings
             // 
-            this.label_InternalTuningName.AutoSize = true;
-            this.label_InternalTuningName.Location = new System.Drawing.Point(197, 22);
-            this.label_InternalTuningName.Name = "label_InternalTuningName";
-            this.label_InternalTuningName.Size = new System.Drawing.Size(76, 13);
-            this.label_InternalTuningName.TabIndex = 82;
-            this.label_InternalTuningName.Text = "Internal Name:";
+            this.button_AddCustomTunings.Location = new System.Drawing.Point(591, 317);
+            this.button_AddCustomTunings.Name = "button_AddCustomTunings";
+            this.button_AddCustomTunings.Size = new System.Drawing.Size(187, 40);
+            this.button_AddCustomTunings.TabIndex = 89;
+            this.button_AddCustomTunings.Text = "Add Custom Tunings To Game";
+            this.button_AddCustomTunings.UseVisualStyleBackColor = true;
+            this.button_AddCustomTunings.Click += new System.EventHandler(this.SetForget_AddCustomTunings);
+            this.button_AddCustomTunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddCustomTunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // nUpDown_String1
+            // label_UIIndex
             // 
-            this.nUpDown_String1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.nUpDown_String1.Location = new System.Drawing.Point(493, 20);
-            this.nUpDown_String1.Maximum = new decimal(new int[] {
+            this.label_UIIndex.AutoSize = true;
+            this.label_UIIndex.Location = new System.Drawing.Point(214, 61);
+            this.label_UIIndex.Name = "label_UIIndex";
+            this.label_UIIndex.Size = new System.Drawing.Size(50, 13);
+            this.label_UIIndex.TabIndex = 85;
+            this.label_UIIndex.Text = "UI Index:";
+            this.label_UIIndex.Visible = false;
+            // 
+            // button_RemoveTuning
+            // 
+            this.button_RemoveTuning.Location = new System.Drawing.Point(588, 61);
+            this.button_RemoveTuning.Name = "button_RemoveTuning";
+            this.button_RemoveTuning.Size = new System.Drawing.Size(93, 23);
+            this.button_RemoveTuning.TabIndex = 73;
+            this.button_RemoveTuning.Text = "Remove Tuning";
+            this.button_RemoveTuning.UseVisualStyleBackColor = true;
+            this.button_RemoveTuning.Click += new System.EventHandler(this.SetForget_RemoveTuning);
+            this.button_RemoveTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RemoveTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_SaveTuningChanges
+            // 
+            this.button_SaveTuningChanges.Location = new System.Drawing.Point(687, 62);
+            this.button_SaveTuningChanges.Name = "button_SaveTuningChanges";
+            this.button_SaveTuningChanges.Size = new System.Drawing.Size(85, 22);
+            this.button_SaveTuningChanges.TabIndex = 88;
+            this.button_SaveTuningChanges.Text = "Save Changes";
+            this.button_SaveTuningChanges.UseVisualStyleBackColor = true;
+            this.button_SaveTuningChanges.Click += new System.EventHandler(this.SetForget_SaveTuningChanges);
+            this.button_SaveTuningChanges.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_SaveTuningChanges.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_CustomTuningDStringLetter
+            // 
+            this.label_CustomTuningDStringLetter.AutoSize = true;
+            this.label_CustomTuningDStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_CustomTuningDStringLetter.Location = new System.Drawing.Point(603, 30);
+            this.label_CustomTuningDStringLetter.Name = "label_CustomTuningDStringLetter";
+            this.label_CustomTuningDStringLetter.Size = new System.Drawing.Size(23, 13);
+            this.label_CustomTuningDStringLetter.TabIndex = 105;
+            this.label_CustomTuningDStringLetter.Text = "D3";
+            // 
+            // button_AddTuning
+            // 
+            this.button_AddTuning.Location = new System.Drawing.Point(489, 61);
+            this.button_AddTuning.Name = "button_AddTuning";
+            this.button_AddTuning.Size = new System.Drawing.Size(93, 23);
+            this.button_AddTuning.TabIndex = 74;
+            this.button_AddTuning.Text = "Add Tuning";
+            this.button_AddTuning.UseVisualStyleBackColor = true;
+            this.button_AddTuning.Click += new System.EventHandler(this.SetForget_AddTuning);
+            this.button_AddTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // nUpDown_String0
+            // 
+            this.nUpDown_String0.BackColor = System.Drawing.Color.Tomato;
+            this.nUpDown_String0.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.nUpDown_String0.Location = new System.Drawing.Point(514, 9);
+            this.nUpDown_String0.Maximum = new decimal(new int[] {
             24,
             0,
             0,
             0});
-            this.nUpDown_String1.Minimum = new decimal(new int[] {
+            this.nUpDown_String0.Minimum = new decimal(new int[] {
             24,
             0,
             0,
             -2147483648});
-            this.nUpDown_String1.Name = "nUpDown_String1";
-            this.nUpDown_String1.Size = new System.Drawing.Size(39, 20);
-            this.nUpDown_String1.TabIndex = 81;
-            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
-            this.nUpDown_String1.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.nUpDown_String1.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.nUpDown_String0.Name = "nUpDown_String0";
+            this.nUpDown_String0.Size = new System.Drawing.Size(39, 20);
+            this.nUpDown_String0.TabIndex = 86;
+            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String0.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String0.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // nUpDown_String5
+            // label_CustomTuningAStringLetter
             // 
-            this.nUpDown_String5.BackColor = System.Drawing.Color.MediumPurple;
-            this.nUpDown_String5.Location = new System.Drawing.Point(673, 20);
-            this.nUpDown_String5.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.nUpDown_String5.Minimum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            -2147483648});
-            this.nUpDown_String5.Name = "nUpDown_String5";
-            this.nUpDown_String5.Size = new System.Drawing.Size(39, 20);
-            this.nUpDown_String5.TabIndex = 80;
-            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
-            this.nUpDown_String5.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.nUpDown_String5.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // nUpDown_String4
-            // 
-            this.nUpDown_String4.BackColor = System.Drawing.Color.GreenYellow;
-            this.nUpDown_String4.Location = new System.Drawing.Point(628, 20);
-            this.nUpDown_String4.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.nUpDown_String4.Minimum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            -2147483648});
-            this.nUpDown_String4.Name = "nUpDown_String4";
-            this.nUpDown_String4.Size = new System.Drawing.Size(39, 20);
-            this.nUpDown_String4.TabIndex = 79;
-            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
-            this.nUpDown_String4.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.nUpDown_String4.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // nUpDown_String3
-            // 
-            this.nUpDown_String3.BackColor = System.Drawing.Color.DarkOrange;
-            this.nUpDown_String3.Location = new System.Drawing.Point(583, 20);
-            this.nUpDown_String3.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.nUpDown_String3.Minimum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            -2147483648});
-            this.nUpDown_String3.Name = "nUpDown_String3";
-            this.nUpDown_String3.Size = new System.Drawing.Size(39, 20);
-            this.nUpDown_String3.TabIndex = 78;
-            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
-            this.nUpDown_String3.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.nUpDown_String3.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.label_CustomTuningAStringLetter.AutoSize = true;
+            this.label_CustomTuningAStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_CustomTuningAStringLetter.Location = new System.Drawing.Point(560, 30);
+            this.label_CustomTuningAStringLetter.Name = "label_CustomTuningAStringLetter";
+            this.label_CustomTuningAStringLetter.Size = new System.Drawing.Size(22, 13);
+            this.label_CustomTuningAStringLetter.TabIndex = 104;
+            this.label_CustomTuningAStringLetter.Text = "A2";
             // 
             // nUpDown_String2
             // 
             this.nUpDown_String2.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.nUpDown_String2.Location = new System.Drawing.Point(538, 20);
+            this.nUpDown_String2.Location = new System.Drawing.Point(604, 9);
             this.nUpDown_String2.Maximum = new decimal(new int[] {
             24,
             0,
@@ -2127,54 +1797,447 @@
             this.nUpDown_String2.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String2.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // textBox_UIName
+            // label_CustomTuningLowEStringLetter
             // 
-            this.textBox_UIName.Location = new System.Drawing.Point(279, 45);
-            this.textBox_UIName.Name = "textBox_UIName";
-            this.textBox_UIName.Size = new System.Drawing.Size(100, 20);
-            this.textBox_UIName.TabIndex = 76;
+            this.label_CustomTuningLowEStringLetter.AutoSize = true;
+            this.label_CustomTuningLowEStringLetter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_CustomTuningLowEStringLetter.Location = new System.Drawing.Point(514, 30);
+            this.label_CustomTuningLowEStringLetter.Name = "label_CustomTuningLowEStringLetter";
+            this.label_CustomTuningLowEStringLetter.Size = new System.Drawing.Size(22, 13);
+            this.label_CustomTuningLowEStringLetter.TabIndex = 103;
+            this.label_CustomTuningLowEStringLetter.Text = "E2";
             // 
-            // textBox_InternalTuningName
+            // nUpDown_String3
             // 
-            this.textBox_InternalTuningName.Location = new System.Drawing.Point(279, 19);
-            this.textBox_InternalTuningName.Name = "textBox_InternalTuningName";
-            this.textBox_InternalTuningName.Size = new System.Drawing.Size(100, 20);
-            this.textBox_InternalTuningName.TabIndex = 75;
+            this.nUpDown_String3.BackColor = System.Drawing.Color.DarkOrange;
+            this.nUpDown_String3.Location = new System.Drawing.Point(649, 9);
+            this.nUpDown_String3.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            this.nUpDown_String3.Minimum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            -2147483648});
+            this.nUpDown_String3.Name = "nUpDown_String3";
+            this.nUpDown_String3.Size = new System.Drawing.Size(39, 20);
+            this.nUpDown_String3.TabIndex = 78;
+            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String3.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String3.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // button_AddTuning
+            // nUpDown_String4
             // 
-            this.button_AddTuning.Location = new System.Drawing.Point(455, 64);
-            this.button_AddTuning.Name = "button_AddTuning";
-            this.button_AddTuning.Size = new System.Drawing.Size(93, 23);
-            this.button_AddTuning.TabIndex = 74;
-            this.button_AddTuning.Text = "Add Tuning";
-            this.button_AddTuning.UseVisualStyleBackColor = true;
-            this.button_AddTuning.Click += new System.EventHandler(this.SetForget_AddTuning);
-            this.button_AddTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_AddTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.nUpDown_String4.BackColor = System.Drawing.Color.GreenYellow;
+            this.nUpDown_String4.Location = new System.Drawing.Point(694, 9);
+            this.nUpDown_String4.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            this.nUpDown_String4.Minimum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            -2147483648});
+            this.nUpDown_String4.Name = "nUpDown_String4";
+            this.nUpDown_String4.Size = new System.Drawing.Size(39, 20);
+            this.nUpDown_String4.TabIndex = 79;
+            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String4.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String4.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // button_RemoveTuning
+            // nUpDown_String5
             // 
-            this.button_RemoveTuning.Location = new System.Drawing.Point(574, 64);
-            this.button_RemoveTuning.Name = "button_RemoveTuning";
-            this.button_RemoveTuning.Size = new System.Drawing.Size(93, 23);
-            this.button_RemoveTuning.TabIndex = 73;
-            this.button_RemoveTuning.Text = "Remove Tuning";
-            this.button_RemoveTuning.UseVisualStyleBackColor = true;
-            this.button_RemoveTuning.Click += new System.EventHandler(this.SetForget_RemoveTuning);
-            this.button_RemoveTuning.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.button_RemoveTuning.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.nUpDown_String5.BackColor = System.Drawing.Color.MediumPurple;
+            this.nUpDown_String5.Location = new System.Drawing.Point(739, 9);
+            this.nUpDown_String5.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            this.nUpDown_String5.Minimum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            -2147483648});
+            this.nUpDown_String5.Name = "nUpDown_String5";
+            this.nUpDown_String5.Size = new System.Drawing.Size(39, 20);
+            this.nUpDown_String5.TabIndex = 80;
+            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String5.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String5.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // listBox_Tunings
+            // nUpDown_String1
             // 
-            this.listBox_Tunings.FormattingEnabled = true;
-            this.listBox_Tunings.Location = new System.Drawing.Point(6, 19);
-            this.listBox_Tunings.Name = "listBox_Tunings";
-            this.listBox_Tunings.Size = new System.Drawing.Size(185, 134);
-            this.listBox_Tunings.TabIndex = 72;
-            this.listBox_Tunings.SelectedIndexChanged += new System.EventHandler(this.SetForget_ListTunings);
-            this.listBox_Tunings.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
-            this.listBox_Tunings.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.nUpDown_String1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.nUpDown_String1.Location = new System.Drawing.Point(559, 9);
+            this.nUpDown_String1.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            this.nUpDown_String1.Minimum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            -2147483648});
+            this.nUpDown_String1.Name = "nUpDown_String1";
+            this.nUpDown_String1.Size = new System.Drawing.Size(39, 20);
+            this.nUpDown_String1.TabIndex = 81;
+            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String1.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.nUpDown_String1.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_CustomStringTunings
+            // 
+            this.label_CustomStringTunings.AutoSize = true;
+            this.label_CustomStringTunings.Location = new System.Drawing.Point(456, 11);
+            this.label_CustomStringTunings.Name = "label_CustomStringTunings";
+            this.label_CustomStringTunings.Size = new System.Drawing.Size(42, 13);
+            this.label_CustomStringTunings.TabIndex = 87;
+            this.label_CustomStringTunings.Text = "Strings:";
+            // 
+            // tabPage_SetAndForget_CustomTones
+            // 
+            this.tabPage_SetAndForget_CustomTones.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_SetAndForget_CustomTones.Controls.Add(this.listBox_ProfileTones);
+            this.tabPage_SetAndForget_CustomTones.Controls.Add(this.groupBox_CustomGuitarcadeTones);
+            this.tabPage_SetAndForget_CustomTones.Controls.Add(this.button_LoadTones);
+            this.tabPage_SetAndForget_CustomTones.Controls.Add(this.groupBox_CustomProfileTones);
+            this.tabPage_SetAndForget_CustomTones.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_SetAndForget_CustomTones.Name = "tabPage_SetAndForget_CustomTones";
+            this.tabPage_SetAndForget_CustomTones.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_SetAndForget_CustomTones.Size = new System.Drawing.Size(802, 363);
+            this.tabPage_SetAndForget_CustomTones.TabIndex = 1;
+            this.tabPage_SetAndForget_CustomTones.Text = "Custom Tones";
+            // 
+            // listBox_ProfileTones
+            // 
+            this.listBox_ProfileTones.FormattingEnabled = true;
+            this.listBox_ProfileTones.Location = new System.Drawing.Point(9, 84);
+            this.listBox_ProfileTones.Name = "listBox_ProfileTones";
+            this.listBox_ProfileTones.Size = new System.Drawing.Size(184, 134);
+            this.listBox_ProfileTones.TabIndex = 98;
+            this.listBox_ProfileTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.listBox_ProfileTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // groupBox_CustomGuitarcadeTones
+            // 
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_TempleOfBendsTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_ScaleWarriorsTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_GoneWailinTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_StringsSkipSaloonTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_RainbowLaserTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_ScaleRacerTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_DucksReduxTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_NinjaSlideNTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_HarmonicHeistTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.button_AssignNewGuitarArcadeTone);
+            this.groupBox_CustomGuitarcadeTones.Controls.Add(this.radio_HurtlinHurdlesTone);
+            this.groupBox_CustomGuitarcadeTones.Location = new System.Drawing.Point(204, 122);
+            this.groupBox_CustomGuitarcadeTones.Name = "groupBox_CustomGuitarcadeTones";
+            this.groupBox_CustomGuitarcadeTones.Size = new System.Drawing.Size(617, 188);
+            this.groupBox_CustomGuitarcadeTones.TabIndex = 126;
+            this.groupBox_CustomGuitarcadeTones.TabStop = false;
+            this.groupBox_CustomGuitarcadeTones.Text = "Custom Guitarcade Tones";
+            // 
+            // radio_TempleOfBendsTone
+            // 
+            this.radio_TempleOfBendsTone.AutoSize = true;
+            this.radio_TempleOfBendsTone.Checked = true;
+            this.radio_TempleOfBendsTone.Location = new System.Drawing.Point(6, 19);
+            this.radio_TempleOfBendsTone.Name = "radio_TempleOfBendsTone";
+            this.radio_TempleOfBendsTone.Size = new System.Drawing.Size(276, 17);
+            this.radio_TempleOfBendsTone.TabIndex = 115;
+            this.radio_TempleOfBendsTone.TabStop = true;
+            this.radio_TempleOfBendsTone.Text = "Set Highlighted Tone As New Temple of Bends Tone";
+            this.radio_TempleOfBendsTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleWarriorsTone
+            // 
+            this.radio_ScaleWarriorsTone.AutoSize = true;
+            this.radio_ScaleWarriorsTone.Location = new System.Drawing.Point(6, 42);
+            this.radio_ScaleWarriorsTone.Name = "radio_ScaleWarriorsTone";
+            this.radio_ScaleWarriorsTone.Size = new System.Drawing.Size(265, 17);
+            this.radio_ScaleWarriorsTone.TabIndex = 116;
+            this.radio_ScaleWarriorsTone.Text = "Set Highlighted Tone As New Scale Warriors Tone";
+            this.radio_ScaleWarriorsTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_GoneWailinTone
+            // 
+            this.radio_GoneWailinTone.AutoSize = true;
+            this.radio_GoneWailinTone.Location = new System.Drawing.Point(344, 111);
+            this.radio_GoneWailinTone.Name = "radio_GoneWailinTone";
+            this.radio_GoneWailinTone.Size = new System.Drawing.Size(256, 17);
+            this.radio_GoneWailinTone.TabIndex = 124;
+            this.radio_GoneWailinTone.Text = "Set Highlighted Tone As New Gone Wailin\' Tone";
+            this.radio_GoneWailinTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_StringsSkipSaloonTone
+            // 
+            this.radio_StringsSkipSaloonTone.AutoSize = true;
+            this.radio_StringsSkipSaloonTone.Location = new System.Drawing.Point(6, 65);
+            this.radio_StringsSkipSaloonTone.Name = "radio_StringsSkipSaloonTone";
+            this.radio_StringsSkipSaloonTone.Size = new System.Drawing.Size(283, 17);
+            this.radio_StringsSkipSaloonTone.TabIndex = 117;
+            this.radio_StringsSkipSaloonTone.Text = "Set Highlighted Tone As New String Skip Saloon Tone";
+            this.radio_StringsSkipSaloonTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_RainbowLaserTone
+            // 
+            this.radio_RainbowLaserTone.AutoSize = true;
+            this.radio_RainbowLaserTone.Location = new System.Drawing.Point(344, 88);
+            this.radio_RainbowLaserTone.Name = "radio_RainbowLaserTone";
+            this.radio_RainbowLaserTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_RainbowLaserTone.TabIndex = 123;
+            this.radio_RainbowLaserTone.Text = "Set Highlighted Tone As New Rainbow Laser Tone";
+            this.radio_RainbowLaserTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_ScaleRacerTone
+            // 
+            this.radio_ScaleRacerTone.AutoSize = true;
+            this.radio_ScaleRacerTone.Location = new System.Drawing.Point(6, 88);
+            this.radio_ScaleRacerTone.Name = "radio_ScaleRacerTone";
+            this.radio_ScaleRacerTone.Size = new System.Drawing.Size(255, 17);
+            this.radio_ScaleRacerTone.TabIndex = 118;
+            this.radio_ScaleRacerTone.Text = "Set Highlighted Tone As New Scale Racer Tone";
+            this.radio_ScaleRacerTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_DucksReduxTone
+            // 
+            this.radio_DucksReduxTone.AutoSize = true;
+            this.radio_DucksReduxTone.Location = new System.Drawing.Point(344, 65);
+            this.radio_DucksReduxTone.Name = "radio_DucksReduxTone";
+            this.radio_DucksReduxTone.Size = new System.Drawing.Size(261, 17);
+            this.radio_DucksReduxTone.TabIndex = 122;
+            this.radio_DucksReduxTone.Text = "Set Highlighted Tone As New Ducks Redux Tone";
+            this.radio_DucksReduxTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_NinjaSlideNTone
+            // 
+            this.radio_NinjaSlideNTone.AutoSize = true;
+            this.radio_NinjaSlideNTone.Location = new System.Drawing.Point(6, 111);
+            this.radio_NinjaSlideNTone.Name = "radio_NinjaSlideNTone";
+            this.radio_NinjaSlideNTone.Size = new System.Drawing.Size(257, 17);
+            this.radio_NinjaSlideNTone.TabIndex = 119;
+            this.radio_NinjaSlideNTone.Text = "Set Highlighted Tone As New Ninja Slide N Tone";
+            this.radio_NinjaSlideNTone.UseVisualStyleBackColor = true;
+            // 
+            // radio_HarmonicHeistTone
+            // 
+            this.radio_HarmonicHeistTone.AutoSize = true;
+            this.radio_HarmonicHeistTone.Location = new System.Drawing.Point(344, 43);
+            this.radio_HarmonicHeistTone.Name = "radio_HarmonicHeistTone";
+            this.radio_HarmonicHeistTone.Size = new System.Drawing.Size(268, 17);
+            this.radio_HarmonicHeistTone.TabIndex = 121;
+            this.radio_HarmonicHeistTone.Text = "Set Highlighted Tone As New Harmonic Heist Tone";
+            this.radio_HarmonicHeistTone.UseVisualStyleBackColor = true;
+            // 
+            // button_AssignNewGuitarArcadeTone
+            // 
+            this.button_AssignNewGuitarArcadeTone.Location = new System.Drawing.Point(6, 147);
+            this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
+            this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
+            this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
+            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
+            this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
+            this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetAndForget_AssignNewGuitarArcadeTone);
+            // 
+            // radio_HurtlinHurdlesTone
+            // 
+            this.radio_HurtlinHurdlesTone.AutoSize = true;
+            this.radio_HurtlinHurdlesTone.Location = new System.Drawing.Point(344, 20);
+            this.radio_HurtlinHurdlesTone.Name = "radio_HurtlinHurdlesTone";
+            this.radio_HurtlinHurdlesTone.Size = new System.Drawing.Size(267, 17);
+            this.radio_HurtlinHurdlesTone.TabIndex = 120;
+            this.radio_HurtlinHurdlesTone.Text = "Set Highlighted Tone As New Hurtlin\' Hurdles Tone";
+            this.radio_HurtlinHurdlesTone.UseVisualStyleBackColor = true;
+            // 
+            // button_LoadTones
+            // 
+            this.button_LoadTones.Location = new System.Drawing.Point(6, 34);
+            this.button_LoadTones.Name = "button_LoadTones";
+            this.button_LoadTones.Size = new System.Drawing.Size(187, 35);
+            this.button_LoadTones.TabIndex = 99;
+            this.button_LoadTones.Text = "Load Tones From Profile";
+            this.button_LoadTones.UseVisualStyleBackColor = true;
+            this.button_LoadTones.Click += new System.EventHandler(this.SetForget_LoadTonesFromProfiles);
+            this.button_LoadTones.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_LoadTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // groupBox_CustomProfileTones
+            // 
+            this.groupBox_CustomProfileTones.Controls.Add(this.radio_DefaultLeadTone);
+            this.groupBox_CustomProfileTones.Controls.Add(this.radio_DefaultRhythmTone);
+            this.groupBox_CustomProfileTones.Controls.Add(this.radio_DefaultBassTone);
+            this.groupBox_CustomProfileTones.Controls.Add(this.button_AssignNewDefaultTone);
+            this.groupBox_CustomProfileTones.Location = new System.Drawing.Point(217, 8);
+            this.groupBox_CustomProfileTones.Name = "groupBox_CustomProfileTones";
+            this.groupBox_CustomProfileTones.Size = new System.Drawing.Size(604, 95);
+            this.groupBox_CustomProfileTones.TabIndex = 128;
+            this.groupBox_CustomProfileTones.TabStop = false;
+            this.groupBox_CustomProfileTones.Text = "Custom Default Tones";
+            // 
+            // radio_DefaultLeadTone
+            // 
+            this.radio_DefaultLeadTone.AutoSize = true;
+            this.radio_DefaultLeadTone.Checked = true;
+            this.radio_DefaultLeadTone.Location = new System.Drawing.Point(18, 19);
+            this.radio_DefaultLeadTone.Name = "radio_DefaultLeadTone";
+            this.radio_DefaultLeadTone.Size = new System.Drawing.Size(257, 17);
+            this.radio_DefaultLeadTone.TabIndex = 101;
+            this.radio_DefaultLeadTone.TabStop = true;
+            this.radio_DefaultLeadTone.Text = "Set Highlighted Tone As New Default Lead Tone";
+            this.radio_DefaultLeadTone.UseVisualStyleBackColor = true;
+            this.radio_DefaultLeadTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultLeadTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // radio_DefaultRhythmTone
+            // 
+            this.radio_DefaultRhythmTone.AutoSize = true;
+            this.radio_DefaultRhythmTone.Location = new System.Drawing.Point(18, 42);
+            this.radio_DefaultRhythmTone.Name = "radio_DefaultRhythmTone";
+            this.radio_DefaultRhythmTone.Size = new System.Drawing.Size(269, 17);
+            this.radio_DefaultRhythmTone.TabIndex = 100;
+            this.radio_DefaultRhythmTone.Text = "Set Highlighted Tone As New Default Rhythm Tone";
+            this.radio_DefaultRhythmTone.UseVisualStyleBackColor = true;
+            this.radio_DefaultRhythmTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultRhythmTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // radio_DefaultBassTone
+            // 
+            this.radio_DefaultBassTone.AutoSize = true;
+            this.radio_DefaultBassTone.Location = new System.Drawing.Point(19, 65);
+            this.radio_DefaultBassTone.Name = "radio_DefaultBassTone";
+            this.radio_DefaultBassTone.Size = new System.Drawing.Size(256, 17);
+            this.radio_DefaultBassTone.TabIndex = 102;
+            this.radio_DefaultBassTone.Text = "Set Highlighted Tone As New Default Bass Tone";
+            this.radio_DefaultBassTone.UseVisualStyleBackColor = true;
+            this.radio_DefaultBassTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.radio_DefaultBassTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_AssignNewDefaultTone
+            // 
+            this.button_AssignNewDefaultTone.Location = new System.Drawing.Point(408, 33);
+            this.button_AssignNewDefaultTone.Name = "button_AssignNewDefaultTone";
+            this.button_AssignNewDefaultTone.Size = new System.Drawing.Size(187, 35);
+            this.button_AssignNewDefaultTone.TabIndex = 96;
+            this.button_AssignNewDefaultTone.Text = "Assign Tone As New Default";
+            this.button_AssignNewDefaultTone.UseVisualStyleBackColor = true;
+            this.button_AssignNewDefaultTone.Click += new System.EventHandler(this.SetForget_SetDefaultTones);
+            this.button_AssignNewDefaultTone.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AssignNewDefaultTone.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // tabPage_SetAndForget_Misc
+            // 
+            this.tabPage_SetAndForget_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_AddFastLoad);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_AddExitGame);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_RemoveTemp);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_ImportExistingSettings);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_CleanUpUnpackedCache);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_AddDCInput);
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_RestoreCacheBackup);
+            this.tabPage_SetAndForget_Misc.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_SetAndForget_Misc.Name = "tabPage_SetAndForget_Misc";
+            this.tabPage_SetAndForget_Misc.Size = new System.Drawing.Size(802, 363);
+            this.tabPage_SetAndForget_Misc.TabIndex = 2;
+            this.tabPage_SetAndForget_Misc.Text = "Misc";
+            // 
+            // button_AddFastLoad
+            // 
+            this.button_AddFastLoad.Location = new System.Drawing.Point(17, 21);
+            this.button_AddFastLoad.Name = "button_AddFastLoad";
+            this.button_AddFastLoad.Size = new System.Drawing.Size(187, 40);
+            this.button_AddFastLoad.TabIndex = 92;
+            this.button_AddFastLoad.Text = "Enable Fast Load";
+            this.button_AddFastLoad.UseVisualStyleBackColor = true;
+            this.button_AddFastLoad.Click += new System.EventHandler(this.SetForget_AddFastLoadMod);
+            this.button_AddFastLoad.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddFastLoad.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_AddExitGame
+            // 
+            this.button_AddExitGame.Location = new System.Drawing.Point(17, 67);
+            this.button_AddExitGame.Name = "button_AddExitGame";
+            this.button_AddExitGame.Size = new System.Drawing.Size(187, 20);
+            this.button_AddExitGame.TabIndex = 93;
+            this.button_AddExitGame.Text = "Add EXIT GAME to Main Menu";
+            this.button_AddExitGame.UseVisualStyleBackColor = true;
+            this.button_AddExitGame.Click += new System.EventHandler(this.SetForget_AddCustomMenu);
+            this.button_AddExitGame.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_AddExitGame.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_RemoveTemp
+            // 
+            this.button_RemoveTemp.Location = new System.Drawing.Point(406, 47);
+            this.button_RemoveTemp.Name = "button_RemoveTemp";
+            this.button_RemoveTemp.Size = new System.Drawing.Size(190, 20);
+            this.button_RemoveTemp.TabIndex = 95;
+            this.button_RemoveTemp.Text = "Remove Temporary Folders";
+            this.button_RemoveTemp.UseVisualStyleBackColor = true;
+            this.button_RemoveTemp.Click += new System.EventHandler(this.SetForget_RemoveTempFolders);
+            this.button_RemoveTemp.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RemoveTemp.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_ImportExistingSettings
+            // 
+            this.button_ImportExistingSettings.Location = new System.Drawing.Point(210, 21);
+            this.button_ImportExistingSettings.Name = "button_ImportExistingSettings";
+            this.button_ImportExistingSettings.Size = new System.Drawing.Size(190, 40);
+            this.button_ImportExistingSettings.TabIndex = 109;
+            this.button_ImportExistingSettings.Text = "Import Existing Settings";
+            this.button_ImportExistingSettings.UseVisualStyleBackColor = true;
+            this.button_ImportExistingSettings.Click += new System.EventHandler(this.SetForget_ImportExistingSettings);
+            // 
+            // button_CleanUpUnpackedCache
+            // 
+            this.button_CleanUpUnpackedCache.Location = new System.Drawing.Point(406, 21);
+            this.button_CleanUpUnpackedCache.Name = "button_CleanUpUnpackedCache";
+            this.button_CleanUpUnpackedCache.Size = new System.Drawing.Size(190, 20);
+            this.button_CleanUpUnpackedCache.TabIndex = 91;
+            this.button_CleanUpUnpackedCache.Text = "Clean Up Unpacked Cache";
+            this.button_CleanUpUnpackedCache.UseVisualStyleBackColor = true;
+            this.button_CleanUpUnpackedCache.Click += new System.EventHandler(this.SetForget_UnpackCacheAgain);
+            this.button_CleanUpUnpackedCache.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_CleanUpUnpackedCache.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_AddDCInput
+            // 
+            this.button_AddDCInput.Location = new System.Drawing.Point(17, 93);
+            this.button_AddDCInput.Name = "button_AddDCInput";
+            this.button_AddDCInput.Size = new System.Drawing.Size(187, 20);
+            this.button_AddDCInput.TabIndex = 111;
+            this.button_AddDCInput.Text = "Add Direct Connect Mode";
+            this.button_AddDCInput.UseVisualStyleBackColor = true;
+            this.button_AddDCInput.Click += new System.EventHandler(this.SetForget_AddDCMode);
+            this.button_AddDCInput.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_RestoreCacheBackup
+            // 
+            this.button_RestoreCacheBackup.Location = new System.Drawing.Point(210, 67);
+            this.button_RestoreCacheBackup.Name = "button_RestoreCacheBackup";
+            this.button_RestoreCacheBackup.Size = new System.Drawing.Size(190, 40);
+            this.button_RestoreCacheBackup.TabIndex = 90;
+            this.button_RestoreCacheBackup.Text = "Restore Cache Backup";
+            this.button_RestoreCacheBackup.UseVisualStyleBackColor = true;
+            this.button_RestoreCacheBackup.Click += new System.EventHandler(this.SetForget_RestoreDefaults);
+            this.button_RestoreCacheBackup.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.button_RestoreCacheBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_ResetToDefaultCachePsarc
+            // 
+            this.button_ResetToDefaultCachePsarc.Location = new System.Drawing.Point(944, 473);
+            this.button_ResetToDefaultCachePsarc.Name = "button_ResetToDefaultCachePsarc";
+            this.button_ResetToDefaultCachePsarc.Size = new System.Drawing.Size(181, 23);
+            this.button_ResetToDefaultCachePsarc.TabIndex = 125;
+            this.button_ResetToDefaultCachePsarc.Text = "My Game Doesn\'t Work Anymore";
+            this.button_ResetToDefaultCachePsarc.UseVisualStyleBackColor = true;
+            this.button_ResetToDefaultCachePsarc.Click += new System.EventHandler(this.SetForget_ResetCache);
+            this.button_ResetToDefaultCachePsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // ToolTip
             // 
@@ -5850,6 +5913,15 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // label_SetAndForget_MayShowUpAsCustomTuning
+            // 
+            this.label_SetAndForget_MayShowUpAsCustomTuning.AutoSize = true;
+            this.label_SetAndForget_MayShowUpAsCustomTuning.Location = new System.Drawing.Point(33, 197);
+            this.label_SetAndForget_MayShowUpAsCustomTuning.Name = "label_SetAndForget_MayShowUpAsCustomTuning";
+            this.label_SetAndForget_MayShowUpAsCustomTuning.Size = new System.Drawing.Size(231, 13);
+            this.label_SetAndForget_MayShowUpAsCustomTuning.TabIndex = 112;
+            this.label_SetAndForget_MayShowUpAsCustomTuning.Text = "Songs That May Show Up As \"Custom Tuning\"";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5880,14 +5952,22 @@
             this.groupBox_StringColors.ResumeLayout(false);
             this.groupBox_StringColors.PerformLayout();
             this.groupBox_SetAndForget.ResumeLayout(false);
-            this.groupBox_SetAndForget.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String0)).EndInit();
+            this.tabControl_SetAndForget.ResumeLayout(false);
+            this.tabPage_SetAndForget_CustomTunings.ResumeLayout(false);
+            this.tabPage_SetAndForget_CustomTunings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_UIIndex)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_String1)).EndInit();
+            this.tabPage_SetAndForget_CustomTones.ResumeLayout(false);
+            this.groupBox_CustomGuitarcadeTones.ResumeLayout(false);
+            this.groupBox_CustomGuitarcadeTones.PerformLayout();
+            this.groupBox_CustomProfileTones.ResumeLayout(false);
+            this.groupBox_CustomProfileTones.PerformLayout();
+            this.tabPage_SetAndForget_Misc.ResumeLayout(false);
             this.groupBox_ToggleSkylineWhen.ResumeLayout(false);
             this.groupBox_ToggleSkylineWhen.PerformLayout();
             this.groupBox_ToggleLyricsOffWhen.ResumeLayout(false);
@@ -6083,7 +6163,6 @@
         private System.Windows.Forms.Button button_AssignNewDefaultTone;
         private System.Windows.Forms.Button button_LoadTones;
         private System.Windows.Forms.ListBox listBox_ProfileTones;
-        private System.Windows.Forms.Label label_ChangeTonesHeader;
         private System.Windows.Forms.RadioButton radio_DefaultBassTone;
         private System.Windows.Forms.RadioButton radio_DefaultLeadTone;
         private System.Windows.Forms.RadioButton radio_DefaultRhythmTone;
@@ -6128,7 +6207,6 @@
         private System.Windows.Forms.TabPage tab_GUISettings;
         public System.Windows.Forms.TabControl TabController;
         private System.Windows.Forms.CheckBox checkBox_ChangeTheme;
-        private System.Windows.Forms.Label label_HorizontalRuleSetAndForget;
         private System.Windows.Forms.Button button_CleanUpUnpackedCache;
         private System.Windows.Forms.TabPage tab_Twitch;
         private System.Windows.Forms.Button button_TwitchReAuthorize;
@@ -6303,8 +6381,6 @@
         private System.Windows.Forms.NumericUpDown nUpDown_ASIO_InputMic_Channel;
         private System.Windows.Forms.Label label_ASIO_InputMic_Channel;
         private System.Windows.Forms.ListBox listBox_AvailableASIODevices_InputMic;
-        private System.Windows.Forms.Label label_SetAndForgetGuitarArcade;
-        private System.Windows.Forms.Label label_HorizontalRulerGuitarArcade;
         private System.Windows.Forms.RadioButton radio_ScaleWarriorsTone;
         private System.Windows.Forms.RadioButton radio_TempleOfBendsTone;
         private System.Windows.Forms.Button button_AssignNewGuitarArcadeTone;
@@ -6440,6 +6516,16 @@
         private System.Windows.Forms.CheckBox checkBox_FixBadBassTuning;
         private System.Windows.Forms.CheckBox checkBox_SpeedUpEnumeration;
         private System.Windows.Forms.Button button_ReplaceMasterfulPerformance_99;
+        private System.Windows.Forms.TabControl tabControl_SetAndForget;
+        private System.Windows.Forms.TabPage tabPage_SetAndForget_CustomTunings;
+        private System.Windows.Forms.TabPage tabPage_SetAndForget_CustomTones;
+        private System.Windows.Forms.GroupBox groupBox_CustomGuitarcadeTones;
+        private System.Windows.Forms.GroupBox groupBox_CustomProfileTones;
+        private System.Windows.Forms.TabPage tabPage_SetAndForget_Misc;
+        private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithCustomTuning;
+        private System.Windows.Forms.Button button_FillCustomTuningList;
+        private System.Windows.Forms.ProgressBar progressBar_FillSongsWithCustomTunings;
+        private System.Windows.Forms.Label label_SetAndForget_MayShowUpAsCustomTuning;
     }
 }
 
