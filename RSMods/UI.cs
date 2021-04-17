@@ -30,7 +30,7 @@ using System.IO.Compression;
 using SevenZip;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using Newtonsoft.Json;
-
+using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 namespace RSMods
 {
     public partial class MainForm : Form
@@ -1487,45 +1487,75 @@ namespace RSMods
             SetAndForgetMods.SetGuitarArcadeTone(selectedToneName, selectedToneType);
         }
 
-        List<SongArrangement.ArrangementAttributes.ArrangementTuning> customTunings = new List<SongArrangement.ArrangementAttributes.ArrangementTuning>();
-
-        private void SetAndForget_FillCustomTuningList(object sender, EventArgs e)
+        private void SetAndForget_LoadSongsToWorkOn(object sender, EventArgs e)
         {
-            List<SongArrangement.ArrangementAttributes.ArrangementTuning> definedTunings = new List<SongArrangement.ArrangementAttributes.ArrangementTuning>();
+            Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings); // Load all the data from the songs
+            SetAndForget_FillDefinedTunings(); // Get a list of all of our non-"Custom Tuning"s.
+            SetAndForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
+            SetAndForget_FillSongsWithBadBassTuningsList(); // Get a list of all song & arrangement combos that have a bass tuning that is not in the Rocksmith tuning format.
+        }
+
+        private TuningDefinitionInfo SetAndForget_ConvertTuningStandards(ArrangementTuning tuning, string name)
+        {
+            TuningDefinitionInfo convertedTuning = new TuningDefinitionInfo();
+
+            convertedTuning.UIName = name;
+            convertedTuning.Strings.Add("string0", tuning.String0);
+            convertedTuning.Strings.Add("string1", tuning.String1);
+            convertedTuning.Strings.Add("string2", tuning.String2);
+            convertedTuning.Strings.Add("string3", tuning.String3);
+            convertedTuning.Strings.Add("string4", tuning.String4);
+            convertedTuning.Strings.Add("string5", tuning.String5);
+
+            return convertedTuning;
+        }
+
+        private ArrangementTuning SetAndForget_ConvertTuningStandards(TuningDefinitionInfo tuning)
+        {
+            ArrangementTuning convertedTuning = new ArrangementTuning();
+
+            foreach (KeyValuePair<string, int> t in tuning.Strings)
+            {
+                switch (t.Key)
+                {
+                    case "string0":
+                        convertedTuning.String0 = t.Value;
+                        break;
+                    case "string1":
+                        convertedTuning.String1 = t.Value;
+                        break;
+                    case "string2":
+                        convertedTuning.String2 = t.Value;
+                        break;
+                    case "string3":
+                        convertedTuning.String3 = t.Value;
+                        break;
+                    case "string4":
+                        convertedTuning.String4 = t.Value;
+                        break;
+                    case "string5":
+                        convertedTuning.String5 = t.Value;
+                        break;
+                }
+            }
+
+            return convertedTuning;
+        }
+
+        List<ArrangementTuning> definedTunings = new List<ArrangementTuning>();
+
+        private void SetAndForget_FillDefinedTunings()
+        {
+            definedTunings.Clear();
 
             foreach (TuningDefinitionInfo tuningDefinition in SetAndForgetMods.TuningsCollection.Values)
             {
-                SongArrangement.ArrangementAttributes.ArrangementTuning arrangementTuning = new SongArrangement.ArrangementAttributes.ArrangementTuning();
-
-                foreach (KeyValuePair<string, int> tuning in tuningDefinition.Strings)
-                {
-                    switch (tuning.Key)
-                    {
-                        case "string0":
-                            arrangementTuning.String0 = tuning.Value;
-                            break;
-                        case "string1":
-                            arrangementTuning.String1 = tuning.Value;
-                            break;
-                        case "string2":
-                            arrangementTuning.String2 = tuning.Value;
-                            break;
-                        case "string3":
-                            arrangementTuning.String3 = tuning.Value;
-                            break;
-                        case "string4":
-                            arrangementTuning.String4 = tuning.Value;
-                            break;
-                        case "string5":
-                            arrangementTuning.String5 = tuning.Value;
-                            break;
-                    }
-                }
-
-                definedTunings.Add(arrangementTuning);
+                definedTunings.Add(SetAndForget_ConvertTuningStandards(tuningDefinition));
             }
+        }
 
-            Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings);
+        private void SetAndForget_FillCustomTuningList()
+        {
             List<string> songsToDisplay = new List<string>();
 
             foreach (SongData song in Songs)
@@ -1533,23 +1563,83 @@ namespace RSMods
                 foreach (SongArrangement arrangement in song.arrangements)
                 {
                     string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
-                    if (!definedTunings.Contains(arrangement.Attributes.Tuning))
+                    if (!definedTunings.Contains(arrangement.Attributes.Tuning) && !customTunings.ContainsKey(formatting))
                     {
-                        songsToDisplay.Add(formatting);
-                        customTunings.Add(arrangement.Attributes.Tuning);
+                        customTunings.Add(formatting, arrangement.Attributes.Tuning);
                     }
                 }
             }
+            
             listBox_SetAndForget_SongsWithCustomTuning.Items.Clear();
-            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(songsToDisplay.ToArray());
+            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(customTunings.Keys.ToArray());
         }
+
+        private void SetAndForget_FillSongsWithBadBassTuningsList()
+        {
+            listBox_SetAndForget_SongsWithBadBassTuning.Items.Clear();
+            List<string> songsBeingChanged = new List<string>();
+
+            foreach(SongData song in Songs)
+            {
+                foreach(SongArrangement arrangement in song.arrangements)
+                {
+                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+                    ArrangementTuning arrangementTuning = arrangement.Attributes.Tuning;
+                    if (arrangement.Attributes.ArrangementName.ToLower().Contains("bass")) // Should be formatted this way or we will lose alt / bonus bass.
+                    {
+                        if (!SetAndForget_IsTuningStandard(arrangement.Attributes.Tuning) && !SetAndForget_IsTuningDrop(arrangement.Attributes.Tuning) && !songsBeingChanged.Contains(formatting))
+                        {
+                            if (!song.ODLC && !(arrangementTuning.String0 == 0 || arrangementTuning.String1 == 0 || arrangementTuning.String2 == 0 || arrangementTuning.String3 == 0) && ((arrangementTuning.String4 == 0 && arrangementTuning.String5 == 0) || (arrangementTuning.String4 == 12 && arrangementTuning.String5 == 12)))
+                            {
+                                songsBeingChanged.Add(formatting);
+                            }
+                        }
+                    }
+                }
+            }
+            listBox_SetAndForget_SongsWithBadBassTuning.Items.AddRange(songsBeingChanged.ToArray());
+        }
+
+        private bool SetAndForget_IsTuningStandard(object tuning, bool forceBass = false)
+        {
+            if (tuning is ArrangementTuning)
+            {
+                ArrangementTuning arrTuning = ((ArrangementTuning) tuning);
+                if (forceBass)
+                    return arrTuning.String0 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3;
+                else
+                    return arrTuning.String0 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3 && arrTuning.String3 == arrTuning.String4 && arrTuning.String4 == arrTuning.String5;
+            }
+            else if (tuning is TuningDefinitionInfo)
+                return SetAndForget_IsTuningStandard(SetAndForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
+            else
+                return false;
+        }
+
+        private bool SetAndForget_IsTuningDrop(object tuning, bool forceBass = false)
+        {
+            if (tuning is ArrangementTuning)
+            {
+                ArrangementTuning arrTuning = ((ArrangementTuning)tuning);
+                if (forceBass)
+                    return arrTuning.String0 + 2 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3;
+                else
+                    return arrTuning.String0 + 2 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3 && arrTuning.String3 == arrTuning.String4 && arrTuning.String4 == arrTuning.String5;
+            }
+            else if (tuning is TuningDefinitionInfo)
+                return SetAndForget_IsTuningDrop(SetAndForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
+            else
+                return false;
+        }
+
+        SortedDictionary<string, ArrangementTuning> customTunings = new SortedDictionary<string, ArrangementTuning>();
 
         private void SetAndForget_LoadCustomTuningFromSong(object sender, EventArgs e)
         {
             if (listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex < 0)
                 return;
 
-            SongArrangement.ArrangementAttributes.ArrangementTuning customTuning = customTunings[listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex];
+            ArrangementTuning customTuning = customTunings[listBox_SetAndForget_SongsWithCustomTuning.SelectedItem.ToString()];
 
             nUpDown_String0.Value = customTuning.String0;
             nUpDown_String1.Value = customTuning.String1;
