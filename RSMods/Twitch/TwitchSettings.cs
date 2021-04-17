@@ -140,29 +140,37 @@ namespace RSMods.Twitch
 
         public async void LoadSettings() // At this point I feel like it would come in handy just to save it as XML/JSON and deserialize it when needed
         {
-            var settingsLines = GenUtil.GetSettingsLines();
-            GenUtil.GetSettingsPairs(settingsLines);
-
-            AccessToken = GenUtil.GetSettingsEntry("AccessToken");
-            Username = GenUtil.GetSettingsEntry("Username");
-            ChannelID = GenUtil.GetSettingsEntry("ChannelID");
-
-            bool _ForceReauth;
-            Boolean.TryParse(GenUtil.GetSettingsEntry("ForceReauth"), out _ForceReauth);
-            ForceReauth = _ForceReauth;
-
-            ChatbotAccessToken = GenUtil.GetSettingsEntry("Chatbot_AccessToken");
-            ChatbotRefreshToken = GenUtil.GetSettingsEntry("Chatbot_RefreshToken");
-            ChatbotTokenSaved = GenUtil.GetSettingsEntry("Chatbot_TokenSaved");
-            ChatbotUsername = GenUtil.GetSettingsEntry("Chatbot_Username");
-
-            if (AccessToken != "")
+            try
             {
-                Authorized = await ValidateCurrentSettings();
-                Reauthorized = Authorized;
+                var settingsLines = GenUtil.GetSettingsLines();
+                GenUtil.GetSettingsPairs(settingsLines);
+
+                AccessToken = GenUtil.GetSettingsEntry("AccessToken");
+                Username = GenUtil.GetSettingsEntry("Username");
+                ChannelID = GenUtil.GetSettingsEntry("ChannelID");
+
+                bool _ForceReauth;
+                Boolean.TryParse(GenUtil.GetSettingsEntry("ForceReauth"), out _ForceReauth);
+                ForceReauth = _ForceReauth;
+
+                ChatbotAccessToken = GenUtil.GetSettingsEntry("Chatbot_AccessToken");
+                ChatbotRefreshToken = GenUtil.GetSettingsEntry("Chatbot_RefreshToken");
+                ChatbotTokenSaved = GenUtil.GetSettingsEntry("Chatbot_TokenSaved");
+                ChatbotUsername = GenUtil.GetSettingsEntry("Chatbot_Username");
+
+                if (AccessToken != "")
+                {
+                    Authorized = await ValidateCurrentSettings();
+                    Reauthorized = Authorized;
+                }
+                else
+                    Authorized = false;
             }
-            else
-                Authorized = false;
+            catch (HttpRequestException)
+            {
+                // User doesn't have a stable internet connection.
+            }
+            
         }
 
         public void SaveSettings(bool refreshDate = false)

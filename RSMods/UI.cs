@@ -3195,10 +3195,9 @@ namespace RSMods
 
                 github_UpdateResponse = jsonResponse;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("CheckForUpdates_GithubAPI.\n" + ex.Message + "\n" + ex.StackTrace);
-                github_UpdateResponse = "null";
+                github_UpdateResponse = "null"; // User doesn't have a stable internet connection.
             }
         }
 
