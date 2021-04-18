@@ -62,6 +62,9 @@ unsigned WINAPI MidiThread() {
 /// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
+	if ((D3DHooks::currentMenu == "Guitarcade_Game" || D3DHooks::currentMenu == "ScoreAttack_Game") && (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU))
+		return true;
+
 	// Trigger Mod on Keypress
 	if (msg == WM_KEYUP) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
