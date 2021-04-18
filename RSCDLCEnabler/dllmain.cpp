@@ -813,6 +813,7 @@ unsigned WINAPI MainThread() {
 
 	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
 	bool skipERSleep = false; // If using RR past 100%, remove the 1.5s sleep on ER mode, to stop flickering colors.
+	bool forkInToasterNewProfile = false; // If Auto Load Profile has a specified profile, and we can't find it, then this will be true.
 
 	// Initialize Functions
 	D3DHooks::debug = debug;
@@ -1064,20 +1065,18 @@ unsigned WINAPI MainThread() {
 				GameLoaded = true;
 
 			// Auto Load Profile. AKA "Fork in the toaster".
-			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter))) {
+			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter)) && !forkInToasterNewProfile) {
 				// If the user user says "I want to always load this profile"
 				if (Settings::ReturnSettingValue("ProfileToLoad") != (std::string)"" && currentMenu == (std::string)"ProfileSelect") {
 					selectedUser = MemHelpers::CurrentSelectedUser();
-
 					if (selectedUser == Settings::ReturnSettingValue("ProfileToLoad")) // The profile we're looking for
 						AutoEnterGame();
-					else if (selectedUser == (std::string)"New profile") // Yeah, the profile they're looking for doesn't exist :(
+					else if (selectedUser == (std::string)"New profile") { // Yeah, the profile they're looking for doesn't exist :(
 						std::cout << "(Auto Load) Invalid Profile Name" << std::endl;
-					else { // Not the profile we're looking for
-						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_DOWN, 0);
-						Sleep(30);
-						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DOWN, 0);
+						forkInToasterNewProfile = true;
 					}
+					else // Not the profile we're looking for
+						AutoEnterGame();
 				}
 				else
 					AutoEnterGame();
