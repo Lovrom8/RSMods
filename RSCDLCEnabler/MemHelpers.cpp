@@ -425,6 +425,7 @@ void MemHelpers::ToggleCB(bool enabled) {
 /// </summary>
 void MemHelpers::PatchCDLCCheck() {
 	uint8_t* VerifySignatureOffset = Offsets::cdlcCheckAdr;
+	*(char*)0x013aefd9 = (char)0x60;
 
 	if (VerifySignatureOffset) {
 		if (!MemUtil::PatchAdr(VerifySignatureOffset + 8, (UINT*)Offsets::patch_CDLCCheck, 2))
