@@ -1302,7 +1302,7 @@ namespace RSMods
             var strings = new Dictionary<string, int>();
 
             for (int strIdx = 0; strIdx < 6; strIdx++)
-                strings[$"string{strIdx}"] = (int)((NumericUpDown)groupBox_SetAndForget.Controls[$"nUpDown_String{strIdx}"]).Value;
+                strings[$"string{strIdx}"] = (int)((NumericUpDown)tabPage_SetAndForget_CustomTunings.Controls[$"nUpDown_String{strIdx}"]).Value;
 
             tuningDefinition.Strings = strings;
             tuningDefinition.UIName = String.Format("$[{0}]{1}", nUpDown_UIIndex.Value.ToString(), textBox_UIName.Text);
@@ -1350,6 +1350,7 @@ namespace RSMods
                 textBox_InternalTuningName.Text = "";
                 nUpDown_UIIndex.Value = 0;
                 textBox_UIName.Text = "";
+                listBox_SetAndForget_SongsWithSelectedTuning.Items.Clear();
                 return;
             }
 
@@ -1362,6 +1363,8 @@ namespace RSMods
 
             for (int strIdx = 0; strIdx < 6; strIdx++) // If you are lazy and don't want to list each string separately, just do this sexy two-liner
                 ((NumericUpDown)tabPage_SetAndForget_CustomTunings.Controls[$"nUpDown_String{strIdx}"]).Value = selectedTuning.Strings[$"string{strIdx}"];
+
+            SetForget_FillSongsWithSelectedTuningList();
         }
 
         private void SetForget_SaveTuningChanges(object sender, EventArgs e)
@@ -1371,7 +1374,12 @@ namespace RSMods
                 string selectedItem = listBox_Tunings.SelectedItem.ToString();
 
                 if (selectedItem != "<New>")
+                {
                     SetAndForgetMods.TuningsCollection[selectedItem] = SetForget_GetCurrentTuningInfo();
+
+                    if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
+                        SetForget_LoadSongsToWorkOn(sender, e);
+                }
             }
 
             SetAndForgetMods.SaveTuningsJSON();
@@ -1391,6 +1399,9 @@ namespace RSMods
 
             SetAndForgetMods.TuningsCollection.Remove(selectedItem); // I guess we would be better here using BindingSource on Listbox + ObservableCollection instead of Dict to make changes reflect automatically, but... one day
             listBox_Tunings.Items.Remove(selectedItem);
+
+            if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
+                SetForget_LoadSongsToWorkOn(sender, e);
         }
 
         private void SetForget_AddTuning(object sender, EventArgs e)
@@ -1414,6 +1425,9 @@ namespace RSMods
             {
                 SetAndForgetMods.TuningsCollection.Add(internalName, currTuning);
                 listBox_Tunings.Items.Add(internalName);
+
+                if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
+                    SetForget_LoadSongsToWorkOn(sender, e);
             }
             else
                 MessageBox.Show("You already have a tuning with the same internal name");
@@ -1461,7 +1475,7 @@ namespace RSMods
                 SetForget_FillUI();
         }
 
-        private void SetAndForget_AssignNewGuitarArcadeTone(object sender, EventArgs e)
+        private void SetForget_AssignNewGuitarArcadeTone(object sender, EventArgs e)
         {
             if (listBox_ProfileTones.SelectedItem == null)
                 return;
@@ -1487,15 +1501,16 @@ namespace RSMods
             SetAndForgetMods.SetGuitarArcadeTone(selectedToneName, selectedToneType);
         }
 
-        private void SetAndForget_LoadSongsToWorkOn(object sender, EventArgs e)
+        private void SetForget_LoadSongsToWorkOn(object sender, EventArgs e)
         {
             Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings); // Load all the data from the songs
-            SetAndForget_FillDefinedTunings(); // Get a list of all of our non-"Custom Tuning"s.
-            SetAndForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
-            SetAndForget_FillSongsWithBadBassTuningsList(); // Get a list of all song & arrangement combos that have a bass tuning that is not in the Rocksmith tuning format.
+            SetForget_FillDefinedTunings(); // Get a list of all of our non-"Custom Tuning"s.
+            SetForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
+            SetForget_FillSongsWithBadBassTuningsList(); // Get a list of all song & arrangement combos that have a bass tuning that is not in the Rocksmith tuning format.
+            SetForget_FillSongsWithSelectedTuningList(); // Get a list of all song & arrangement combos that have the same tuning as selected in listBox_Tunings.
         }
 
-        private TuningDefinitionInfo SetAndForget_ConvertTuningStandards(ArrangementTuning tuning, string name)
+        private TuningDefinitionInfo SetForget_ConvertTuningStandards(ArrangementTuning tuning, string name)
         {
             TuningDefinitionInfo convertedTuning = new TuningDefinitionInfo();
 
@@ -1510,7 +1525,7 @@ namespace RSMods
             return convertedTuning;
         }
 
-        private ArrangementTuning SetAndForget_ConvertTuningStandards(TuningDefinitionInfo tuning)
+        private ArrangementTuning SetForget_ConvertTuningStandards(TuningDefinitionInfo tuning)
         {
             ArrangementTuning convertedTuning = new ArrangementTuning();
 
@@ -1544,19 +1559,19 @@ namespace RSMods
 
         List<ArrangementTuning> definedTunings = new List<ArrangementTuning>();
 
-        private void SetAndForget_FillDefinedTunings()
+        private void SetForget_FillDefinedTunings()
         {
             definedTunings.Clear();
 
             foreach (TuningDefinitionInfo tuningDefinition in SetAndForgetMods.TuningsCollection.Values)
             {
-                definedTunings.Add(SetAndForget_ConvertTuningStandards(tuningDefinition));
+                definedTunings.Add(SetForget_ConvertTuningStandards(tuningDefinition));
             }
         }
 
-        private void SetAndForget_FillCustomTuningList()
+        private void SetForget_FillCustomTuningList()
         {
-            List<string> songsToDisplay = new List<string>();
+            customTunings.Clear();
 
             foreach (SongData song in Songs)
             {
@@ -1574,7 +1589,34 @@ namespace RSMods
             listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(customTunings.Keys.ToArray());
         }
 
-        private void SetAndForget_FillSongsWithBadBassTuningsList()
+        private void SetForget_FillSongsWithSelectedTuningList()
+        {
+            listBox_SetAndForget_SongsWithSelectedTuning.Items.Clear();
+
+            List<string> songsWithTuning = new List<string>();
+
+            if (listBox_Tunings.SelectedIndex == -1 || listBox_Tunings.SelectedItem.ToString() == "<New>")
+                return;
+
+            ArrangementTuning selectedTuning = SetForget_ConvertTuningStandards(SetAndForgetMods.TuningsCollection[listBox_Tunings.SelectedItem.ToString()]);
+
+            foreach (SongData song in Songs)
+            {
+                foreach(SongArrangement arrangement in song.arrangements)
+                {
+                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+                    if (arrangement.Attributes.Tuning.Equals(selectedTuning))
+                    {
+                        songsWithTuning.Add(formatting);
+                    }
+                }
+            }
+
+            songsWithTuning.Sort();
+            listBox_SetAndForget_SongsWithSelectedTuning.Items.AddRange(songsWithTuning.ToArray());
+        }
+
+        private void SetForget_FillSongsWithBadBassTuningsList()
         {
             listBox_SetAndForget_SongsWithBadBassTuning.Items.Clear();
             List<string> songsBeingChanged = new List<string>();
@@ -1587,7 +1629,7 @@ namespace RSMods
                     ArrangementTuning arrangementTuning = arrangement.Attributes.Tuning;
                     if (arrangement.Attributes.ArrangementName.ToLower().Contains("bass")) // Should be formatted this way or we will lose alt / bonus bass.
                     {
-                        if (!SetAndForget_IsTuningStandard(arrangement.Attributes.Tuning) && !SetAndForget_IsTuningDrop(arrangement.Attributes.Tuning) && !songsBeingChanged.Contains(formatting))
+                        if (!SetForget_IsTuningStandard(arrangement.Attributes.Tuning) && !SetForget_IsTuningDrop(arrangement.Attributes.Tuning) && !songsBeingChanged.Contains(formatting))
                         {
                             if (!song.ODLC && !(arrangementTuning.String0 == 0 || arrangementTuning.String1 == 0 || arrangementTuning.String2 == 0 || arrangementTuning.String3 == 0) && ((arrangementTuning.String4 == 0 && arrangementTuning.String5 == 0) || (arrangementTuning.String4 == 12 && arrangementTuning.String5 == 12)))
                             {
@@ -1600,7 +1642,7 @@ namespace RSMods
             listBox_SetAndForget_SongsWithBadBassTuning.Items.AddRange(songsBeingChanged.ToArray());
         }
 
-        private bool SetAndForget_IsTuningStandard(object tuning, bool forceBass = false)
+        private bool SetForget_IsTuningStandard(object tuning, bool forceBass = false)
         {
             if (tuning is ArrangementTuning)
             {
@@ -1611,12 +1653,12 @@ namespace RSMods
                     return arrTuning.String0 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3 && arrTuning.String3 == arrTuning.String4 && arrTuning.String4 == arrTuning.String5;
             }
             else if (tuning is TuningDefinitionInfo)
-                return SetAndForget_IsTuningStandard(SetAndForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
+                return SetForget_IsTuningStandard(SetForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
             else
                 return false;
         }
 
-        private bool SetAndForget_IsTuningDrop(object tuning, bool forceBass = false)
+        private bool SetForget_IsTuningDrop(object tuning, bool forceBass = false)
         {
             if (tuning is ArrangementTuning)
             {
@@ -1627,14 +1669,14 @@ namespace RSMods
                     return arrTuning.String0 + 2 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3 && arrTuning.String3 == arrTuning.String4 && arrTuning.String4 == arrTuning.String5;
             }
             else if (tuning is TuningDefinitionInfo)
-                return SetAndForget_IsTuningDrop(SetAndForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
+                return SetForget_IsTuningDrop(SetForget_ConvertTuningStandards((TuningDefinitionInfo)tuning), forceBass);
             else
                 return false;
         }
 
         SortedDictionary<string, ArrangementTuning> customTunings = new SortedDictionary<string, ArrangementTuning>();
 
-        private void SetAndForget_LoadCustomTuningFromSong(object sender, EventArgs e)
+        private void SetForget_LoadCustomTuningFromSong(object sender, EventArgs e)
         {
             if (listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex < 0)
                 return;
