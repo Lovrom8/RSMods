@@ -121,6 +121,9 @@ namespace RSMods
             // Prevent some double saving
             PriorSettings_PreventDoubleSave();
 
+            // Unpack Cache.psarc
+            Startup_UnpackCachePsarc();
+
             // Load Set And Forget Mods
             SetForget_LoadSetAndForgetMods();
 
@@ -332,6 +335,8 @@ namespace RSMods
         private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
 
         private void Startup_CheckStatusAudioPsarc() => SoundPacks_ChangeUIForUnpackedFolder(Directory.Exists("audio_psarc"));
+
+        private void Startup_UnpackCachePsarc() => SetAndForgetMods.UnpackCachePsarc();
 
         #endregion
         #region Show Prior Settings In GUI
@@ -1587,7 +1592,14 @@ namespace RSMods
             {
                 foreach (SongArrangement arrangement in song.arrangements)
                 {
-                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+                    string formatting = string.Empty;
+
+                    if (arrangement.Attributes.ArrangementProperties.Represent == 0)
+                        formatting += "Alt ";
+                    else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
+                        formatting += "Bonus ";
+
+                    formatting += arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
                     if (!definedTunings.Contains(arrangement.Attributes.Tuning) && !customTunings.ContainsKey(formatting))
                     {
                         customTunings.Add(formatting, arrangement.Attributes.Tuning);
@@ -1614,7 +1626,14 @@ namespace RSMods
             {
                 foreach(SongArrangement arrangement in song.arrangements)
                 {
-                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+                    string formatting = string.Empty;
+
+                    if (arrangement.Attributes.ArrangementProperties.Represent == 0)
+                        formatting += "Alt ";
+                    else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
+                        formatting += "Bonus ";
+
+                    formatting += arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
                     if (arrangement.Attributes.Tuning.Equals(selectedTuning))
                     {
                         songsWithTuning.Add(formatting);
@@ -1635,7 +1654,15 @@ namespace RSMods
             {
                 foreach(SongArrangement arrangement in song.arrangements)
                 {
-                    string formatting = arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+
+                    string formatting = string.Empty;
+
+                    if (arrangement.Attributes.ArrangementProperties.Represent == 0)
+                        formatting += "Alt ";
+                    else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
+                        formatting += "Bonus ";
+
+                    formatting += arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
                     ArrangementTuning arrangementTuning = arrangement.Attributes.Tuning;
                     if (arrangement.Attributes.ArrangementName.ToLower().Contains("bass")) // Should be formatted this way or we will lose alt / bonus bass.
                     {
