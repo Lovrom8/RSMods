@@ -13,6 +13,6 @@
     verbosity: quiet
   on_finish:
   - cmd: >-
-       7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\Release\*.* -r
+       7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\x64\Release\*.* -r 
      
        appveyor PushArtifact RSMods.zip
