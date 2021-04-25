@@ -105,6 +105,8 @@
             this.groupBox_SetAndForget = new System.Windows.Forms.GroupBox();
             this.tabControl_SetAndForget = new System.Windows.Forms.TabControl();
             this.tabPage_SetAndForget_CustomTunings = new System.Windows.Forms.TabPage();
+            this.label_SongsWithSelectedTuning = new System.Windows.Forms.Label();
+            this.listBox_SetAndForget_SongsWithSelectedTuning = new System.Windows.Forms.ListBox();
             this.label_SongsWithBadBassTunings = new System.Windows.Forms.Label();
             this.listBox_SetAndForget_SongsWithBadBassTuning = new System.Windows.Forms.ListBox();
             this.label_SetAndForget_MayShowUpAsCustomTuning = new System.Windows.Forms.Label();
@@ -474,8 +476,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.listBox_SetAndForget_SongsWithSelectedTuning = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1522,7 +1522,7 @@
             // 
             this.tabPage_SetAndForget_CustomTunings.BackColor = System.Drawing.Color.Azure;
             this.tabPage_SetAndForget_CustomTunings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label1);
+            this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_SongsWithSelectedTuning);
             this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.listBox_SetAndForget_SongsWithSelectedTuning);
             this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.label_SongsWithBadBassTunings);
             this.tabPage_SetAndForget_CustomTunings.Controls.Add(this.listBox_SetAndForget_SongsWithBadBassTuning);
@@ -1561,6 +1561,25 @@
             this.tabPage_SetAndForget_CustomTunings.TabIndex = 0;
             this.tabPage_SetAndForget_CustomTunings.Text = "Custom Tunings";
             // 
+            // label_SongsWithSelectedTuning
+            // 
+            this.label_SongsWithSelectedTuning.AutoSize = true;
+            this.label_SongsWithSelectedTuning.Location = new System.Drawing.Point(65, 197);
+            this.label_SongsWithSelectedTuning.Name = "label_SongsWithSelectedTuning";
+            this.label_SongsWithSelectedTuning.Size = new System.Drawing.Size(165, 13);
+            this.label_SongsWithSelectedTuning.TabIndex = 116;
+            this.label_SongsWithSelectedTuning.Text = "Songs With The Selected Tuning";
+            this.label_SongsWithSelectedTuning.Visible = false;
+            // 
+            // listBox_SetAndForget_SongsWithSelectedTuning
+            // 
+            this.listBox_SetAndForget_SongsWithSelectedTuning.FormattingEnabled = true;
+            this.listBox_SetAndForget_SongsWithSelectedTuning.Location = new System.Drawing.Point(6, 213);
+            this.listBox_SetAndForget_SongsWithSelectedTuning.Name = "listBox_SetAndForget_SongsWithSelectedTuning";
+            this.listBox_SetAndForget_SongsWithSelectedTuning.Size = new System.Drawing.Size(298, 134);
+            this.listBox_SetAndForget_SongsWithSelectedTuning.TabIndex = 115;
+            this.listBox_SetAndForget_SongsWithSelectedTuning.Visible = false;
+            // 
             // label_SongsWithBadBassTunings
             // 
             this.label_SongsWithBadBassTunings.AutoSize = true;
@@ -1569,6 +1588,7 @@
             this.label_SongsWithBadBassTunings.Size = new System.Drawing.Size(151, 13);
             this.label_SongsWithBadBassTunings.TabIndex = 114;
             this.label_SongsWithBadBassTunings.Text = "Songs With Bad Bass Tunings";
+            this.label_SongsWithBadBassTunings.Visible = false;
             // 
             // listBox_SetAndForget_SongsWithBadBassTuning
             // 
@@ -1577,6 +1597,7 @@
             this.listBox_SetAndForget_SongsWithBadBassTuning.Name = "listBox_SetAndForget_SongsWithBadBassTuning";
             this.listBox_SetAndForget_SongsWithBadBassTuning.Size = new System.Drawing.Size(298, 134);
             this.listBox_SetAndForget_SongsWithBadBassTuning.TabIndex = 113;
+            this.listBox_SetAndForget_SongsWithBadBassTuning.Visible = false;
             // 
             // label_SetAndForget_MayShowUpAsCustomTuning
             // 
@@ -1586,6 +1607,7 @@
             this.label_SetAndForget_MayShowUpAsCustomTuning.Size = new System.Drawing.Size(231, 13);
             this.label_SetAndForget_MayShowUpAsCustomTuning.TabIndex = 112;
             this.label_SetAndForget_MayShowUpAsCustomTuning.Text = "Songs That May Show Up As \"Custom Tuning\"";
+            this.label_SetAndForget_MayShowUpAsCustomTuning.Visible = false;
             // 
             // progressBar_FillSongsWithCustomTunings
             // 
@@ -1604,6 +1626,7 @@
             this.button_LoadSongsToWorkOn.Text = "Load Songs To Work On";
             this.button_LoadSongsToWorkOn.UseVisualStyleBackColor = true;
             this.button_LoadSongsToWorkOn.Click += new System.EventHandler(this.SetForget_LoadSongsToWorkOn);
+            this.button_LoadSongsToWorkOn.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // listBox_SetAndForget_SongsWithCustomTuning
             // 
@@ -1612,6 +1635,7 @@
             this.listBox_SetAndForget_SongsWithCustomTuning.Name = "listBox_SetAndForget_SongsWithCustomTuning";
             this.listBox_SetAndForget_SongsWithCustomTuning.Size = new System.Drawing.Size(298, 134);
             this.listBox_SetAndForget_SongsWithCustomTuning.TabIndex = 109;
+            this.listBox_SetAndForget_SongsWithCustomTuning.Visible = false;
             this.listBox_SetAndForget_SongsWithCustomTuning.SelectedIndexChanged += new System.EventHandler(this.SetForget_LoadCustomTuningFromSong);
             // 
             // listBox_Tunings
@@ -1944,7 +1968,7 @@
             this.tabPage_SetAndForget_CustomTones.Location = new System.Drawing.Point(4, 22);
             this.tabPage_SetAndForget_CustomTones.Name = "tabPage_SetAndForget_CustomTones";
             this.tabPage_SetAndForget_CustomTones.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_SetAndForget_CustomTones.Size = new System.Drawing.Size(996, 394);
+            this.tabPage_SetAndForget_CustomTones.Size = new System.Drawing.Size(1080, 422);
             this.tabPage_SetAndForget_CustomTones.TabIndex = 1;
             this.tabPage_SetAndForget_CustomTones.Text = "Custom Tones";
             // 
@@ -2177,7 +2201,7 @@
             this.tabPage_SetAndForget_Misc.Controls.Add(this.button_RestoreCacheBackup);
             this.tabPage_SetAndForget_Misc.Location = new System.Drawing.Point(4, 22);
             this.tabPage_SetAndForget_Misc.Name = "tabPage_SetAndForget_Misc";
-            this.tabPage_SetAndForget_Misc.Size = new System.Drawing.Size(996, 394);
+            this.tabPage_SetAndForget_Misc.Size = new System.Drawing.Size(1080, 422);
             this.tabPage_SetAndForget_Misc.TabIndex = 2;
             this.tabPage_SetAndForget_Misc.Text = "Misc";
             // 
@@ -2207,9 +2231,9 @@
             // 
             // button_RemoveTemp
             // 
-            this.button_RemoveTemp.Location = new System.Drawing.Point(406, 47);
+            this.button_RemoveTemp.Location = new System.Drawing.Point(406, 67);
             this.button_RemoveTemp.Name = "button_RemoveTemp";
-            this.button_RemoveTemp.Size = new System.Drawing.Size(190, 20);
+            this.button_RemoveTemp.Size = new System.Drawing.Size(190, 46);
             this.button_RemoveTemp.TabIndex = 95;
             this.button_RemoveTemp.Text = "Remove Temporary Folders";
             this.button_RemoveTemp.UseVisualStyleBackColor = true;
@@ -2231,7 +2255,7 @@
             // 
             this.button_CleanUpUnpackedCache.Location = new System.Drawing.Point(406, 21);
             this.button_CleanUpUnpackedCache.Name = "button_CleanUpUnpackedCache";
-            this.button_CleanUpUnpackedCache.Size = new System.Drawing.Size(190, 20);
+            this.button_CleanUpUnpackedCache.Size = new System.Drawing.Size(190, 40);
             this.button_CleanUpUnpackedCache.TabIndex = 91;
             this.button_CleanUpUnpackedCache.Text = "Clean Up Unpacked Cache";
             this.button_CleanUpUnpackedCache.UseVisualStyleBackColor = true;
@@ -2254,7 +2278,7 @@
             // 
             this.button_RestoreCacheBackup.Location = new System.Drawing.Point(210, 67);
             this.button_RestoreCacheBackup.Name = "button_RestoreCacheBackup";
-            this.button_RestoreCacheBackup.Size = new System.Drawing.Size(190, 40);
+            this.button_RestoreCacheBackup.Size = new System.Drawing.Size(190, 46);
             this.button_RestoreCacheBackup.TabIndex = 90;
             this.button_RestoreCacheBackup.Text = "Restore Cache Backup";
             this.button_RestoreCacheBackup.UseVisualStyleBackColor = true;
@@ -5446,6 +5470,7 @@
             this.button_ResetSoundpack.Text = "Reset To Default";
             this.button_ResetSoundpack.UseVisualStyleBackColor = true;
             this.button_ResetSoundpack.Click += new System.EventHandler(this.SoundPacks_Reset);
+            this.button_ResetSoundpack.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ReplaceBadPerformance
             // 
@@ -5466,6 +5491,7 @@
             this.button_ExportSoundPack.Text = "Export Soundpack";
             this.button_ExportSoundPack.UseVisualStyleBackColor = true;
             this.button_ExportSoundPack.Click += new System.EventHandler(this.SoundPacks_Export_Dialog);
+            this.button_ExportSoundPack.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_RemoveUnpackedAudioPsarc
             // 
@@ -5476,6 +5502,7 @@
             this.button_RemoveUnpackedAudioPsarc.Text = "Remove Unpacked Files";
             this.button_RemoveUnpackedAudioPsarc.UseVisualStyleBackColor = true;
             this.button_RemoveUnpackedAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RemoveUnpackedAudioPsarc);
+            this.button_RemoveUnpackedAudioPsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ImportSoundPack
             // 
@@ -5486,6 +5513,7 @@
             this.button_ImportSoundPack.Text = "Import Soundpack";
             this.button_ImportSoundPack.UseVisualStyleBackColor = true;
             this.button_ImportSoundPack.Click += new System.EventHandler(this.SoundPacks_Import_Dialog);
+            this.button_ImportSoundPack.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_RepackAudioPsarc
             // 
@@ -5496,6 +5524,7 @@
             this.button_RepackAudioPsarc.Text = "Repack Audio Psarc";
             this.button_RepackAudioPsarc.UseVisualStyleBackColor = true;
             this.button_RepackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_RepackAudioPsarc);
+            this.button_RepackAudioPsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // button_ReplaceWonderfulPerformance
             // 
@@ -5538,6 +5567,7 @@
             this.button_UnpackAudioPsarc.Text = "Unpack Audio Psarc";
             this.button_UnpackAudioPsarc.UseVisualStyleBackColor = true;
             this.button_UnpackAudioPsarc.Click += new System.EventHandler(this.SoundPacks_UnpackAudioPsarc);
+            this.button_UnpackAudioPsarc.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // tab_Profiles
             // 
@@ -5946,23 +5976,6 @@
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // listBox_SetAndForget_SongsWithSelectedTuning
-            // 
-            this.listBox_SetAndForget_SongsWithSelectedTuning.FormattingEnabled = true;
-            this.listBox_SetAndForget_SongsWithSelectedTuning.Location = new System.Drawing.Point(6, 213);
-            this.listBox_SetAndForget_SongsWithSelectedTuning.Name = "listBox_SetAndForget_SongsWithSelectedTuning";
-            this.listBox_SetAndForget_SongsWithSelectedTuning.Size = new System.Drawing.Size(298, 134);
-            this.listBox_SetAndForget_SongsWithSelectedTuning.TabIndex = 115;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(33, 187);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(165, 13);
-            this.label1.TabIndex = 116;
-            this.label1.Text = "Songs With The Selected Tuning";
             // 
             // MainForm
             // 
@@ -6570,7 +6583,7 @@
         private System.Windows.Forms.Label label_SetAndForget_MayShowUpAsCustomTuning;
         private System.Windows.Forms.Label label_SongsWithBadBassTunings;
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithBadBassTuning;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_SongsWithSelectedTuning;
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithSelectedTuning;
     }
 }

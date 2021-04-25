@@ -93,6 +93,7 @@ namespace RSMods
             TooltipDictionary.Add(nUpDown_String4, "Set the offset for the B string.");
             TooltipDictionary.Add(nUpDown_String5, "Set the offset for the high-E string.");
             TooltipDictionary.Add(button_SaveTuningChanges, "Saves the tuning list to Rocksmith.");
+            TooltipDictionary.Add(button_LoadSongsToWorkOn, "Loads all the songs in your dlc folder to see what tunings you might need to add.");
 
             // One Click Mods
             TooltipDictionary.Add(button_AddExitGame, "Replaces UPLAY on the main menu with an EXIT GAME option.");
@@ -186,6 +187,14 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_Rocksmith_MSAASamples, "Check this box if you want to use anti-aliasing.");
             TooltipDictionary.Add(checkBox_Rocksmith_DisableBrowser, "Check this box to stop Rocksmith from opening their website every two weeks.");
             TooltipDictionary.Add(checkBox_Rocksmith_UseProxy, "Use a proxy to connect to the Rocksmith servers?\nReal usage is unknown.");
+
+            // Soundpacks
+            TooltipDictionary.Add(button_UnpackAudioPsarc, "This mod requires editing the game's audio file.\nWe have to extract every file which can take a lot of space.");
+            TooltipDictionary.Add(button_ResetSoundpack, "If you don't want your custom sounds anymore, click this button and we will reset them back to the default");
+            TooltipDictionary.Add(button_ImportSoundPack, "Did a friend give you their soundpack?\nIf so, click this button and point to the file to add all their custom sounds.");
+            TooltipDictionary.Add(button_ExportSoundPack, "Want to share your soundpack with your friends?\nIf so, click this button and make a file that you can share with them.\nTell them to open RSMods and go to this menu and click the \"Import Soundpack\" button");
+            TooltipDictionary.Add(button_RepackAudioPsarc, "This mod requires editing the game's audio file.\nWe have to put all your sounds into that file or they won't be heard.\nThis will take a couple minutes.\nDon't close the application if it hangs, as it's working with a major game file");
+            TooltipDictionary.Add(button_RemoveUnpackedAudioPsarc, "If you are done messing with your sounds, click this button and we'll remove our copy of your game's audio file.\nNote: You will have to unpack the file again if you want to change any sounds");
         }
         #endregion
         #region Fill Color Textboxes

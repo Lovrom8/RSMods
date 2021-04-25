@@ -15,6 +15,7 @@ namespace RSMods
         public static List<SongData> Songs = new List<SongData>();
         public static List<SongData> ExtractSongData(ProgressBar progressBar = null)
         {
+            Songs.Clear();
             bool progressBarAvailable = progressBar != null;
             List<string> allFiles = Directory.GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "dlc"), "*_p.psarc", SearchOption.AllDirectories).ToList();
             allFiles.Add(Path.Combine(GenUtil.GetRSDirectory(), "songs.psarc"));
@@ -70,7 +71,7 @@ namespace RSMods
                             Songs.RemoveAll(songData => songData == null); // If this isn't run then we can end up with some blank songs getting passed in and crashing the app.
 
                             // If Song Name Exists -> Add To Current Values -> Return Updated Song
-                            if (Songs.Exists(songData => Equals(songData.DLCKey, song.DLCKey)))
+                            if (Songs.Exists(songData => songData != null && Equals(songData.DLCKey, song.DLCKey)))
                             {
                                 int index = Songs.IndexOf(new SongData { DLCKey = song.DLCKey });
 

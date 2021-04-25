@@ -1504,10 +1504,23 @@ namespace RSMods
         private void SetForget_LoadSongsToWorkOn(object sender, EventArgs e)
         {
             Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings); // Load all the data from the songs
+
+            SetForget_ShowLoadedSongs(); // Makes the listboxes and labels visible for songs with tunings.
             SetForget_FillDefinedTunings(); // Get a list of all of our non-"Custom Tuning"s.
             SetForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
-            SetForget_FillSongsWithBadBassTuningsList(); // Get a list of all song & arrangement combos that have a bass tuning that is not in the Rocksmith tuning format.
+            // SetForget_FillSongsWithBadBassTuningsList(); // DISABLED: Not integrated with the automated fixing | Get a list of all song & arrangement combos that have a bass tuning that is not in the Rocksmith tuning format.
             SetForget_FillSongsWithSelectedTuningList(); // Get a list of all song & arrangement combos that have the same tuning as selected in listBox_Tunings.
+        }
+
+        private void SetForget_ShowLoadedSongs()
+        {
+            // Songs with Selected Tuning
+            label_SongsWithSelectedTuning.Visible = true;
+            listBox_SetAndForget_SongsWithSelectedTuning.Visible = true;
+
+            // Songs that may show up as "Custom Tuning".
+            label_SetAndForget_MayShowUpAsCustomTuning.Visible = true;
+            listBox_SetAndForget_SongsWithCustomTuning.Visible = true;
         }
 
         private TuningDefinitionInfo SetForget_ConvertTuningStandards(ArrangementTuning tuning, string name)
@@ -3366,6 +3379,7 @@ namespace RSMods
 
         private void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
+            MessageBox.Show("This will take a couple minutes!\nGo do something while this is working it's magic.\nIf RSMods looks like it crashed, it didn't, do NOT attempt to close it or you may need to verify your game files");
             SoundPacks_PleaseWaitMessage(true);
             GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
             GlobalExtension.UpdateProgress = progressBar_RepackAudioPsarc;
