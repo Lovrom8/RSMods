@@ -16,13 +16,7 @@ namespace RSMods
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-
-                bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-                if (!isAdmin)
-                    Application.Run(new MainForm());
-                else
-                    Application.Run(new AdminForm());
+                Application.Run(new MainForm());
             }
             catch (Exception ex)
             {

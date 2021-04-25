@@ -119,12 +119,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdminForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AdminForm.Designer.cs">
-      <DependentUpon>AdminForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="ASIO\GetASIODevices.cs" />
     <Compile Include="ASIO\ReadSettings.cs" />
     <Compile Include="ASIO\WriteSettings.cs" />
@@ -164,9 +158,6 @@
     <Compile Include="Util\WinMsgUtil.cs" />
     <Compile Include="Util\ZipUtils.cs" />
     <Compile Include="WriteSettings.cs" />
-    <EmbeddedResource Include="AdminForm.resx">
-      <DependentUpon>AdminForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI.resx">
       <DependentUpon>UI.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -190,6 +181,7 @@
     <None Include="Lib\tools\OpenCmd.bat" />
     <None Include="Lib\tools\packed_codebooks.bin" />
     <None Include="Lib\tools\packed_codebooks_aoTuV_603.bin" />
+    <Content Include="Lib\Rocksmith2014PsarcLib.dll" />
     <Content Include="Lib\Wwise2010.tar.bz2" />
     <Content Include="Lib\Wwise2013.tar.bz2" />
     <Content Include="Lib\Wwise2014.tar.bz2" />

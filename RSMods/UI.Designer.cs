@@ -62,7 +62,6 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
-            this.checkBox_SpeedUpEnumeration = new System.Windows.Forms.CheckBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
@@ -989,7 +988,6 @@
             // 
             // groupBox_EnabledMods
             // 
-            this.groupBox_EnabledMods.Controls.Add(this.checkBox_SpeedUpEnumeration);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
@@ -1022,18 +1020,6 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
-            // 
-            // checkBox_SpeedUpEnumeration
-            // 
-            this.checkBox_SpeedUpEnumeration.AutoSize = true;
-            this.checkBox_SpeedUpEnumeration.Location = new System.Drawing.Point(10, 310);
-            this.checkBox_SpeedUpEnumeration.Name = "checkBox_SpeedUpEnumeration";
-            this.checkBox_SpeedUpEnumeration.Size = new System.Drawing.Size(136, 17);
-            this.checkBox_SpeedUpEnumeration.TabIndex = 100008;
-            this.checkBox_SpeedUpEnumeration.Text = "Speed Up Enumeration";
-            this.checkBox_SpeedUpEnumeration.UseVisualStyleBackColor = true;
-            this.checkBox_SpeedUpEnumeration.CheckedChanged += new System.EventHandler(this.Save_SpeedUpEnumeration);
-            this.checkBox_SpeedUpEnumeration.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ModsLog
             // 
@@ -6569,7 +6555,6 @@
         private System.Windows.Forms.Button button_ReplaceFlawlessPerformance;
         private System.Windows.Forms.ProgressBar progressBar_RepackAudioPsarc;
         private System.Windows.Forms.CheckBox checkBox_FixBadBassTuning;
-        private System.Windows.Forms.CheckBox checkBox_SpeedUpEnumeration;
         private System.Windows.Forms.Button button_ReplaceMasterfulPerformance_99;
         private System.Windows.Forms.TabControl tabControl_SetAndForget;
         private System.Windows.Forms.TabPage tabPage_SetAndForget_CustomTunings;
