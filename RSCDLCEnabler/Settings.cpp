@@ -17,6 +17,7 @@ void Settings::Initialize()
 		{"RemoveLyricsKey", "L"},
 		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
+		{"TuningOffsetKey", "O"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -148,6 +149,7 @@ void Settings::ReadKeyBinds() {
 			{ "RainbowNotesKey", reader.GetValue("Keybinds", "RainbowNotesKey", "N")},
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
+			{ "TuningOffsetKey", reader.GetValue("Keybinds", "TuningOffsetKey", "O")},
 
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },

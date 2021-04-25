@@ -146,6 +146,20 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
 			}
+
+			else if (keyPressed == Settings::GetKeyBind("TuningOffsetKey") && Settings::ReturnSettingValue("AutoTuneForSong") == "on") { // Change Tuning Offset In Game
+				if (GetKeyState(VK_SHIFT) & 0x8000)
+					Midi::tuningOffset--;
+				else
+					Midi::tuningOffset++;
+
+
+				// Cap what values can be set (as we don't want to have to specify every value, and some pedals don't support more than an octave).
+				if (Midi::tuningOffset < -3)
+					Midi::tuningOffset = -3;
+				else if (Midi::tuningOffset > 12)
+					Midi::tuningOffset = 12;
+			}
 			
 
 			/*else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
@@ -538,6 +552,10 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
 		}
 
+		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // Show current tuning
+			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
+		}
+
 		// Regenerate Twitch Solid Note Color for a new color
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
@@ -825,6 +843,7 @@ unsigned WINAPI MainThread() {
 	GUI();
 	ClearMDMPs();
 	Midi::InitMidi();
+	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 
 	using namespace D3DHooks;
 	while (!GameClosing) {

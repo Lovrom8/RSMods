@@ -19,6 +19,7 @@ namespace Midi {
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice);
 	bool SendProgramChange(char programChange = '\000');
 	bool SendControlChange(char toePosition = '\000');
+	std::string GetTuningOffsetName(int offset);
 
 	extern int MidiCC, MidiPC;
 	inline bool scannedForMidiDevices = false;
@@ -31,6 +32,7 @@ namespace Midi {
 	inline bool alreadyAutomatedTuningInThisSong = false, alreadyAutomatedTrueTuningInThisSong = false, userWantsToUseAutoTuning = false;
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
 	inline MidiPedal selectedPedal = MidiPedal();
+	inline int tuningOffset;
 
 	namespace Digitech {
 		namespace WhammyDT {

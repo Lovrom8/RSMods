@@ -195,7 +195,7 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
 				highestTuning -= 12;
 
-			selectedPedal.autoTuneFunction(highestTuning + Settings::GetModSetting("TuningOffset"), TrueTuning_Hertz);
+			selectedPedal.autoTuneFunction(highestTuning - tuningOffset, TrueTuning_Hertz);
 
 		}
 	}
@@ -245,6 +245,67 @@ namespace Midi {
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC) {
 		sendCC = shouldWeSendCC;
 		dataToSendCC = toePosition;
+	}
+
+	/// <summary>
+	/// Returns the tuning name based on what the offset is.
+	/// </summary>
+	/// <param name="offset"> - How far from E standard is the user.</param>
+	/// <returns> - Tuning Name</returns>
+	std::string GetTuningOffsetName(int offset) {
+		switch (offset) {
+			case -3: 
+				return "G Standard / Drop F (Up)";
+				break;
+			case -2:
+				return "F# Standard / Drop E (Up)";
+				break;
+			case -1:
+				return "F Standard / Drop Eb (Up)";
+				break;
+			case 0:
+				return "E Standard / Drop D";
+				break;
+			case 1:
+				return "Eb Standard / Drop C#";
+				break;
+			case 2:
+				return "D Standard / Drop C";
+				break;
+			case 3:
+				return "C# Standard / Drop B";
+				break;
+			case 4:
+				return "C Standard / Drop A#";
+				break;
+			case 5:
+				return "B Standard / Drop A";
+				break;
+			case 6:
+				return "A# Standard / Drop G#";
+				break;
+			case 7:
+				return "A Standard / Drop G";
+				break;
+			case 8:
+				return "G# Standard / Drop F#";
+				break;
+			case 9:
+				return "G Standard / Drop F (Down)";
+				break;
+			case 10:
+				return "F# Standard / Drop E (Down)";
+				break;
+			case 11:
+				return "F Standard / Drop E (Down)";
+				break;
+			case 12:
+				return "E Standard / Drop Eb (Down)";
+				break;
+			default:
+				return "UNKNOWN TUNING";
+				break;
+		}
 	}
 
 	// Pedal Specific Functions
