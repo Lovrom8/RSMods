@@ -475,6 +475,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.label_TuningOffsetKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -619,7 +620,7 @@
             // label_ToggleLoftKey
             // 
             this.label_ToggleLoftKey.AutoSize = true;
-            this.label_ToggleLoftKey.Location = new System.Drawing.Point(464, 14);
+            this.label_ToggleLoftKey.Location = new System.Drawing.Point(464, 10);
             this.label_ToggleLoftKey.Name = "label_ToggleLoftKey";
             this.label_ToggleLoftKey.Size = new System.Drawing.Size(67, 13);
             this.label_ToggleLoftKey.TabIndex = 14;
@@ -628,7 +629,7 @@
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 35);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 29);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
             this.label_SongTimerKey.Size = new System.Drawing.Size(67, 13);
             this.label_SongTimerKey.TabIndex = 17;
@@ -637,7 +638,7 @@
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 57);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 47);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
             this.label_ReEnumerationKey.Size = new System.Drawing.Size(72, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
@@ -698,7 +699,7 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 79);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 68);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
             this.label_RainbowStringsKey.Size = new System.Drawing.Size(90, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
@@ -1247,6 +1248,7 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_TuningOffsetKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RainbowNotesKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RRSpeedKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RemoveLyricsKey);
@@ -1270,7 +1272,7 @@
             // label_RainbowNotesKey
             // 
             this.label_RainbowNotesKey.AutoSize = true;
-            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 101);
+            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 89);
             this.label_RainbowNotesKey.Name = "label_RainbowNotesKey";
             this.label_RainbowNotesKey.Size = new System.Drawing.Size(86, 13);
             this.label_RainbowNotesKey.TabIndex = 54;
@@ -1279,7 +1281,7 @@
             // label_RRSpeedKey
             // 
             this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 147);
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 131);
             this.label_RRSpeedKey.Name = "label_RRSpeedKey";
             this.label_RRSpeedKey.Size = new System.Drawing.Size(110, 13);
             this.label_RRSpeedKey.TabIndex = 53;
@@ -1288,7 +1290,7 @@
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 123);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 109);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
             this.label_RemoveLyricsKey.Size = new System.Drawing.Size(83, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
@@ -3175,6 +3177,7 @@
             this.listBox_MidiAutoTuningOffset.Size = new System.Drawing.Size(176, 212);
             this.listBox_MidiAutoTuningOffset.TabIndex = 0;
             this.listBox_MidiAutoTuningOffset.SelectedIndexChanged += new System.EventHandler(this.Save_MidiAutoTuningOffset);
+            this.listBox_MidiAutoTuningOffset.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_MidiAutoTuneDevice
             // 
@@ -5963,6 +5966,15 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // label_TuningOffsetKey
+            // 
+            this.label_TuningOffsetKey.AutoSize = true;
+            this.label_TuningOffsetKey.Location = new System.Drawing.Point(464, 153);
+            this.label_TuningOffsetKey.Name = "label_TuningOffsetKey";
+            this.label_TuningOffsetKey.Size = new System.Drawing.Size(77, 13);
+            this.label_TuningOffsetKey.TabIndex = 55;
+            this.label_TuningOffsetKey.Text = "Tuning Offset: ";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6570,6 +6582,7 @@
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithBadBassTuning;
         private System.Windows.Forms.Label label_SongsWithSelectedTuning;
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithSelectedTuning;
+        private System.Windows.Forms.Label label_TuningOffsetKey;
     }
 }
 

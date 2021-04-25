@@ -217,6 +217,7 @@ namespace RSMods
             label_RainbowNotesKey.Text = "Rainbow Notes: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowNotesIdentifier));
             label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
             label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
+            label_TuningOffsetKey.Text = "Tuning Offset: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()

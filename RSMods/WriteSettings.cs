@@ -35,6 +35,7 @@ namespace RSMods
                 { ReadSettings.RainbowNotesIdentifier, CreateDefaultOnOldINI(ReadSettings.RainbowNotesIdentifier, "") }, // Rainbow Notes
                 { ReadSettings.RemoveLyricsKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveLyricsKeyIdentifier, "") }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RRSpeedKeyIdentifier, "") }, // Riff Repeater Above 100% key.
+                { ReadSettings.TuningOffsetKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningOffsetKeyIdentifier, "") }, // Change Auto Tune For Song Offset Ingame.
             }},
             {"[Audio Keybindings]", new Dictionary<string, string>
             {

@@ -13,7 +13,7 @@ namespace RSMods
                              Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
 
                              // Mod Key Bindings
-                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey, RemoveLyricsKey, RRSpeedKey,
+                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey, RemoveLyricsKey, RRSpeedKey, TuningOffsetKey,
 
                              // Audio Key Bindings
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
@@ -64,6 +64,7 @@ namespace RSMods
             RainbowNotesIdentifier = "RainbowNotesKey = ",
             RemoveLyricsKeyIdentifier = "RemoveLyricsKey = ",
             RRSpeedKeyIdentifier = "RRSpeedKey = ",
+            TuningOffsetKeyIdentifier = "TuningOffsetKey = ",
 
             // Audio Keybindings
             MasterVolumeKeyIdentifier = "MasterVolumeKey = ",
@@ -270,6 +271,8 @@ namespace RSMods
                     return FillSettingVariable(RemoveLyricsKeyIdentifier, SettingType.VKEY, currentLine, out RemoveLyricsKey);
                 if (IdentifierIsFound(currentLine, RRSpeedKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(RRSpeedKeyIdentifier, SettingType.VKEY, currentLine, out RRSpeedKey);
+                if (IdentifierIsFound(currentLine, TuningOffsetKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(TuningOffsetKeyIdentifier, SettingType.VKEY, currentLine, out TuningOffsetKey);
 
                 #endregion
                 #region Audio Keybindings

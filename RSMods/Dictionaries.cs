@@ -61,6 +61,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
             TooltipDictionary.Add(button_SecondaryMonitorStartPos, "PLEASE READ THIS!\nMove this window over to your secondary monitor and make it full screen.\nPress this button when it is full screen so we can save the resolution.\nAfter you press the button you can go back to windowed mode.");
             TooltipDictionary.Add(checkBox_NoteColors_UseRocksmithColors, "Check this box if you want normal Rocksmith colored notes.");
+            TooltipDictionary.Add(listBox_MidiAutoTuningOffset, "What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nIf you press the \"Change Tuning Offset\" keybind it will go down in tuning.\nIf you hold Shift while pressing your \"Change Tuning Offset\" keybind, it will go up in tuning.");
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
@@ -320,7 +321,8 @@ namespace RSMods
             ReadSettings.RainbowStringsIdentifier,
             ReadSettings.RainbowNotesIdentifier,
             ReadSettings.RemoveLyricsKeyIdentifier,
-            ReadSettings.RRSpeedKeyIdentifier
+            ReadSettings.RRSpeedKeyIdentifier,
+            ReadSettings.TuningOffsetKeyIdentifier
         };
 
         public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
@@ -401,7 +403,8 @@ namespace RSMods
             "Rainbow Strings",
             "Rainbow Notes",
             "Remove Lyrics",
-            "RR Speed Change"
+            "RR Speed Change",
+            "Change Tuning Offset"
         };
 
         public static List<string> currentAudioKeypressList = new List<string>()
@@ -431,6 +434,7 @@ namespace RSMods
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowNotesIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier)));
             return savedKeysForModToggles;
         }
 
