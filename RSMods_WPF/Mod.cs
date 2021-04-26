@@ -1,0 +1,257 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Controls;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace RSMods_WPF
+{
+    public class Mod
+    {
+        /// <summary>
+        /// Name to display in the "Mods" tab.
+        /// </summary>
+        public string UIName { get; }
+
+        /// <summary>
+        /// What section of the Settings File should this mod be placed in?
+        /// </summary>
+        public string Section { get; }
+
+        /// <summary>
+        /// What should the mod be called in the Settings File?
+        /// </summary>
+        public string SettingName { get; }
+
+        /// <summary>
+        /// A short description on what the mod is / does.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
+        /// PRIVATE Value used for {get;} so we can run commands on {set;}
+        /// </summary>
+        private object _value;
+
+        /// <summary>
+        /// <para>PUBLIC Value used to determine what the mod state is.</para>
+        /// <para>When Mod State is changed, we will save it to the Settings File.</para>
+        /// </summary>
+        public object Value
+        {
+            get { return _value; }
+            set {
+                
+                _value = value;
+
+                if (!alreadyInit)
+                {
+                    if (Settings.HasValidSettingsFile())
+                    {
+                        if (LoadMods.Mods.Where(mod => mod.SettingName == SettingName).First().Value != Value)
+                            LoadMods.Mods.Where(mod => mod.SettingName == SettingName).First().Value = Value;
+
+                        LoadMods.WriteSettingsFile();
+                    }
+                }
+                else
+                    alreadyInit = false;
+            }
+        }
+
+        /// <summary>
+        /// <para>Value used to detach DataGridCheckbox from the actual value when loading the UI.</para>
+        /// <para>This should fix the checkbox getting changed twice.</para>
+        /// </summary>
+        public object initialValue { get; set; }
+
+        /// <summary>
+        /// Prevents stack overflow loop.
+        /// </summary>
+        private bool alreadyInit = false;
+
+        /// <summary>
+        /// The mods default "off" value.
+        /// </summary>
+        public object DefaultValue { get; }
+
+        /// <summary>
+        /// Has a secondary page with information (like keybindings, when to toggle, etc).
+        /// </summary>
+        public bool ShowMoreInfo { get; }
+
+        /// <summary>
+        /// Page to display when "More Info" is pressed.
+        /// </summary>
+        public object OtherInfo { get; }
+
+        /// <summary>
+        /// Is the setting a mod itself (true), or just a setting for another mod (false)
+        /// </summary>
+        public bool ShowInModsTab { get; }
+
+
+        /// <summary>
+        /// Create New Mod
+        /// </summary>
+        /// <param name="_UIName"> - Name shown in "Mods" tab.</param>
+        /// <param name="_Section"> - What section of the Settings File do you want this mod to be located in?</param>
+        /// <param name="_SettingName"> - What should the setting name in the Settings File be?</param>
+        /// <param name="_Description"> - A short description on what the mod is / does.</param>
+        /// <param name="_DefaultValue"> - If we can't find the value, what should we default to?</param>
+        /// <param name="_ShowMoreInfo"> - Is there more than just a toggle switch required?</param>
+        /// <param name="_OtherInfo"> - Mod Page for if _ShowMoreInfo is set to true.</param>
+        public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, bool _ShowMoreInfo = false, object _OtherInfo = null, bool _ShowInModsTab = true)
+        {
+            alreadyInit = true;
+            UIName = _UIName;
+            Section = _Section;
+            SettingName = _SettingName;
+            Description = _Description;
+            DefaultValue = _DefaultValue;
+            ShowMoreInfo = _ShowMoreInfo;
+            OtherInfo = _OtherInfo;
+            ShowInModsTab = _ShowInModsTab;
+
+            if (File.Exists(Settings.SettingsFile) && File.ReadAllText(Settings.SettingsFile).Length > 0)
+            {
+                if (ReadPreviousSetting(_SettingName, _DefaultValue) == null) // Value not found
+                {
+                    Value = DefaultValue;
+                    initialValue = DefaultValue;
+                }   
+                else // Value found
+                {
+                    Value = ReadPreviousSetting(_SettingName, _DefaultValue);
+                    initialValue = Value;
+                }   
+            }        
+        }
+
+        /// <summary>
+        /// Read Setting From Settings File
+        /// </summary>
+        /// <param name="SettingName"> - Name of setting in the Settings File.</param>
+        /// <returns>INT (if int), STRING (if string), NULL (if not found)</returns>
+        private static object ReadPreviousSetting(string SettingName, object @default)
+        {
+            if (LoadMods.SettingsFile_Cache.Count == 0)
+            {
+                bool settingExistsInSettingsFile = false;
+                foreach (string line in File.ReadAllLines(Settings.SettingsFile))
+                {
+                    if (line[0] == '[') // Don't cache sections
+                        continue;
+
+                    int equals = line.IndexOf(" = ");
+                    LoadMods.SettingsFile_Cache.Add(line.Substring(0, equals), line.Substring(equals + " = ".Length));
+
+                    if (line.Substring(0, equals) == SettingName)
+                        settingExistsInSettingsFile = true;
+                }
+
+                if (!settingExistsInSettingsFile) // Mod doesn't exist in Settings File.
+                    LoadMods.SettingsFile_Cache.Add(SettingName, @default);
+
+                return ReadPreviousSetting(SettingName, @default);
+            }
+            else
+            {
+                if (!LoadMods.SettingsFile_Cache.ContainsKey(SettingName)) // Mod doesn't exist in Settings File.
+                    LoadMods.SettingsFile_Cache.Add(SettingName, @default);
+
+                object output = LoadMods.SettingsFile_Cache[SettingName];
+                try
+                {
+                    if (output != null && int.TryParse(output.ToString(), out int intOutput))
+                        return intOutput;
+                    else
+                        return output;
+                }
+                catch // INI Error. Best to just return that we don't know what the mod is.
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get instance of mod by the Setting Name.
+        /// </summary>
+        /// <param name="SettingName"> - Name of setting in the Settings File.</param>
+        /// <returns>Mod</returns>
+        public static Mod WhereSettingName(string SettingName) => LoadMods.Mods.Where(mod => mod.SettingName == SettingName).FirstOrDefault();
+
+        /// <summary>
+        /// Get instance of mod by the UI Name.
+        /// </summary>
+        /// <param name="UIName"> - Name of setting in the "Mods" tab.</param>
+        /// <returns>Mod</returns>
+        public static Mod WhereUIName(string UIName) => LoadMods.Mods.Where(mod => mod.UIName == UIName).FirstOrDefault();
+    }
+
+    public class LoadMods
+    {
+        /// <summary>
+        /// Load Mods into a list, title LoadMods.Mods;
+        /// </summary>
+        public LoadMods()
+        {
+            Mods.Clear();
+
+            Mods.Add(new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Disable the background of the game", "on", true, new Pages.ModPages.ToggleLoft()));
+            Mods.Add(new Mod("Toggle Loft When", "Toggle Switches", "ToggleLoftWhen", "When should we toggle the background of the game?", "manual", _ShowInModsTab: false));
+            Mods.Add(new Mod("Disable Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off"));
+
+
+
+            WriteSettingsFile();
+        }
+
+        /// <summary>
+        /// <para>A dictionary of what the Settings File says the mod should be.</para>
+        /// <para>Use this for caching the Settings File so we aren't wasting time re-reading the same file over, and over again.</para>
+        /// </summary>
+        public static Dictionary<string, object> SettingsFile_Cache = new();
+
+        /// <summary>
+        /// A list of all the Mods.
+        /// </summary>
+        public static List<Mod> Mods = new();
+
+        public static void WriteSettingsFile(Mod changedMod = null)
+        {
+            using (StreamWriter sw = File.CreateText(Settings.SettingsFile))
+            {
+                Dictionary<string, List<Mod>> splitModsIntoSections = new();
+                
+                foreach(Mod mod in Mods)
+                {
+                    if (splitModsIntoSections.ContainsKey(mod.Section))
+                        splitModsIntoSections[mod.Section].Add(mod);
+                    else
+                        splitModsIntoSections.Add(mod.Section, new() { mod });
+                }
+
+                if (changedMod != null)
+                    splitModsIntoSections[changedMod.Section][splitModsIntoSections[changedMod.Section].FindIndex(mod => mod.SettingName == changedMod.SettingName)] = changedMod;
+
+                foreach (string section in splitModsIntoSections.Keys)
+                {
+                    sw.WriteLine("[" + section + "]");
+
+                    foreach(Mod mod in splitModsIntoSections[section])
+                    {
+                        if (mod.Value == null)
+                            sw.WriteLine(mod.SettingName + " = " + mod.DefaultValue);
+                        else
+                            sw.WriteLine(mod.SettingName + " = " + mod.Value);
+                    }
+                }
+            }
+        }
+    }
+}

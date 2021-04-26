@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>LogoX256.ico</ApplicationIcon>
+    <Version>1.2.5</Version>
+    <Product>RSMods</Product>
+    <PackageId>RSMods</PackageId>
+    <Authors>LovroM8, Ffio1, ZagatoZee</Authors>
+    <Copyright>Copyright ©  2021</Copyright>
+    <Company>CustomsForge</Company>
+    <Description>A modding tool for Rocksmith 2014 Remastered.</Description>
+  </PropertyGroup>
+
+</Project>
