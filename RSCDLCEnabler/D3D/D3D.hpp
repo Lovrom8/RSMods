@@ -134,6 +134,7 @@ inline std::vector<ThiccMesh> noteModifiers{ // Note assets that need to be chan
 	{ 36, 205, 313, 0, 0, 4, 2, 4, 7 }, // Open Chord Slap
 	{ 32, 48, 72, 0, 0, 4, 2, 4, 7 }, // Open Arpeggio
 	{ 32, 12, 24, 0, 0, 4, 2, 4, 7 }, // Arpeggio
+	{ 36, 450, 482, 0, 0, 4, 2, 4, 7 }, // Pinch Harmonic ~ 1 measure ahead
 };
 
 inline std::vector<ThiccMesh> tunerHighlight{
