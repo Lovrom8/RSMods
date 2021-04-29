@@ -626,7 +626,7 @@ namespace RSMods
 
             checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier), 0));
             checkBox_Rocksmith_ExclusiveMode.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ExclusiveModeIdentifier), 0));
-            if (GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier), 4) <= 0)
+            if (GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier), 4) <= 0 || GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier), 4) > 4)
                 SaveSettings_Rocksmith_Middleware(Rocksmith.ReadSettings.LatencyBufferIdentifier, "4");
             nUpDown_Rocksmith_LatencyBuffer.Value = GenUtil.StrToDecDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.LatencyBufferIdentifier), 4);
             checkBox_Rocksmith_ForceWDM.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.ForceWDMIdentifier), 0));
