@@ -169,15 +169,7 @@ namespace RSMods
             }},
         };
 
-        private static string CreateDefaultOnOldINI(string settingIdentifier, string @default)
-        {
-            string returnValue = "";
-            if (ReadSettings.DoesSettingsINIExist() && ReadSettings.ProcessSettings(settingIdentifier) != String.Empty)
-                returnValue = ReadSettings.ProcessSettings(settingIdentifier);
-            else
-                returnValue = @default;
-            return returnValue;
-        }
+        private static string CreateDefaultOnOldINI(string settingIdentifier, string @default) => ReadSettings.DoesSettingsINIExist() && ReadSettings.ProcessSettings(settingIdentifier) != String.Empty ? ReadSettings.ProcessSettings(settingIdentifier) : @default;
 
         #endregion
         #region Write Settings

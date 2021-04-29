@@ -621,10 +621,7 @@ namespace RSMods
         }
 
         private void PriorSettings_LoadRocksmithSettings()
-        {
-            if (!Rocksmith.ReadSettings.VerifySettingsINI())
-                return;
-            // Convert.ToDecimal(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.));
+        {   
             // Audio Settings
 
             checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier), 0));

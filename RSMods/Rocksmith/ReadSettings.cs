@@ -51,17 +51,18 @@ namespace RSMods.Rocksmith
 
         private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
 
-        public static bool VerifySettingsINI()
-        {
-            if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini")))
-                return false;
-            return true;
-        }
+        public static bool DoesSettingsINIExist() => File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini"));
 
+        private static void VerifySettingsINI()
+        {
+            if (!DoesSettingsINIExist())
+                WriteSettings.WriteINI(WriteSettings.settings); // Creates Settings File
+        }
 
         public static string ProcessSettings(string identifierToGrab)
         {
             VerifySettingsINI();
+
             foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini")))
             {
                 #region Audio

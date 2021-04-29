@@ -6,42 +6,42 @@ namespace RSMods.Rocksmith
 {
     class WriteSettings
     {
-        public static Dictionary<string, Dictionary<string, string>> newSettings = new Dictionary<string, Dictionary<string, string>>()
+        public static Dictionary<string, Dictionary<string, string>> settings = new Dictionary<string, Dictionary<string, string>>()
         {
             // Section                  name    value
             {"[Audio]", new Dictionary<string, string>
             {
-                { ReadSettings.EnableMicrophoneIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableMicrophoneIdentifier) },
-                { ReadSettings.ExclusiveModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.ExclusiveModeIdentifier) },
-                { ReadSettings.LatencyBufferIdentifier, ReadSettings.ProcessSettings(ReadSettings.LatencyBufferIdentifier) },
-                { ReadSettings.ForceDefaultPlaybackDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceDefaultPlaybackDeviceIdentifier) },
-                { ReadSettings.ForceWDMIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceWDMIdentifier) },
-                { ReadSettings.ForceDirectXSinkIdentifier, ReadSettings.ProcessSettings(ReadSettings.ForceDirectXSinkIdentifier) },
-                { ReadSettings.DumpAudioLogIdentifier, ReadSettings.ProcessSettings(ReadSettings.DumpAudioLogIdentifier) },
-                { ReadSettings.MaxOutputBufferSizeIdentifier, ReadSettings.ProcessSettings(ReadSettings.MaxOutputBufferSizeIdentifier) },
-                { ReadSettings.RealToneCableOnlyIdentifier, ReadSettings.ProcessSettings(ReadSettings.RealToneCableOnlyIdentifier) },
-                { ReadSettings.Win32UltraLowLatencyModeIdentifier, ReadSettings.ProcessSettings(ReadSettings.Win32UltraLowLatencyModeIdentifier) },
+                { ReadSettings.EnableMicrophoneIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnableMicrophoneIdentifier), "1") },
+                { ReadSettings.ExclusiveModeIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ExclusiveModeIdentifier), "1") },
+                { ReadSettings.LatencyBufferIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.LatencyBufferIdentifier), "4") },
+                { ReadSettings.ForceDefaultPlaybackDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ForceDefaultPlaybackDeviceIdentifier), "") },
+                { ReadSettings.ForceWDMIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ForceWDMIdentifier), "0") },
+                { ReadSettings.ForceDirectXSinkIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ForceDirectXSinkIdentifier), "0") },
+                { ReadSettings.DumpAudioLogIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.DumpAudioLogIdentifier), "0") },
+                { ReadSettings.MaxOutputBufferSizeIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.MaxOutputBufferSizeIdentifier), "0") },
+                { ReadSettings.RealToneCableOnlyIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.RealToneCableOnlyIdentifier), "0") },
+                { ReadSettings.Win32UltraLowLatencyModeIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.Win32UltraLowLatencyModeIdentifier), "1") },
             }},
             {"[Renderer.Win32]", new Dictionary<string, string>
             {
-                { ReadSettings.ShowGamepadUIIdentifier, ReadSettings.ProcessSettings(ReadSettings.ShowGamepadUIIdentifier) },
-                { ReadSettings.ScreenWidthIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenWidthIdentifier) },
-                { ReadSettings.ScreenHeightIdentifier, ReadSettings.ProcessSettings(ReadSettings.ScreenHeightIdentifier) },
-                { ReadSettings.FullscreenIdentifier, ReadSettings.ProcessSettings(ReadSettings.FullscreenIdentifier) },
-                { ReadSettings.VisualQualityIdentifier, ReadSettings.ProcessSettings(ReadSettings.VisualQualityIdentifier) },
-                { ReadSettings.RenderingWidthIdentifier, ReadSettings.ProcessSettings(ReadSettings.RenderingWidthIdentifier) },
-                { ReadSettings.RenderingHeightIdentifier, ReadSettings.ProcessSettings(ReadSettings.RenderingHeightIdentifier) },
-                { ReadSettings.EnablePostEffectsIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnablePostEffectsIdentifier) },
-                { ReadSettings.EnableShadowsIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableShadowsIdentifier) },
-                { ReadSettings.EnableHighResScopeIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableHighResScopeIdentifier) },
-                { ReadSettings.EnableDepthOfFieldIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableDepthOfFieldIdentifier) },
-                { ReadSettings.EnablePerPixelLightingIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnablePerPixelLightingIdentifier) },
-                { ReadSettings.MsaaSamplesIdentifier, ReadSettings.ProcessSettings(ReadSettings.MsaaSamplesIdentifier) },
-                { ReadSettings.DisableBrowserIdentifier, ReadSettings.ProcessSettings(ReadSettings.DisableBrowserIdentifier) },
+                { ReadSettings.ShowGamepadUIIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ShowGamepadUIIdentifier), "0") },
+                { ReadSettings.ScreenWidthIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ScreenWidthIdentifier), "0") },
+                { ReadSettings.ScreenHeightIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.ScreenHeightIdentifier), "0") },
+                { ReadSettings.FullscreenIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.FullscreenIdentifier), "2") },
+                { ReadSettings.VisualQualityIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.VisualQualityIdentifier), "1") },
+                { ReadSettings.RenderingWidthIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.RenderingWidthIdentifier), "0") },
+                { ReadSettings.RenderingHeightIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.RenderingHeightIdentifier), "0") },
+                { ReadSettings.EnablePostEffectsIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnablePostEffectsIdentifier), "1") },
+                { ReadSettings.EnableShadowsIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnableShadowsIdentifier), "1") },
+                { ReadSettings.EnableHighResScopeIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnableHighResScopeIdentifier), "1") },
+                { ReadSettings.EnableDepthOfFieldIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnableDepthOfFieldIdentifier), "1") },
+                { ReadSettings.EnablePerPixelLightingIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.EnablePerPixelLightingIdentifier), "1") },
+                { ReadSettings.MsaaSamplesIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.MsaaSamplesIdentifier), "4") },
+                { ReadSettings.DisableBrowserIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.DisableBrowserIdentifier), "0") },
             }},
             {"[Net]", new Dictionary<string, string>
             {
-                { ReadSettings.UseProxyIdentifier, ReadSettings.ProcessSettings(ReadSettings.UseProxyIdentifier) },
+                { ReadSettings.UseProxyIdentifier, CreateDefaultOnOldINI(ReadSettings.ProcessSettings(ReadSettings.UseProxyIdentifier), "1") },
             }},
         };
 
@@ -49,6 +49,9 @@ namespace RSMods.Rocksmith
         {
             using (StreamWriter sw = File.CreateText(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini")))
             {
+                if (DictionaryToWrite == null)
+                    return;
+
                 foreach (string section in DictionaryToWrite.Keys)
                 {
                     sw.WriteLine(section);
@@ -60,6 +63,8 @@ namespace RSMods.Rocksmith
             }
         }
 
+        private static string CreateDefaultOnOldINI(string settingIdentifier, string @default) => ReadSettings.DoesSettingsINIExist() && ReadSettings.ProcessSettings(settingIdentifier) != string.Empty ? ReadSettings.ProcessSettings(settingIdentifier) : @default;
+
         public static void SaveChanges(string IdentifierToChange, string ChangedSettingValue)
         {
             // Right before launch, we switched from the boolean names of (true / false) to (1 / 0) for users to be able to edit the mods without the GUI (by hand).
@@ -68,19 +73,19 @@ namespace RSMods.Rocksmith
             else if (ChangedSettingValue == "false")
                 ChangedSettingValue = "0";
 
-            foreach (string section in newSettings.Keys)
+            foreach (string section in settings.Keys)
             {
-                foreach (KeyValuePair<string, string> entry in newSettings[section])
+                foreach (KeyValuePair<string, string> entry in settings[section])
                 {
                     if (entry.Key == IdentifierToChange)
                     {
-                        newSettings[section][IdentifierToChange] = ChangedSettingValue;
+                        settings[section][IdentifierToChange] = ChangedSettingValue;
                         break; // We found what we need, so let's leave.
                     }
                 }
             }
 
-            WriteINI(newSettings);
+            WriteINI(settings);
         }
     }
 }
