@@ -143,7 +143,7 @@ namespace RSMods_WPF
                 bool settingExistsInSettingsFile = false;
                 foreach (string line in File.ReadAllLines(Settings.SettingsFile))
                 {
-                    if (line[0] == '[') // Don't cache sections
+                    if (line.Length == 0 || line[0] == '[') // Don't cache sections
                         continue;
 
                     int equals = line.IndexOf(" = ");
