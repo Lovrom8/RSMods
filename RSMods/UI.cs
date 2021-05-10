@@ -385,7 +385,6 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off") // Force Enumeration Settings
             {
-                checkBox_ForceEnumeration.Checked = true;
                 radio_ForceEnumerationAutomatic.Visible = true;
                 radio_ForceEnumerationManual.Visible = true;
                 groupBox_HowToEnumerate.Visible = true;
@@ -707,6 +706,7 @@ namespace RSMods
             checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged -= new System.EventHandler(Save_DumpRSModsLogToFile);
             checkBox_TurnOffAllMods.CheckedChanged -= new System.EventHandler(Save_TurnOffAllMods);
+            checkBox_ForceEnumeration.CheckedChanged -= new System.EventHandler(Save_ForceEnumeration);
 
             // Now we can change things without saving.
             nUpDown_ForceEnumerationXMS.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
@@ -724,6 +724,7 @@ namespace RSMods
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             checkBox_TurnOffAllMods.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            checkBox_ForceEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
 
             // Re-enable the saving of the values now that we've done our work.
             listBox_ExtendedRangeTunings.SelectedIndexChanged += new System.EventHandler(Save_ExtendedRangeTuningAt);
@@ -740,6 +741,7 @@ namespace RSMods
             checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged += new System.EventHandler(Save_DumpRSModsLogToFile);
             checkBox_TurnOffAllMods.CheckedChanged += new System.EventHandler(Save_TurnOffAllMods);
+            checkBox_ForceEnumeration.CheckedChanged += new System.EventHandler(Save_ForceEnumeration);
         }
 
         #endregion
