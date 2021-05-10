@@ -26,10 +26,7 @@ namespace RSMods
             try
             {
                 if (!Directory.Exists(Constants.CachePcPath))
-                {
-                    MessageBox.Show("Unpacked cache gone...");
-                    return;
-                }
+                    UnpackCachePsarc();
 
                 if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
                     GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "sltsv1_aggregategraph.nt" }); //NOTE: when adding resources, change Build Action to Embeded Resource  
