@@ -644,18 +644,17 @@ namespace Midi {
 					SendControlChange(activeBypassMap.find(highestTuning)->second);
 			}
 			else
-				std::cout << "SOFTWARE AUTO TUNING: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
+				std::cout << "(MIDI) Software Pedal Error: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
 
 			if (TrueTuning_Hertz != 440 && TrueTuning_Hertz != 220)
 				AutoTrueTuning(TrueTuning_Hertz);
 		}
 
 		void AutoTrueTuning(float TrueTuning_Hertz) {
-			std::cout << "SOFTWARE TRUE TUNING: " << TrueTuning_Hertz << std::endl;
+			std::cout << "(NOT IMPLEMENTED) (MIDI) Software Pedal True Tuning: " << TrueTuning_Hertz << std::endl;
 		}
 
 		void FillSemitoneMap() {
-			std::cout << "SOFTWARE SEMITONEMAP" << std::endl;
 			std::string triggers = Settings::ReturnSettingValue("AutoTuneForSoftwareTriggers");
 			std::string delim = ", ";
 			std::vector<std::string> separated;
@@ -681,17 +680,18 @@ namespace Midi {
 				if (activeBypassMap.count(ON) == 0)
 					activeBypassMap[ON] = OFF;
 				else
-					std::cout << "SOFTWARE SEMITONEMAP ERROR: Trigger for " << ON << " is already set to " << activeBypassMap[ON] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(ON)) << " position" << std::endl;
+					std::cout << "(MIDI) Software Pedal Error: Trigger for " << ON << " is already set to " << activeBypassMap[ON] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(ON)) << " position" << std::endl;
 			}
 
-			std::cout << "SOFTWARE SEMITONEMAP DONE! RESULTS ARE AS FOLLOWS" << std::endl;
+			std::cout << "(MIDI) Software Pedal: Triggers" << std::endl;
 
 			for (std::map<char, char>::iterator it = activeBypassMap.begin(); it != activeBypassMap.end(); it++)
-				std::cout << "First = " << (int)it->first << ", Second = " << (int)it->second << std::endl;
+				std::cout << "Semitone = " << (int)it->first << ", Value To Send = " << (int)it->second << std::endl;
+
+			std::cout << "(MIDI) Software Pedal: Triggers --END" << std::endl;
 		}
 
 		void LoadSettings() {
-			std::cout << "SOFTWARE LOADSETTINGS" << std::endl;
 			std::string settings = Settings::ReturnSettingValue("AutoTuneForSoftwareSettings");
 			std::string delim = ", ";
 			std::vector<std::string> separated;
