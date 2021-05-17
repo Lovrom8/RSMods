@@ -128,6 +128,11 @@ inline std::vector<std::string> scoreScreens = { // Screens for us to take score
 	"H2H_SongReview",
 };
 
+inline std::vector<std::string> onlineModes = {
+	"ScoreAttack_Game",
+	"Guitarcade_Game",
+};
+
 inline std::vector<std::string> dontAutoEnter = { // Don't use the auto load last profile mode if we are on these screens.
 	// First time Player
 	"TextEntryDialog", // Prompts to enter profile name / uplay name / etc.
