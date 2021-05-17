@@ -186,7 +186,6 @@ namespace Midi {
 				std::cout << "(MIDI) Invalid H_L_Tuning Pointer" << std::endl;
 				return;
 			}
-				
 			
 			delete[] highestLowestTuning;
 
@@ -196,7 +195,6 @@ namespace Midi {
 				highestTuning -= 12;
 
 			selectedPedal.autoTuneFunction(highestTuning - tuningOffset, TrueTuning_Hertz);
-
 		}
 	}
 
@@ -208,12 +206,25 @@ namespace Midi {
 		if (selectedPedal.pedalName == MidiPedal().pedalName || !userWantsToUseAutoTuning)
 			return;
 
-		if (lastPC != 666) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
+		if (lastPC != 666 || selectedPedal.softwarePedal) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
+
+			std::cout << "Attmepting to turn off automatic tuning" << std::endl;
+
+			if (selectedPedal.softwarePedal) {
+				if (Midi::Software::sendSemitoneCommand == programChangeStatus)
+					SendProgramChange(Midi::Software::shutoffTrigger);
+				else if (Midi::Software::sendSemitoneCommand == controlChangeStatus)
+					SendControlChange(Midi::Software::shutoffTrigger);
+
+
+				alreadyAutomatedTuningInThisSong = false;
+				alreadyAutomatedTrueTuningInThisSong = false;
+				return;
+			}
+
 			int cache = lastPC;
 			
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
-			
-			std::cout << "Attmepting to turn off automatic tuning" << std::endl;
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
 
@@ -610,6 +621,107 @@ namespace Midi {
 					SendProgramChange(temp_PC + offset - 1);
 					SendControlChange(temp_CC);
 				}
+			}
+		}
+	}
+
+	namespace Software {
+		/// <summary>
+		/// Auto tuning for a software pedal
+		/// </summary>
+		/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
+		/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
+		void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
+			if (activeBypassMap.size() == 0) {
+				LoadSettings();
+				FillSemitoneMap();
+			}
+
+			if (activeBypassMap.find(highestTuning) != activeBypassMap.end()) {
+				if (sendSemitoneCommand == programChangeStatus)
+					SendProgramChange(activeBypassMap.find(highestTuning)->second);
+				if (sendSemitoneCommand == controlChangeStatus)
+					SendControlChange(activeBypassMap.find(highestTuning)->second);
+			}
+			else
+				std::cout << "SOFTWARE AUTO TUNING: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
+
+			if (TrueTuning_Hertz != 440 && TrueTuning_Hertz != 220)
+				AutoTrueTuning(TrueTuning_Hertz);
+		}
+
+		void AutoTrueTuning(float TrueTuning_Hertz) {
+			std::cout << "SOFTWARE TRUE TUNING: " << TrueTuning_Hertz << std::endl;
+		}
+
+		void FillSemitoneMap() {
+			std::cout << "SOFTWARE SEMITONEMAP" << std::endl;
+			std::string triggers = Settings::ReturnSettingValue("AutoTuneForSoftwareTriggers");
+			std::string delim = ", ";
+			std::vector<std::string> separated;
+			size_t position = 0;
+
+			// String of triggers -> List of triggers
+			while ((position = triggers.find(delim)) != std::string::npos) {
+				separated.push_back(triggers.substr(0, position));
+				triggers.erase(0, position + delim.length());
+			}
+			separated.push_back(triggers); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+			delim = " ";
+
+			// List of triggers (string) -> Map of triggers (char)
+			for (int i = 0; i < separated.size(); i++) {
+
+				std::string ON_STRING = separated[i].substr(0, separated[i].find(delim));
+				std::string OFF_STRING = separated[i].erase(0, separated[i].find(delim) + delim.length());
+				char ON = std::atoi(ON_STRING.c_str());
+				char OFF = std::atoi(OFF_STRING.c_str());
+
+				if (activeBypassMap.count(ON) == 0)
+					activeBypassMap[ON] = OFF;
+				else
+					std::cout << "SOFTWARE SEMITONEMAP ERROR: Trigger for " << ON << " is already set to " << activeBypassMap[ON] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(ON)) << " position" << std::endl;
+			}
+
+			std::cout << "SOFTWARE SEMITONEMAP DONE! RESULTS ARE AS FOLLOWS" << std::endl;
+
+			for (std::map<char, char>::iterator it = activeBypassMap.begin(); it != activeBypassMap.end(); it++)
+				std::cout << "First = " << (int)it->first << ", Second = " << (int)it->second << std::endl;
+		}
+
+		void LoadSettings() {
+			std::cout << "SOFTWARE LOADSETTINGS" << std::endl;
+			std::string settings = Settings::ReturnSettingValue("AutoTuneForSoftwareSettings");
+			std::string delim = ", ";
+			std::vector<std::string> separated;
+			size_t position = 0;
+
+			// String of settings -> List of settings
+			while ((position = settings.find(delim)) != std::string::npos) {
+				separated.push_back(settings.substr(0, position));
+				settings.erase(0, position + delim.length());
+			}
+			separated.push_back(settings); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+			if (separated.size() > 0) {
+				shutoffTrigger = std::atoi(separated.at(0).c_str());
+
+				if (separated.size() > 1) {
+					if (separated.at(1) == "PC")
+						sendSemitoneCommand = programChangeStatus;
+					if (separated.at(1) == "CC") {
+						sendSemitoneCommand = controlChangeStatus;
+
+						if (separated.size() > 2)
+							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str());
+						else
+							std::cout << "SOFTWARE LOADSETTINGS ERROR: CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
+					}
+				}
+			}
+			else {
+				std::cout << "SOFTWARE LOADSETTINGS ERROR: No settings to load!" << std::endl;
 			}
 		}
 	}

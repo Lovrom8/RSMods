@@ -58,6 +58,8 @@ void Settings::Initialize()
 		{"RRSpeedAboveOneHundred", "off"},
 		{"AutoTuneForSong", "off"},
 		{"AutoTuneForSongDevice", ""},
+		{"AutoTuneForSoftwareTriggers", ""},
+		{"AutoTuneForSoftwareSettings", ""},
 		{"ChordsMode", "off"},
 		{"ShowCurrentNoteOnScreen", "off"},
 		{"OnScreenFont", "Arial"},
@@ -231,6 +233,8 @@ void Settings::ReadModSettings() {
 	modSettings["RRSpeedAboveOneHundred"] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 	modSettings["AutoTuneForSong"] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
+	modSettings["AutoTuneForSoftwareTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTriggers", "");
+	modSettings["AutoTuneForSoftwareSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSettings", "");
 	modSettings["ChordsMode"] = reader.GetValue("Toggle Switches", "ChordsMode", "off");
 	modSettings["ShowCurrentNoteOnScreen"] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
 	modSettings["OnScreenFont"] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");

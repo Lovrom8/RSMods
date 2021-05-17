@@ -181,7 +181,7 @@ struct Resolution {
 typedef void (*tuningFunction)(int highestTuning, float TrueTuning_Hertz);
 
 /// <summary>
-/// pedalName, CC_Channel, supportsDropTuning, supportsTrueTuning, semiTones, activeBypassMap, autoTuneFunction.
+/// pedalName, CC_Channel, supportsDropTuning, supportsTrueTuning, semiTones, activeBypassMap, autoTuneFunction, softwarePedal = false
 /// </summary>
 struct MidiPedal {
 	std::string pedalName;
@@ -190,7 +190,7 @@ struct MidiPedal {
 	std::vector<float> semiTones;
 	std::map<char, char> activeBypassMap;
 	tuningFunction autoTuneFunction;
-
+	bool softwarePedal;
 
 	MidiPedal() {
 		pedalName = "DUMMY PEDAL";
@@ -199,9 +199,10 @@ struct MidiPedal {
 		supportsTrueTuning = false;
 		semiTones = {};
 		activeBypassMap = {};
+		softwarePedal = false;
 	}
 
-	MidiPedal(std::string _pedalName, char _CC_Channel, bool _supportsDropTuning, bool _supportsTrueTuning, std::vector<float> _semiTones, std::map<char, char> _activeBypassMap, tuningFunction _tuningFunction) {
+	MidiPedal(std::string _pedalName, char _CC_Channel, bool _supportsDropTuning, bool _supportsTrueTuning, std::vector<float> _semiTones, std::map<char, char> _activeBypassMap, tuningFunction _tuningFunction, bool _softwarePedal = false) {
 		pedalName = _pedalName;
 		CC_Channel = _CC_Channel;
 		supportsDropTuning = _supportsDropTuning;
@@ -209,6 +210,7 @@ struct MidiPedal {
 		semiTones = _semiTones;
 		activeBypassMap = _activeBypassMap;
 		autoTuneFunction = _tuningFunction;
+		softwarePedal = _softwarePedal;
 	}
 };
 
