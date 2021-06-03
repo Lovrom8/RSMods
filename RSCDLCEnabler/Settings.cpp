@@ -305,6 +305,11 @@ void Settings::ReadNotewayColors() {
 	};
 }
 
+void Settings::ToggleExtendedRangeMode()
+{
+	modSettings["ExtendedRangeEnabled"] = (modSettings["ExtendedRangeEnabled"] == "on") ? "off" : "on";
+}
+
 
 /// <summary>
 /// Read Keybind From INI
