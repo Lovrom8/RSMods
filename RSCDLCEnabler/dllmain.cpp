@@ -245,6 +245,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (prepToTurnOff && realSongSpeed == 100.f) // Disable UI if we bug out of the mode.
 					useNewSongSpeed = false;
 			}
+			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
+			{
+				Settings::ToggleExtendedRangeMode();
+			}
 
 			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
 				Midi::userWantsToUseAutoTuning = true;
