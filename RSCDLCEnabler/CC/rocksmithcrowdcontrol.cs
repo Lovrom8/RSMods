@@ -12,7 +12,7 @@ public class Rocksmith2014 : SimpleTCPPack
 
     public Rocksmith2014(IPlayer player, Func<CrowdControlBlock, bool> responseHandler, Action<object> statusUpdateHandler) : base(player, responseHandler, statusUpdateHandler) { }
 
-    public override Game Game => new Game(1234, "Rocksmith 2014", "rocksmith2014", "PC", ConnectorType.SimpleTCPConnector);
+    public override Game Game => new Game(99, "Rocksmith 2014", "Rocksmith2014", "PC", ConnectorType.SimpleTCPConnector);
 
     public override List<Effect> Effects => new List<Effect>
     {
