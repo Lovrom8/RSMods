@@ -64,7 +64,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
-		ERMode::ResetAllStrings();
+		//ERMode::ResetAllStrings();
 
 		return EffectResult::Success;
 	}
@@ -127,7 +127,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
-		ERMode::ResetAllStrings();
+		//ERMode::ResetAllStrings();
 
 		return EffectResult::Success;
 	}
@@ -193,7 +193,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
-		ERMode::ResetAllStrings();
+		//ERMode::ResetAllStrings();
 
 		return EffectResult::Success;
 	}

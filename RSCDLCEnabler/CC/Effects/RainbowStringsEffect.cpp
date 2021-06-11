@@ -26,7 +26,7 @@ namespace CrowdControl::Effects {
 
 		running = true;
 
-		ERMode::ToggleRainbowMode();
+		ERMode::RainbowEnabled = true;
 
 		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -50,7 +50,8 @@ namespace CrowdControl::Effects {
 		std::cout << "RainbowStringsEffect::Stop()" << std::endl;
 
 		running = false;
-		ERMode::ToggleRainbowMode();
+		ERMode::RainbowEnabled = false;
+		ERMode::ResetAllStrings();
 
 		return EffectResult::Success;
 	}
