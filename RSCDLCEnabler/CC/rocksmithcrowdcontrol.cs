@@ -16,13 +16,14 @@ public class Rocksmith2014 : SimpleTCPPack
 
     public override List<Effect> Effects => new List<Effect>
     {
-        new Effect("Rainbow strings (60 seconds)", "rainbow"),
-        new Effect("Drunk mode (20 seconds)", "drunk"),
+        new Effect("Rainbow strings (20 seconds)", "rainbowstrings"),
+        new Effect("Drunk mode (10 seconds)", "drunkmode"),
         new Effect("FYOurFC (reset combo)", "fyourfc"),
-        new Effect("Solid Notes (random, 10 seconds)", "solidrandom"),
 
+        new Effect("Solid Notes (random, 10 seconds)", "solidrandom"),
         new Effect("Solid Notes (custom, 10 seconds)", "solidcustom", new[] { "color" }),
         new Effect("Solid Notes (custom rgb, 10 seconds)", "solidcustomrgb", new[] {  "sliderred", "slidergreen", "sliderblue"}),
+        new Effect("Rainbow notes (20 seconds)", "rainbownotes"),
 
         new Effect("Red", "red", ItemKind.Usable, "color"),
         new Effect("Yellow", "yellow", ItemKind.Usable, "color"),
