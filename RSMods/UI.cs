@@ -722,7 +722,7 @@ namespace RSMods
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
-            checkBox_TurnOffAllMods.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            checkBox_TurnOffAllMods.Checked = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
             checkBox_ForceEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
 
             // Re-enable the saving of the values now that we've done our work.
@@ -2169,10 +2169,17 @@ namespace RSMods
 
         private void Save_TurnOffAllMods(object sender, EventArgs e)
         {
-            if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")))
+
+            if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"))) // Has DLL enabled and doesn't have DLL turned off
                 File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
-            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off")))
+            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"))) // Has DLL turned off and doesn't have DLL enabled
                 File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"));
+            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"))) // Has DLL enabled AND turned off.
+            {
+                File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            }
         }
 
         private void Save_ERFixBadBassTuning(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.ExtendedRangeFixBassTuningIdentifier, checkBox_FixBadBassTuning.Checked.ToString().ToLower());
