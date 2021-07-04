@@ -93,6 +93,16 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] BouncyCastle_Crypto {
+            get {
+                object obj = ResourceManager.GetObject("BouncyCastle_Crypto", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] core {
             get {
                 object obj = ResourceManager.GetObject("core", resourceCulture);
@@ -140,7 +150,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;6&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;6&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;4&quot; maxChordNotes=&quot;6&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_chords_protector {
             get {
@@ -158,7 +168,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;4&quot; maxChordNotes=&quot;1&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_chords_remover {
             get {
@@ -198,7 +208,7 @@ namespace RS2014_Mod_Installer.Properties {
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;1&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;2&quot; maxChordNotes=&quot;2&quot;/&gt;
         ///  &lt;level maxCategory=&quot;4&quot; maxSubCategory= &quot;3&quot; maxChordNotes=&quot;2&quot;/&gt;
-        ///  &lt;level maxCategory [rest of string was truncated]&quot;;.
+        ///  &lt;level maxCategory=&quot;4&quot; maxS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ddc_default1 {
             get {
@@ -246,7 +256,8 @@ namespace RS2014_Mod_Installer.Properties {
         ///    (at your option) any later version.
         ///
         ///    This program is distributed in the hope that it will be useful,
-        ///    but WITHOUT ANY WARRANTY; without even the implied warranty  [rest of string was truncated]&quot;;.
+        ///    but WITHOUT ANY WARRANTY; without even the implied warranty of
+        ///    ME [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string license {
             get {
@@ -504,28 +515,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RocksmithToolkitLib.dll uses the applications in this directory.
-        ///These applications were made by developers who are not part of this project.
-        ///
-        ///All claims and liabilities of any misuse of the programs of this folder 
-        ///should be directed to the respective developer.
-        ///
-        ///The files below are used to recover Rocksmith (Wwise) audio
-        ///files to default .ogg file that can be used in any sound player:
-        ///
-        ///1. revorb.exe
-        ///2. ww2ogg.exe
-        ///3. packed_codebooks.bin
-        ///
-        ///.
-        /// </summary>
-        internal static string readme {
-            get {
-                return ResourceManager.GetString("readme", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to -------------------------------------------------------------
         ///-- DDC v3.6 (c) 2013-2018, by Chlipouni
         ///-------------------------------------------------------------
@@ -541,7 +530,30 @@ namespace RS2014_Mod_Installer.Properties {
         ///- Open a Windows command-line interpreter
         ///- Execute the &quot;ddc.exe&quot; tool with the following parameters :
         ///
-        ///  C:\ddc_v3.6&gt;ddc.exe        /// [rest of string was truncated]&quot;;.
+        ///  C:\ddc_v3.6&gt;ddc.exe
+        ///  ------------- [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string readme {
+            get {
+                return ResourceManager.GetString("readme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RocksmithToolkitLib.dll uses the applications in this directory.
+        ///These applications were made by developers who are not part of this project.
+        ///
+        ///All claims and liabilities of any misuse of the programs of this folder 
+        ///should be directed to the respective developer.
+        ///
+        ///The files below are used to recover Rocksmith (Wwise) audio
+        ///files to default .ogg file that can be used in any sound player:
+        ///
+        ///1. revorb.exe
+        ///2. ww2ogg.exe
+        ///3. packed_codebooks.bin
+        ///
+        ///.
         /// </summary>
         internal static string readme1 {
             get {
@@ -751,25 +763,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;
-        ///&lt;ArrayOfTwitchReward xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-        ///  &lt;TwitchReward xsi:type=&quot;BitsReward&quot;&gt;
-        ///    &lt;InternalMsgEnable&gt;rainbowstrings&lt;/InternalMsgEnable&gt;
-        ///    &lt;Description&gt;Your strings will continuously shift colors like rainbow&lt;/Description&gt;
-        ///    &lt;Name&gt;Rainbow Strings&lt;/Name&gt;
-        ///    &lt;Length&gt;10&lt;/Length&gt;
-        ///    &lt;Enabled&gt;true&lt;/Enabled&gt;
-        ///    &lt;BitsID&gt;1&lt;/BitsID&gt;
-        ///    &lt;BitsAmount&gt;0&lt;/BitsAmount&gt;
-        ///  &lt;/TwitchReward&gt; [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string TwitchEnabledEffects {
-            get {
-                return ResourceManager.GetString("TwitchEnabledEffects", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] TwitchLib_Api {
@@ -905,6 +898,16 @@ namespace RS2014_Mod_Installer.Properties {
         internal static byte[] TwitchLib_PubSub {
             get {
                 object obj = ResourceManager.GetObject("TwitchLib_PubSub", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] UserProfileLib {
+            get {
+                object obj = ResourceManager.GetObject("UserProfileLib", resourceCulture);
                 return ((byte[])(obj));
             }
         }
