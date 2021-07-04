@@ -36,6 +36,7 @@ namespace RSMods
                 { ReadSettings.RemoveLyricsKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveLyricsKeyIdentifier, "") }, // Remove Lyrics Key
                 { ReadSettings.RRSpeedKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RRSpeedKeyIdentifier, "") }, // Riff Repeater Above 100% key.
                 { ReadSettings.TuningOffsetKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningOffsetKeyIdentifier, "") }, // Change Auto Tune For Song Offset Ingame.
+                { ReadSettings.ToggleExtendedRangeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.ToggleExtendedRangeKeyIdentifier, "") }, // Toggle ER Mode on / off
             }},
             {"[Audio Keybindings]", new Dictionary<string, string>
             {

@@ -26,10 +26,8 @@ using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
-using System.IO.Compression;
 using SevenZip;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
-using Newtonsoft.Json;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 namespace RSMods
 {
@@ -218,6 +216,7 @@ namespace RSMods
             label_RemoveLyricsKey.Text = "Remove Lyrics: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier));
             label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
             label_TuningOffsetKey.Text = "Tuning Offset: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier));
+            label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()

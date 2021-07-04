@@ -322,7 +322,8 @@ namespace RSMods
             ReadSettings.RainbowNotesIdentifier,
             ReadSettings.RemoveLyricsKeyIdentifier,
             ReadSettings.RRSpeedKeyIdentifier,
-            ReadSettings.TuningOffsetKeyIdentifier
+            ReadSettings.TuningOffsetKeyIdentifier,
+            ReadSettings.ToggleExtendedRangeKeyIdentifier
         };
 
         public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
@@ -404,7 +405,8 @@ namespace RSMods
             "Rainbow Notes",
             "Remove Lyrics",
             "RR Speed Change",
-            "Change Tuning Offset"
+            "Change Tuning Offset",
+            "Toggle Extended Range"
         };
 
         public static List<string> currentAudioKeypressList = new List<string>()
@@ -435,6 +437,7 @@ namespace RSMods
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier)));
             return savedKeysForModToggles;
         }
 

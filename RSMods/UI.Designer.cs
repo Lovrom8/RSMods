@@ -81,6 +81,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_TuningOffsetKey = new System.Windows.Forms.Label();
             this.label_RainbowNotesKey = new System.Windows.Forms.Label();
             this.label_RRSpeedKey = new System.Windows.Forms.Label();
             this.label_RemoveLyricsKey = new System.Windows.Forms.Label();
@@ -475,7 +476,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_TuningOffsetKey = new System.Windows.Forms.Label();
+            this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1248,6 +1249,7 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_ToggleExtendedRangeKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_TuningOffsetKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RainbowNotesKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RRSpeedKey);
@@ -1262,12 +1264,21 @@
             this.groupBox_Keybindings_MODS.Controls.Add(this.listBox_Modlist_MODS);
             this.groupBox_Keybindings_MODS.Location = new System.Drawing.Point(15, 17);
             this.groupBox_Keybindings_MODS.Name = "groupBox_Keybindings_MODS";
-            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 178);
+            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 191);
             this.groupBox_Keybindings_MODS.TabIndex = 52;
             this.groupBox_Keybindings_MODS.TabStop = false;
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_TuningOffsetKey
+            // 
+            this.label_TuningOffsetKey.AutoSize = true;
+            this.label_TuningOffsetKey.Location = new System.Drawing.Point(464, 149);
+            this.label_TuningOffsetKey.Name = "label_TuningOffsetKey";
+            this.label_TuningOffsetKey.Size = new System.Drawing.Size(77, 13);
+            this.label_TuningOffsetKey.TabIndex = 55;
+            this.label_TuningOffsetKey.Text = "Tuning Offset: ";
             // 
             // label_RainbowNotesKey
             // 
@@ -1281,7 +1292,7 @@
             // label_RRSpeedKey
             // 
             this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 131);
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 129);
             this.label_RRSpeedKey.Name = "label_RRSpeedKey";
             this.label_RRSpeedKey.Size = new System.Drawing.Size(110, 13);
             this.label_RRSpeedKey.TabIndex = 53;
@@ -5966,14 +5977,14 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_TuningOffsetKey
+            // label_ToggleExtendedRangeKey
             // 
-            this.label_TuningOffsetKey.AutoSize = true;
-            this.label_TuningOffsetKey.Location = new System.Drawing.Point(464, 153);
-            this.label_TuningOffsetKey.Name = "label_TuningOffsetKey";
-            this.label_TuningOffsetKey.Size = new System.Drawing.Size(77, 13);
-            this.label_TuningOffsetKey.TabIndex = 55;
-            this.label_TuningOffsetKey.Text = "Tuning Offset: ";
+            this.label_ToggleExtendedRangeKey.AutoSize = true;
+            this.label_ToggleExtendedRangeKey.Location = new System.Drawing.Point(464, 169);
+            this.label_ToggleExtendedRangeKey.Name = "label_ToggleExtendedRangeKey";
+            this.label_ToggleExtendedRangeKey.Size = new System.Drawing.Size(129, 13);
+            this.label_ToggleExtendedRangeKey.TabIndex = 56;
+            this.label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: ";
             // 
             // MainForm
             // 
@@ -6583,6 +6594,7 @@
         private System.Windows.Forms.Label label_SongsWithSelectedTuning;
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithSelectedTuning;
         private System.Windows.Forms.Label label_TuningOffsetKey;
+        private System.Windows.Forms.Label label_ToggleExtendedRangeKey;
     }
 }
 
