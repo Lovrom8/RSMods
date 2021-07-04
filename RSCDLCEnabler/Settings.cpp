@@ -18,6 +18,7 @@ void Settings::Initialize()
 		{"RRSpeedKey", "R"},
 		{"MenuToggleKey", "M"},
 		{"TuningOffsetKey", "O"},
+		{"ToggleExtendedRangeKey", "E"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -152,7 +153,7 @@ void Settings::ReadKeyBinds() {
 			{ "RemoveLyricsKey", reader.GetValue("Keybinds", "RemoveLyricsKey", "L")},
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
 			{ "TuningOffsetKey", reader.GetValue("Keybinds", "TuningOffsetKey", "O")},
-
+			{ "ToggleExtendedRangeKey", reader.GetValue("Keybinds", "ToggleExtendedRangeKey", "E")},
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
 			{ "Player1VolumeKey", reader.GetValue("Audio Keybindings", "Player1VolumeKey", "7") },
@@ -160,7 +161,7 @@ void Settings::ReadKeyBinds() {
 			{ "MicrophoneVolumeKey", reader.GetValue("Audio Keybindings", "MicrophoneVolumeKey", "9") },
 			{ "VoiceOverVolumeKey", reader.GetValue("Audio Keybindings", "VoiceOverVolumeKey", "0") },
 			{ "SFXVolumeKey", reader.GetValue("Audio Keybindings", "SFXVolumeKey", "S") },
-			{ "ChangedSelectedVolumeKey", reader.GetValue("Audio Keybindings", "ChangedSelectedVolumeKey", "P") },
+			{ "ChangedSelectedVolumeKey", reader.GetValue("Audio Keybindings", "ChangedSelectedVolumeKey", "P") }
 	};
 	//std::cout << "Read " << modSettings["ToggleLoftKey"] << std::endl;
 }
@@ -303,6 +304,11 @@ void Settings::ReadNotewayColors() {
 			{ "CustomHighwayGutter", reader.GetValue("Highway Colors", "CustomHighwayGutter", "") },
 			{ "CustomFretNubmers", reader.GetValue("Highway Colors", "CustomFretNubmers", "") },
 	};
+}
+
+void Settings::ToggleExtendedRangeMode()
+{
+	modSettings["ExtendedRangeEnabled"] = (modSettings["ExtendedRangeEnabled"] == "on") ? "off" : "on";
 }
 
 

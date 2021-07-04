@@ -16,6 +16,8 @@ namespace Settings {
 	void ReadStringColors();
 	void ReadNotewayColors();
 
+	void ToggleExtendedRangeMode();
+
 	// Return INI Settings
 	unsigned int GetKeyBind(std::string name);
 	int GetModSetting(std::string name);
