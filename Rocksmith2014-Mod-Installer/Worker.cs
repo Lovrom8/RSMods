@@ -127,6 +127,7 @@ namespace RS2014_Mod_Installer
 
                 return false;
             }
+
             return true;
         }
     }
