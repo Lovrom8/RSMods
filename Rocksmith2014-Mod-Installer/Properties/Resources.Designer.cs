@@ -93,16 +93,6 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] BouncyCastle_Crypto {
-            get {
-                object obj = ResourceManager.GetObject("BouncyCastle_Crypto", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] core {
             get {
                 object obj = ResourceManager.GetObject("core", resourceCulture);
