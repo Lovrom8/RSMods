@@ -306,6 +306,9 @@ void Settings::ReadNotewayColors() {
 	};
 }
 
+/// <summary>
+/// Turn ExtendedRangeEnabled off / on, when ToggleExtendedRangeKey is pressed.
+/// </summary>
 void Settings::ToggleExtendedRangeMode()
 {
 	modSettings["ExtendedRangeEnabled"] = (modSettings["ExtendedRangeEnabled"] == "on") ? "off" : "on";

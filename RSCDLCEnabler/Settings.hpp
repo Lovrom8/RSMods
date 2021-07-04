@@ -1,10 +1,12 @@
 #pragma once
-#include "Settings.hpp"
-#include "Lib/Ini/SimpleIni.h"
+
+// Libraries
 #include "windows.h"
 #include <iostream>
 #include "Structs.hpp"
 #include <vector>
+#include "Lib/Ini/SimpleIni.h"
+
 
 namespace Settings {
 	void Initialize(); // Default Settings
