@@ -3380,7 +3380,7 @@ namespace RSMods
             GlobalExtension.UpdateProgress = progressBar_RepackAudioPsarc;
             GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
 
-            Packer.Unpack(audioPsarcLocation, "audio_psarc/");
+            Packer.Unpack(audioPsarcLocation, Path.Combine(GenUtil.GetRSDirectory(), "RSMods/", "audio_psarc"));
 
             SoundPacks_PleaseWaitMessage(false);
             SoundPacks_ChangeUIForUnpackedFolder(true);
@@ -3402,6 +3402,11 @@ namespace RSMods
 
         private void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
+            if (!Directory.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods/", "audio_psarc\\audio_psarc_RS2014_Pc"))) {
+                MessageBox.Show("We detect no audio.psarc is decompiled. Give us some time to try to fix that.");
+                SoundPacks_UnpackAudioPsarc(sender, e);
+            }
+               
             MessageBox.Show("This will take a couple minutes!\nGo do something while this is working it's magic.\nIf RSMods looks like it crashed, it didn't, do NOT attempt to close it or you may need to verify your game files");
             SoundPacks_PleaseWaitMessage(true);
             GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
