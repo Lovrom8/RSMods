@@ -194,7 +194,7 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260) // Give some leeway for A220 and it's true tuned offsets
 				highestTuning -= 12;
 
-			selectedPedal.autoTuneFunction(highestTuning - tuningOffset, TrueTuning_Hertz);
+			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
 		}
 	}
 

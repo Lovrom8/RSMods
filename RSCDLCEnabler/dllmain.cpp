@@ -559,7 +559,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // Show current tuning
+		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::GetKeyBind("TuningOffsetKey") != NULL && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // Show current tuning
 			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
 		}
 
