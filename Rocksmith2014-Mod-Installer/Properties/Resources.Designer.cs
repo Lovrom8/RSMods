@@ -418,16 +418,6 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] NVorbis {
-            get {
-                object obj = ResourceManager.GetObject("NVorbis", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] oggCut {
             get {
                 object obj = ResourceManager.GetObject("oggCut", resourceCulture);
@@ -592,26 +582,6 @@ namespace RS2014_Mod_Installer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;ArrayOfConfig xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; /&gt;.
-        /// </summary>
-        internal static string RocksmithToolkitLib_Config {
-            get {
-                return ResourceManager.GetString("RocksmithToolkitLib_Config", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;ArrayOfTuningDefinition xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; /&gt;.
-        /// </summary>
-        internal static string RocksmithToolkitLib_TuningDefinition {
-            get {
-                return ResourceManager.GetString("RocksmithToolkitLib_TuningDefinition", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] RocksmithToTabLib {
@@ -685,46 +655,6 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] System_Buffers {
-            get {
-                object obj = ResourceManager.GetObject("System_Buffers", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] System_Memory {
-            get {
-                object obj = ResourceManager.GetObject("System_Memory", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] System_Numerics_Vectors {
-            get {
-                object obj = ResourceManager.GetObject("System_Numerics_Vectors", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] System_Runtime_CompilerServices_Unsafe {
-            get {
-                object obj = ResourceManager.GetObject("System_Runtime_CompilerServices_Unsafe", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] System_Security_AccessControl {
             get {
                 object obj = ResourceManager.GetObject("System_Security_AccessControl", resourceCulture);
@@ -738,16 +668,6 @@ namespace RS2014_Mod_Installer.Properties {
         internal static byte[] System_Security_Principal_Windows {
             get {
                 object obj = ResourceManager.GetObject("System_Security_Principal_Windows", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] System_ValueTuple {
-            get {
-                object obj = ResourceManager.GetObject("System_ValueTuple", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -898,16 +818,6 @@ namespace RS2014_Mod_Installer.Properties {
         internal static byte[] TwitchLib_PubSub {
             get {
                 object obj = ResourceManager.GetObject("TwitchLib_PubSub", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] UserProfileLib {
-            get {
-                object obj = ResourceManager.GetObject("UserProfileLib", resourceCulture);
                 return ((byte[])(obj));
             }
         }
