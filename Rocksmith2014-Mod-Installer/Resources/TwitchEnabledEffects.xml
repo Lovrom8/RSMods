@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfTwitchReward xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TwitchReward xsi:type="BitsReward">
+    <InternalMsgEnable>rainbowstrings</InternalMsgEnable>
+    <Description>Your strings will continuously shift colors like rainbow</Description>
+    <Name>Rainbow Strings</Name>
+    <Length>10</Length>
+    <Enabled>true</Enabled>
+    <BitsID>1</BitsID>
+    <BitsAmount>0</BitsAmount>
+  </TwitchReward>
+  <TwitchReward xsi:type="ChannelPointsReward">
+    <InternalMsgEnable>turbospeed</InternalMsgEnable>
+    <Description>EXPERIMENTAL: turn up song speed, a lot. NOTE: do not ALT-TAB mid song or this won't work!</Description>
+    <Name>TurboSpeed</Name>
+    <Length>10</Length>
+    <Enabled>true</Enabled>
+    <PointsID>2</PointsID>
+    <PointsAmount>0</PointsAmount>
+  </TwitchReward>
+  <TwitchReward xsi:type="ChannelPointsReward">
+    <InternalMsgEnable>drunkmode</InternalMsgEnable>
+    <Description>Have the background freak out because you're drunk</Description>
+    <Name>Drunk Mode</Name>
+    <Length>30</Length>
+    <Enabled>true</Enabled>
+    <PointsID>3</PointsID>
+    <PointsAmount>0</PointsAmount>
+  </TwitchReward>
+  <TwitchReward xsi:type="BitsReward">
+    <InternalMsgEnable>rainbownotes</InternalMsgEnable>
+    <Description>The notes on screeen will continously shift colors like a rainbow</Description>
+    <Name>Rainbow Notes</Name>
+    <Length>20</Length>
+    <Enabled>true</Enabled>
+    <BitsID>4</BitsID>
+    <BitsAmount>0</BitsAmount>
+  </TwitchReward>
+</ArrayOfTwitchReward>

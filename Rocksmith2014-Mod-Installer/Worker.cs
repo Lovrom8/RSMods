@@ -41,13 +41,26 @@ namespace RS2014_Mod_Installer
             {
                 // Root Folder
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "7z64.dll"), Properties.Resources._7z64);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "BouncyCastle.Crypto.dll"), Properties.Resources.BouncyCastle_Crypto);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.dll"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Win32.Registry.dll"), Properties.Resources.Microsoft_Win32_Registry);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "MiscUtil.dll"), Properties.Resources.MiscUtil);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.Asio.dll"), Properties.Resources.NAudio_Asio);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.Core.dll"), Properties.Resources.NAudio_Core);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.dll"), Properties.Resources.NAudio);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.Midi.dll"), Properties.Resources.NAudio_Midi);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.Wasapi.dll"), Properties.Resources.NAudio_Wasapi);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.WinForms.dll"), Properties.Resources.NAudio_WinForms);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NAudio.WinMM.dll"), Properties.Resources.NAudio_WinMM);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "NDesk.Options.dll"), Properties.Resources.NDesk_Options);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Newtonsoft.Json.dll"), Properties.Resources.Newtonsoft_Json);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "NLog.dll"), Properties.Resources.NLog);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "NVorbis.dll"), Properties.Resources.NVorbis);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Ookii.Dialogs.dll"), Properties.Resources.Ookii_Dialogs);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Pfim.dll"), Properties.Resources.Pfim);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Rocksmith2014PsarcLib.dll"), Properties.Resources.Rocksmith2014PsarcLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "PSTaskDialog.dll"), Properties.Resources.PSTaskDialog);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "RocksmithToolkitLib.dll"), Properties.Resources.RocksmithToolkitLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "RocksmithToTabLib.dll"), Properties.Resources.RocksmithToTabLib);
@@ -56,6 +69,14 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "RSMods.pdb"), Properties.Resources.RSMods1);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "SevenZipSharp.dll"), Properties.Resources.SevenZipSharp);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "SharpConfig.dll"), Properties.Resources.SharpConfig);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Buffers.dll"), Properties.Resources.System_Buffers);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Memory.dll"), Properties.Resources.System_Memory);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Numerics.Vectors.dll"), Properties.Resources.System_Numerics_Vectors);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Runtime.CompilerServices.Unsafe.dll"), Properties.Resources.System_Runtime_CompilerServices_Unsafe);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Security.AccessControl.dll"), Properties.Resources.System_Security_AccessControl);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.Security.Principal.Windows.dll"), Properties.Resources.System_Security_Principal_Windows);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "System.ValueTuple.dll"), Properties.Resources.System_ValueTuple);
+
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.dll"), Properties.Resources.TwitchLib_Api_Core);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.Enums.dll"), Properties.Resources.TwitchLib_Api_Core_Enums);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Api.Core.Interfaces.dll"), Properties.Resources.TwitchLib_Api_Core_Interfaces);
@@ -70,6 +91,14 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Client.Models.dll"), Properties.Resources.TwitchLib_Client_Models);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.Communication.dll"), Properties.Resources.TwitchLib_Communication);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "TwitchLib.PubSub.dll"), Properties.Resources.TwitchLib_PubSub);
+
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2010.tar.bz2"), Properties.Resources.Wwise2010_tar);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2013.tar.bz2"), Properties.Resources.Wwise2013_tar);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2014.tar.bz2"), Properties.Resources.Wwise2014_tar);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2015.tar.bz2"), Properties.Resources.Wwise2015_tar);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2016.tar.bz2"), Properties.Resources.Wwise2016_tar);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "Wwise2017.tar.bz2"), Properties.Resources.Wwise2017_tar);
+
                 File.WriteAllBytes(Path.Combine(rootModFolder, "X360.dll"), Properties.Resources.X360);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "zlib.net.dll"), Properties.Resources.zlib_net);
                 // ddc Folder

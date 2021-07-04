@@ -53,6 +53,26 @@
   <PropertyGroup>
     <ApplicationIcon>LogoX256.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
@@ -103,6 +123,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\ddc_default.cfg" />
+    <None Include="Resources\ddc_keep_all_levels.cfg" />
+    <None Include="Resources\ddc_merge_all_levels.cfg" />
+    <None Include="Resources\GUI_Settings.ini" />
+    <None Include="Resources\OpenCmd.bat" />
+    <None Include="Resources\packed_codebooks.bin" />
+    <None Include="Resources\packed_codebooks_aoTuV_603.bin" />
+    <None Include="Resources\Rocksmith.ini" />
+    <None Include="Resources\RSMods.exe.config" />
     <None Include="Resources\RSModsGUI\ddc\ddc_default.cfg" />
     <None Include="Resources\RSModsGUI\ddc\ddc_keep_all_levels.cfg" />
     <None Include="Resources\RSModsGUI\ddc\ddc_merge_all_levels.cfg" />
@@ -110,51 +139,70 @@
     <None Include="Resources\RSModsGUI\tools\OpenCmd.bat" />
     <None Include="Resources\RSModsGUI\tools\packed_codebooks.bin" />
     <None Include="Resources\RSModsGUI\tools\packed_codebooks_aoTuV_603.bin" />
+    <None Include="Resources\RSModsGUI\Wwise2010.tar.bz2" />
+    <None Include="Resources\RSModsGUI\Wwise2013.tar.bz2" />
+    <None Include="Resources\RSModsGUI\Wwise2014.tar.bz2" />
+    <None Include="Resources\RSModsGUI\Wwise2015.tar.bz2" />
+    <None Include="Resources\RSModsGUI\Wwise2016.tar.bz2" />
+    <None Include="Resources\RSModsGUI\Wwise2017.tar.bz2" />
+    <None Include="Resources\Wwise2010.tar.bz2" />
+    <None Include="Resources\Wwise2013.tar.bz2" />
+    <None Include="Resources\Wwise2014.tar.bz2" />
+    <None Include="Resources\Wwise2015.tar.bz2" />
+    <None Include="Resources\Wwise2016.tar.bz2" />
+    <None Include="Resources\Wwise2017.tar.bz2" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ww2ogg.exe" />
+    <None Include="Resources\topng.exe" />
+    <None Include="Resources\NAudio.Core.dll" />
+    <None Include="Resources\NAudio.dll" />
+    <None Include="Resources\NAudio.Midi.dll" />
+    <None Include="Resources\NAudio.Wasapi.dll" />
+    <None Include="Resources\NAudio.WinForms.dll" />
+    <None Include="Resources\NAudio.WinMM.dll" />
+    <None Include="Resources\NDesk.Options.dll" />
+    <None Include="Resources\Newtonsoft.Json.dll" />
+    <None Include="Resources\NLog.dll" />
+    <None Include="Resources\NVorbis.dll" />
+    <None Include="Resources\Ookii.Dialogs.dll" />
+    <None Include="Resources\Pfim.dll" />
+    <None Include="Resources\PSTaskDialog.dll" />
+    <None Include="Resources\Rocksmith2014PsarcLib.dll" />
+    <None Include="Resources\RocksmithToolkitLib.Config.xml" />
+    <None Include="Resources\RocksmithToolkitLib.dll" />
+    <None Include="Resources\RocksmithToolkitLib.TuningDefinition.xml" />
+    <None Include="Resources\RocksmithToTabLib.dll" />
+    <None Include="Resources\7z.dll" />
+    <None Include="Resources\7z64.dll" />
+    <None Include="Resources\BouncyCastle.Crypto.dll" />
+    <None Include="Resources\ICSharpCode.SharpZipLib.dll" />
+    <None Include="Resources\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <None Include="Resources\Microsoft.Win32.Registry.dll" />
+    <None Include="Resources\MiscUtil.dll" />
+    <None Include="Resources\NAudio.Asio.dll" />
+    <None Include="Resources\ddc_chords_protector.xml" />
+    <None Include="Resources\ddc_chords_remover.xml" />
+    <None Include="Resources\ddc_dd_remover.xml" />
+    <None Include="Resources\ddc_default.xml" />
+    <None Include="Resources\license.txt" />
+    <None Include="Resources\ddc.exe" />
     <None Include="Resources\D3DX9_42.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\LogoX256.ico" />
-    <Content Include="LogoX256.ico" />
-    <None Include="Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.dll" />
-    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.dll" />
-    <Content Include="Resources\RSModsGUI\Microsoft.WindowsAPICodePack.Shell.dll" />
-    <Content Include="Resources\RSModsGUI\7z.dll" />
-    <Content Include="Resources\RSModsGUI\ddc\ddc.exe" />
-    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_protector.xml" />
-    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_remover.xml" />
-    <Content Include="Resources\RSModsGUI\ddc\ddc_dd_remover.xml" />
-    <Content Include="Resources\RSModsGUI\ddc\ddc_default.xml" />
-    <Content Include="Resources\RSModsGUI\ddc\license.txt" />
-    <Content Include="Resources\RSModsGUI\ddc\readme.txt" />
-    <Content Include="Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll" />
-    <Content Include="Resources\RSModsGUI\MiscUtil.dll" />
-    <Content Include="Resources\RSModsGUI\NDesk.Options.dll" />
-    <Content Include="Resources\RSModsGUI\Newtonsoft.Json.dll" />
-    <Content Include="Resources\RSModsGUI\NLog.dll" />
-    <Content Include="Resources\RSModsGUI\Ookii.Dialogs.dll" />
-    <Content Include="Resources\RSModsGUI\PSTaskDialog.dll" />
-    <Content Include="Resources\RSModsGUI\RocksmithToolkitLib.dll" />
-    <Content Include="Resources\RSModsGUI\RocksmithToTabLib.dll" />
-    <Content Include="Resources\RSModsGUI\RSMods.exe" />
-    <Content Include="Resources\RSModsGUI\RSMods.pdb" />
-    <Content Include="Resources\RSModsGUI\SevenZipSharp.dll" />
-    <Content Include="Resources\RSModsGUI\SharpConfig.dll" />
-    <Content Include="Resources\RSModsGUI\tools\7za.exe" />
-    <Content Include="Resources\RSModsGUI\tools\core.jar" />
-    <Content Include="Resources\RSModsGUI\tools\CreateToolkitShortcut.exe" />
-    <Content Include="Resources\RSModsGUI\tools\nvdxt.exe" />
-    <Content Include="Resources\RSModsGUI\tools\oggCut.exe" />
-    <Content Include="Resources\RSModsGUI\tools\oggdec.exe" />
-    <Content Include="Resources\RSModsGUI\tools\oggenc.exe" />
-    <Content Include="Resources\RSModsGUI\tools\readme.txt" />
-    <Content Include="Resources\RSModsGUI\tools\revorb.exe" />
-    <Content Include="Resources\RSModsGUI\tools\topng.exe" />
-    <Content Include="Resources\RSModsGUI\tools\ww2ogg.exe" />
+    <None Include="Resources\oggCut.exe" />
+    <None Include="Resources\oggdec.exe" />
+    <None Include="Resources\oggenc.exe" />
+    <None Include="Resources\readme.txt" />
+    <None Include="Resources\revorb.exe" />
+    <None Include="Resources\7za.exe" />
+    <None Include="Resources\core.jar" />
+    <None Include="Resources\CreateToolkitShortcut.exe" />
+    <None Include="Resources\nvdxt.exe" />
+    <None Include="Resources\readme1.txt" />
+    <None Include="Resources\RSMods.exe" />
+    <None Include="Resources\RSMods.pdb" />
     <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.dll" />
     <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.Enums.dll" />
     <Content Include="Resources\RSModsGUI\TwitchLib.Api.Core.Interfaces.dll" />
@@ -169,8 +217,92 @@
     <Content Include="Resources\RSModsGUI\TwitchLib.Client.Models.dll" />
     <Content Include="Resources\RSModsGUI\TwitchLib.Communication.dll" />
     <Content Include="Resources\RSModsGUI\TwitchLib.PubSub.dll" />
+    <Content Include="Resources\RSModsGUI\UserProfileLib.dll" />
     <Content Include="Resources\RSModsGUI\X360.dll" />
     <Content Include="Resources\RSModsGUI\zlib.net.dll" />
+    <None Include="Resources\System.Numerics.Vectors.dll" />
+    <None Include="Resources\System.Memory.dll" />
+    <None Include="Resources\System.Buffers.dll" />
+    <None Include="Resources\SharpConfig.dll" />
+    <None Include="Resources\SevenZipSharp.dll" />
+    <None Include="Resources\zlib.net.dll" />
+    <None Include="Resources\X360.dll" />
+    <None Include="Resources\TwitchLib.PubSub.dll" />
+    <None Include="Resources\TwitchLib.Communication.dll" />
+    <None Include="Resources\TwitchLib.Client.Models.dll" />
+    <None Include="Resources\TwitchLib.Client.Enums.dll" />
+    <None Include="Resources\TwitchLib.Client.dll" />
+    <None Include="Resources\TwitchLib.Api.V5.Models.dll" />
+    <None Include="Resources\TwitchLib.Api.V5.dll" />
+    <None Include="Resources\TwitchLib.Api.Helix.Models.dll" />
+    <None Include="Resources\TwitchLib.Api.Helix.dll" />
+    <None Include="Resources\TwitchLib.Api.dll" />
+    <None Include="Resources\TwitchLib.Api.Core.Models.dll" />
+    <None Include="Resources\TwitchLib.Api.Core.Interfaces.dll" />
+    <None Include="Resources\TwitchLib.Api.Core.Enums.dll" />
+    <None Include="Resources\TwitchLib.Api.Core.dll" />
+    <None Include="Resources\TwitchEnabledEffects.xml" />
+    <None Include="Resources\System.ValueTuple.dll" />
+    <None Include="Resources\System.Security.Principal.Windows.dll" />
+    <None Include="Resources\System.Security.AccessControl.dll" />
+    <None Include="Resources\System.Runtime.CompilerServices.Unsafe.dll" />
+    <None Include="Assets\LogoX256.ico" />
+    <Content Include="LogoX256.ico" />
+    <Content Include="Resources\RSModsGUI\7z.dll" />
+    <Content Include="Resources\RSModsGUI\7z64.dll" />
+    <Content Include="Resources\RSModsGUI\BouncyCastle.Crypto.dll" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc.exe" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_protector.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_chords_remover.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_dd_remover.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\ddc_default.xml" />
+    <Content Include="Resources\RSModsGUI\ddc\license.txt" />
+    <Content Include="Resources\RSModsGUI\ddc\readme.txt" />
+    <Content Include="Resources\RSModsGUI\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="Resources\RSModsGUI\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <Content Include="Resources\RSModsGUI\Microsoft.Win32.Registry.dll" />
+    <Content Include="Resources\RSModsGUI\MiscUtil.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.Asio.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.Core.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.Midi.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.Wasapi.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.WinForms.dll" />
+    <Content Include="Resources\RSModsGUI\NAudio.WinMM.dll" />
+    <Content Include="Resources\RSModsGUI\NDesk.Options.dll" />
+    <Content Include="Resources\RSModsGUI\Newtonsoft.Json.dll" />
+    <Content Include="Resources\RSModsGUI\NLog.dll" />
+    <Content Include="Resources\RSModsGUI\NVorbis.dll" />
+    <Content Include="Resources\RSModsGUI\Ookii.Dialogs.dll" />
+    <Content Include="Resources\RSModsGUI\Pfim.dll" />
+    <Content Include="Resources\RSModsGUI\PSTaskDialog.dll" />
+    <Content Include="Resources\RSModsGUI\Rocksmith2014PsarcLib.dll" />
+    <Content Include="Resources\RSModsGUI\RocksmithToolkitLib.Config.xml" />
+    <Content Include="Resources\RSModsGUI\RocksmithToolkitLib.dll" />
+    <Content Include="Resources\RSModsGUI\RocksmithToolkitLib.TuningDefinition.xml" />
+    <Content Include="Resources\RSModsGUI\RocksmithToTabLib.dll" />
+    <Content Include="Resources\RSModsGUI\RSMods.exe" />
+    <Content Include="Resources\RSModsGUI\RSMods.pdb" />
+    <Content Include="Resources\RSModsGUI\SevenZipSharp.dll" />
+    <Content Include="Resources\RSModsGUI\SharpConfig.dll" />
+    <Content Include="Resources\RSModsGUI\System.Buffers.dll" />
+    <Content Include="Resources\RSModsGUI\System.Memory.dll" />
+    <Content Include="Resources\RSModsGUI\System.Numerics.Vectors.dll" />
+    <Content Include="Resources\RSModsGUI\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="Resources\RSModsGUI\System.Security.AccessControl.dll" />
+    <Content Include="Resources\RSModsGUI\System.Security.Principal.Windows.dll" />
+    <Content Include="Resources\RSModsGUI\System.ValueTuple.dll" />
+    <Content Include="Resources\RSModsGUI\tools\7za.exe" />
+    <Content Include="Resources\RSModsGUI\tools\core.jar" />
+    <Content Include="Resources\RSModsGUI\tools\CreateToolkitShortcut.exe" />
+    <Content Include="Resources\RSModsGUI\tools\nvdxt.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggCut.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggdec.exe" />
+    <Content Include="Resources\RSModsGUI\tools\oggenc.exe" />
+    <Content Include="Resources\RSModsGUI\tools\readme.txt" />
+    <Content Include="Resources\RSModsGUI\tools\revorb.exe" />
+    <Content Include="Resources\RSModsGUI\tools\topng.exe" />
+    <Content Include="Resources\RSModsGUI\tools\ww2ogg.exe" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\RSModsGUI\CustomMods\" />
