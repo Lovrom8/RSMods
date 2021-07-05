@@ -120,6 +120,7 @@ namespace RS2014_Mod_Installer
             }
             catch (IOException ex)
             {
+
                 if (ex.Message.Contains("cannot access"))
                     MessageBox.Show("Please make sure you don't have an instance of RSMods already running!", "Error");
                 else
