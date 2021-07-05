@@ -176,7 +176,6 @@ namespace RSMods.Util
         public static bool ExtractSingleFile(string targetDir, string zipFile, string fileName)
         {
             SetupZlib();
-            SevenZipExtractor.SetLibraryPath(Path.Combine(Application.StartupPath, "7z64.dll"));
             try
             {
                 using (SevenZipExtractor extractor = new SevenZipExtractor(zipFile))
@@ -263,7 +262,7 @@ namespace RSMods.Util
 
             // "7za.dll" only supports 7Zip archives
             // use "7z.dll" to support many archive formats 
-            var libraryPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "7z.dll");
+            var libraryPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "7z64.dll");
 
             SevenZipBase.SetLibraryPath(libraryPath);
 
