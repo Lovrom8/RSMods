@@ -3394,7 +3394,11 @@ namespace RSMods
             MessageBox.Show("You may now mess around with custom sound packs");
         }
 
-        private void SoundPacks_DownloadWwise(object sender, EventArgs e) => Process.Start("https://ignition4.customsforge.com/cfsm/wwise/");
+        private void SoundPacks_DownloadWwise(object sender, EventArgs e)
+        {
+            Process.Start("https://ignition4.customsforge.com/cfsm/wwise/");
+            MessageBox.Show("After you download and install Wwise, make sure to open it at least once to ensure the EULA is agreed to!", "Wwise EULA", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private bool SoundPacks_PleaseWaitMessage(bool show)
         {
@@ -3442,7 +3446,7 @@ namespace RSMods
         private void SoundPacks_ReplaceSound(string soundToReplace)
         {
 
-            if (!Directory.Exists("audio_psarc"))
+            if (!Directory.Exists(Path.Combine(Application.StartupPath, "audio_psarc")))
             {
                 MessageBox.Show("Audio PSARC not unpacked");
                 SoundPacks_ChangeUIForUnpackedFolder(false);
@@ -3497,6 +3501,10 @@ namespace RSMods
             try
             {
                 string previewWav = Path.Combine(Path.GetDirectoryName(wavFile), Path.GetFileNameWithoutExtension(wavFile) + "_preview.wav"); // Previw needs to be made or Wav2Wem crashes.
+
+                if (File.Exists(previewWav))
+                    File.Delete(previewWav);
+
                 File.Copy(wavFile, previewWav);
                 Wwise.Wav2Wem(wavFile, Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem"), 4);
                 wemFile = Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(wavFile) + ".wem");
