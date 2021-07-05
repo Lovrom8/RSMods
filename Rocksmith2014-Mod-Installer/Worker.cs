@@ -42,6 +42,7 @@ namespace RS2014_Mod_Installer
                 // Root Folder
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z.dll"), Properties.Resources._7z);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "7z64.dll"), Properties.Resources._7z64);
+                File.WriteAllBytes(Path.Combine(rootModFolder, "BouncyCastle.Crypto.dll"), Properties.Resources.BouncyCastle_Crypto);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "ICSharpCode.SharpZipLib.dll"), Properties.Resources.ICSharpCode_SharpZipLib);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Extensions.Logging.Abstractions.dll"), Properties.Resources.Microsoft_Extensions_Logging_Abstractions);
                 File.WriteAllBytes(Path.Combine(rootModFolder, "Microsoft.Win32.Registry.dll"), Properties.Resources.Microsoft_Win32_Registry);
