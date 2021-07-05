@@ -261,12 +261,15 @@ namespace RSMods
 
         public static Dictionary<string, Tone2014> tonesFromAllProfiles = new Dictionary<string, Tone2014>();
 
-        public static void SetDefaultTones(string selectedToneName, int selectedToneType)
+        public static void SetDefaultTones(string selectedToneName, int selectedToneType, bool alreadyTried = false)
         {
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
 
             if (!File.Exists(Constants.ToneManager_CustomPath))
-                MessageBox.Show("Could not extract tones from cache.psarc. Please press Import Existing Settings button!", "Error");
+            {
+                MessageBox.Show("Could not extract tones from cache.psarc.", "Error");
+                return;
+            }
 
             string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
             var tonesJson = JObject.Parse(toneManagerFileContent);

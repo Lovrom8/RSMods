@@ -15,7 +15,7 @@ namespace RSMods.Data
         public static string SettingsPath { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GUI_Settings.ini"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
         public static string WorkFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Temp"); } }
-        public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache.psarc_RS2014_Pc"); } }
+        public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache_psarc_RS2014_Pc"); } }
         public static string Cache4_7zPath { get { return Path.Combine(CachePcPath, "cache4.7z"); } }
         public static string Cache7_7zPath { get { return Path.Combine(CachePcPath, "cache7.7z"); } }
         public static string LocalizationCSV_InternalPath { get { return Path.Combine("localization", "maingame.csv"); } }

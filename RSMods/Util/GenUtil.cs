@@ -256,7 +256,8 @@ namespace RSMods.Util
                 if (File.Exists(Constants.SettingsPath))
                 {
                     Constants.RSFolder = GetSettingsEntry("RSPath");
-                    return Constants.RSFolder;
+                    if (Constants.RSFolder != string.Empty)
+                        return Constants.RSFolder;
                 }
             }
             else
