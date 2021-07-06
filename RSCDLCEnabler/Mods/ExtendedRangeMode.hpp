@@ -18,7 +18,7 @@ namespace ERMode {
 	bool IsRainbowEnabled();
 	bool IsRainbowNotesEnabled();
 	void ResetString(int strIndex);
-	void ResetAllStrings();
+	bool ResetAllStrings();
 	void SetCustomColors(int strIdx, ColorMap customColorMap);
 	void Initialize();
 	void InitStrings(std::vector<uintptr_t>& strings, int state);

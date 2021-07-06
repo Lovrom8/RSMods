@@ -81,12 +81,13 @@ std::vector<Color> oldNormal, oldDisabled, oldEnabled, oldGlow, oldAmb;
 /// <summary>
 /// Run ResetString on all six strings.
 /// </summary>
-void ERMode::ResetAllStrings() {
+bool ERMode::ResetAllStrings() {
 	if (!ColorsSaved)
-		return;
+		return false;
 
 	for (int str = 0; str < 6;str++)
 		ResetString(str);
+	return true;
 }
 
 /// <summary>
@@ -170,7 +171,7 @@ void ERMode::Toggle7StringMode() {
 		}
 	}
 	else {
-		if (!ColorsSaved && MemHelpers::GetCurrentMenu() == "LearnASong_Game") { //read only once, so it won't change defaults if you change to CB
+		if (!ColorsSaved) { //read only once, so it won't change defaults if you change to CB
 			for (int i = 0; i < 6; i++) {
 				oldDisabled.push_back(*(Color*)stringsDisabled[i]);
 				oldEnabled.push_back(*(Color*)stringsEnabled[i]);

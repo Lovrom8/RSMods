@@ -88,7 +88,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") { // Rainbow Strings
 				ERMode::ToggleRainbowMode();
-				std::cout << "Rainbows Are Pretty Cool" << std::endl;
+
+				if (!ERMode::RainbowEnabled)
+					ERMode::ResetAllStrings();
+					
+				std::cout << "Rainbow Strings" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") { // Rainbow Notes
