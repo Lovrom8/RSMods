@@ -161,7 +161,7 @@ namespace RSMods.Util
             catch (Exception ex)
             {
                 Debug.WriteLine("Error Unzipping: " + ex.Message + Environment.NewLine +
-                    "Make sure correct version of 7z.dll is used.");
+                    "Make sure correct version of 7z64.dll is used.");
                 return false;
             }
 
@@ -262,7 +262,7 @@ namespace RSMods.Util
             }
 
             // "7za.dll" only supports 7Zip archives
-            // use "7z.dll" to support many archive formats 
+            // use "7z64.dll" to support many archive formats 
             var libraryPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "7z64.dll");
 
             SevenZipBase.SetLibraryPath(libraryPath);
