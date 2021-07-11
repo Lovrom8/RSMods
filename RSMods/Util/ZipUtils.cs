@@ -130,8 +130,9 @@ namespace RSMods.Util
                 injector.Add(internalArchivePath, sourceFilePath);
                 compressor.CompressFileDictionary(injector, archiveName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                MessageBox.Show($"Error:{ex.Message}", "File injection failed");
                 return false;
             }
 
