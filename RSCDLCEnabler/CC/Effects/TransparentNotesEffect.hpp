@@ -17,6 +17,6 @@ namespace CrowdControl::Effects {
 
 	private:
 		std::vector<std::string> incompatibleEffects =
-			{ "solidcustom", "solidrandom", "solidcustomrgb" };
+			{ "solidcustom", "solidrandom", "solidcustomrgb", "bignoteheads", "smallnoteheads", "removenotes" };
 	};
 }

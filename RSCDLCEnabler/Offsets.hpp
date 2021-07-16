@@ -137,4 +137,9 @@ namespace Offsets {
 	// Objects
 	extern uintptr_t ptr_rootObject;
 	extern std::vector<unsigned int> ptr_rootObjectOffsets;
+
+	// Faster dynamic density / scroll speed change
+	extern uintptr_t patch_scrollSpeedLTTarget; // Less than target
+	extern uintptr_t patch_scrollSpeedGTTarget; // Greater than target
+	extern const char* patch_scrollSpeedChange;
 };

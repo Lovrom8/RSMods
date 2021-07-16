@@ -20,12 +20,11 @@
     <ClCompile Include="CC\Effects\RainbowNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp" />
-    <ClCompile Include="CC\Effects\ZoomInEffect.cpp" />
+    <ClCompile Include="CC\Effects\ZoomEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
     <ClCompile Include="CC\CCStructs.hpp" />
-    <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp" />
-    <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp" />
+    <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp" />
     <ClCompile Include="Lib\Midi\RtMidi.cpp" />
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
@@ -43,7 +42,7 @@
     <ClInclude Include="CC\Effects\RainbowNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
     <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp" />
-    <ClInclude Include="CC\Effects\ZoomInEffect.hpp" />
+    <ClInclude Include="CC\Effects\ZoomEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
     <ClCompile Include="WwiseHijack.cpp" />
@@ -61,8 +60,7 @@
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
-    <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp" />
-    <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp" />
+    <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp" />
     <ClInclude Include="Lib\Json\json.hpp" />
     <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Mods\DisableControllers.hpp" />

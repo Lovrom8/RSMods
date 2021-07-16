@@ -13,9 +13,8 @@
 #include "Effects/BigNoteheadEffect.hpp"
 #include "Effects/SmallNoteheadEffect.hpp"
 #include "Effects/InvertedStringsEffect.hpp"
-#include "Effects/HalfSpeedEffect.hpp"
-#include "Effects/DoubleSpeedEffect.hpp"
-#include "Effects/ZoomInEffect.hpp"
+#include "Effects/HighwayScrollSpeedEffect.hpp"
+#include "Effects/ZoomEffect.hpp"
 #include "Effects/RemoveInstrumentEffect.hpp"
 #include "Effects/TurboSpeedEffect.hpp"
 
@@ -44,9 +43,11 @@ namespace CrowdControl::EffectList {
 		{ "bignoteheads", new BigNoteheadEffect(20) },
 		{ "smallnoteheads", new SmallNoteheadEffect(20) },
 		{ "invertedstrings", new InvertedStringsEffect(20) },
-		{ "halfsongspeed", new HalfSpeedEffect(30) },
-		{ "doublesongspeed", new DoubleSpeedEffect(30) },
-		{ "zoomin", new ZoomInEffect(20) },
+		{ "halfscrollspeed", new HighwayScrollSpeedEffect(30, 1.5) },
+		{ "doublescrollspeed", new HighwayScrollSpeedEffect(30, 10.0) },
+		{ "triplescrollspeed", new HighwayScrollSpeedEffect(30, 15.0) },
+		{ "zoomin", new ZoomEffect(20, 2.0) },
+		{ "zoomout", new ZoomEffect(20, 0.5) },
 		{ "removeinstrument", new RemoveInstrumentEffect(20) },
 		{ "turbospeed", new TurboSpeedEffect(20) }
 	};

@@ -1,11 +1,11 @@
-#include "ZoomInEffect.hpp"
+#include "ZoomEffect.hpp"
 
 using namespace CrowdControl::Enums;
 
-namespace CrowdControl::Effects { 
-	EffectResult ZoomInEffect::Test(Request request)
+namespace CrowdControl::Effects {
+	EffectResult ZoomEffect::Test(Request request)
 	{
-		std::cout << "ZoomInEffect::Test()" << std::endl;
+		std::cout << "ZoomEffect::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -14,17 +14,17 @@ namespace CrowdControl::Effects {
 	}
 
 
-	EffectResult ZoomInEffect::Start(Request request)
+	EffectResult ZoomEffect::Start(Request request)
 	{
-		std::cout << "ZoomInEffect::Start()" << std::endl;
+		std::cout << "ZoomEffect::Start()" << std::endl;
 
-		if (!MemHelpers::IsInSong() || running)
+		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 		running = true;
 
-		auto rootObject = ObjectUtil::GetRootObject(); 
-		rootObject->scale = 2.0f; // TODO: determine correct values
+		auto rootObject = ObjectUtil::GetRootObject();
+		rootObject->scale = factor;
 
 		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -32,7 +32,7 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
-	void ZoomInEffect::Run()
+	void ZoomEffect::Run()
 	{
 		// Stop automatically after duration has elapsed
 		if (running) {
@@ -43,9 +43,9 @@ namespace CrowdControl::Effects {
 		}
 	}
 
-	EffectResult ZoomInEffect::Stop()
+	EffectResult ZoomEffect::Stop()
 	{
-		std::cout << "ZoomInEffect::Stop()" << std::endl;
+		std::cout << "ZoomEffect::Stop()" << std::endl;
 
 		auto rootObject = ObjectUtil::GetRootObject();
 		rootObject->scale = 1.0f;

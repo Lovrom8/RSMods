@@ -49,12 +49,15 @@ public class Rocksmith2014 : SimpleTCPPack
 
         new Effect("Big note heads (20 seconds)", "bignoteheads"),
         new Effect("Small note heads (20 seconds)", "smallnoteheads"),
-        new Effect("Inverted strings (20 seconds)", "invertedstrings"),
+        // Disabled until actual string inverting is figured out (currently only flips strings, not notes) (also crash in dll)
+        //new Effect("Inverted strings (20 seconds)", "invertedstrings"),
 
-        new Effect("Half song speed (30 seconds)", "halfsongspeed"),
-        new Effect("Double song speed (30 seconds)", "doublesongspeed"),
+        new Effect("Half scroll speed (30 seconds)", "halfscrollspeed"),
+        new Effect("Double scroll speed (30 seconds)", "doublescrollspeed"),
+        new Effect("Triple scroll speed (30 seconds)", "triplescrollspeed"),
 
-        new Effect("Zoom camera in (20 seconds)", "zoomin") 
+        new Effect("Zoom camera in (20 seconds)", "zoomin"),
+        new Effect("Zoom camera out (20 seconds)", "zoomout")
     };
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]

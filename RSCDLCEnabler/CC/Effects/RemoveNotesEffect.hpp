@@ -19,6 +19,6 @@ namespace CrowdControl::Effects {
 		void ScaleNotes(float scale);
 
 		std::vector<std::string> incompatibleEffects =
-			{ "transparentnotes" };
+			{ "transparentnotes", "bignoteheads", "smallnoteheads" };
 	};
 }

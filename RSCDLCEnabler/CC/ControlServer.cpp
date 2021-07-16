@@ -253,5 +253,9 @@ namespace CrowdControl {
 		std::thread(EffectRunThread).detach();
 		// Object util scale updater thread
 		std::thread(ObjectUtilUpdateThread).detach();
+
+		// Patch scroll speed to be 10x faster
+		MemUtil::PatchAdr((BYTE*)Offsets::patch_scrollSpeedLTTarget, (UINT*)Offsets::patch_scrollSpeedChange, 3);
+		MemUtil::PatchAdr((BYTE*)Offsets::patch_scrollSpeedGTTarget, (UINT*)Offsets::patch_scrollSpeedChange, 3);
 	}
 }

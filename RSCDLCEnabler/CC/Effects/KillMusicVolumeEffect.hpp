@@ -17,5 +17,6 @@ namespace CrowdControl::Effects {
 		EffectResult Stop();
 
 		float oldVolume = 100.0f;
+		bool ending = false;
 	};
 }

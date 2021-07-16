@@ -162,12 +162,6 @@
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="CC\Effects\DoubleSpeedEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\Effects\HalfSpeedEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
     <ClCompile Include="CC\Effects\BigNoteheadEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
@@ -176,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="Mods\ExtendedRangeMode.cpp">
       <Filter>Mods</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\Effects\ZoomInEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
     <ClCompile Include="CC\CCEffectList.cpp">
       <Filter>CrowdControl</Filter>
@@ -218,6 +209,12 @@
     </ClCompile>
     <ClCompile Include="Mods\VoiceOverControl.cpp">
       <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ZoomEffect.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,16 +329,10 @@
     <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="CC\Effects\DoubleSpeedEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="CC\Effects\DrunkModeEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\FYourFCEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\HalfSpeedEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp">
@@ -369,9 +360,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\ZoomInEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp">
@@ -433,6 +421,12 @@
     </ClInclude>
     <ClInclude Include="Mods\VoiceOverControl.hpp">
       <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ZoomEffect.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

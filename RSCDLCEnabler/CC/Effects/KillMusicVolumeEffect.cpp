@@ -45,6 +45,14 @@ namespace CrowdControl::Effects {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
 
+			// Start fadeout before effect actually stops
+			if (duration < std::chrono::milliseconds(2000) && !ending) {
+				// Restore volume
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0xffffffff, 2000, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x00001234, 2000, AkCurveInterpolation_Linear);
+				ending = true;
+			}
+
 			if (duration.count() <= 0) Stop();
 		}
 	}
@@ -55,13 +63,14 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Success</returns>
 	EffectResult KillMusicVolumeEffect::Stop()
 	{
-		std::cout << "KillGuitarVolumeEffect::Stop()" << std::endl;
+		std::cout << "KillMusicVolumeEffect::Stop()" << std::endl;
+
+		// Make sure volume was set to original value by setting it immediately effective
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0xffffffff, 0, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x00001234, 0, AkCurveInterpolation_Linear);
 
 		running = false;
-
-		// Restore volume
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0xffffffff, 2000, AkCurveInterpolation_Linear);
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x00001234, 2000, AkCurveInterpolation_Linear);
+		ending = false;
 
 		return EffectResult::Success;
 	}

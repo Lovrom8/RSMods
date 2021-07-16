@@ -153,6 +153,11 @@ namespace Offsets {
 	// Objects
 	uintptr_t ptr_rootObject = 0x00F5C508;
 	std::vector<unsigned int> ptr_rootObjectOffsets{ 0xAC, 0x20, 0x24, 0x24, 0x0 };
+
+	// Faster dynamic density / scroll speed change
+	uintptr_t patch_scrollSpeedLTTarget = 0x01406278; // Less than target
+	uintptr_t patch_scrollSpeedGTTarget = 0x01406242; // Greater than target
+	const char* patch_scrollSpeedChange = "\xD9\xE8\x90";
 }
 
 

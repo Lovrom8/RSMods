@@ -61,6 +61,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 
 		running = false;
 
+		// Return to tone slot 1 at the end
+		Util::SendKey(Settings::GetVKCodeForString("1"));
+
 		return EffectResult::Success;
 	}
 }

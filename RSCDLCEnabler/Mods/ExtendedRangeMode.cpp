@@ -134,10 +134,11 @@ void ERMode::Toggle7StringMode() {
 		if (customSolidColor.size() != 6) // JIC
 			return;
 
-		SetColors(stringsGlow, customSolidColor);
-		SetColors(stringsEnabled, customSolidColor);
-		SetColors(stringsDisabled, customSolidColor);
-		SetColors(stringsAmb, customSolidColor);
+		// Don't change string colors with solid notes
+		//SetColors(stringsGlow, customSolidColor);
+		//SetColors(stringsEnabled, customSolidColor);
+		//SetColors(stringsDisabled, customSolidColor);
+		//SetColors(stringsAmb, customSolidColor);
 
 		return;
 	}
