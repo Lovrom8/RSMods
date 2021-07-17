@@ -18,7 +18,7 @@ namespace CrowdControl::Effects {
 
 	private:
 		std::vector<std::string> incompatibleEffects =
-			{ "removenotes", "transparentnotes", "solidcustom", "solidcustomrgb" };
+		{ "removenotes", "transparentnotes", "solidcustom", "solidcustomrgb", "rainbownotes" };
 	};
 
 	class SolidNotesCustomEffect : public CCEffect
@@ -35,7 +35,7 @@ namespace CrowdControl::Effects {
 
 	private:
 		std::vector<std::string> incompatibleEffects =
-			{ "removenotes", "transparentnotes", "solidrandom", "solidcustomrgb" };
+		{ "removenotes", "transparentnotes", "solidrandom", "solidcustomrgb", "rainbownotes" };
 	};
 
 	class SolidNotesCustomRGBEffect : public CCEffect
@@ -52,6 +52,6 @@ namespace CrowdControl::Effects {
 
 	private:
 		std::vector<std::string> incompatibleEffects =
-			{ "removenotes", "transparentnotes", "solidcustom", "solidrandom" };
+		{ "removenotes", "transparentnotes", "solidcustom", "solidrandom", "rainbownotes" };
 	};
 }
