@@ -172,11 +172,34 @@ namespace RSMods
 
             if (RSFolder == String.Empty)
             {
-                MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
+                string newRSFolder = GenUtil.AskUserForRSFolder();
+
+                if (newRSFolder == string.Empty)
+                {
+                    MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
+                }
+
+                Constants.RSFolder = newRSFolder;
             }
             else
-                Constants.RSFolder = RSFolder;
+            {
+                if (!Directory.Exists(RSFolder))
+                {
+                    MessageBox.Show("It looks like your current Rocksmith2014 install folder cannot be found. Please tell us where it is located!", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    string newRSFolder = GenUtil.AskUserForRSFolder();
+                    if (newRSFolder == string.Empty)
+                    {
+                        MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                    }
+
+                    Constants.RSFolder = newRSFolder;
+                }
+                else
+                    Constants.RSFolder = RSFolder;
+            }
+                
         }
         private void Startup_VerifyGUIInstall()
         {
