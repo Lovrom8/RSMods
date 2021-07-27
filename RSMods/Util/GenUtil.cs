@@ -300,12 +300,12 @@ namespace RSMods.Util
                     {
                         if (!File.Exists(Path.Combine(rs2RootDir, "cache.psarc")))
                         { // If cache.psarc doesn't exist (old install / steam left-overs)
-                            if (AskUserForRSFolder() == String.Empty)
+                            rs2RootDir = AskUserForRSFolder();
+                            if (rs2RootDir == String.Empty)
                             {
                                 MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, and you didn't give us a valid RS Folder.", "Closing Application");
                                 Application.Exit();
                             }
-
                         }
                     }
                 }
