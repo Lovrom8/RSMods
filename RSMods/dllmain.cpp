@@ -847,7 +847,7 @@ unsigned WINAPI MainThread() {
 	// Initialize Functions
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
-	MemHelpers::PatchCDLCCheck();
+	*(char*)0x013aefd9 = (char)0x60; // Patches out function in Rocksmith.
 	Settings::Initialize();
 	UpdateSettings();
 	ERMode::Initialize();
@@ -1163,11 +1163,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 		}
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
-		D3DX9_42::InitProxy(); // Proxy all real D3DX9_42.dll commands to the actual D3DX9_42.dll.
+		Proxy::Init(); // Proxy all real D3DX9_42.dll commands to the actual D3DX9_42.dll.
 		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
-		D3DX9_42::ShutdownProxy(); // Kill Proxy to D3DX9_42.dll
+		Proxy::Shutdown(); // Kill Proxy to D3DX9_42.dll
 
 		// Shutdown ImGUI
 		ImGui_ImplWin32_Shutdown();

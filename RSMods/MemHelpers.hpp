@@ -41,8 +41,6 @@ namespace MemHelpers {
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
 
-	void PatchCDLCCheck();
-
 	inline static std::string lastMenu = "";
 	inline static bool canGetRealMenu = false;
 

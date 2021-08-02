@@ -60,7 +60,7 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="d3dx9_42.cpp">
+    <ClCompile Include="Proxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Settings.cpp">
@@ -248,9 +248,6 @@
     <ClInclude Include="Lib\DirectX\d3dx9.h">
       <Filter>Main Headers\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="D3DX9_42.hpp">
-      <Filter>Main Headers\DirectX</Filter>
-    </ClInclude>
     <ClInclude Include="Lib\DirectX\d3dx9anim.h">
       <Filter>Main Headers\DirectX</Filter>
     </ClInclude>
@@ -428,9 +425,12 @@
     <ClInclude Include="CC\Effects\ZoomEffect.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Proxy.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="d3dx9_42.def">
+    <None Include="xinput1_3.def">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Lib\DirectX\d3dx9math.inl">

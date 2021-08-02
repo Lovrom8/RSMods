@@ -1,5 +1,5 @@
 // DLL Hijack. Do NOT remove this line!
-#include "d3dx9_42.hpp"
+#include "Proxy.hpp"
 
 // DLL Settings
 #include "MemHelpers.hpp"

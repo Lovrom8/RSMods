@@ -420,21 +420,6 @@ void MemHelpers::ToggleCB(bool enabled) {
 		*(byte*)cbEnabled = enabled;
 }
 
-/// <summary>
-/// Patch Game for CDLC.
-/// </summary>
-void MemHelpers::PatchCDLCCheck() {
-	uint8_t* VerifySignatureOffset = Offsets::cdlcCheckAdr;
-	*(char*)0x013aefd9 = (char)0x60;
-
-	if (VerifySignatureOffset) {
-		if (!MemUtil::PatchAdr(VerifySignatureOffset + 8, (UINT*)Offsets::patch_CDLCCheck, 2))
-			std::cout << "Failed: CDLC Patch" << std::endl;
-		else
-			std::cout << "Success: CDLC Patch" << std::endl;
-	}
-}
-
 
 /// <returns>Size of Rocksmith Window</returns>
 Resolution MemHelpers::GetWindowSize() {
