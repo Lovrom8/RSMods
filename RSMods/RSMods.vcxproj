@@ -157,7 +157,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>RSCDLCEnabler</RootNamespace>
+    <RootNamespace>RSMods</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -200,7 +200,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSMODS_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>
@@ -232,7 +232,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSCDLCENABLER_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSMODS_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>SDK Path\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>

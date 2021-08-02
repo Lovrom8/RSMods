@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RSCDLCEnabler", "RSCDLCEnabler\RSCDLCEnabler.vcxproj", "{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RSMods", "RSMods\RSMods.vcxproj", "{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
