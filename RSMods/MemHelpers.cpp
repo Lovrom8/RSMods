@@ -552,7 +552,7 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 /// Automate triggering the Riff Repeater above 100% mod.
 /// </summary>
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
-	Sleep(5000); // Main animation from Tuner -> In game where we can control the menu
+	Sleep(6000); // Main animation from Tuner -> In game where we can control the menu
 
 	std::cout << "Triggering RR Speed mod" << std::endl;
 
