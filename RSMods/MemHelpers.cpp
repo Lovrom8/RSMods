@@ -387,18 +387,16 @@ void MemHelpers::ToggleLoft() {
 		*(float*)farAddr = 10000; // Loft On
 }
 
-/// <returns>Current Time In Song</returns>
-std::string MemHelpers::ShowSongTimer() {
+float MemHelpers::SongTimer() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
 	// Null Pointer Check
 	if (!addrTimer) {
 		std::cout << "Invalid Pointer: ShowSongTimer" << std::endl;
-		return "";
+		return 0.f;
 	}
-		
 
-	return std::to_string(*(float*)addrTimer);
+	return *(float*)addrTimer;
 }
 
 /// <summary>
@@ -552,7 +550,10 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 /// Automate triggering the Riff Repeater above 100% mod.
 /// </summary>
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
-	Sleep(6000); // Main animation from Tuner -> In game where we can control the menu
+
+	while (SongTimer() < 5.f) {
+		Sleep(500);
+	}
 
 	std::cout << "Triggering RR Speed mod" << std::endl;
 

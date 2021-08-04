@@ -526,8 +526,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "")) { // Show Song Timer
-			std::string currentSongTimeString = MemHelpers::ShowSongTimer();
+		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) { // Show Song Timer
+			std::string currentSongTimeString = std::to_string(MemHelpers::SongTimer());
 			size_t stringSize;
 
 			int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.

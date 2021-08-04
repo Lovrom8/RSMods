@@ -21,7 +21,7 @@ namespace MemHelpers {
 	byte getLowestStringTuning();
 	byte* GetCurrentTuning(bool verbose = false);
 	void ToggleLoft();
-	std::string ShowSongTimer();
+	float SongTimer();
 	bool IsExtendedRangeSong();
 	int* GetHighestLowestString();
 	bool IsSongInDrop(Tuning tuning);
