@@ -22,8 +22,8 @@ namespace CrowdControl::Structs {
 		std::string message;
 	};
 
-	extern void to_json(json& j, const Request& p);
-	extern void from_json(const json& j, Request& p);
-	extern void to_json(json& j, const Response& p);
-	extern void from_json(const json& j, Response& p);
+	extern void to_json_request(json& j, const Request& p);
+	extern void from_json_request(const json& j, Request& p);
+	extern void to_json_response(json& j, const Response& p);
+	extern void from_json_response(const json& j, Response& p);
 }

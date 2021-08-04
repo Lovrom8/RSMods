@@ -66,7 +66,8 @@ namespace CrowdControl {
 	/// </summary>
 	void SendResponse(Response response) {
 		//Serialize response
-		json j = response;
+		json j;
+		CrowdControl::Structs::to_json_response(j, response);
 		std::string jsonstr = j.dump();
 
 		std::cout << "Responding: " << jsonstr.c_str() << std::endl;
@@ -122,7 +123,8 @@ namespace CrowdControl {
 			std::string command = std::string(&buffer[0], &buffer[currentMessageLength]);
 
 			json j = json::parse(command);
-			auto request = j.get<Request>();
+			Request request;
+			CrowdControl::Structs::from_json_request(j, request);
 
 			std::cout << "Received command:" << std::endl;
 			std::cout << j.dump(2) << std::endl;
@@ -224,7 +226,7 @@ namespace CrowdControl {
 			Sleep(5000);
 
 		while (!D3DHooks::GameClosing) {
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes)) // Guitarcade games crash if UpdateScales is run. So we will just sleep.
+			if (MemHelpers::IsInSong()) // Guitarcade games crash if UpdateScales is run. So we will just sleep.
 				ObjectUtil::UpdateScales();
 
 			Sleep(1000);

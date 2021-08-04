@@ -436,14 +436,8 @@ Resolution MemHelpers::GetWindowSize() {
 /// <param name="stringToCheckIfInsideArray"> - Input</param>
 /// <param name="stringArray"> - Is input in list | ARRAY? (NULLABLE)</param>
 /// <param name="stringVector"> - Is input in list | VECTOR? (NULLABLE)</param>
-bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
-	if (stringArray != NULL) {
-		for (unsigned int i = 0; i < stringArray->length(); i++) {
-			if (stringToCheckIfInsideArray == stringArray[i])
-				return true;
-		}
-	}
-	else if (stringVector != std::vector<std::string>()) {
+bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::vector<std::string> stringVector) {
+	if (stringVector != std::vector<std::string>()) {
 		for (unsigned int i = 0; i < stringVector.size(); i++) {
 			if (stringToCheckIfInsideArray == stringVector[i])
 				return true;
@@ -522,7 +516,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 /// Are we in a song?
 /// </summary>
 bool MemHelpers::IsInSong() {
-	return IsInStringArray(GetCurrentMenu(), 0, songModes);
+	return IsInStringArray(GetCurrentMenu(), songModes);
 }
 
 /// <summary>

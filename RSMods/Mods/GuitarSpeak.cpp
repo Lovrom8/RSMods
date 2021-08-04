@@ -48,13 +48,13 @@ bool GuitarSpeak::RunGuitarSpeak() {
 
 		std::string currentMenu = MemHelpers::GetCurrentMenu();
 
-		if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+		if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
 			if (verbose)
 				std::cout << "(GS) Entered Tuning Menu! Stopping Guitar Speak." << std::endl;
 			break; // We aren't needed here anymore.
 		}
 
-		if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes) || MemHelpers::IsInStringArray(currentMenu, NULL, songMenus) || MemHelpers::IsInStringArray(currentMenu, NULL, calibrationMenus)) {
+		if (MemHelpers::IsInStringArray(currentMenu, lessonModes) || MemHelpers::IsInSong() || MemHelpers::IsInStringArray(currentMenu, calibrationMenus)) {
 			if (verbose)
 				std::cout << "(GS) Entered Song Menu! Stopping Guitar Speak." << std::endl;
 			break; // We aren't needed here anymore.
