@@ -62,8 +62,13 @@ unsigned WINAPI MidiThread() {
 /// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
-	if (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU)
+	if (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU) {
+		if (lParam == VK_RETURN) // Alt+Enter = F11
+			WndProc(hWnd, WM_KEYUP, VK_F11, 0);
+
 		return true;
+	}
+		
 
 	if (msg == WM_SYSCOMMAND && keyPressed == SC_MOVE + 0x2 && MemHelpers::IsInStringArray(D3DHooks::currentMenu, onlineModes))
 		return true;
