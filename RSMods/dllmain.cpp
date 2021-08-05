@@ -78,17 +78,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
 			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") { // Toggle Loft
 				MemHelpers::ToggleLoft();
-				std::cout << "Toggle Loft" << std::endl;
+				std::cout << "Triggered Mod: Toggle Loft" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") { // Show Song Timer
 				D3DHooks::showSongTimerOnScreen = !D3DHooks::showSongTimerOnScreen;
-				std::cout << "Show Me Dat Timer Bruh" << std::endl;
+				std::cout << "Triggered Mod: Show Song Timer" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") { // Force Enumeration (Manual | Keypress)
 				Enumeration::ForceEnumeration();
-				std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
+				std::cout << "Triggered Mod: Force Enumeration" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") { // Rainbow Strings
@@ -97,24 +97,21 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (!ERMode::RainbowEnabled)
 					ERMode::ResetAllStrings();
 					
-				std::cout << "Rainbow Strings" << std::endl;
+				std::cout << "Triggered Mod: Rainbow Strings" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") { // Rainbow Notes
 				ERMode::ToggleRainbowNotes();
-				std::cout << "Those notes do be kinda pretty" << std::endl;
+				std::cout << "Triggered Mod: Rainbow Notes" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") { // Remove Lyrics (Manual | Keypress)
 				D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
-				if (D3DHooks::RemoveLyrics)
-					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when on and "Karaoke For You" when off.
-				std::cout << "Karaoke For You" << std::endl;
+				std::cout << "Triggered Mod: Remove Lyrics" << std::endl;
 			}
 			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) { //CTRL + A
 				Settings::UpdateSettings();
-				std::cout << "Value: " << Settings::ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
-				std::cout << "Reloaded settings" << std::endl;
+				std::cout << "Triggered Setting Update" << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Master Volume
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
@@ -165,12 +162,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				else
 					Midi::tuningOffset++;
 
-
 				// Cap what values can be set (as we don't want to have to specify every value, and some pedals don't support more than an octave).
 				if (Midi::tuningOffset < -3)
 					Midi::tuningOffset = -3;
 				else if (Midi::tuningOffset > 12)
 					Midi::tuningOffset = 12;
+
+				std::cout << "Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << std::endl;
 			}
 			
 
@@ -253,14 +251,21 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				if (prepToTurnOff && realSongSpeed == 100.f) // Disable UI if we bug out of the mode.
 					useNewSongSpeed = false;
+
+				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << UISpeed << "% UI speed." << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
 				Settings::ToggleExtendedRangeMode();
+				
+				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE)
+			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
+				std::cout << "Triggered Mod: Auto Tuning VIA Midi" << std::endl;
+			}
+				
 		}
 
 		if (debug) {
