@@ -1,6 +1,5 @@
 // DON'T TOUCH THIS FILE!!!!!! This is what allows us to get our code running.
 
-#include "windows.h"
 #include "Proxy.hpp"
 #pragma pack(1)
 
