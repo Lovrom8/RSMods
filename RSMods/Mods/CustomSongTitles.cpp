@@ -6,19 +6,18 @@
 std::vector<std::string> songTitles(6);
 
 /// <summary>
-/// Hook to grab songlists. EAX = char* str "$[36969]SONG LIST". ESI = SongList Index
+/// Hook to grab songlists. EAX = char* str "$[36969]SONG LIST". ESI = SongList Index (One-Indexed)
 /// </summary>
 void __declspec(naked) hook_fakeTitles() {
 	__asm {
-		mov ecx, dword ptr ds : [0x135CB7C]
-		pushad
-		mov ebx, 0x33 //sets the last number 
-		add ebx, esi
-		mov byte ptr[eax + 0x6], bl
-		mov byte ptr[eax + 0x2], 0x34 //third char (that is, the first digit); 0x30 = 0, 0x31 = 1, ... | with 0x34, there's no string with key [4696x] - it returns the whole thing back
-		//mov byte ptr[eax + 0x3], 0x34 //adapt to your needs
-		popad
-		jmp[Offsets::hookBackAddr_FakeTitles]
+		mov ecx, dword ptr ds : [0x135CB7C] // Store the contents of 0x135CB7C into the ECX register. This is the line we are "replacing" to inject this hook.
+		pushad // Save EAX, ECX, and EDX to the stack. 
+		mov ebx, 0x33 // Sets EBX to 0x33 / 51 / '3' in ASCII
+		add ebx, esi // Add Song List Index to EBX. One-Indexed
+		mov byte ptr[eax + 0x6], bl // "$[36969]SONG LIST" -> "$[3696X]SONG LIST" where "X" = 3 + SongList Index. Ex: Song list 2 would result in "$[36965]SONG LIST".
+		mov byte ptr[eax + 0x2], 0x34 // "$[3696X]SONG LIST" -> "$[4696X]SONG LIST". This allows us to throw the localized string into an unknown value, which we can later hijack to put our "localized" version in.
+		popad // Return EAX, ECX, and EDX from the stack.
+		jmp[Offsets::hookBackAddr_FakeTitles] // Return to the original code.
 	}
 }
 
@@ -57,18 +56,18 @@ const char* __stdcall missingLocalization(int number, char* text) {
 /// </summary>
 void __declspec(naked) missingLocalizationHookFunc() {
 	__asm {
-		push ecx
-		push edx
-		push esp
+		push ecx // Push ECX to the stack. This is the line we are "replacing" to inject this hook.
+		push edx // Push EDX to the stack. This is the line we are "replacing" to inject this hook.
+		push esp // Push ESP to the stack. This is the line we are "replacing" to inject this hook.
 
-		push[esp + 0x10]
-		push eax
-		call missingLocalization
+		push[esp + 0x10] // ESP+10 = Song List Name.
+		push eax // EAX = Localization Number. 46964 = Song list 1, 46965 = Song list 2, 46966, 46967, 46968, 46969.
+		call missingLocalization // Call our "localization" function that will replace the Song List name with the user's custom Song List name.
 
-		pop esp
-		pop edx
-		pop ecx
-
+		pop esp // Return ESP from the stack.
+		pop edx // Return EDX from the stack.
+		pop ecx // Return ECX from the stack.
+		
 		add esp, 0x8
 		push eax
 		jmp[Offsets::hookBackAddr_missingLocalization]
@@ -79,8 +78,8 @@ void __declspec(naked) missingLocalizationHookFunc() {
 /// Remove spaces and numbers. "SONG LIST 1" -> "SONGLIST"
 /// </summary>
 void CustomSongTitles::PatchSongListAppendages() {
-	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedSpaces, (UINT*)Offsets::patch_ListSpaces, 5); //MemUtil out " "
-	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedNumbers, (UINT*)Offsets::patch_ListNumbers, 5); //MemUtil 1-6
+	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedSpaces, (UINT*)Offsets::patch_ListSpaces, 5); // Remove the space added between "SONG LIST" and the index.
+	MemUtil::PatchAdr((BYTE*)Offsets::patch_addedNumbers, (UINT*)Offsets::patch_ListNumbers, 5); // Remove the index from the Song List name.
 }
 
 /// <summary>
