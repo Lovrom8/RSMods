@@ -51,13 +51,13 @@ bool Proxy::Init() {
 
 extern "C" {
 	enum XInput_Proxy {
-		Enable = 0,
-		GetBatteryInformation = 1,
-		GetCapabilities = 2,
-		GetDSoundAudioDeviceGuids = 3,
-		GetKeystroke = 4,
-		GetState = 5,
-		SetState = 6
+		Enable,
+		GetBatteryInformation,
+		GetCapabilities,
+		GetDSoundAudioDeviceGuids,
+		GetKeystroke,
+		GetState,
+		SetState
 	};
 
 
