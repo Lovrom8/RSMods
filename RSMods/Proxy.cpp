@@ -1,9 +1,16 @@
-// DON'T TOUCH THIS FILE!!!!!! This is what allows us to get our code running.
-
 #include "Proxy.hpp"
+
 #pragma pack(1)
 
-FARPROC proxy[13] = { 0 };
+typedef void(__stdcall* T_XInput_XInputEnable)(BOOL enable);
+typedef DWORD(__stdcall* T_XInput_XInputGetBatteryInformation)(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION* pBatteryInformation);
+typedef DWORD(__stdcall* T_XInput_XInputGetCapabilities)(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities);
+typedef DWORD(__stdcall* T_XInput_XInputGetDSoundAudioDeviceGuids)(DWORD dwUserIndex, GUID* pDSoundRenderGuid, GUID* pDSoundCaptureGuid);
+typedef DWORD(__stdcall* T_XInput_XInputGetKeystroke)(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE* pKeystroke);
+typedef DWORD(__stdcall* T_XInput_XInputGetState)(DWORD dwUserIndex, XINPUT_STATE* pState);
+typedef DWORD(__stdcall* T_XInput_XInputSetState)(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
+
+FARPROC proxy[7] = { 0 };
 HINSTANCE originalDLL;
 
 /// <summary>
@@ -30,124 +37,51 @@ bool Proxy::Init() {
 	if (!originalDLL)
 		return false;
 
-	proxy[0] = GetProcAddress(originalDLL, "DllMain");
-	proxy[1] = GetProcAddress(originalDLL, "entry");
-	proxy[2] = GetProcAddress(originalDLL, "Ordinal_100");
-	proxy[3] = GetProcAddress(originalDLL, "Ordinal_101");
-	proxy[4] = GetProcAddress(originalDLL, "Ordinal_102");
-	proxy[5] = GetProcAddress(originalDLL, "Ordinal_103");
-	proxy[6] = GetProcAddress(originalDLL, "XInputEnable");
-	proxy[7] = GetProcAddress(originalDLL, "XInputGetBatteryInformation");
-	proxy[8] = GetProcAddress(originalDLL, "XInputGetCapabilities");
-	proxy[9] = GetProcAddress(originalDLL, "XInputGetDSoundAudioDeviceGuids");
-	proxy[10] = GetProcAddress(originalDLL, "XInputGetKeystroke");
-	proxy[11] = GetProcAddress(originalDLL, "XInputGetState");
-	proxy[12] = GetProcAddress(originalDLL, "XInputSetState");
+	proxy[0] = GetProcAddress(originalDLL, "XInputEnable");
+	proxy[1] = GetProcAddress(originalDLL, "XInputGetBatteryInformation");
+	proxy[2] = GetProcAddress(originalDLL, "XInputGetCapabilities");
+	proxy[3] = GetProcAddress(originalDLL, "XInputGetDSoundAudioDeviceGuids");
+	proxy[4] = GetProcAddress(originalDLL, "XInputGetKeystroke");
+	proxy[5] = GetProcAddress(originalDLL, "XInputGetState");
+	proxy[6] = GetProcAddress(originalDLL, "XInputSetState");
 
 	return true;
 }
 
-// DllMain
-extern "C" __declspec(naked) void __cdecl XInput_DllMain() {
-	__asm
-	{
-		jmp proxy[0 * 4];
+
+extern "C" {
+	// XInputEnable
+	void __cdecl XInput_XInputEnable(BOOL enable) {
+		return ((T_XInput_XInputEnable)proxy[0])(enable);
+	}
+
+	// XInputGetBatteryInformation
+	DWORD __cdecl XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION batteryInformation) {
+		return ((T_XInput_XInputGetBatteryInformation)proxy[1])(dwUserIndex, devType, &batteryInformation);
+	}
+
+	// XInputGetCapabilities
+	DWORD __cdecl XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES capabilities) {
+		return ((T_XInput_XInputGetCapabilities)proxy[2])(dwUserIndex, dwFlags, &capabilities);
+	}
+
+	// XInputGetDSoundAudioDeviceGuids
+	DWORD __cdecl XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID pDSoundRenderGuid, GUID DSoundCaptureGuid) {
+		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[3])(dwUserIndex, &pDSoundRenderGuid, &DSoundCaptureGuid);
+	}
+
+	// XInputGetKeystroke
+	DWORD __cdecl XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE keystroke) {
+		return ((T_XInput_XInputGetKeystroke)proxy[4])(dwUserIndex, dwReserved, &keystroke);
+	}
+
+	// XInputGetState
+	DWORD __cdecl XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE state) {
+		return ((T_XInput_XInputGetState)proxy[5])(dwUserIndex, &state);
+	}
+
+	// XInputSetState
+	DWORD __cdecl XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION vibration) {
+		return ((T_XInput_XInputSetState)proxy[6])(dwUserIndex, &vibration);
 	}
 }
-
-// entry
-extern "C" __declspec(naked) void __cdecl XInput_entry() {
-	__asm
-	{
-		jmp proxy[1 * 4];
-	}
-}
-
-// Ordinal_100
-extern "C" __declspec(naked) void __cdecl XInput_Ordinal_100() {
-	__asm
-	{
-		jmp proxy[2 * 4];
-	}
-}
-
-// Ordinal_101
-extern "C" __declspec(naked) void __cdecl XInput_Ordinal_101() {
-	__asm
-	{
-		jmp proxy[3 * 4];
-	}
-}
-
-// Ordinal_102
-extern "C" __declspec(naked) void __cdecl XInput_Ordinal_102() {
-	__asm
-	{
-		jmp proxy[4 * 4];
-	}
-}
-
-// Ordinal_103
-extern "C" __declspec(naked) void __cdecl XInput_Ordinal_103() {
-	__asm
-	{
-		jmp proxy[5 * 4];
-	}
-}
-
-// XInputEnable
-extern "C" __declspec(naked) void __cdecl XInput_XInputEnable() {
-	__asm
-	{
-		jmp proxy[6 * 4];
-	}
-}
-
-// XInputGetBatteryInformation
-extern "C" __declspec(naked) void __cdecl XInput_XInputGetBatteryInformation() {
-	__asm
-	{
-		jmp proxy[7 * 4];
-	}
-}
-
-// XInputGetCapabilities
-extern "C" __declspec(naked) void __cdecl XInput_XInputGetCapabilities() {
-	__asm
-	{
-		jmp proxy[8 * 4];
-	}
-}
-
-// XInputGetDSoundAudioDeviceGuids
-extern "C" __declspec(naked) void __cdecl XInput_XInputGetDSoundAudioDeviceGuids() {
-	__asm
-	{
-		jmp proxy[9 * 4];
-	}
-}
-
-// XInputGetKeystroke
-extern "C" __declspec(naked) void __cdecl XInput_XInputGetKeystroke() {
-	__asm
-	{
-		jmp proxy[10 * 4];
-	}
-}
-
-// XInputGetState
-extern "C" __declspec(naked) void __cdecl XInput_XInputGetState() {
-	__asm
-	{
-		jmp proxy[11 * 4];
-	}
-}
-
-// XInputSetState
-extern "C" __declspec(naked) void __cdecl XInput_XInputSetState() {
-	__asm
-	{
-		jmp proxy[12 * 4];
-	}
-}
-
