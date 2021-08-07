@@ -50,38 +50,49 @@ bool Proxy::Init() {
 
 
 extern "C" {
+	enum XInput_Proxy {
+		Enable = 0,
+		GetBatteryInformation = 1,
+		GetCapabilities = 2,
+		GetDSoundAudioDeviceGuids = 3,
+		GetKeystroke = 4,
+		GetState = 5,
+		SetState = 6
+	};
+
+
 	// XInputEnable
 	void __cdecl XInput_XInputEnable(BOOL enable) {
-		return ((T_XInput_XInputEnable)proxy[0])(enable);
+		return ((T_XInput_XInputEnable)proxy[XInput_Proxy::Enable])(enable);
 	}
 
 	// XInputGetBatteryInformation
 	DWORD __cdecl XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION batteryInformation) {
-		return ((T_XInput_XInputGetBatteryInformation)proxy[1])(dwUserIndex, devType, &batteryInformation);
+		return ((T_XInput_XInputGetBatteryInformation)proxy[XInput_Proxy::GetBatteryInformation])(dwUserIndex, devType, &batteryInformation);
 	}
 
 	// XInputGetCapabilities
 	DWORD __cdecl XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES capabilities) {
-		return ((T_XInput_XInputGetCapabilities)proxy[2])(dwUserIndex, dwFlags, &capabilities);
+		return ((T_XInput_XInputGetCapabilities)proxy[XInput_Proxy::GetCapabilities])(dwUserIndex, dwFlags, &capabilities);
 	}
 
 	// XInputGetDSoundAudioDeviceGuids
 	DWORD __cdecl XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID pDSoundRenderGuid, GUID DSoundCaptureGuid) {
-		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[3])(dwUserIndex, &pDSoundRenderGuid, &DSoundCaptureGuid);
+		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[XInput_Proxy::GetDSoundAudioDeviceGuids])(dwUserIndex, &pDSoundRenderGuid, &DSoundCaptureGuid);
 	}
 
 	// XInputGetKeystroke
 	DWORD __cdecl XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE keystroke) {
-		return ((T_XInput_XInputGetKeystroke)proxy[4])(dwUserIndex, dwReserved, &keystroke);
+		return ((T_XInput_XInputGetKeystroke)proxy[XInput_Proxy::GetKeystroke])(dwUserIndex, dwReserved, &keystroke);
 	}
 
 	// XInputGetState
 	DWORD __cdecl XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE state) {
-		return ((T_XInput_XInputGetState)proxy[5])(dwUserIndex, &state);
+		return ((T_XInput_XInputGetState)proxy[XInput_Proxy::GetState])(dwUserIndex, &state);
 	}
 
 	// XInputSetState
 	DWORD __cdecl XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION vibration) {
-		return ((T_XInput_XInputSetState)proxy[6])(dwUserIndex, &vibration);
+		return ((T_XInput_XInputSetState)proxy[XInput_Proxy::SetState])(dwUserIndex, &vibration);
 	}
 }
