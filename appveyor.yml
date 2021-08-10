@@ -13,6 +13,6 @@
       verbosity: quiet
   on_finish:
   - cmd: >-
-       7z a DLL.zip %APPVEYOR_BUILD_FOLDER%\Release\D3DX9_42.dll
+       7z a DLL.zip %APPVEYOR_BUILD_FOLDER%\Release\xinput1_3.dll
 
        appveyor PushArtifact DLL.zip
