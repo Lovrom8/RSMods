@@ -42,7 +42,7 @@
             this.UseModsButton.TabIndex = 1;
             this.UseModsButton.Text = "Click To Use Mods";
             this.UseModsButton.UseVisualStyleBackColor = true;
-            this.UseModsButton.Click += new System.EventHandler(this.UseCDLCButton_Click);
+            this.UseModsButton.Click += new System.EventHandler(this.UseModsButton_Click);
             // 
             // label1
             // 

@@ -14,7 +14,7 @@ namespace RS2014_Mod_Installer
             InitializeComponent();
         }
 
-        private void UseCDLCButton_Click(object sender, EventArgs e)
+        private void UseModsButton_Click(object sender, EventArgs e)
         {
             string originalButtonText = UseModsButton.Text;
             UseModsButton.Text += "\n(Please wait as we get the mods setup).";
