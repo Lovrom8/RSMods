@@ -186,7 +186,7 @@
     <Content Include="Resources\RSModsGUI\TwitchLib.PubSub.dll" />
     <Content Include="Resources\RSModsGUI\X360.dll" />
     <Content Include="Resources\RSModsGUI\zlib.net.dll" />
-    <None Include="Resources\D3DX9_42.dll" />
+    <Content Include="Resources\xinput1_3.dll" />
     <None Include="Assets\LogoX256.ico" />
     <Content Include="LogoX256.ico" />
     <Content Include="Resources\RSModsGUI\ddc\ddc.exe" />

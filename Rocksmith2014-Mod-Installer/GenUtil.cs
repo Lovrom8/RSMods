@@ -148,14 +148,14 @@ namespace RSMods.Util
         {
             try
             {
-                var rs2RootDir = string.Empty;
+                var rs2RootDir = String.Empty;
                 var steamRootPath = GetSteamDirectory();
 
-                if (!string.IsNullOrEmpty(steamRootPath))
+                if (!String.IsNullOrEmpty(steamRootPath))
                 {
                     rs2RootDir = Path.Combine(steamRootPath, "SteamApps\\common\\Rocksmith2014");
 
-                    if (!Directory.Exists(rs2RootDir))
+                    if (!Directory.Exists(rs2RootDir)) // RS-Folder doesn't exist
                     {
                         // Go through each possible registry location
                         foreach (var installRegKey in InstallRegKeys)
@@ -169,21 +169,25 @@ namespace RSMods.Util
                             }
                         }
 
+
+
                         rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
 
-                        if (string.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
+                        if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
                         {
                             MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!", "Your help is required!");
-                            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+                            return AskUserForRSFolder();
+                        }
+                    }
+                    else // RS-Folder does exist
+                    {
+                        if (!File.Exists(Path.Combine(rs2RootDir, "cache.psarc")))
+                        { // If cache.psarc doesn't exist (old install / steam left-overs)
+                            rs2RootDir = AskUserForRSFolder();
+                            if (rs2RootDir == String.Empty)
                             {
-                                DialogResult result = dialog.ShowDialog();
-                                if (result == DialogResult.OK)
-                                {
-                                    string rsFolder = dialog.SelectedPath;
-
-                                    if (rsFolder.IsRSFolder())
-                                        return rsFolder;
-                                }
+                                MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, and you didn't give us a valid RS Folder.", "Closing Application");
+                                Application.Exit();
                             }
                         }
                     }
@@ -196,6 +200,22 @@ namespace RSMods.Util
                 MessageBox.Show("<Warning> GetStreamDirectory, " + ex.Message);
             }
 
+            return String.Empty;
+        }
+
+        public static string AskUserForRSFolder()
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            {
+                DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string rsFolder = dialog.SelectedPath;
+
+                    if (rsFolder.IsRSFolder())
+                        return rsFolder;
+                }
+            }
             return String.Empty;
         }
     }

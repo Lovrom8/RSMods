@@ -5,9 +5,14 @@ namespace RS2014_Mod_Installer
 {
     class Worker
     {
+        private static string RSLocation = string.Empty;
+
         public static string WhereIsRocksmith()
         {
-            return RSMods.Util.GenUtil.GetRSDirectory();
+            if (RSLocation == string.Empty)
+                RSLocation = RSMods.Util.GenUtil.GetRSDirectory();
+
+            return RSLocation;
         }
     }
     class DLLStuff
@@ -16,7 +21,11 @@ namespace RS2014_Mod_Installer
         {
             try
             {
-                File.WriteAllBytes(Path.Combine(@rocksmithLocation, "D3DX9_42.dll"), Properties.Resources.D3DX9_42);
+                File.WriteAllBytes(Path.Combine(@rocksmithLocation, "xinput1_3.dll"), Properties.Resources.xinput1_3);
+
+                if (File.Exists(Path.Combine(@rocksmithLocation, "D3DX9_42.dll")) && new FileInfo(Path.Combine(@rocksmithLocation, "D3DX9_42.dll")).Length >= 300000)
+                    File.Delete(Path.Combine(@rocksmithLocation, "D3DX9_42.dll"));
+
                 return true;
             }
             catch (IOException)

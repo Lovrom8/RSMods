@@ -123,16 +123,6 @@ namespace RS2014_Mod_Installer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] D3DX9_42 {
-            get {
-                object obj = ResourceManager.GetObject("D3DX9_42", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] ddc {
             get {
                 object obj = ResourceManager.GetObject("ddc", resourceCulture);
@@ -898,6 +888,16 @@ namespace RS2014_Mod_Installer.Properties {
         internal static byte[] X360 {
             get {
                 object obj = ResourceManager.GetObject("X360", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] xinput1_3 {
+            get {
+                object obj = ResourceManager.GetObject("xinput1_3", resourceCulture);
                 return ((byte[])(obj));
             }
         }
