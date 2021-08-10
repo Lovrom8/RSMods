@@ -56,6 +56,12 @@ namespace Offsets {
 	extern uintptr_t func_getStringFromCSV;
 	extern uintptr_t func_getLocalizedString;
 	extern uintptr_t func_appendString; //for reference purposes
+	extern uintptr_t patch_addedSpaces;
+	extern uintptr_t patch_addedNumbers;
+	extern uintptr_t patch_sprintfArg;
+	extern const char* patch_ListSpaces;
+	extern const char* patch_ListNumbers;
+	extern const char* patch_SprintfArgs;
 
 	// Disable Controllers
 	extern uintptr_t hookAddr_DirectInput8, hookBackAddr_DirectInput8;
@@ -65,19 +71,6 @@ namespace Offsets {
 	extern uint32_t d3dDevice_SearchLen;
 	extern char* d3dDevice_Mask;
 
-	// cDLC Stuff :P
-	extern uintptr_t cdlcCheckdwAdr;
-	extern uintptr_t cdlcCheckSearchLen;
-	extern uint8_t* cdlcCheckAdr;
-	extern const char* sig_CDLCCheck;
-	extern char* sig_CDLCCheckMask;
-	extern const char* patch_CDLCCheck;
-	extern uintptr_t patch_addedSpaces;
-	extern uintptr_t patch_addedNumbers;
-	extern uintptr_t patch_sprintfArg;
-	extern const char* patch_ListSpaces;
-	extern const char* patch_ListNumbers;
-	extern const char* patch_SprintfArgs;
 	void Initialize();
 
 	// Current Menu

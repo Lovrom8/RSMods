@@ -1,7 +1,6 @@
 #include "Offsets.hpp"
 
 void Offsets::Initialize() {
-	cdlcCheckAdr = MemUtil::FindPattern<uint8_t*>(cdlcCheckdwAdr, cdlcCheckSearchLen, (uint8_t*)sig_CDLCCheck, sig_CDLCCheckMask);
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);
 }
 
