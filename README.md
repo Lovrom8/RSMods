@@ -3,7 +3,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
 
 ## Branches:
-1) [Develop](https://github.com/Lovrom8/RSMods/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/DLL.zip?branch=develop)
+1) [Develop](https://github.com/Lovrom8/RSMods/tree/develop) - proxy DLL for xinput1_3.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/DLL.zip?branch=develop)
 2) [GUI](https://github.com/Lovrom8/RSMods/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/RSMods.zip?branch=GUI)
 3) [One-Click-Installer](https://github.com/Lovrom8/rsmods/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSMods/releases/latest)
 
