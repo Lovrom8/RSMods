@@ -60,6 +60,12 @@ namespace Offsets {
 	uintptr_t func_getStringFromCSV = 0x017B7A3E;
 	uintptr_t func_getLocalizedString = 0x01395763;
 	uintptr_t func_appendString = 0x01395488; //for reference purposes
+	uintptr_t patch_addedSpaces = 0x01529f98;
+	uintptr_t patch_addedNumbers = 0x0152a006;
+	uintptr_t patch_sprintfArg = 0x0183479C;
+	const char* patch_ListSpaces = "\x58\x58\x90\x90\x90";
+	const char* patch_ListNumbers = "\x5A\x5A\x90\x90\x90";
+	const char* patch_SprintfArgs = "\x04";
 
 	// Disable Controllers
 	uintptr_t hookAddr_DirectInput8 = 0x01c5961a;
@@ -70,19 +76,6 @@ namespace Offsets {
 	uint32_t d3dDevice_SearchLen = 0x128000;
 	char* d3dDevice_Mask = "xx????xx????xx";
 
-	// cDLC Stuff :P
-	uintptr_t cdlcCheckdwAdr = 0x01377000;
-	uintptr_t cdlcCheckSearchLen = 0x00DDE000;
-	uint8_t* cdlcCheckAdr;
-	const char* sig_CDLCCheck = "\xE8\x00\x00\x00\x00\x83\xC4\x20\x88\xC3";
-	char* sig_CDLCCheckMask = "x????xxxxx";
-	const char* patch_CDLCCheck = "\xB3\x01";
-	uintptr_t patch_addedSpaces = 0x01529f98;
-	uintptr_t patch_addedNumbers = 0x0152a006;
-	uintptr_t patch_sprintfArg = 0x0183479C;
-	const char* patch_ListSpaces = "\x58\x58\x90\x90\x90";
-	const char* patch_ListNumbers = "\x5A\x5A\x90\x90\x90";
-	const char* patch_SprintfArgs = "\x04";
 	void Initialize();
 
 	// Current Menu
