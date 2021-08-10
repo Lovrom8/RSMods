@@ -3,9 +3,9 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
 
 ## Branches:
-1) [Develop](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/DLL.zip?branch=develop)
-2) [GUI](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/RSMods.zip?branch=GUI)
-3) [One-Click-Installer](https://github.com/Lovrom8/rsmods/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/releases/latest)
+1) [Develop](https://github.com/Lovrom8/RSMods/tree/develop) - proxy DLL for D3DX9_42.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/DLL.zip?branch=develop)
+2) [GUI](https://github.com/Lovrom8/RSMods/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/RSMods.zip?branch=GUI)
+3) [One-Click-Installer](https://github.com/Lovrom8/rsmods/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSMods/releases/latest)
 
 ## Features:
 
@@ -71,9 +71,6 @@
 * **Show Current Note**
   * While we still don't have a way of forcing the game to show the pause menu tuner while you are playing, you can enable this budget version to see which note you are currently hitting, so that you can finally hit 100% instead of missing those pesky bends due to _bad note detection_.
 
-* **CDLC Enabler**
-  * After all, this mod is based on the proxy DLL which bypassed the check which enabled users to play community made songs in the game.
-
 * **Fast Load** - **GUI Only**
   * If you are running the game from an SSD or especially an NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in a matter of seconds. It can be fairly unstable, but in general it should work provided you don't try to use it on a good old mechanical HDD. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
   
@@ -101,7 +98,7 @@
   
 ## Installation:
 * There's two options as how this mod can be installed:
-1. Manually build/copy the DLL to the root folder of Rocksmith 2014 RM, create a file called RSMods.ini and fill it with options as [shown below](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition#settings)
+1. Manually build/copy the DLL to the root folder of Rocksmith 2014 RM, create a file called RSMods.ini and fill it with options as [shown below](https://github.com/Lovrom8/RSMods#settings)
    If it is installed in the most common folder (C drive, Program Files/Steam/Steamapps), VS will attempt to copy the DLL to the folder for your convenience.
 2. Use the One-Click-Installer to copy both the DLL and RSMods GUI to the game folder. If it's unable to automatically detect where Rocksmith is installed, it will ask you to point it to the correct folder.
   
@@ -128,7 +125,7 @@ Section        | Entry             | Possible values | Info   |
  **Keybinds** | &nbsp; | &nbsp; | &nbsp; |
 &nbsp; | ToggleLoftKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Toggle the background of the game when this key is pressed. Only usable when Toggle Switches > ToggleLoft is on. |
 &nbsp; | ShowSongTimerKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Shows the current time of the song being played. Only usable when Toggle Switches > ShowSongTimer is on.|
-&nbsp; | ForceReEnumerationKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Force the game to check for new CDLC added to your DLC folder. Only usable when Toggle Switches > ForceReEnumeration is on. | 
+&nbsp; | ForceReEnumerationKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Force the game to check for new songs added to your DLC folder. Only usable when Toggle Switches > ForceReEnumeration is on. | 
 &nbsp; | RainbowStringsKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Make your strings scroll through colors. Only usable when Toggle Switches > RainbowStrings is on. |
 &nbsp; | RainbowNotesKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Make your notes scroll through colors. Only usable when Toggle Switches > RainbowNotes is on. |
 &nbsp; | RemoveLyricsKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format.| Toggle the lyrics when in a song. Only usable when Toggle Switches > Lyrics is on. |
@@ -147,7 +144,7 @@ Section        | Entry             | Possible values | Info   |
 &nbsp; | ToggleLoft | on/off | Turns off the background of the game. This will make the background black. |
 &nbsp; | VolumeControl | on/off | Allows you to change volumes by pressing a keybinding. |
 &nbsp; | ShowSongTimer | on/off | Shows the time of the song you are playing. |
-&nbsp; | ForceReEnumeration | automatic/manual | Forces the game to look for new CDLC added to your DLC folder. |
+&nbsp; | ForceReEnumeration | automatic/manual | Forces the game to look for new songs added to your DLC folder. |
 &nbsp; | RainbowStrings | on/off | Makes your strings cycle through a color wheel. |
 &nbsp; | RainbowNotes | on/off | Makes your notes cycle through a color wheel. |
 &nbsp; | ExtendedRange | on/off | Change your string colors based on the tuning of the song. This is helpful for people who play low-tuned songs with a 7-string guitar or 5-string bass. |
@@ -272,15 +269,15 @@ Section        | Entry             | Possible values | Info   |
 * A: The current pedals that support drop tuning automatically are the Digitech Whammy DT, Digitech Whammy, and the Digitech Bass Whammy. Thank PoizenJam for the work they did getting those last two pedals to work as intended.
 
 * Q: I want something added to the mod, like I want to remove XYZ from the game!!!
-* A: Post a request in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/issues) with the name "DLL - FR - XYZ". Please follow this format so we know what we are doing, either fixing something or adding a new feature. Note: Just because you post a request for us to do something doesn't mean we can do it and/ or we will do it. Please don't keep begging us to do your request, we will get to it if we think it's worth our time spent.
+* A: Post a request in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSMods/issues) with the name "DLL - FR - XYZ". Please follow this format so we know what we are doing, either fixing something or adding a new feature. Note: Just because you post a request for us to do something doesn't mean we can do it and/ or we will do it. Please don't keep begging us to do your request, we will get to it if we think it's worth our time spent.
 
 
 * Q: I found a bug / somethings not working as it should! How do I get this fixed?
-* A: Please post an issue in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSCDLCEnabler-2020Edition/issues) with the name "DLL - Bug - XYZ" if the bug is in Rocksmith or "GUI - Bug - XYZ" if the bug is in the tool to mod your game. Please try to be descriptive in this, as posting "It don't work" doesn't help us. Screenshots and/ or videos can help, but steps on what you did to get it to break would be greatly appreciated. Sometimes bugs are where we get our best features :)
+* A: Please post an issue in the [Issues tab of this Github repo](https://github.com/Lovrom8/RSMods/issues) with the name "DLL - Bug - XYZ" if the bug is in Rocksmith or "GUI - Bug - XYZ" if the bug is in the tool to mod your game. Please try to be descriptive in this, as posting "It don't work" doesn't help us. Screenshots and/ or videos can help, but steps on what you did to get it to break would be greatly appreciated. Sometimes bugs are where we get our best features :)
 
 
 * Q: Who made these mods, and how can I thank you guys?
 * A: Thank you for showing interest in the project. We spent over ten months working on this project trying to flesh it out so people would enjoy using it. The developers are mainly: LovroM8 (Lovro), and Ffio1 (Ffio) but we received a lot of help from ZagatoZee (ZZ), Kokolihapihvi (Koko), and L0fka. All we ask for is a quick thank you, and those can either be sent by starring this project on Github, telling your Rocksmith friends, or just coming into the Discord and saying "Thank You". I know it sounds like it's not much, but it really makes our day(s). 
 
-* If you have any questions, feel free to reach us in the [r/Rocksmith Discord](https://rocksmith.rocks/discord) in the #rsmods channel, or in the #rs-mods channel of the [CustomsForge Discord](https://discord.gg/cf)
+* If you have any questions, feel free to reach us in the [r/Rocksmith Discord](https://rocksmith.rocks/discord) in the #rsmods channel.
 
