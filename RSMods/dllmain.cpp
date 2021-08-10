@@ -1173,7 +1173,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 		}
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
-		Proxy::Init(); // Proxy all real xinput1_3.dll commands to the actual D3DX9_42.dll.
+		Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
