@@ -1,4 +1,4 @@
-# One Click Installer for Rocksmith 2014 "RSMods" and CDLC enabling
+# One Click Installer for Rocksmith 2014 "RSMods"
 
 Open the EXE, click the big button, select where your rocksmith folder is. 
 
