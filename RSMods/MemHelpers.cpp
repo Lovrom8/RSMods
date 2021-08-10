@@ -387,18 +387,16 @@ void MemHelpers::ToggleLoft() {
 		*(float*)farAddr = 10000; // Loft On
 }
 
-/// <returns>Current Time In Song</returns>
-std::string MemHelpers::ShowSongTimer() {
+float MemHelpers::SongTimer() {
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
 	// Null Pointer Check
 	if (!addrTimer) {
 		std::cout << "Invalid Pointer: ShowSongTimer" << std::endl;
-		return "";
+		return 0.f;
 	}
-		
 
-	return std::to_string(*(float*)addrTimer);
+	return *(float*)addrTimer;
 }
 
 /// <summary>
@@ -420,21 +418,6 @@ void MemHelpers::ToggleCB(bool enabled) {
 		*(byte*)cbEnabled = enabled;
 }
 
-/// <summary>
-/// Patch Game for CDLC.
-/// </summary>
-void MemHelpers::PatchCDLCCheck() {
-	uint8_t* VerifySignatureOffset = Offsets::cdlcCheckAdr;
-	*(char*)0x013aefd9 = (char)0x60;
-
-	if (VerifySignatureOffset) {
-		if (!MemUtil::PatchAdr(VerifySignatureOffset + 8, (UINT*)Offsets::patch_CDLCCheck, 2))
-			std::cout << "Failed: CDLC Patch" << std::endl;
-		else
-			std::cout << "Success: CDLC Patch" << std::endl;
-	}
-}
-
 
 /// <returns>Size of Rocksmith Window</returns>
 Resolution MemHelpers::GetWindowSize() {
@@ -453,14 +436,8 @@ Resolution MemHelpers::GetWindowSize() {
 /// <param name="stringToCheckIfInsideArray"> - Input</param>
 /// <param name="stringArray"> - Is input in list | ARRAY? (NULLABLE)</param>
 /// <param name="stringVector"> - Is input in list | VECTOR? (NULLABLE)</param>
-bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray, std::vector<std::string> stringVector) {
-	if (stringArray != NULL) {
-		for (unsigned int i = 0; i < stringArray->length(); i++) {
-			if (stringToCheckIfInsideArray == stringArray[i])
-				return true;
-		}
-	}
-	else if (stringVector != std::vector<std::string>()) {
+bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::vector<std::string> stringVector) {
+	if (stringVector != std::vector<std::string>()) {
 		for (unsigned int i = 0; i < stringVector.size(); i++) {
 			if (stringToCheckIfInsideArray == stringVector[i])
 				return true;
@@ -539,7 +516,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 /// Are we in a song?
 /// </summary>
 bool MemHelpers::IsInSong() {
-	return IsInStringArray(GetCurrentMenu(), 0, songModes);
+	return IsInStringArray(GetCurrentMenu(), songModes);
 }
 
 /// <summary>
@@ -567,7 +544,10 @@ float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
 /// Automate triggering the Riff Repeater above 100% mod.
 /// </summary>
 void MemHelpers::AutomatedOpenRRSpeedAbuse() {
-	Sleep(5000); // Main animation from Tuner -> In game where we can control the menu
+
+	while (SongTimer() < 5.f) {
+		Sleep(500);
+	}
 
 	std::cout << "Triggering RR Speed mod" << std::endl;
 

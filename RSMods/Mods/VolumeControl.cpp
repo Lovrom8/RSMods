@@ -9,7 +9,7 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
-	if (!MemHelpers::IsInStringArray(mixerToIncrease, NULL, mixerNames)) {
+	if (!MemHelpers::IsInStringArray(mixerToIncrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}
@@ -24,6 +24,8 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	// Set Volume
 	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+
+	std::cout << "Increase volume of " << mixerToIncrease << " by " << amountToIncrease << " with a new volume of " << volume << std::endl;
 }
 
 /// <summary>
@@ -35,7 +37,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
-	if (!MemHelpers::IsInStringArray(mixerToDecrease, NULL, mixerNames)) {
+	if (!MemHelpers::IsInStringArray(mixerToDecrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}
@@ -50,4 +52,6 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	// Set Volume
 	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
 	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+	
+	std::cout << "Decrease volume of " << mixerToDecrease << " by " << amountToDecrease << " with a new volume of " << volume << std::endl;
 }

@@ -482,9 +482,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::IsTwitchSettingEnabled("FYourFC")) {
 		uintptr_t currentNoteStreak = 0;
 
-		if (MemHelpers::IsInStringArray(currentMenu, 0, learnASongModes))
+		if (MemHelpers::IsInStringArray(currentMenu, learnASongModes))
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakLASOffsets);
-		else if (MemHelpers::IsInStringArray(currentMenu, 0, scoreAttackModes))
+		else if (MemHelpers::IsInStringArray(currentMenu, scoreAttackModes))
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakSAOffsets);
 
 		if (currentNoteStreak != 0)
@@ -501,7 +501,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		return REMOVE_TEXTURE;
 
 	// Thicc Mesh Mods
-	if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
+	if (MemHelpers::IsInSong()) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return REMOVE_TEXTURE;
 		if (Settings::ReturnSettingValue("RemoveInlaysEnabled") == "on" && IsExtraRemoved(inlays, currentThicc))
@@ -513,7 +513,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Remove Headstock Artifacts
-	else if (MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
+	else if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 			return REMOVE_TEXTURE;
@@ -577,7 +577,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 				int headstockCRCLimit = 3;
 
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, multiplayerTuners))
+				if (MemHelpers::IsInStringArray(currentMenu, multiplayerTuners))
 					headstockCRCLimit = 6;
 
 				if (headstockTexturePointers.size() == headstockCRCLimit) {

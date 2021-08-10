@@ -62,10 +62,15 @@ unsigned WINAPI MidiThread() {
 /// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
-	if (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU)
-		return true;
+	if (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU) {
+		if (lParam == VK_RETURN) // Alt+Enter = F11
+			WndProc(hWnd, WM_KEYUP, VK_F11, 0);
 
-	if (msg == WM_SYSCOMMAND && keyPressed == SC_MOVE + 0x2 && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, onlineModes))
+		return true;
+	}
+		
+
+	if (msg == WM_SYSCOMMAND && keyPressed == SC_MOVE + 0x2 && MemHelpers::IsInStringArray(D3DHooks::currentMenu, onlineModes))
 		return true;
 
 	// Trigger Mod on Keypress
@@ -73,17 +78,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
 			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") { // Toggle Loft
 				MemHelpers::ToggleLoft();
-				std::cout << "Toggle Loft" << std::endl;
+				std::cout << "Triggered Mod: Toggle Loft" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") { // Show Song Timer
 				D3DHooks::showSongTimerOnScreen = !D3DHooks::showSongTimerOnScreen;
-				std::cout << "Show Me Dat Timer Bruh" << std::endl;
+				std::cout << "Triggered Mod: Show Song Timer" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") { // Force Enumeration (Manual | Keypress)
 				Enumeration::ForceEnumeration();
-				std::cout << "ENUMERATE YOU FRICKIN' SOAB" << std::endl;
+				std::cout << "Triggered Mod: Force Enumeration" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") { // Rainbow Strings
@@ -92,24 +97,21 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (!ERMode::RainbowEnabled)
 					ERMode::ResetAllStrings();
 					
-				std::cout << "Rainbow Strings" << std::endl;
+				std::cout << "Triggered Mod: Rainbow Strings" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") { // Rainbow Notes
 				ERMode::ToggleRainbowNotes();
-				std::cout << "Those notes do be kinda pretty" << std::endl;
+				std::cout << "Triggered Mod: Rainbow Notes" << std::endl;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") { // Remove Lyrics (Manual | Keypress)
 				D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
-				if (D3DHooks::RemoveLyrics)
-					std::cout << "No "; // Keep this without a endl so it appears as "No Karaoke For You" when on and "Karaoke For You" when off.
-				std::cout << "Karaoke For You" << std::endl;
+				std::cout << "Triggered Mod: Remove Lyrics" << std::endl;
 			}
 			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) { //CTRL + A
 				Settings::UpdateSettings();
-				std::cout << "Value: " << Settings::ReturnSettingValue("ExtendedRangeEnabled") << std::endl;
-				std::cout << "Reloaded settings" << std::endl;
+				std::cout << "Triggered Setting Update" << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Master Volume
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
@@ -160,12 +162,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				else
 					Midi::tuningOffset++;
 
-
 				// Cap what values can be set (as we don't want to have to specify every value, and some pedals don't support more than an octave).
 				if (Midi::tuningOffset < -3)
 					Midi::tuningOffset = -3;
 				else if (Midi::tuningOffset > 12)
 					Midi::tuningOffset = 12;
+
+				std::cout << "Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << std::endl;
 			}
 			
 
@@ -215,7 +218,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 			
 
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes)) && useNewSongSpeed) { // Riff Repeater over 100%
+			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && useNewSongSpeed) { // Riff Repeater over 100%
 				bool prepToTurnOff = false;
 
 				if (realSongSpeed >= 100.f)
@@ -248,14 +251,21 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				if (prepToTurnOff && realSongSpeed == 100.f) // Disable UI if we bug out of the mode.
 					useNewSongSpeed = false;
+
+				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << UISpeed << "% UI speed." << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
 				Settings::ToggleExtendedRangeMode();
+				
+				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, tuningMenus) && keyPressed == VK_DELETE)
+			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
+				std::cout << "Triggered Mod: Auto Tuning VIA Midi" << std::endl;
+			}
+				
 		}
 
 		if (debug) {
@@ -517,7 +527,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	// Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
 	if (D3DHooks::GameLoaded) {
 
-		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, songModes) || AutomatedSelectedVolume)) { // Show Selected Volume
+		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) { // Show Selected Volume
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
 			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
@@ -526,8 +536,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::ShowSongTimer() != "")) { // Show Song Timer
-			std::string currentSongTimeString = MemHelpers::ShowSongTimer();
+		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) { // Show Song Timer
+			std::string currentSongTimeString = std::to_string(MemHelpers::SongTimer());
 			size_t stringSize;
 
 			int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
@@ -546,10 +556,10 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))) { // Riff Repeater over 100%
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) { // Riff Repeater over 100%
 			
 			// Set song speed every frame (approx) as the value continously falls down.
-			if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens))
+			if (!MemHelpers::IsInStringArray(currentMenu,  scoreScreens))
 				MemHelpers::RiffRepeaterSpeed(((60 / (realSongSpeed / 100) - 104.539) / -0.4393));
 
 			if (useNewSongSpeed)
@@ -557,13 +567,13 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") { // Show Current Note On Screen
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
+			if (MemHelpers::IsInSong())
 				MemHelpers::DX9DrawText(GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 1.75), (int)(WindowSize.width / 5.75), (int)(WindowSize.height / 8), pDevice);
 			else // Show outside of the song at the top of the screen.
 				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::GetKeyBind("TuningOffsetKey") != NULL && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { // Show current tuning
+		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::GetKeyBind("TuningOffsetKey") != NULL && MemHelpers::IsInStringArray(currentMenu, tuningMenus)) { // Show current tuning
 			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
 		}
 
@@ -644,7 +654,7 @@ void HandleEffect(std::string currEffectMsg) {
 	std::cout << "Entering the thread for: " << currEffectMsg << std::endl;
 
 	// Don't allow the current effect to apply twice. Also blocks mods from triggering when not in a song.
-	while (MemHelpers::IsInStringArray(effectName, 0, enabledEffects) && !MemHelpers::IsInSong())  
+	while (MemHelpers::IsInStringArray(effectName, enabledEffects) && !MemHelpers::IsInSong())  
 		Sleep(150);
 	std::cout << enabledEffects.size() << std::endl;
 
@@ -657,7 +667,7 @@ void HandleEffect(std::string currEffectMsg) {
 		// Disable the effect after it's done
 		HandleMessage(currEffectMsg, "disable");
 		std::cout << "Disabling " << effectName << std::endl;
-		if (MemHelpers::IsInStringArray(effectName, 0, enabledEffects)) // JIC
+		if (MemHelpers::IsInStringArray(effectName, enabledEffects)) // JIC
 			enabledEffects.erase(std::find(enabledEffects.begin(), enabledEffects.end(), effectName));
 	}
 }
@@ -675,7 +685,7 @@ unsigned WINAPI HandleEffectQueueThread() {
 				std::string effectName = Settings::SplitByWhitespace(*it)[1];
 
 				// Make sure we don't already have this effect in the queue.
-				if (!MemHelpers::IsInStringArray(effectName, 0, enabledEffects)) { 
+				if (!MemHelpers::IsInStringArray(effectName, enabledEffects)) { 
 					enabledEffects.push_back(effectName);
 
 					// Send full effect message to the thread
@@ -818,7 +828,7 @@ void ClearMDMPs() {
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI StreamerLogThread() {
 	while (!D3DHooks::GameClosing) {
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, NULL, fastRRModes) && saveNewRRSpeedToFile) {
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes) && saveNewRRSpeedToFile) {
 			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
 			rrText << std::to_string((int)realSongSpeed) << std::endl;
 			saveNewRRSpeedToFile = false;
@@ -847,7 +857,7 @@ unsigned WINAPI MainThread() {
 	// Initialize Functions
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
-	MemHelpers::PatchCDLCCheck();
+	*(char*)0x013aefd9 = (char)0x60; // Patches out function in Rocksmith.
 	Settings::Initialize();
 	UpdateSettings();
 	ERMode::Initialize();
@@ -880,7 +890,7 @@ unsigned WINAPI MainThread() {
 
 			/// If User Is Entering / In Lesson Mode
 
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, lessonModes))
+			if (MemHelpers::IsInStringArray(currentMenu, lessonModes))
 				LessonMode = true;
 			else
 				LessonMode = false;
@@ -922,13 +932,13 @@ unsigned WINAPI MainThread() {
 
 			// Riff Repeater above 100%
 			userWantsRRSpeedEnabled = (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on"); // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) { // This won't work in SA so we need to exclude it.
+			if (MemHelpers::IsInStringArray(currentMenu, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) { // This won't work in SA so we need to exclude it.
 				MemHelpers::AutomatedOpenRRSpeedAbuse();
 				skipERSleep = true;
 			}
 
 			/// If User Is Entering Song
-			if (MemHelpers::IsInStringArray(currentMenu, NULL, songModes)) {
+			if (MemHelpers::IsInSong()) {
 				GuitarSpeakPresent = false;
 				AttemptedERInTuner = false;
 				UseERInTuner = false;
@@ -982,7 +992,7 @@ unsigned WINAPI MainThread() {
 			else {
 
 				// Turn off Riff Repeater Speed above 100%
-				if (!MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) {
+				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens)) {
 					automatedSongSpeedInThisSong = false; 
 					realSongSpeed = 100.f;
 					skipERSleep = false;
@@ -996,7 +1006,7 @@ unsigned WINAPI MainThread() {
 				}
 
 				/// Turn on Extended Range In Tuner
-				if (MemHelpers::IsInStringArray(currentMenu, NULL, preSongTuners)) {
+				if (MemHelpers::IsInStringArray(currentMenu, preSongTuners)) {
 					if (!AttemptedERInTuner) { // The reason this is a separate if statement is so that the else statement isn't voiding the correct menu.
 						Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
 						AttemptedERInTuner = true;
@@ -1054,20 +1064,20 @@ unsigned WINAPI MainThread() {
 				}
 
 				// Reset Headstock Cache (so we aren't running the same textures over and over again)
-				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) || currentMenu == "MissionMenu"))
+				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, tuningMenus)) || currentMenu == "MissionMenu"))
 					resetHeadstockCache = true;
 			}
 			
 			/// "Other" menus. These will normally state what menus they need to be in.
 
 			// Screenshot Scores
-			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, NULL, scoreScreens)) // Screenshot Scores
+			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, scoreScreens)) // Screenshot Scores
 				TakeScreenshot();
 			else
 				takenScreenshotOfThisScreen = false;
 
 			// If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
-			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, NULL, tuningMenus)) { 
+			if (previousMenu != currentMenu && MemHelpers::IsInStringArray(currentMenu, tuningMenus)) { 
 				resetHeadstockCache = true;
 				headstockTexturePointers.clear();
 			}
@@ -1095,7 +1105,7 @@ unsigned WINAPI MainThread() {
 				GameLoaded = true;
 
 			// Auto Load Profile. AKA "Fork in the toaster".
-			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, NULL, dontAutoEnter)) && !forkInToasterNewProfile) {
+			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, dontAutoEnter)) && !forkInToasterNewProfile) {
 				// If the user user says "I want to always load this profile"
 				if (Settings::ReturnSettingValue("ProfileToLoad") != (std::string)"" && currentMenu == (std::string)"ProfileSelect") {
 					selectedUser = MemHelpers::CurrentSelectedUser();
@@ -1163,11 +1173,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 		}
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
-		D3DX9_42::InitProxy(); // Proxy all real D3DX9_42.dll commands to the actual D3DX9_42.dll.
+		Proxy::Init(); // Proxy all real D3DX9_42.dll commands to the actual D3DX9_42.dll.
 		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
-		D3DX9_42::ShutdownProxy(); // Kill Proxy to D3DX9_42.dll
+		Proxy::Shutdown(); // Kill Proxy to D3DX9_42.dll
 
 		// Shutdown ImGUI
 		ImGui_ImplWin32_Shutdown();

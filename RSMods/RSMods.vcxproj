@@ -93,7 +93,7 @@
     <ClInclude Include="Mods\CustomSongTitles.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3DX9_42.cpp" />
+    <ClCompile Include="Proxy.cpp" />
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="Lib\ImGUI\imgui.cpp" />
     <ClCompile Include="Lib\ImGUI\imgui_draw.cpp" />
@@ -123,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Detours\detours.h" />
-    <ClInclude Include="D3DX9_42.hpp" />
+    <ClInclude Include="Proxy.hpp" />
     <ClInclude Include="Functions.hpp" />
     <ClInclude Include="Lib\ImGUI\imconfig.h" />
     <ClInclude Include="Lib\ImGUI\imgui.h" />
@@ -142,7 +142,7 @@
     <ClInclude Include="Structs.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="d3dx9_42.def" />
+    <None Include="xinput1_3.def" />
     <None Include="Lib\Detours\detours.pdb">
       <FileType>Document</FileType>
     </None>
@@ -186,14 +186,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>D3DX9_42</TargetName>
+    <TargetName>xinput1_3</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;</LibraryPath>
-    <TargetName>D3DX9_42</TargetName>
+    <TargetName>xinput1_3</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -214,12 +214,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>xinput1_3.def</ModuleDefinitionFile>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
-IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
+IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\xinput1_3.dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
@@ -242,7 +242,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>d3dx9_42.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>xinput1_3.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>SDK Path\Lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>

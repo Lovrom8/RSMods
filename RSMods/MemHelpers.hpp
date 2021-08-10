@@ -21,14 +21,14 @@ namespace MemHelpers {
 	byte getLowestStringTuning();
 	byte* GetCurrentTuning(bool verbose = false);
 	void ToggleLoft();
-	std::string ShowSongTimer();
+	float SongTimer();
 	bool IsExtendedRangeSong();
 	int* GetHighestLowestString();
 	bool IsSongInDrop(Tuning tuning);
 	bool IsSongInStandard(Tuning tuning);
 	int GetTrueTuning();
 	Resolution GetWindowSize();
-	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::string* stringArray = NULL, std::vector<std::string> stringVector = std::vector<std::string>());
+	bool IsInStringArray(std::string stringToCheckIfInsideArray, std::vector<std::string> stringVector = std::vector<std::string>());
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { NULL, NULL });
 	void ToggleDrunkMode(bool enable);
 	bool IsInSong();
@@ -40,8 +40,6 @@ namespace MemHelpers {
 
 	std::string GetCurrentMenu(bool GameNotLoaded=false);
 	void ToggleCB(bool enabled);
-
-	void PatchCDLCCheck();
 
 	inline static std::string lastMenu = "";
 	inline static bool canGetRealMenu = false;

@@ -3,8 +3,6 @@
 /*
 This is probably pretty janky, but it's based on the research I did below
 https://docs.google.com/spreadsheets/d/1X3UjY68Z5oOuZpV_UpckOy-G-XZe7lWaskc31C7FxOs/edit?usp=sharing
-
-Feel free to modify this pile of shit, I don't know how we wanted it formatted.
 */
 
 
