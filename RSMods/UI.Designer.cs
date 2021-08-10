@@ -879,7 +879,7 @@
             this.radio_ForceEnumerationAutomatic.Name = "radio_ForceEnumerationAutomatic";
             this.radio_ForceEnumerationAutomatic.Size = new System.Drawing.Size(180, 17);
             this.radio_ForceEnumerationAutomatic.TabIndex = 25;
-            this.radio_ForceEnumerationAutomatic.Text = "Automatic (Scan For New CDLC)";
+            this.radio_ForceEnumerationAutomatic.Text = "Automatic (Scan For New Songs)";
             this.radio_ForceEnumerationAutomatic.UseVisualStyleBackColor = true;
             this.radio_ForceEnumerationAutomatic.Visible = false;
             this.radio_ForceEnumerationAutomatic.CheckedChanged += new System.EventHandler(this.Save_ForceEnumerationAutomatic);

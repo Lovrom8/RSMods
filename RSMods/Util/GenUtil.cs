@@ -107,7 +107,6 @@ namespace RSMods.Util
             if (!Directory.Exists(folderPath))
                 return false;
 
-            string dlcFolderPath = Path.Combine(folderPath, "dlc");
             string cachePsarcPath = Path.Combine(folderPath, "cache.psarc");
 
             //if (IsDirectoryEmpty(dlcFolderPath))
@@ -268,6 +267,9 @@ namespace RSMods.Util
                 var rs2RootDir = String.Empty;
                 var steamRootPath = GetSteamDirectory();
 
+                if (Directory.GetParent(Application.StartupPath).FullName.IsRSFolder()) // Before we ask the user to say where RS is located, lets check to see if we are located in a RS Install folder.
+                    return Directory.GetParent(Application.StartupPath).FullName;
+
                 if (!String.IsNullOrEmpty(steamRootPath))
                 {
                     rs2RootDir = Path.Combine(steamRootPath, "SteamApps\\common\\Rocksmith2014");
@@ -298,9 +300,11 @@ namespace RSMods.Util
                     }
                     else // RS-Folder does exist
                     {
-                        if (!File.Exists(Path.Combine(rs2RootDir, "cache.psarc")))
-                        { // If cache.psarc doesn't exist (old install / steam left-overs)
+                        while (!rs2RootDir.IsRSFolder())  // If cache.psarc doesn't exist (old install / steam left-overs)
+                        {
+                            MessageBox.Show("We cannot verify your installation of Rocksmith 2014. It appears the folder we have saved doesn't contain a cache.psarc which is REQUIRED for Rocksmith 2014 to boot.", "Your help is required!");
                             rs2RootDir = AskUserForRSFolder();
+
                             if (rs2RootDir == String.Empty)
                             {
                                 MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, and you didn't give us a valid RS Folder.", "Closing Application");

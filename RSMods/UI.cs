@@ -745,7 +745,7 @@ namespace RSMods
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
             checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
-            checkBox_TurnOffAllMods.Checked = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+            checkBox_TurnOffAllMods.Checked = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
             checkBox_ForceEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
 
             // Re-enable the saving of the values now that we've done our work.
@@ -2193,15 +2193,15 @@ namespace RSMods
         private void Save_TurnOffAllMods(object sender, EventArgs e)
         {
 
-            if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"))) // Has DLL enabled and doesn't have DLL turned off
-                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
-            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"))) // Has DLL turned off and doesn't have DLL enabled
-                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"));
-            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"))) // Has DLL enabled AND turned off.
+            if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"))) // Has DLL enabled and doesn't have DLL turned off
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll"), Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
+            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off")) && !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll"))) // Has DLL turned off and doesn't have DLL enabled
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"), Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll"));
+            else if (File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"))) // Has DLL enabled AND turned off.
             {
-                File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+                File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
 
-                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll"), Path.Combine(GenUtil.GetRSDirectory(), "D3DX9_42.dll.off"));
+                File.Move(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll"), Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
             }
         }
 
@@ -3030,9 +3030,6 @@ namespace RSMods
 
         List<SongData> Songs = new List<SongData>();
 
-        // TODO: Add ODLC / CDLC Only buttons (radios maybe?)
-        List<SongData> ODLCOnly = new List<SongData>();
-        List<SongData> CDLCOnly = new List<SongData>();
         private string currentUnpackedProfile = String.Empty;
 
         private void Profiles_RefreshSonglistNames()
@@ -3052,8 +3049,6 @@ namespace RSMods
 
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
-            ODLCOnly = Songs.Where(song => song.ODLC == true).ToList();
-            CDLCOnly = Songs.Where(song => song.ODLC == false).ToList();
 
             Profiles_UnpackProfile();
 

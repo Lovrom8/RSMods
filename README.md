@@ -1,5 +1,5 @@
 # RS CDLC Enabler GUI
-A GUI tool that communicates with Rocksmith 2014's **NEW** D3DX9_42.dll
+A GUI tool that communicates with Rocksmith 2014's xinput1_3.dll
 
 How to compile:
   There's a lot of repos that require a lot of steps to compile. For us you open the .sln Visual Studio project, and press F5. This will compile, and run the latest version.         That's it...
