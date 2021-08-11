@@ -13,7 +13,7 @@ namespace RS2014_Mod_Installer
         {
             InitializeComponent();
         }
-
+        //
         private void UseModsButton_Click(object sender, EventArgs e)
         {
             string originalButtonText = UseModsButton.Text;
