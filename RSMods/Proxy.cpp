@@ -62,37 +62,37 @@ extern "C" {
 
 
 	// XInputEnable
-	void __cdecl XInput_XInputEnable(BOOL enable) {
+	void __stdcall XInput_XInputEnable(BOOL enable) {
 		return ((T_XInput_XInputEnable)proxy[XInput_Proxy::Enable])(enable);
 	}
 
 	// XInputGetBatteryInformation
-	DWORD __cdecl XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION batteryInformation) {
-		return ((T_XInput_XInputGetBatteryInformation)proxy[XInput_Proxy::GetBatteryInformation])(dwUserIndex, devType, &batteryInformation);
+	DWORD __stdcall XInput_XInputGetBatteryInformation(DWORD dwUserIndex, BYTE devType, XINPUT_BATTERY_INFORMATION* batteryInformation) {
+		return ((T_XInput_XInputGetBatteryInformation)proxy[XInput_Proxy::GetBatteryInformation])(dwUserIndex, devType, batteryInformation);
 	}
 
 	// XInputGetCapabilities
-	DWORD __cdecl XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES capabilities) {
-		return ((T_XInput_XInputGetCapabilities)proxy[XInput_Proxy::GetCapabilities])(dwUserIndex, dwFlags, &capabilities);
+	DWORD __stdcall XInput_XInputGetCapabilities(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* capabilities) {
+		return ((T_XInput_XInputGetCapabilities)proxy[XInput_Proxy::GetCapabilities])(dwUserIndex, dwFlags, capabilities);
 	}
 
 	// XInputGetDSoundAudioDeviceGuids
-	DWORD __cdecl XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID pDSoundRenderGuid, GUID DSoundCaptureGuid) {
-		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[XInput_Proxy::GetDSoundAudioDeviceGuids])(dwUserIndex, &pDSoundRenderGuid, &DSoundCaptureGuid);
+	DWORD __stdcall XInput_XInputGetDSoundAudioDeviceGuids(DWORD dwUserIndex, GUID* pDSoundRenderGuid, GUID* DSoundCaptureGuid) {
+		return ((T_XInput_XInputGetDSoundAudioDeviceGuids)proxy[XInput_Proxy::GetDSoundAudioDeviceGuids])(dwUserIndex, pDSoundRenderGuid, DSoundCaptureGuid);
 	}
 
 	// XInputGetKeystroke
-	DWORD __cdecl XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE keystroke) {
-		return ((T_XInput_XInputGetKeystroke)proxy[XInput_Proxy::GetKeystroke])(dwUserIndex, dwReserved, &keystroke);
+	DWORD __stdcall XInput_XInputGetKeystroke(DWORD dwUserIndex, DWORD dwReserved, XINPUT_KEYSTROKE* keystroke) {
+		return ((T_XInput_XInputGetKeystroke)proxy[XInput_Proxy::GetKeystroke])(dwUserIndex, dwReserved, keystroke);
 	}
 
 	// XInputGetState
-	DWORD __cdecl XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE state) {
-		return ((T_XInput_XInputGetState)proxy[XInput_Proxy::GetState])(dwUserIndex, &state);
+	DWORD __stdcall XInput_XInputGetState(DWORD dwUserIndex, XINPUT_STATE* state) {
+		return ((T_XInput_XInputGetState)proxy[XInput_Proxy::GetState])(dwUserIndex, state);
 	}
 
 	// XInputSetState
-	DWORD __cdecl XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION vibration) {
-		return ((T_XInput_XInputSetState)proxy[XInput_Proxy::SetState])(dwUserIndex, &vibration);
+	DWORD __stdcall  XInput_XInputSetState(DWORD dwUserIndex, XINPUT_VIBRATION* vibration) {
+		return ((T_XInput_XInputSetState)proxy[XInput_Proxy::SetState])(dwUserIndex, vibration);
 	}
 }
