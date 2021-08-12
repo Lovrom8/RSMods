@@ -1178,7 +1178,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 		Initialize(); // Inject our code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
-		Proxy::Shutdown(); // Kill Proxy to D3DX9_42.dll
+		Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 		// Shutdown ImGUI
 		ImGui_ImplWin32_Shutdown();
