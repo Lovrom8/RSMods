@@ -19,7 +19,7 @@ namespace RS2014_Mod_Installer
             string originalButtonText = UseModsButton.Text;
             UseModsButton.Text += "\n(Please wait as we get the mods setup).";
             // Can we find Rocksmith's install?
-            if (Worker.WhereIsRocksmith() == String.Empty)
+            if (Worker.WhereIsRocksmith() == string.Empty)
             {
                 MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
