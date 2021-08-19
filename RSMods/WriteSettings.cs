@@ -211,15 +211,23 @@ namespace RSMods
 
         private static bool CheckExecutable(string installLocation)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            try
             {
-                FileStream exeStream = File.Open(Path.Combine(installLocation, "Rocksmith2014.exe"), FileMode.Open);
-                exeStream.Position = 0;
+                using (SHA256 sha256 = SHA256.Create())
+                {
+                    FileStream exeStream = File.Open(Path.Combine(installLocation, "Rocksmith2014.exe"), FileMode.Open);
+                    exeStream.Position = 0;
 
-                byte[] hash = sha256.ComputeHash(exeStream);
+                    byte[] hash = sha256.ComputeHash(exeStream);
 
-                return hash.SequenceEqual(HASH_EXE); // True - User is using Remastered game, False - User is using a NON-Remastered game (VOID).
+                    return hash.SequenceEqual(HASH_EXE); // True - User is using Remastered game, False - User is using a NON-Remastered game (VOID).
+                }
             }
+            catch
+            {
+                return true; // Not ideal but if the game is open, there isn't much we can do...
+            }
+            
         }
         #endregion
     }
