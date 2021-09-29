@@ -6,6 +6,7 @@
 #include "Structs.hpp"
 #include <vector>
 #include "Lib/Ini/SimpleIni.h"
+#include "D3D/D3DHooks.hpp"
 
 
 namespace Settings {

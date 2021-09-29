@@ -526,6 +526,8 @@ void Settings::UpdateSettings() {
 	ReadModSettings();
 	ReadStringColors();
 	ReadNotewayColors();
+
+	D3DHooks::RecreateTextures = true;
 }
 
 

@@ -328,6 +328,21 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (PrideMode && NOTE_TAILS) // As of right now, this requires rainbow strings to be toggled on
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 	}
+
+	// User has updated their settings, and we need to recreate our textures
+	if (RecreateTextures) {
+		// Generate textures to be called later
+		D3D::GenerateTextures(pDevice, D3D::Strings);
+		D3D::GenerateTextures(pDevice, D3D::Notes);
+		D3D::GenerateTextures(pDevice, D3D::Rainbow);
+		//GenerateTextures(pDevice, Random);
+		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
+		D3D::GenerateTextures(pDevice, D3D::Noteway);
+		D3D::GenerateTextures(pDevice, D3D::Gutter);
+		D3D::GenerateTextures(pDevice, D3D::FretNums);
+
+		RecreateTextures = false;
+	}
 		
 	//if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
 	//	 //Need Lovro's Help With This :(

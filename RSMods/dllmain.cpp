@@ -376,16 +376,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		Settings::UpdateSettings();
 
-		// Generate textures to be called later
-		D3D::GenerateTextures(pDevice, D3D::Strings);
-		D3D::GenerateTextures(pDevice, D3D::Notes);
-		D3D::GenerateTextures(pDevice, D3D::Rainbow);
-		//GenerateTextures(pDevice, Random);
-		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
-		D3D::GenerateTextures(pDevice, D3D::Noteway);
-		D3D::GenerateTextures(pDevice, D3D::Gutter);
-		D3D::GenerateTextures(pDevice, D3D::FretNums);
-
 		D3DXCreateTextureFromFile(pDevice, L"headstock.png", &customHeadstockTexture); // Custom Headstock
 
 		// Green Screen Wall textures. Look at the uses of the textures for more information.
@@ -518,6 +508,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	if (generateTexture) {
 		D3D::GenerateTextures(pDevice, D3D::Strings);
+
 		generateTexture = false;
 	}
 
