@@ -532,18 +532,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			size_t stringSize;
 
 			int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
-			int seconds = currentSongTime, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
-
-			if (currentSongTime / 60 > 0) { // Handles Seconds -> Minutes conversion
-				minutes = currentSongTime / 60;
-				seconds = currentSongTime - (minutes * 60);
-			}
-
-			if (minutes >= 60) { // Handles Minutes -> Hours conversion
-				hours++;
-				minutes = 0;
-			}
-
+			int seconds = 0, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
+			
+			seconds = currentSongTime % 60;
+			minutes = (currentSongTime / 60) % 60;
+			hours = currentSongTime / 3600;
+			
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
