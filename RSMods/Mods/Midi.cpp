@@ -644,8 +644,10 @@ namespace Midi {
 		/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
 		/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 		void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
-			if (semiToneMap.size() == 0)
+			if (Settings::async_UpdateMidiSettings) {
 				ReloadSettings();
+				Settings::async_UpdateMidiSettings = false;
+			}
 
 			if (semiToneMap.find(highestTuning) != semiToneMap.end()) {
 				if (sendSemitoneCommand == programChangeStatus)
@@ -686,6 +688,7 @@ namespace Midi {
 			FillSemitoneMap();
 			FillTrueTuningMap();
 			LoadTrueTuningSettings();
+
 		}
 
 		void FillSemitoneMap() {

@@ -531,6 +531,7 @@ void Settings::UpdateSettings() {
 	ReadStringColors();
 	ReadNotewayColors();
 
+	async_UpdateMidiSettings = true;
 	D3DHooks::RecreateTextures = true;
 }
 
