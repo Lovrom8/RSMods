@@ -23,8 +23,9 @@ namespace RSMods
                              ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                             RiffRepeaterAboveHundred, MidiAutoTuning, MidiAutoTuningDevice, MidiSoftwareTriggers, MidiSoftwareSettings, ChordsMode, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad,
-                             ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
+                             MidiAutoTuning, MidiAutoTuningDevice, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
+                             RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
+
 
                              // String Colors
                              String0Color_N, String1Color_N, String2Color_N, String3Color_N, String4Color_N, String5Color_N,
@@ -107,8 +108,10 @@ namespace RSMods
             RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
             MidiAutoTuningIdentifier = "AutoTuneForSong = ",
             MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
-            MidiSoftwareTriggersIdentifier = "AutoTuneForSoftwareTriggers = ",
-            MidiSoftwareSettingsIdentifier = "AutoTuneForSoftwareSettings = ",
+            MidiSoftwareSemitoneTriggersIdentifier = "AutoTuneForSoftwareSemitoneTriggers = ",
+            MidiSoftwareSemitoneSettingsIdentifier = "AutoTuneForSoftwareSemitoneSettings = ",
+            MidiSoftwareTrueTuningTriggersIdentifier = "AutoTuneForSoftwareTrueTuningTriggers = ",
+            MidiSoftwareTrueTuningSettingsIdentifier = "AutoTuneForSoftwareTrueTuningSettings = ",
             ChordsModeIdentifier = "ChordsMode = ",
             ShowCurrentNoteOnScreenIdentifier = "ShowCurrentNoteOnScreen = ",
             OnScreenFontIdentifier = "OnScreenFont = ",
@@ -362,10 +365,14 @@ namespace RSMods
                     return FillSettingVariable(MidiAutoTuningIdentifier, SettingType.ON_OFF, currentLine, out MidiAutoTuning);
                 if (IdentifierIsFound(currentLine, MidiAutoTuningDeviceIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiAutoTuningDeviceIdentifier, SettingType.STRING, currentLine, out MidiAutoTuningDevice);
-                if (IdentifierIsFound(currentLine, MidiSoftwareSettingsIdentifier, identifierToGrab))
-                    return FillSettingVariable(MidiSoftwareSettingsIdentifier, SettingType.STRING, currentLine, out MidiSoftwareSettings);
-                if (IdentifierIsFound(currentLine, MidiSoftwareTriggersIdentifier, identifierToGrab))
-                    return FillSettingVariable(MidiSoftwareTriggersIdentifier, SettingType.STRING, currentLine, out MidiSoftwareTriggers);
+                if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneSettingsIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiSoftwareSemitoneSettingsIdentifier, SettingType.STRING, currentLine, out MidiSoftwareSemitoneSettings);
+                if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneTriggersIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiSoftwareSemitoneTriggersIdentifier, SettingType.STRING, currentLine, out MidiSoftwareSemitoneTriggers);
+                if (IdentifierIsFound(currentLine, MidiSoftwareTrueTuningSettingsIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiSoftwareTrueTuningSettingsIdentifier, SettingType.STRING, currentLine, out MidiSoftwareTrueTuningSettings);
+                if (IdentifierIsFound(currentLine, MidiSoftwareTrueTuningTriggersIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiSoftwareTrueTuningTriggersIdentifier, SettingType.STRING, currentLine, out MidiSoftwareTrueTuningTriggers);
                 if (IdentifierIsFound(currentLine, ChordsModeIdentifier, identifierToGrab))
                     return FillSettingVariable(ChordsModeIdentifier, SettingType.ON_OFF, currentLine, out ChordsMode);
                 if (IdentifierIsFound(currentLine, ShowCurrentNoteOnScreenIdentifier, identifierToGrab))
