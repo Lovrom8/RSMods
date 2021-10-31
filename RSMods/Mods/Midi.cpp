@@ -342,9 +342,13 @@ namespace Midi {
 					lastPC_TUNING = 49;
 					break;
 				case 11:
+					[[fallthrough]];
 				case 10:
+					[[fallthrough]];
 				case 9:
+					[[fallthrough]];
 				case 8:
+					[[fallthrough]];
 				case 7:
 
 					SendProgramChange(48); // B Standard
@@ -412,11 +416,14 @@ namespace Midi {
 					lastPC_TUNING = 54;
 					break;
 				case -7:
+					[[fallthrough]];
 				case -8:
+					[[fallthrough]];
 				case -9:
+					[[fallthrough]];
 				case -10:
+					[[fallthrough]];
 				case -11:
-
 					SendProgramChange(53); // A Standard
 					lastPC_TUNING = 53;
 
