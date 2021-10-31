@@ -214,11 +214,11 @@ namespace Midi {
 
 			if (selectedPedal.softwarePedal) {
 				if (Midi::Software::sendSemitoneCommand == programChangeStatus)
-					SendProgramChange(Midi::Software::shutoffTrigger);
+					SendProgramChange(Midi::Software::semiToneShutoffTrigger);
 				else if (Midi::Software::sendSemitoneCommand == controlChangeStatus)
-					SendControlChange(Midi::Software::shutoffTrigger);
+					SendControlChange(Midi::Software::semiToneShutoffTrigger);
 				if (Midi::Software::sentTrueTuningInThisSong)
-					SendControlChange(40, Midi::Software::sendTrueTuningCommand); // Range is 0 - 80 which maps to 400 - 480. Sending 40 should reset the user back to 440.
+					SendControlChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::sendTrueTuningCommand); // Range is 0 - 80 which maps to 400 - 480. Sending 40 should reset the user back to 440.
 
 				Midi::Software::sentTrueTuningInThisSong = false;
 				alreadyAutomatedTuningInThisSong = false;
@@ -644,16 +644,14 @@ namespace Midi {
 		/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
 		/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 		void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
-			if (activeBypassMap.size() == 0) {
-				LoadSettings();
-				FillSemitoneMap();
-			}
+			if (semiToneMap.size() == 0)
+				ReloadSettings();
 
-			if (activeBypassMap.find(highestTuning) != activeBypassMap.end()) {
+			if (semiToneMap.find(highestTuning) != semiToneMap.end()) {
 				if (sendSemitoneCommand == programChangeStatus)
-					SendProgramChange(activeBypassMap.find(highestTuning)->second);
+					SendProgramChange(semiToneMap.find(highestTuning)->second);
 				if (sendSemitoneCommand == controlChangeStatus)
-					SendControlChange(activeBypassMap.find(highestTuning)->second);
+					SendControlChange(semiToneMap.find(highestTuning)->second);
 			}
 			else
 				std::cout << "(MIDI) Software Pedal Error: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
@@ -666,18 +664,32 @@ namespace Midi {
 		}
 
 		void AutoTrueTuning(float TrueTuning_Hertz) {
+
 			if (TrueTuning_Hertz < 260.f)
 				TrueTuning_Hertz *= 2;
 
-			if (TrueTuning_Hertz != 440) {
-				SendControlChange(TrueTuning_Hertz - 400, sendTrueTuningCommand);
-				std::cout << "(MIDI) Software Pedal True Tuning: A" << TrueTuning_Hertz << std::endl;
-				sentTrueTuningInThisSong = true;
+			if (trueTuningMap.find(TrueTuning_Hertz) != trueTuningMap.end()) {
+				if (sendTrueTuningCommand == programChangeStatus)
+					SendProgramChange(trueTuningMap.find(TrueTuning_Hertz)->second);
+				if (sendTrueTuningCommand == controlChangeStatus)
+					SendControlChange(trueTuningMap.find(TrueTuning_Hertz)->second, trueTuningChannel);
 			}
+			else
+				std::cout << "(MIDI) Software Pedal Error: Attempted to truetune to A" << TrueTuning_Hertz << " but the user doesn't have a value set for it." << std::endl;
+		}
+
+		void ReloadSettings() {
+			semiToneMap.clear();
+			trueTuningMap.clear();
+
+			LoadSemitoneSettings();
+			FillSemitoneMap();
+			FillTrueTuningMap();
+			LoadTrueTuningSettings();
 		}
 
 		void FillSemitoneMap() {
-			std::string triggers = Settings::ReturnSettingValue("AutoTuneForSoftwareTriggers");
+			std::string triggers = Settings::ReturnSettingValue("AutoTuneForSoftwareSemitoneTriggers");
 			std::string delim = ", ";
 			std::vector<std::string> separated;
 			size_t position = 0;
@@ -691,7 +703,7 @@ namespace Midi {
 
 			delim = " ";
 
-			// List of triggers (string) -> Map of triggers (char)
+			// List of triggers (string) -> Map of triggers (char, char)
 			for (int i = 0; i < separated.size(); i++) {
 
 				std::string semiTone_string = separated[i].substr(0, separated[i].find(delim));
@@ -699,22 +711,22 @@ namespace Midi {
 				char semiTone = std::atoi(semiTone_string.c_str());
 				char command = std::atoi(command_string.c_str());
 
-				if (activeBypassMap.count(semiTone) == 0)
-					activeBypassMap[semiTone] = command;
+				if (semiToneMap.count(semiTone) == 0)
+					semiToneMap[semiTone] = command;
 				else
-					std::cout << "(MIDI) Software Pedal Error: Trigger for " << semiTone << " is already set to " << activeBypassMap[semiTone] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(semiTone)) << " position" << std::endl;
+					std::cout << "(MIDI) Software Pedal Error: Semitone Triggers for " << semiTone << " is already set to " << semiToneMap[semiTone] << " found in the " << std::distance(semiToneMap.begin(), semiToneMap.find(semiTone)) << " position" << std::endl;
 			}
 
-			std::cout << "(MIDI) Software Pedal: Triggers" << std::endl;
+			std::cout << "(MIDI) Software Pedal: Semitone Triggers" << std::endl;
 
-			for (std::map<char, char>::iterator it = activeBypassMap.begin(); it != activeBypassMap.end(); it++)
+			for (std::map<char, char>::iterator it = semiToneMap.begin(); it != semiToneMap.end(); it++)
 				std::cout << "Semitone = " << (int)it->first << ", Value To Send = " << (int)it->second << std::endl;
 
-			std::cout << "(MIDI) Software Pedal: Triggers --END" << std::endl;
+			std::cout << "(MIDI) Software Pedal: Semitone Triggers --END" << std::endl;
 		}
 
-		void LoadSettings() {
-			std::string settings = Settings::ReturnSettingValue("AutoTuneForSoftwareSettings");
+		void LoadSemitoneSettings() {
+			std::string settings = Settings::ReturnSettingValue("AutoTuneForSoftwareSemitoneSettings");
 			std::string delim = ", ";
 			std::vector<std::string> separated;
 			size_t position = 0;
@@ -727,7 +739,7 @@ namespace Midi {
 			separated.push_back(settings); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
 
 			if (separated.size() > 0) {
-				shutoffTrigger = std::atoi(separated.at(0).c_str());
+				semiToneShutoffTrigger = std::atoi(separated.at(0).c_str());
 
 				if (separated.size() > 1) {
 					if (separated.at(1) == "PC")
@@ -735,19 +747,86 @@ namespace Midi {
 					if (separated.at(1) == "CC") {
 						sendSemitoneCommand = controlChangeStatus;
 
-						if (separated.size() > 2) {
-							sendTrueTuningCommand = std::atoi(separated.at(2).c_str());
-
-							if (separated.size() > 3)
-								selectedPedal.CC_Channel = std::atoi(separated.at(3).c_str());
-							else
-								std::cout << "SOFTWARE LOADSETTINGS ERROR: CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
-						}
+						if (separated.size() > 2)
+							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str());
+						else
+							std::cout << "SOFTWARE LOADSETTINGS ERROR (semitones): CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
 					}
 				}
 			}
 			else {
-				std::cout << "SOFTWARE LOADSETTINGS ERROR: No settings to load!" << std::endl;
+				std::cout << "SOFTWARE LOADSETTINGS ERROR (semitones): No settings to load!" << std::endl;
+			}
+		}
+
+		void FillTrueTuningMap() {
+			std::string triggers = Settings::ReturnSettingValue("AutoTuneForSoftwareTrueTuningTriggers");
+			std::string delim = ", ";
+			std::vector<std::string> separated;
+			size_t position = 0;
+
+			// String of triggers -> List of triggers
+			while ((position = triggers.find(delim)) != std::string::npos) {
+				separated.push_back(triggers.substr(0, position));
+				triggers.erase(0, position + delim.length());
+			}
+			separated.push_back(triggers); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+			delim = " ";
+
+			// List of triggers (string) -> Map of triggers (int, char)
+			for (int i = 0; i < separated.size(); i++) {
+
+				std::string semiTone_string = separated[i].substr(0, separated[i].find(delim));
+				std::string command_string = separated[i].erase(0, separated[i].find(delim) + delim.length());
+				int trueTuning = std::atoi(semiTone_string.c_str());
+				char command = std::atoi(command_string.c_str());
+
+				if (trueTuningMap.count(trueTuning) == 0)
+					trueTuningMap[trueTuning] = command;
+				else
+					std::cout << "(MIDI) Software Pedal Error: TrueTuning Triggers for " << trueTuning << " is already set to " << trueTuningMap[trueTuning] << " found in the " << std::distance(trueTuningMap.begin(), trueTuningMap.find(trueTuning)) << " position" << std::endl;
+			}
+
+			std::cout << "(MIDI) Software Pedal: TrueTuning Triggers" << std::endl;
+
+			for (std::map<int, char>::iterator it = trueTuningMap.begin(); it != trueTuningMap.end(); it++)
+				std::cout << "True Tuning = A" << it->first << ", Value To Send = " << (int)it->second << std::endl;
+
+			std::cout << "(MIDI) Software Pedal: TrueTuning Triggers --END" << std::endl;
+		}
+
+		void LoadTrueTuningSettings() {
+			std::string settings = Settings::ReturnSettingValue("AutoTuneForSoftwareTrueTuningSettings");
+			std::string delim = ", ";
+			std::vector<std::string> separated;
+			size_t position = 0;
+
+			// String of settings -> List of settings
+			while ((position = settings.find(delim)) != std::string::npos) {
+				separated.push_back(settings.substr(0, position));
+				settings.erase(0, position + delim.length());
+			}
+			separated.push_back(settings); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+			if (separated.size() > 0) {
+				trueTuningShutoffTrigger = std::atoi(separated.at(0).c_str());
+
+				if (separated.size() > 1) {
+					if (separated.at(1) == "PC")
+						sendTrueTuningCommand = programChangeStatus;
+					if (separated.at(1) == "CC") {
+						sendTrueTuningCommand = controlChangeStatus;
+
+						if (separated.size() > 2)
+							trueTuningChannel = std::atoi(separated.at(2).c_str());
+						else
+							std::cout << "SOFTWARE LOADSETTINGS ERROR (truetuning): CC set as the send method but no channel is specified. Defaulting to Channel 1." << std::endl;
+					}
+				}
+			}
+			else {
+				std::cout << "SOFTWARE LOADSETTINGS ERROR (truetuning): No settings to load!" << std::endl;
 			}
 		}
 	}

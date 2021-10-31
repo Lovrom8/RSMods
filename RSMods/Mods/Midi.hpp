@@ -239,18 +239,27 @@ namespace Midi {
 	 
 	namespace Software {
 
-		inline std::map<char, char> activeBypassMap; // DON'T TREAT THIS AS AN ACTIVE BYPASS MAP! This is a map of { SemiTone, TriggerOn }.
+		inline std::map<char, char> semiToneMap; // DON'T TREAT THIS AS AN ACTIVE BYPASS MAP! This is a map of { SemiTone, MidiValue }.
+		inline std::map<int, char> trueTuningMap; // This is a map of { TrueTuning, MidiValue }.
 
 		void AutoTuning(int highestTuning, float TrueTuning_Hertz);
 
 		void AutoTrueTuning(float TrueTuning_Hertz);
 
+		void ReloadSettings();
+
 		void FillSemitoneMap();
-		void LoadSettings();
+		void LoadSemitoneSettings();
+
+		void FillTrueTuningMap();
+		void LoadTrueTuningSettings();
+
 
 		inline unsigned char sendSemitoneCommand = '\0';
-		inline unsigned char shutoffTrigger = '\0';
-		inline unsigned char sendTrueTuningCommand = 255;
+		inline unsigned char sendTrueTuningCommand = '\0';
+		inline unsigned char semiToneShutoffTrigger = '\0';
+		inline unsigned char trueTuningShutoffTrigger = '\0';
+		inline unsigned char trueTuningChannel = '\1';
 		inline bool sentTrueTuningInThisSong = false;
 	}
 
@@ -258,7 +267,7 @@ namespace Midi {
 		MidiPedal("DIGITECH Whammy DT", 11, true, true, Digitech::WhammyDT::semiTones, Digitech::WhammyDT::activeBypassMap, Digitech::WhammyDT::AutoTuning),
 		MidiPedal("DIGITECH Bass Whammy", 11, true, true, Digitech::BassWhammy::semiTones, Digitech::BassWhammy::activeBypassMap, Digitech::BassWhammy::AutoTuningAndTrueTuning),
 		MidiPedal("DIGITECH Whammy", 11, true, true, Digitech::Whammy::semiTones, Digitech::Whammy::activeBypassMap, Digitech::Whammy::AutoTuningAndTrueTuning),
-		MidiPedal("Software Pedal", 0, true, true, std::vector<float>{}, Software::activeBypassMap, Software::AutoTuning, true),
+		MidiPedal("Software Pedal", 0, true, true, std::vector<float>{}, Software::semiToneMap, Software::AutoTuning, true),
 	};
 };
 

@@ -59,8 +59,10 @@ void Settings::Initialize()
 		{"RRSpeedAboveOneHundred", "off"},
 		{"AutoTuneForSong", "off"},
 		{"AutoTuneForSongDevice", ""},
-		{"AutoTuneForSoftwareTriggers", ""},
-		{"AutoTuneForSoftwareSettings", ""},
+		{"AutoTuneForSoftwareSemitoneSettings", ""},
+		{"AutoTuneForSoftwareSemitoneTriggers", ""},
+		{"AutoTuneForSoftwareTrueTuningSettings", ""},
+		{"AutoTuneForSoftwareTrueTuningTriggers", ""},
 		{"ChordsMode", "off"},
 		{"ShowCurrentNoteOnScreen", "off"},
 		{"OnScreenFont", "Arial"},
@@ -234,8 +236,10 @@ void Settings::ReadModSettings() {
 	modSettings["RRSpeedAboveOneHundred"] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 	modSettings["AutoTuneForSong"] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
-	modSettings["AutoTuneForSoftwareTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTriggers", "");
-	modSettings["AutoTuneForSoftwareSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSettings", "");
+	modSettings["AutoTuneForSoftwareSemitoneSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneSettings", "");
+	modSettings["AutoTuneForSoftwareSemitoneTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneTriggers", "");
+	modSettings["AutoTuneForSoftwareTrueTuningSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningSettings", "");
+	modSettings["AutoTuneForSoftwareTrueTuningTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningTriggers", "");
 	modSettings["ChordsMode"] = reader.GetValue("Toggle Switches", "ChordsMode", "off");
 	modSettings["ShowCurrentNoteOnScreen"] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
 	modSettings["OnScreenFont"] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");
