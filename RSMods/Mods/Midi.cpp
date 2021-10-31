@@ -221,15 +221,13 @@ namespace Midi {
 				alreadyAutomatedTrueTuningInThisSong = false;
 				return;
 			}
-
-			int cache = lastPC;
 			
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
 
-			if (activeBypassMap.find(cache) != activeBypassMap.end())
-				SendProgramChange(activeBypassMap.find(cache)->second); // Send the bypass code to revert back to normal guitar.
+			if (activeBypassMap.find(lastPC) != activeBypassMap.end())
+				SendProgramChange(activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
 		}
 
@@ -498,9 +496,12 @@ namespace Midi {
 			/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 			void AutoTrueTuning(int TrueTuning_Hertz) {
 
-				// A440 / A220
-				if (TrueTuning_Hertz == 440 || TrueTuning_Hertz == 220)
+				if (TrueTuning_Hertz < 260)
+					TrueTuning_Hertz *= 2;
+
+				if (TrueTuning_Hertz == 440) // A440
 					return;
+
 
 				// Above A440
 				else if (TrueTuning_Hertz > 440) {
@@ -672,15 +673,15 @@ namespace Midi {
 			// List of triggers (string) -> Map of triggers (char)
 			for (int i = 0; i < separated.size(); i++) {
 
-				std::string ON_STRING = separated[i].substr(0, separated[i].find(delim));
-				std::string OFF_STRING = separated[i].erase(0, separated[i].find(delim) + delim.length());
-				char ON = std::atoi(ON_STRING.c_str());
-				char OFF = std::atoi(OFF_STRING.c_str());
+				std::string semiTone_string = separated[i].substr(0, separated[i].find(delim));
+				std::string command_string = separated[i].erase(0, separated[i].find(delim) + delim.length());
+				char semiTone = std::atoi(semiTone_string.c_str());
+				char command = std::atoi(command_string.c_str());
 
-				if (activeBypassMap.count(ON) == 0)
-					activeBypassMap[ON] = OFF;
+				if (activeBypassMap.count(semiTone) == 0)
+					activeBypassMap[semiTone] = command;
 				else
-					std::cout << "(MIDI) Software Pedal Error: Trigger for " << ON << " is already set to " << activeBypassMap[ON] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(ON)) << " position" << std::endl;
+					std::cout << "(MIDI) Software Pedal Error: Trigger for " << semiTone << " is already set to " << activeBypassMap[semiTone] << " found in the " << std::distance(activeBypassMap.begin(), activeBypassMap.find(semiTone)) << " position" << std::endl;
 			}
 
 			std::cout << "(MIDI) Software Pedal: Triggers" << std::endl;

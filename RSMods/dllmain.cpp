@@ -1134,28 +1134,26 @@ void Initialize() {
 /// <param name="lpReserved"></param>
 /// <returns>Always returns TRUE</returns>
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
-
 	bool debugLogPresent = std::ifstream("RSMods_debug.txt").good();
 	std::ofstream clearDebugLog = std::ofstream("RSMods_debug.txt");
-
-
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
-		// Give debug console
-		if (debug) {
-			FILE* streamRead, * streamWrite;
+		FILE* streamRead, * streamWrite;
+		if (debug) // Give debug console
 			AllocConsole();
-			freopen_s(&streamRead, "CONIN$", "r", stdin);
-			freopen_s(&streamWrite, "CONOUT$", "w", stdout);
-		}
+		freopen_s(&streamRead, "CONIN$", "r", stdin);
+		freopen_s(&streamWrite, "CONOUT$", "w", stdout);
+
 		if (debugLogPresent) { // Dump console to log (mainly for debugging release build issues)
 			// Clear log so it isn't full of junk from the last launch
 			clearDebugLog.open("RSMods_debug.txt", std::ofstream::out | std::ofstream::trunc);
 			clearDebugLog.close();
 
-			// Attach log to stdout / std::cout so we can get the logs.
-			FILE* debugLog;
-			freopen_s(&debugLog, "RSMods_debug.txt", "w", stdout);
+			// Attach log to stdout / std::cout so we can get the logs. | Doesn't work on debug clients as it takes over the console output.
+			if (!debug) {
+				FILE* debugLog;
+				freopen_s(&debugLog, "RSMods_debug.txt", "w", stdout);
+			}
 		}
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
