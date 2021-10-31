@@ -18,7 +18,7 @@ namespace Midi {
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice);
 	bool SendProgramChange(char programChange = '\000');
-	bool SendControlChange(char toePosition = '\000');
+	bool SendControlChange(char toePosition = '\000', char alternativeChannel = 255);
 	std::string GetTuningOffsetName(int offset);
 
 	extern int MidiCC, MidiPC;
@@ -250,6 +250,8 @@ namespace Midi {
 
 		inline unsigned char sendSemitoneCommand = '\0';
 		inline unsigned char shutoffTrigger = '\0';
+		inline unsigned char sendTrueTuningCommand = 255;
+		inline bool sentTrueTuningInThisSong = false;
 	}
 
 	inline std::vector<MidiPedal> supportedPedals = {

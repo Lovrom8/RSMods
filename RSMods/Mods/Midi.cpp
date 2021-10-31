@@ -121,7 +121,9 @@ namespace Midi {
 	/// </summary>
 	/// <param name="toePosition"> - Value of CC</param>
 	/// <returns>Message wwas sent or not.</returns>
-	bool SendControlChange(char toePosition) {
+	bool SendControlChange(char toePosition, char alternativeChannel) {
+
+		char channel = alternativeChannel == (char)255 ? selectedPedal.CC_Channel : alternativeChannel; // If we want to bypass the CC channel (mainly for software pedals) then alternative channel won't be default.
 
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
 			std::cout << "(MIDI) SendCC: DUMMY PEDAL" << std::endl;
@@ -146,7 +148,7 @@ namespace Midi {
 
 			// Send MIDI Message
 			message.push_back(controlChangeStatus); // Say it's a Control Change
-			message.push_back(selectedPedal.CC_Channel); // Control to change
+			message.push_back(channel); // Control to change
 			message.push_back(toePosition); // New Control Value || 0 = off, 127 = on
 			std::cout << "Sending Midi Message: " << "CC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
@@ -215,8 +217,10 @@ namespace Midi {
 					SendProgramChange(Midi::Software::shutoffTrigger);
 				else if (Midi::Software::sendSemitoneCommand == controlChangeStatus)
 					SendControlChange(Midi::Software::shutoffTrigger);
+				if (Midi::Software::sentTrueTuningInThisSong)
+					SendControlChange(40, Midi::Software::sendTrueTuningCommand); // Range is 0 - 80 which maps to 400 - 480. Sending 40 should reset the user back to 440.
 
-
+				Midi::Software::sentTrueTuningInThisSong = false;
 				alreadyAutomatedTuningInThisSong = false;
 				alreadyAutomatedTrueTuningInThisSong = false;
 				return;
@@ -647,12 +651,22 @@ namespace Midi {
 			else
 				std::cout << "(MIDI) Software Pedal Error: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
 
-			if (TrueTuning_Hertz != 440 && TrueTuning_Hertz != 220)
+			if (TrueTuning_Hertz < 260.f)
+				TrueTuning_Hertz *= 2;
+
+			if (TrueTuning_Hertz != 440)
 				AutoTrueTuning(TrueTuning_Hertz);
 		}
 
 		void AutoTrueTuning(float TrueTuning_Hertz) {
-			std::cout << "(NOT IMPLEMENTED) (MIDI) Software Pedal True Tuning: " << TrueTuning_Hertz << std::endl;
+			if (TrueTuning_Hertz < 260.f)
+				TrueTuning_Hertz *= 2;
+
+			if (TrueTuning_Hertz != 440) {
+				SendControlChange(TrueTuning_Hertz - 400, sendTrueTuningCommand);
+				std::cout << "(MIDI) Software Pedal True Tuning: A" << TrueTuning_Hertz << std::endl;
+				sentTrueTuningInThisSong = true;
+			}
 		}
 
 		void FillSemitoneMap() {
@@ -714,10 +728,14 @@ namespace Midi {
 					if (separated.at(1) == "CC") {
 						sendSemitoneCommand = controlChangeStatus;
 
-						if (separated.size() > 2)
-							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str());
-						else
-							std::cout << "SOFTWARE LOADSETTINGS ERROR: CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
+						if (separated.size() > 2) {
+							sendTrueTuningCommand = std::atoi(separated.at(2).c_str());
+
+							if (separated.size() > 3)
+								selectedPedal.CC_Channel = std::atoi(separated.at(3).c_str());
+							else
+								std::cout << "SOFTWARE LOADSETTINGS ERROR: CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
+						}
 					}
 				}
 			}
