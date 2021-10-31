@@ -554,6 +554,9 @@ namespace RSMods
                             radio_Whammy.Checked = true;
                             checkBox_WhammyChordsMode.Visible = true;
                             break;
+                        case 4:
+                            radio_SoftwarePedal.Checked = true;
+                            break;
                         default:
                             break;
                     }
@@ -1990,6 +1993,8 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.TuningPedalIdentifier, "3");
             checkBox_WhammyChordsMode.Visible = radio_Whammy.Checked;
         }
+
+        private void Save_SoftwarePedal(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.TuningPedalIdentifier, "4");
 
         private void Save_WhammyChordsMode(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.ChordsModeIdentifier, checkBox_WhammyChordsMode.Checked.ToString().ToLower());
 

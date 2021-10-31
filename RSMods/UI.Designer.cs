@@ -81,6 +81,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
             this.label_TuningOffsetKey = new System.Windows.Forms.Label();
             this.label_RainbowNotesKey = new System.Windows.Forms.Label();
             this.label_RRSpeedKey = new System.Windows.Forms.Label();
@@ -241,6 +242,7 @@
             this.groupBox_MidiAutoTuningOffset = new System.Windows.Forms.GroupBox();
             this.listBox_MidiAutoTuningOffset = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
+            this.radio_SoftwarePedal = new System.Windows.Forms.RadioButton();
             this.radio_Whammy = new System.Windows.Forms.RadioButton();
             this.checkBox_WhammyChordsMode = new System.Windows.Forms.CheckBox();
             this.radio_WhammyBass = new System.Windows.Forms.RadioButton();
@@ -476,7 +478,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -877,7 +878,7 @@
             this.radio_ForceEnumerationAutomatic.AutoSize = true;
             this.radio_ForceEnumerationAutomatic.Location = new System.Drawing.Point(14, 48);
             this.radio_ForceEnumerationAutomatic.Name = "radio_ForceEnumerationAutomatic";
-            this.radio_ForceEnumerationAutomatic.Size = new System.Drawing.Size(180, 17);
+            this.radio_ForceEnumerationAutomatic.Size = new System.Drawing.Size(182, 17);
             this.radio_ForceEnumerationAutomatic.TabIndex = 25;
             this.radio_ForceEnumerationAutomatic.Text = "Automatic (Scan For New Songs)";
             this.radio_ForceEnumerationAutomatic.UseVisualStyleBackColor = true;
@@ -1270,6 +1271,15 @@
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_ToggleExtendedRangeKey
+            // 
+            this.label_ToggleExtendedRangeKey.AutoSize = true;
+            this.label_ToggleExtendedRangeKey.Location = new System.Drawing.Point(464, 169);
+            this.label_ToggleExtendedRangeKey.Name = "label_ToggleExtendedRangeKey";
+            this.label_ToggleExtendedRangeKey.Size = new System.Drawing.Size(129, 13);
+            this.label_ToggleExtendedRangeKey.TabIndex = 56;
+            this.label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: ";
             // 
             // label_TuningOffsetKey
             // 
@@ -3192,6 +3202,7 @@
             // 
             // groupBox_MidiAutoTuneDevice
             // 
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_SoftwarePedal);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_Whammy);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.checkBox_WhammyChordsMode);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyBass);
@@ -3201,13 +3212,25 @@
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
             this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(16, 16);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
-            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 206);
+            this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 222);
             this.groupBox_MidiAutoTuneDevice.TabIndex = 100002;
             this.groupBox_MidiAutoTuneDevice.TabStop = false;
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
             this.groupBox_MidiAutoTuneDevice.Visible = false;
             this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.Midi_LoadDevices);
             this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // radio_SoftwarePedal
+            // 
+            this.radio_SoftwarePedal.AutoSize = true;
+            this.radio_SoftwarePedal.Location = new System.Drawing.Point(10, 200);
+            this.radio_SoftwarePedal.Name = "radio_SoftwarePedal";
+            this.radio_SoftwarePedal.Size = new System.Drawing.Size(97, 17);
+            this.radio_SoftwarePedal.TabIndex = 7;
+            this.radio_SoftwarePedal.TabStop = true;
+            this.radio_SoftwarePedal.Text = "Software Pedal";
+            this.radio_SoftwarePedal.UseVisualStyleBackColor = true;
+            this.radio_SoftwarePedal.CheckedChanged += new System.EventHandler(this.Save_SoftwarePedal);
             // 
             // radio_Whammy
             // 
@@ -5977,15 +6000,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_ToggleExtendedRangeKey
-            // 
-            this.label_ToggleExtendedRangeKey.AutoSize = true;
-            this.label_ToggleExtendedRangeKey.Location = new System.Drawing.Point(464, 169);
-            this.label_ToggleExtendedRangeKey.Name = "label_ToggleExtendedRangeKey";
-            this.label_ToggleExtendedRangeKey.Size = new System.Drawing.Size(129, 13);
-            this.label_ToggleExtendedRangeKey.TabIndex = 56;
-            this.label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: ";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6595,6 +6609,7 @@
         private System.Windows.Forms.ListBox listBox_SetAndForget_SongsWithSelectedTuning;
         private System.Windows.Forms.Label label_TuningOffsetKey;
         private System.Windows.Forms.Label label_ToggleExtendedRangeKey;
+        private System.Windows.Forms.RadioButton radio_SoftwarePedal;
     }
 }
 
