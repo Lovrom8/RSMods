@@ -50,6 +50,7 @@ inline std::vector<std::string> tuningMenus = { // These are all the menus where
 };
 
 inline std::vector<std::string> preSongTuners = { // Tuning menus where we aren't in the song
+	"SelectionListDialog",
 	"LearnASong_PreSongTuner",
 	"LearnASong_PreSongTunerMP",
 	"NonStopPlay_PreSongTuner",

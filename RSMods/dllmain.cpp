@@ -259,13 +259,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				Settings::ToggleExtendedRangeMode();
 				
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
-			}
-
-			if (MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
-				Midi::userWantsToUseAutoTuning = true;
-				std::cout << "Triggered Mod: Auto Tuning VIA Midi" << std::endl;
-			}
-				
+			}	
 		}
 
 		if (debug) {
@@ -922,6 +916,12 @@ unsigned WINAPI MainThread() {
 				skipERSleep = true;
 			}
 
+			// MIDI Auto Tuning / Auto True-Tuning (In Tuner)
+			if (MemHelpers::IsInStringArray(currentMenu, preSongTuners) && Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAttemptedTuningInTuner && !Midi::alreadyAutomatedTuningInThisSong) {
+				Midi::AttemptTuningInTuner();
+				skipERSleep = true;
+			}	
+
 			/// If User Is Entering Song
 			if (MemHelpers::IsInSong()) {
 				GuitarSpeakPresent = false;
@@ -946,10 +946,10 @@ unsigned WINAPI MainThread() {
 					DrawSkylineInMenu = false;
 				}
 
-				// MIDI Auto Tuning / Auto True-Tuning
-				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong && Midi::userWantsToUseAutoTuning)
+				// MIDI Auto Tuning / Auto True-Tuning (In Song)
+				if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && !Midi::alreadyAutomatedTuningInThisSong)
 					Midi::AutomateTuning();
-
+					
 				// Show Song Timer (In Song)
 				if (!AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
 					AutomatedSongTimer = true;
@@ -1016,8 +1016,9 @@ unsigned WINAPI MainThread() {
 				}
 
 				// Turn off MIDI Auto Tuning / Auto True-Tuning
-				if (Midi::alreadyAutomatedTuningInThisSong) {
+				if (Midi::alreadyAutomatedTuningInThisSong && !MemHelpers::IsInStringArray(currentMenu, preSongTuners)) {
 					Midi::RevertAutomatedTuning();
+					Midi::alreadyAttemptedTuningInTuner = false;
 					Midi::userWantsToUseAutoTuning = false;
 				}	
 

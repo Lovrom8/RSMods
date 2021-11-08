@@ -24,6 +24,7 @@ namespace MemHelpers {
 	float SongTimer();
 	bool IsExtendedRangeSong();
 	int* GetHighestLowestString();
+	int* GetHighestLowestString(Tuning tuningOverride);
 	bool IsSongInDrop(Tuning tuning);
 	bool IsSongInStandard(Tuning tuning);
 	int GetTrueTuning();

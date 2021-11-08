@@ -302,6 +302,67 @@ int* MemHelpers::GetHighestLowestString() {
 	return returnValue;
 }
 
+/// <summary>
+/// Gets the highest tuned string, and the lowest tuned string.
+/// </summary>
+/// <returns>[0] - Highest, [1] - Lowest</returns>
+int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
+	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
+
+	// Null Pointer Check
+	if (tuningOverride.lowE == 69) {
+		int* fakeReturns = new int[2]{ 666, 666 };
+		// std::cout << "Failed: GetHighestLowestString. GetCurrentTuning returned an invalid tuning" << std::endl; // Disabled because it causes log to get huge real quick
+		return fakeReturns;
+	}
+
+	int numberOfStrings = (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on" && (tuningOverride.strB == 0 || tuningOverride.strB == 12) && (tuningOverride.highE == 0 || tuningOverride.highE == 12)) ? 4 : 6; // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+
+	bool bassOctaveEffect = GetTrueTuning() == 220;
+
+	if (bassOctaveEffect) {
+		tuningOverride.lowE		-= 12;
+		tuningOverride.strA		-= 12;
+		tuningOverride.strD		-= 12;
+		tuningOverride.strG		-= 12;
+		tuningOverride.strB		-= 12;
+		tuningOverride.highE	-= 12;
+	}
+
+	highestTuning = tuningOverride.lowE < highestTuning ? tuningOverride.lowE : highestTuning;
+	highestTuning = tuningOverride.strA < highestTuning ? tuningOverride.strA : highestTuning;
+	highestTuning = tuningOverride.strD < highestTuning ? tuningOverride.strD : highestTuning;
+	highestTuning = tuningOverride.strG < highestTuning ? tuningOverride.strG : highestTuning;
+
+	lowestTuning = tuningOverride.lowE > lowestTuning ? tuningOverride.lowE : lowestTuning;
+	lowestTuning = tuningOverride.strA > lowestTuning ? tuningOverride.strA : lowestTuning;
+	lowestTuning = tuningOverride.strD > lowestTuning ? tuningOverride.strD : lowestTuning;
+	lowestTuning = tuningOverride.strG > lowestTuning ? tuningOverride.strG : lowestTuning;
+
+	if (numberOfStrings == 6) {
+		highestTuning = tuningOverride.strB < highestTuning ? tuningOverride.strB : highestTuning;
+		highestTuning = tuningOverride.highE < highestTuning ? tuningOverride.highE : highestTuning;
+
+		lowestTuning = tuningOverride.strB > lowestTuning ? tuningOverride.strB : lowestTuning;
+		lowestTuning = tuningOverride.highE > lowestTuning ? tuningOverride.highE : lowestTuning;
+	}
+
+	if (bassOctaveEffect) { // Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.
+		highestTuning += 12;
+		lowestTuning += 12;
+	}
+
+	// Change tuning number (255 = Eb Standard, 254 D Standard, etc) to drop number (-1 = Eb Standard, -2 D Standard, etc).
+	if (highestTuning != 0)
+		highestTuning -= 256;
+	if (lowestTuning != 0)
+		lowestTuning -= 256;
+
+	int* returnValue = new int[2]{ highestTuning, lowestTuning };
+
+	return returnValue;
+}
+
 
 /// <param name="tuning"> - Song Tuning</param>
 /// <returns>Are we playing in Drop tuning? ex: D Drop C</returns>

@@ -185,7 +185,7 @@ namespace Midi {
 
 			// Invalid pointer check
 			if (highestTuning == 666 && lowestTuning == 666) {
-				std::cout << "(MIDI) Invalid H_L_Tuning Pointer" << std::endl;
+				std::cout << "(MIDI) Unable to read tuning in song." << std::endl;
 				return;
 			}
 			
@@ -197,6 +197,41 @@ namespace Midi {
 				highestTuning -= 12;
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
+			std::cout << "Triggered Mod: Auto Tuning VIA Midi (Song)" << std::endl;
+		}
+	}
+
+	void AttemptTuningInTuner() {
+		if (!alreadyAttemptedTuningInTuner) {
+			alreadyAttemptedTuningInTuner = true;
+
+			if (!selectedPedal.supportsDropTuning) {
+				std::cout << "Your pedal doesn't support drop tuning." << std::endl;
+				return;
+			}
+
+			Sleep(2000); // The menu is called when the animation starts. We need to wait for the tuning name to appear in the bottom-right corner so we can read it and get the tuning we need.
+
+			int* highestLowestTuning = MemHelpers::GetHighestLowestString(MemHelpers::GetTuningAtTuner());
+
+			int highestTuning = highestLowestTuning[0];
+			int lowestTuning = highestLowestTuning[1];
+
+			// Invalid pointer check
+			if (highestTuning == 666 && lowestTuning == 666) {
+				std::cout << "(MIDI) Cannot read tuning in tuner. Will attempt to automate tuning once the user is in the song." << std::endl;
+				return;
+			}
+
+			delete[] highestLowestTuning;
+
+			int TrueTuning_Hertz = MemHelpers::GetTrueTuning();
+
+			// highestLowestTuning accounts for true tuning of A220. Do not add a check for it here.
+
+			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
+			std::cout << "Triggered Mod: Auto Tuning VIA Midi (Tuner)" << std::endl;
+			alreadyAutomatedTuningInThisSong = true;
 		}
 	}
 
@@ -205,7 +240,7 @@ namespace Midi {
 	/// </summary>
 	void RevertAutomatedTuning() { // Turn off the pedal after we are done with a song.
 
-		if (selectedPedal.pedalName == MidiPedal().pedalName || !userWantsToUseAutoTuning)
+		if (selectedPedal.pedalName == MidiPedal().pedalName)
 			return;
 
 		if (lastPC != 666 || selectedPedal.softwarePedal) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
@@ -227,11 +262,13 @@ namespace Midi {
 			}
 			
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
+
+			if (activeBypassMap.find((char)lastPC) != activeBypassMap.end())
+				SendProgramChange((int)activeBypassMap.find((char)lastPC)->second); // Send the bypass code to revert back to normal guitar.
+
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
 
-			if (activeBypassMap.find(lastPC) != activeBypassMap.end())
-				SendProgramChange(activeBypassMap.find(lastPC)->second); // Send the bypass code to revert back to normal guitar.
 			SendControlChange(0); // Reset the expression pedal
 		}
 
