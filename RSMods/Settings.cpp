@@ -6,7 +6,7 @@
 /// </summary>
 void Settings::Initialize()
 {
-	modSettings = {  
+	modSettings = {
 
 		{"CustomSongListTitles", "K"},
 		{"ToggleLoftKey", "T"},
@@ -59,6 +59,7 @@ void Settings::Initialize()
 		{"RRSpeedAboveOneHundred", "off"},
 		{"AutoTuneForSong", "off"},
 		{"AutoTuneForSongDevice", ""},
+		{"AutoTuneForSongWhen", "manual"},
 		{"AutoTuneForSoftwareSemitoneSettings", ""},
 		{"AutoTuneForSoftwareSemitoneTriggers", ""},
 		{"AutoTuneForSoftwareTrueTuningSettings", ""},
@@ -236,6 +237,7 @@ void Settings::ReadModSettings() {
 	modSettings["RRSpeedAboveOneHundred"] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 	modSettings["AutoTuneForSong"] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
+	modSettings["AutoTuneForSongWhen"] = reader.GetValue("Toggle Switches", "AutoTuneForSongWhen", "manual");
 	modSettings["AutoTuneForSoftwareSemitoneSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneSettings", "");
 	modSettings["AutoTuneForSoftwareSemitoneTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneTriggers", "");
 	modSettings["AutoTuneForSoftwareTrueTuningSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningSettings", "");

@@ -329,22 +329,29 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 		tuningOverride.highE	-= 12;
 	}
 
-	highestTuning = tuningOverride.lowE < highestTuning ? tuningOverride.lowE : highestTuning;
-	highestTuning = tuningOverride.strA < highestTuning ? tuningOverride.strA : highestTuning;
-	highestTuning = tuningOverride.strD < highestTuning ? tuningOverride.strD : highestTuning;
-	highestTuning = tuningOverride.strG < highestTuning ? tuningOverride.strG : highestTuning;
+	int string_lowE = tuningOverride.lowE <= 24		? tuningOverride.lowE + 256		: tuningOverride.lowE;
+	int string_A = tuningOverride.strA <= 24		? tuningOverride.strA + 256		: tuningOverride.strA;
+	int string_D = tuningOverride.strD <= 24		? tuningOverride.strD + 256		: tuningOverride.strD;
+	int string_G = tuningOverride.strG <= 24		? tuningOverride.strG + 256		: tuningOverride.strG;
+	int string_B = tuningOverride.strB <= 24		? tuningOverride.strB + 256		: tuningOverride.strB;
+	int string_highE = tuningOverride.highE <= 24	? tuningOverride.highE + 256	: tuningOverride.highE;
 
-	lowestTuning = tuningOverride.lowE > lowestTuning ? tuningOverride.lowE : lowestTuning;
-	lowestTuning = tuningOverride.strA > lowestTuning ? tuningOverride.strA : lowestTuning;
-	lowestTuning = tuningOverride.strD > lowestTuning ? tuningOverride.strD : lowestTuning;
-	lowestTuning = tuningOverride.strG > lowestTuning ? tuningOverride.strG : lowestTuning;
+	highestTuning = string_lowE > highestTuning ? string_lowE	: highestTuning;
+	highestTuning = string_A	> highestTuning ? string_A		: highestTuning;
+	highestTuning = string_D	> highestTuning ? string_D		: highestTuning;
+	highestTuning = string_G	> highestTuning ? string_G		: highestTuning;
+
+	lowestTuning = string_lowE	< lowestTuning	? string_lowE	: lowestTuning;
+	lowestTuning = string_A		< lowestTuning	? string_A		: lowestTuning;
+	lowestTuning = string_D		< lowestTuning	? string_D		: lowestTuning;
+	lowestTuning = string_G		< lowestTuning	? string_G		: lowestTuning;
 
 	if (numberOfStrings == 6) {
-		highestTuning = tuningOverride.strB < highestTuning ? tuningOverride.strB : highestTuning;
-		highestTuning = tuningOverride.highE < highestTuning ? tuningOverride.highE : highestTuning;
+		highestTuning = string_B		> highestTuning ? string_B		: highestTuning;
+		highestTuning = string_highE	> highestTuning ? string_highE	: highestTuning;
 
-		lowestTuning = tuningOverride.strB > lowestTuning ? tuningOverride.strB : lowestTuning;
-		lowestTuning = tuningOverride.highE > lowestTuning ? tuningOverride.highE : lowestTuning;
+		lowestTuning = string_B			< lowestTuning	? string_B		: lowestTuning;
+		lowestTuning = string_highE		< lowestTuning	? string_highE	: lowestTuning;
 	}
 
 	if (bassOctaveEffect) { // Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.

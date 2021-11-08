@@ -262,14 +262,16 @@ namespace Midi {
 			}
 			
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
-
-			if (activeBypassMap.find((char)lastPC) != activeBypassMap.end())
-				SendProgramChange((int)activeBypassMap.find((char)lastPC)->second); // Send the bypass code to revert back to normal guitar.
+			char originalPC = lastPC;
 
 			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
 
-			SendControlChange(0); // Reset the expression pedal
+			if (activeBypassMap.find(originalPC) != activeBypassMap.end())
+				SendProgramChange(activeBypassMap.find(originalPC)->second); // Send the bypass code to revert back to normal guitar.
+
+			if (lastCC != 0)
+				SendControlChange(0); // Reset the expression pedal
 		}
 
 		alreadyAutomatedTuningInThisSong = false;
