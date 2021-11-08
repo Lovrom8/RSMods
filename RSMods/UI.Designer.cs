@@ -239,6 +239,9 @@
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_AutoTuning = new System.Windows.Forms.TabPage();
+            this.groupBox_MidiAutoTuningWhen = new System.Windows.Forms.GroupBox();
+            this.radio_AutoTuningWhenTuner = new System.Windows.Forms.RadioButton();
+            this.radio_AutoTuningWhenManual = new System.Windows.Forms.RadioButton();
             this.groupBox_MidiAutoTuningOffset = new System.Windows.Forms.GroupBox();
             this.listBox_MidiAutoTuningOffset = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuneDevice = new System.Windows.Forms.GroupBox();
@@ -518,6 +521,7 @@
             this.tabPage_ModSettings_Automation.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.tabPage_ModSettings_AutoTuning.SuspendLayout();
+            this.groupBox_MidiAutoTuningWhen.SuspendLayout();
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
@@ -3154,6 +3158,7 @@
             // tabPage_ModSettings_AutoTuning
             // 
             this.tabPage_ModSettings_AutoTuning.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningWhen);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningOffset);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuneDevice);
             this.tabPage_ModSettings_AutoTuning.Location = new System.Drawing.Point(4, 22);
@@ -3162,10 +3167,47 @@
             this.tabPage_ModSettings_AutoTuning.TabIndex = 4;
             this.tabPage_ModSettings_AutoTuning.Text = "Auto Tuning";
             // 
+            // groupBox_MidiAutoTuningWhen
+            // 
+            this.groupBox_MidiAutoTuningWhen.Controls.Add(this.radio_AutoTuningWhenTuner);
+            this.groupBox_MidiAutoTuningWhen.Controls.Add(this.radio_AutoTuningWhenManual);
+            this.groupBox_MidiAutoTuningWhen.Location = new System.Drawing.Point(16, 244);
+            this.groupBox_MidiAutoTuningWhen.Name = "groupBox_MidiAutoTuningWhen";
+            this.groupBox_MidiAutoTuningWhen.Size = new System.Drawing.Size(200, 79);
+            this.groupBox_MidiAutoTuningWhen.TabIndex = 100004;
+            this.groupBox_MidiAutoTuningWhen.TabStop = false;
+            this.groupBox_MidiAutoTuningWhen.Text = "When to trigger?";
+            // 
+            // radio_AutoTuningWhenTuner
+            // 
+            this.radio_AutoTuningWhenTuner.AutoSize = true;
+            this.radio_AutoTuningWhenTuner.Location = new System.Drawing.Point(10, 50);
+            this.radio_AutoTuningWhenTuner.Name = "radio_AutoTuningWhenTuner";
+            this.radio_AutoTuningWhenTuner.Size = new System.Drawing.Size(126, 17);
+            this.radio_AutoTuningWhenTuner.TabIndex = 1;
+            this.radio_AutoTuningWhenTuner.TabStop = true;
+            this.radio_AutoTuningWhenTuner.Text = "When entering Tuner";
+            this.radio_AutoTuningWhenTuner.UseVisualStyleBackColor = true;
+            this.radio_AutoTuningWhenTuner.CheckedChanged += new System.EventHandler(this.Save_AutoTuningWhenTuner);
+            this.radio_AutoTuningWhenTuner.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // radio_AutoTuningWhenManual
+            // 
+            this.radio_AutoTuningWhenManual.AutoSize = true;
+            this.radio_AutoTuningWhenManual.Location = new System.Drawing.Point(10, 19);
+            this.radio_AutoTuningWhenManual.Name = "radio_AutoTuningWhenManual";
+            this.radio_AutoTuningWhenManual.Size = new System.Drawing.Size(109, 17);
+            this.radio_AutoTuningWhenManual.TabIndex = 0;
+            this.radio_AutoTuningWhenManual.TabStop = true;
+            this.radio_AutoTuningWhenManual.Text = "On \"Skip Tuning\"";
+            this.radio_AutoTuningWhenManual.UseVisualStyleBackColor = true;
+            this.radio_AutoTuningWhenManual.CheckedChanged += new System.EventHandler(this.Save_AutoTuningWhenManual);
+            this.radio_AutoTuningWhenManual.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // groupBox_MidiAutoTuningOffset
             // 
             this.groupBox_MidiAutoTuningOffset.Controls.Add(this.listBox_MidiAutoTuningOffset);
-            this.groupBox_MidiAutoTuningOffset.Location = new System.Drawing.Point(346, 16);
+            this.groupBox_MidiAutoTuningOffset.Location = new System.Drawing.Point(337, 16);
             this.groupBox_MidiAutoTuningOffset.Name = "groupBox_MidiAutoTuningOffset";
             this.groupBox_MidiAutoTuningOffset.Size = new System.Drawing.Size(193, 253);
             this.groupBox_MidiAutoTuningOffset.TabIndex = 100003;
@@ -6072,6 +6114,8 @@
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
+            this.groupBox_MidiAutoTuningWhen.ResumeLayout(false);
+            this.groupBox_MidiAutoTuningWhen.PerformLayout();
             this.groupBox_MidiAutoTuningOffset.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.ResumeLayout(false);
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
@@ -6610,6 +6654,9 @@
         private System.Windows.Forms.Label label_TuningOffsetKey;
         private System.Windows.Forms.Label label_ToggleExtendedRangeKey;
         private System.Windows.Forms.RadioButton radio_SoftwarePedal;
+        private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningWhen;
+        private System.Windows.Forms.RadioButton radio_AutoTuningWhenTuner;
+        private System.Windows.Forms.RadioButton radio_AutoTuningWhenManual;
     }
 }
 

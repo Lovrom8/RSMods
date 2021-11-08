@@ -23,7 +23,7 @@ namespace RSMods
                              ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                             MidiAutoTuning, MidiAutoTuningDevice, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
+                             MidiAutoTuning, MidiAutoTuningDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
 
 
@@ -108,6 +108,7 @@ namespace RSMods
             RiffRepeaterAboveHundredIdentifier = "RRSpeedAboveOneHundred = ",
             MidiAutoTuningIdentifier = "AutoTuneForSong = ",
             MidiAutoTuningDeviceIdentifier = "AutoTuneForSongDevice = ",
+            MidiAutoTuningWhenIdentifier = "AutoTuneForSongWhen = ",
             MidiSoftwareSemitoneTriggersIdentifier = "AutoTuneForSoftwareSemitoneTriggers = ",
             MidiSoftwareSemitoneSettingsIdentifier = "AutoTuneForSoftwareSemitoneSettings = ",
             MidiSoftwareTrueTuningTriggersIdentifier = "AutoTuneForSoftwareTrueTuningTriggers = ",
@@ -365,6 +366,8 @@ namespace RSMods
                     return FillSettingVariable(MidiAutoTuningIdentifier, SettingType.ON_OFF, currentLine, out MidiAutoTuning);
                 if (IdentifierIsFound(currentLine, MidiAutoTuningDeviceIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiAutoTuningDeviceIdentifier, SettingType.STRING, currentLine, out MidiAutoTuningDevice);
+                if (IdentifierIsFound(currentLine, MidiAutoTuningWhenIdentifier, identifierToGrab))
+                    return FillSettingVariable(MidiAutoTuningWhenIdentifier, SettingType.STRING, currentLine, out MidiAutoTuningWhen);
                 if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneSettingsIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiSoftwareSemitoneSettingsIdentifier, SettingType.STRING, currentLine, out MidiSoftwareSemitoneSettings);
                 if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneTriggersIdentifier, identifierToGrab))

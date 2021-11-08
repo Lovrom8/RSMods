@@ -565,6 +565,17 @@ namespace RSMods
 
                 if (ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on")
                     checkBox_WhammyChordsMode.Checked = true;
+
+                switch (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningWhenIdentifier))
+                {
+                    default: // Intentional fall-through
+                    case "manual":
+                        radio_AutoTuningWhenManual.Checked = true;
+                        break;
+                    case "tuner":
+                        radio_AutoTuningWhenTuner.Checked = true;
+                        break;
+                }
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on")
@@ -2194,6 +2205,10 @@ namespace RSMods
             if (listBox_MidiAutoTuningOffset.SelectedIndex > -1)
                 SaveSettings_Save(ReadSettings.MidiTuningOffsetIdentifier, (listBox_MidiAutoTuningOffset.SelectedIndex - 3).ToString());
         }
+
+        private void Save_AutoTuningWhenManual(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.MidiAutoTuningWhenIdentifier, "manual");
+
+        private void Save_AutoTuningWhenTuner(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.MidiAutoTuningWhenIdentifier, "tuner");
 
         private void Save_TurnOffAllMods(object sender, EventArgs e)
         {
