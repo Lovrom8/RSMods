@@ -43,8 +43,8 @@ namespace Midi {
 			std::cout << "(MIDI) Chords Mode: Enabled" << std::endl;
 		}
 		
-		if (PedalToUse > 0)
-			selectedPedal = supportedPedals.at(PedalToUse - 1);
+		if (PedalToUse != NULL)
+			selectedPedal = supportedPedals.at((PedalToUse - 1) % supportedPedals.size());
 		else
 			return;
 
@@ -106,7 +106,7 @@ namespace Midi {
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
-			std::cout << "(MIDI) " << error.getMessage() << std::endl;
+			std::cout << "(MIDI) Error: " << error.getMessage() << std::endl;
 		}
 
 		// Clean up
@@ -154,7 +154,7 @@ namespace Midi {
 			midiout->sendMessage(&message);
 		}
 		catch (RtMidiError& error) {
-			std::cout << "(MIDI) " << error.getMessage() << std::endl;
+			std::cout << "(MIDI) Error: " << error.getMessage() << std::endl;
 		}
 
 		// Clean up
@@ -197,7 +197,7 @@ namespace Midi {
 				highestTuning -= 12;
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
-			std::cout << "Triggered Mod: Auto Tuning VIA Midi (Song)" << std::endl;
+			std::cout << "(MIDI) Triggered Mod: Automated Tuning (Song)" << std::endl;
 		}
 	}
 
@@ -206,7 +206,7 @@ namespace Midi {
 			alreadyAttemptedTuningInTuner = true;
 
 			if (!selectedPedal.supportsDropTuning) {
-				std::cout << "Your pedal doesn't support drop tuning." << std::endl;
+				std::cout << "(MIDI) Your pedal doesn't support drop tuning." << std::endl;
 				return;
 			}
 
@@ -230,7 +230,7 @@ namespace Midi {
 			// highestLowestTuning accounts for true tuning of A220. Do not add a check for it here.
 
 			selectedPedal.autoTuneFunction(highestTuning + tuningOffset, TrueTuning_Hertz);
-			std::cout << "Triggered Mod: Auto Tuning VIA Midi (Tuner)" << std::endl;
+			std::cout << "(MIDI) Triggered Mod: Automated Tuning (Tuner)" << std::endl;
 			alreadyAutomatedTuningInThisSong = true;
 		}
 	}
@@ -245,7 +245,7 @@ namespace Midi {
 
 		if (lastPC != 666 || selectedPedal.softwarePedal) { // If the song is in E Standard, and we leave, it tries to use "Bypass +2 OCT Whammy"
 
-			std::cout << "Attmepting to turn off automatic tuning" << std::endl;
+			std::cout << "(MIDI) Attmepting to turn off automatic tuning" << std::endl;
 
 			if (selectedPedal.softwarePedal) {
 				if (Midi::Software::sendSemitoneCommand == programChangeStatus)
@@ -371,7 +371,6 @@ namespace Midi {
 			/// <param name="highestTuning"> - Highest tuned string in the current song's tuning</param>
 			void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
 				bool alreadyAttemptedTrueTune = false;
-
 
 				switch (highestTuning) {
 

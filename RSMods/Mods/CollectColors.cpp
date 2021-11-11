@@ -10,12 +10,12 @@ https://docs.google.com/spreadsheets/d/1X3UjY68Z5oOuZpV_UpckOy-G-XZe7lWaskc31C7F
 /// Convert input color (from INI) to Ambient String Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		H = stringHue + 4;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetAmbientStringColor(int stringHue, bool colorBlind) {
+	if (colorBlind)
 		H = stringHue - 1;
+	else
+		H = stringHue + 4;
 
 	S = 0.423f;
 	L = 0.558f;
@@ -29,15 +29,15 @@ Color CollectColors::GetAmbientStringColor(int stringHue, bool isColorBlindMode)
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="stringSaturation"> - Saturation of input color</param>
 /// <param name="stringLightness"> - Lightness of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		S = stringSaturation - (float).144;
-		L = stringLightness / (float)3.136;
-	}
-	else {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool colorBlind) {
+	if (colorBlind) {
 		S = stringSaturation - (float).428;
 		L = stringLightness / (float)2.812;
+	}
+	else {
+		S = stringSaturation - (float).144;
+		L = stringLightness / (float)3.136;
 	}
 
 	H = stringHue;
@@ -61,9 +61,9 @@ Color CollectColors::GetGlowStringColor(int stringHue) {
 /// Convert input color (from INI) to Tuning Peg Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetTuningPegColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetTuningPegColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue - 4;
 		L = 0.3385f;
 	}
@@ -92,13 +92,16 @@ Color CollectColors::GetPegResetColor() {
 /// <summary>
 /// Convert input color (from INI) to Peg Success Color
 /// </summary>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
 /// <returns>Returns white if ColorBlind, black if not.</returns>
-Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		L = 0.0f;
-	else
+Color CollectColors::GetPegSuccessColor(bool colorBlind) {
+	if (colorBlind) {
 		L = 1.0f;
+	}
+	else {
+		L = 0.0f;
+	}
+
 	H = (int)0.0f;
 	S = 0.0f;
 
@@ -109,12 +112,14 @@ Color CollectColors::GetPegSuccessColor(bool isColorBlindMode) {
 /// Convert input color (from INI) to Peg In-Tune Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetPegInTuneColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		H = stringHue + 4;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetPegInTuneColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue - 1;
+	}
+	else {
+		H = stringHue + 4;
+	}
 
 	S = 1.0f;
 	L = 0.349f;
@@ -138,15 +143,15 @@ Color CollectColors::GetPegOutTuneColor() {
 /// Convert input color (from INI) to Reg Text Indicator Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		H = stringHue + 3;
-		L = 0.625f;
-	}
-	else {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue + 2;
 		L = 0.624f;
+	}
+	else {
+		H = stringHue + 3;
+		L = 0.625f;
 	}
 
 	S = 1.0f;
@@ -158,12 +163,14 @@ Color CollectColors::GetRegTextIndicatorColor(int stringHue, bool isColorBlindMo
 /// Convert input color (from INI) to Fork Particles Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		L = 0.625f;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetRegForkParticlesColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		L = 0.624f;
+	}
+	else {
+		L = 0.625f;
+	}
 
 	H = stringHue + 5;
 	S = 1.0f;
@@ -177,17 +184,17 @@ Color CollectColors::GetRegForkParticlesColor(int stringHue, bool isColorBlindMo
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="stringSaturation"> - Saturation of input color</param>
 /// <param name="stringLightness"> - Lightness of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		H = stringHue + 5;
-		S = 1.0f;
-		L = .5f;
-	}
-	else {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation, float stringLightness, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue;
 		S = stringSaturation;
 		L = stringLightness;
+	}
+	else {
+		H = stringHue + 5;
+		S = 1.0f;
+		L = .5f;
 	}
 
 	return GetColor();
@@ -197,17 +204,17 @@ Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation
 /// Convert input color (from INI) to Noteway Accent Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		H = stringHue + 3;
-		S = 0.909f;
-		L = 0.761f;
-	}
-	else {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetNotewayAccentColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		H = (int)0.0f;
 		S = 0.0f;
 		L = 1.0f;
+	}
+	else {
+		H = stringHue + 3;
+		S = 0.909f;
+		L = 0.761f;
 	}
 
 	return GetColor();
@@ -217,17 +224,17 @@ Color CollectColors::GetNotewayAccentColor(int stringHue, bool isColorBlindMode)
 /// Convert input color (from INI) to Noteway Preview Color
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode) {
-	if (!isColorBlindMode) {
-		H = stringHue - 1;
-		S = 0.219f;
-		L = 0.206f;
-	}
-	else {
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetNotewayPreviewColor(int stringHue, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue;
 		S = 0.212f;
 		L = 0.204f;
+	}
+	else {
+		H = stringHue - 1;
+		S = 0.219f;
+		L = 0.206f;
 	}
 
 	return GetColor();
@@ -238,12 +245,14 @@ Color CollectColors::GetNotewayPreviewColor(int stringHue, bool isColorBlindMode
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		H = stringHue + 12;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue - 4;
+	}
+	else {
+		H = stringHue + 12;
+	}
 
 	S = 1.0f;
 
@@ -262,12 +271,14 @@ Color CollectColors::GetGuitarcadeMainColor(int stringHue, int stringNumber, boo
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		H = stringHue + 12;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue + 2;
+	}
+	else {
+		H = stringHue + 12;
+	}
 
 	S = 1.0f;
 
@@ -286,12 +297,14 @@ Color CollectColors::GetGuitarcadeAdditiveColor(int stringHue, int stringNumber,
 /// </summary>
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="stringNumber"> - String# from thickest to thinnest (zero-indexed)</param>
-/// <param name="isColorBlindMode"> - Should we make a ColorBlind color</param>
-Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool isColorBlindMode) {
-	if (!isColorBlindMode)
-		H = stringHue + 12;
-	else
+/// <param name="colorBlind"> - Should we make a ColorBlind color</param>
+Color CollectColors::GetGuitarcadeUIColor(int stringHue, int stringNumber, bool colorBlind) {
+	if (colorBlind) {
 		H = stringHue + 2;
+	}
+	else {
+		H = stringHue + 12;
+	}
 
 	S = 1.0f;
 

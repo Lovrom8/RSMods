@@ -62,63 +62,82 @@ xyzPosition GuitarSkeletons::FretBarPosition(bool leftHanded, bool topOfFretBar,
 	
 	// WARNING: !Do not edit these values!
 
-	if (fretNumber <= 6) {
-		if (fretNumber == 1)
+	switch (fretNumber) {
+		case 1:
 			Y = -53.6527178626;
-		else if (fretNumber == 2)
+			break;
+		case 2:
 			Y = -47.2859269312;
-		else if (fretNumber == 3)
+			break;
+		case 3:
 			Y = -41.571296608;
-		else if (fretNumber == 4)
+			break;
+		case 4:
 			Y = -35.9061810256;
-		else if (fretNumber == 5)
+			break;
+		case 5:
 			Y = -30.4193875755;
-		else
+			break;
+		case 6:
 			Y = -25.0898652107;
-	}
-	else if (fretNumber <= 12) {
-		if (fretNumber == 7)
+			break;
+		case 7:
 			Y = -20.0143908249;
-		else if (fretNumber == 8)
+			break;
+		case 8:
 			Y = -14.9411685956;
-		else if (fretNumber == 9)
+			break;
+		case 9:
 			Y = -10.083622901;
-		else if (fretNumber == 10)
+			break;
+		case 10:
 			Y = -5.36222444569;
-		else if (fretNumber == 11)
+			break;
+		case 11:
 			Y = -0.759047133141;
-		else
+			break;
+		case 12:
 			Y = 3.75125107804;
-	}
-	else if (fretNumber <= 18) {
-		if (fretNumber == 13)
+			break;
+		case 13:
 			Y = 8.11236881306;
-		else if (fretNumber == 14)
+			break;
+		case 14:
 			Y = 12.3725997238;
-		else if (fretNumber == 15)
+			break;
+		case 15:
 			Y = 16.5238361907;
-		else if (fretNumber == 16)
+			break;
+		case 16:
 			Y = 20.6624282726;
-		else if (fretNumber == 17)
+			break;
+		case 17:
 			Y = 24.5914074241;
-		else
+			break;
+		case 18:
 			Y = 28.5391059999;
-	}
-	else {
-		if (fretNumber == 19)
+			break;
+		case 19:
 			Y = 32.3164597843;
-		else if (fretNumber == 20)
+			break;
+		case 20:
 			Y = 36.1167300113;
-		else if (fretNumber == 21)
+			break;
+		case 21:
 			Y = 39.7790145179;
-		else if (fretNumber == 22)
+			break;
+		case 22:
 			Y = 43.3392100451;
-		else if (fretNumber == 23)
+			break;
+		case 23:
 			Y = 46.7799529547;
-		else if (fretNumber == 24)
+			break;
+		case 24:
 			Y = 50.2136309284;
-		else // Fret # 25 (Edge of fret 24)
+			break;
+		case 25:
 			Y = 53.6527176054;
+			break;
 	}
 
 	if (setToDefaults) {
