@@ -73,7 +73,7 @@ namespace RSMods
             TooltipDictionary.Add(button_Profiles_RevertBackup, "Click this button with a date selected to revert to that backup.\nThe above dates are of all the backups we've taken.");
             TooltipDictionary.Add(listBox_Profiles_ListBackups, "This is a list of all the backups of your profile(s) we've taken.\nWe enable backups by default to lower the risk of \"bricking\" a profile.\nIt is always good to make backups, just in-case the inevitable happens.");
             TooltipDictionary.Add(radio_AutoTuningWhenManual, "We will tell your pedal how to tune when you enter the tuner and press \"DELETE\" to skip tuning! Your guitar or bass will NOT have the altered tuning in the tuner.");
-            TooltipDictionary.Add(radio_AutoTuningWhenTuner, "We will tell your pedal how to tuner when you enter the tuner. Your guitar or bass WILL have the altered tuning in the tuner.");
+            TooltipDictionary.Add(radio_AutoTuningWhenTuner, "We will tell your pedal how to tune when you enter the tuner. Your guitar or bass WILL have the altered tuning in the tuner.");
 
             // Set & Forget Mods (Cache.psarc Modifications)
             // Tones

@@ -3910,7 +3910,7 @@
             // label_ASIO_Output_MaxVolume
             // 
             this.label_ASIO_Output_MaxVolume.AutoSize = true;
-            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(250, 80);
+            this.label_ASIO_Output_MaxVolume.Location = new System.Drawing.Point(247, 80);
             this.label_ASIO_Output_MaxVolume.Name = "label_ASIO_Output_MaxVolume";
             this.label_ASIO_Output_MaxVolume.Size = new System.Drawing.Size(68, 13);
             this.label_ASIO_Output_MaxVolume.TabIndex = 7;
@@ -3947,7 +3947,7 @@
             // label_ASIO_Output_BaseChannel
             // 
             this.label_ASIO_Output_BaseChannel.AutoSize = true;
-            this.label_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(250, 30);
+            this.label_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(247, 30);
             this.label_ASIO_Output_BaseChannel.Name = "label_ASIO_Output_BaseChannel";
             this.label_ASIO_Output_BaseChannel.Size = new System.Drawing.Size(76, 13);
             this.label_ASIO_Output_BaseChannel.TabIndex = 2;
