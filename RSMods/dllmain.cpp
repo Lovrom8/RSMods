@@ -980,6 +980,20 @@ unsigned WINAPI MainThread() {
 
 			else {
 
+				/// Turn on Extended Range In Tuner
+				if (MemHelpers::IsInStringArray(currentMenu, preSongTuners)) {
+					if (!AttemptedERInTuner) { // The reason this is a separate if statement is so that the else statement isn't voiding the correct menu.
+						if (!skipERSleep)
+							Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
+						AttemptedERInTuner = true;
+						UseERInTuner = MemHelpers::IsExtendedRangeTuner();
+					}
+				}
+				else {
+					AttemptedERInTuner = false;
+					UseERInTuner = false;
+				}
+
 				// Turn off Riff Repeater Speed above 100%
 				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens)) {
 					automatedSongSpeedInThisSong = false; 
@@ -992,19 +1006,6 @@ unsigned WINAPI MainThread() {
 					UseERExclusivelyInThisSong = false;
 					UseEROrColorsInThisSong = false;
 					AttemptedERInThisSong = false;
-				}
-
-				/// Turn on Extended Range In Tuner
-				if (MemHelpers::IsInStringArray(currentMenu, preSongTuners)) {
-					if (!AttemptedERInTuner) { // The reason this is a separate if statement is so that the else statement isn't voiding the correct menu.
-						Sleep(1500); // Tuning takes a second, or so, to get set by the game. We use this to make sure we have the right tuning numbers. Otherwise, we would never get ER mode to turn on properly.
-						AttemptedERInTuner = true;
-						UseERInTuner = MemHelpers::IsExtendedRangeTuner();
-					}
-				}
-				else {
-					AttemptedERInTuner = false;
-					UseERInTuner = false;
 				}
 				
 				// Turn off Show Song Timer (In Song)

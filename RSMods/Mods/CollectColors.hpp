@@ -11,7 +11,7 @@ namespace CollectColors {
 	RSColor GetAmbientStringColor(int stringHue, bool colorBlind);
 	RSColor GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool colorBlind);
 	RSColor GetGlowStringColor(int stringHue);
-	RSColor GetTuningPegColor(int stringHue, bool colorBlind);
+	RSColor GetTuningPegColor(int stringHue);
 	RSColor GetPegResetColor();
 	RSColor GetPegSuccessColor(bool colorBlind);
 	RSColor GetPegInTuneColor(int stringHue, bool colorBlind);
