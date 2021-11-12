@@ -63,16 +63,9 @@ Color CollectColors::GetGlowStringColor(int stringHue) {
 /// <param name="stringHue"> - Hue of input color</param>
 /// <param name="colorBlind"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetTuningPegColor(int stringHue, bool colorBlind) {
-	if (colorBlind) {
-		H = stringHue - 4;
-		L = 0.3385f;
-	}
-	else {
-		H = stringHue;
-		L = 0.3453f;
-	}
-
+	H = stringHue;
 	S = 1.0f;
+	L = 0.25f;
 
 	return GetColor();
 }
