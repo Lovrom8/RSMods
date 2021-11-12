@@ -116,7 +116,7 @@ std::vector<std::vector<Color>> defaultColors;
 /// Set colors of strings depending on INI settings.
 /// </summary>
 void ERMode::Toggle7StringMode() {
-	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
+	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, pegsTuning, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
@@ -128,6 +128,7 @@ void ERMode::Toggle7StringMode() {
 	//InitStrings(stringsPart, Particles);
 	InitStrings(stringsBodyNorm, BodyNorm);
 	InitStrings(stringsBodyAcc, BodyAcc);
+	InitStrings(pegsTuning, PegsTuning);
 	//InitStrings(stringsBodyPrev, BodyPrev);
 
 	if (ColorsSaved && Settings::IsTwitchSettingEnabled("SolidNotes")) {
@@ -156,6 +157,7 @@ void ERMode::Toggle7StringMode() {
 				SetColors(stringsText, colorsText); // name="GuitarRegistrarTextIndicatorBlind" id="3186002004"
 				SetColors(stringsBodyNorm, colorsNormal); // name="NotewayBodyPartsBodyNormBlind" id="3629363565"
 				SetColors(stringsBodyAcc, colorsBodyAcc); // name="NotewayBodyPartsAccentBlind" id = "47948252"
+				SetColors(pegsTuning, colorsPegsTuning);
 				break;
 			case 2: // User wants their own custom (ER) colors
 				SetColors(stringsEnabled, "Enabled_CB");
@@ -166,6 +168,7 @@ void ERMode::Toggle7StringMode() {
 				SetColors(stringsPegNotInTune, "PegOutTune_CB");
 				SetColors(stringsBodyNorm, "BodyNorm_CB");
 				SetColors(stringsBodyAcc, "BodyAcc_CB");
+				SetColors(pegsTuning, "PegsTuning_CB");
 				break;
 			default:
 				break;
@@ -192,6 +195,7 @@ void ERMode::Toggle7StringMode() {
 			SetColors(stringsPegNotInTune, "PegOutTune_N");
 			SetColors(stringsBodyNorm, "BodyNorm_N");
 			SetColors(stringsBodyAcc, "BodyAcc_N");
+			SetColors(pegsTuning, "PegsTuning_N");
 			//etc.
 		} // If not enabled, colors will auto-reset upon entering a song
 	}

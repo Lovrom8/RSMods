@@ -42,7 +42,7 @@ ColorMap D3D::GetCustomColors(int strIdx, bool CB) {
 		{"Disabled" + ext, CollectColors::GetDisabledStringColor(H, S, L, CB)},
 		{"Enabled" + ext, iniColor},
 		{"Glow" + ext, CollectColors::GetGlowStringColor(H)},
-		{"PegsTuning" + ext, CollectColors::GetGlowStringColor(H)},
+		{"PegsTuning" + ext, CollectColors::GetTuningPegColor(H, CB)},
 		{"PegsReset" + ext, CollectColors::GetPegResetColor()},
 		{"PegsSuccess" + ext, CollectColors::GetPegSuccessColor(CB)},
 		{"PegsInTune" + ext, CollectColors::GetPegInTuneColor(H, CB)},
