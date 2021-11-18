@@ -3177,6 +3177,7 @@
             this.groupBox_MidiAutoTuningWhen.TabIndex = 100004;
             this.groupBox_MidiAutoTuningWhen.TabStop = false;
             this.groupBox_MidiAutoTuningWhen.Text = "When to trigger?";
+            this.groupBox_MidiAutoTuningWhen.Visible = false;
             // 
             // radio_AutoTuningWhenTuner
             // 
