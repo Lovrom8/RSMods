@@ -164,11 +164,11 @@ void ERMode::Toggle7StringMode() {
 				SetColors(stringsGlow, "Glow_CB");
 				SetColors(stringsDisabled, "Disabled_CB");
 				SetColors(stringsText, "TextIndicator_CB");
-				SetColors(stringsPegInTune, "PegInTune_CB");
-				SetColors(stringsPegNotInTune, "PegOutTune_CB");
+				SetColors(pegsTuning, "PegsTuning_CB");
+				SetColors(stringsPegInTune, "PegsInTune_CB");
+				SetColors(stringsPegNotInTune, "PegsOutTune_CB");
 				SetColors(stringsBodyNorm, "BodyNorm_CB");
 				SetColors(stringsBodyAcc, "BodyAcc_CB");
-				SetColors(pegsTuning, "PegsTuning_CB");
 				break;
 			default:
 				break;
@@ -191,11 +191,11 @@ void ERMode::Toggle7StringMode() {
 			SetColors(stringsGlow, "Glow_N");
 			SetColors(stringsDisabled, "Disabled_N");
 			SetColors(stringsText, "TextIndicator_N");
-			SetColors(stringsPegInTune, "PegInTune_N");
-			SetColors(stringsPegNotInTune, "PegOutTune_N");
+			SetColors(pegsTuning, "PegsTuning_N");
+			SetColors(stringsPegInTune, "PegsInTune_N");
+			SetColors(stringsPegNotInTune, "PegsOutTune_N");
 			SetColors(stringsBodyNorm, "BodyNorm_N");
 			SetColors(stringsBodyAcc, "BodyAcc_N");
-			SetColors(pegsTuning, "PegsTuning_N");
 			//etc.
 		} // If not enabled, colors will auto-reset upon entering a song
 	}
