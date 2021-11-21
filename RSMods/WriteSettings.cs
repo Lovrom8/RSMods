@@ -99,7 +99,8 @@ namespace RSMods
                 { ReadSettings.ProfileToLoadIdentifier, CreateDefaultOnOldINI(ReadSettings.ProfileToLoadIdentifier, "") }, // Default profile to load.
                 { ReadSettings.ShowSongTimerWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSongTimerWhenIdentifier, "manual") }, // Should we start the game with song timer on.
                 { ReadSettings.ShowSelectedVolumeWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual") }, // Should we always show the selected volume.
-                { ReadSettings.SecondaryMonitorIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorIdentifier, "off")} // Should we allow a secondary monitor to be used for Rocksmith?
+                { ReadSettings.SecondaryMonitorIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorIdentifier, "off")}, // Should we allow a secondary monitor to be used for Rocksmith?
+                { ReadSettings.RemoveSongPreviewsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSongPreviewsIdentifier, "off")} // Should we disable the song previews for the user?
             }},
             {"[String Colors]", new Dictionary<string, string>
             {

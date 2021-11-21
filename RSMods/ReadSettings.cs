@@ -24,7 +24,7 @@ namespace RSMods
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
-                             RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor,
+                             RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews,
 
 
                              // String Colors
@@ -120,6 +120,7 @@ namespace RSMods
             ShowSongTimerWhenIdentifier                 = "ShowSongTimerWhen = ",
             ShowSelectedVolumeWhenIdentifier            = "ShowSelectedVolumeWhen = ",
             SecondaryMonitorIdentifier                  = "SecondaryMonitor = ",
+            RemoveSongPreviewsIdentifier                = "SongPreviews = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -390,6 +391,8 @@ namespace RSMods
                     return FillSettingVariable(ShowSelectedVolumeWhenIdentifier, SettingType.STRING, currentLine, out ShowSelectedVolumeWhen);
                 if (IdentifierIsFound(currentLine, SecondaryMonitorIdentifier, identifierToGrab))
                     return FillSettingVariable(SecondaryMonitorIdentifier, SettingType.STRING, currentLine, out SecondaryMonitor);
+                if (IdentifierIsFound(currentLine, RemoveSongPreviewsIdentifier, identifierToGrab))
+                    return FillSettingVariable(RemoveSongPreviewsIdentifier, SettingType.ON_OFF, currentLine, out RemoveSongPreviews);
                 #endregion
                 #region String Colors
                     // String Colors (Normal {N} & Colorblind {CB})

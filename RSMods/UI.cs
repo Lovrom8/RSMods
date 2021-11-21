@@ -603,6 +603,7 @@ namespace RSMods
 
             checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsModeIdentifier) == "1";
             checkBox_FixBadBassTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
+            checkBox_RemoveSongPreviews.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveSongPreviewsIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2228,14 +2229,8 @@ namespace RSMods
 
         private void Save_ERFixBadBassTuning(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.ExtendedRangeFixBassTuningIdentifier, checkBox_FixBadBassTuning.Checked.ToString().ToLower());
 
-        private void Save_SpeedUpEnumeration(object sender, EventArgs e)
-        {
-            Process process = new Process();
-            process.StartInfo.FileName = Application.ExecutablePath;
-            process.StartInfo.UseShellExecute = true;
-            process.StartInfo.Verb = "runas";
-            process.Start();
-        }
+        private void Save_RemoveSongPreviews(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RemoveSongPreviewsIdentifier, checkBox_RemoveSongPreviews.Checked.ToString().ToLower());
+
 
         #endregion
         #region ToolTips

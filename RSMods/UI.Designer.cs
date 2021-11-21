@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_RemoveSongPreviews = new System.Windows.Forms.CheckBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
             this.checkBox_SecondaryMonitor = new System.Windows.Forms.CheckBox();
@@ -995,6 +996,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveSongPreviews);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_SecondaryMonitor);
@@ -1023,10 +1025,22 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 333);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 342);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_RemoveSongPreviews
+            // 
+            this.checkBox_RemoveSongPreviews.AutoSize = true;
+            this.checkBox_RemoveSongPreviews.Location = new System.Drawing.Point(10, 312);
+            this.checkBox_RemoveSongPreviews.Name = "checkBox_RemoveSongPreviews";
+            this.checkBox_RemoveSongPreviews.Size = new System.Drawing.Size(112, 17);
+            this.checkBox_RemoveSongPreviews.TabIndex = 69;
+            this.checkBox_RemoveSongPreviews.Text = "Remove Previews";
+            this.checkBox_RemoveSongPreviews.UseVisualStyleBackColor = true;
+            this.checkBox_RemoveSongPreviews.CheckedChanged += new System.EventHandler(this.Save_RemoveSongPreviews);
+            this.checkBox_RemoveSongPreviews.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_ModsLog
             // 
@@ -6658,6 +6672,7 @@
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningWhen;
         private System.Windows.Forms.RadioButton radio_AutoTuningWhenTuner;
         private System.Windows.Forms.RadioButton radio_AutoTuningWhenManual;
+        private System.Windows.Forms.CheckBox checkBox_RemoveSongPreviews;
     }
 }
 

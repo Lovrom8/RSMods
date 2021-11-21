@@ -62,6 +62,7 @@ namespace RSMods
             TooltipDictionary.Add(button_SecondaryMonitorStartPos, "PLEASE READ THIS!\nMove this window over to your secondary monitor and make it full screen.\nPress this button when it is full screen so we can save the resolution.\nAfter you press the button you can go back to windowed mode.");
             TooltipDictionary.Add(checkBox_NoteColors_UseRocksmithColors, "Check this box if you want normal Rocksmith colored notes.");
             TooltipDictionary.Add(listBox_MidiAutoTuningOffset, "What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nIf you press the \"Change Tuning Offset\" keybind it will go down in tuning.\nIf you hold Shift while pressing your \"Change Tuning Offset\" keybind, it will go up in tuning.");
+            TooltipDictionary.Add(checkBox_RemoveSongPreviews, "Check this box if you want to turn off the song previews that play when you hover over a song.");
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
