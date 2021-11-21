@@ -2095,6 +2095,7 @@ namespace RSMods
             SaveSettings_Save(ReadSettings.MidiAutoTuningIdentifier, checkBox_useMidiAutoTuning.Checked.ToString().ToLower());
             groupBox_MidiAutoTuneDevice.Visible = checkBox_useMidiAutoTuning.Checked;
             groupBox_MidiAutoTuningOffset.Visible = checkBox_useMidiAutoTuning.Checked;
+            groupBox_MidiAutoTuningWhen.Visible = checkBox_useMidiAutoTuning.Checked;
         }
         private void Save_AutoTuneDevice(object sender, EventArgs e)
         {
