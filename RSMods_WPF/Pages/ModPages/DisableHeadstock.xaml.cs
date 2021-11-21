@@ -32,14 +32,8 @@ namespace RSMods_WPF.Pages.ModPages
             }
         }
 
-        private void When_InSong_Checked(object sender, RoutedEventArgs e)
-        {
-            when.Value = "song";
-        }
+        private void When_InSong_Checked(object sender, RoutedEventArgs e) => when.Value = "song";
 
-        private void When_Always_Checked(object sender, RoutedEventArgs e)
-        {
-            when.Value = "startup";
-        }
+        private void When_Always_Checked(object sender, RoutedEventArgs e) => when.Value = "startup";
     }
 }

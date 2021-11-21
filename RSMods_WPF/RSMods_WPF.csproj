@@ -4,14 +4,23 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>LogoX256.ico</ApplicationIcon>
-    <Version>1.2.5</Version>
+    <ApplicationIcon>Assets\LogoX256.ico</ApplicationIcon>
+    <Version>1.3.0</Version>
     <Product>RSMods</Product>
     <PackageId>RSMods</PackageId>
     <Authors>LovroM8, Ffio1, ZagatoZee</Authors>
     <Copyright>Copyright ©  2021</Copyright>
-    <Company>CustomsForge</Company>
+    <Company>RSModders</Company>
     <Description>A modding tool for Rocksmith 2014 Remastered.</Description>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\LogoX256.ico" />
+  </ItemGroup>
 
 </Project>
