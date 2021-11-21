@@ -1353,9 +1353,73 @@ namespace RSMods
         {
             SetAndForgetMods.LoadDefaultFiles();
             SetForget_FillUI();
+            SetForget_SetTunerColors();
         }
         #endregion
         #region Set And Forget UI Functions
+        private void SetForget_SetTunerColors(int string_num = -1, bool extendedRange = false)
+        {
+            switch (string_num)
+            {
+                case 0: // Set low E string color
+                    if (extendedRange)
+                        nUpDown_String0.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
+                    else
+                        nUpDown_String0.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
+                    break;
+                case 1: // Set A string Color
+                    if (extendedRange)
+                        nUpDown_String1.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
+                    else
+                        nUpDown_String1.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
+                    break;
+                case 2: // Set D string color
+                    if (extendedRange)
+                        nUpDown_String2.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
+                    else
+                        nUpDown_String2.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
+                    break;
+                case 3: // Set G string color
+                    if (extendedRange)
+                        nUpDown_String3.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
+                    else
+                        nUpDown_String3.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
+                    break;
+                case 4: // Set B string color
+                    if (extendedRange)
+                        nUpDown_String4.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
+                    else
+                        nUpDown_String4.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
+                    break;
+                case 5: // Set high e string color
+                    if (extendedRange)
+                        nUpDown_String5.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
+                    else
+                        nUpDown_String5.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
+                    break;
+                default: // Set all string colors
+                    if (extendedRange)
+                    {
+                        nUpDown_String0.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_CB_Identifier));
+                        nUpDown_String1.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_CB_Identifier));
+                        nUpDown_String2.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_CB_Identifier));
+                        nUpDown_String3.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_CB_Identifier));
+                        nUpDown_String4.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_CB_Identifier));
+                        nUpDown_String5.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_CB_Identifier));
+                    }
+                    else
+                    {
+                        nUpDown_String0.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String0Color_N_Identifier));
+                        nUpDown_String1.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String1Color_N_Identifier));
+                        nUpDown_String2.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String2Color_N_Identifier));
+                        nUpDown_String3.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String3Color_N_Identifier));
+                        nUpDown_String4.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String4Color_N_Identifier));
+                        nUpDown_String5.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
+                    }
+                    break;
+            } 
+        }
+
 
         private void SetForget_RestoreDefaults(object sender, EventArgs e)
         {
@@ -2354,6 +2418,16 @@ namespace RSMods
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
                     break;
+            }
+
+            // Change string color if the user if it would be "extended range" of that string.
+            if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on" && int.Parse(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) >= ((NumericUpDown)sender).Value)
+            {
+                SetForget_SetTunerColors(stringNumber, true);
+            }
+            else
+            {
+                SetForget_SetTunerColors(stringNumber);
             }
         }
 
