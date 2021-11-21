@@ -61,7 +61,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 /// </summary>
 void VolumeControl::DisableSongPreviewAudio() {
 	if (!disabledSongPreviewAudio) {
-		MemUtil::PatchAdr((void*)0x011AE6E0, "Play_%s_Invalid", 16);
+		MemUtil::PatchAdr((void*)Offsets::patch_SongPreviewWwiseEvent, "Play_%s_Invalid", 16);
 		disabledSongPreviewAudio = true;
 	}
 	else {
@@ -74,7 +74,7 @@ void VolumeControl::DisableSongPreviewAudio() {
 /// </summary>
 void VolumeControl::EnableSongPreviewAudio() {
 	if (disabledSongPreviewAudio) {
-		MemUtil::PatchAdr((void*)0x011AE6E0, "Play_%s_Preview", 16);
+		MemUtil::PatchAdr((void*)Offsets::patch_SongPreviewWwiseEvent, "Play_%s_Preview", 16);
 		disabledSongPreviewAudio = false;
 	}
 	else {

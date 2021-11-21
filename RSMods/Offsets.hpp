@@ -124,6 +124,7 @@ namespace Offsets {
 	extern uintptr_t ptr_stringColor;
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
 	extern uintptr_t ptr_scrollSpeedMultiplier;
+	extern uintptr_t patch_SongPreviewWwiseEvent;
 
 	extern volatile double& ref_scrollSpeedMultiplier;
 

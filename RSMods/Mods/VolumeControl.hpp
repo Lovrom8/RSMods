@@ -3,6 +3,7 @@
 #include <iostream>
 #include "../WwiseHijack.hpp"
 #include "../MemHelpers.hpp"
+#include "../Offsets.hpp"
 
 
 namespace VolumeControl {
