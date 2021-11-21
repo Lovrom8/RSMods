@@ -71,6 +71,7 @@ void Settings::Initialize()
 		{"ShowSongTimerWhen", "manual"},
 		{"ShowSelectedVolumeWhen", "manual"},
 		{"SecondaryMonitor", "off"},
+		{"SongPreviews", "off"},
 	};
 
 	customSettings = {
@@ -250,6 +251,7 @@ void Settings::ReadModSettings() {
 	modSettings["ShowSongTimerWhen"] = reader.GetValue("Toggle Switches", "ShowSongTimerWhen", "manual");
 	modSettings["ShowSelectedVolumeWhen"] = reader.GetValue("Toggle Switches", "ShowSelectedVolumeWhen", "manual");
 	modSettings["SecondaryMonitor"] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
+	modSettings["SongPreviews"] = reader.GetValue("Toggle Switches", "SongPreviews", "off");
 }
 
 /// <summary>

@@ -96,7 +96,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				if (!ERMode::RainbowEnabled)
 					ERMode::ResetAllStrings();
-					
+
 				std::cout << "Triggered Mod: Rainbow Strings" << std::endl;
 			}
 
@@ -170,9 +170,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				std::cout << "Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << std::endl;
 			}
-			
 
-			/*else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
+
+			/* else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
 				DiscoModeEnabled = !DiscoModeEnabled;
 
 				if (debug) {
@@ -183,7 +183,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 						std::cout << "on";
 					std::cout << " Disco Mode!" << std::endl;
 				}
-			}*/
+			} */
 
 			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Show Selected Volume
 				currentVolumeIndex++;
@@ -216,7 +216,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
-			
+
 
 			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && useNewSongSpeed) { // Riff Repeater over 100%
 				bool prepToTurnOff = false;
@@ -234,7 +234,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
 				else
 					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
-				
+
 				// Set Limits
 				if (realSongSpeed > 428.f)
 					realSongSpeed = 428.f;
@@ -257,7 +257,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
 				Settings::ToggleExtendedRangeMode();
-				
+
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
@@ -1053,6 +1053,16 @@ unsigned WINAPI MainThread() {
 					if (!GuitarSpeak::RunGuitarSpeak()) // If we are in a menu where we don't want to read bad values
 						GuitarSpeakPresent = false;
 				}
+
+				// Disable song previews
+				if (Settings::ReturnSettingValue("SongPreviews") == "on") {
+					if (!VolumeControl::disabledSongPreviewAudio)
+						VolumeControl::DisableSongPreviewAudio();
+				}
+
+				// User originally wanted song previews off, but now wants them on.
+				else if (VolumeControl::disabledSongPreviewAudio)
+					VolumeControl::EnableSongPreviewAudio();
 
 				// Reset Headstock Cache (so we aren't running the same textures over and over again)
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && (!(MemHelpers::IsInStringArray(currentMenu, tuningMenus)) || currentMenu == "MissionMenu"))

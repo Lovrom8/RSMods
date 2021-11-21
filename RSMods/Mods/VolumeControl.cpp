@@ -55,3 +55,30 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	
 	std::cout << "Decrease volume of " << mixerToDecrease << " by " << amountToDecrease << " with a new volume of " << volume << std::endl;
 }
+
+/// <summary>
+/// Disables the song previews when hovering over a song.
+/// </summary>
+void VolumeControl::DisableSongPreviewAudio() {
+	if (!disabledSongPreviewAudio) {
+		MemUtil::PatchAdr((void*)0x011AE6E0, "Play_%s_Invalid", 16);
+		disabledSongPreviewAudio = true;
+	}
+	else {
+		std::cout << "Tried to disable song previews when they are already disabled!" << std::endl;
+	}
+}
+
+/// <summary>
+/// Enables the song previews when hovering over a song.
+/// </summary>
+void VolumeControl::EnableSongPreviewAudio() {
+	if (disabledSongPreviewAudio) {
+		MemUtil::PatchAdr((void*)0x011AE6E0, "Play_%s_Preview", 16);
+		disabledSongPreviewAudio = false;
+	}
+	else {
+		std::cout << "Tried to enable song previews when they are already enabled!" << std::endl;
+	}
+	
+}

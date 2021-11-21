@@ -8,6 +8,10 @@
 namespace VolumeControl {
 	void IncreaseVolume(int amountToIncrease, std::string mixerToIncrease);
 	void DecreaseVolume(int amountToDecrease, std::string mixerToDecrease);
+	void DisableSongPreviewAudio();
+	void EnableSongPreviewAudio();
+
+	inline bool disabledSongPreviewAudio = false;
 }
 
 inline std::vector<std::string> mixerNames = {
