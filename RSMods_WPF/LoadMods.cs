@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Windows.Controls;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace RSMods_WPF
 {
@@ -39,32 +33,30 @@ namespace RSMods_WPF
 
         public static void WriteSettingsFile(Mod changedMod = null)
         {
-            using (StreamWriter sw = File.CreateText(Settings.SettingsFile))
+            using StreamWriter sw = File.CreateText(Settings.SettingsFile);
+            Dictionary<string, List<Mod>> splitModsIntoSections = new();
+
+            foreach (Mod mod in Mods)
             {
-                Dictionary<string, List<Mod>> splitModsIntoSections = new();
+                if (splitModsIntoSections.ContainsKey(mod.Section))
+                    splitModsIntoSections[mod.Section].Add(mod);
+                else
+                    splitModsIntoSections.Add(mod.Section, new() { mod });
+            }
 
-                foreach (Mod mod in Mods)
+            if (changedMod != null)
+                splitModsIntoSections[changedMod.Section][splitModsIntoSections[changedMod.Section].FindIndex(mod => mod.SettingName == changedMod.SettingName)] = changedMod;
+
+            foreach (string section in splitModsIntoSections.Keys)
+            {
+                sw.WriteLine("[" + section + "]");
+
+                foreach (Mod mod in splitModsIntoSections[section])
                 {
-                    if (splitModsIntoSections.ContainsKey(mod.Section))
-                        splitModsIntoSections[mod.Section].Add(mod);
+                    if (mod.Value == null)
+                        sw.WriteLine(mod.SettingName + " = " + mod.DefaultValue);
                     else
-                        splitModsIntoSections.Add(mod.Section, new() { mod });
-                }
-
-                if (changedMod != null)
-                    splitModsIntoSections[changedMod.Section][splitModsIntoSections[changedMod.Section].FindIndex(mod => mod.SettingName == changedMod.SettingName)] = changedMod;
-
-                foreach (string section in splitModsIntoSections.Keys)
-                {
-                    sw.WriteLine("[" + section + "]");
-
-                    foreach (Mod mod in splitModsIntoSections[section])
-                    {
-                        if (mod.Value == null)
-                            sw.WriteLine(mod.SettingName + " = " + mod.DefaultValue);
-                        else
-                            sw.WriteLine(mod.SettingName + " = " + mod.Value);
-                    }
+                        sw.WriteLine(mod.SettingName + " = " + mod.Value);
                 }
             }
         }

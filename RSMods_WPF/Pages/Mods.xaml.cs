@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RSMods_WPF.Pages.ModPages;
 
 namespace RSMods_WPF.Pages
 {
@@ -37,7 +38,7 @@ namespace RSMods_WPF.Pages
         private void ModEnabledStateChange(object sender, RoutedEventArgs e)
         {
             string content = ((DataGridCell)sender).Content.ToString();
-            bool @checked = Convert.ToBoolean(content.Substring(content.IndexOf("IsChecked:") + "IsChecked:".Length).ToLower());
+            bool @checked = Convert.ToBoolean(content[(content.IndexOf("IsChecked:") + "IsChecked:".Length)..].ToLower());
             string result = @checked ? "on" : "off";
 
             if (ModsDataGrid.SelectedItem != null && Mod.WhereSettingName(((Mod)ModsDataGrid.SelectedItem).SettingName) != null)
@@ -53,10 +54,15 @@ namespace RSMods_WPF.Pages
             }
 
             MoreInfo.Visibility = Visibility.Visible;
-            MoreInfo.DataContext = ((Mod)ModsDataGrid.SelectedItem).OtherInfo;
+            MoreInfo.DataContext = ((Mod)ModsDataGrid.SelectedItem).ModPage;
         }
 
-        private void MoreInfo_Button(object sender, RoutedEventArgs e) => NavigationService.GetNavigationService(this).Navigate((Page)((Mod)ModsDataGrid.SelectedItem).OtherInfo);
+        private void MoreInfo_Button(object sender, RoutedEventArgs e)
+        {
+            ((Mod)ModsDataGrid.SelectedItem).ModPage.LoadSettings(); // Load settings for the Mod Page
+
+            NavigationService.GetNavigationService(this).Navigate(((Mod)ModsDataGrid.SelectedItem).ModPage);
+        }
     }
 
     /// <summary>

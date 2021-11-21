@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using RSMods_WPF.Pages.ModPages;
 
 namespace RSMods_WPF
 {
@@ -47,18 +48,18 @@ namespace RSMods_WPF
                 
                 _value = value;
 
-                if (!alreadyInit)
+                if (!AlreadyInit)
                 {
                     if (Settings.HasValidSettingsFile())
                     {
-                        if (LoadMods.Mods.Where(mod => mod.SettingName == SettingName).First().Value != Value)
-                            LoadMods.Mods.Where(mod => mod.SettingName == SettingName).First().Value = Value;
+                        if (WhereSettingName(SettingName).Value != Value)
+                            WhereSettingName(SettingName).Value = Value;
 
                         LoadMods.WriteSettingsFile();
                     }
                 }
                 else
-                    alreadyInit = false;
+                    AlreadyInit = false;
             }
         }
 
@@ -66,12 +67,12 @@ namespace RSMods_WPF
         /// <para>Value used to detach DataGridCheckbox from the actual value when loading the UI.</para>
         /// <para>This should fix the checkbox getting changed twice.</para>
         /// </summary>
-        public object initialValue { get; set; }
+        public object InitialValue { get; set; }
 
         /// <summary>
         /// Prevents stack overflow loop.
         /// </summary>
-        private bool alreadyInit = false;
+        private bool AlreadyInit = false;
 
         /// <summary>
         /// The mods default "off" value.
@@ -86,7 +87,7 @@ namespace RSMods_WPF
         /// <summary>
         /// Page to display when "More Info" is pressed.
         /// </summary>
-        public object OtherInfo { get; }
+        public ModPage ModPage { get; }
 
         /// <summary>
         /// Is the setting a mod itself (true), or just a setting for another mod (false)
@@ -104,16 +105,16 @@ namespace RSMods_WPF
         /// <param name="_DefaultValue"> - If we can't find the value, what should we default to?</param>
         /// <param name="_ShowMoreInfo"> - Is there more than just a toggle switch required?</param>
         /// <param name="_OtherInfo"> - Mod Page for if _ShowMoreInfo is set to true.</param>
-        public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, bool _ShowMoreInfo = false, object _OtherInfo = null, bool _ShowInModsTab = true)
+        public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, bool _ShowMoreInfo = false, ModPage _ModPage = null, bool _ShowInModsTab = true)
         {
-            alreadyInit = true;
+            AlreadyInit = true;
             UIName = _UIName;
             Section = _Section;
             SettingName = _SettingName;
             Description = _Description;
             DefaultValue = _DefaultValue;
             ShowMoreInfo = _ShowMoreInfo;
-            OtherInfo = _OtherInfo;
+            ModPage = _ModPage;
             ShowInModsTab = _ShowInModsTab;
 
             if (File.Exists(Settings.SettingsFile) && File.ReadAllText(Settings.SettingsFile).Length > 0)
@@ -121,12 +122,12 @@ namespace RSMods_WPF
                 if (ReadPreviousSetting(_SettingName, _DefaultValue) == null) // Value not found
                 {
                     Value = DefaultValue;
-                    initialValue = DefaultValue;
+                    InitialValue = DefaultValue;
                 }   
                 else // Value found
                 {
                     Value = ReadPreviousSetting(_SettingName, _DefaultValue);
-                    initialValue = Value;
+                    InitialValue = Value;
                 }   
             }        
         }
@@ -147,9 +148,9 @@ namespace RSMods_WPF
                         continue;
 
                     int equals = line.IndexOf(" = ");
-                    LoadMods.SettingsFile_Cache.Add(line.Substring(0, equals), line.Substring(equals + " = ".Length));
+                    LoadMods.SettingsFile_Cache.Add(line[..equals], line[(equals + " = ".Length)..]);
 
-                    if (line.Substring(0, equals) == SettingName)
+                    if (line[..equals] == SettingName)
                         settingExistsInSettingsFile = true;
                 }
 

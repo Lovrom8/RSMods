@@ -1,4 +1,4 @@
-﻿<Page xmlns:local="clr-namespace:RSMods_WPF.Pages"
+﻿<modpages:ModPage  xmlns:modpages="clr-namespace:RSMods_WPF.Pages.ModPages"
 	  x:Class="RSMods_WPF.Pages.ModPages.ToggleLoft"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,5 +10,9 @@
 
 	<Grid>
 		<Button Content="&lt;" Name="GoBack" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="GoBack_Click"/>
+		<Label x:Name="When_Label" Content="Toggle Loft When" HorizontalAlignment="Left" Margin="71,62,0,0" VerticalAlignment="Top"/>
+		<RadioButton x:Name="When_Manual" Content="Manual" HorizontalAlignment="Left" Margin="201,68,0,0" VerticalAlignment="Top" Checked="When_Manual_Checked"/>
+		<RadioButton x:Name="When_InSong" Content="In Song" HorizontalAlignment="Left" Margin="278,68,0,0" VerticalAlignment="Top" Checked="When_InSong_Checked"/>
+		<RadioButton x:Name="When_Always" Content="Always" HorizontalAlignment="Left" Margin="358,68,0,0" VerticalAlignment="Top" Checked="When_Always_Checked"/>
 	</Grid>
-</Page>
+</modpages:ModPage>
