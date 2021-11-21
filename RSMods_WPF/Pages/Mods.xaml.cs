@@ -28,12 +28,8 @@ namespace RSMods_WPF.Pages
 
         private void ModEnabledStateChange(object sender, RoutedEventArgs e)
         {
-            string content = ((DataGridCell)sender).Content.ToString();
-            bool @checked = Convert.ToBoolean(content[(content.IndexOf("IsChecked:") + "IsChecked:".Length)..].ToLower());
-            string result = @checked ? "on" : "off";
-
             if (ModsDataGrid.SelectedItem != null && Mod.WhereSettingName(((Mod)ModsDataGrid.SelectedItem).SettingName) != null)
-                Mod.WhereSettingName(((Mod)ModsDataGrid.SelectedItem).SettingName).Value = result;
+                Mod.WhereSettingName(((Mod)ModsDataGrid.SelectedItem).SettingName).Value = (bool)((CheckBox)sender).IsChecked ? "on" : "off";
         }
 
         private void ModSelectionChanged(object sender, SelectionChangedEventArgs e)

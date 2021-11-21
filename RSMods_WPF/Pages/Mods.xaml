@@ -16,14 +16,13 @@
 		</DockPanel>
 		<DataGrid Margin="0,0,0,65" SelectionMode="Single" AlternatingRowBackground="AliceBlue" Name="ModsDataGrid" AutoGenerateColumns="False" SelectionChanged="ModSelectionChanged">
 			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Header="Enabled" Binding="{Binding InitialValue, Converter={StaticResource ModEnabledState}}">
-					<DataGridCheckBoxColumn.CellStyle>
-						<Style>
-							<EventSetter Event="CheckBox.Checked" Handler="ModEnabledStateChange"/>
-							<EventSetter Event="CheckBox.Unchecked" Handler="ModEnabledStateChange"/>
-						</Style>
-					</DataGridCheckBoxColumn.CellStyle>
-				</DataGridCheckBoxColumn>
+				<DataGridTemplateColumn Header="Enabled">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<CheckBox IsChecked="{Binding InitialValue, Converter={StaticResource ModEnabledState}}" HorizontalAlignment="Center" Checked="ModEnabledStateChange" Unchecked="ModEnabledStateChange" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 				<DataGridTextColumn Header="Mod Name" Binding="{Binding UIName}" IsReadOnly="True"/>
 				<DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True"/>
 			</DataGrid.Columns>

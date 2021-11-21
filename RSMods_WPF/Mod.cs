@@ -123,7 +123,9 @@ namespace RSMods_WPF
                     Value = ReadPreviousSetting(_SettingName, _DefaultValue);
                     InitialValue = Value;
                 }   
-            }        
+            }
+
+            LoadMods.Mods.Add(this);
         }
 
         /// <summary>
