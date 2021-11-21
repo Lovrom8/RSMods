@@ -62,6 +62,9 @@ namespace RSMods
             // Check if the GUI settings, and DLL settings already exist
             Startup_VerifyGUIInstall();
 
+            // Read Ini, or create an default one.
+            Startup_ReadIniOrCreateDefault();
+
             // Load saved credidentials and enable PubSub
             PrepTwitch_LoadSettings();
 
@@ -154,6 +157,8 @@ namespace RSMods
         }
 
         #region Startup Functions
+
+        private void Startup_ReadIniOrCreateDefault() => WriteSettings.LoadSettingsFromINI();
 
         private void Startup_InitWinForms()
         {
@@ -1009,8 +1014,9 @@ namespace RSMods
             if (MessageBox.Show("Are you sure you want to reset your mod settings to their defaults?", "WARNING: RESET TO DEFAULT?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 File.Delete(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini"));
-                Reset_RefreshForm();
+                WriteSettings.LoadSettingsFromINI(); // Create the default INI
                 WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults); // Refresh Form will regenerate all the settings, so we need to overwrite them.
+                Reset_RefreshForm();
             }
             else
                 MessageBox.Show("All your settings have been saved, and nothing was reset");
