@@ -1847,7 +1847,7 @@
             this.nUpDown_String0.Name = "nUpDown_String0";
             this.nUpDown_String0.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String0.TabIndex = 86;
-            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String0.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String0.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String0.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
@@ -1878,7 +1878,7 @@
             this.nUpDown_String2.Name = "nUpDown_String2";
             this.nUpDown_String2.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String2.TabIndex = 77;
-            this.nUpDown_String2.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String2.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String2.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String2.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
@@ -1909,7 +1909,7 @@
             this.nUpDown_String3.Name = "nUpDown_String3";
             this.nUpDown_String3.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String3.TabIndex = 78;
-            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String3.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String3.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String3.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
@@ -1930,7 +1930,7 @@
             this.nUpDown_String4.Name = "nUpDown_String4";
             this.nUpDown_String4.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String4.TabIndex = 79;
-            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String4.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String4.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String4.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
@@ -1951,7 +1951,7 @@
             this.nUpDown_String5.Name = "nUpDown_String5";
             this.nUpDown_String5.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String5.TabIndex = 80;
-            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String5.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String5.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String5.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
@@ -1972,7 +1972,7 @@
             this.nUpDown_String1.Name = "nUpDown_String1";
             this.nUpDown_String1.Size = new System.Drawing.Size(39, 20);
             this.nUpDown_String1.TabIndex = 81;
-            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.GuitarSpeak_TuningOffsets);
+            this.nUpDown_String1.ValueChanged += new System.EventHandler(this.SetForget_TuningOffsets);
             this.nUpDown_String1.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.nUpDown_String1.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 

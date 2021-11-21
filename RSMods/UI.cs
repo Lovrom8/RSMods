@@ -1832,6 +1832,48 @@ namespace RSMods
             listBox_Tunings.SelectedIndex = 0; // "<New>"
         }
 
+        private void SetForget_TuningOffsets(object sender, EventArgs e)
+        {
+            string nupName = ((NumericUpDown)sender).Name;
+            int stringNumber = Int32.Parse(nupName[nupName.Length - 1].ToString()); // Returns the current sender's name.
+            switch (stringNumber)
+            {
+                case 0:
+                    int offset = 40; // E2 (Midi)
+                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String0.Value) + offset));
+                    break;
+                case 1:
+                    offset = 45; // A2 (Midi)
+                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String1.Value) + offset));
+                    break;
+                case 2:
+                    offset = 50; // D3 (Midi)
+                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String2.Value) + offset));
+                    break;
+                case 3:
+                    offset = 55;// G3 (Midi)
+                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String3.Value) + offset));
+                    break;
+                case 4:
+                    offset = 59; // B3 (Midi)
+                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String4.Value) + offset));
+                    break;
+                case 5:
+                    offset = 64; // E4 (Midi)
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String5.Value) + offset)).ToLower();
+                    break;
+                default: // Yeah we don't know wtf happened here
+                    MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
+                    break;
+            }
+
+            // Change string color if the user if it would be "extended range" of that string.
+            if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on" && int.Parse(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) >= ((NumericUpDown)sender).Value)
+                SetForget_SetTunerColors(stringNumber, true);
+            else
+                SetForget_SetTunerColors(stringNumber);
+        }
+
         #endregion
         #region Save Setting Middleware
 
@@ -2383,52 +2425,6 @@ namespace RSMods
             }
             else
                 MessageBox.Show("One, or more, of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        private void GuitarSpeak_TuningOffsets(object sender, EventArgs e)
-        {
-            string nupName = ((NumericUpDown)sender).Name;
-            int stringNumber = Int32.Parse(nupName[nupName.Length - 1].ToString()); // Returns the current sender's name.
-            switch (stringNumber)
-            {
-                case 0:
-                    int offset = 40; // E2 (Midi)
-                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String0.Value) + offset));
-                    break;
-                case 1:
-                    offset = 45; // A2 (Midi)
-                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String1.Value) + offset));
-                    break;
-                case 2:
-                    offset = 50; // D3 (Midi)
-                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String2.Value) + offset));
-                    break;
-                case 3:
-                    offset = 55;// G3 (Midi)
-                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String3.Value) + offset));
-                    break;
-                case 4:
-                    offset = 59; // B3 (Midi)
-                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String4.Value) + offset));
-                    break;
-                case 5:
-                    offset = 64; // E4 (Midi)
-                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String5.Value) + offset)).ToLower();
-                    break;
-                default: // Yeah we don't know wtf happened here
-                    MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
-                    break;
-            }
-
-            // Change string color if the user if it would be "extended range" of that string.
-            if (ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeEnabledIdentifier) == "on" && int.Parse(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier)) >= ((NumericUpDown)sender).Value)
-            {
-                SetForget_SetTunerColors(stringNumber, true);
-            }
-            else
-            {
-                SetForget_SetTunerColors(stringNumber);
-            }
         }
 
         private void GuitarSpeak_WhileTuning(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.GuitarSpeakTuningIdentifier, checkBox_GuitarSpeakWhileTuning.Checked.ToString().ToLower());
