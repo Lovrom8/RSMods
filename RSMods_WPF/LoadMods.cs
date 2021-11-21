@@ -14,7 +14,8 @@ namespace RSMods_WPF
 
             Mods.Add(new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Disable the background of the game", "on", true, new Pages.ModPages.ToggleLoft()));
             Mods.Add(new Mod("Toggle Loft When", "Toggle Switches", "ToggleLoftWhen", "When should we toggle the background of the game?", "manual", _ShowInModsTab: false));
-            Mods.Add(new Mod("Disable Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off"));
+            Mods.Add(new Mod("Disable Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off", true, new Pages.ModPages.DisableHeadstock()));
+            Mods.Add(new Mod("Disabled Headstock When", "Toggle Switches", "RemoveHeadstockWhen", "When should we disabled the headstock?", "song", _ShowInModsTab: false));
 
 
             WriteSettingsFile();

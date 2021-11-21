@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Windows.Controls;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using RSMods_WPF.Pages.ModPages;
 
 namespace RSMods_WPF
