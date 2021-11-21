@@ -104,7 +104,7 @@ namespace RSMods_WPF
         /// <param name="_Description"> - A short description on what the mod is / does.</param>
         /// <param name="_DefaultValue"> - If we can't find the value, what should we default to?</param>
         /// <param name="_ShowMoreInfo"> - Is there more than just a toggle switch required?</param>
-        /// <param name="_OtherInfo"> - Mod Page for if _ShowMoreInfo is set to true.</param>
+        /// <param name="_ModPage"> - Mod Page for if _ShowMoreInfo is set to true.</param>
         public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, bool _ShowMoreInfo = false, ModPage _ModPage = null, bool _ShowInModsTab = true)
         {
             AlreadyInit = true;
