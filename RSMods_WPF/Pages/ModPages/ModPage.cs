@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using RSMods_WPF.Pages.SettingsPages;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 

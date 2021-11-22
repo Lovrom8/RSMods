@@ -23,4 +23,16 @@
     <Content Include="Assets\LogoX256.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\corbi\Desktop\RSMods_WPF\RSMods_WPF\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\corbi\Desktop\RSMods_WPF\RSMods_WPF\.editorconfig" />
+  </ItemGroup>
+
 </Project>

@@ -1,17 +1,41 @@
-﻿<Window x:Class="RSMods_WPF.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RSMods_WPF"
-        mc:Ignorable="d"
-        Title="RSMods" Height="525" Width="1000">
+﻿<Window
+    x:Class="RSMods_WPF.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextElement.FontWeight="Regular"
+    TextElement.FontSize="13"
+    TextOptions.TextFormattingMode="Ideal" 
+    TextOptions.TextRenderingMode="Auto"
+	Background="{DynamicResource MaterialDesignPaper}"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    Title="RSMods"
+    Height="525"
+    Width="1000"
+>
 	<Grid>
-		<Button Name="Mods_Tab" Content="Mods" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Height="57" Width="88" Click="Mods_Tab_Click"/>
-		<Button Name="OtherApps_Tab" Content="Other Apps" HorizontalAlignment="Left" Margin="10,90,0,0" VerticalAlignment="Top" Height="57" Width="88" Click="OtherApps_Tab_Click"/>
-		<Button x:Name="Soundpacks_Tab" Content="Soundpacks" HorizontalAlignment="Left" Margin="10,160,0,0" VerticalAlignment="Top" Height="57" Width="88"/>
-		<Button Name="Twitch_Tab" Content="Twitch" HorizontalAlignment="Left" Margin="10,230,0,0" VerticalAlignment="Top" Height="57" Width="88"/>
+		<Button Name="Mods_Tab" Content="Mods" HorizontalAlignment="Left" Margin="5,20,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Mods_Tab_Click"/>
+		<Button Name="SetForget_Tab" Content="Set-n-Forget" HorizontalAlignment="Left" Margin="5,82,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="SetForget_Tab_Click"/>
+		<Button Name="Rocksmith_Tab" Content="Rocksmith" HorizontalAlignment="Left" Margin="5,144,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Rocksmith_Tab_Click"/>
+		<Button Name="ASIO_Tab" Content="ASIO" HorizontalAlignment="Left" Margin="5,330,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="ASIO_Tab_Click"/>
+		<Button Name="Soundpacks_Tab" HorizontalAlignment="Left" Margin="5,206,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Soundpacks_Tab_Click">
+			<Viewbox Width="48" Height="48">
+				<Canvas Width="24" Height="24">
+					<Path Fill="White" Data="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+				</Canvas>
+			</Viewbox>
+		</Button>
+		<Button Name="Twitch_Tab" HorizontalAlignment="Left" Margin="5,268,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Twitch_Tab_Click">
+			<Viewbox Width="48" Height="48">
+				<Canvas Width="24" Height="24">
+					<Path Fill="White" Data="M11.64 5.93H13.07V10.21H11.64M15.57 5.93H17V10.21H15.57M7 2L3.43 5.57V18.43H7.71V22L11.29 18.43H14.14L20.57 12V2M19.14 11.29L16.29 14.14H13.43L10.93 16.64V14.14H7.71V3.43H19.14Z" />
+				</Canvas>
+			</Viewbox>
+		</Button>
 		<Frame Name="MainFrame" Margin="115,10,19,10" NavigationUIVisibility="Hidden" Source="{Binding}"/>
-		<Label Name="Version" Content="Version" HorizontalAlignment="Left" Margin="10,385,0,0" VerticalAlignment="Top"/>
+		<Label Name="Version" Content="Version" HorizontalAlignment="Left" Margin="5,477,0,0" VerticalAlignment="Top"/>
 	</Grid>
 </Window>

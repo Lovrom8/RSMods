@@ -6,14 +6,14 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Navigation;
 
-namespace RSMods_WPF.Pages
+namespace RSMods_WPF.Pages.SettingsPages
 {
     /// <summary>
     /// Interaction logic for Mods.xaml
     /// </summary>
-    public partial class Mods : Page
+    public partial class Mods : SettingsPage
     {
-        public readonly static Mods Instance = new();
+        public readonly static new Mods Instance = new();
         public Mods()
         {
             InitializeComponent();
