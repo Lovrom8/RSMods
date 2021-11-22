@@ -74,11 +74,6 @@ namespace RSMods_WPF
         public object DefaultValue { get; }
 
         /// <summary>
-        /// Has a secondary page with information (like keybindings, when to toggle, etc).
-        /// </summary>
-        public bool ShowMoreInfo { get; }
-
-        /// <summary>
         /// Page to display when "More Info" is pressed.
         /// </summary>
         public ModPage ModPage { get; }
@@ -99,7 +94,7 @@ namespace RSMods_WPF
         /// <param name="_DefaultValue"> - If we can't find the value, what should we default to?</param>
         /// <param name="_ShowMoreInfo"> - Is there more than just a toggle switch required?</param>
         /// <param name="_ModPage"> - Mod Page for if _ShowMoreInfo is set to true.</param>
-        public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, bool _ShowMoreInfo = false, ModPage _ModPage = null, bool _ShowInModsTab = true)
+        public Mod(string _UIName, string _Section, string _SettingName, string _Description, object _DefaultValue, ModPage _ModPage = null, bool _ShowInModsTab = true)
         {
             AlreadyInit = true;
             UIName = _UIName;
@@ -107,7 +102,6 @@ namespace RSMods_WPF
             SettingName = _SettingName;
             Description = _Description;
             DefaultValue = _DefaultValue;
-            ShowMoreInfo = _ShowMoreInfo;
             ModPage = _ModPage;
             ShowInModsTab = _ShowInModsTab;
 

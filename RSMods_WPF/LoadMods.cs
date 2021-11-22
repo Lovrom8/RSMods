@@ -13,15 +13,15 @@ namespace RSMods_WPF
             Mods.Clear();
 
             // Toggle Loft
-            _ = new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Make the background of the game black", "on", true, new Pages.ModPages.ToggleLoft());
+            _ = new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Make the background of the game black", "on", new Pages.ModPages.ToggleLoft());
             _ = new Mod("Toggle Loft When", "Toggle Switches", "ToggleLoftWhen", "When should we make the background of the game black?", "manual", _ShowInModsTab: false);
 
             // Disable Headstock
-            _ = new Mod("Remove Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off", true, new Pages.ModPages.DisableHeadstock());
+            _ = new Mod("Remove Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off", new Pages.ModPages.DisableHeadstock());
             _ = new Mod("Remove Headstock When", "Toggle Switches", "RemoveHeadstockWhen", "When should we disabled the headstock?", "song", _ShowInModsTab: false);
 
             // Song Timer
-            _ = new Mod("Show Song Timer", "Toggle Switches", "ShowSongTimer", "Show the current time in the song", "off", true, new Pages.ModPages.SongTimer());
+            _ = new Mod("Show Song Timer", "Toggle Switches", "ShowSongTimer", "Show the current time in the song", "off", new Pages.ModPages.SongTimer());
             _ = new Mod("Show Song Timer When", "Toggle Switches", "ShowSongTimerWhen", "When should we show the song timer?", "manual", _ShowInModsTab: false);
 
             // Remove Inlays

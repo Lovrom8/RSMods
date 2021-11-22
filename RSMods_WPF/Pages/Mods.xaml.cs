@@ -34,7 +34,7 @@ namespace RSMods_WPF.Pages
 
         private void ModSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ModsDataGrid.SelectedItem == null || !((Mod)ModsDataGrid.SelectedItem).ShowMoreInfo)
+            if (ModsDataGrid.SelectedItem == null || ((Mod)ModsDataGrid.SelectedItem).ModPage == null)
             {
                 MoreInfo.Visibility = Visibility.Hidden;
                 return;
