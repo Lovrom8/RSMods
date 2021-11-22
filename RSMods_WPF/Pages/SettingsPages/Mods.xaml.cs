@@ -13,11 +13,12 @@ namespace RSMods_WPF.Pages.SettingsPages
     /// </summary>
     public partial class Mods : SettingsPage
     {
-        public readonly static new Mods Instance = new();
+        public static new readonly Mods Instance = new();
         public Mods()
         {
             InitializeComponent();
             Startup_FillModsList();
+            Startup_HideMoreInfoButton();
         }
 
         private void Startup_FillModsList()
@@ -25,6 +26,11 @@ namespace RSMods_WPF.Pages.SettingsPages
             _ = new LoadMods();
             ModsDataGrid.ItemsSource = LoadMods.Mods.Where(mod => mod.ShowInModsTab == true).ToList();
         }
+
+        /// <summary>
+        /// We use this so we can see the button in the editor, but it isn't drawn when the user opens the screen.
+        /// </summary>
+        private void Startup_HideMoreInfoButton() => MoreInfo.Visibility = Visibility.Hidden;
 
         private void ModEnabledStateChange(object sender, RoutedEventArgs e)
         {

@@ -9,26 +9,30 @@
     d:DesignHeight="450" d:DesignWidth="800"
     Title="Mods"
 >
-	<Page.Resources>
-		<settingsPages:ModEnabledState x:Key="ModEnabledState"/>
-	</Page.Resources>
-	<Grid Margin="0,0,0,-34">
-		<DockPanel>
-			<Frame Name="Navigation" NavigationUIVisibility="Hidden" />
-		</DockPanel>
-		<DataGrid Margin="0,0,0,65" SelectionMode="Single" Name="ModsDataGrid" AutoGenerateColumns="False" SelectionChanged="ModSelectionChanged">
-			<DataGrid.Columns>
-				<DataGridTemplateColumn Header="Enabled">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<CheckBox IsChecked="{Binding InitialValue, Converter={StaticResource ModEnabledState}}" HorizontalAlignment="Center" Checked="ModEnabledStateChange" Unchecked="ModEnabledStateChange" />
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Mod Name" Binding="{Binding UIName}" IsReadOnly="True"/>
-				<DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True"/>
-			</DataGrid.Columns>
-		</DataGrid>
-		<Button Content="More Info" Name="MoreInfo" HorizontalAlignment="Left" Margin="703,448,0,0" VerticalAlignment="Top" Width="68" Visibility="Hidden"  Click="MoreInfo_Button"/>
-	</Grid>
+    <Page.Resources>
+        <settingsPages:ModEnabledState x:Key="ModEnabledState"/>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="523*"/>
+            <ColumnDefinition Width="277*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.ColumnSpan="2" Margin="0,0,0,37">
+            <Frame Name="Navigation" NavigationUIVisibility="Hidden" Height="458" />
+        </DockPanel>
+        <DataGrid Margin="0,0,0,37" SelectionMode="Single" Name="ModsDataGrid" AutoGenerateColumns="False" SelectionChanged="ModSelectionChanged" Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Enabled">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding InitialValue, Converter={StaticResource ModEnabledState}}" HorizontalAlignment="Center" Checked="ModEnabledStateChange" Unchecked="ModEnabledStateChange" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Mod Name" Binding="{Binding UIName}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="More Info" Name="MoreInfo" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="MoreInfo_Button" Grid.Column="1"/>
+    </Grid>
 </settingsPages:SettingsPage>
