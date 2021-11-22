@@ -18,6 +18,8 @@ namespace RSMods_WPF
             _ = new Mod("Disabled Headstock When", "Toggle Switches", "RemoveHeadstockWhen", "When should we disabled the headstock?", "song", _ShowInModsTab: false);
             _ = new Mod("Show Song Timer", "Toggle Switches", "ShowSongTimer", "Show the current time in the song", "off", true, new Pages.ModPages.SongTimer());
             _ = new Mod("Show Song Timer When", "Toggle Switches", "ShowSongTimerWhen", "When should we show the song timer?", "manual", _ShowInModsTab: false);
+
+            Mods.Sort((x, y) => string.Compare(x.UIName, y.UIName));
             WriteSettingsFile();
         }
 
