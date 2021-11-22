@@ -157,10 +157,7 @@ namespace RSMods_WPF
                 object output = LoadMods.SettingsFile_Cache[SettingName];
                 try
                 {
-                    if (output != null && int.TryParse(output.ToString(), out int intOutput))
-                        return intOutput;
-                    else
-                        return output;
+                    return output;
                 }
                 catch // INI Error. Best to just return that we don't know what the mod is.
                 {

@@ -13,6 +13,7 @@
     <Company>RSModders</Company>
     <Description>A modding tool for Rocksmith 2014 Remastered.</Description>
     <DebugType>portable</DebugType>
+    <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

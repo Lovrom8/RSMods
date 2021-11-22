@@ -7,7 +7,7 @@ namespace RSMods_WPF.Pages.ModPages
 {
     public abstract class ModPage : Page
     {
-        abstract public void LoadSettings();
+        public abstract void LoadSettings();
         public void GoBack_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.GetNavigationService(this).Navigate(Mods.Instance);

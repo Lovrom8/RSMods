@@ -1,26 +1,26 @@
 ﻿<settingsPages:SettingsPage
-    x:Class="RSMods_WPF.Pages.SettingsPages.Mods"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:settingsPages="clr-namespace:RSMods_WPF.Pages.SettingsPages"
+    x:Class="RSMods_WPF.Pages.SettingsPages.Mods"
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="800"
     Title="Mods"
 >
-    <Page.Resources>
+    <settingsPages:SettingsPage.Resources>
         <settingsPages:ModEnabledState x:Key="ModEnabledState"/>
-    </Page.Resources>
+    </settingsPages:SettingsPage.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="523*"/>
             <ColumnDefinition Width="277*"/>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.ColumnSpan="2" Margin="0,0,0,37">
-            <Frame Name="Navigation" NavigationUIVisibility="Hidden" Height="458" />
+            <Frame x:Name="Navigation" NavigationUIVisibility="Hidden" Height="458" />
         </DockPanel>
-        <DataGrid Margin="0,0,0,37" SelectionMode="Single" Name="ModsDataGrid" AutoGenerateColumns="False" SelectionChanged="ModSelectionChanged" Grid.ColumnSpan="2">
+        <DataGrid Margin="0,0,0,37" SelectionMode="Single" x:Name="ModsDataGrid" AutoGenerateColumns="False" SelectionChanged="ModSelectionChanged" Grid.ColumnSpan="2">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Enabled">
                     <DataGridTemplateColumn.CellTemplate>
@@ -33,6 +33,6 @@
                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" IsReadOnly="True"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Content="More Info" Name="MoreInfo" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="MoreInfo_Button" Grid.Column="1"/>
+        <Button Content="More Info" x:Name="MoreInfo" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="MoreInfo_Button" Grid.Column="1"/>
     </Grid>
 </settingsPages:SettingsPage>

@@ -12,6 +12,12 @@ namespace RSMods_WPF
         {
             Mods.Clear();
 
+            // Dark Mode in GUI
+            _ = new Mod("Dark Mode", "GUI Settings", "DarkMode", "Sets GUI to Dark Mode", "off", _ShowInModsTab: false);
+
+            // Primary Color in GUI
+            _ = new Mod("Primary Color", "GUI Settings", "PrimaryColor", "Sets GUI's primary color", "800080", _ShowInModsTab: false);
+
             // Toggle Loft
             _ = new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Make the background of the game black", "on", new Pages.ModPages.ToggleLoft());
             _ = new Mod("Toggle Loft When", "Toggle Switches", "ToggleLoftWhen", "When should we make the background of the game black?", "manual", _ShowInModsTab: false);
