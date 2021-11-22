@@ -13,6 +13,8 @@
 	Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{DynamicResource MaterialDesignFont}"
     Title="RSMods"
+    MinHeight="550"
+    MinWidth="1000"
     Height="525"
     Width="1000"
 >
