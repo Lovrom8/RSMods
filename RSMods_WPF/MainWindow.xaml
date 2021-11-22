@@ -18,7 +18,7 @@
 >
 	<Grid>
 		<Button Name="Mods_Tab" Content="Mods" HorizontalAlignment="Left" Margin="5,20,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Mods_Tab_Click"/>
-		<Button Name="SetForget_Tab" Content="Set-n-Forget" HorizontalAlignment="Left" Margin="5,82,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="SetForget_Tab_Click"/>
+		<Button Name="SetForget_Tab" Content="Set &amp; Forget" HorizontalAlignment="Left" Margin="5,82,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="SetForget_Tab_Click"/>
 		<Button Name="Rocksmith_Tab" Content="Rocksmith" HorizontalAlignment="Left" Margin="5,144,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Rocksmith_Tab_Click"/>
 		<Button Name="ASIO_Tab" Content="ASIO" HorizontalAlignment="Left" Margin="5,330,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="ASIO_Tab_Click"/>
 		<Button Name="Soundpacks_Tab" HorizontalAlignment="Left" Margin="5,206,0,0" VerticalAlignment="Top" Height="57" Width="110" Click="Soundpacks_Tab_Click">
