@@ -92,15 +92,44 @@ void VolumeControl::SetupMicrophones() {
 
 	HRESULT coInit = CoInitialize(NULL);
 	if (coInit != S_OK) {
-		std::cout << "Unable to setup microphones. CoInitialize is not S_OK. Returned " << coInit << std::endl;
+		std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
+		switch (coInit) {
+		case (S_FALSE):
+			std::cout << "S_FALSE" << std::endl;
+			break;
+		case (RPC_E_CHANGED_MODE):
+			std::cout << "RPC_E_CHANGED_MODE" << std::endl;
+			break;
+		default: // Non-documented error.
+			std::cout << "NOT DOCUMENTED!" << std::endl;
+			break;
+		}
 		return;
 	}
 
 	IMMDeviceEnumerator* deviceEnumerator = NULL;
 	HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
-	
+
 	if (coCI != S_OK) {
-		std::cout << "Unable to setup microphones. CoCreateInstance is not S_OK. Returned " << coCI << std::endl;
+		std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned ";
+		switch (coCI) {
+		case (REGDB_E_CLASSNOTREG):
+			std::cout << "REGDB_E_CLASSNOTREG" << std::endl;
+			break;
+		case (CLASS_E_NOAGGREGATION):
+			std::cout << "CLASS_E_NOAGGREGATION" << std::endl;
+			break;
+		case (E_NOINTERFACE):
+			std::cout << "E_NOINTERFACE" << std::endl;
+			break;
+		case (E_POINTER):
+			std::cout << "E_POINTER" << std::endl;
+			break;
+		default: // Non-documented error.
+			std::cout << "NOT DOCUMENTED!" << std::endl;
+			break;
+		}
+
 		return;
 	}
 	
@@ -170,7 +199,18 @@ void VolumeControl::SetMicrophoneVolume(std::string microphoneName, int volume) 
 
 		HRESULT coInit = CoInitialize(NULL);
 		if (coInit != S_OK) {
-			std::cout << "Unable to set microphone volume. CoInitialize is not S_OK. Returned " << coInit << std::endl;
+			std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
+			switch (coInit) {
+			case (S_FALSE):
+				std::cout << "S_FALSE" << std::endl;
+				break;
+			case (RPC_E_CHANGED_MODE):
+				std::cout << "RPC_E_CHANGED_MODE" << std::endl;
+				break;
+			default: // Non-documented error.
+				std::cout << "NOT DOCUMENTED!" << std::endl;
+				break;
+			}
 			return;
 		}
 
@@ -178,7 +218,25 @@ void VolumeControl::SetMicrophoneVolume(std::string microphoneName, int volume) 
 		HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
 		if (coCI != S_OK) {
-			std::cout << "Unable to set microphone volume. CoCreateInstance is not S_OK. Returned " << coCI << std::endl;
+			std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned ";
+			switch (coCI) {
+			case (REGDB_E_CLASSNOTREG):
+				std::cout << "REGDB_E_CLASSNOTREG" << std::endl;
+				break;
+			case (CLASS_E_NOAGGREGATION):
+				std::cout << "CLASS_E_NOAGGREGATION" << std::endl;
+				break;
+			case (E_NOINTERFACE):
+				std::cout << "E_NOINTERFACE" << std::endl;
+				break;
+			case (E_POINTER):
+				std::cout << "E_POINTER" << std::endl;
+				break;
+			default: // Non-documented error.
+				std::cout << "NOT DOCUMENTED!" << std::endl;
+				break;
+			}
+
 			return;
 		}
 
@@ -222,7 +280,18 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 
 		HRESULT coInit = CoInitialize(NULL);
 		if (coInit != S_OK) {
-			std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned " << coInit << std::endl;
+			std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
+			switch (coInit) {
+				case (S_FALSE):
+					std::cout << "S_FALSE" << std::endl;
+					break;
+				case (RPC_E_CHANGED_MODE):
+					std::cout << "RPC_E_CHANGED_MODE" << std::endl;
+					break;
+				default: // Non-documented error.
+					std::cout << "NOT DOCUMENTED!" << std::endl;
+					break;
+			}
 			return;
 		}
 
@@ -230,13 +299,30 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 		HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
 		if (coCI != S_OK) {
-			std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned " << coCI << std::endl;
+			std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned ";
+			switch (coCI) {
+				case (REGDB_E_CLASSNOTREG):
+					std::cout << "REGDB_E_CLASSNOTREG" << std::endl;
+					break;
+				case (CLASS_E_NOAGGREGATION):
+					std::cout << "CLASS_E_NOAGGREGATION" << std::endl;
+					break;
+				case (E_NOINTERFACE):
+					std::cout << "E_NOINTERFACE" << std::endl;
+					break;
+				case (E_POINTER):
+					std::cout << "E_POINTER" << std::endl;
+					break;
+				default: // Non-documented error.
+					std::cout << "NOT DOCUMENTED!" << std::endl;
+					break;
+			}
+			
 			return;
 		}
 
 		// Get the microphone we want
 		deviceEnumerator->GetDevice(microphoneId, &microphone);
-
 		deviceEnumerator->Release();
 		deviceEnumerator = NULL;
 
