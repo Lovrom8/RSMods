@@ -292,7 +292,7 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 					std::cout << "NOT DOCUMENTED!" << std::endl;
 					break;
 			}
-			return;
+			return 17.f;
 		}
 
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
@@ -318,7 +318,7 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 					break;
 			}
 			
-			return;
+			return 17.f;
 		}
 
 		// Get the microphone we want
@@ -343,5 +343,6 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 	else
 	{
 		std::cout << "Unable to find microphone (Get volume): \"" << microphoneName << "\"" << std::endl;
+		return 17.f;
 	}
 }
