@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using RSMods_WPF.Pages.ModPages;
 
 namespace RSMods_WPF
 {
@@ -19,16 +20,21 @@ namespace RSMods_WPF
             _ = new Mod("Primary Color", "GUI Settings", "PrimaryColor", "Sets GUI's primary color", "800080", _ShowInModsTab: false);
 
             // Toggle Loft
-            _ = new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Make the background of the game black", "on", new Pages.ModPages.ToggleLoft());
+            _ = new Mod("Toggle Loft", "Toggle Switches", "ToggleLoft", "Make the background of the game black", "on", new ToggleLoft());
             _ = new Mod("Toggle Loft When", "Toggle Switches", "ToggleLoftWhen", "When should we make the background of the game black?", "manual", _ShowInModsTab: false);
 
             // Disable Headstock
-            _ = new Mod("Remove Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off", new Pages.ModPages.DisableHeadstock());
+            _ = new Mod("Remove Headstock", "Toggle Switches", "Headstock", "Removes the headstock", "off", new DisableHeadstock());
             _ = new Mod("Remove Headstock When", "Toggle Switches", "RemoveHeadstockWhen", "When should we disabled the headstock?", "song", _ShowInModsTab: false);
 
             // Song Timer
-            _ = new Mod("Show Song Timer", "Toggle Switches", "ShowSongTimer", "Show the current time in the song", "off", new Pages.ModPages.SongTimer());
+            _ = new Mod("Show Song Timer", "Toggle Switches", "ShowSongTimer", "Show the current time in the song", "off", new SongTimer());
             _ = new Mod("Show Song Timer When", "Toggle Switches", "ShowSongTimerWhen", "When should we show the song timer?", "manual", _ShowInModsTab: false);
+
+            // Force Enumeration
+            _ = new Mod("Force Enumeration", "Toggle Switches", "ForceReEnumeration", "Forces game to look for new songs in your DLC folder.", "off", new ForceEnumeration());
+            _ = new Mod("Force Enumeration When", "Toggle Switches", "ForceReEnumerationWhen", "When should we look for new songs?", "manual", _ShowInModsTab: false);
+            _ = new Mod("Check For New Songs Interval", "Mod Settings", "CheckForNewSongsInterval", "How often should we look for new songs?", "5000", _ShowInModsTab: false);
 
             // Remove Inlays
             _ = new Mod("Remove Inlays", "Toggle Switches", "Inlays", "Removes the inlays from your guitar or bass. Use the dot inlay when using this.", "off");
