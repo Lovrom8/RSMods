@@ -41,12 +41,20 @@ unsigned WINAPI EnumerationThread() {
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {
+	int everyXcyclesCheckD3DTextures = 31;
+	int currentCount = 0;
 	while (!D3DHooks::GameClosing) {
+		if (currentCount == 31) {
+			currentCount = 0;
+			D3DHooks::RecreateTextureTimer = true;
+		}
+
 		if (Midi::sendPC)
 			Midi::SendProgramChange(Midi::dataToSendPC);
 		if (Midi::sendCC)
 			Midi::SendControlChange(Midi::dataToSendCC);
 		Sleep(Midi::sleepFor); // Sleep for 1/33rd of a second so we don't drain resources.
+		currentCount++;
 	}
 	
 	return 0;

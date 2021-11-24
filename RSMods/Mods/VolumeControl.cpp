@@ -132,6 +132,11 @@ void VolumeControl::SetupMicrophones() {
 
 		return;
 	}
+
+	if (!deviceEnumerator) {
+		std::cout << "CoCreateInstance failed while setting up microphones. DeviceEnumerator is null" << std::endl;
+		return;
+	}
 	
 	// Get the list of microphones
 	IMMDeviceCollection* microphones;
@@ -223,10 +228,20 @@ void VolumeControl::SetMicrophoneVolume(std::string microphoneName, int volume) 
 			return;
 		}
 
+		if (!deviceEnumerator) {
+			std::cout << "CoCreateInstance failed while setting microphone volume. DeviceEnumerator is null" << std::endl;
+			return;
+		}
+
 		// Get the microphone we want
 		deviceEnumerator->GetDevice(microphoneId, &microphone);
 		deviceEnumerator->Release();
 		deviceEnumerator = NULL;
+
+		if (!microphone) {
+			std::cout << "GetDevice failed to get a microphone in SetVolume." << std::endl;
+			return;
+		}
 
 		// Get the endpoint volume
 		IAudioEndpointVolume* microphoneVolume = NULL;
@@ -287,10 +302,20 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 			return 17.f;
 		}
 
+		if (!deviceEnumerator) {
+			std::cout << "CoCreateInstance failed while getting microphone volume. DeviceEnumerator is null" << std::endl;
+			return 17.f;
+		}
+
 		// Get the microphone we want
 		deviceEnumerator->GetDevice(microphoneId, &microphone);
 		deviceEnumerator->Release();
 		deviceEnumerator = NULL;
+
+		if (!microphone) {
+			std::cout << "GetDevice failed to get a microphone in GetVolume." << std::endl;
+			return 17.f;
+		}
 
 		// Get the endpoint volume
 		IAudioEndpointVolume* microphoneVolume = NULL;

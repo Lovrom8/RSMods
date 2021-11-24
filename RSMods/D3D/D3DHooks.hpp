@@ -82,6 +82,7 @@ namespace D3DHooks {
 	inline bool AttemptedERInTuner = false; // If true, then we are safe to look for the ER In Tuner variable.
 	inline bool UseERInTuner = false; // If true, ER Mode will toggle on in the tuner.
 	inline bool RecreateTextures = false; // User has triggered an update, so we need to re-create textures.
+	inline bool RecreateTextureTimer = false; // If user spams recreating textures then we end up with a lot of memory usage. Limit how often we update textures.
 
 	// Dev Functions
 	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory

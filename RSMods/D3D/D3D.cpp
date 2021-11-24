@@ -129,8 +129,34 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	BitmapData bitmapData;
 	D3DLOCKED_RECT lockedRect;
 
-	D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture);
+	HRESULT hr_D3DX = D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture);
 
+	if (*ppTexture == NULL) { // User is spam updating their INI through the GUI. D3DX textures are becoming NULL references.
+		std::cout << "User is spam updating their INI through the GUI. D3DXCreateTexture returned ";
+
+		switch (hr_D3DX) {
+			case (D3D_OK):
+				std::cout << "D3D_OK" << std::endl;
+				break;
+			case (D3DERR_INVALIDCALL):
+				std::cout << "D3DERR_INVALIDCALL" << std::endl;
+				break;
+			case (D3DERR_NOTAVAILABLE):
+				std::cout << "D3DERR_NOTAVAILABLE" << std::endl;
+				break;
+			case (D3DERR_OUTOFVIDEOMEMORY):
+				std::cout << "D3DERR_OUTOFVIDEOMEMORY" << std::endl;
+				break;
+			case (E_OUTOFMEMORY):
+				std::cout << "E_OUTOFMEMORY" << std::endl;
+				break;
+			default: // Non-documented error
+				std::cout << "NOT DOCUMENTED!" << std::endl;
+				break;
+		}
+		return;
+	}
+	
 	(*ppTexture)->LockRect(0, &lockedRect, 0, 0);
 
 	bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData); // Strings
@@ -258,6 +284,7 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 	}
 	else if (type == FretNums) {
 		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomFretNubmers")));
+
 		GenerateTexture(pDevice, &fretNumTexture, colorSet, 256, 16, 16, 1);
 	}
 }
