@@ -467,6 +467,37 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
+		ImGui::Begin("Microphones");
+
+		static std::string previewMicrophone = "Select a Microphone";
+		static std::string selectedMicrophone = "";
+		static std::vector<std::string> microphones;
+
+		if (microphones.size() == 0) {
+			for (std::map<std::string, LPWSTR>::iterator it = VolumeControl::activeMicrophones.begin(); it != VolumeControl::activeMicrophones.end(); ++it) {
+				microphones.push_back(it->first);
+			}
+		}
+		
+		if (ImGui::BeginCombo("Microphones", previewMicrophone.c_str())) {
+			for (int n = 0; n < microphones.size(); n++)
+			{
+				const bool is_selected = (selectedMicrophone == microphones.at(n));
+				if (ImGui::Selectable(microphones.at(n).c_str(), is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
+					selectedMicrophone = microphones.at(n);
+
+				if (is_selected) {
+					previewMicrophone = microphones.at(n);
+				}
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Random Volume"))
+			VolumeControl::SetMicrophoneVolume(selectedMicrophone, rand() % 100);
+
+		ImGui::End();
+
 		ImGui::Begin("Voicelines");
 
 		static std::string previewVoiceline = "Select a voiceline";
@@ -848,6 +879,7 @@ unsigned WINAPI MainThread() {
 	ClearMDMPs();
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
+	VolumeControl::SetupMicrophones();
 
 	using namespace D3DHooks;
 	while (!GameClosing) {
@@ -862,6 +894,10 @@ unsigned WINAPI MainThread() {
 		// If Game Is Loaded (No need to run these while the game is loading.)
 		if (GameLoaded) {
 			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
+
+			// Override the default microphone volume.
+			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && VolumeControl::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
+				VolumeControl::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
 
 			//std::cout << currentMenu << std::endl;
 

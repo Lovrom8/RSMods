@@ -82,3 +82,135 @@ void VolumeControl::EnableSongPreviewAudio() {
 	}
 	
 }
+
+/// <summary>
+/// Setup active microphones map with all the available microphones and their respective IDs.
+/// </summary>
+void VolumeControl::SetupMicrophones() {
+	activeMicrophones.clear();
+
+	CoInitialize(NULL);
+
+	IMMDeviceEnumerator* deviceEnumerator = NULL;
+	CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+
+	IMMDeviceCollection* microphones;
+	deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &microphones);
+
+	UINT totalMicrophones = 0;
+	microphones->GetCount(&totalMicrophones);
+
+	for (int i = 0; i < totalMicrophones; i++) {
+		IMMDevice* selectedMicrophone;
+		microphones->Item(i, &selectedMicrophone);
+
+		IPropertyStore* microphoneProperties = NULL;
+		selectedMicrophone->OpenPropertyStore(STGM_READ, &microphoneProperties);
+
+		PROPVARIANT microphoneName;
+		PropVariantInit(&microphoneName);
+
+		microphoneProperties->GetValue(PKEY_Device_FriendlyName, &microphoneName);
+		
+		LPWSTR microphoneId = NULL;
+		selectedMicrophone->GetId(&microphoneId);
+
+		std::wstring utf16MicrophoneName = std::wstring(microphoneName.pwszVal);
+		int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &utf16MicrophoneName[0], utf16MicrophoneName.size(), NULL, 0, NULL, NULL);
+		std::string utf8MicrophoneName(sizeNeeded, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &utf16MicrophoneName[0], utf16MicrophoneName.size(), &utf8MicrophoneName[0], sizeNeeded, NULL, NULL);
+			
+		activeMicrophones.insert(std::pair<std::string, LPWSTR>(utf8MicrophoneName, microphoneId));
+
+		// Clean-up
+		PropVariantClear(&microphoneName);
+		microphoneProperties->Release();
+		selectedMicrophone->Release();
+		microphoneId = NULL;
+		microphoneProperties = NULL;
+		selectedMicrophone = NULL;
+	}
+	
+	// Clean-up
+	microphones->Release();
+	deviceEnumerator->Release();
+	microphones = NULL;
+	deviceEnumerator = NULL;
+}
+
+
+/// <summary>
+/// Sets the volume of the selected microphone
+/// </summary>
+/// <param name="microphone"> - Name of the microphone</param>
+/// <param name="volume"> - New Volume</param>
+void VolumeControl::SetMicrophoneVolume(std::string microphoneName, int volume) {
+	if (activeMicrophones.find(microphoneName) != activeMicrophones.end()) {
+		LPWSTR microphoneId = activeMicrophones[microphoneName];
+		IMMDevice* microphone = NULL;
+
+		CoInitialize(NULL);
+
+		IMMDeviceEnumerator* deviceEnumerator = NULL;
+		CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+
+		deviceEnumerator->GetDevice(microphoneId, &microphone);
+
+		deviceEnumerator->Release();
+		deviceEnumerator = NULL;
+
+		IAudioEndpointVolume* microphoneVolume = NULL;
+		microphone->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&microphoneVolume);
+
+		if (volume > 100)
+			volume %= 100;
+
+		microphoneVolume->SetMasterVolumeLevelScalar((float)volume / 100, NULL);
+
+		std::cout << "Set volume of microphone: \"" << microphoneName << "\" to " << volume << std::endl;
+
+		microphone->Release();
+		microphoneVolume->Release();
+	}
+	else
+	{
+		std::cout << "Unable to find microphone (Set volume): \"" << microphoneName << "\"" << std::endl;
+	}
+}
+
+/// <summary>
+/// Gets the current volume of the selected microphone
+/// </summary>
+/// <param name="microphone"> - Name of the microphone</param>
+/// <returns>Int 0-100 of the current volume of the microphone</returns>
+int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
+	if (activeMicrophones.find(microphoneName) != activeMicrophones.end()) {
+		LPWSTR microphoneId = activeMicrophones[microphoneName];
+		IMMDevice* microphone = NULL;
+
+		CoInitialize(NULL);
+
+		IMMDeviceEnumerator* deviceEnumerator = NULL;
+		CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+
+		deviceEnumerator->GetDevice(microphoneId, &microphone);
+
+		deviceEnumerator->Release();
+		deviceEnumerator = NULL;
+
+		IAudioEndpointVolume* microphoneVolume = NULL;
+		microphone->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&microphoneVolume);
+
+		float currentVolume = 0.f;
+		microphoneVolume->GetMasterVolumeLevelScalar(&currentVolume);
+
+		microphone->Release();
+		microphoneVolume->Release();
+
+		return currentVolume * 100;
+	}
+	else
+	{
+		std::cout << "Unable to find microphone (Get volume): \"" << microphoneName << "\"" << std::endl;
+	}
+}

@@ -1,6 +1,10 @@
 #include "Windows.h"
 #include <string>
 #include <iostream>
+#include <mmdeviceapi.h>
+#include <endpointvolume.h>
+#include <Functiondiscoverykeys_devpkey.h>
+
 #include "../WwiseHijack.hpp"
 #include "../MemHelpers.hpp"
 #include "../Offsets.hpp"
@@ -11,8 +15,11 @@ namespace VolumeControl {
 	void DecreaseVolume(int amountToDecrease, std::string mixerToDecrease);
 	void DisableSongPreviewAudio();
 	void EnableSongPreviewAudio();
-
+	void SetupMicrophones();
+	void SetMicrophoneVolume(std::string microphoneName,int volume);
+	int GetMicrophoneVolume(std::string microphoneName);
 	inline bool disabledSongPreviewAudio = false;
+	inline std::map<std::string, LPWSTR> activeMicrophones;
 }
 
 inline std::vector<std::string> mixerNames = {

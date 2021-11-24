@@ -72,6 +72,8 @@ void Settings::Initialize()
 		{"ShowSelectedVolumeWhen", "manual"},
 		{"SecondaryMonitor", "off"},
 		{"SongPreviews", "off"},
+		{"OverrideInputVolumeEnabled", "off"},
+		{"OverrideInputVolumeDevice", ""}
 	};
 
 	customSettings = {
@@ -84,6 +86,7 @@ void Settings::Initialize()
 		{"SecondaryMonitorXPosition", 0},
 		{"SecondaryMonitorYPosition", 0},
 		{"SeparateNoteColorsMode", 0},
+		{"OverrideInputVolume", 17},
 		{"CustomStringColors", 0},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -191,6 +194,7 @@ void Settings::ReadModSettings() {
 		{"SecondaryMonitorYPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorYPosition", 0)},
 		{"SeparateNoteColorsMode", reader.GetLongValue("Mod Settings", "SeparateNoteColors", 0)}, // 0 = same as strings, 1 = default, 2 = custom
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
+		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
 		{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
@@ -252,6 +256,8 @@ void Settings::ReadModSettings() {
 	modSettings["ShowSelectedVolumeWhen"] = reader.GetValue("Toggle Switches", "ShowSelectedVolumeWhen", "manual");
 	modSettings["SecondaryMonitor"] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
 	modSettings["SongPreviews"] = reader.GetValue("Toggle Switches", "SongPreviews", "off");
+	modSettings["OverrideInputVolumeEnabled"] = reader.GetValue("Toggle Switches", "OverrideInputVolumeEnabled", "off");
+	modSettings["OverrideInputVolumeDevice"] = reader.GetValue("Toggle Switches", "OverrideInputVolumeDevice", "");
 }
 
 /// <summary>
