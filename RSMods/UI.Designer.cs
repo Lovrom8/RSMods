@@ -3294,7 +3294,6 @@
             this.groupBox_MidiAutoTuneDevice.TabStop = false;
             this.groupBox_MidiAutoTuneDevice.Text = "Midi Device To Tune";
             this.groupBox_MidiAutoTuneDevice.Visible = false;
-            this.groupBox_MidiAutoTuneDevice.VisibleChanged += new System.EventHandler(this.Midi_LoadDevices);
             this.groupBox_MidiAutoTuneDevice.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // radio_SoftwarePedal

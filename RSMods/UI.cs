@@ -56,6 +56,8 @@ namespace RSMods
 
         string github_UpdateResponse;
 
+        bool AllowSaving = false;
+
         public MainForm()
         {
 
@@ -113,6 +115,9 @@ namespace RSMods
             // Load Input Devices for Override Input Device Volume mod
             Startup_LoadInputDevices();
 
+            // Load Midi Devices
+            Midi_LoadDevices();
+
             // Load RS_ASIO
             Startup_VerifyInstallOfASIO();
 
@@ -160,6 +165,8 @@ namespace RSMods
 
             // Is Audio.psarc unpacked?
             Startup_CheckStatusAudioPsarc();
+
+            AllowSaving = true;
         }
 
         #region Startup Functions
@@ -1061,6 +1068,9 @@ namespace RSMods
         #region Save Settings
         private void SaveSettings_Save(string IdentifierToChange, string ChangedSettingValue)
         {
+            if (!AllowSaving)
+                return;
+
             // Right before launch, we switched from the boolean names of (true / false) to (on / off) for users to be able to edit the mods without the GUI (by hand).
             if (ChangedSettingValue == "true")
                 ChangedSettingValue = "on";
@@ -1079,6 +1089,8 @@ namespace RSMods
                 }
             }
 
+            Debug.WriteLine(new StackFrame(1, true).GetMethod().Name);
+
             WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults);
             SaveSettings_ShowLabel();
             WinMsgUtil.SendMsgToRS("update all");
@@ -1095,6 +1107,10 @@ namespace RSMods
 
         private void Save_Songlists_Keybindings(object sender, EventArgs e) // Save Songlists and Keybindings when pressing Enter
         {
+            if (!AllowSaving)
+                return;
+
+
             TextBox textBox = ((TextBox)sender);
 
             // Song Lists
@@ -1170,12 +1186,19 @@ namespace RSMods
 
         private void SaveSettings_ASIO_Middleware(string identifierToChange, ASIO.ReadSettings.Sections section, string ChangedSettingValue)
         {
+            if (!AllowSaving)
+                return;
+
+
             ASIO.WriteSettings.SaveChanges(identifierToChange, section, ChangedSettingValue, checkBox_ASIO_Output_Disabled.Checked, checkBox_ASIO_Input0_Disabled.Checked, checkBox_ASIO_Input1_Disabled.Checked, checkBox_ASIO_InputMic_Disabled.Checked);
             SaveSettings_ShowLabel();
         }
 
         private void SaveSettings_Rocksmith_Middleware(string identifierToChange, string ChangedSettingValue)
         {
+            if (!AllowSaving)
+                return;
+
             Rocksmith.WriteSettings.SaveChanges(identifierToChange, ChangedSettingValue);
             SaveSettings_ShowLabel();
         }
@@ -2127,7 +2150,7 @@ namespace RSMods
         }
         private void Save_AutoTuneDevice(object sender, EventArgs e)
         {
-            if (listBox_ListMidiDevices.SelectedIndex != -1)
+            if (listBox_ListMidiDevices.SelectedItem != null)
             {
                 SaveSettings_Save(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
                 label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
@@ -3809,7 +3832,7 @@ namespace RSMods
 
         #region Midi
 
-        private void Midi_LoadDevices(object sender, EventArgs e)
+        private void Midi_LoadDevices()
         {
             this.listBox_ListMidiDevices.Items.Clear();
 
