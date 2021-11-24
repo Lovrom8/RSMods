@@ -197,23 +197,6 @@ void VolumeControl::SetMicrophoneVolume(std::string microphoneName, int volume) 
 		LPWSTR microphoneId = activeMicrophones[microphoneName];
 		IMMDevice* microphone = NULL;
 
-		HRESULT coInit = CoInitialize(NULL);
-		if (coInit != S_OK) {
-			std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
-			switch (coInit) {
-			case (S_FALSE):
-				std::cout << "S_FALSE" << std::endl;
-				break;
-			case (RPC_E_CHANGED_MODE):
-				std::cout << "RPC_E_CHANGED_MODE" << std::endl;
-				break;
-			default: // Non-documented error.
-				std::cout << "NOT DOCUMENTED!" << std::endl;
-				break;
-			}
-			return;
-		}
-
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
 		HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
@@ -277,23 +260,6 @@ int VolumeControl::GetMicrophoneVolume(std::string microphoneName) {
 		// Initialization
 		LPWSTR microphoneId = activeMicrophones[microphoneName];
 		IMMDevice* microphone = NULL;
-
-		HRESULT coInit = CoInitialize(NULL);
-		if (coInit != S_OK) {
-			std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
-			switch (coInit) {
-				case (S_FALSE):
-					std::cout << "S_FALSE" << std::endl;
-					break;
-				case (RPC_E_CHANGED_MODE):
-					std::cout << "RPC_E_CHANGED_MODE" << std::endl;
-					break;
-				default: // Non-documented error.
-					std::cout << "NOT DOCUMENTED!" << std::endl;
-					break;
-			}
-			return 17.f;
-		}
 
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
 		HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
