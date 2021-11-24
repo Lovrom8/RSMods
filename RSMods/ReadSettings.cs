@@ -24,7 +24,7 @@ namespace RSMods
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
-                             RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews,
+                             RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
 
 
                              // String Colors
@@ -36,7 +36,7 @@ namespace RSMods
 
 
                              // Mod Settings
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -121,6 +121,8 @@ namespace RSMods
             ShowSelectedVolumeWhenIdentifier            = "ShowSelectedVolumeWhen = ",
             SecondaryMonitorIdentifier                  = "SecondaryMonitor = ",
             RemoveSongPreviewsIdentifier                = "SongPreviews = ",
+            OverrideInputVolumeEnabledIdentifier        = "OverrideInputVolumeEnabled = ",
+            OverrideInputVolumeDeviceIdentifier         = "OverrideInputVolumeDevice = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -165,6 +167,7 @@ namespace RSMods
             SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
             SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
             SeparateNoteColorsModeIdentifier    = "SeparateNoteColorsMode = ",
+            OverrideInputVolumeIdentifier       = "OverrideInputVolume = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier     = "GuitarSpeakDeleteWhen = ",
@@ -393,11 +396,16 @@ namespace RSMods
                     return FillSettingVariable(SecondaryMonitorIdentifier, SettingType.STRING, currentLine, out SecondaryMonitor);
                 if (IdentifierIsFound(currentLine, RemoveSongPreviewsIdentifier, identifierToGrab))
                     return FillSettingVariable(RemoveSongPreviewsIdentifier, SettingType.ON_OFF, currentLine, out RemoveSongPreviews);
+                if (IdentifierIsFound(currentLine, OverrideInputVolumeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(OverrideInputVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out OverrideInputVolumeEnabled);
+                if (IdentifierIsFound(currentLine, OverrideInputVolumeDeviceIdentifier, identifierToGrab))
+                    return FillSettingVariable(OverrideInputVolumeDeviceIdentifier, SettingType.STRING, currentLine, out OverrideInputVolumeDevice);
+
                 #endregion
                 #region String Colors
-                    // String Colors (Normal {N} & Colorblind {CB})
+                // String Colors (Normal {N} & Colorblind {CB})
 
-                    // Normal Colors
+                // Normal Colors
 
                 if (IdentifierIsFound(currentLine, String0Color_N_Identifier, identifierToGrab))
                     return FillSettingVariable(String0Color_N_Identifier, SettingType.STRING, currentLine, out String0Color_N);
@@ -477,6 +485,8 @@ namespace RSMods
                     return FillSettingVariable(SecondaryMonitorYPositionIdentifier, SettingType.STRING, currentLine, out SecondaryMonitorYPosition);
                 if (IdentifierIsFound(currentLine, SeparateNoteColorsModeIdentifier, identifierToGrab))
                     return FillSettingVariable(SeparateNoteColorsModeIdentifier, SettingType.STRING, currentLine, out SeparateNoteColorsMode);
+                if (IdentifierIsFound(currentLine, OverrideInputVolumeIdentifier, identifierToGrab))
+                    return FillSettingVariable(OverrideInputVolumeIdentifier, SettingType.STRING, currentLine, out OverrideInputVolume);
                 #endregion
                 #region Guitar Speak
 

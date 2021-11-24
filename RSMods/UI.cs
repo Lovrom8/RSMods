@@ -26,9 +26,12 @@ using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
+using NAudio.CoreAudioApi;
 using SevenZip;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
+using System.Management;
+
 namespace RSMods
 {
     public partial class MainForm : Form
@@ -106,6 +109,9 @@ namespace RSMods
 
             // Load Colors Saved as Theme Colors.
             CustomTheme_LoadCustomColors();
+
+            // Load Input Devices for Override Input Device Volume mod
+            Startup_LoadInputDevices();
 
             // Load RS_ASIO
             Startup_VerifyInstallOfASIO();
@@ -257,6 +263,17 @@ namespace RSMods
             label_VoiceOverVolumeKey.Text = "Voice-Over Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier));
             label_SFXVolumeKey.Text = "SFX Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier));
             label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
+        }
+
+        private void Startup_LoadInputDevices()
+        {
+            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+            MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+
+            foreach(MMDevice device in devices)
+            {
+                listBox_AvailableInputDevices.Items.Add(device.FriendlyName);
+            }
         }
 
         private void Startup_LoadASIODevices()
@@ -609,6 +626,11 @@ namespace RSMods
             checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsModeIdentifier) == "1";
             checkBox_FixBadBassTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
             checkBox_RemoveSongPreviews.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveSongPreviewsIdentifier) == "on";
+            if (ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeEnabledIdentifier) == "on")
+            {
+                checkBox_OverrideInputVolume.Checked = true;
+                groupBox_OverrideInputVolume.Visible = true;
+            }
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -745,6 +767,8 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input0_Disable);
             checkBox_ASIO_Input1_Disabled.CheckedChanged -= new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged -= new System.EventHandler(ASIO_InputMic_Disable);
+            listBox_AvailableInputDevices.SelectedIndexChanged -= new System.EventHandler(Save_OverrideInputVolumeDevice);
+            nUpDown_OverrideInputVolume.ValueChanged -= new System.EventHandler(Save_OverrideInputVolume);
             checkBox_ER_SeparateNoteColors.CheckedChanged -= new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged -= new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged -= new System.EventHandler(Save_DumpRSModsLogToFile);
@@ -762,6 +786,8 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
+            listBox_AvailableInputDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeDeviceIdentifier);
+            nUpDown_OverrideInputVolume.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeIdentifier), 17);
             checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
@@ -780,6 +806,8 @@ namespace RSMods
             checkBox_ASIO_Input0_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input0_Disable);
             checkBox_ASIO_Input1_Disabled.CheckedChanged += new System.EventHandler(ASIO_Input1_Disable);
             checkBox_ASIO_InputMic_Disabled.CheckedChanged += new System.EventHandler(ASIO_InputMic_Disable);
+            listBox_AvailableInputDevices.SelectedIndexChanged += new System.EventHandler(Save_OverrideInputVolumeDevice);
+            nUpDown_OverrideInputVolume.ValueChanged += new System.EventHandler(Save_OverrideInputVolume);
             checkBox_ER_SeparateNoteColors.CheckedChanged += new System.EventHandler(Save_ER_SeparateNoteColors);
             checkBox_BackupProfile.CheckedChanged += new System.EventHandler(Save_BackupProfile);
             checkBox_ModsLog.CheckedChanged += new System.EventHandler(Save_DumpRSModsLogToFile);
@@ -2344,6 +2372,21 @@ namespace RSMods
 
         private void Save_RemoveSongPreviews(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RemoveSongPreviewsIdentifier, checkBox_RemoveSongPreviews.Checked.ToString().ToLower());
 
+        private void Save_OverrideInputVolumeEnabled(object sender, EventArgs e)
+        {
+            groupBox_OverrideInputVolume.Visible = checkBox_OverrideInputVolume.Checked;
+            SaveSettings_Save(ReadSettings.OverrideInputVolumeEnabledIdentifier, checkBox_OverrideInputVolume.Checked.ToString().ToLower());
+        }
+
+        private void Save_OverrideInputVolume(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.OverrideInputVolumeIdentifier, nUpDown_OverrideInputVolume.Value.ToString());
+
+        private void Save_OverrideInputVolumeDevice(object sender, EventArgs e)
+        {
+            if (listBox_AvailableInputDevices.SelectedItem != null)
+            {
+                SaveSettings_Save(ReadSettings.OverrideInputVolumeDeviceIdentifier, listBox_AvailableInputDevices.SelectedItem.ToString());
+            }
+        }
 
         #endregion
         #region ToolTips
@@ -3834,6 +3877,8 @@ namespace RSMods
 
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiOutGetNumDevs();
+
+        
     }
 #endregion
 }

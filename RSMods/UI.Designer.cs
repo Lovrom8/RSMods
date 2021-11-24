@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_OverrideInputVolume = new System.Windows.Forms.CheckBox();
             this.checkBox_RemoveSongPreviews = new System.Windows.Forms.CheckBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
             this.checkBox_ER_SeparateNoteColors = new System.Windows.Forms.CheckBox();
@@ -255,6 +256,11 @@
             this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.groupBox_OverrideInputVolume = new System.Windows.Forms.GroupBox();
+            this.nUpDown_OverrideInputVolume = new System.Windows.Forms.NumericUpDown();
+            this.label_OverrideInputVolumeTo = new System.Windows.Forms.Label();
+            this.label_AvailableInputDevices = new System.Windows.Forms.Label();
+            this.listBox_AvailableInputDevices = new System.Windows.Forms.ListBox();
             this.checkBox_TurnOffAllMods = new System.Windows.Forms.CheckBox();
             this.button_SecondaryMonitorStartPos = new System.Windows.Forms.Button();
             this.groupBox_CustomHighway = new System.Windows.Forms.GroupBox();
@@ -526,6 +532,8 @@
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
+            this.groupBox_OverrideInputVolume.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
             this.groupBox_CustomHighway.SuspendLayout();
             this.groupBox_Backups.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
@@ -996,6 +1004,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_OverrideInputVolume);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveSongPreviews);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ER_SeparateNoteColors);
@@ -1029,6 +1038,17 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_OverrideInputVolume
+            // 
+            this.checkBox_OverrideInputVolume.AutoSize = true;
+            this.checkBox_OverrideInputVolume.Location = new System.Drawing.Point(131, 312);
+            this.checkBox_OverrideInputVolume.Name = "checkBox_OverrideInputVolume";
+            this.checkBox_OverrideInputVolume.Size = new System.Drawing.Size(131, 17);
+            this.checkBox_OverrideInputVolume.TabIndex = 70;
+            this.checkBox_OverrideInputVolume.Text = "Override Input Volume";
+            this.checkBox_OverrideInputVolume.UseVisualStyleBackColor = true;
+            this.checkBox_OverrideInputVolume.CheckedChanged += new System.EventHandler(this.Save_OverrideInputVolumeEnabled);
             // 
             // checkBox_RemoveSongPreviews
             // 
@@ -3368,6 +3388,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OverrideInputVolume);
             this.tabPage_ModSettings_Misc.Controls.Add(this.checkBox_TurnOffAllMods);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_SecondaryMonitorStartPos);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_ResetModsToDefault);
@@ -3382,10 +3403,64 @@
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
             // 
+            // groupBox_OverrideInputVolume
+            // 
+            this.groupBox_OverrideInputVolume.Controls.Add(this.nUpDown_OverrideInputVolume);
+            this.groupBox_OverrideInputVolume.Controls.Add(this.label_OverrideInputVolumeTo);
+            this.groupBox_OverrideInputVolume.Controls.Add(this.label_AvailableInputDevices);
+            this.groupBox_OverrideInputVolume.Controls.Add(this.listBox_AvailableInputDevices);
+            this.groupBox_OverrideInputVolume.Location = new System.Drawing.Point(335, 153);
+            this.groupBox_OverrideInputVolume.Name = "groupBox_OverrideInputVolume";
+            this.groupBox_OverrideInputVolume.Size = new System.Drawing.Size(275, 235);
+            this.groupBox_OverrideInputVolume.TabIndex = 100009;
+            this.groupBox_OverrideInputVolume.TabStop = false;
+            this.groupBox_OverrideInputVolume.Text = "Override Input Volume";
+            this.groupBox_OverrideInputVolume.Visible = false;
+            // 
+            // nUpDown_OverrideInputVolume
+            // 
+            this.nUpDown_OverrideInputVolume.Location = new System.Drawing.Point(149, 201);
+            this.nUpDown_OverrideInputVolume.Name = "nUpDown_OverrideInputVolume";
+            this.nUpDown_OverrideInputVolume.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_OverrideInputVolume.TabIndex = 3;
+            this.nUpDown_OverrideInputVolume.Value = new decimal(new int[] {
+            17,
+            0,
+            0,
+            0});
+            this.nUpDown_OverrideInputVolume.ValueChanged += new System.EventHandler(this.Save_OverrideInputVolume);
+            // 
+            // label_OverrideInputVolumeTo
+            // 
+            this.label_OverrideInputVolumeTo.AutoSize = true;
+            this.label_OverrideInputVolumeTo.Location = new System.Drawing.Point(90, 203);
+            this.label_OverrideInputVolumeTo.Name = "label_OverrideInputVolumeTo";
+            this.label_OverrideInputVolumeTo.Size = new System.Drawing.Size(45, 13);
+            this.label_OverrideInputVolumeTo.TabIndex = 2;
+            this.label_OverrideInputVolumeTo.Text = "Volume:";
+            // 
+            // label_AvailableInputDevices
+            // 
+            this.label_AvailableInputDevices.AutoSize = true;
+            this.label_AvailableInputDevices.Location = new System.Drawing.Point(6, 24);
+            this.label_AvailableInputDevices.Name = "label_AvailableInputDevices";
+            this.label_AvailableInputDevices.Size = new System.Drawing.Size(122, 13);
+            this.label_AvailableInputDevices.TabIndex = 1;
+            this.label_AvailableInputDevices.Text = "Available Input Devices:";
+            // 
+            // listBox_AvailableInputDevices
+            // 
+            this.listBox_AvailableInputDevices.FormattingEnabled = true;
+            this.listBox_AvailableInputDevices.Location = new System.Drawing.Point(6, 45);
+            this.listBox_AvailableInputDevices.Name = "listBox_AvailableInputDevices";
+            this.listBox_AvailableInputDevices.Size = new System.Drawing.Size(263, 134);
+            this.listBox_AvailableInputDevices.TabIndex = 0;
+            this.listBox_AvailableInputDevices.SelectedIndexChanged += new System.EventHandler(this.Save_OverrideInputVolumeDevice);
+            // 
             // checkBox_TurnOffAllMods
             // 
             this.checkBox_TurnOffAllMods.AutoSize = true;
-            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(637, 238);
+            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(651, 306);
             this.checkBox_TurnOffAllMods.Name = "checkBox_TurnOffAllMods";
             this.checkBox_TurnOffAllMods.Size = new System.Drawing.Size(108, 17);
             this.checkBox_TurnOffAllMods.TabIndex = 100008;
@@ -6136,6 +6211,9 @@
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.tabPage_ModSettings_Misc.PerformLayout();
+            this.groupBox_OverrideInputVolume.ResumeLayout(false);
+            this.groupBox_OverrideInputVolume.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).EndInit();
             this.groupBox_CustomHighway.ResumeLayout(false);
             this.groupBox_CustomHighway.PerformLayout();
             this.groupBox_Backups.ResumeLayout(false);
@@ -6673,6 +6751,12 @@
         private System.Windows.Forms.RadioButton radio_AutoTuningWhenTuner;
         private System.Windows.Forms.RadioButton radio_AutoTuningWhenManual;
         private System.Windows.Forms.CheckBox checkBox_RemoveSongPreviews;
+        private System.Windows.Forms.CheckBox checkBox_OverrideInputVolume;
+        private System.Windows.Forms.GroupBox groupBox_OverrideInputVolume;
+        private System.Windows.Forms.NumericUpDown nUpDown_OverrideInputVolume;
+        private System.Windows.Forms.Label label_OverrideInputVolumeTo;
+        private System.Windows.Forms.Label label_AvailableInputDevices;
+        private System.Windows.Forms.ListBox listBox_AvailableInputDevices;
     }
 }
 

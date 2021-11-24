@@ -116,7 +116,9 @@ namespace RSMods
                     { ReadSettings.ShowSongTimerWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSongTimerWhenIdentifier, "manual") }, // Should we start the game with song timer on.
                     { ReadSettings.ShowSelectedVolumeWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual") }, // Should we always show the selected volume.
                     { ReadSettings.SecondaryMonitorIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorIdentifier, "off")}, // Should we allow a secondary monitor to be used for Rocksmith?
-                    { ReadSettings.RemoveSongPreviewsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSongPreviewsIdentifier, "off")} // Should we disable the song previews for the user?
+                    { ReadSettings.RemoveSongPreviewsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSongPreviewsIdentifier, "off")}, // Should we disable the song previews for the user?
+                    { ReadSettings.OverrideInputVolumeEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeEnabledIdentifier, "off")}, // Should we monitor to input volume of the user's cable to increase it above the default?
+                    { ReadSettings.OverrideInputVolumeDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeDeviceIdentifier, "")}, // What device are we considering as the real tone cable?
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -164,6 +166,7 @@ namespace RSMods
                     { ReadSettings.SecondaryMonitorXPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorXPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. X
                     { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. Y
                     { ReadSettings.SeparateNoteColorsModeIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsModeIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
+                    { ReadSettings.OverrideInputVolumeIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeIdentifier, "17")}, // What volume should we use when the user wants to override the default input volume?
                 }
             );
             saveSettingsOrDefaults.Add(
