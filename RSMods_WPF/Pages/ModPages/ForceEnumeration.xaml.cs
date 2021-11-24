@@ -24,6 +24,15 @@ namespace RSMods_WPF.Pages.ModPages
             if (howOften == null)
                 howOften = Mod.WhereSettingName("CheckForNewSongsInterval");
 
+            try
+            {
+                Convert.ToInt32(howOften.Value);
+            }
+            catch // User has a number bigger than Int32 can handle.
+            {
+                howOften.Value = 5000;
+            }
+
             HowOften_DUD.Value = Convert.ToDecimal(howOften.Value) / 1000;
             HowOften_DUD.Visibility = Visibility.Hidden;
             HowOften_Label.Visibility = Visibility.Hidden;
