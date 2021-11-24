@@ -1049,6 +1049,7 @@
             this.checkBox_OverrideInputVolume.Text = "Override Input Volume";
             this.checkBox_OverrideInputVolume.UseVisualStyleBackColor = true;
             this.checkBox_OverrideInputVolume.CheckedChanged += new System.EventHandler(this.Save_OverrideInputVolumeEnabled);
+            this.checkBox_OverrideInputVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_RemoveSongPreviews
             // 
@@ -3428,6 +3429,7 @@
             0,
             0});
             this.nUpDown_OverrideInputVolume.ValueChanged += new System.EventHandler(this.Save_OverrideInputVolume);
+            this.nUpDown_OverrideInputVolume.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_OverrideInputVolumeTo
             // 
@@ -3455,6 +3457,7 @@
             this.listBox_AvailableInputDevices.Size = new System.Drawing.Size(263, 134);
             this.listBox_AvailableInputDevices.TabIndex = 0;
             this.listBox_AvailableInputDevices.SelectedIndexChanged += new System.EventHandler(this.Save_OverrideInputVolumeDevice);
+            this.listBox_AvailableInputDevices.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_TurnOffAllMods
             // 

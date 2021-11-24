@@ -63,6 +63,9 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_NoteColors_UseRocksmithColors, "Check this box if you want normal Rocksmith colored notes.");
             TooltipDictionary.Add(listBox_MidiAutoTuningOffset, "What tuning is your guitar / bass set to?\nWe can adjust how we auto tune based on what you specify here.\nThis value can be changed in game by setting the \"Change Tuning Offset\" keybind.\nIf you press the \"Change Tuning Offset\" keybind it will go down in tuning.\nIf you hold Shift while pressing your \"Change Tuning Offset\" keybind, it will go up in tuning.");
             TooltipDictionary.Add(checkBox_RemoveSongPreviews, "Check this box if you want to turn off the song previews that play when you hover over a song.");
+            TooltipDictionary.Add(checkBox_OverrideInputVolume, "Enable this to allow you to turn your guitar or bass up to 11!\nRocksmith sets what volume it wants to listen to your cable at.\nThis mod allows you to bypass that restriction by changing it to whatever you set.");
+            TooltipDictionary.Add(listBox_AvailableInputDevices, "This is a list of your available microphones.\nPlease select the one you use in Rocksmith so you can override the maximum volume.");
+            TooltipDictionary.Add(nUpDown_OverrideInputVolume, "Set this value from 0-100 to change how loud your guitar is in Rocksmith.\nDefault value in Rocksmith is 17.\nIt is recommended to keep this value below 50.\n0 does not mean no audio, as Rocksmith will bypass the volume if you set it to 0.");
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
