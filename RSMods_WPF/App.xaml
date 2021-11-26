@@ -6,11 +6,14 @@
     StartupUri="MainWindow.xaml"
 >
     <Application.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary>
+            <Style TargetType="RadioButton">
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            </Style>
+            <ResourceDictionary.MergedDictionaries>
                 <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</Application.Resources>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
