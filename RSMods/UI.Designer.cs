@@ -1068,9 +1068,9 @@
             this.checkBox_ModsLog.AutoSize = true;
             this.checkBox_ModsLog.Location = new System.Drawing.Point(131, 289);
             this.checkBox_ModsLog.Name = "checkBox_ModsLog";
-            this.checkBox_ModsLog.Size = new System.Drawing.Size(125, 17);
+            this.checkBox_ModsLog.Size = new System.Drawing.Size(119, 17);
             this.checkBox_ModsLog.TabIndex = 68;
-            this.checkBox_ModsLog.Text = "Dump RS_Mods Log";
+            this.checkBox_ModsLog.Text = "Dump RSMods Log";
             this.checkBox_ModsLog.UseVisualStyleBackColor = true;
             this.checkBox_ModsLog.CheckedChanged += new System.EventHandler(this.Save_DumpRSModsLogToFile);
             this.checkBox_ModsLog.MouseHover += new System.EventHandler(this.ToolTips_Show);
