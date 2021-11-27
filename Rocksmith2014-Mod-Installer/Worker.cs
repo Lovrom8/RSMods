@@ -112,7 +112,7 @@ namespace RS2014_Mod_Installer
                 File.WriteAllBytes(Path.Combine(ddcFolder, "ddc_merge_all_levels.cfg"), Properties.Resources.ddc_merge_all_levels);
                 File.WriteAllText(Path.Combine(ddcFolder, "license.txt"), Properties.Resources.license);
                 File.WriteAllText(Path.Combine(ddcFolder, "readme.txt"), Properties.Resources.readme1);
-                // tools Folder
+                // tools Folder 
                 File.WriteAllBytes(Path.Combine(toolsFolder, "7za.exe"), Properties.Resources._7za);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "core.jar"), Properties.Resources.core);
                 File.WriteAllBytes(Path.Combine(toolsFolder, "CreateToolkitShortcut.exe"), Properties.Resources.CreateToolkitShortcut);
