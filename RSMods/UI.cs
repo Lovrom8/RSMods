@@ -2213,7 +2213,7 @@ namespace RSMods
             {
                 Profiles.SaveProfile();
 
-                TabController.TabPages.Insert(ProfileEditsTabIndex, ProfileEditsTab);
+                //TabController.TabPages.Insert(ProfileEditsTabIndex, ProfileEditsTab);
 
                 if (Profiles.GetSaveDirectory() == String.Empty)
                 {
