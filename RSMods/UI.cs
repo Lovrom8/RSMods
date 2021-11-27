@@ -3472,10 +3472,17 @@ namespace RSMods
                 return false;
 
             // Get Version Number From Github API.
-            string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
+            try
+            {
+                string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
 
-            // Return true if an update is available, and false if it isn't.
-            return github_versionNumber != Application.ProductVersion;
+                // Return true if an update is available, and false if it isn't.
+                return github_versionNumber != Application.ProductVersion;
+            }
+            catch // Unable to check for updates.
+            {
+                return false;
+            }
         }
 
         private string CheckForUpdates_GetPatchNotes()
