@@ -10,6 +10,9 @@
             <Style TargetType="RadioButton">
                 <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
             </Style>
+            <Style TargetType="CheckBox">
+                <Setter Property="Background" Value="{DynamicResource MaterialDesignBody}"/>
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />

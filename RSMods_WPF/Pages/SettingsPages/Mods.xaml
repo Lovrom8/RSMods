@@ -25,7 +25,7 @@
                 <DataGridTemplateColumn Header="Enabled">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding InitialValue, Converter={StaticResource ModEnabledState}}" Background="{DynamicResource MaterialDesignBody}" HorizontalAlignment="Center" Checked="ModEnabledStateChange" Unchecked="ModEnabledStateChange" />
+                            <CheckBox IsChecked="{Binding InitialValue, Converter={StaticResource ModEnabledState}}" HorizontalAlignment="Center" Checked="ModEnabledStateChange" Unchecked="ModEnabledStateChange" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
