@@ -2222,8 +2222,8 @@ namespace RSMods
                 }
             }
 
-            else
-                TabController.TabPages.Remove(ProfileEditsTab);
+            //else
+            //    TabController.TabPages.Remove(ProfileEditsTab);
         }
 
         private void UnlimitedBackups(object sender, EventArgs e)
