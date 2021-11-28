@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System;
 using Xceed.Wpf.Toolkit;
+using System.Windows.Media;
 
 namespace RSMods_WPF.Pages.SettingsPages
 {
@@ -20,6 +21,15 @@ namespace RSMods_WPF.Pages.SettingsPages
             InitializeComponent();
             GetAsioDevices();
             Startup_LoadInitialValues();
+            Startup_UpdateResetIcons();
+        }
+
+        public void Startup_UpdateResetIcons()
+        {
+            Input0_ResetIcon.Fill   = (Brush)Application.Current.Resources["InvertedPrimaryColor"];
+            Input1_ResetIcon.Fill   = (Brush)Application.Current.Resources["InvertedPrimaryColor"];
+            InputMic_ResetIcon.Fill = (Brush)Application.Current.Resources["InvertedPrimaryColor"];
+            Output_ResetIcon.Fill   = (Brush)Application.Current.Resources["InvertedPrimaryColor"];
         }
 
         private void GetAsioDevices()
@@ -28,10 +38,10 @@ namespace RSMods_WPF.Pages.SettingsPages
             
             Devices.FindDevices().ForEach(driver => AsioDeviceNames.Add(driver.deviceName));
 
-            Output_Devices.ItemsSource = AsioDeviceNames;
-            Input0_Devices.ItemsSource = AsioDeviceNames;
-            Input1_Devices.ItemsSource = AsioDeviceNames;
-            InputMic_Devices.ItemsSource = AsioDeviceNames;
+            Output_Devices.ItemsSource      = AsioDeviceNames;
+            Input0_Devices.ItemsSource      = AsioDeviceNames;
+            Input1_Devices.ItemsSource      = AsioDeviceNames;
+            InputMic_Devices.ItemsSource    = AsioDeviceNames;
 
             if (AsioDeviceNames.Contains(AsioSetting.WhereSettingName("Driver", "Asio.Output").Value.ToString()))
                 Output_Devices.SelectedItem = AsioSetting.WhereSettingName("Driver", "Asio.Output").Value.ToString();
@@ -50,8 +60,8 @@ namespace RSMods_WPF.Pages.SettingsPages
         {
             // Config
             WASAPI_Output.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableWasapiOutputs", "Config").Value.ToString(), 0) == 1;
-            WASAPI_Input.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableWasapiInputs", "Config").Value.ToString(), 0) == 1;
-            UseAsio.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableAsio", "Config").Value.ToString(), 1) == 1;
+            WASAPI_Input.IsChecked  = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableWasapiInputs", "Config").Value.ToString(), 0) == 1;
+            UseAsio.IsChecked       = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableAsio", "Config").Value.ToString(), 1) == 1;
 
             // Asio
             CustomBufferSize.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("CustomBufferSize", "Asio").Value.ToString(), 48);
@@ -82,48 +92,48 @@ namespace RSMods_WPF.Pages.SettingsPages
             Output_Disabled.IsChecked   = LoadAsio.DisabledDevices.Contains("Asio.Output");
 
             // Asio.Output
-            Output_BaseChannel.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("BaseChannel", "Asio.Output").Value.ToString(), 0);
-            Output_AltBaseChannel.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("AltBaseChannel", "Asio.Output").Value.ToString(), null);
-            Output_EnableMasterVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Output").Value.ToString(), 1) == 1;
-            Output_EnableEndpointVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Output").Value.ToString(), 1) == 1;
-            Output_MasterVolume.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Output").Value.ToString(), 100);
+            Output_BaseChannel.Value                = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("BaseChannel", "Asio.Output").Value.ToString(), 0);
+            Output_AltBaseChannel.Value             = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("AltBaseChannel", "Asio.Output").Value.ToString(), null);
+            Output_EnableMasterVolume.IsChecked     = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Output").Value.ToString(), 1) == 1;
+            Output_EnableEndpointVolume.IsChecked   = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Output").Value.ToString(), 1) == 1;
+            Output_MasterVolume.Value               = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Output").Value.ToString(), 100);
             if (!(bool)Output_EnableMasterVolume.IsChecked)
             {
                 Output_MasterVolumeLabel.Visibility = Visibility.Hidden;
-                Output_MasterVolume.Visibility = Visibility.Hidden;
+                Output_MasterVolume.Visibility      = Visibility.Hidden;
             }
 
             // Asio.Input.0
-            Input0_Channel.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.0").Value.ToString(), 0);
-            Input0_EnableMasterVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.0").Value.ToString(), 1) == 1;
-            Input0_EnableEndpointVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Input.0").Value.ToString(), 1) == 1;
-            Input0_MasterVolume.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.0").Value.ToString(), 100);
+            Input0_Channel.Value                    = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.0").Value.ToString(), 0);
+            Input0_EnableMasterVolume.IsChecked     = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.0").Value.ToString(), 1) == 1;
+            Input0_EnableEndpointVolume.IsChecked   = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Input.0").Value.ToString(), 1) == 1;
+            Input0_MasterVolume.Value               = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.0").Value.ToString(), 100);
             if (!(bool)Input0_EnableMasterVolume.IsChecked)
             {
                 Input0_MasterVolumeLabel.Visibility = Visibility.Hidden;
-                Input0_MasterVolume.Visibility = Visibility.Hidden;
+                Input0_MasterVolume.Visibility      = Visibility.Hidden;
             }
 
             // Asio.Input.1
-            Input1_Channel.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.1").Value.ToString(), 0);
-            Input1_EnableMasterVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.1").Value.ToString(), 1) == 1;
-            Input1_EnableEndpointVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Input.1").Value.ToString(), 1) == 1;
-            Input1_MasterVolume.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.1").Value.ToString(), 100);
+            Input1_Channel.Value                    = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.1").Value.ToString(), 0);
+            Input1_EnableMasterVolume.IsChecked     = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.1").Value.ToString(), 1) == 1;
+            Input1_EnableEndpointVolume.IsChecked   = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Input.1").Value.ToString(), 1) == 1;
+            Input1_MasterVolume.Value               = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.1").Value.ToString(), 100);
             if (!(bool)Input1_EnableMasterVolume.IsChecked)
             {
                 Input1_MasterVolumeLabel.Visibility = Visibility.Hidden;
-                Input1_MasterVolume.Visibility = Visibility.Hidden;
+                Input1_MasterVolume.Visibility      = Visibility.Hidden;
             }
 
             // Asio.Input.Mic
-            InputMic_Channel.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.Mic").Value.ToString(), 0);
-            InputMic_EnableMasterVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.Mic").Value.ToString(), 1) == 1;
+            InputMic_Channel.Value                  = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("Channel", "Asio.Input.Mic").Value.ToString(), 0);
+            InputMic_EnableMasterVolume.IsChecked   = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareMasterVolumeControl", "Asio.Input.Mic").Value.ToString(), 1) == 1;
             InputMic_EnableEndpointVolume.IsChecked = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("EnableSoftwareEndpointVolumeControl", "Asio.Input.Mic").Value.ToString(), 1) == 1;
-            InputMic_MasterVolume.Value = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.Mic").Value.ToString(), 100);
+            InputMic_MasterVolume.Value             = Utils.ConvertStringToInt(AsioSetting.WhereSettingName("SoftwareMasterVolumePercent", "Asio.Input.Mic").Value.ToString(), 100);
             if (!(bool)InputMic_EnableMasterVolume.IsChecked)
             {
-                InputMic_MasterVolumeLabel.Visibility = Visibility.Hidden;
-                InputMic_MasterVolume.Visibility = Visibility.Hidden;
+                InputMic_MasterVolumeLabel.Visibility   = Visibility.Hidden;
+                InputMic_MasterVolume.Visibility        = Visibility.Hidden;
             }
 
             ReadyToUseSettings = true;
@@ -134,16 +144,16 @@ namespace RSMods_WPF.Pages.SettingsPages
             switch(((ListBox)sender).Name)
             {
                 case "Output_Devices":
-                    AsioSetting.WhereSettingName("Driver", "Asio.Output").Value = ((ListBox)sender).SelectedItem.ToString();
+                    AsioSetting.WhereSettingName("Driver", "Asio.Output").Value     = ((ListBox)sender).SelectedItem.ToString();
                     break;
                 case "Input0_Devices":
-                    AsioSetting.WhereSettingName("Driver", "Asio.Input.0").Value = ((ListBox)sender).SelectedItem.ToString();
+                    AsioSetting.WhereSettingName("Driver", "Asio.Input.0").Value    = ((ListBox)sender).SelectedItem.ToString();
                     break;
                 case "Input1_Devices":
-                    AsioSetting.WhereSettingName("Driver", "Asio.Input.1").Value = ((ListBox)sender).SelectedItem.ToString();
+                    AsioSetting.WhereSettingName("Driver", "Asio.Input.1").Value    = ((ListBox)sender).SelectedItem.ToString();
                     break;
                 case "InputMic_Devices":
-                    AsioSetting.WhereSettingName("Driver", "Asio.Input.Mic").Value = ((ListBox)sender).SelectedItem.ToString();
+                    AsioSetting.WhereSettingName("Driver", "Asio.Input.Mic").Value  = ((ListBox)sender).SelectedItem.ToString();
                     break;
                 default: // Unknown ListBox
                     break;
@@ -162,10 +172,10 @@ namespace RSMods_WPF.Pages.SettingsPages
                         AsioSetting.WhereSettingName("EnableWasapiOutputs", "Config").Value = Convert.ToInt32(isChecked);
                         break;
                     case "WASAPI_Input":
-                        AsioSetting.WhereSettingName("EnableWasapiInputs", "Config").Value = Convert.ToInt32(isChecked);
+                        AsioSetting.WhereSettingName("EnableWasapiInputs", "Config").Value  = Convert.ToInt32(isChecked);
                         break;
                     case "UseAsio":
-                        AsioSetting.WhereSettingName("EnableAsio", "Config").Value = Convert.ToInt32(isChecked);
+                        AsioSetting.WhereSettingName("EnableAsio", "Config").Value          = Convert.ToInt32(isChecked);
                         break;
 
                     // Disabled Statuses

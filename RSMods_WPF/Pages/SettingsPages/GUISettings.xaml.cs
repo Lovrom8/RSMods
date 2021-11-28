@@ -54,7 +54,14 @@ namespace RSMods_WPF.Pages.SettingsPages
 
                 Mod.WhereSettingName("PrimaryColor").Value = colorDialog.Color.R.ToString("X2") + colorDialog.Color.G.ToString("X2") + colorDialog.Color.B.ToString("X2");
 
-                (Window.GetWindow(Application.Current.MainWindow) as MainWindow).ResetIconColors();
+                MainWindow currentWindow = Window.GetWindow(Application.Current.MainWindow) as MainWindow;
+                currentWindow.PrimaryColor = DrawingColorToMediaColor(colorDialog.Color);
+                Application.Current.Resources["InvertedPrimaryColor"] = (SolidColorBrush)new BrushConverter().ConvertFromString(Color.FromRgb((byte)(255 - currentWindow.PrimaryColor.R), (byte)(255 - currentWindow.PrimaryColor.G), (byte)(255 - currentWindow.PrimaryColor.B)).ToString());
+
+                currentWindow.ResetSelectedTab();
+                currentWindow.HighlightedTabBrush = (Brush)Application.Current.Resources["PrimaryHueLightBrush"];
+                currentWindow.GUISettings_Tab.Background = currentWindow.HighlightedTabBrush;
+                currentWindow.ResetIconColors();
             }
         }
 

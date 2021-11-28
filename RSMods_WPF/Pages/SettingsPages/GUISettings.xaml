@@ -10,7 +10,7 @@
     Title="GUISettings"
 >
     <Grid>
-        <CheckBox Name="DarkMode" Content="Dark Mode" Foreground="{DynamicResource MaterialDesignBody}" HorizontalAlignment="Left" Margin="80,24,0,0" VerticalAlignment="Top" Checked="ChangeDarkMode" Unchecked="ChangeDarkMode"/>
+        <CheckBox Name="DarkMode" Content="Dark Mode" HorizontalAlignment="Left" Margin="80,24,0,0" VerticalAlignment="Top" Checked="ChangeDarkMode" Unchecked="ChangeDarkMode"/>
         <Label Name="Credits" Content="Originally Created By:&#xD;&#xA;Ffio - Main GUI Dev&#xD;&#xA;LovroM8 - Set &amp; Forget&#xD;&#xA;ZagatoZee - Co-GUI Dev" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="139"/>
         <Button Name="ChangePrimaryColor" Content="Change Primary Color" HorizontalAlignment="Left" Margin="80,61,0,0" VerticalAlignment="Top" Click="ChangePrimaryColor_Click"/>
     </Grid>

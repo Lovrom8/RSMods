@@ -12,8 +12,8 @@
             </Style>
             <Style TargetType="CheckBox">
                 <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                <Setter Property="Background" Value="{DynamicResource MaterialDesignBody}"/>
             </Style>
+            <DynamicResource x:Key="InvertedPrimaryColor"/>
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Purple" SecondaryColor="Lime"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />

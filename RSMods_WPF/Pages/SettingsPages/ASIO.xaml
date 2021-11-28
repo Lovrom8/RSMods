@@ -11,7 +11,7 @@
       Title="ASIO"
 >
     <Grid>
-        <GroupBox Header="Input0" Margin="0,0,533,212" BorderThickness="0">
+        <GroupBox Header="Input0" Margin="10,0,533,212" BorderThickness="0">
             <Grid>
                 <ListBox Name="Input0_Devices" SelectionChanged="SelectedAsioDevice" d:ItemsSource="{d:SampleData ItemCount=4}" Margin="0,0,50,80" HorizontalAlignment="Left">
                     <ListBox.ItemContainerStyle>
@@ -19,16 +19,16 @@
                     </ListBox.ItemContainerStyle>
                 </ListBox>
                 <CheckBox Name="Input0_Disabled" Content="Disabled" HorizontalAlignment="Left" Margin="0,161,0,0" VerticalAlignment="Top" Checked="CheckStateChanged" Unchecked="CheckStateChanged"/>
-                <Label Content="Channel:" HorizontalAlignment="Left" Margin="125,105,0,0" VerticalAlignment="Top"/>
-                <xctk:IntegerUpDown Name="Input0_Channel" HorizontalAlignment="Left" Margin="178,107,0,0" VerticalAlignment="Top" Height="22" Width="71" Minimum="0" Maximum="100" ValueChanged="ChannelChanged"/>
+                <Label Content="Channel:" HorizontalAlignment="Left" Margin="118,105,0,0" VerticalAlignment="Top"/>
+                <xctk:IntegerUpDown Name="Input0_Channel" HorizontalAlignment="Left" Margin="169,107,0,0" VerticalAlignment="Top" Height="22" Width="71" Minimum="0" Maximum="100" ValueChanged="ChannelChanged"/>
                 <CheckBox Name="Input0_EnableEndpointVolume" Content="Endpoint Volume" HorizontalAlignment="Left" Margin="0,120,0,0" VerticalAlignment="Top" Checked="CheckStateChanged" Unchecked="CheckStateChanged"/>
                 <CheckBox Name="Input0_EnableMasterVolume" Content="Master Volume" HorizontalAlignment="Left" Margin="0,141,0,0" VerticalAlignment="Top" Checked="CheckStateChanged" Unchecked="CheckStateChanged"/>
-                <Label Name="Input0_MasterVolumeLabel" Content="Volume:" HorizontalAlignment="Left" Margin="127,142,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.417,0.48"/>
-                <xctk:IntegerUpDown Name="Input0_MasterVolume" HorizontalAlignment="Left" Margin="178,144,0,0" VerticalAlignment="Top" Height="22" Width="71" Minimum="0" Maximum="1000" Increment="10" ValueChanged="MasterVolumeChanged"/>
-                <Button Name="Input0_ResetDevice" HorizontalAlignment="Left" Margin="188,-8,0,0" VerticalAlignment="Top" Width="61" Click="ResetDeviceSettings">
+                <Label Name="Input0_MasterVolumeLabel" Content="Volume:" HorizontalAlignment="Left" Margin="121,142,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.417,0.48"/>
+                <xctk:IntegerUpDown Name="Input0_MasterVolume" HorizontalAlignment="Left" Margin="168,144,0,0" VerticalAlignment="Top" Height="22" Width="71" Minimum="0" Maximum="1000" Increment="10" ValueChanged="MasterVolumeChanged"/>
+                <Button Name="Input0_ResetDevice" HorizontalAlignment="Left" Margin="178,-8,0,0" VerticalAlignment="Top" Width="61" Click="ResetDeviceSettings">
                     <Viewbox Width="55" Height="72">
                         <Canvas Width="29" Height="29">
-                            <Path Fill="White" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
+                            <Path Name="Input0_ResetIcon" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
                         </Canvas>
                     </Viewbox>
                 </Button>
@@ -51,7 +51,7 @@
                 <Button Name="Input1_ResetDevice" HorizontalAlignment="Left" Margin="188,-8,0,0" VerticalAlignment="Top" Width="61" Click="ResetDeviceSettings">
                     <Viewbox Width="55" Height="72">
                         <Canvas Width="29" Height="29">
-                            <Path Fill="White" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
+                            <Path Name="Input1_ResetIcon" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
                         </Canvas>
                     </Viewbox>
                 </Button>
@@ -74,13 +74,13 @@
                 <Button Name="InputMic_ResetDevice" HorizontalAlignment="Left" Margin="188,-8,0,0" VerticalAlignment="Top" Width="61" Click="ResetDeviceSettings">
                     <Viewbox Width="55" Height="72">
                         <Canvas Width="29" Height="29">
-                            <Path Fill="White" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
+                            <Path Name="InputMic_ResetIcon" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
                         </Canvas>
                     </Viewbox>
                 </Button>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Output" Margin="0,238,422,0" BorderThickness="0">
+        <GroupBox Header="Output" Margin="10,238,422,0" BorderThickness="0">
             <Grid>
                 <ListBox Name="Output_Devices"  Margin="0,0,50,80" d:ItemsSource="{d:SampleData ItemCount=4}" SelectionChanged="SelectedAsioDevice" HorizontalAlignment="Left">
                     <ListBox.ItemContainerStyle>
@@ -99,7 +99,7 @@
                 <Button Name="Output_ResetDevice" HorizontalAlignment="Left" Margin="289,-11,0,0" VerticalAlignment="Top" Width="61" Click="ResetDeviceSettings">
                     <Viewbox Width="55" Height="72">
                         <Canvas Width="29" Height="29">
-                            <Path Fill="White" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
+                            <Path Name="Output_ResetIcon" Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" Height="12" Stretch="Fill" Width="12" />
                         </Canvas>
                     </Viewbox>
                 </Button>
