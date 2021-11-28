@@ -105,7 +105,7 @@ namespace RSMods_WPF
             ModPage = _ModPage;
             ShowInModsTab = _ShowInModsTab;
 
-            if (File.Exists(Settings.SettingsFile) && File.ReadAllText(Settings.SettingsFile).Length > 0)
+            if (Settings.HasValidSettingsFile())
             {
                 if (ReadPreviousSetting(_SettingName, _DefaultValue) == null) // Value not found
                 {

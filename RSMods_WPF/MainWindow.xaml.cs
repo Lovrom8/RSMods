@@ -3,6 +3,7 @@ using System.Reflection;
 using RSMods_WPF.Pages.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Media;
+using RSMods_WPF.Asio;
 
 namespace RSMods_WPF
 {
@@ -17,11 +18,22 @@ namespace RSMods_WPF
             InitializeComponent();
             Startup_UpdateVersionText();
             Startup_LoadMods();
+            Startup_LoadAsioSettings();
             Startup_LoadCustomColors();
         }
 
         private void Startup_UpdateVersionText() => Version.Content = "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         private static void Startup_LoadMods() => _ = new LoadMods();
+
+        private void Startup_LoadAsioSettings()
+        {
+            if (!Settings.HasValidAsioSettingsFile())
+            {
+                ASIO_Tab.Visibility = Visibility.Hidden;
+                return;
+            }
+            _ = new LoadAsio();
+        }
 
         private void Startup_LoadCustomColors()
         {

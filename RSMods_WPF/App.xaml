@@ -11,6 +11,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
             </Style>
             <Style TargetType="CheckBox">
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignBody}"/>
             </Style>
             <ResourceDictionary.MergedDictionaries>
