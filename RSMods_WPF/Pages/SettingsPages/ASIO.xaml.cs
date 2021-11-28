@@ -359,7 +359,7 @@ namespace RSMods_WPF.Pages.SettingsPages
             }
         }
 
-        private void ResetPage()
+        private static void ResetPage()
         {
             Instance = new ASIO();
             (Window.GetWindow(Application.Current.MainWindow) as MainWindow).MainFrame.Content = Instance;
