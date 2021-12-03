@@ -638,6 +638,8 @@ namespace RSMods
                 checkBox_OverrideInputVolume.Checked = true;
                 groupBox_OverrideInputVolume.Visible = true;
             }
+
+            checkBox_AllowAudioInBackground.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2410,6 +2412,9 @@ namespace RSMods
                 SaveSettings_Save(ReadSettings.OverrideInputVolumeDeviceIdentifier, listBox_AvailableInputDevices.SelectedItem.ToString());
             }
         }
+
+        private void Save_AllowAudioInBackground(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.AllowAudioInBackgroundIdentifier, checkBox_AllowAudioInBackground.Checked.ToString().ToLower());
+
 
         #endregion
         #region ToolTips

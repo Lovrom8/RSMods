@@ -25,6 +25,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
+                             AllowAudioInBackground,
 
 
                              // String Colors
@@ -123,6 +124,7 @@ namespace RSMods
             RemoveSongPreviewsIdentifier                = "SongPreviews = ",
             OverrideInputVolumeEnabledIdentifier        = "OverrideInputVolumeEnabled = ",
             OverrideInputVolumeDeviceIdentifier         = "OverrideInputVolumeDevice = ",
+            AllowAudioInBackgroundIdentifier            = "AllowAudioInBackground = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -400,6 +402,8 @@ namespace RSMods
                     return FillSettingVariable(OverrideInputVolumeEnabledIdentifier, SettingType.ON_OFF, currentLine, out OverrideInputVolumeEnabled);
                 if (IdentifierIsFound(currentLine, OverrideInputVolumeDeviceIdentifier, identifierToGrab))
                     return FillSettingVariable(OverrideInputVolumeDeviceIdentifier, SettingType.STRING, currentLine, out OverrideInputVolumeDevice);
+                if (IdentifierIsFound(currentLine, AllowAudioInBackgroundIdentifier, identifierToGrab))
+                    return FillSettingVariable(AllowAudioInBackgroundIdentifier, SettingType.ON_OFF, currentLine, out AllowAudioInBackground);
 
                 #endregion
                 #region String Colors

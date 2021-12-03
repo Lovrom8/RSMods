@@ -119,6 +119,7 @@ namespace RSMods
                     { ReadSettings.RemoveSongPreviewsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveSongPreviewsIdentifier, "off")}, // Should we disable the song previews for the user?
                     { ReadSettings.OverrideInputVolumeEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeEnabledIdentifier, "off")}, // Should we monitor to input volume of the user's cable to increase it above the default?
                     { ReadSettings.OverrideInputVolumeDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeDeviceIdentifier, "")}, // What device are we considering as the real tone cable?
+                    { ReadSettings.AllowAudioInBackgroundIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowAudioInBackgroundIdentifier, "off")}, // Allows users to have Rocksmith in the background while the audio still plays.
                 }
             );
             saveSettingsOrDefaults.Add(

@@ -488,6 +488,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1004,6 +1005,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowAudioInBackground);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_OverrideInputVolume);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveSongPreviews);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_ModsLog);
@@ -1034,7 +1036,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 342);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 357);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -1054,7 +1056,7 @@
             // checkBox_RemoveSongPreviews
             // 
             this.checkBox_RemoveSongPreviews.AutoSize = true;
-            this.checkBox_RemoveSongPreviews.Location = new System.Drawing.Point(10, 312);
+            this.checkBox_RemoveSongPreviews.Location = new System.Drawing.Point(11, 312);
             this.checkBox_RemoveSongPreviews.Name = "checkBox_RemoveSongPreviews";
             this.checkBox_RemoveSongPreviews.Size = new System.Drawing.Size(112, 17);
             this.checkBox_RemoveSongPreviews.TabIndex = 69;
@@ -1137,7 +1139,7 @@
             // checkBox_ShowCurrentNote
             // 
             this.checkBox_ShowCurrentNote.AutoSize = true;
-            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(10, 289);
+            this.checkBox_ShowCurrentNote.Location = new System.Drawing.Point(11, 289);
             this.checkBox_ShowCurrentNote.Name = "checkBox_ShowCurrentNote";
             this.checkBox_ShowCurrentNote.Size = new System.Drawing.Size(116, 17);
             this.checkBox_ShowCurrentNote.TabIndex = 51;
@@ -6134,6 +6136,18 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_AllowAudioInBackground
+            // 
+            this.checkBox_AllowAudioInBackground.AutoSize = true;
+            this.checkBox_AllowAudioInBackground.Location = new System.Drawing.Point(11, 334);
+            this.checkBox_AllowAudioInBackground.Name = "checkBox_AllowAudioInBackground";
+            this.checkBox_AllowAudioInBackground.Size = new System.Drawing.Size(126, 17);
+            this.checkBox_AllowAudioInBackground.TabIndex = 71;
+            this.checkBox_AllowAudioInBackground.Text = "Audio In Background";
+            this.checkBox_AllowAudioInBackground.UseVisualStyleBackColor = true;
+            this.checkBox_AllowAudioInBackground.CheckedChanged += new System.EventHandler(this.Save_AllowAudioInBackground);
+            this.checkBox_AllowAudioInBackground.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6759,6 +6773,7 @@
         private System.Windows.Forms.Label label_OverrideInputVolumeTo;
         private System.Windows.Forms.Label label_AvailableInputDevices;
         private System.Windows.Forms.ListBox listBox_AvailableInputDevices;
+        private System.Windows.Forms.CheckBox checkBox_AllowAudioInBackground;
     }
 }
 
