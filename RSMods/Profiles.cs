@@ -13,6 +13,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Win32;
 using System.Windows.Forms;
 using RSMods.Util;
+using System.Linq;
 
 namespace RSMods
 {
@@ -263,6 +264,74 @@ namespace RSMods
             0x45, 0x56, 0x41, 0x53, 0x01, 0x00, 0x00, 0x00,
             0x5D, 0x8F, 0xE7, 0x03, 0x00, 0x00, 0x10, 0x01,
         };
+
+
+        //public static void TestEncryption()
+        //{
+        //    string profile = string.Empty;
+            
+        //    using (StreamReader decryptedFile = new StreamReader("decryptedprofile.json"))
+        //    using (Stream decryptedProfileStream = new MemoryStream())
+        //    {
+        //        profile = decryptedFile.ReadToEnd();
+
+        //        decryptedFile.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        //        decryptedFile.BaseStream.CopyTo(decryptedProfileStream);
+
+        //        decryptedProfileStream.Seek(0, SeekOrigin.End);
+        //        decryptedProfileStream.Write(new byte[1] { 0 }, 0, 1);
+        //        decryptedProfileStream.Seek(0, SeekOrigin.Begin);
+
+        //        decryptedProfileStream.Position = 0;
+
+        //        using (var encrypted = new MemoryStream())
+        //        using (var compressed = new MemoryStream())
+        //        using (var brEnc = new EndianBinaryWriter(EndianBitConverter.Little, encrypted))
+        //        {
+        //            brEnc.Write(SaveHeader, 0, 16);
+        //            brEnc.Write((uint)decryptedProfileStream.Length);
+
+        //            Zip(decryptedProfileStream, compressed, decryptedProfileStream.Length);
+        //            compressed.Seek(2, SeekOrigin.Current);
+        //            EncryptFile(compressed, brEnc.BaseStream, PCSaveKey);
+
+        //            brEnc.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        //            using (StreamWriter sw = new StreamWriter("profile_PRFLDB"))
+        //            {
+        //                brEnc.BaseStream.CopyTo(sw.BaseStream);
+        //            }
+        //        }
+
+        //        using (StreamReader RawZlibStream = new StreamReader("compressedzlib.zlib"))
+        //        using (Stream ZlibStream = new MemoryStream())
+        //        {
+        //            RawZlibStream.BaseStream.CopyTo(ZlibStream);
+
+        //            ZlibStream.Seek(0, SeekOrigin.Begin);
+
+        //            using (var encrypted = new MemoryStream())
+        //            using (var brEnc = new EndianBinaryWriter(EndianBitConverter.Little, encrypted))
+        //            {
+        //                brEnc.Write(SaveHeader, 0, 16);
+        //                brEnc.Write((uint)decryptedProfileStream.Length);
+
+        //                EncryptFile(ZlibStream, brEnc.BaseStream, PCSaveKey);
+
+        //                brEnc.BaseStream.Seek(0, SeekOrigin.Begin);
+
+        //                using (StreamWriter sw = new StreamWriter("profile_PRFLDB"))
+        //                {
+        //                    //brEnc.BaseStream.SetLength(brEnc.BaseStream.Length - 0x180);
+        //                    brEnc.BaseStream.CopyTo(sw.BaseStream);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    MessageBox.Show("Done!");
+        //} 
+
         private static void EncryptFile(Stream input, Stream output, byte[] key)
         {
             using (var rij = new RijndaelManaged())
