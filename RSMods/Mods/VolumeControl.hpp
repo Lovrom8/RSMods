@@ -8,6 +8,7 @@
 #include "../WwiseHijack.hpp"
 #include "../MemHelpers.hpp"
 #include "../Offsets.hpp"
+#include "../MemUtil.hpp"
 
 
 namespace VolumeControl {
@@ -18,7 +19,10 @@ namespace VolumeControl {
 	void SetupMicrophones();
 	void SetMicrophoneVolume(std::string microphoneName,int volume);
 	int GetMicrophoneVolume(std::string microphoneName);
+	void AllowAltTabbingWithAudio();
+	void DisableAltTabbingWithAudio();
 	inline bool disabledSongPreviewAudio = false;
+	inline bool allowedAltTabbingWithAudio = false;
 	inline std::map<std::string, LPWSTR> activeMicrophones;
 }
 

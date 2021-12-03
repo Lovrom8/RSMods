@@ -889,6 +889,9 @@ unsigned WINAPI MainThread() {
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	VolumeControl::SetupMicrophones();
 
+	if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on")
+		VolumeControl::AllowAltTabbingWithAudio();	
+
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
@@ -906,6 +909,13 @@ unsigned WINAPI MainThread() {
 			// Override the default microphone volume.
 			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && VolumeControl::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
 				VolumeControl::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
+
+			if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on" && !VolumeControl::allowedAltTabbingWithAudio)
+				VolumeControl::AllowAltTabbingWithAudio();
+
+			else if (Settings::ReturnSettingValue("AllowAudioInBackground") == "off" && VolumeControl::allowedAltTabbingWithAudio) {
+				VolumeControl::DisableAltTabbingWithAudio();
+			}
 
 			//std::cout << currentMenu << std::endl;
 

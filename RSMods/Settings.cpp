@@ -73,7 +73,8 @@ void Settings::Initialize()
 		{"SecondaryMonitor", "off"},
 		{"SongPreviews", "off"},
 		{"OverrideInputVolumeEnabled", "off"},
-		{"OverrideInputVolumeDevice", ""}
+		{"OverrideInputVolumeDevice", ""},
+		{"AllowAudioInBackground", "off"}
 	};
 
 	customSettings = {
@@ -258,6 +259,7 @@ void Settings::ReadModSettings() {
 	modSettings["SongPreviews"] = reader.GetValue("Toggle Switches", "SongPreviews", "off");
 	modSettings["OverrideInputVolumeEnabled"] = reader.GetValue("Toggle Switches", "OverrideInputVolumeEnabled", "off");
 	modSettings["OverrideInputVolumeDevice"] = reader.GetValue("Toggle Switches", "OverrideInputVolumeDevice", "");
+	modSettings["AllowAudioInBackground"] = reader.GetValue("Toggle Switches", "AllowAudioInBackground", "off");
 }
 
 /// <summary>
