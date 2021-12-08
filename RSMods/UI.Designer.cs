@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
             this.checkBox_OverrideInputVolume = new System.Windows.Forms.CheckBox();
             this.checkBox_RemoveSongPreviews = new System.Windows.Forms.CheckBox();
             this.checkBox_ModsLog = new System.Windows.Forms.CheckBox();
@@ -488,7 +489,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1040,6 +1040,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_AllowAudioInBackground
+            // 
+            this.checkBox_AllowAudioInBackground.AutoSize = true;
+            this.checkBox_AllowAudioInBackground.Location = new System.Drawing.Point(11, 334);
+            this.checkBox_AllowAudioInBackground.Name = "checkBox_AllowAudioInBackground";
+            this.checkBox_AllowAudioInBackground.Size = new System.Drawing.Size(126, 17);
+            this.checkBox_AllowAudioInBackground.TabIndex = 71;
+            this.checkBox_AllowAudioInBackground.Text = "Audio In Background";
+            this.checkBox_AllowAudioInBackground.UseVisualStyleBackColor = true;
+            this.checkBox_AllowAudioInBackground.CheckedChanged += new System.EventHandler(this.Save_AllowAudioInBackground);
+            this.checkBox_AllowAudioInBackground.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_OverrideInputVolume
             // 
@@ -4731,9 +4743,9 @@
             this.checkBox_Rocksmith_PerPixelLighting.AutoSize = true;
             this.checkBox_Rocksmith_PerPixelLighting.Location = new System.Drawing.Point(304, 134);
             this.checkBox_Rocksmith_PerPixelLighting.Name = "checkBox_Rocksmith_PerPixelLighting";
-            this.checkBox_Rocksmith_PerPixelLighting.Size = new System.Drawing.Size(125, 17);
+            this.checkBox_Rocksmith_PerPixelLighting.Size = new System.Drawing.Size(107, 17);
             this.checkBox_Rocksmith_PerPixelLighting.TabIndex = 9;
-            this.checkBox_Rocksmith_PerPixelLighting.Text = "Pixel Perfect Lighting";
+            this.checkBox_Rocksmith_PerPixelLighting.Text = "Per-Pixel Lighting";
             this.checkBox_Rocksmith_PerPixelLighting.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_PerPixelLighting.CheckedChanged += new System.EventHandler(this.Rocksmith_PerPixelLighting);
             this.checkBox_Rocksmith_PerPixelLighting.MouseHover += new System.EventHandler(this.ToolTips_Show);
@@ -6135,18 +6147,6 @@
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // checkBox_AllowAudioInBackground
-            // 
-            this.checkBox_AllowAudioInBackground.AutoSize = true;
-            this.checkBox_AllowAudioInBackground.Location = new System.Drawing.Point(11, 334);
-            this.checkBox_AllowAudioInBackground.Name = "checkBox_AllowAudioInBackground";
-            this.checkBox_AllowAudioInBackground.Size = new System.Drawing.Size(126, 17);
-            this.checkBox_AllowAudioInBackground.TabIndex = 71;
-            this.checkBox_AllowAudioInBackground.Text = "Audio In Background";
-            this.checkBox_AllowAudioInBackground.UseVisualStyleBackColor = true;
-            this.checkBox_AllowAudioInBackground.CheckedChanged += new System.EventHandler(this.Save_AllowAudioInBackground);
-            this.checkBox_AllowAudioInBackground.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
