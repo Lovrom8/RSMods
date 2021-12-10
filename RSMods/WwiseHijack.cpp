@@ -423,8 +423,9 @@ namespace WwiseVariables {
 	
 	*/
 
-
+#ifdef _WWISE_LOGS
 namespace WwiseLogging {
+
 	void __stdcall log_PostEvent_Name(char* eventName) {
 		std::cout << "(Wwise) PostEvent: " << eventName << std::endl;
 	}
@@ -451,4 +452,48 @@ namespace WwiseLogging {
 	void Setup_log_PostEvent() {
 		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_PostEventHook, hook_log_PostEvent, 5);
 	}
+
+
+	void __stdcall log_SetRTPCValue(char* rtpcName, float rtpcValue) {
+		if (!strcmp(rtpcName, "Player_Success") ||
+			!strcmp(rtpcName, "Portal_Size") ||
+			!strcmp(rtpcName, "LoftAmb_CamPosition") ||
+			!strcmp(rtpcName, "AmbRadio_OnOff_Return") ||
+			!strcmp(rtpcName, "Average_Song_Difficulty") ||
+			!strcmp(rtpcName, "Lowest_Phrase_Difficulty_Level") ||
+			!strcmp(rtpcName, "PortalClose_TailLP_Return") ||
+			!strcmp(rtpcName, "PortalClose_TailRamping_Return") ||
+			!strcmp(rtpcName, "P1_Streak_Hit_Count") ||
+			!strcmp(rtpcName, "P1_Streak_Miss") ||
+			!strcmp(rtpcName, "P1_Streak_Note_Count") ||
+			!strcmp(rtpcName, "P1_Streak_Chord_Count") ||
+			!strcmp(rtpcName, "P1_Streak_Phrase_Count")
+			)
+			return; // To prevent spamming of the log. If you need to look at these, remove the if-statement.
+
+		std::cout << "(Wwise) SetRTPCValue: " << rtpcName << " to " << rtpcValue << std::endl;
+	}
+
+	void __declspec(naked) hook_log_SetRTPCValue() {
+		__asm {
+			push ESP // Save current state of ESP to the stack.
+			push EAX // Save current state of EAX to the stack.
+
+			push [EBP+0xC] // RTPC Value
+			push [EBP+0x8]	// RTPC Name
+			call log_SetRTPCValue
+
+			pop EAX // Get old EAX
+			pop ESP // Get old ESP
+
+			add ESP, 0x4 // Assembly we removed to place this hook
+			test EAX,EAX // Assembly we removed to place this hook
+			jmp Offsets::ptr_Wwise_Log_SetRTPCValueHookJmpBck // Jump back to the original code.
+		}
+	}
+
+	void Setup_log_SetRTPCValue() {
+		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_SetRTPCValueHook, hook_log_SetRTPCValue, 5);
+	}
 }
+#endif

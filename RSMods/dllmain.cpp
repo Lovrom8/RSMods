@@ -889,9 +889,10 @@ unsigned WINAPI MainThread() {
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	VolumeControl::SetupMicrophones();
 
-	if (WwiseLogging::EnableLogging) { // Only use in a debug environment. Will fill your log with spam!
-		WwiseLogging::Setup_log_PostEvent();
-	}
+#ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
+	WwiseLogging::Setup_log_PostEvent();
+	WwiseLogging::Setup_log_SetRTPCValue();
+#endif
 
 	if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on")
 		VolumeControl::AllowAltTabbingWithAudio();	

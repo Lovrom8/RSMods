@@ -14,6 +14,7 @@ RSMods/RSMods.vcxproj.user
 *.userprefs
 
 # Build results
+[Dd]ebug with Wwise Logging/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

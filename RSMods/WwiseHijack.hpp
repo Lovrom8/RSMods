@@ -2427,9 +2427,12 @@ namespace WwiseVariables {
 
 }
 
+#ifdef _WWISE_LOGS
 namespace WwiseLogging {
-	inline bool EnableLogging = false;
-
 	void hook_log_PostEvent();
 	void Setup_log_PostEvent();
+
+	void hook_log_SetRTPCValue();
+	void Setup_log_SetRTPCValue();
 }
+#endif
