@@ -216,6 +216,9 @@
     <ClCompile Include="CC\Effects\ZoomEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_tables.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -398,9 +401,6 @@
     <ClInclude Include="Mods\Midi.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\Json\json.hpp">
-      <Filter>Main Headers\Json</Filter>
-    </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">
       <Filter>Main Headers\Midi</Filter>
     </ClInclude>
@@ -427,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="Proxy.hpp">
       <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Json\json.hpp">
+      <Filter>Main Headers\Json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

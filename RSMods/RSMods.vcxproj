@@ -29,6 +29,7 @@
     <ClCompile Include="CC\CCEnums.hpp" />
     <ClCompile Include="CC\CCStructs.hpp" />
     <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp" />
+    <ClCompile Include="Lib\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Lib\Midi\RtMidi.cpp" />
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
