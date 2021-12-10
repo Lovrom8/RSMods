@@ -467,7 +467,9 @@ namespace WwiseLogging {
 			!strcmp(rtpcName, "P1_Streak_Miss") ||
 			!strcmp(rtpcName, "P1_Streak_Note_Count") ||
 			!strcmp(rtpcName, "P1_Streak_Chord_Count") ||
-			!strcmp(rtpcName, "P1_Streak_Phrase_Count")
+			!strcmp(rtpcName, "P1_Streak_Phrase_Count") ||
+			!strcmp(rtpcName, "P2_Instrument_Volume") ||
+			!strcmp(rtpcName, "MusicRamping")
 			)
 			return; // To prevent spamming of the log. If you need to look at these, remove the if-statement.
 
