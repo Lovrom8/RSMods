@@ -296,6 +296,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					Settings::ParseSettingUpdate(currMsg);
 			}
 
+			else if (Contains(currMsg, "WwiseEvent")) {
+				auto msgParts = Settings::SplitByWhitespace(currMsg);
+
+				if (msgParts.size() == 2)
+					VoiceOverControl::PlayVoiceOver(msgParts[1]);
+			}
+
 			// **Deprecated** Twitch Integration. Use CrowdControl.
 			else if (Contains(currMsg, "TurboSpeed"))
 				userWantsRRSpeedEnabled = Contains(currMsg, "enable");

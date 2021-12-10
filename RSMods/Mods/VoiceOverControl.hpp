@@ -9,6 +9,7 @@
 
 namespace VoiceOverControl {
 	void PlayVoiceOver(VoiceOver voiceOver);
+	void PlayVoiceOver(std::string voiceOver);
 
 	inline std::vector<VoiceOver> VO_ResultsScreens{
 		VoiceOver("play_VO_RESULTSSCREEN_001_07NARRATOR_DRY_26331", "Adequate Performance"),
