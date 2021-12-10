@@ -345,6 +345,31 @@ namespace RSMods
             ReadSettings.ChangeSelectedVolumeKeyIdentifier
         };
         #endregion
+        #region VoiceOver
+
+        public static Dictionary<string, string> ResultVoiceOverDictionary = new Dictionary<string, string>()
+        {
+            { "Bad Performance", "play_VO_RESULTSSCREEN2_001_15NARRATOR_DRY_26312" },
+            { "Disappointing Performance", "play_VO_RESULTSSCREEN2_001_13NARRATOR_DRY_26310" },
+            { "Subpar Performance", "play_VO_RESULTSSCREEN2_001_17NARRATOR_DRY_26314" },
+            { "Could Be Better", "play_VO_RESULTSSCREEN2_001_22NARRATOR_DRY_26319" },
+            { "Decent Performance", "play_VO_RESULTSSCREEN_001_31NARRATOR_DRY_26288" },
+            { "Alright Performance", "play_VO_RESULTSSCREEN_001_04NARRATOR_DRY_26328" },
+            { "Excellent Performance", "play_VO_RESULTSSCREEN_001_22NARRATOR_DRY_26344" },
+            { "Top Notch Performance", "play_VO_RESULTSSCREEN2_001_24NARRATOR_DRY_26322" },
+            { "Superb Performance", "play_VO_RESULTSSCREEN2_001_30NARRATOR_DRY_26352" },
+            { "Dazzling Performance", "play_VO_RESULTSSCREEN_001_13NARRATOR_DRY_26337" },
+            { "You\'re Gonna Be A Superstar", "play_VO_RESULTSSCREEN_001_39NARRATOR_DRY_26296" },
+            { "Wonderful Performance", "play_VO_RESULTSSCREEN_001_19NARRATOR_DRY_26341" },
+            { "Exceptional Performance", "play_VO_RESULTSSCREEN_001_23NARRATOR_DRY_26345" },
+            { "Amazing Performance", "play_VO_RESULTSSCREEN2_001_29NARRATOR_DRY_26351" },
+            { "Exemplary Performance", "play_VO_RESULTSSCREEN_001_26NARRATOR_DRY_26348" },
+            { "(98%) Masterful Performance", "play_VO_RESULTSSCREEN2_001_27NARRATOR_DRY_26324" },
+            { "(99%) Masterful Performance", "play_VO_RESULTSSCREEN_001_20NARRATOR_DRY_26342" },
+            { "Flawless Performance", "play_VO_RESULTSSCREEN_001_12NARRATOR_DRY_26336" }
+        };
+
+        #endregion
         #region Colors
 
         public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()

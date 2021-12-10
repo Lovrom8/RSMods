@@ -166,6 +166,9 @@ namespace RSMods
             // Is Audio.psarc unpacked?
             Startup_CheckStatusAudioPsarc();
 
+            // Load SoundPacks Result Voice Over list
+            SoundPacks_LoadResultVoiceOverList();
+
             AllowSaving = true;
         }
 
@@ -3840,6 +3843,21 @@ namespace RSMods
         private void SoundPacks_ReplaceMasterfulPerformance_98(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_98);
         private void SoundPacks_ReplaceMasterfulPerformance_99(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_MasterfulPerformance_99);
         private void SoundPacks_ReplaceFlawlessPerformance(object sender, EventArgs e) => SoundPacks_ReplaceSound(soundPackLocationPrefix + soundPackEnglishPrefix + voiceLine_FlawlessPerformance);
+
+
+        private void SoundPacks_LoadResultVoiceOverList()
+        {
+            listBox_Result_VOs.Items.Clear();
+            Dictionaries.ResultVoiceOverDictionary.Keys.ToList().ForEach(key => listBox_Result_VOs.Items.Add(key));
+        }
+
+        private void SoundPacks_PlayResultVoiceOver(object sender, EventArgs e)
+        {
+            if (listBox_Result_VOs.SelectedIndex == -1)
+                return;
+
+            WinMsgUtil.SendMsgToRS($"WwiseEvent {Dictionaries.ResultVoiceOverDictionary[listBox_Result_VOs.SelectedItem.ToString()]}");
+        }
         #endregion
 
         #region Midi

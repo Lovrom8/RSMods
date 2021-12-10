@@ -420,6 +420,8 @@
             this.label_TwitchAuthorized = new System.Windows.Forms.Label();
             this.button_TwitchReAuthorize = new System.Windows.Forms.Button();
             this.tab_SoundPacks = new System.Windows.Forms.TabPage();
+            this.button_PlayResultVoiceOver = new System.Windows.Forms.Button();
+            this.listBox_Result_VOs = new System.Windows.Forms.ListBox();
             this.progressBar_RepackAudioPsarc = new System.Windows.Forms.ProgressBar();
             this.label_SoundPacksBETA = new System.Windows.Forms.Label();
             this.groupBox_SoundPacks = new System.Windows.Forms.GroupBox();
@@ -5405,6 +5407,8 @@
             // tab_SoundPacks
             // 
             this.tab_SoundPacks.BackColor = System.Drawing.Color.Azure;
+            this.tab_SoundPacks.Controls.Add(this.button_PlayResultVoiceOver);
+            this.tab_SoundPacks.Controls.Add(this.listBox_Result_VOs);
             this.tab_SoundPacks.Controls.Add(this.progressBar_RepackAudioPsarc);
             this.tab_SoundPacks.Controls.Add(this.label_SoundPacksBETA);
             this.tab_SoundPacks.Controls.Add(this.groupBox_SoundPacks);
@@ -5417,6 +5421,24 @@
             this.tab_SoundPacks.Size = new System.Drawing.Size(1150, 513);
             this.tab_SoundPacks.TabIndex = 10;
             this.tab_SoundPacks.Text = "Sound Packs";
+            // 
+            // button_PlayResultVoiceOver
+            // 
+            this.button_PlayResultVoiceOver.Location = new System.Drawing.Point(478, 211);
+            this.button_PlayResultVoiceOver.Name = "button_PlayResultVoiceOver";
+            this.button_PlayResultVoiceOver.Size = new System.Drawing.Size(127, 23);
+            this.button_PlayResultVoiceOver.TabIndex = 13;
+            this.button_PlayResultVoiceOver.Text = "Play Result VO";
+            this.button_PlayResultVoiceOver.UseVisualStyleBackColor = true;
+            this.button_PlayResultVoiceOver.Click += new System.EventHandler(this.SoundPacks_PlayResultVoiceOver);
+            // 
+            // listBox_Result_VOs
+            // 
+            this.listBox_Result_VOs.FormattingEnabled = true;
+            this.listBox_Result_VOs.Location = new System.Drawing.Point(246, 87);
+            this.listBox_Result_VOs.Name = "listBox_Result_VOs";
+            this.listBox_Result_VOs.Size = new System.Drawing.Size(226, 147);
+            this.listBox_Result_VOs.TabIndex = 12;
             // 
             // progressBar_RepackAudioPsarc
             // 
@@ -6774,6 +6796,8 @@
         private System.Windows.Forms.Label label_AvailableInputDevices;
         private System.Windows.Forms.ListBox listBox_AvailableInputDevices;
         private System.Windows.Forms.CheckBox checkBox_AllowAudioInBackground;
+        private System.Windows.Forms.Button button_PlayResultVoiceOver;
+        private System.Windows.Forms.ListBox listBox_Result_VOs;
     }
 }
 
