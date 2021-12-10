@@ -116,6 +116,15 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_noteLocationPurpleFourthOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
 	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
 
+	// Wwise Logging
+	uintptr_t ptr_Wwise_Log_PostEventHook = 0x01f5b2d6;
+	uintptr_t ptr_Wwise_Log_PostEventHookJmpBck = 0x01f5b2d6 + 5;
+
+
+	// Audio In Background
+	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.
+	uintptr_t ptr_WindowNotInFocusValue = 0x01f5bfa9; // When the user alt+tabs, the IsWindowInFocus changes to this value.
+
 	// Lua Hijack
 		// Gamebryo Game Engine
 	uintptr_t ptr_luaopen_BehaviorAPI = 0x019a4664; // https://cdn.discordapp.com/attachments/711634485388771439/759602588588179486/screencapture-file-C-Emergent-Gamebryo-LightSpeed-3-2-Source-Documentation-HTML-documentation-htm-20.png

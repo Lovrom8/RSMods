@@ -101,6 +101,14 @@ namespace Offsets {
 	extern std::vector<unsigned int> ptr_currentNoteStreakLASOffsets;
 	extern std::vector<unsigned int> ptr_currentNoteStreakSAOffsets;
 
+	// Wwise Logging
+	extern uintptr_t ptr_Wwise_Log_PostEventHook;
+	extern uintptr_t ptr_Wwise_Log_PostEventHookJmpBck;
+
+	// Audio In Background
+	extern uintptr_t ptr_IsWindowInFocus;
+	extern uintptr_t ptr_WindowNotInFocusValue;
+
 	// Lua Hijack
 		// Gamebryo Game Engine
 	extern uintptr_t ptr_luaopen_BehaviorAPI;

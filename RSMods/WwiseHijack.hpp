@@ -7,6 +7,8 @@
 
 #include "windows.h"
 
+#include "Offsets.hpp"
+
 /*
  Get documentation here: https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=namespace_a_k_1_1_sound_engine.html
 
@@ -2423,4 +2425,11 @@ namespace WwiseVariables {
 	//extern  tRegisterAllPlugins Rocksmith_RegisterAllPlugins;
 	//extern	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks;
 
+}
+
+namespace WwiseLogging {
+	inline bool EnableLogging = false;
+
+	void hook_log_PostEvent();
+	void Setup_log_PostEvent();
 }

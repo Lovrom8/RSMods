@@ -422,3 +422,33 @@ namespace WwiseVariables {
 	std::cout << WwiseVariables::Wwise_Sound_RegisterPlugin((AkPluginType)3, 259, 9, (AkCreatePluginCallback*)0x01fe22ba, (AkCreateParamCallback*)0x01fe1a11) << std::endl; // iZotope Trash Multiband Distortion https://www.audiokinetic.com/library/2015.1.9_5624/?source=SDK&id=i_z_trash_multiband_distortion_f_x_factory_8h_a270360b0053eddb74cafb461763ff2cb.html#a270360b0053eddb74cafb461763ff2cb
 	
 	*/
+
+
+namespace WwiseLogging {
+	void __stdcall log_PostEvent_Name(char* eventName) {
+		std::cout << "(Wwise) PostEvent: " << eventName << std::endl;
+	}
+
+	void __declspec(naked) hook_log_PostEvent() {
+		__asm {
+			push ESI	// Save current state of ESI to the stack.
+			push EAX	// Save current state of EAX to the stack.
+			push ESP	// Save current state of ESP to the stack.
+
+			push[EBP + 0x8]			// Get Wwise event name.
+			call log_PostEvent_Name	// Log the event name
+
+			pop ESP	// Get old ESP
+			pop EAX	// Get old EAX
+			pop ESI // Get old ESI
+
+			mov ESI, EAX  // Assembly we removed to place this hook
+			add ESP, 0x20 // Assembly we removed to place this hook
+			jmp Offsets::ptr_Wwise_Log_PostEventHookJmpBck  // Jump back to the original code.
+		}
+	}
+
+	void Setup_log_PostEvent() {
+		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_PostEventHook, hook_log_PostEvent, 5);
+	}
+}
