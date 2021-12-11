@@ -950,10 +950,7 @@ unsigned WINAPI MainThread() {
 
 			/// If User Is Entering / In Lesson Mode
 
-			if (MemHelpers::IsInStringArray(currentMenu, lessonModes))
-				LessonMode = true;
-			else
-				LessonMode = false;
+			LessonMode = MemHelpers::IsInStringArray(currentMenu, lessonModes);
 
 			/// Always on Mods (If the user specifies them to be on)
 
