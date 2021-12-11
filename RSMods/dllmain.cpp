@@ -919,15 +919,6 @@ unsigned WINAPI MainThread() {
 		if (GameLoaded) {
 			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
 
-			if (MemHelpers::IsMultiplayer()) {
-				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0xE9) // Two RTC Bypass is enabled, but we need to disable it as we are going into multiplayer.
-					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_original, 6);
-			}
-			else {
-				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0x8B) // Two RTC Bypass is disabled, but we need to re-enable it as we are back in singleplayer.
-					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
-			}
-
 			// Override the default microphone volume.
 			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && VolumeControl::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
 				VolumeControl::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
