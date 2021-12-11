@@ -92,6 +92,11 @@ namespace Offsets {
 	extern uintptr_t ptr_selectedProfileName;
 	extern std::vector<unsigned int> ptr_selectedProfileNameOffsets;
 
+	// Two RTC Bypass
+	extern uintptr_t ptr_twoRTCBypass;
+	extern const char* ptr_twoRTCBypass_patch;
+	extern const char* ptr_twoRTCBypass_original;
+
 	// Colorblind Mode
 	extern uintptr_t ptr_colorBlindMode;
 	extern std::vector<unsigned int> ptr_colorBlindModeOffsets;

@@ -895,6 +895,7 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	VolumeControl::SetupMicrophones();
+	MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 0x1F);
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
 	WwiseLogging::Setup_log_PostEvent();
@@ -917,6 +918,16 @@ unsigned WINAPI MainThread() {
 		// If Game Is Loaded (No need to run these while the game is loading.)
 		if (GameLoaded) {
 			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
+
+			if (currentMenu == "ProfileSelect") {
+				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0x90) // Two RTC Bypass is enabled, but we need to disable it as we are going into multiplayer.
+					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_original, 0x1F);
+			}
+
+			if (currentMenu == "MainMenu") {
+				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0x8B) // Two RTC Bypass is disabled, but we need to re-enable it as we are back in singleplayer.
+					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 0x1F);
+			}
 
 			// Override the default microphone volume.
 			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && VolumeControl::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))

@@ -98,6 +98,11 @@ namespace Offsets {
 	uintptr_t ptr_selectedProfileName = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_selectedProfileNameOffsets{ 0x18, 0x3C, 0x28, 0x1FC };
 
+	// Two RTC Bypass
+	uintptr_t ptr_twoRTCBypass = 0x017b9518;
+	const char* ptr_twoRTCBypass_patch = "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90";
+	const char* ptr_twoRTCBypass_original = "\x8B\xB5\x8C\xFF\xFF\xFF\xE8\x37\xBE\xE0\xFF\x84\xC0\x74\x6B\xBA\xE4\xD1\x1C\x01\x8D\xB3\x4C\x01\x00\x00\xE8\x27\x4B\xBE\xFF";
+
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
