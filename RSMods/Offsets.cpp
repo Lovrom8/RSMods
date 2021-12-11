@@ -76,6 +76,10 @@ namespace Offsets {
 	uint32_t d3dDevice_SearchLen = 0x128000;
 	char* d3dDevice_Mask = "xx????xx????xx";
 
+	// Multiplayer
+	uintptr_t ptr_multiplayer = 0x00F5C4FC;
+	std::vector<unsigned int> ptr_multiplayerOffsets {0x24, 0x28, 0x14, 0x90, 0xC};
+
 	void Initialize();
 
 	// Current Menu

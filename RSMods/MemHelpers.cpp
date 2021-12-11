@@ -641,6 +641,14 @@ void MemHelpers::AutomatedOpenRRSpeedAbuse() {
 }
 
 /// <summary>
+/// Get the status of if the user is in multiplayer
+/// </summary>
+/// <returns>Is the user in multiplayer</returns>
+bool MemHelpers::IsMultiplayer() {
+	return *(int*)MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_multiplayer, Offsets::ptr_multiplayerOffsets); // No need to null check because if it's null, then we assume it's singleplayer (which is zero).
+}
+
+/// <summary>
 /// Get the current selected profile name. **Only works on Profile Selection screen**
 /// </summary>
 /// <returns>Profile Name</returns>

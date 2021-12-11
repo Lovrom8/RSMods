@@ -919,12 +919,11 @@ unsigned WINAPI MainThread() {
 		if (GameLoaded) {
 			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
 
-			if (currentMenu == "ProfileSelect") {
+			if (MemHelpers::IsMultiplayer()) {
 				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0x90) // Two RTC Bypass is enabled, but we need to disable it as we are going into multiplayer.
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_original, 0x1F);
 			}
-
-			if (currentMenu == "MainMenu") {
+			else {
 				if (*(char*)Offsets::ptr_twoRTCBypass == (char)0x8B) // Two RTC Bypass is disabled, but we need to re-enable it as we are back in singleplayer.
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 0x1F);
 			}

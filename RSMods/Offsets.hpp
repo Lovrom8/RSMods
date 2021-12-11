@@ -71,6 +71,10 @@ namespace Offsets {
 	extern uint32_t d3dDevice_SearchLen;
 	extern char* d3dDevice_Mask;
 
+	// Multiplayer
+	extern uintptr_t ptr_multiplayer;
+	extern std::vector<unsigned int> ptr_multiplayerOffsets;
+
 	void Initialize();
 
 	// Current Menu
