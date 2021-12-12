@@ -895,6 +895,7 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	VolumeControl::SetupMicrophones();
+	MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
 	WwiseLogging::Setup_log_PostEvent();
