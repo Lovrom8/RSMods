@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_BypassTwoRTCMessageBox = new System.Windows.Forms.CheckBox();
             this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
             this.checkBox_OverrideInputVolume = new System.Windows.Forms.CheckBox();
             this.checkBox_RemoveSongPreviews = new System.Windows.Forms.CheckBox();
@@ -1007,6 +1008,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_BypassTwoRTCMessageBox);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowAudioInBackground);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_OverrideInputVolume);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveSongPreviews);
@@ -1042,6 +1044,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_BypassTwoRTCMessageBox
+            // 
+            this.checkBox_BypassTwoRTCMessageBox.AutoSize = true;
+            this.checkBox_BypassTwoRTCMessageBox.Location = new System.Drawing.Point(131, 334);
+            this.checkBox_BypassTwoRTCMessageBox.Name = "checkBox_BypassTwoRTCMessageBox";
+            this.checkBox_BypassTwoRTCMessageBox.Size = new System.Drawing.Size(140, 17);
+            this.checkBox_BypassTwoRTCMessageBox.TabIndex = 72;
+            this.checkBox_BypassTwoRTCMessageBox.Text = "Bypass 2 RTC Message";
+            this.checkBox_BypassTwoRTCMessageBox.UseVisualStyleBackColor = true;
+            this.checkBox_BypassTwoRTCMessageBox.CheckedChanged += new System.EventHandler(this.Save_BypassTwoRTCMessageBox);
+            this.checkBox_BypassTwoRTCMessageBox.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_AllowAudioInBackground
             // 
@@ -6798,6 +6812,7 @@
         private System.Windows.Forms.CheckBox checkBox_AllowAudioInBackground;
         private System.Windows.Forms.Button button_PlayResultVoiceOver;
         private System.Windows.Forms.ListBox listBox_Result_VOs;
+        private System.Windows.Forms.CheckBox checkBox_BypassTwoRTCMessageBox;
     }
 }
 

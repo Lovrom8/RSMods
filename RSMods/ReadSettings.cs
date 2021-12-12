@@ -25,7 +25,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox,
 
 
                              // String Colors
@@ -125,6 +125,7 @@ namespace RSMods
             OverrideInputVolumeEnabledIdentifier        = "OverrideInputVolumeEnabled = ",
             OverrideInputVolumeDeviceIdentifier         = "OverrideInputVolumeDevice = ",
             AllowAudioInBackgroundIdentifier            = "AllowAudioInBackground = ",
+            BypassTwoRTCMessageBoxIdentifier            = "BypassTwoRTCMessageBox = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -404,6 +405,8 @@ namespace RSMods
                     return FillSettingVariable(OverrideInputVolumeDeviceIdentifier, SettingType.STRING, currentLine, out OverrideInputVolumeDevice);
                 if (IdentifierIsFound(currentLine, AllowAudioInBackgroundIdentifier, identifierToGrab))
                     return FillSettingVariable(AllowAudioInBackgroundIdentifier, SettingType.ON_OFF, currentLine, out AllowAudioInBackground);
+                if (IdentifierIsFound(currentLine, BypassTwoRTCMessageBoxIdentifier, identifierToGrab))
+                    return FillSettingVariable(BypassTwoRTCMessageBoxIdentifier, SettingType.ON_OFF, currentLine, out BypassTwoRTCMessageBox);
 
                 #endregion
                 #region String Colors
