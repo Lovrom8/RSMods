@@ -626,7 +626,7 @@
             // checkBox_SongTimer
             // 
             this.checkBox_SongTimer.AutoSize = true;
-            this.checkBox_SongTimer.Location = new System.Drawing.Point(131, 38);
+            this.checkBox_SongTimer.Location = new System.Drawing.Point(144, 38);
             this.checkBox_SongTimer.Name = "checkBox_SongTimer";
             this.checkBox_SongTimer.Size = new System.Drawing.Size(110, 17);
             this.checkBox_SongTimer.TabIndex = 10;
@@ -705,7 +705,7 @@
             // checkBox_ExtendedRange
             // 
             this.checkBox_ExtendedRange.AutoSize = true;
-            this.checkBox_ExtendedRange.Location = new System.Drawing.Point(131, 107);
+            this.checkBox_ExtendedRange.Location = new System.Drawing.Point(144, 107);
             this.checkBox_ExtendedRange.Name = "checkBox_ExtendedRange";
             this.checkBox_ExtendedRange.Size = new System.Drawing.Size(146, 17);
             this.checkBox_ExtendedRange.TabIndex = 27;
@@ -775,7 +775,7 @@
             // checkBox_RemoveSkyline
             // 
             this.checkBox_RemoveSkyline.AutoSize = true;
-            this.checkBox_RemoveSkyline.Location = new System.Drawing.Point(131, 153);
+            this.checkBox_RemoveSkyline.Location = new System.Drawing.Point(144, 153);
             this.checkBox_RemoveSkyline.Name = "checkBox_RemoveSkyline";
             this.checkBox_RemoveSkyline.Size = new System.Drawing.Size(103, 17);
             this.checkBox_RemoveSkyline.TabIndex = 36;
@@ -801,7 +801,7 @@
             // checkBox_AutoLoadProfile
             // 
             this.checkBox_AutoLoadProfile.AutoSize = true;
-            this.checkBox_AutoLoadProfile.Location = new System.Drawing.Point(131, 176);
+            this.checkBox_AutoLoadProfile.Location = new System.Drawing.Point(144, 176);
             this.checkBox_AutoLoadProfile.Name = "checkBox_AutoLoadProfile";
             this.checkBox_AutoLoadProfile.Size = new System.Drawing.Size(151, 17);
             this.checkBox_AutoLoadProfile.TabIndex = 38;
@@ -1040,7 +1040,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(297, 357);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 357);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -1048,11 +1048,11 @@
             // checkBox_BypassTwoRTCMessageBox
             // 
             this.checkBox_BypassTwoRTCMessageBox.AutoSize = true;
-            this.checkBox_BypassTwoRTCMessageBox.Location = new System.Drawing.Point(131, 334);
+            this.checkBox_BypassTwoRTCMessageBox.Location = new System.Drawing.Point(144, 334);
             this.checkBox_BypassTwoRTCMessageBox.Name = "checkBox_BypassTwoRTCMessageBox";
-            this.checkBox_BypassTwoRTCMessageBox.Size = new System.Drawing.Size(140, 17);
+            this.checkBox_BypassTwoRTCMessageBox.Size = new System.Drawing.Size(164, 17);
             this.checkBox_BypassTwoRTCMessageBox.TabIndex = 72;
-            this.checkBox_BypassTwoRTCMessageBox.Text = "Bypass 2 RTC Message";
+            this.checkBox_BypassTwoRTCMessageBox.Text = "Bypass 2+ RTC MessageBox";
             this.checkBox_BypassTwoRTCMessageBox.UseVisualStyleBackColor = true;
             this.checkBox_BypassTwoRTCMessageBox.CheckedChanged += new System.EventHandler(this.Save_BypassTwoRTCMessageBox);
             this.checkBox_BypassTwoRTCMessageBox.MouseHover += new System.EventHandler(this.ToolTips_Show);
@@ -1072,7 +1072,7 @@
             // checkBox_OverrideInputVolume
             // 
             this.checkBox_OverrideInputVolume.AutoSize = true;
-            this.checkBox_OverrideInputVolume.Location = new System.Drawing.Point(131, 312);
+            this.checkBox_OverrideInputVolume.Location = new System.Drawing.Point(144, 311);
             this.checkBox_OverrideInputVolume.Name = "checkBox_OverrideInputVolume";
             this.checkBox_OverrideInputVolume.Size = new System.Drawing.Size(131, 17);
             this.checkBox_OverrideInputVolume.TabIndex = 70;
@@ -1096,7 +1096,7 @@
             // checkBox_ModsLog
             // 
             this.checkBox_ModsLog.AutoSize = true;
-            this.checkBox_ModsLog.Location = new System.Drawing.Point(131, 289);
+            this.checkBox_ModsLog.Location = new System.Drawing.Point(144, 288);
             this.checkBox_ModsLog.Name = "checkBox_ModsLog";
             this.checkBox_ModsLog.Size = new System.Drawing.Size(119, 17);
             this.checkBox_ModsLog.TabIndex = 68;
@@ -1108,7 +1108,7 @@
             // checkBox_ER_SeparateNoteColors
             // 
             this.checkBox_ER_SeparateNoteColors.AutoSize = true;
-            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(131, 243);
+            this.checkBox_ER_SeparateNoteColors.Location = new System.Drawing.Point(144, 243);
             this.checkBox_ER_SeparateNoteColors.Name = "checkBox_ER_SeparateNoteColors";
             this.checkBox_ER_SeparateNoteColors.Size = new System.Drawing.Size(127, 17);
             this.checkBox_ER_SeparateNoteColors.TabIndex = 67;
@@ -1119,7 +1119,7 @@
             // checkBox_SecondaryMonitor
             // 
             this.checkBox_SecondaryMonitor.AutoSize = true;
-            this.checkBox_SecondaryMonitor.Location = new System.Drawing.Point(131, 266);
+            this.checkBox_SecondaryMonitor.Location = new System.Drawing.Point(144, 266);
             this.checkBox_SecondaryMonitor.Name = "checkBox_SecondaryMonitor";
             this.checkBox_SecondaryMonitor.Size = new System.Drawing.Size(157, 17);
             this.checkBox_SecondaryMonitor.TabIndex = 55;
@@ -1143,7 +1143,7 @@
             // checkBox_RainbowNotes
             // 
             this.checkBox_RainbowNotes.AutoSize = true;
-            this.checkBox_RainbowNotes.Location = new System.Drawing.Point(131, 61);
+            this.checkBox_RainbowNotes.Location = new System.Drawing.Point(144, 61);
             this.checkBox_RainbowNotes.Name = "checkBox_RainbowNotes";
             this.checkBox_RainbowNotes.Size = new System.Drawing.Size(99, 17);
             this.checkBox_RainbowNotes.TabIndex = 53;
@@ -1191,7 +1191,7 @@
             // checkBox_RiffRepeaterSpeedAboveOneHundred
             // 
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.AutoSize = true;
-            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(131, 220);
+            this.checkBox_RiffRepeaterSpeedAboveOneHundred.Location = new System.Drawing.Point(144, 220);
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Name = "checkBox_RiffRepeaterSpeedAboveOneHundred";
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.Size = new System.Drawing.Size(159, 17);
             this.checkBox_RiffRepeaterSpeedAboveOneHundred.TabIndex = 49;
@@ -1215,7 +1215,7 @@
             // checkBox_ControlVolume
             // 
             this.checkBox_ControlVolume.AutoSize = true;
-            this.checkBox_ControlVolume.Location = new System.Drawing.Point(131, 198);
+            this.checkBox_ControlVolume.Location = new System.Drawing.Point(144, 197);
             this.checkBox_ControlVolume.Name = "checkBox_ControlVolume";
             this.checkBox_ControlVolume.Size = new System.Drawing.Size(128, 17);
             this.checkBox_ControlVolume.TabIndex = 47;
@@ -1241,7 +1241,7 @@
             // checkBox_RemoveLyrics
             // 
             this.checkBox_RemoveLyrics.AutoSize = true;
-            this.checkBox_RemoveLyrics.Location = new System.Drawing.Point(131, 15);
+            this.checkBox_RemoveLyrics.Location = new System.Drawing.Point(144, 15);
             this.checkBox_RemoveLyrics.Name = "checkBox_RemoveLyrics";
             this.checkBox_RemoveLyrics.Size = new System.Drawing.Size(96, 17);
             this.checkBox_RemoveLyrics.TabIndex = 45;
@@ -1254,7 +1254,7 @@
             // checkBox_CustomColors
             // 
             this.checkBox_CustomColors.AutoSize = true;
-            this.checkBox_CustomColors.Location = new System.Drawing.Point(131, 130);
+            this.checkBox_CustomColors.Location = new System.Drawing.Point(144, 130);
             this.checkBox_CustomColors.Name = "checkBox_CustomColors";
             this.checkBox_CustomColors.Size = new System.Drawing.Size(123, 17);
             this.checkBox_CustomColors.TabIndex = 44;
@@ -1267,7 +1267,7 @@
             // checkBox_RemoveLaneMarkers
             // 
             this.checkBox_RemoveLaneMarkers.AutoSize = true;
-            this.checkBox_RemoveLaneMarkers.Location = new System.Drawing.Point(131, 84);
+            this.checkBox_RemoveLaneMarkers.Location = new System.Drawing.Point(144, 84);
             this.checkBox_RemoveLaneMarkers.Name = "checkBox_RemoveLaneMarkers";
             this.checkBox_RemoveLaneMarkers.Size = new System.Drawing.Size(134, 17);
             this.checkBox_RemoveLaneMarkers.TabIndex = 43;
