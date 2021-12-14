@@ -426,8 +426,8 @@ namespace WwiseVariables {
 #ifdef _WWISE_LOGS
 namespace WwiseLogging {
 
-	void __stdcall log_PostEvent_Name(char* eventName) {
-		std::cout << "(Wwise) PostEvent: " << eventName << std::endl;
+	void __stdcall log_PostEvent_Name(char* eventName, int gameObject) {
+		std::cout << "(Wwise) PostEvent: " << eventName << " on game object 0x" << std::hex << gameObject << std::endl;
 	}
 
 	void __declspec(naked) hook_log_PostEvent() {
@@ -436,7 +436,8 @@ namespace WwiseLogging {
 			push EAX	// Save current state of EAX to the stack.
 			push ESP	// Save current state of ESP to the stack.
 
-			push[EBP + 0x8]			// Get Wwise event name.
+			push[EBP + 0xC]			// Wwise Object
+			push[EBP + 0x8]			// Wwise Event name.
 			call log_PostEvent_Name	// Log the event name
 
 			pop ESP	// Get old ESP
@@ -454,7 +455,7 @@ namespace WwiseLogging {
 	}
 
 
-	void __stdcall log_SetRTPCValue(char* rtpcName, float rtpcValue) {
+	void __stdcall log_SetRTPCValue(char* rtpcName, float rtpcValue, int gameObject) {
 		if (!strcmp(rtpcName, "Player_Success") ||
 			!strcmp(rtpcName, "Portal_Size") ||
 			!strcmp(rtpcName, "LoftAmb_CamPosition") ||
@@ -473,7 +474,7 @@ namespace WwiseLogging {
 			)
 			return; // To prevent spamming of the log. If you need to look at these, remove the if-statement.
 
-		std::cout << "(Wwise) SetRTPCValue: " << rtpcName << " to " << rtpcValue << std::endl;
+		std::cout << "(Wwise) SetRTPCValue: " << rtpcName << " to " << rtpcValue << " on game object 0x" << std::hex << gameObject << std::endl;
 	}
 
 	void __declspec(naked) hook_log_SetRTPCValue() {
@@ -481,7 +482,8 @@ namespace WwiseLogging {
 			push ESP // Save current state of ESP to the stack.
 			push EAX // Save current state of EAX to the stack.
 
-			push [EBP+0xC] // RTPC Value
+			push [EBP+0x10] // RTPC Object
+			push [EBP+0xC]	// RTPC Value
 			push [EBP+0x8]	// RTPC Name
 			call log_SetRTPCValue
 
