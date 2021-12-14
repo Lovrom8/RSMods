@@ -565,7 +565,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) { // Show Selected Volume
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
-			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), 0xffffffff, &volume, &type);
+			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
 
 			if (currentVolumeIndex != 0)
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);

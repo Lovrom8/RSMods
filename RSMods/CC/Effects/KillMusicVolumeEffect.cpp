@@ -14,7 +14,7 @@ namespace CrowdControl::Effects {
 	/// <summary>
 	/// We can individually set volumes of the WWise objects the game uses
 	/// The current volume is read by using Wwise_Sound_Query_GetRTPCValue_Char
-	/// New volume is set using Wwise_Sound_Query_SetRTPCValue_Char, the game calls it with both 0xffffffff and 0x00001234 as object IDs 
+	/// New volume is set using Wwise_Sound_Query_SetRTPCValue_Char, the game calls it with both AK_INVALID_GAME_OBJECT and 0x1234 as object IDs 
 	/// </summary>
 	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult KillMusicVolumeEffect::Start(Request request)
@@ -27,10 +27,10 @@ namespace CrowdControl::Effects {
 		running = true;
 
 		RTPCValue_type type = RTPCValue_GameObject; // Save old volume
-		WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char("Mixer_Music", 0xffffffff, &oldVolume, &type);
+		WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char("Mixer_Music", AK_INVALID_GAME_OBJECT, &oldVolume, &type);
 
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, 0xffffffff, 2000, AkCurveInterpolation_Linear);
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, 0x00001234, 2000, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, AK_INVALID_GAME_OBJECT, 2000, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", 0.0f, 0x1234, 2000, AkCurveInterpolation_Linear);
 
 		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -48,8 +48,8 @@ namespace CrowdControl::Effects {
 			// Start fadeout before effect actually stops
 			if (duration < std::chrono::milliseconds(2000) && !ending) {
 				// Restore volume
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0xffffffff, 2000, AkCurveInterpolation_Linear);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x00001234, 2000, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, AK_INVALID_GAME_OBJECT, 2000, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x1234, 2000, AkCurveInterpolation_Linear);
 				ending = true;
 			}
 
@@ -66,8 +66,8 @@ namespace CrowdControl::Effects {
 		std::cout << "KillMusicVolumeEffect::Stop()" << std::endl;
 
 		// Make sure volume was set to original value by setting it immediately effective
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x00001234, 0, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+		WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Mixer_Music", oldVolume, 0x1234, 0, AkCurveInterpolation_Linear);
 
 		running = false;
 		ending = false;

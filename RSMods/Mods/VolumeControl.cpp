@@ -14,7 +14,7 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 		return;
 	}
 
-	WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerToIncrease.c_str(), 0xffffffff, &volume, &type); // Fill Volume Variable With Current Volume
+	WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerToIncrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); // Fill Volume Variable With Current Volume
 
 	if (volume <= (100.0f - amountToIncrease))
 		volume += amountToIncrease;
@@ -22,8 +22,8 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 		volume = 100.0f; // Incase the volume is within the amountToIncrease we can't throw it over 100.
 	
 	// Set Volume
-	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToIncrease.c_str(), (float)volume, 0x1234, 0, AkCurveInterpolation_Linear);
 
 	std::cout << "Increase volume of " << mixerToIncrease << " by " << amountToIncrease << " with a new volume of " << volume << std::endl;
 }
@@ -42,7 +42,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 		return;
 	}
 
-	WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerToDecrease.c_str(), 0xffffffff, &volume, &type); // Fill Volume Variable With Current Volume
+	WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerToDecrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); // Fill Volume Variable With Current Volume
 
 	if (volume >= (0.0f + amountToDecrease))
 		volume -= amountToDecrease;
@@ -50,8 +50,8 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 		volume = 0.0f; // Incase the volume is within the amountToDecrease we can't throw it below 0.
 
 	// Set Volume
-	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, 0xffffffff, 0, AkCurveInterpolation_Linear);
-	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, 0x00001234, 0, AkCurveInterpolation_Linear);
+	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+	WwiseVariables::Wwise_Sound_SetRTPCValue_Char(mixerToDecrease.c_str(), (float)volume, 0x1234, 0, AkCurveInterpolation_Linear);
 	
 	std::cout << "Decrease volume of " << mixerToDecrease << " by " << amountToDecrease << " with a new volume of " << volume << std::endl;
 }
