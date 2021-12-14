@@ -565,10 +565,12 @@ namespace RSMods
             {
                 checkBox_useMidiAutoTuning.Checked = true;
                 groupBox_MidiAutoTuneDevice.Visible = true;
-                label_SelectedMidiDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+                label_SelectedMidiOutDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
                 groupBox_MidiAutoTuningOffset.Visible = true;
                 listBox_MidiAutoTuningOffset.SelectedIndex = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.MidiTuningOffsetIdentifier), 0) + 3;
                 groupBox_MidiAutoTuningWhen.Visible = true;
+                groupBox_MidiInDevice.Visible = true;
+                label_SelectedMidiInDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
 
                 if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
                 {
@@ -2156,10 +2158,19 @@ namespace RSMods
         }
         private void Save_AutoTuneDevice(object sender, EventArgs e)
         {
-            if (listBox_ListMidiDevices.SelectedItem != null)
+            if (listBox_ListMidiOutDevices.SelectedItem != null)
             {
-                SaveSettings_Save(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiDevices.SelectedItem.ToString());
-                label_SelectedMidiDevice.Text = "Midi Device: " + listBox_ListMidiDevices.SelectedItem.ToString();
+                SaveSettings_Save(ReadSettings.MidiAutoTuningDeviceIdentifier, listBox_ListMidiOutDevices.SelectedItem.ToString());
+                label_SelectedMidiOutDevice.Text = "Midi Device: " + listBox_ListMidiOutDevices.SelectedItem.ToString();
+            }
+        }
+
+        private void Save_MidiInDevice(object sender, EventArgs e)
+        {
+            if (listBox_ListMidiInDevices.SelectedItem != null)
+            {
+                SaveSettings_Save(ReadSettings.MidiInDeviceIdentifier, listBox_ListMidiInDevices.SelectedItem.ToString());
+                label_SelectedMidiInDevice.Text = "Midi Device: " + listBox_ListMidiInDevices.SelectedItem.ToString();
             }
         }
 
@@ -3865,19 +3876,31 @@ namespace RSMods
 
         private void Midi_LoadDevices()
         {
-            this.listBox_ListMidiDevices.Items.Clear();
+            this.listBox_ListMidiOutDevices.Items.Clear();
+            this.listBox_ListMidiInDevices.Items.Clear();
 
             uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
+            uint numberOfMidiInDevices = Midi.midiInGetNumDevs();
 
             for (uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
             {
                 Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS { };
                 Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
-                this.listBox_ListMidiDevices.Items.Add(temp.szPname);
+                this.listBox_ListMidiOutDevices.Items.Add(temp.szPname);
+            }
+
+            for (uint deviceNumber = 0; deviceNumber < numberOfMidiInDevices; deviceNumber++)
+            {
+                Midi.MIDIINCAPS temp = new Midi.MIDIINCAPS { };
+                Midi.midiInGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIINCAPS)));
+                this.listBox_ListMidiInDevices.Items.Add(temp.szPname);
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier) != "")
-                listBox_ListMidiDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+                listBox_ListMidiOutDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningDeviceIdentifier);
+
+            if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
+                listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
 
         private void Save_BypassTwoRTCMessageBox(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.BypassTwoRTCMessageBoxIdentifier, checkBox_BypassTwoRTCMessageBox.Checked.ToString().ToLower());
@@ -3887,27 +3910,27 @@ namespace RSMods
     {
         public enum MMRESULT : uint
         {
-            MMSYSERR_NOERROR = 0,
-            MMSYSERR_ERROR = 1,
-            MMSYSERR_BADDEVICEID = 2,
-            MMSYSERR_NOTENABLED = 3,
-            MMSYSERR_ALLOCATED = 4,
-            MMSYSERR_INVALHANDLE = 5,
-            MMSYSERR_NODRIVER = 6,
-            MMSYSERR_NOMEM = 7,
-            MMSYSERR_NOTSUPPORTED = 8,
-            MMSYSERR_BADERRNUM = 9,
-            MMSYSERR_INVALFLAG = 10,
-            MMSYSERR_INVALPARAM = 11,
-            MMSYSERR_HANDLEBUSY = 12,
-            MMSYSERR_INVALIDALIAS = 13,
-            MMSYSERR_BADDB = 14,
-            MMSYSERR_KEYNOTFOUND = 15,
-            MMSYSERR_READERROR = 16,
-            MMSYSERR_WRITEERROR = 17,
-            MMSYSERR_DELETEERROR = 18,
-            MMSYSERR_VALNOTFOUND = 19,
-            MMSYSERR_NODRIVERCB = 20,
+            MMSYSERR_NOERROR,
+            MMSYSERR_ERROR,
+            MMSYSERR_BADDEVICEID,
+            MMSYSERR_NOTENABLED,
+            MMSYSERR_ALLOCATED,
+            MMSYSERR_INVALHANDLE,
+            MMSYSERR_NODRIVER,
+            MMSYSERR_NOMEM,
+            MMSYSERR_NOTSUPPORTED,
+            MMSYSERR_BADERRNUM,
+            MMSYSERR_INVALFLAG,
+            MMSYSERR_INVALPARAM,
+            MMSYSERR_HANDLEBUSY,
+            MMSYSERR_INVALIDALIAS,
+            MMSYSERR_BADDB,
+            MMSYSERR_KEYNOTFOUND,
+            MMSYSERR_READERROR,
+            MMSYSERR_WRITEERROR,
+            MMSYSERR_DELETEERROR,
+            MMSYSERR_VALNOTFOUND,
+            MMSYSERR_NODRIVERCB,
             WAVERR_BADFORMAT = 32,
             WAVERR_STILLPLAYING = 33,
             WAVERR_UNPREPARED = 34
@@ -3928,13 +3951,28 @@ namespace RSMods
             public uint dwSupport;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIDIINCAPS
+        {
+            public ushort wMid;
+            public ushort wPid;
+            public uint vDriverVersion;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string szPname;
+            public uint dwSupport;
+        }
+
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern MMRESULT midiOutGetDevCaps(uint uDeviceID, ref MIDIOUTCAPS lpMidiOutCaps, uint cbMidiOutCaps);
 
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiOutGetNumDevs();
 
-        
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern MMRESULT midiInGetDevCaps(uint uDeviceID, ref MIDIINCAPS pmic, uint cbmic);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiInGetNumDevs();
     }
 #endregion
 }

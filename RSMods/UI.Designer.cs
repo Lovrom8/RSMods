@@ -243,6 +243,9 @@
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_AutoTuning = new System.Windows.Forms.TabPage();
+            this.groupBox_MidiInDevice = new System.Windows.Forms.GroupBox();
+            this.label_SelectedMidiInDevice = new System.Windows.Forms.Label();
+            this.listBox_ListMidiInDevices = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuningWhen = new System.Windows.Forms.GroupBox();
             this.radio_AutoTuningWhenTuner = new System.Windows.Forms.RadioButton();
             this.radio_AutoTuningWhenManual = new System.Windows.Forms.RadioButton();
@@ -255,8 +258,8 @@
             this.radio_WhammyBass = new System.Windows.Forms.RadioButton();
             this.radio_WhammyDT = new System.Windows.Forms.RadioButton();
             this.label_MidiWhatTuningPedalDoYouUse = new System.Windows.Forms.Label();
-            this.label_SelectedMidiDevice = new System.Windows.Forms.Label();
-            this.listBox_ListMidiDevices = new System.Windows.Forms.ListBox();
+            this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
+            this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
             this.groupBox_OverrideInputVolume = new System.Windows.Forms.GroupBox();
             this.nUpDown_OverrideInputVolume = new System.Windows.Forms.NumericUpDown();
@@ -532,6 +535,7 @@
             this.tabPage_ModSettings_Automation.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.tabPage_ModSettings_AutoTuning.SuspendLayout();
+            this.groupBox_MidiInDevice.SuspendLayout();
             this.groupBox_MidiAutoTuningWhen.SuspendLayout();
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
@@ -3223,6 +3227,7 @@
             // tabPage_ModSettings_AutoTuning
             // 
             this.tabPage_ModSettings_AutoTuning.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiInDevice);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningWhen);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningOffset);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuneDevice);
@@ -3231,6 +3236,36 @@
             this.tabPage_ModSettings_AutoTuning.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_AutoTuning.TabIndex = 4;
             this.tabPage_ModSettings_AutoTuning.Text = "Auto Tuning";
+            // 
+            // groupBox_MidiInDevice
+            // 
+            this.groupBox_MidiInDevice.Controls.Add(this.label_SelectedMidiInDevice);
+            this.groupBox_MidiInDevice.Controls.Add(this.listBox_ListMidiInDevices);
+            this.groupBox_MidiInDevice.Location = new System.Drawing.Point(434, 276);
+            this.groupBox_MidiInDevice.Name = "groupBox_MidiInDevice";
+            this.groupBox_MidiInDevice.Size = new System.Drawing.Size(343, 147);
+            this.groupBox_MidiInDevice.TabIndex = 100005;
+            this.groupBox_MidiInDevice.TabStop = false;
+            this.groupBox_MidiInDevice.Text = "Midi In Device";
+            this.groupBox_MidiInDevice.Visible = false;
+            // 
+            // label_SelectedMidiInDevice
+            // 
+            this.label_SelectedMidiInDevice.AutoSize = true;
+            this.label_SelectedMidiInDevice.Location = new System.Drawing.Point(6, 93);
+            this.label_SelectedMidiInDevice.Name = "label_SelectedMidiInDevice";
+            this.label_SelectedMidiInDevice.Size = new System.Drawing.Size(69, 13);
+            this.label_SelectedMidiInDevice.TabIndex = 1;
+            this.label_SelectedMidiInDevice.Text = "Midi Device: ";
+            // 
+            // listBox_ListMidiInDevices
+            // 
+            this.listBox_ListMidiInDevices.FormattingEnabled = true;
+            this.listBox_ListMidiInDevices.Location = new System.Drawing.Point(7, 20);
+            this.listBox_ListMidiInDevices.Name = "listBox_ListMidiInDevices";
+            this.listBox_ListMidiInDevices.Size = new System.Drawing.Size(330, 56);
+            this.listBox_ListMidiInDevices.TabIndex = 0;
+            this.listBox_ListMidiInDevices.SelectedIndexChanged += new System.EventHandler(this.Save_MidiInDevice);
             // 
             // groupBox_MidiAutoTuningWhen
             // 
@@ -3316,8 +3351,8 @@
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyBass);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.radio_WhammyDT);
             this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_MidiWhatTuningPedalDoYouUse);
-            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiDevice);
-            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiDevices);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.label_SelectedMidiOutDevice);
+            this.groupBox_MidiAutoTuneDevice.Controls.Add(this.listBox_ListMidiOutDevices);
             this.groupBox_MidiAutoTuneDevice.Location = new System.Drawing.Point(16, 16);
             this.groupBox_MidiAutoTuneDevice.Name = "groupBox_MidiAutoTuneDevice";
             this.groupBox_MidiAutoTuneDevice.Size = new System.Drawing.Size(315, 222);
@@ -3397,23 +3432,23 @@
             this.label_MidiWhatTuningPedalDoYouUse.TabIndex = 2;
             this.label_MidiWhatTuningPedalDoYouUse.Text = "What Tuning Pedal Do You Use?";
             // 
-            // label_SelectedMidiDevice
+            // label_SelectedMidiOutDevice
             // 
-            this.label_SelectedMidiDevice.AutoSize = true;
-            this.label_SelectedMidiDevice.Location = new System.Drawing.Point(7, 83);
-            this.label_SelectedMidiDevice.Name = "label_SelectedMidiDevice";
-            this.label_SelectedMidiDevice.Size = new System.Drawing.Size(69, 13);
-            this.label_SelectedMidiDevice.TabIndex = 1;
-            this.label_SelectedMidiDevice.Text = "Midi Device: ";
+            this.label_SelectedMidiOutDevice.AutoSize = true;
+            this.label_SelectedMidiOutDevice.Location = new System.Drawing.Point(7, 83);
+            this.label_SelectedMidiOutDevice.Name = "label_SelectedMidiOutDevice";
+            this.label_SelectedMidiOutDevice.Size = new System.Drawing.Size(69, 13);
+            this.label_SelectedMidiOutDevice.TabIndex = 1;
+            this.label_SelectedMidiOutDevice.Text = "Midi Device: ";
             // 
-            // listBox_ListMidiDevices
+            // listBox_ListMidiOutDevices
             // 
-            this.listBox_ListMidiDevices.FormattingEnabled = true;
-            this.listBox_ListMidiDevices.Location = new System.Drawing.Point(13, 27);
-            this.listBox_ListMidiDevices.Name = "listBox_ListMidiDevices";
-            this.listBox_ListMidiDevices.Size = new System.Drawing.Size(288, 43);
-            this.listBox_ListMidiDevices.TabIndex = 0;
-            this.listBox_ListMidiDevices.SelectedIndexChanged += new System.EventHandler(this.Save_AutoTuneDevice);
+            this.listBox_ListMidiOutDevices.FormattingEnabled = true;
+            this.listBox_ListMidiOutDevices.Location = new System.Drawing.Point(13, 27);
+            this.listBox_ListMidiOutDevices.Name = "listBox_ListMidiOutDevices";
+            this.listBox_ListMidiOutDevices.Size = new System.Drawing.Size(288, 43);
+            this.listBox_ListMidiOutDevices.TabIndex = 0;
+            this.listBox_ListMidiOutDevices.SelectedIndexChanged += new System.EventHandler(this.Save_AutoTuneDevice);
             // 
             // tabPage_ModSettings_Misc
             // 
@@ -6256,6 +6291,8 @@
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
+            this.groupBox_MidiInDevice.ResumeLayout(false);
+            this.groupBox_MidiInDevice.PerformLayout();
             this.groupBox_MidiAutoTuningWhen.ResumeLayout(false);
             this.groupBox_MidiAutoTuningWhen.PerformLayout();
             this.groupBox_MidiAutoTuningOffset.ResumeLayout(false);
@@ -6522,8 +6559,8 @@
         private System.Windows.Forms.Button button_AddDCInput;
         private System.Windows.Forms.CheckBox checkBox_useMidiAutoTuning;
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuneDevice;
-        private System.Windows.Forms.ListBox listBox_ListMidiDevices;
-        private System.Windows.Forms.Label label_SelectedMidiDevice;
+        private System.Windows.Forms.ListBox listBox_ListMidiOutDevices;
+        private System.Windows.Forms.Label label_SelectedMidiOutDevice;
         private System.Windows.Forms.RadioButton radio_WhammyBass;
         private System.Windows.Forms.RadioButton radio_WhammyDT;
         private System.Windows.Forms.Label label_MidiWhatTuningPedalDoYouUse;
@@ -6813,6 +6850,9 @@
         private System.Windows.Forms.Button button_PlayResultVoiceOver;
         private System.Windows.Forms.ListBox listBox_Result_VOs;
         private System.Windows.Forms.CheckBox checkBox_BypassTwoRTCMessageBox;
+        private System.Windows.Forms.GroupBox groupBox_MidiInDevice;
+        private System.Windows.Forms.ListBox listBox_ListMidiInDevices;
+        private System.Windows.Forms.Label label_SelectedMidiInDevice;
     }
 }
 
