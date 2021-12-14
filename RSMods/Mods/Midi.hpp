@@ -10,6 +10,7 @@
 #include "../Lib/Midi/RtMidi.h"
 #include "../MemHelpers.hpp"
 #include "../Structs.hpp"
+#include "../WwiseHijack.hpp"
 
 namespace Midi {
 	void InitMidi();
