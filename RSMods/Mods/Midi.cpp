@@ -140,21 +140,28 @@ namespace Midi {
 					std::cout << "(MIDI IN) Invalid CC" << std::endl;
 					return false;
 				}
-				std::cout << "(MIDI IN) CC. Controller# = " << (int)message->at(1) << ". Value = " << (int)message->at(2) << std::endl;
-				if ((int)message->at(1) == 4) { // Wah Control on Pod XT Live
-					float rtpcValue = ceil((int)message->at(2) / 127.f * 100.f);
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Sens", rtpcValue, 0x1234, 0, AkCurveInterpolation_Linear);
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Sens", rtpcValue, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Sens", rtpcValue, 0x1234, 0, AkCurveInterpolation_Linear);
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Sens", rtpcValue, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				std::cout << "(MIDI IN) CC. Controller# = " << (int)message->at(1) << ". Value = " << std::dec << (int)message->at(2) << std::endl;
 
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Sens", rtpcValue, 0x1234, 0, AkCurveInterpolation_Linear);
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Sens", rtpcValue, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Auto", 1, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Auto", 1, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_USWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Sens", rtpcValue, 0x1234, 0, AkCurveInterpolation_Linear);
-					WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Sens", rtpcValue, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-				}
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Auto", 1, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Auto", 1, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Bass_Pedal_BassWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Auto", 1, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Auto", 1, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_ModernWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Auto", 1, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Auto", 1, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Pedal_UKWah_Sens", ceil((int)message->at(2) / 127.f * 100.f), AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 				break;
 			case MidiCommands::PC:
 				if (messageSize != 2) {
