@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <map>
 #include <string>
+#include <thread>
 
 #include "../Lib/Midi/RtMidi.h"
 #include "../MemHelpers.hpp"
@@ -17,16 +18,23 @@ namespace Midi {
 	void RevertAutomatedTuning();
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
-	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice);
+	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string MidiOutDevice, std::string MidiInDevice);
 	bool SendProgramChange(char programChange = '\000');
 	bool SendControlChange(char toePosition = '\000', char alternativeChannel = 255);
 	std::string GetTuningOffsetName(int offset);
+	bool IsValidMidiMessage(std::vector<unsigned char>* message);
+	unsigned WINAPI ListenToMidiInThread();
+	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData);
+	void FindMidiInDevices(std::string deviceToLookFor);
+	void FindMidiOutDevices(std::string deviceToLookFor);
 
+	inline bool disableMidiIn = false;
 	extern int MidiCC, MidiPC;
-	inline bool scannedForMidiDevices = false;
+	inline bool scannedForMidiDevices = false, detachedMidiInThread = false;
+	extern std::vector<MIDIINCAPSA> midiInDevices; // All MIDI in devices currently connected
 	extern std::vector<MIDIOUTCAPSA> midiOutDevices; // All MIDI out devices currently connected
-	extern int SelectedMidiDevice; 
-	extern unsigned int NumberOfPorts;
+	extern int SelectedMidiOutDevice, SelectedMidiInDevice;
+	extern unsigned int NumberOfOutPorts, NumberOfInPorts;
 	inline bool sendCC = false, sendPC = false;
 	inline int dataToSendPC = 0, dataToSendCC = 0, lastCC = 0, lastPC = 666;
 	inline int lastPC_TUNING = 0; // Only use if the song requires a tuning change AND a true tuning. (Hendrix Eb Standard)
@@ -34,6 +42,17 @@ namespace Midi {
 	inline int sleepFor = 33; // Sleep for 33ms or ~ 1/33rd of a second.
 	inline MidiPedal selectedPedal = MidiPedal();
 	inline int tuningOffset;
+
+	enum MidiCommands {
+		NoteOff		= 0x80,
+		NoteOn		= 0x90,
+		AfterTouch	= 0xA0,
+		CC			= 0xB0,
+		PC			= 0xC0,
+		Pressure	= 0xD0,
+		PitchBend	= 0xE0,
+		// System commands start at 0xF0
+	};
 
 	namespace Digitech {
 		namespace WhammyDT {

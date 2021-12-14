@@ -3,8 +3,9 @@
 // Midi codes should follow this guide: http://fmslogo.sourceforge.net/manual/midi-table.html
 namespace Midi {
 	std::vector<MIDIOUTCAPSA> midiOutDevices;
-	int SelectedMidiDevice = 0, MidiCC = 0, MidiPC = 666;
-	unsigned int NumberOfPorts;
+	std::vector<MIDIINCAPSA> midiInDevices;
+	int SelectedMidiOutDevice = 0, SelectedMidiInDevice = 0, MidiCC = 0, MidiPC = 666;
+	unsigned int NumberOfOutPorts, NumberOfInPorts;
 
 	/// <summary>
 	/// Startup MIDI processing
@@ -23,11 +24,17 @@ namespace Midi {
 	/// Get all MIDI devices connected.
 	/// </summary>
 	void GetMidiDeviceNames() {
-		NumberOfPorts = midiOutGetNumDevs();
-		for (int device = 0; device < NumberOfPorts; device++) {
+		NumberOfOutPorts = midiOutGetNumDevs();
+		NumberOfInPorts = midiInGetNumDevs();
+		for (int device = 0; device < NumberOfOutPorts; device++) {
 			MIDIOUTCAPSA temp;
 			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
 			midiOutDevices.push_back(temp);
+		}
+		for (int device = 0; device < NumberOfInPorts; device++) {
+			MIDIINCAPSA temp;
+			midiInGetDevCapsA(device, &temp, sizeof(MIDIINCAPSA));
+			midiInDevices.push_back(temp);
 		}
 	}
 
@@ -36,8 +43,9 @@ namespace Midi {
 	/// </summary>
 	/// <param name="ChordsMode"> - Does the user have a pedal with Chorus Mode, and is it being used?</param>
 	/// <param name="PedalToUse"> - What pedal is the user using?</param>
-	/// <param name="AutoTuneForSongDevice"> - MIDI Name of pedal.</param>
-	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string AutoTuneForSongDevice) {
+	/// <param name="MidiOutDevice"> - Name of MIDI device to send MIDI to.</param>
+	/// <param name="MidiInDevice"> - Name of MIDI device to listen to.</param>
+	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string MidiOutDevice, std::string MidiInDevice) {
 		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
 			Digitech::DIGITECH_CHORDS_MODE = true;
 			std::cout << "(MIDI) Chords Mode: Enabled" << std::endl;
@@ -52,7 +60,12 @@ namespace Midi {
 
 		GetMidiDeviceNames();
 
-		for (int device = 0; device < NumberOfPorts; device++) {
+		FindMidiOutDevices(MidiOutDevice);
+		FindMidiInDevices(MidiInDevice);
+	}
+
+	void FindMidiOutDevices(std::string deviceToLookFor) {
+		for (int device = 0; device < NumberOfOutPorts; device++) {
 
 			std::string deviceName = "";
 
@@ -63,14 +76,138 @@ namespace Midi {
 				deviceName.push_back(midiOutDevices.at(device).szPname[i]);
 			}
 
-			if (deviceName.find(AutoTuneForSongDevice) != std::string::npos) {
-				std::cout << "(MIDI) Connecting To Midi Device: " << midiOutDevices.at(device).szPname << std::endl;
-				SelectedMidiDevice = device;
+			if (deviceName.find(deviceToLookFor) != std::string::npos) {
+				std::cout << "(MIDI) Connecting To Midi OUT Device: " << midiOutDevices.at(device).szPname << std::endl;
+				SelectedMidiOutDevice = device;
 				break;
 			}
 			else
-				std::cout << "(MIDI) Available MIDI device: " << midiOutDevices.at(device).szPname << std::endl;
+				std::cout << "(MIDI) Available MIDI OUT device: " << midiOutDevices.at(device).szPname << std::endl;
 		}
+	}
+	void FindMidiInDevices(std::string deviceToLookFor) {
+		for (int device = 0; device < NumberOfInPorts; device++) {
+
+			std::string deviceName = "";
+
+			// Parse Char Buffer, since the name is a null-terminated string, we need to terminate it ourselves in a string.
+			for (int i = 0; i < 32; i++) {
+				if (midiInDevices.at(device).szPname[i] == (char)0)
+					break;
+				deviceName.push_back(midiInDevices.at(device).szPname[i]);
+			}
+
+			if (deviceName.find(deviceToLookFor) != std::string::npos) {
+				std::cout << "(MIDI) Connecting To Midi IN Device: " << midiInDevices.at(device).szPname << std::endl;
+				SelectedMidiInDevice = device;
+				break;
+			}
+			else
+				std::cout << "(MIDI) Available MIDI IN device: " << midiInDevices.at(device).szPname << std::endl;
+		}
+	}
+
+	bool IsValidMidiMessage(std::vector<unsigned char>* message) {
+		size_t messageSize = message->size();
+
+		if (messageSize < 1) // Empty Message
+			return false;
+
+		switch (message->at(0)) {
+			case MidiCommands::NoteOff:
+				if (messageSize != 3) {
+					std::cout << "(MIDI IN) Invalid NoteOff" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) NoteOff. Key = " << (int)message->at(1) << ". Velocity = " << (int)message->at(2) << std::endl;
+				break;
+			case MidiCommands::NoteOn:
+				if (messageSize != 3) {
+					std::cout << "(MIDI IN) Invalid NoteOn" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) NoteOn. Key = " << (int)message->at(1) << ". Velocity = " << (int)message->at(2) << std::endl;
+				break;
+			case MidiCommands::AfterTouch:
+				if (messageSize != 3) {
+					std::cout << "(MIDI IN) Invalid AfterTouch" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) AfterTouch. Key = " << (int)message->at(1) << ". Touch = " << (int)message->at(2) << std::endl;
+				break;
+			case MidiCommands::CC:
+				if (messageSize != 3) {
+					std::cout << "(MIDI IN) Invalid CC" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) CC. Controller# = " << (int)message->at(1) << ". Value = " << (int)message->at(2) << std::endl;
+				break;
+			case MidiCommands::PC:
+				if (messageSize != 2) {
+					std::cout << "(MIDI IN) Invalid PC" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) PC. Instrument# = " << (int)message->at(1) << std::endl;
+				break;
+			case MidiCommands::Pressure:
+				if (messageSize != 2) {
+					std::cout << "(MIDI IN) Invalid Pressure" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) Pressure. Pressure = " << (int)message->at(1) << std::endl;
+				break;
+			case MidiCommands::PitchBend: // Pitch Bend
+				if (messageSize != 3) {
+					std::cout << "(MIDI IN) Invalid PitchBend" << std::endl;
+					return false;
+				}
+				std::cout << "(MIDI IN) PitchBend. LSB = " << (int)message->at(1) << ". MSB = " << (int)message->at(2) << std::endl;
+				break;
+			default:
+				if (message->at(0) >= 0xF0) { // System Command
+					std::cout << "(MIDI IN) System: ";
+					for (int i = 0; i < messageSize; i++) {
+						std::cout << (int)message->at(i) << " ";
+					}
+					std::cout << std::endl;
+				}
+				else { // Unknown Midi Command
+					std::cout << "(MIDI IN) Unknown: ";
+					for (int i = 0; i < messageSize; i++) {
+						std::cout << (int)message->at(i) << " ";
+					}
+					std::cout << std::endl;
+					return false; 
+				}
+				break;
+		}
+		return true;
+	}
+
+	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData) {
+		IsValidMidiMessage(message);
+	}
+
+	unsigned WINAPI ListenToMidiInThread() {
+		RtMidiIn* midiin = new RtMidiIn();
+
+		NumberOfInPorts = midiInGetNumDevs();
+		if (NumberOfInPorts == 0) {
+			std::cout << "No MIDI IN ports available!" << std::endl;
+			delete midiin;
+			return -1;
+		}
+
+		midiin->openPort(SelectedMidiInDevice);
+		midiin->setCallback(&RespondToMidiIn);
+		midiin->ignoreTypes(false, false, true);
+
+		detachedMidiInThread = true;
+
+		while (!D3DHooks::GameClosing) {
+			Sleep(50);
+		}
+		return 0;
 	}
 
 	/// <summary>
@@ -88,16 +225,16 @@ namespace Midi {
 		}
 
 		// Check available ports.
-		NumberOfPorts = midiOutGetNumDevs();
-		if (NumberOfPorts == 0) {
-			std::cout << "No MIDI ports available!" << std::endl;
+		NumberOfOutPorts = midiOutGetNumDevs();
+		if (NumberOfOutPorts == 0) {
+			std::cout << "No MIDI OUT ports available!" << std::endl;
 			delete midiout;
 			sendPC = false;
 			return false;
 		}
 
 		try {
-			midiout->openPort(SelectedMidiDevice);
+			midiout->openPort(SelectedMidiOutDevice);
 
 			// Send MIDI message
 			message.push_back(programChangeStatus); // It's a Program Change
@@ -134,8 +271,8 @@ namespace Midi {
 		std::vector<unsigned char> message;
 
 		// Check available ports.
-		NumberOfPorts = midiOutGetNumDevs();
-		if (NumberOfPorts == 0) {
+		NumberOfOutPorts = midiOutGetNumDevs();
+		if (NumberOfOutPorts == 0) {
 			std::cout << "No MIDI ports available!" << std::endl;
 			delete midiout;
 			sendCC = false;
@@ -144,7 +281,7 @@ namespace Midi {
 
 		try {
 			// Open first available port.
-			midiout->openPort(SelectedMidiDevice);
+			midiout->openPort(SelectedMidiOutDevice);
 
 			// Send MIDI Message
 			message.push_back(controlChangeStatus); // Say it's a Control Change

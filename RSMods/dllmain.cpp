@@ -417,7 +417,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		static std::string previewValue = "Select a device";
 		if (ImGui::BeginCombo("MIDI devices", previewValue.c_str())) {
-			for (int n = 0; n < Midi::NumberOfPorts; n++)
+			for (int n = 0; n < Midi::NumberOfOutPorts; n++)
 			{
 				const bool is_selected = (selectedDevice == n);
 				if (ImGui::Selectable(Midi::midiOutDevices[n].szPname, is_selected, ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups))
@@ -425,7 +425,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 				if (is_selected) {
 					previewValue = Midi::midiOutDevices[n].szPname;
-					Midi::SelectedMidiDevice = n;
+					Midi::SelectedMidiOutDevice = n;
 				}
 			}
 			ImGui::EndCombo();
@@ -942,7 +942,12 @@ unsigned WINAPI MainThread() {
 			// Scan for MIDI devices for Automated Tuning / True-Tuning
 			if (!Midi::scannedForMidiDevices && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
 				Midi::scannedForMidiDevices = true;
-				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"));
+				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"), Settings::ReturnSettingValue("MidiInDevice"));
+			}
+
+			if (!Midi::detachedMidiInThread && Settings::ReturnSettingValue("MidiInDevice") != "") {
+				Midi::FindMidiInDevices(Settings::ReturnSettingValue("MidiInDevice")); // Just in-case the user has AutoTuneForSong off but MidiInDevice selected.
+				std::thread(Midi::ListenToMidiInThread).detach();
 			}
 
 			/// If User Is Entering / In Lesson Mode
