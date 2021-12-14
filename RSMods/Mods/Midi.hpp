@@ -30,7 +30,7 @@ namespace Midi {
 
 	inline bool disableMidiIn = false;
 	extern int MidiCC, MidiPC;
-	inline bool scannedForMidiDevices = false, detachedMidiInThread = false;
+	inline bool scannedForMidiDevices = false, attemptedToDetachMidiInThread = false;
 	extern std::vector<MIDIINCAPSA> midiInDevices; // All MIDI in devices currently connected
 	extern std::vector<MIDIOUTCAPSA> midiOutDevices; // All MIDI out devices currently connected
 	extern int SelectedMidiOutDevice, SelectedMidiInDevice;

@@ -202,8 +202,6 @@ namespace Midi {
 		midiin->setCallback(&RespondToMidiIn);
 		midiin->ignoreTypes(false, false, true);
 
-		detachedMidiInThread = true;
-
 		while (!D3DHooks::GameClosing) {
 			Sleep(50);
 		}

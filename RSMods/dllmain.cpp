@@ -945,7 +945,8 @@ unsigned WINAPI MainThread() {
 				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"), Settings::ReturnSettingValue("MidiInDevice"));
 			}
 
-			if (!Midi::detachedMidiInThread && Settings::ReturnSettingValue("MidiInDevice") != "") {
+			if (!Midi::attemptedToDetachMidiInThread && Settings::ReturnSettingValue("MidiInDevice") != "") {
+				Midi::attemptedToDetachMidiInThread = true;
 				Midi::FindMidiInDevices(Settings::ReturnSettingValue("MidiInDevice")); // Just in-case the user has AutoTuneForSong off but MidiInDevice selected.
 				std::thread(Midi::ListenToMidiInThread).detach();
 			}
