@@ -234,7 +234,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				// Convert UI Speed -> Real Speed
 				float UISpeed = MemHelpers::RiffRepeaterSpeed();
-				realSongSpeed = ((60 / (104.539 - (0.4393 * UISpeed))) * 100);
+				realSongSpeed = 100 / (100 - ((UISpeed - 100) * 0.75)) * 100;
 
 				// Add / Subtract User's Interval
 
@@ -251,7 +251,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					realSongSpeed = 100.f;
 
 				// Convert Real Speed -> UI Speed
-				UISpeed = ((60 / (realSongSpeed / 100) - 104.539) / -0.4393);
+				UISpeed = ((1 / (realSongSpeed / 10000) - 100) * -4 / 3) + 100;
 
 				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
 				MemHelpers::RiffRepeaterSpeed(UISpeed);
@@ -268,6 +268,19 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
+
+			//else if (keyPressed == VK_F9) {
+			//	int random = rand() % 200;
+			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(AK_ID_Song, 2, AK_ID_Default_Time_Stretch);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			//}
+
+			//else if (keyPressed == VK_F1) {
+			//	std::cout << "SetActorMixerEffect(RESET) = " << WwiseVariables::Wwise_Sound_SetActorMixerEffect(AK_ID_Song, 2, AK_INVALID_UNIQUE_ID) << std::endl;
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			//}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
@@ -589,7 +602,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			
 			// Set song speed every frame (approx) as the value continously falls down.
 			if (!MemHelpers::IsInStringArray(currentMenu,  scoreScreens))
-				MemHelpers::RiffRepeaterSpeed(((60 / (realSongSpeed / 100) - 104.539) / -0.4393));
+				MemHelpers::RiffRepeaterSpeed(((1 / (realSongSpeed / 10000) - 100) * -4 / 3) + 100);
 
 			if (useNewSongSpeed)
 				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);

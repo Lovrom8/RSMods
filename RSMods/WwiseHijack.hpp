@@ -65,6 +65,9 @@ typedef AkUInt32		AkArgumentValueID;			///< Argument value ID
 typedef AkUInt32		AkChannelMask;				///< Channel mask (similar to WAVE_FORMAT_EXTENSIBLE). Bit values are defined in AkCommonDefs.h.
 
 static const AkGameObjectID	AK_INVALID_GAME_OBJECT = (AkGameObjectID)-1;	///< Invalid game object (may also mean all game objects)
+static const AkUniqueID AK_INVALID_UNIQUE_ID = (AkUniqueID)0;
+static const AkUniqueID AK_ID_Song = 0x14BE02A7;
+static const AkUniqueID AK_ID_Default_Time_Stretch = 0xB3745FC2;
 
 enum AKRESULT
 {
@@ -1983,7 +1986,7 @@ typedef AKRESULT(__cdecl* tQuery_GetRTPCValue_Char)(const char* in_pszRtpcName, 
 //typedef AKRESULT(__cdecl* tRegisterPlugin)(AkPluginType in_eType, AkUInt32 in_ulCompanyID, AkUInt32 in_ulPluginID, AkCreatePluginCallback in_pCreateFunc, AkCreateParamCallback in_pCreateParamFunc);
 //typedef AKRESULT(__cdecl* tRenderAudio)(void);
 //typedef AKRESULT(__cdecl* tSetActiveListeners)(AkGameObjectID in_gameObjectID, AkUInt32 in_uiListenerMask);
-//typedef AKRESULT(__cdecl* tSetActorMixerEffect)(AkUniqueID in_audioNodeID, AkUInt32 in_uFXIndex, AkUniqueID in_shareSetID);
+typedef AKRESULT(__cdecl* tSetActorMixerEffect)(AkUniqueID in_audioNodeID, AkUInt32 in_uFXIndex, AkUniqueID in_shareSetID);
 //typedef AKRESULT(__cdecl* tSetAttenuationScalingFactor)(AkGameObjectID in_GameObjectID, AkReal32 in_fAttenuationScalingFactor);
 //typedef AKRESULT(__cdecl* tSetBankLoadIOSettings)(AkReal32 in_fThroughput, AkPriority in_priority);
 //typedef AKRESULT(__cdecl* tSetBusEffect_UniqueID)(AkUniqueID in_audioNodeID, AkUInt32 in_uFXIndex, AkUniqueID in_shareSetID);
@@ -2048,6 +2051,7 @@ typedef AKRESULT(__cdecl* tSetRTPCValue_Char) (const char* in_pszRtpcName, AkRtp
 //
 //typedef void(__stdcall* tRegisterAllPlugins)(void);
 //typedef void(__cdecl* tSetAudioInputCallbacks)(AkAudioInputPluginExecuteCallbackFunc* execute, AkAudioInputPluginGetFormatCallbackFunc* format, AkAudioInputPluginGetGainCallbackFunc* gain, int* normallyReturnsOne);
+typedef void(__stdcall* tRiffRepeaterBelow100Percent)(float TimeStretch);
 
 //// End Rocksmith Function Hijack
 
@@ -2245,6 +2249,7 @@ namespace WwiseVariables {
 	// Rocksmith Function Hijack
 	extern uintptr_t func_Rocksmith_RegisterAllPlugins;
 	extern uintptr_t func_Rocksmith_SetAudioInputCallbacks;
+	extern uintptr_t func_Rocksmith_RiffRepeaterBelow100Percent;
 	// End Wwise Hijack;
 
 	//// Root Functions;
@@ -2366,7 +2371,7 @@ namespace WwiseVariables {
 	//extern 	tRegisterPlugin Wwise_Sound_RegisterPlugin;
 	//extern 	tRenderAudio Wwise_Sound_RenderAudio;
 	//extern 	tSetActiveListeners Wwise_Sound_SetActiveListeners;
-	//extern 	tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect;
+	extern 	tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect;
 	//extern 	tSetAttenuationScalingFactor Wwise_Sound_SetAttenuationScalingFactor;
 	//extern 	tSetBankLoadIOSettings Wwise_Sound_SetBankLoadIOSettings;
 	//extern 	tSetBusEffect_UniqueID Wwise_Sound_SetBusEffect_UniqueID;
@@ -2424,6 +2429,7 @@ namespace WwiseVariables {
 
 	//extern  tRegisterAllPlugins Rocksmith_RegisterAllPlugins;
 	//extern	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks;
+	extern tRiffRepeaterBelow100Percent Rocksmith_RiffRepeaterBelow100Percent;
 
 }
 

@@ -196,6 +196,7 @@ namespace WwiseVariables {
 	// Rocksmith Function Hijack
 	uintptr_t func_Rocksmith_RegisterAllPlugins = 0x01ca0780;
 	uintptr_t func_Rocksmith_SetAudioInputCallbacks = 0x01f10d67;
+	uintptr_t func_Rocksmith_RiffRepeaterBelow100Percent = 0x017c816d;
 
 	// End Wwise Hijack
 
@@ -321,7 +322,7 @@ namespace WwiseVariables {
 	//tRegisterPlugin Wwise_Sound_RegisterPlugin = (tRegisterPlugin)func_Wwise_Sound_RegisterPlugin;
 	//tRenderAudio Wwise_Sound_RenderAudio = (tRenderAudio)func_Wwise_Sound_RenderAudio;
 	//tSetActiveListeners Wwise_Sound_SetActiveListeners = (tSetActiveListeners)func_Wwise_Sound_SetActiveListeners;
-	//tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect = (tSetActorMixerEffect)func_Wwise_Sound_SetActorMixerEffect;
+	tSetActorMixerEffect Wwise_Sound_SetActorMixerEffect = (tSetActorMixerEffect)func_Wwise_Sound_SetActorMixerEffect;
 	//tSetAttenuationScalingFactor Wwise_Sound_SetAttenuationScalingFactor = (tSetAttenuationScalingFactor)func_Wwise_Sound_SetAttenuationScalingFactor;
 	//tSetBankLoadIOSettings Wwise_Sound_SetBankLoadIOSettings = (tSetBankLoadIOSettings)func_Wwise_Sound_SetBankLoadIOSettings;
 	//tSetBusEffect_UniqueID Wwise_Sound_SetBusEffect_UniqueID = (tSetBusEffect_UniqueID)func_Wwise_Sound_SetBusEffect_UniqueID;
@@ -379,6 +380,7 @@ namespace WwiseVariables {
 
 	//tRegisterAllPlugins Rocksmith_RegisterAllPlugins = (tRegisterAllPlugins)func_Rocksmith_RegisterAllPlugins;
 	//tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks = (tSetAudioInputCallbacks)func_Rocksmith_SetAudioInputCallbacks;
+	tRiffRepeaterBelow100Percent Rocksmith_RiffRepeaterBelow100Percent = (tRiffRepeaterBelow100Percent)func_Rocksmith_RiffRepeaterBelow100Percent;
 }
 /* 
 	// Plugin Registration
@@ -464,6 +466,8 @@ namespace WwiseLogging {
 			!strcmp(rtpcName, "Lowest_Phrase_Difficulty_Level") ||
 			!strcmp(rtpcName, "PortalClose_TailLP_Return") ||
 			!strcmp(rtpcName, "PortalClose_TailRamping_Return") ||
+			!strcmp(rtpcName, "P1_Instrument_Volume") ||
+			!strcmp(rtpcName, "GateTime") ||
 			!strcmp(rtpcName, "P1_Streak_Hit_Count") ||
 			!strcmp(rtpcName, "P1_Streak_Miss") ||
 			!strcmp(rtpcName, "P1_Streak_Note_Count") ||
