@@ -391,7 +391,7 @@ namespace WwiseVariables {
 		std::string playEvent = "Play_" + songKey;
 		
 
-		AkUInt32 totalObjects;
+		AkUInt32 totalObjects = 0;
 
 		Wwise_Sound_Query_QueryAudioObjectIDs_Char(playEvent.c_str(), &totalObjects, NULL); // Gets total number of objects so we know how much memory we need to allocate.
 
