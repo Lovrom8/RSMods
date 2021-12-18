@@ -296,18 +296,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			else if (keyPressed == VK_F9) {
-				int random = rand() % 200;
-				WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_ID_Default_Time_Stretch);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			}
+			//else if (keyPressed == VK_F9) {
+			//	int random = rand() % 200;
+			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_ID_Default_Time_Stretch);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			//}
 
-			else if (keyPressed == VK_F1) {
-				WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_INVALID_UNIQUE_ID);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
-				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			}
+			//else if (keyPressed == VK_F1) {
+			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_INVALID_UNIQUE_ID);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
+			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			//}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
