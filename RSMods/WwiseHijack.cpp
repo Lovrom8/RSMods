@@ -316,7 +316,7 @@ namespace WwiseVariables {
 	//tQuery_GetSwitch_SwitchGroupID Wwise_Sound_Query_GetSwitch_SwitchGroupID = (tQuery_GetSwitch_SwitchGroupID)func_Wwise_Sound_Query_GetSwitch_SwitchGroupID;
 	//tQuery_GetSwitch_Char Wwise_Sound_Query_GetSwitch_Char = (tQuery_GetSwitch_Char)func_Wwise_Sound_Query_GetSwitch_Char;
 	//tQuery_QueryAudioObjectIDs_UniqueID Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID = (tQuery_QueryAudioObjectIDs_UniqueID)func_Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
-	//tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char = (tQuery_QueryAudioObjectIDs_Char)func_Wwise_Sound_Query_QueryAudioObjectIDs_Char;
+	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char = (tQuery_QueryAudioObjectIDs_Char)func_Wwise_Sound_Query_QueryAudioObjectIDs_Char;
 	//tRegisterCodec Wwise_Sound_RegisterCodec = (tRegisterCodec)func_Wwise_Sound_RegisterCodec;
 	//tRegisterGlobalCallback Wwise_Sound_RegisterGlobalCallback = (tRegisterGlobalCallback)func_Wwise_Sound_RegisterGlobalCallback;
 	//tRegisterPlugin Wwise_Sound_RegisterPlugin = (tRegisterPlugin)func_Wwise_Sound_RegisterPlugin;
@@ -381,6 +381,34 @@ namespace WwiseVariables {
 	//tRegisterAllPlugins Rocksmith_RegisterAllPlugins = (tRegisterAllPlugins)func_Rocksmith_RegisterAllPlugins;
 	//tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks = (tSetAudioInputCallbacks)func_Rocksmith_SetAudioInputCallbacks;
 	tRiffRepeaterBelow100Percent Rocksmith_RiffRepeaterBelow100Percent = (tRiffRepeaterBelow100Percent)func_Rocksmith_RiffRepeaterBelow100Percent;
+
+	/// <summary>
+	/// Gets the Actor-Mixer ID of the Play_{SongKey} so we can modify the Time_Stretch effect of it.
+	/// </summary>
+	/// <param name="songKey"> - SongKey for the current playing song.</param>
+	/// <returns>QueryAudioObjectIDs == AK_SUCCESS</returns>
+	bool LogSongID(std::string songKey) {
+		std::string playEvent = "Play_" + songKey;
+		
+
+		AkUInt32 totalObjects;
+
+		Wwise_Sound_Query_QueryAudioObjectIDs_Char(playEvent.c_str(), &totalObjects, NULL); // Gets total number of objects so we know how much memory we need to allocate.
+
+		void* memoryBlock = malloc(totalObjects * 0xC); // Allocate a memory block, 12 wide per object. Should only ever be 1 object, but just to be sure.
+
+		AKRESULT soundObjects = Wwise_Sound_Query_QueryAudioObjectIDs_Char(playEvent.c_str(), &totalObjects, (AkObjectInfo*)memoryBlock); // Get the Actor-Mixer ID that we need to manipulate the Time_Stretch parameter.
+
+		if (totalObjects > 0) {
+			SongObjectIDs.insert({ playEvent, *(AkUInt32*)memoryBlock }); // Save the Play_{SongKey} event and the Actor-Mixer ID to a map so we don't need to get it multiple times if the user leaves and comes back to the song.
+																		  // These values are static, PER SONG, so we could even make a database file (and/or csv) with these IDs in it to have an even bigger cache of them.
+			currentSongID = *(AkUInt32*)memoryBlock; // The Actor-Mixer ID we need is at the very beginning of the memory block.
+		}
+		
+		free(memoryBlock); // Free the memory we allocated earlier in this function.
+
+		return soundObjects == AK_Success;
+	}
 }
 /* 
 	// Plugin Registration

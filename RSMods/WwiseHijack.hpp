@@ -405,12 +405,12 @@ struct AkExternalSourceInfo
 //	AkLPFType           HPFValueAtMaxDist;
 //};
 //
-//struct AkObjectInfo
-//{
-//	AkUniqueID  objID;
-//	AkUniqueID  parentID;
-//	AkInt32     iDepth;
-//};
+struct AkObjectInfo
+{
+	AkUniqueID  objID;
+	AkUniqueID  parentID;
+	AkInt32     iDepth;
+};
 //class IAkSoftwareCodec;
 //
 //typedef IAkSoftwareCodec* (AkCreateFileSourceCallback)(void* in_pCtx);
@@ -1979,7 +1979,7 @@ typedef AKRESULT(__cdecl* tQuery_GetRTPCValue_Char)(const char* in_pszRtpcName, 
 //typedef AKRESULT(__cdecl* tQuery_GetSwitch_SwitchGroupID)(AkSwitchGroupID in_switchGroup, AkGameObjectID in_gameObjectID, AkSwitchStateID* out_rSwitchState);
 //typedef AKRESULT(__cdecl* tQuery_GetSwitch_Char)(const char* in_pstrSwitchGroupName, AkGameObjectID in_GameObj, AkSwitchStateID* out_rSwitchState);
 //typedef AKRESULT(__cdecl* tQuery_QueryAudioObjectIDs_UniqueID)(AkUniqueID in_eventID, AkUInt32* io_ruNumItems, AkObjectInfo* out_aObjectInfos);
-//typedef AKRESULT(__cdecl* tQuery_QueryAudioObjectIDs_Char)(const char* in_pszEventName, AkUInt32* io_ruNumItems, AkObjectInfo* out_aObjectInfos);
+typedef AKRESULT(__cdecl* tQuery_QueryAudioObjectIDs_Char)(const char* in_pszEventName, AkUInt32* io_ruNumItems, AkObjectInfo* out_aObjectInfos);
 //// End Query
 //typedef AKRESULT(__cdecl* tRegisterCodec)(AkUInt32 in_ulCompanyID, AkUInt32 in_ulCodecID, AkCreateFileSourceCallback in_pFileCreateFunc, AkCreateBankSourceCallback in_pBankCreateFunc);
 //typedef AKRESULT(__cdecl* tRegisterGlobalCallback)(AkGlobalCallbackFunc in_pCallback);
@@ -2365,7 +2365,7 @@ namespace WwiseVariables {
 	//extern 	tQuery_GetSwitch_SwitchGroupID Wwise_Sound_Query_GetSwitch_SwitchGroupID;
 	//extern 	tQuery_GetSwitch_Char Wwise_Sound_Query_GetSwitch_Char;
 	//extern 	tQuery_QueryAudioObjectIDs_UniqueID Wwise_Sound_Query_QueryAudioObjectIDs_UniqueID;
-	//extern 	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char;
+	extern 	tQuery_QueryAudioObjectIDs_Char Wwise_Sound_Query_QueryAudioObjectIDs_Char;
 	//extern 	tRegisterCodec Wwise_Sound_RegisterCodec;
 	//extern 	tRegisterGlobalCallback Wwise_Sound_RegisterGlobalCallback;
 	//extern 	tRegisterPlugin Wwise_Sound_RegisterPlugin;
@@ -2431,6 +2431,13 @@ namespace WwiseVariables {
 	//extern	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks;
 	extern tRiffRepeaterBelow100Percent Rocksmith_RiffRepeaterBelow100Percent;
 
+	extern bool LogSongID(std::string songKey);
+
+
+	inline std::map<std::string, AkUInt32> SongObjectIDs;
+
+	inline AkUInt32 currentSongID;
+	inline bool readyToLogSongID;
 }
 
 #ifdef _WWISE_LOGS

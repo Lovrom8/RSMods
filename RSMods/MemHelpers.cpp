@@ -675,3 +675,22 @@ std::string MemHelpers::CurrentSelectedUser() {
 
 	return hopeThisWorks;
 }
+
+/// <summary>
+/// Gets the SongKey of the current playing song, based on the initial preview.
+/// </summary>
+/// <returns>Last played Song Key</returns>
+std::string MemHelpers::GetSongKey() {
+	uintptr_t previewEvent = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_previewName, Offsets::ptr_previewNameOffsets);
+
+	if (previewEvent) {
+		std::string previewName = std::string((char*)previewEvent);
+
+		if (previewName.length() > 13 && previewName._Starts_with("Play_")) {
+			if (previewName.compare(previewName.length() - 9, 9, "_Preview") || previewName.compare(previewName.length() - 9, 9, "_Invalid")) {
+				lastSongKey = previewName.substr(5, previewName.length() - 13);
+			}
+		}
+	}
+	return lastSongKey;
+}

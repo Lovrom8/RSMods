@@ -60,6 +60,33 @@ unsigned WINAPI MidiThread() {
 	return 0;
 }
 
+unsigned WINAPI RiffRepeaterThread() {
+	std::string previousSongKey = "";
+	while (!D3DHooks::GameClosing) {
+		Sleep(100);
+
+		if (MemHelpers::GetSongKey() != previousSongKey) {
+			WwiseVariables::readyToLogSongID = false;
+			previousSongKey = MemHelpers::GetSongKey();
+
+			if (WwiseVariables::SongObjectIDs.find("Play_" + previousSongKey) != WwiseVariables::SongObjectIDs.end()) {
+				WwiseVariables::currentSongID = WwiseVariables::SongObjectIDs.find("Play_" + previousSongKey)->second;
+			}
+			else {
+				WwiseVariables::readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
+			}
+		}
+		
+		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes) && saveNewRRSpeedToFile) {
+			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
+			rrText << std::to_string((int)realSongSpeed) << std::endl;
+			saveNewRRSpeedToFile = false;
+		}
+	}
+
+	return 0;
+}
+
 /// <summary>
 /// Handle Keypress Inputs. Used to toggle mods on / off. WARNING: RUNS (almost) EVERY FRAME
 /// </summary>
@@ -269,18 +296,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			//else if (keyPressed == VK_F9) {
-			//	int random = rand() % 200;
-			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(AK_ID_Song, 2, AK_ID_Default_Time_Stretch);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			//}
+			else if (keyPressed == VK_F9) {
+				int random = rand() % 200;
+				WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_ID_Default_Time_Stretch);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			}
 
-			//else if (keyPressed == VK_F1) {
-			//	std::cout << "SetActorMixerEffect(RESET) = " << WwiseVariables::Wwise_Sound_SetActorMixerEffect(AK_ID_Song, 2, AK_INVALID_UNIQUE_ID) << std::endl;
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			//}
+			else if (keyPressed == VK_F1) {
+				WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 0, AK_INVALID_UNIQUE_ID);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
+				WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+			}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
@@ -865,23 +892,6 @@ void ClearMDMPs() {
 }
 
 /// <summary>
-/// Write a log of Riff Repeater speed if it's above 100%. Mainly used for streamers who want to create their own UI for the RR Speed.
-/// </summary>
-/// <returns>NULL. Loops while game is open.</returns>
-unsigned WINAPI StreamerLogThread() {
-	while (!D3DHooks::GameClosing) {
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes) && saveNewRRSpeedToFile) {
-			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
-			rrText << std::to_string((int)realSongSpeed) << std::endl;
-			saveNewRRSpeedToFile = false;
-		}
-		Sleep(50);
-	}
-
-	return 0;
-}
-
-/// <summary>
 /// Main Thread where we trigger the mods to startup.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
@@ -1021,6 +1031,11 @@ unsigned WINAPI MainThread() {
 				GuitarSpeakPresent = false;
 				AttemptedERInTuner = false;
 				UseERInTuner = false;
+
+				if (WwiseVariables::readyToLogSongID) {
+					if (WwiseVariables::LogSongID(MemHelpers::GetSongKey()))
+						WwiseVariables::readyToLogSongID = false;
+				}
 
 				// Remove Headstock (In Song)
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
@@ -1226,7 +1241,7 @@ void Initialize() {
 	std::thread(EnumerationThread).detach(); // Force Enumeration
 	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
-	std::thread(StreamerLogThread).detach(); // RR Speed Above 100% Log
+	std::thread(RiffRepeaterThread).detach(); // RR Speed Above 100% Log
 
 	// Probably check ini setting before starting this thing
 	CrowdControl::StartServer(); // Twitch Effects Server
