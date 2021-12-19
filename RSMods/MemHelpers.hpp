@@ -33,8 +33,6 @@ namespace MemHelpers {
 	void DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { NULL, NULL });
 	void ToggleDrunkMode(bool enable);
 	bool IsInSong();
-	float RiffRepeaterSpeed(float newSpeed = NULL);
-	void AutomatedOpenRRSpeedAbuse();
 	Tuning GetTuningAtTuner();
 	bool IsExtendedRangeTuner();
 	bool IsMultiplayer();

@@ -588,59 +588,6 @@ bool MemHelpers::IsInSong() {
 }
 
 /// <summary>
-/// Get / Set Riff Repeater Speed
-/// </summary>
-/// <param name="newSpeed"> - Override current speed.</param>
-/// <returns>Riff Repeater Speed</returns>
-float MemHelpers::RiffRepeaterSpeed(float newSpeed) {
-	uintptr_t riffRepeaterSpeed = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_songSpeed, Offsets::ptr_songSpeedOffsets);
-
-	// Null Pointer Check
-	if (!riffRepeaterSpeed) {
-		std::cout << "Invalid Pointer: RiffRepeaterSpeed" << std::endl;
-		return 100.f;
-	}
-
-	// Set the speed, if sent.
-	if (newSpeed != NULL) 
-		*(float*)riffRepeaterSpeed = newSpeed;
-
-	return *(float*)riffRepeaterSpeed;
-}
-
-/// <summary>
-/// Automate triggering the Riff Repeater above 100% mod.
-/// </summary>
-void MemHelpers::AutomatedOpenRRSpeedAbuse() {
-
-	while (SongTimer() < 5.f) {
-		Sleep(500);
-	}
-
-	std::cout << "Triggering RR Speed mod" << std::endl;
-
-	Util::SendKey(VK_SPACE); // Open RR Menu
-	Sleep(666); // Menu animations do be slow
-
-	Util::SendKey(VK_DOWN); // Difficulty
-
-	Util::SendKey(VK_DOWN); // Speed
-
-	RiffRepeaterSpeed(100.00001f); // Allow us to change speed values. Keep this number as close to 100 as possible to allow NSP to use this number. It doesn't like being reset to 100 at the bottom of this function.
-
-	Util::SendKey(VK_LEFT); // Trigger our new speed requirement
-
-	Util::SendKey(VK_RIGHT); // Reset back to 100% in the UI
-
-	Util::SendKey(VK_DELETE); // Return to the song
-
-	RiffRepeaterSpeed(100.f); // Reset to 100% speed so the end user doesn't experience any speed ups / slow downs when an event isn't triggered.
-
-	automatedSongSpeedInThisSong = true; // Don't run this again in the same song if we put this in a loop.
-	useNewSongSpeed = true; // Show RR Speed Text
-}
-
-/// <summary>
 /// Get the status of if the user is in multiplayer
 /// </summary>
 /// <returns>Is the user in multiplayer</returns>

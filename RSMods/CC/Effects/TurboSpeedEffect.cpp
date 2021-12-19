@@ -23,7 +23,8 @@ namespace CrowdControl::Effects {
 		running = true;
 
 		// TODO: check if it works correctly
-		MemHelpers::RiffRepeaterSpeed(200.0001f);
+		RiffRepeater::SetSpeed(200.f, true);
+		RiffRepeater::EnableTimeStretch();
 
 		SetDuration(request);
 		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
@@ -47,7 +48,8 @@ namespace CrowdControl::Effects {
 		std::cout << "TurboSpeedEffect::Stop()" << std::endl;
 
 		// TODO: check if it works correctly
-		MemHelpers::RiffRepeaterSpeed(100.0001f);
+		RiffRepeater::SetSpeed(100.f);
+		RiffRepeater::DisableTimeStretch();
 
 		running = false;
 

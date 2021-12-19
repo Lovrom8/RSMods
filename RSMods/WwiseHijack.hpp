@@ -2051,7 +2051,6 @@ typedef AKRESULT(__cdecl* tSetRTPCValue_Char) (const char* in_pszRtpcName, AkRtp
 //
 //typedef void(__stdcall* tRegisterAllPlugins)(void);
 //typedef void(__cdecl* tSetAudioInputCallbacks)(AkAudioInputPluginExecuteCallbackFunc* execute, AkAudioInputPluginGetFormatCallbackFunc* format, AkAudioInputPluginGetGainCallbackFunc* gain, int* normallyReturnsOne);
-typedef void(__stdcall* tRiffRepeaterBelow100Percent)(float TimeStretch);
 
 //// End Rocksmith Function Hijack
 
@@ -2249,7 +2248,6 @@ namespace WwiseVariables {
 	// Rocksmith Function Hijack
 	extern uintptr_t func_Rocksmith_RegisterAllPlugins;
 	extern uintptr_t func_Rocksmith_SetAudioInputCallbacks;
-	extern uintptr_t func_Rocksmith_RiffRepeaterBelow100Percent;
 	// End Wwise Hijack;
 
 	//// Root Functions;
@@ -2429,15 +2427,6 @@ namespace WwiseVariables {
 
 	//extern  tRegisterAllPlugins Rocksmith_RegisterAllPlugins;
 	//extern	tSetAudioInputCallbacks Rocksmith_SetAudioInputCallbacks;
-	extern tRiffRepeaterBelow100Percent Rocksmith_RiffRepeaterBelow100Percent;
-
-	extern bool LogSongID(std::string songKey);
-
-
-	inline std::map<std::string, AkUInt32> SongObjectIDs;
-
-	inline AkUInt32 currentSongID;
-	inline bool readyToLogSongID;
 }
 
 #ifdef _WWISE_LOGS

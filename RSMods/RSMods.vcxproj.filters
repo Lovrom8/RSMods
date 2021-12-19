@@ -219,6 +219,9 @@
     <ClCompile Include="Lib\ImGUI\imgui_tables.cpp">
       <Filter>Main Headers\ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\RiffRepeater.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -430,6 +433,9 @@
     </ClInclude>
     <ClInclude Include="Lib\Json\json.hpp">
       <Filter>Main Headers\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RiffRepeater.hpp">
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

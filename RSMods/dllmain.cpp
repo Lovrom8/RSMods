@@ -66,14 +66,14 @@ unsigned WINAPI RiffRepeaterThread() {
 		Sleep(100);
 
 		if (MemHelpers::GetSongKey() != previousSongKey) {
-			WwiseVariables::readyToLogSongID = false;
+			RiffRepeater::readyToLogSongID = false;
 			previousSongKey = MemHelpers::GetSongKey();
 
-			if (WwiseVariables::SongObjectIDs.find("Play_" + previousSongKey) != WwiseVariables::SongObjectIDs.end()) {
-				WwiseVariables::currentSongID = WwiseVariables::SongObjectIDs.find("Play_" + previousSongKey)->second;
+			if (RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey) != RiffRepeater::SongObjectIDs.end()) {
+				RiffRepeater::currentSongID = RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey)->second;
 			}
 			else {
-				WwiseVariables::readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
+				RiffRepeater::readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
 			}
 		}
 		
@@ -253,15 +253,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//}
 
 
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && useNewSongSpeed) { // Riff Repeater over 100%
-				bool prepToTurnOff = false;
-
-				if (realSongSpeed >= 100.f)
-					prepToTurnOff = true;
+			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes))) { // Riff Repeater over 100%
 
 				// Convert UI Speed -> Real Speed
-				float UISpeed = MemHelpers::RiffRepeaterSpeed();
-				realSongSpeed = 100 / (100 - ((UISpeed - 100) * 0.75)) * 100;
+				realSongSpeed = RiffRepeater::GetSpeed(true);
 
 				// Add / Subtract User's Interval
 
@@ -271,23 +266,19 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
 
 				// Set Limits
-				if (realSongSpeed > 428.f)
-					realSongSpeed = 428.f;
+				if (realSongSpeed > 400.f) // Cap at 400. Plugin only goes down to 25. 10000 / 25 = 400.
+					realSongSpeed = 400.f;
 
-				if (realSongSpeed < 100.f)
-					realSongSpeed = 100.f;
-
-				// Convert Real Speed -> UI Speed
-				UISpeed = ((1 / (realSongSpeed / 10000) - 100) * -4 / 3) + 100;
+				if (realSongSpeed < 25.f) // Cap at 25. Plugin only goes up to 400. 10000 / 400 = 25.
+					realSongSpeed = 25.f;
 
 				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
-				MemHelpers::RiffRepeaterSpeed(UISpeed);
+				RiffRepeater::SetSpeed(realSongSpeed, true);
+				if (!RiffRepeater::currentlyEnabled)
+					RiffRepeater::EnableTimeStretch();
 				saveNewRRSpeedToFile = true;
 
-				if (prepToTurnOff && realSongSpeed == 100.f) // Disable UI if we bug out of the mode.
-					useNewSongSpeed = false;
-
-				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << UISpeed << "% UI speed." << std::endl;
+				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl;
 			}
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
@@ -295,19 +286,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
-
-			//else if (keyPressed == VK_F9) {
-			//	int random = rand() % 200;
-			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 2, AK_ID_Default_Time_Stretch);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, 0x1234, 0, AkCurveInterpolation_Linear);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", random, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			//}
-
-			//else if (keyPressed == VK_F1) {
-			//	WwiseVariables::Wwise_Sound_SetActorMixerEffect(WwiseVariables::currentSongID, 2, AK_INVALID_UNIQUE_ID);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, 0x1234, 0, AkCurveInterpolation_Linear);
-			//	WwiseVariables::Wwise_Sound_SetRTPCValue_Char("Time_Stretch", 100, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
-			//}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
@@ -345,7 +323,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// **Deprecated** Twitch Integration. Use CrowdControl.
 			else if (Contains(currMsg, "TurboSpeed"))
-				userWantsRRSpeedEnabled = Contains(currMsg, "enable");
+				if (Contains(currMsg, "enable")) {
+					RiffRepeater::EnableTimeStretch();
+				}
 			else if (Contains(currMsg, "enable"))
 				effectQueue.push_back(currMsg);
 			else if (Contains(currMsg, "Reconnect"))
@@ -625,14 +605,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) { // Riff Repeater over 100%
-			
-			// Set song speed every frame (approx) as the value continously falls down.
-			if (!MemHelpers::IsInStringArray(currentMenu,  scoreScreens))
-				MemHelpers::RiffRepeaterSpeed(((1 / (realSongSpeed / 10000) - 100) * -4 / 3) + 100);
-
-			if (useNewSongSpeed)
-				MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
+		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled) { // Riff Repeater over 100%
+			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 		}
 
 		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") { // Show Current Note On Screen
@@ -1013,13 +987,6 @@ unsigned WINAPI MainThread() {
 			if (!RemoveLyrics && Settings::ReturnSettingValue("RemoveLyricsWhen") == "startup")
 				RemoveLyrics = true;
 
-			// Riff Repeater above 100%
-			userWantsRRSpeedEnabled = (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on"); // Set To True if you want the user / streamer to have RR open every song (for over 100% RR speed)
-			if (MemHelpers::IsInStringArray(currentMenu, fastRRModes) && userWantsRRSpeedEnabled && !automatedSongSpeedInThisSong) { // This won't work in SA so we need to exclude it.
-				MemHelpers::AutomatedOpenRRSpeedAbuse();
-				skipERSleep = true;
-			}
-
 			// MIDI Auto Tuning / Auto True-Tuning (In Tuner)
 			if (MemHelpers::IsInStringArray(currentMenu, preSongTuners) && Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::ReturnSettingValue("AutoTuneForSongWhen") == "tuner" && !Midi::alreadyAttemptedTuningInTuner && !Midi::alreadyAutomatedTuningInThisSong) {
 				Midi::AttemptTuningInTuner();
@@ -1032,9 +999,9 @@ unsigned WINAPI MainThread() {
 				AttemptedERInTuner = false;
 				UseERInTuner = false;
 
-				if (WwiseVariables::readyToLogSongID) {
-					if (WwiseVariables::LogSongID(MemHelpers::GetSongKey()))
-						WwiseVariables::readyToLogSongID = false;
+				if (RiffRepeater::readyToLogSongID) {
+					if (RiffRepeater::LogSongID(MemHelpers::GetSongKey()))
+						RiffRepeater::readyToLogSongID = false;
 				}
 
 				// Remove Headstock (In Song)
@@ -1101,7 +1068,7 @@ unsigned WINAPI MainThread() {
 
 				// Turn off Riff Repeater Speed above 100%
 				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens)) {
-					automatedSongSpeedInThisSong = false; 
+					RiffRepeater::DisableTimeStretch();
 					realSongSpeed = 100.f;
 					skipERSleep = false;
 				}
