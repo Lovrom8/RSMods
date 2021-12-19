@@ -97,8 +97,6 @@ namespace Offsets {
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
 	uintptr_t ptr_previewName = 0x00F5C494;
 	std::vector<unsigned int> ptr_previewNameOffsets{ 0xBC, 0x0 };
-	uintptr_t ptr_songSpeed = 0x00F5C4CC;
-	std::vector<unsigned int> ptr_songSpeedOffsets{ 0x10, 0x28, 0x38, 0x18, 0x4, 0x1C, 0x28 };
 
 	// Selected Profile Name
 	uintptr_t ptr_selectedProfileName = 0x00F5C5AC;
