@@ -274,8 +274,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
 				RiffRepeater::SetSpeed(realSongSpeed, true);
-				if (!RiffRepeater::currentlyEnabled)
-					RiffRepeater::EnableTimeStretch();
+				RiffRepeater::EnableTimeStretch();
 				saveNewRRSpeedToFile = true;
 
 				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl;
@@ -606,6 +605,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled) { // Riff Repeater over 100%
+			realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
+
 			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 		}
 

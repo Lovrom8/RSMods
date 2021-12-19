@@ -10,7 +10,10 @@ float RiffRepeater::GetSpeed(bool realSpeed) {
 	RTPCValue_type type = RTPCValue_GameObject;
 
 	WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char("Time_Stretch", 0x1234, &currentTimeStretch, &type);
-	
+
+	if (floorf(currentTimeStretch) == 100) // Rocksmith doesn't always set 100% speed to 100. This causes us to read 100 as 99.
+		currentTimeStretch = 100;
+
 	return realSpeed ? ConvertSpeed(currentTimeStretch) : currentTimeStretch;
 }
 
