@@ -51,6 +51,7 @@ void RiffRepeater::EnableTimeStretch() {
 /// </summary>
 void RiffRepeater::DisableTimeStretch() {
 	WwiseVariables::Wwise_Sound_SetActorMixerEffect(currentSongID, 2, AK_INVALID_UNIQUE_ID);
+	SetSpeed(100); // Reset TimeStretch to default.
 	currentlyEnabled = false;
 }
 
@@ -74,6 +75,7 @@ bool RiffRepeater::LogSongID(std::string songKey) {
 		SongObjectIDs.insert({ playEvent, *(AkUInt32*)memoryBlock }); // Save the Play_{SongKey} event and the Actor-Mixer ID to a map so we don't need to get it multiple times if the user leaves and comes back to the song.
 																	  // These values are static, PER SONG, so we could even make a database file (and/or csv) with these IDs in it to have an even bigger cache of them.
 		currentSongID = *(AkUInt32*)memoryBlock; // The Actor-Mixer ID we need is at the very beginning of the memory block.
+		loggedCurrentSongID = true;
 	}
 
 	free(memoryBlock); // Free the memory we allocated earlier in this function.

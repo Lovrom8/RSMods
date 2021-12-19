@@ -18,6 +18,7 @@ namespace RiffRepeater {
 	inline std::map<std::string, AkUInt32> SongObjectIDs;
 	inline AkUInt32 currentSongID;
 	inline bool readyToLogSongID;
+	inline bool loggedCurrentSongID = false;
 
 	inline bool currentlyEnabled = false;
 }
