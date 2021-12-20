@@ -1,5 +1,8 @@
 #include "RiffRepeater.hpp"
 
+float Divisor = 10000.f;
+float Max = 400.f;
+
 /// <summary>
 /// Gets the Time_Stretch RTPC.
 /// </summary>
@@ -86,3 +89,26 @@ bool RiffRepeater::LogSongID(std::string songKey) {
 	return soundObjects == AK_Success;
 }
 
+void __declspec(naked) hook_timeStretchCalulations() {
+	__asm {
+		push EBP // Save EBP
+
+		fld Divisor // Store 10000 in ST(0).
+		fdiv ST(0), ST(1) // ST(0) = 10000. ST(1) = Riff Repeater Speed. 10000 / Speed, result in ST(0).
+
+		fld Max	// Store 400 in ST(0). ST(1) = 10000 / Speed
+		fxch // Switch ST(1) and ST(0). ST(0) = 10000 / Speed. ST(1) = 400
+
+		pop EBP // Restore EBP
+
+		jmp Offsets::ptr_timeStretchCalculationsJmpBck  // Skip to the validation checks.
+	}
+}
+
+void RiffRepeater::FixSpeedPercents() {
+	MemUtil::PlaceHook((void*)Offsets::ptr_timeStretchCalculations, hook_timeStretchCalulations, 6);
+}
+
+void RiffRepeater::ReverseSpeedPercents() {
+	MemUtil::PatchAdr((LPVOID)Offsets::ptr_timeStretchCalculations, "\xDD\x05\xA0\x18\x22\x01", 6);
+}

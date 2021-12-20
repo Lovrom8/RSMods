@@ -3,8 +3,10 @@
 #include <iostream>
 #include "Windows.h"
 #include <string>
+
 #include "../MemHelpers.hpp"
 #include "../WwiseHijack.hpp"
+#include "../Offsets.hpp"
 
 
 namespace RiffRepeater {
@@ -13,6 +15,8 @@ namespace RiffRepeater {
 	float ConvertSpeed(float speed);
 	void EnableTimeStretch();
 	void DisableTimeStretch();
+	void FixSpeedPercents();
+	void ReverseSpeedPercents();
 	bool LogSongID(std::string songKey);
 
 	inline std::map<std::string, AkUInt32> SongObjectIDs;
