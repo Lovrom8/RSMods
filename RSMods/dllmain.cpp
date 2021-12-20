@@ -1240,6 +1240,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 			AllocConsole();
 		freopen_s(&streamRead, "CONIN$", "r", stdin);
 		freopen_s(&streamWrite, "CONOUT$", "w", stdout);
+		freopen_s(&streamWrite, "CONOUT$", "w", stderr);
 
 		if (debugLogPresent) { // Dump console to log (mainly for debugging release build issues)
 			// Clear log so it isn't full of junk from the last launch
@@ -1250,6 +1251,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 			if (!debug) {
 				FILE* debugLog;
 				freopen_s(&debugLog, "RSMods_debug.txt", "w", stdout);
+				freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr);
 			}
 		}
 
