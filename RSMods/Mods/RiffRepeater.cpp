@@ -89,9 +89,13 @@ bool RiffRepeater::LogSongID(std::string songKey) {
 	return soundObjects == AK_Success;
 }
 
+
+/// <summary>
+/// x87 ASM hook for making Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
+/// </summary>
 void __declspec(naked) hook_timeStretchCalulations() {
 	__asm {
-		push EBP // Save EBP
+		push EBP // Save EBP to stack
 
 		fld Divisor // Store 10000 in ST(0).
 		fdiv ST(0), ST(1) // ST(0) = 10000. ST(1) = Riff Repeater Speed. 10000 / Speed, result in ST(0).
@@ -99,16 +103,22 @@ void __declspec(naked) hook_timeStretchCalulations() {
 		fld Max	// Store 400 in ST(0). ST(1) = 10000 / Speed
 		fxch // Switch ST(1) and ST(0). ST(0) = 10000 / Speed. ST(1) = 400
 
-		pop EBP // Restore EBP
+		pop EBP // Restore EBP from stack
 
 		jmp Offsets::ptr_timeStretchCalculationsJmpBck  // Skip to the validation checks.
 	}
 }
 
+/// <summary>
+/// Enables the fixes that make Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
+/// </summary>
 void RiffRepeater::FixSpeedPercents() {
 	MemUtil::PlaceHook((void*)Offsets::ptr_timeStretchCalculations, hook_timeStretchCalulations, 6);
 }
 
+/// <summary>
+/// Reverts back to the default way to handle Riff Repeater speeds. 68% on the slider -> 50% song speed.
+/// </summary>
 void RiffRepeater::ReverseSpeedPercents() {
 	MemUtil::PatchAdr((LPVOID)Offsets::ptr_timeStretchCalculations, "\xDD\x05\xA0\x18\x22\x01", 6);
 }
