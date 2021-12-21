@@ -112,15 +112,15 @@ void __declspec(naked) hook_timeStretchCalulations() {
 /// <summary>
 /// Enables the fixes that make Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
 /// </summary>
-void RiffRepeater::FixSpeedPercents() {
-	currentlyEnabled_FixPercents = true;
+void RiffRepeater::EnableLinearSpeeds() {
+	currentlyEnabled_LinearRR = true;
 	MemUtil::PlaceHook((void*)Offsets::ptr_timeStretchCalculations, hook_timeStretchCalulations, 6);
 }
 
 /// <summary>
 /// Reverts back to the default way to handle Riff Repeater speeds. 68% on the slider -> 50% song speed.
 /// </summary>
-void RiffRepeater::ReverseSpeedPercents() {
-	currentlyEnabled_FixPercents = false;
+void RiffRepeater::DisableLinearSpeeds() {
+	currentlyEnabled_LinearRR = false;
 	MemUtil::PatchAdr((LPVOID)Offsets::ptr_timeStretchCalculations, "\xDD\x05\xA0\x18\x22\x01", 6);
 }

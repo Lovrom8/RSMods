@@ -15,8 +15,8 @@ namespace RiffRepeater {
 	float ConvertSpeed(float speed);
 	void EnableTimeStretch();
 	void DisableTimeStretch();
-	void FixSpeedPercents();
-	void ReverseSpeedPercents();
+	void EnableLinearSpeeds();
+	void DisableLinearSpeeds();
 	bool LogSongID(std::string songKey);
 
 	inline std::map<std::string, AkUInt32> SongObjectIDs;
@@ -25,5 +25,5 @@ namespace RiffRepeater {
 	inline bool loggedCurrentSongID = false;
 
 	inline bool currentlyEnabled_Above100 = false;
-	inline bool currentlyEnabled_FixPercents = false;
+	inline bool currentlyEnabled_LinearRR = false;
 }

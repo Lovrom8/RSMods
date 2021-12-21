@@ -901,7 +901,7 @@ unsigned WINAPI MainThread() {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 
 	if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on")
-		RiffRepeater::FixSpeedPercents();
+		RiffRepeater::EnableLinearSpeeds();
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
 	WwiseLogging::Setup_log_PostEvent();
@@ -944,10 +944,10 @@ unsigned WINAPI MainThread() {
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 			}
 
-			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_FixPercents) // User had Linear RR off, but now they want it turned on.
-				RiffRepeater::FixSpeedPercents();
-			else if (Settings::ReturnSettingValue("LinearRiffRepeater") == "off" && RiffRepeater::currentlyEnabled_FixPercents) // User had Linear RR on, but now they want it turned off.
-				RiffRepeater::ReverseSpeedPercents();
+			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_LinearRR) // User had Linear RR off, but now they want it turned on.
+				RiffRepeater::EnableLinearSpeeds();
+			else if (Settings::ReturnSettingValue("LinearRiffRepeater") == "off" && RiffRepeater::currentlyEnabled_LinearRR) // User had Linear RR on, but now they want it turned off.
+				RiffRepeater::DisableLinearSpeeds();
 
 			//std::cout << currentMenu << std::endl;
 
