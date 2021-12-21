@@ -495,6 +495,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1012,6 +1013,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_LinearRiffRepeater);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BypassTwoRTCMessageBox);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowAudioInBackground);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_OverrideInputVolume);
@@ -1044,7 +1046,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 357);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 378);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -6219,6 +6221,18 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_LinearRiffRepeater
+            // 
+            this.checkBox_LinearRiffRepeater.AutoSize = true;
+            this.checkBox_LinearRiffRepeater.Location = new System.Drawing.Point(11, 356);
+            this.checkBox_LinearRiffRepeater.Name = "checkBox_LinearRiffRepeater";
+            this.checkBox_LinearRiffRepeater.Size = new System.Drawing.Size(121, 17);
+            this.checkBox_LinearRiffRepeater.TabIndex = 73;
+            this.checkBox_LinearRiffRepeater.Text = "Linear Riff Repeater";
+            this.checkBox_LinearRiffRepeater.UseVisualStyleBackColor = true;
+            this.checkBox_LinearRiffRepeater.CheckedChanged += new System.EventHandler(this.Save_LinearRiffRepeater);
+            this.checkBox_LinearRiffRepeater.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6853,6 +6867,7 @@
         private System.Windows.Forms.GroupBox groupBox_MidiInDevice;
         private System.Windows.Forms.ListBox listBox_ListMidiInDevices;
         private System.Windows.Forms.Label label_SelectedMidiInDevice;
+        private System.Windows.Forms.CheckBox checkBox_LinearRiffRepeater;
     }
 }
 

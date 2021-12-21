@@ -25,7 +25,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater,
 
 
                              // String Colors
@@ -127,6 +127,7 @@ namespace RSMods
             OverrideInputVolumeDeviceIdentifier         = "OverrideInputVolumeDevice = ",
             AllowAudioInBackgroundIdentifier            = "AllowAudioInBackground = ",
             BypassTwoRTCMessageBoxIdentifier            = "BypassTwoRTCMessageBox = ",
+            LinearRiffRepeaterIdentifier                = "LinearRiffRepeater = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -410,7 +411,8 @@ namespace RSMods
                     return FillSettingVariable(AllowAudioInBackgroundIdentifier, SettingType.ON_OFF, currentLine, out AllowAudioInBackground);
                 if (IdentifierIsFound(currentLine, BypassTwoRTCMessageBoxIdentifier, identifierToGrab))
                     return FillSettingVariable(BypassTwoRTCMessageBoxIdentifier, SettingType.ON_OFF, currentLine, out BypassTwoRTCMessageBox);
-
+                if (IdentifierIsFound(currentLine, LinearRiffRepeaterIdentifier, identifierToGrab))
+                    return FillSettingVariable(LinearRiffRepeaterIdentifier, SettingType.ON_OFF, currentLine, out LinearRiffRepeater);
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})

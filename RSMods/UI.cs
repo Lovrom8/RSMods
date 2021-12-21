@@ -646,6 +646,7 @@ namespace RSMods
 
             checkBox_AllowAudioInBackground.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
             checkBox_BypassTwoRTCMessageBox.Checked = ReadSettings.ProcessSettings(ReadSettings.BypassTwoRTCMessageBoxIdentifier) == "on";
+            checkBox_LinearRiffRepeater.Checked     = ReadSettings.ProcessSettings(ReadSettings.LinearRiffRepeaterIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2430,6 +2431,8 @@ namespace RSMods
 
         private void Save_AllowAudioInBackground(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.AllowAudioInBackgroundIdentifier, checkBox_AllowAudioInBackground.Checked.ToString().ToLower());
 
+        private void Save_BypassTwoRTCMessageBox(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.BypassTwoRTCMessageBoxIdentifier, checkBox_BypassTwoRTCMessageBox.Checked.ToString().ToLower());
+        private void Save_LinearRiffRepeater(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LinearRiffRepeaterIdentifier, checkBox_LinearRiffRepeater.Checked.ToString().ToLower());
 
         #endregion
         #region ToolTips
@@ -3902,8 +3905,6 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
-
-        private void Save_BypassTwoRTCMessageBox(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.BypassTwoRTCMessageBoxIdentifier, checkBox_BypassTwoRTCMessageBox.Checked.ToString().ToLower());
     }
 
     public class Midi
