@@ -24,5 +24,6 @@ namespace RiffRepeater {
 	inline bool readyToLogSongID;
 	inline bool loggedCurrentSongID = false;
 
-	inline bool currentlyEnabled = false;
+	inline bool currentlyEnabled_Above100 = false;
+	inline bool currentlyEnabled_FixPercents = false;
 }

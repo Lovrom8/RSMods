@@ -49,7 +49,7 @@ float RiffRepeater::ConvertSpeed(float speed) {
 /// </summary>
 void RiffRepeater::EnableTimeStretch() {
 	WwiseVariables::Wwise_Sound_SetActorMixerEffect(currentSongID, 2, AK_ID_Default_Time_Stretch);
-	currentlyEnabled = true;
+	currentlyEnabled_Above100 = true;
 }
 
 /// <summary>
@@ -58,7 +58,7 @@ void RiffRepeater::EnableTimeStretch() {
 void RiffRepeater::DisableTimeStretch() {
 	WwiseVariables::Wwise_Sound_SetActorMixerEffect(currentSongID, 2, AK_INVALID_UNIQUE_ID);
 	SetSpeed(100); // Reset TimeStretch to default.
-	currentlyEnabled = false;
+	currentlyEnabled_Above100 = false;
 }
 
 /// <summary>
@@ -113,6 +113,7 @@ void __declspec(naked) hook_timeStretchCalulations() {
 /// Enables the fixes that make Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
 /// </summary>
 void RiffRepeater::FixSpeedPercents() {
+	currentlyEnabled_FixPercents = true;
 	MemUtil::PlaceHook((void*)Offsets::ptr_timeStretchCalculations, hook_timeStretchCalulations, 6);
 }
 
@@ -120,5 +121,6 @@ void RiffRepeater::FixSpeedPercents() {
 /// Reverts back to the default way to handle Riff Repeater speeds. 68% on the slider -> 50% song speed.
 /// </summary>
 void RiffRepeater::ReverseSpeedPercents() {
+	currentlyEnabled_FixPercents = false;
 	MemUtil::PatchAdr((LPVOID)Offsets::ptr_timeStretchCalculations, "\xDD\x05\xA0\x18\x22\x01", 6);
 }

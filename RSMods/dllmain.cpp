@@ -604,7 +604,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled) { // Riff Repeater over 100%
+		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled_Above100) { // Riff Repeater over 100%
 			realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
 
 			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
@@ -893,13 +893,15 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	VolumeControl::SetupMicrophones();
-	RiffRepeater::FixSpeedPercents();
 
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 
 	std::cout << "RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl;
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
+
+	if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on")
+		RiffRepeater::FixSpeedPercents();
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
 	WwiseLogging::Setup_log_PostEvent();
@@ -941,7 +943,12 @@ unsigned WINAPI MainThread() {
 				else if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_original[0]) // User originally had BypassTwoRTCMessageBox off, but now they want it turned on.
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 			}
-			
+
+			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_FixPercents) // User had Linear RR off, but now they want it turned on.
+				RiffRepeater::FixSpeedPercents();
+			else if (Settings::ReturnSettingValue("LinearRiffRepeater") == "off" && RiffRepeater::currentlyEnabled_FixPercents) // User had Linear RR on, but now they want it turned off.
+				RiffRepeater::ReverseSpeedPercents();
+
 			//std::cout << currentMenu << std::endl;
 
 			// Scan for MIDI devices for Automated Tuning / True-Tuning
@@ -1075,11 +1082,10 @@ unsigned WINAPI MainThread() {
 				}
 
 				// Turn off Riff Repeater Speed above 100%
-				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens)) {
+				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens) && RiffRepeater::currentlyEnabled_Above100) {
 					RiffRepeater::DisableTimeStretch();
 					RiffRepeater::loggedCurrentSongID = false;
 					realSongSpeed = 100.f;
-					skipERSleep = false;
 				}
 
 				// Turn off Extended Range
