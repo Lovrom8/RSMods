@@ -3171,6 +3171,7 @@
             this.listBox_AvailableFonts.Name = "listBox_AvailableFonts";
             this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
             this.listBox_AvailableFonts.TabIndex = 0;
+            this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.Fonts_Change);
             // 
             // groupBox_ControlSongVolumeWhen
             // 
