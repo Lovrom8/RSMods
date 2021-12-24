@@ -618,9 +618,7 @@ std::string MemHelpers::CurrentSelectedUser() {
 		i++;
 	}
 
-	std::string hopeThisWorks = std::string((const char*)badValue);
-
-	return hopeThisWorks;
+	return std::string((const char*)badValue);
 }
 
 /// <summary>

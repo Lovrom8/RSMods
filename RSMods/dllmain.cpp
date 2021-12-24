@@ -1189,13 +1189,13 @@ unsigned WINAPI MainThread() {
 			// Change Current Menu status to the current menu while the game is loading.
 			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
 
-			if (currentMenu == "MainMenu") // Yay We Loaded :P
+			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") // Yay We Loaded :P (or the user opened a new user profile. This prevents us from creating a loop that the user cannot leave.
 				GameLoaded = true;
 
 			// Auto Load Profile. AKA "Fork in the toaster".
 			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, dontAutoEnter)) && !forkInToasterNewProfile) {
 				// If the user user says "I want to always load this profile"
-				if (Settings::ReturnSettingValue("ProfileToLoad") != (std::string)"" && currentMenu == (std::string)"ProfileSelect") {
+				if (Settings::ReturnSettingValue("ProfileToLoad") != "" && currentMenu == (std::string)"ProfileSelect") {
 					selectedUser = MemHelpers::CurrentSelectedUser();
 					if (selectedUser == Settings::ReturnSettingValue("ProfileToLoad")) // The profile we're looking for
 						AutoEnterGame();
@@ -1203,8 +1203,11 @@ unsigned WINAPI MainThread() {
 						std::cout << "(Auto Load) Invalid Profile Name" << std::endl;
 						forkInToasterNewProfile = true;
 					}
-					else // Not the profile we're looking for
-						AutoEnterGame();
+					else { // Not the profile we're looking for. Move down 1.
+						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_DOWN, 0);
+						Sleep(30);
+						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DOWN, 0);
+					} 
 				}
 				else
 					AutoEnterGame();
