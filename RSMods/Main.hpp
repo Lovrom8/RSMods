@@ -32,6 +32,7 @@
 #include "Mods/LaunchOnExternalMonitor.hpp"
 #include "Mods/VoiceOverControl.hpp"
 #include "Mods/RiffRepeater.hpp"
+#include "Mods/AudioDevices.hpp"
 
 std::vector<std::string> effectQueue;
 std::vector<std::string> enabledEffects;

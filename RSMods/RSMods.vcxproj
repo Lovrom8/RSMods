@@ -31,6 +31,7 @@
     <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp" />
     <ClCompile Include="Lib\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Lib\Midi\RtMidi.cpp" />
+    <ClCompile Include="Mods\AudioDevices.cpp" />
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
     <ClCompile Include="Mods\RiffRepeater.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp" />
     <ClInclude Include="Lib\Json\json.hpp" />
     <ClInclude Include="Lib\Midi\RtMidi.h" />
+    <ClInclude Include="Mods\AudioDevices.hpp" />
     <ClInclude Include="Mods\DisableControllers.hpp" />
     <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />

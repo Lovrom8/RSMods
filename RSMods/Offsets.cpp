@@ -164,6 +164,8 @@ namespace Offsets {
 	uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40;
 	volatile double& ref_scrollSpeedMultiplier = *((volatile double *)ptr_scrollSpeedMultiplier);
 	uintptr_t patch_SongPreviewWwiseEvent = 0x011AE6E0;
+	uintptr_t ptr_sampleRateRequirementAudioOutput = 0x01F5C80B;
+	uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck = 0x01F5C810;
 
 	// Objects
 	uintptr_t ptr_rootObject = 0x00F5C508;

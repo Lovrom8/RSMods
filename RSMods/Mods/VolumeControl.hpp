@@ -16,14 +16,10 @@ namespace VolumeControl {
 	void DecreaseVolume(int amountToDecrease, std::string mixerToDecrease);
 	void DisableSongPreviewAudio();
 	void EnableSongPreviewAudio();
-	void SetupMicrophones();
-	void SetMicrophoneVolume(std::string microphoneName,int volume);
-	int GetMicrophoneVolume(std::string microphoneName);
 	void AllowAltTabbingWithAudio();
 	void DisableAltTabbingWithAudio();
 	inline bool disabledSongPreviewAudio = false;
 	inline bool allowedAltTabbingWithAudio = false;
-	inline std::map<std::string, LPWSTR> activeMicrophones;
 }
 
 inline std::vector<std::string> mixerNames = {

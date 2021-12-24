@@ -222,6 +222,9 @@
     <ClCompile Include="Mods\RiffRepeater.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\AudioDevices.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -435,6 +438,9 @@
       <Filter>Main Headers\Json</Filter>
     </ClInclude>
     <ClInclude Include="Mods\RiffRepeater.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\AudioDevices.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>

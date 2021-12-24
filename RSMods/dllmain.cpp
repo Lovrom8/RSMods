@@ -508,7 +508,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		static std::vector<std::string> microphones;
 
 		if (microphones.size() == 0) {
-			for (std::map<std::string, LPWSTR>::iterator it = VolumeControl::activeMicrophones.begin(); it != VolumeControl::activeMicrophones.end(); ++it) {
+			for (std::map<std::string, LPWSTR>::iterator it = AudioDevices::activeMicrophones.begin(); it != AudioDevices::activeMicrophones.end(); ++it) {
 				microphones.push_back(it->first);
 			}
 		}
@@ -528,7 +528,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if (ImGui::Button("Random Volume"))
-			VolumeControl::SetMicrophoneVolume(selectedMicrophone, rand() % 100);
+			AudioDevices::SetMicrophoneVolume(selectedMicrophone, rand() % 100);
 
 		ImGui::End();
 
@@ -892,7 +892,8 @@ unsigned WINAPI MainThread() {
 	ClearMDMPs();
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
-	VolumeControl::SetupMicrophones();
+	AudioDevices::SetupMicrophones();
+	//AudioDevices::ChangeOutputSampleRateRequirement();
 
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 
@@ -926,8 +927,8 @@ unsigned WINAPI MainThread() {
 			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
 
 			// Override the default microphone volume.
-			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && VolumeControl::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
-				VolumeControl::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
+			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && AudioDevices::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
+				AudioDevices::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
 
 			if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on" && !VolumeControl::allowedAltTabbingWithAudio)
 				VolumeControl::AllowAltTabbingWithAudio();
