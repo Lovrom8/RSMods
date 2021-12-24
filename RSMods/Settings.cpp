@@ -77,7 +77,8 @@ void Settings::Initialize()
 		{"OverrideInputVolumeDevice", ""},
 		{"AllowAudioInBackground", "off"},
 		{"BypassTwoRTCMessageBox", "off"},
-		{"LinearRiffRepeater", "off"}
+		{"LinearRiffRepeater", "off"},
+		{"Use44100HzForOutput", "off"}
 	};
 
 	customSettings = {
@@ -266,6 +267,7 @@ void Settings::ReadModSettings() {
 	modSettings["AllowAudioInBackground"] = reader.GetValue("Toggle Switches", "AllowAudioInBackground", "off");
 	modSettings["BypassTwoRTCMessageBox"] = reader.GetValue("Toggle Switches", "BypassTwoRTCMessageBox", "off");
 	modSettings["LinearRiffRepeater"] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
+	modSettings["Use44100HzForOutput"] = reader.GetValue("Toggle Switches", "Use44100HzForOutput", "off");
 }
 
 /// <summary>

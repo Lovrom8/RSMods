@@ -893,8 +893,10 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
-	//AudioDevices::ChangeOutputSampleRateRequirement();
 
+	if (Settings::ReturnSettingValue("Use44100HzForOutput") == "on")
+		AudioDevices::ChangeOutputSampleRateTo44100();
+	
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 
 	std::cout << "RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl;

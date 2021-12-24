@@ -16,9 +16,7 @@ namespace AudioDevices {
 	void SetupMicrophones();
 	void SetMicrophoneVolume(std::string microphoneName, int volume);
 	int GetMicrophoneVolume(std::string microphoneName);
-	void ChangeOutputSampleRateRequirement();
+	void ChangeOutputSampleRateTo44100();
 
 	inline std::map<std::string, LPWSTR> activeMicrophones;
-
-	inline int output_sampleRate = 44100;
 };
