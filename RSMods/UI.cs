@@ -363,6 +363,7 @@ namespace RSMods
         {
             try
             {
+                List<string> backups = new List<string>();
                 foreach (string backup in Directory.GetDirectories(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups")))
                 {
                     string folderName = Path.GetFileNameWithoutExtension(backup);
@@ -375,9 +376,10 @@ namespace RSMods
 
                     string userFriendlyName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month) + " " + day + " " + year + " @ " + time.Replace('-', ':');
 
-                    listBox_Profiles_ListBackups.Items.Add(userFriendlyName);
+                    backups.Add(userFriendlyName);
                 }
-
+                backups.Reverse();
+                backups.ForEach(b => listBox_Profiles_ListBackups.Items.Add(b));
             }
             catch // Folder doesn't exist
             {
@@ -564,8 +566,6 @@ namespace RSMods
                     }
 
                 }
-
-                
 
                 switch (ReadSettings.ProcessSettings(ReadSettings.MidiAutoTuningWhenIdentifier))
                 {

@@ -233,6 +233,11 @@
             this.textBox_Note0Color = new System.Windows.Forms.TextBox();
             this.button_Note0ColorButton = new System.Windows.Forms.Button();
             this.tabPage_ModSettings_DisableUI = new System.Windows.Forms.TabPage();
+            this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
+            this.label_FontTestNumbers = new System.Windows.Forms.Label();
+            this.label_FontTestlowercase = new System.Windows.Forms.Label();
+            this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
+            this.listBox_AvailableFonts = new System.Windows.Forms.ListBox();
             this.groupBox_ControlSongVolumeWhen = new System.Windows.Forms.GroupBox();
             this.radio_ControlSongVolumeManual = new System.Windows.Forms.RadioButton();
             this.radio_ControlSongVolumeInSong = new System.Windows.Forms.RadioButton();
@@ -263,6 +268,9 @@
             this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
+            this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
+            this.listBox_Profiles_ListBackups = new System.Windows.Forms.ListBox();
             this.groupBox_OverrideInputVolume = new System.Windows.Forms.GroupBox();
             this.nUpDown_OverrideInputVolume = new System.Windows.Forms.NumericUpDown();
             this.label_OverrideInputVolumeTo = new System.Windows.Forms.Label();
@@ -283,11 +291,6 @@
             this.groupBox_Backups = new System.Windows.Forms.GroupBox();
             this.checkBox_UnlimitedBackups = new System.Windows.Forms.CheckBox();
             this.nUpDown_NumberOfBackups = new System.Windows.Forms.NumericUpDown();
-            this.groupBox_OnScreenFont = new System.Windows.Forms.GroupBox();
-            this.label_FontTestNumbers = new System.Windows.Forms.Label();
-            this.label_FontTestlowercase = new System.Windows.Forms.Label();
-            this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
-            this.listBox_AvailableFonts = new System.Windows.Forms.ListBox();
             this.groupBox_RRSpeed = new System.Windows.Forms.GroupBox();
             this.nUpDown_RiffRepeaterSpeed = new System.Windows.Forms.NumericUpDown();
             this.groupBox_ControlVolumeIncrement = new System.Windows.Forms.GroupBox();
@@ -458,9 +461,6 @@
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
-            this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
-            this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
-            this.listBox_Profiles_ListBackups = new System.Windows.Forms.ListBox();
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
@@ -532,6 +532,7 @@
             this.tabPage_ModSettings_ER.SuspendLayout();
             this.groupBox_NoteColors.SuspendLayout();
             this.tabPage_ModSettings_DisableUI.SuspendLayout();
+            this.groupBox_OnScreenFont.SuspendLayout();
             this.groupBox_ControlSongVolumeWhen.SuspendLayout();
             this.groupBox_SongTimer.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
@@ -542,12 +543,12 @@
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
+            this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_OverrideInputVolume.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
             this.groupBox_CustomHighway.SuspendLayout();
             this.groupBox_Backups.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).BeginInit();
-            this.groupBox_OnScreenFont.SuspendLayout();
             this.groupBox_RRSpeed.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).BeginInit();
             this.groupBox_ControlVolumeIncrement.SuspendLayout();
@@ -589,7 +590,6 @@
             this.tab_SoundPacks.SuspendLayout();
             this.groupBox_SoundPacks.SuspendLayout();
             this.tab_Profiles.SuspendLayout();
-            this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
             this.groupBox_Profiles_SongLists.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).BeginInit();
@@ -3107,6 +3107,7 @@
             // tabPage_ModSettings_DisableUI
             // 
             this.tabPage_ModSettings_DisableUI.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_OnScreenFont);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_ControlSongVolumeWhen);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_SongTimer);
@@ -3119,6 +3120,57 @@
             this.tabPage_ModSettings_DisableUI.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_DisableUI.TabIndex = 3;
             this.tabPage_ModSettings_DisableUI.Text = "Disable UI Elements";
+            // 
+            // groupBox_OnScreenFont
+            // 
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestNumbers);
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestlowercase);
+            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestCAPITALS);
+            this.groupBox_OnScreenFont.Controls.Add(this.listBox_AvailableFonts);
+            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(420, 308);
+            this.groupBox_OnScreenFont.Name = "groupBox_OnScreenFont";
+            this.groupBox_OnScreenFont.Size = new System.Drawing.Size(357, 115);
+            this.groupBox_OnScreenFont.TabIndex = 100009;
+            this.groupBox_OnScreenFont.TabStop = false;
+            this.groupBox_OnScreenFont.Text = "On Screen Font";
+            // 
+            // label_FontTestNumbers
+            // 
+            this.label_FontTestNumbers.AutoSize = true;
+            this.label_FontTestNumbers.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestNumbers.Location = new System.Drawing.Point(203, 92);
+            this.label_FontTestNumbers.Name = "label_FontTestNumbers";
+            this.label_FontTestNumbers.Size = new System.Drawing.Size(88, 17);
+            this.label_FontTestNumbers.TabIndex = 3;
+            this.label_FontTestNumbers.Text = "1234567890";
+            // 
+            // label_FontTestlowercase
+            // 
+            this.label_FontTestlowercase.AutoSize = true;
+            this.label_FontTestlowercase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestlowercase.Location = new System.Drawing.Point(268, 15);
+            this.label_FontTestlowercase.Name = "label_FontTestlowercase";
+            this.label_FontTestlowercase.Size = new System.Drawing.Size(59, 68);
+            this.label_FontTestlowercase.TabIndex = 2;
+            this.label_FontTestlowercase.Text = "abcdefg\r\nhijklmn\r\nopqrstu\r\nvwxyz";
+            // 
+            // label_FontTestCAPITALS
+            // 
+            this.label_FontTestCAPITALS.AutoSize = true;
+            this.label_FontTestCAPITALS.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label_FontTestCAPITALS.Location = new System.Drawing.Point(189, 15);
+            this.label_FontTestCAPITALS.Name = "label_FontTestCAPITALS";
+            this.label_FontTestCAPITALS.Size = new System.Drawing.Size(77, 68);
+            this.label_FontTestCAPITALS.TabIndex = 1;
+            this.label_FontTestCAPITALS.Text = "ABCDEFG\r\nHIJKLMN\r\nOPQRSTU\r\nVWXYZ\r\n";
+            // 
+            // listBox_AvailableFonts
+            // 
+            this.listBox_AvailableFonts.FormattingEnabled = true;
+            this.listBox_AvailableFonts.Location = new System.Drawing.Point(9, 20);
+            this.listBox_AvailableFonts.Name = "listBox_AvailableFonts";
+            this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
+            this.listBox_AvailableFonts.TabIndex = 0;
             // 
             // groupBox_ControlSongVolumeWhen
             // 
@@ -3481,13 +3533,13 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OverrideInputVolume);
             this.tabPage_ModSettings_Misc.Controls.Add(this.checkBox_TurnOffAllMods);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_SecondaryMonitorStartPos);
             this.tabPage_ModSettings_Misc.Controls.Add(this.button_ResetModsToDefault);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_CustomHighway);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Backups);
-            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OnScreenFont);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_RRSpeed);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_ControlVolumeIncrement);
             this.tabPage_ModSettings_Misc.Location = new System.Drawing.Point(4, 22);
@@ -3496,13 +3548,42 @@
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
             // 
+            // groupBox_Profiles_RevertBackup
+            // 
+            this.groupBox_Profiles_RevertBackup.Controls.Add(this.button_Profiles_RevertBackup);
+            this.groupBox_Profiles_RevertBackup.Controls.Add(this.listBox_Profiles_ListBackups);
+            this.groupBox_Profiles_RevertBackup.Location = new System.Drawing.Point(7, 290);
+            this.groupBox_Profiles_RevertBackup.Name = "groupBox_Profiles_RevertBackup";
+            this.groupBox_Profiles_RevertBackup.Size = new System.Drawing.Size(327, 123);
+            this.groupBox_Profiles_RevertBackup.TabIndex = 100010;
+            this.groupBox_Profiles_RevertBackup.TabStop = false;
+            this.groupBox_Profiles_RevertBackup.Text = "Revert Profile To Backup";
+            // 
+            // button_Profiles_RevertBackup
+            // 
+            this.button_Profiles_RevertBackup.Location = new System.Drawing.Point(91, 94);
+            this.button_Profiles_RevertBackup.Name = "button_Profiles_RevertBackup";
+            this.button_Profiles_RevertBackup.Size = new System.Drawing.Size(146, 23);
+            this.button_Profiles_RevertBackup.TabIndex = 1;
+            this.button_Profiles_RevertBackup.Text = "Revert To Backup";
+            this.button_Profiles_RevertBackup.UseVisualStyleBackColor = true;
+            this.button_Profiles_RevertBackup.Click += new System.EventHandler(this.Profiles_RevertToBackup);
+            // 
+            // listBox_Profiles_ListBackups
+            // 
+            this.listBox_Profiles_ListBackups.FormattingEnabled = true;
+            this.listBox_Profiles_ListBackups.Location = new System.Drawing.Point(6, 19);
+            this.listBox_Profiles_ListBackups.Name = "listBox_Profiles_ListBackups";
+            this.listBox_Profiles_ListBackups.Size = new System.Drawing.Size(314, 69);
+            this.listBox_Profiles_ListBackups.TabIndex = 0;
+            // 
             // groupBox_OverrideInputVolume
             // 
             this.groupBox_OverrideInputVolume.Controls.Add(this.nUpDown_OverrideInputVolume);
             this.groupBox_OverrideInputVolume.Controls.Add(this.label_OverrideInputVolumeTo);
             this.groupBox_OverrideInputVolume.Controls.Add(this.label_AvailableInputDevices);
             this.groupBox_OverrideInputVolume.Controls.Add(this.listBox_AvailableInputDevices);
-            this.groupBox_OverrideInputVolume.Location = new System.Drawing.Point(335, 153);
+            this.groupBox_OverrideInputVolume.Location = new System.Drawing.Point(199, 14);
             this.groupBox_OverrideInputVolume.Name = "groupBox_OverrideInputVolume";
             this.groupBox_OverrideInputVolume.Size = new System.Drawing.Size(275, 235);
             this.groupBox_OverrideInputVolume.TabIndex = 100009;
@@ -3566,7 +3647,7 @@
             // 
             // button_SecondaryMonitorStartPos
             // 
-            this.button_SecondaryMonitorStartPos.Location = new System.Drawing.Point(21, 382);
+            this.button_SecondaryMonitorStartPos.Location = new System.Drawing.Point(562, 215);
             this.button_SecondaryMonitorStartPos.Name = "button_SecondaryMonitorStartPos";
             this.button_SecondaryMonitorStartPos.Size = new System.Drawing.Size(197, 23);
             this.button_SecondaryMonitorStartPos.TabIndex = 52;
@@ -3587,9 +3668,9 @@
             this.groupBox_CustomHighway.Controls.Add(this.button_ChangeNotewayGutter);
             this.groupBox_CustomHighway.Controls.Add(this.button_ChangeUnNumberedFrets);
             this.groupBox_CustomHighway.Controls.Add(this.button_ChangeNumberedFrets);
-            this.groupBox_CustomHighway.Location = new System.Drawing.Point(21, 154);
+            this.groupBox_CustomHighway.Location = new System.Drawing.Point(480, 23);
             this.groupBox_CustomHighway.Name = "groupBox_CustomHighway";
-            this.groupBox_CustomHighway.Size = new System.Drawing.Size(308, 169);
+            this.groupBox_CustomHighway.Size = new System.Drawing.Size(294, 169);
             this.groupBox_CustomHighway.TabIndex = 100005;
             this.groupBox_CustomHighway.TabStop = false;
             this.groupBox_CustomHighway.Text = "Custom Highway Colors";
@@ -3600,7 +3681,7 @@
             // 
             this.button_ResetNotewayColors.Location = new System.Drawing.Point(157, 140);
             this.button_ResetNotewayColors.Name = "button_ResetNotewayColors";
-            this.button_ResetNotewayColors.Size = new System.Drawing.Size(134, 23);
+            this.button_ResetNotewayColors.Size = new System.Drawing.Size(122, 23);
             this.button_ResetNotewayColors.TabIndex = 8;
             this.button_ResetNotewayColors.Text = "Reset Colors";
             this.button_ResetNotewayColors.UseVisualStyleBackColor = true;
@@ -3612,7 +3693,7 @@
             this.textBox_ShowFretNumber.Location = new System.Drawing.Point(157, 116);
             this.textBox_ShowFretNumber.Name = "textBox_ShowFretNumber";
             this.textBox_ShowFretNumber.ReadOnly = true;
-            this.textBox_ShowFretNumber.Size = new System.Drawing.Size(134, 20);
+            this.textBox_ShowFretNumber.Size = new System.Drawing.Size(122, 20);
             this.textBox_ShowFretNumber.TabIndex = 7;
             // 
             // textBox_ShowNotewayGutter
@@ -3621,7 +3702,7 @@
             this.textBox_ShowNotewayGutter.Location = new System.Drawing.Point(157, 87);
             this.textBox_ShowNotewayGutter.Name = "textBox_ShowNotewayGutter";
             this.textBox_ShowNotewayGutter.ReadOnly = true;
-            this.textBox_ShowNotewayGutter.Size = new System.Drawing.Size(134, 20);
+            this.textBox_ShowNotewayGutter.Size = new System.Drawing.Size(122, 20);
             this.textBox_ShowNotewayGutter.TabIndex = 6;
             // 
             // textBox_ShowUnNumberedFrets
@@ -3630,7 +3711,7 @@
             this.textBox_ShowUnNumberedFrets.Location = new System.Drawing.Point(157, 58);
             this.textBox_ShowUnNumberedFrets.Name = "textBox_ShowUnNumberedFrets";
             this.textBox_ShowUnNumberedFrets.ReadOnly = true;
-            this.textBox_ShowUnNumberedFrets.Size = new System.Drawing.Size(134, 20);
+            this.textBox_ShowUnNumberedFrets.Size = new System.Drawing.Size(122, 20);
             this.textBox_ShowUnNumberedFrets.TabIndex = 5;
             // 
             // textBox_ShowNumberedFrets
@@ -3639,7 +3720,7 @@
             this.textBox_ShowNumberedFrets.Location = new System.Drawing.Point(157, 29);
             this.textBox_ShowNumberedFrets.Name = "textBox_ShowNumberedFrets";
             this.textBox_ShowNumberedFrets.ReadOnly = true;
-            this.textBox_ShowNumberedFrets.Size = new System.Drawing.Size(134, 20);
+            this.textBox_ShowNumberedFrets.Size = new System.Drawing.Size(122, 20);
             this.textBox_ShowNumberedFrets.TabIndex = 4;
             // 
             // button_ChangeFretNumber
@@ -3690,7 +3771,7 @@
             // 
             this.groupBox_Backups.Controls.Add(this.checkBox_UnlimitedBackups);
             this.groupBox_Backups.Controls.Add(this.nUpDown_NumberOfBackups);
-            this.groupBox_Backups.Location = new System.Drawing.Point(601, 16);
+            this.groupBox_Backups.Location = new System.Drawing.Point(27, 144);
             this.groupBox_Backups.Name = "groupBox_Backups";
             this.groupBox_Backups.Size = new System.Drawing.Size(128, 86);
             this.groupBox_Backups.TabIndex = 100006;
@@ -3728,59 +3809,6 @@
             0,
             0});
             this.nUpDown_NumberOfBackups.ValueChanged += new System.EventHandler(this.Save_NumberOfBackups);
-            // 
-            // groupBox_OnScreenFont
-            // 
-            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestNumbers);
-            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestlowercase);
-            this.groupBox_OnScreenFont.Controls.Add(this.label_FontTestCAPITALS);
-            this.groupBox_OnScreenFont.Controls.Add(this.listBox_AvailableFonts);
-            this.groupBox_OnScreenFont.Location = new System.Drawing.Point(222, 16);
-            this.groupBox_OnScreenFont.Name = "groupBox_OnScreenFont";
-            this.groupBox_OnScreenFont.Size = new System.Drawing.Size(357, 115);
-            this.groupBox_OnScreenFont.TabIndex = 100003;
-            this.groupBox_OnScreenFont.TabStop = false;
-            this.groupBox_OnScreenFont.Text = "On Screen Font";
-            this.groupBox_OnScreenFont.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // label_FontTestNumbers
-            // 
-            this.label_FontTestNumbers.AutoSize = true;
-            this.label_FontTestNumbers.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestNumbers.Location = new System.Drawing.Point(203, 92);
-            this.label_FontTestNumbers.Name = "label_FontTestNumbers";
-            this.label_FontTestNumbers.Size = new System.Drawing.Size(88, 17);
-            this.label_FontTestNumbers.TabIndex = 3;
-            this.label_FontTestNumbers.Text = "1234567890";
-            // 
-            // label_FontTestlowercase
-            // 
-            this.label_FontTestlowercase.AutoSize = true;
-            this.label_FontTestlowercase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestlowercase.Location = new System.Drawing.Point(268, 15);
-            this.label_FontTestlowercase.Name = "label_FontTestlowercase";
-            this.label_FontTestlowercase.Size = new System.Drawing.Size(59, 68);
-            this.label_FontTestlowercase.TabIndex = 2;
-            this.label_FontTestlowercase.Text = "abcdefg\r\nhijklmn\r\nopqrstu\r\nvwxyz";
-            // 
-            // label_FontTestCAPITALS
-            // 
-            this.label_FontTestCAPITALS.AutoSize = true;
-            this.label_FontTestCAPITALS.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label_FontTestCAPITALS.Location = new System.Drawing.Point(189, 15);
-            this.label_FontTestCAPITALS.Name = "label_FontTestCAPITALS";
-            this.label_FontTestCAPITALS.Size = new System.Drawing.Size(77, 68);
-            this.label_FontTestCAPITALS.TabIndex = 1;
-            this.label_FontTestCAPITALS.Text = "ABCDEFG\r\nHIJKLMN\r\nOPQRSTU\r\nVWXYZ\r\n";
-            // 
-            // listBox_AvailableFonts
-            // 
-            this.listBox_AvailableFonts.FormattingEnabled = true;
-            this.listBox_AvailableFonts.Location = new System.Drawing.Point(9, 20);
-            this.listBox_AvailableFonts.Name = "listBox_AvailableFonts";
-            this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
-            this.listBox_AvailableFonts.TabIndex = 0;
-            this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.Fonts_Change);
             // 
             // groupBox_RRSpeed
             // 
@@ -5842,7 +5870,6 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
-            this.tab_Profiles.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
             this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
@@ -5856,38 +5883,6 @@
             this.tab_Profiles.Size = new System.Drawing.Size(1150, 513);
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
-            // 
-            // groupBox_Profiles_RevertBackup
-            // 
-            this.groupBox_Profiles_RevertBackup.Controls.Add(this.button_Profiles_RevertBackup);
-            this.groupBox_Profiles_RevertBackup.Controls.Add(this.listBox_Profiles_ListBackups);
-            this.groupBox_Profiles_RevertBackup.Location = new System.Drawing.Point(14, 375);
-            this.groupBox_Profiles_RevertBackup.Name = "groupBox_Profiles_RevertBackup";
-            this.groupBox_Profiles_RevertBackup.Size = new System.Drawing.Size(327, 123);
-            this.groupBox_Profiles_RevertBackup.TabIndex = 12;
-            this.groupBox_Profiles_RevertBackup.TabStop = false;
-            this.groupBox_Profiles_RevertBackup.Text = "Fix Corrupt Profile";
-            this.groupBox_Profiles_RevertBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_Profiles_RevertBackup
-            // 
-            this.button_Profiles_RevertBackup.Location = new System.Drawing.Point(91, 94);
-            this.button_Profiles_RevertBackup.Name = "button_Profiles_RevertBackup";
-            this.button_Profiles_RevertBackup.Size = new System.Drawing.Size(146, 23);
-            this.button_Profiles_RevertBackup.TabIndex = 1;
-            this.button_Profiles_RevertBackup.Text = "Revert To Backup";
-            this.button_Profiles_RevertBackup.UseVisualStyleBackColor = true;
-            this.button_Profiles_RevertBackup.Click += new System.EventHandler(this.Profiles_RevertToBackup);
-            this.button_Profiles_RevertBackup.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // listBox_Profiles_ListBackups
-            // 
-            this.listBox_Profiles_ListBackups.FormattingEnabled = true;
-            this.listBox_Profiles_ListBackups.Location = new System.Drawing.Point(6, 19);
-            this.listBox_Profiles_ListBackups.Name = "listBox_Profiles_ListBackups";
-            this.listBox_Profiles_ListBackups.Size = new System.Drawing.Size(314, 69);
-            this.listBox_Profiles_ListBackups.TabIndex = 0;
-            this.listBox_Profiles_ListBackups.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_Profiles_Rewards
             // 
@@ -6312,6 +6307,8 @@
             this.groupBox_NoteColors.ResumeLayout(false);
             this.groupBox_NoteColors.PerformLayout();
             this.tabPage_ModSettings_DisableUI.ResumeLayout(false);
+            this.groupBox_OnScreenFont.ResumeLayout(false);
+            this.groupBox_OnScreenFont.PerformLayout();
             this.groupBox_ControlSongVolumeWhen.ResumeLayout(false);
             this.groupBox_ControlSongVolumeWhen.PerformLayout();
             this.groupBox_SongTimer.ResumeLayout(false);
@@ -6328,6 +6325,7 @@
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.tabPage_ModSettings_Misc.PerformLayout();
+            this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).EndInit();
@@ -6336,8 +6334,6 @@
             this.groupBox_Backups.ResumeLayout(false);
             this.groupBox_Backups.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NumberOfBackups)).EndInit();
-            this.groupBox_OnScreenFont.ResumeLayout(false);
-            this.groupBox_OnScreenFont.PerformLayout();
             this.groupBox_RRSpeed.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RiffRepeaterSpeed)).EndInit();
             this.groupBox_ControlVolumeIncrement.ResumeLayout(false);
@@ -6396,7 +6392,6 @@
             this.groupBox_SoundPacks.ResumeLayout(false);
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
-            this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
             this.groupBox_Profiles_SongLists.ResumeLayout(false);
             this.groupBox_Profiles_SongLists.PerformLayout();
@@ -6597,11 +6592,6 @@
         private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
         private System.Windows.Forms.CheckBox checkBox_ShowCurrentNote;
         private System.Windows.Forms.CheckBox checkBox_RevealTwitchAuthToken;
-        private System.Windows.Forms.GroupBox groupBox_OnScreenFont;
-        private System.Windows.Forms.ListBox listBox_AvailableFonts;
-        private System.Windows.Forms.Label label_FontTestNumbers;
-        private System.Windows.Forms.Label label_FontTestlowercase;
-        private System.Windows.Forms.Label label_FontTestCAPITALS;
         private System.Windows.Forms.GroupBox groupBox_Keybindings_AUDIO;
         private System.Windows.Forms.Button button_ClearSelectedKeybind_AUDIO;
         private System.Windows.Forms.Label label_NewAssignmentAUDIO;
@@ -6739,16 +6729,6 @@
         private System.Windows.Forms.TabPage tabPage_ModSettings_Automation;
         private System.Windows.Forms.TabPage tabPage_ModSettings_Misc;
         private System.Windows.Forms.CheckBox checkBox_CustomHighway;
-        private System.Windows.Forms.GroupBox groupBox_CustomHighway;
-        private System.Windows.Forms.TextBox textBox_ShowFretNumber;
-        private System.Windows.Forms.TextBox textBox_ShowNotewayGutter;
-        private System.Windows.Forms.TextBox textBox_ShowUnNumberedFrets;
-        private System.Windows.Forms.TextBox textBox_ShowNumberedFrets;
-        private System.Windows.Forms.Button button_ChangeFretNumber;
-        private System.Windows.Forms.Button button_ChangeNotewayGutter;
-        private System.Windows.Forms.Button button_ChangeUnNumberedFrets;
-        private System.Windows.Forms.Button button_ChangeNumberedFrets;
-        private System.Windows.Forms.Button button_ResetNotewayColors;
         private System.Windows.Forms.Button button_ResetToDefaultCachePsarc;
         private System.Windows.Forms.RadioButton radio_Whammy;
         private System.Windows.Forms.GroupBox groupBox_SongTimer;
@@ -6804,10 +6784,7 @@
         private System.Windows.Forms.Button button_Note0ColorButton;
         private System.Windows.Forms.CheckBox checkBox_NoteColors_UseRocksmithColors;
         private System.Windows.Forms.CheckBox checkBox_ModsLog;
-        private System.Windows.Forms.GroupBox groupBox_Profiles_RevertBackup;
-        private System.Windows.Forms.ListBox listBox_Profiles_ListBackups;
         private System.IO.FileSystemWatcher fileSystemWatcher1;
-        private System.Windows.Forms.Button button_Profiles_RevertBackup;
         private System.Windows.Forms.TabPage tabPage_ModSettings_AutoTuning;
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningOffset;
         private System.Windows.Forms.ListBox listBox_MidiAutoTuningOffset;
@@ -6883,6 +6860,24 @@
         private System.Windows.Forms.Label label_SelectedMidiInDevice;
         private System.Windows.Forms.CheckBox checkBox_LinearRiffRepeater;
         private System.Windows.Forms.CheckBox checkBox_Use44100HzForOutput;
+        private System.Windows.Forms.GroupBox groupBox_OnScreenFont;
+        private System.Windows.Forms.Label label_FontTestNumbers;
+        private System.Windows.Forms.Label label_FontTestlowercase;
+        private System.Windows.Forms.Label label_FontTestCAPITALS;
+        private System.Windows.Forms.ListBox listBox_AvailableFonts;
+        private System.Windows.Forms.GroupBox groupBox_Profiles_RevertBackup;
+        private System.Windows.Forms.Button button_Profiles_RevertBackup;
+        private System.Windows.Forms.ListBox listBox_Profiles_ListBackups;
+        private System.Windows.Forms.GroupBox groupBox_CustomHighway;
+        private System.Windows.Forms.Button button_ResetNotewayColors;
+        private System.Windows.Forms.TextBox textBox_ShowFretNumber;
+        private System.Windows.Forms.TextBox textBox_ShowNotewayGutter;
+        private System.Windows.Forms.TextBox textBox_ShowUnNumberedFrets;
+        private System.Windows.Forms.TextBox textBox_ShowNumberedFrets;
+        private System.Windows.Forms.Button button_ChangeFretNumber;
+        private System.Windows.Forms.Button button_ChangeNotewayGutter;
+        private System.Windows.Forms.Button button_ChangeUnNumberedFrets;
+        private System.Windows.Forms.Button button_ChangeNumberedFrets;
     }
 }
 
