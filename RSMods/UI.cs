@@ -647,6 +647,7 @@ namespace RSMods
             checkBox_AllowAudioInBackground.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
             checkBox_BypassTwoRTCMessageBox.Checked = ReadSettings.ProcessSettings(ReadSettings.BypassTwoRTCMessageBoxIdentifier) == "on";
             checkBox_LinearRiffRepeater.Checked     = ReadSettings.ProcessSettings(ReadSettings.LinearRiffRepeaterIdentifier) == "on";
+            checkBox_Use44100HzForOutput.Checked    = ReadSettings.ProcessSettings(ReadSettings.Use44100HzForOutputIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2433,6 +2434,8 @@ namespace RSMods
 
         private void Save_BypassTwoRTCMessageBox(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.BypassTwoRTCMessageBoxIdentifier, checkBox_BypassTwoRTCMessageBox.Checked.ToString().ToLower());
         private void Save_LinearRiffRepeater(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LinearRiffRepeaterIdentifier, checkBox_LinearRiffRepeater.Checked.ToString().ToLower());
+
+        private void Save_Use44100HzForOutput(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.Use44100HzForOutputIdentifier, checkBox_Use44100HzForOutput.Checked.ToString().ToLower());
 
         #endregion
         #region ToolTips

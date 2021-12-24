@@ -41,6 +41,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_AllowAudioInBackground, "Allows you to listen to Rocksmith with the game in the background.\nThe game will give you about half a second of leeway to alt+tab without opening the pause menu.\nThe best spot to open is when the song starts, as you have around 3-4 seconds.");
             TooltipDictionary.Add(checkBox_BypassTwoRTCMessageBox, "Allows you to have two Real Tone Cables plugged in while playing singleplayer.\nWith this mod disabled, Rocksmith will stop you from doing this.\nIf you are using RS_ASIO v0.5.7, this will always be enabled.");
             TooltipDictionary.Add(checkBox_LinearRiffRepeater, "By default, the speed for Riff Repeater is now linear.\nEnabling this mod will fix that.\nIn standard Rocksmith 2014: 68% speed in Riff Repeater = 50% real speed.\nWith this mod: 68% speed in Riff Repeater = 68% real speed.");
+            TooltipDictionary.Add(checkBox_Use44100HzForOutput, "Tells Rocksmith to look for headphones / speakers using 44.1kHz instead of 48kHz.\nThis can be used to play with bluetooth headphones (there will be latency).\nSupport for this mod is \"as-is\" as we cannot help with every headset / speaker configuration.\nChanges made to this setting won't take effect until you restart Rocksmith.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");

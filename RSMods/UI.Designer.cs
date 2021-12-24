@@ -62,6 +62,8 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_Use44100HzForOutput = new System.Windows.Forms.CheckBox();
+            this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
             this.checkBox_BypassTwoRTCMessageBox = new System.Windows.Forms.CheckBox();
             this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
             this.checkBox_OverrideInputVolume = new System.Windows.Forms.CheckBox();
@@ -495,7 +497,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1013,6 +1014,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_Use44100HzForOutput);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_LinearRiffRepeater);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BypassTwoRTCMessageBox);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowAudioInBackground);
@@ -1050,6 +1052,30 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_Use44100HzForOutput
+            // 
+            this.checkBox_Use44100HzForOutput.AutoSize = true;
+            this.checkBox_Use44100HzForOutput.Location = new System.Drawing.Point(144, 356);
+            this.checkBox_Use44100HzForOutput.Name = "checkBox_Use44100HzForOutput";
+            this.checkBox_Use44100HzForOutput.Size = new System.Drawing.Size(141, 17);
+            this.checkBox_Use44100HzForOutput.TabIndex = 74;
+            this.checkBox_Use44100HzForOutput.Text = "Use 44.1kHz For Output";
+            this.checkBox_Use44100HzForOutput.UseVisualStyleBackColor = true;
+            this.checkBox_Use44100HzForOutput.CheckedChanged += new System.EventHandler(this.Save_Use44100HzForOutput);
+            this.checkBox_Use44100HzForOutput.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_LinearRiffRepeater
+            // 
+            this.checkBox_LinearRiffRepeater.AutoSize = true;
+            this.checkBox_LinearRiffRepeater.Location = new System.Drawing.Point(11, 356);
+            this.checkBox_LinearRiffRepeater.Name = "checkBox_LinearRiffRepeater";
+            this.checkBox_LinearRiffRepeater.Size = new System.Drawing.Size(121, 17);
+            this.checkBox_LinearRiffRepeater.TabIndex = 73;
+            this.checkBox_LinearRiffRepeater.Text = "Linear Riff Repeater";
+            this.checkBox_LinearRiffRepeater.UseVisualStyleBackColor = true;
+            this.checkBox_LinearRiffRepeater.CheckedChanged += new System.EventHandler(this.Save_LinearRiffRepeater);
+            this.checkBox_LinearRiffRepeater.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_BypassTwoRTCMessageBox
             // 
@@ -6221,18 +6247,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // checkBox_LinearRiffRepeater
-            // 
-            this.checkBox_LinearRiffRepeater.AutoSize = true;
-            this.checkBox_LinearRiffRepeater.Location = new System.Drawing.Point(11, 356);
-            this.checkBox_LinearRiffRepeater.Name = "checkBox_LinearRiffRepeater";
-            this.checkBox_LinearRiffRepeater.Size = new System.Drawing.Size(121, 17);
-            this.checkBox_LinearRiffRepeater.TabIndex = 73;
-            this.checkBox_LinearRiffRepeater.Text = "Linear Riff Repeater";
-            this.checkBox_LinearRiffRepeater.UseVisualStyleBackColor = true;
-            this.checkBox_LinearRiffRepeater.CheckedChanged += new System.EventHandler(this.Save_LinearRiffRepeater);
-            this.checkBox_LinearRiffRepeater.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6868,6 +6882,7 @@
         private System.Windows.Forms.ListBox listBox_ListMidiInDevices;
         private System.Windows.Forms.Label label_SelectedMidiInDevice;
         private System.Windows.Forms.CheckBox checkBox_LinearRiffRepeater;
+        private System.Windows.Forms.CheckBox checkBox_Use44100HzForOutput;
     }
 }
 

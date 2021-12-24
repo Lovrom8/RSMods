@@ -123,6 +123,7 @@ namespace RSMods
                     { ReadSettings.AllowAudioInBackgroundIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowAudioInBackgroundIdentifier, "off")}, // Allows users to have Rocksmith in the background while the audio still plays.
                     { ReadSettings.BypassTwoRTCMessageBoxIdentifier, CreateDefaultOnOldINI(ReadSettings.BypassTwoRTCMessageBoxIdentifier, "off")}, // Allows the user to play singleplayer with 2 RTCs connected without the message box appearing.
                     { ReadSettings.LinearRiffRepeaterIdentifier, CreateDefaultOnOldINI(ReadSettings.LinearRiffRepeaterIdentifier, "off") }, // Makes Riff Repeater linear, so 68% speed = 68% real speed.
+                    { ReadSettings.Use44100HzForOutputIdentifier, CreateDefaultOnOldINI(ReadSettings.Use44100HzForOutputIdentifier, "off") }, // Forces Rocksmith to look for audio output devices set to 44.1kHz instead of 48kHz.
                 }
             );
             saveSettingsOrDefaults.Add(

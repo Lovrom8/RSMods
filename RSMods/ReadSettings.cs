@@ -25,7 +25,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, Use44100HzForOutput,
 
 
                              // String Colors
@@ -128,6 +128,7 @@ namespace RSMods
             AllowAudioInBackgroundIdentifier            = "AllowAudioInBackground = ",
             BypassTwoRTCMessageBoxIdentifier            = "BypassTwoRTCMessageBox = ",
             LinearRiffRepeaterIdentifier                = "LinearRiffRepeater = ",
+            Use44100HzForOutputIdentifier               = "Use44100HzForOutput = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -413,6 +414,8 @@ namespace RSMods
                     return FillSettingVariable(BypassTwoRTCMessageBoxIdentifier, SettingType.ON_OFF, currentLine, out BypassTwoRTCMessageBox);
                 if (IdentifierIsFound(currentLine, LinearRiffRepeaterIdentifier, identifierToGrab))
                     return FillSettingVariable(LinearRiffRepeaterIdentifier, SettingType.ON_OFF, currentLine, out LinearRiffRepeater);
+                if (IdentifierIsFound(currentLine, Use44100HzForOutputIdentifier, identifierToGrab))
+                    return FillSettingVariable(Use44100HzForOutputIdentifier, SettingType.ON_OFF, currentLine, out Use44100HzForOutput);
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})
