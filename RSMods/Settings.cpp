@@ -78,7 +78,7 @@ void Settings::Initialize()
 		{"AllowAudioInBackground", "off"},
 		{"BypassTwoRTCMessageBox", "off"},
 		{"LinearRiffRepeater", "off"},
-		{"Use44100HzForOutput", "off"}
+		{"AltOutputSampleRate", "off"}
 	};
 
 	customSettings = {
@@ -93,6 +93,7 @@ void Settings::Initialize()
 		{"SeparateNoteColorsMode", 0},
 		{"OverrideInputVolume", 17},
 		{"CustomStringColors", 0},
+		{"AlternativeOutputSampleRate", 48000},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
 		{"GuitarSpeakEnter", 0},
@@ -200,6 +201,7 @@ void Settings::ReadModSettings() {
 		{"SeparateNoteColorsMode", reader.GetLongValue("Mod Settings", "SeparateNoteColors", 0)}, // 0 = same as strings, 1 = default, 2 = custom
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
+		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
 		{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
@@ -267,7 +269,7 @@ void Settings::ReadModSettings() {
 	modSettings["AllowAudioInBackground"] = reader.GetValue("Toggle Switches", "AllowAudioInBackground", "off");
 	modSettings["BypassTwoRTCMessageBox"] = reader.GetValue("Toggle Switches", "BypassTwoRTCMessageBox", "off");
 	modSettings["LinearRiffRepeater"] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
-	modSettings["Use44100HzForOutput"] = reader.GetValue("Toggle Switches", "Use44100HzForOutput", "off");
+	modSettings["AltOutputSampleRate"] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 }
 
 /// <summary>

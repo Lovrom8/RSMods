@@ -894,8 +894,11 @@ unsigned WINAPI MainThread() {
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
 
-	if (Settings::ReturnSettingValue("Use44100HzForOutput") == "on")
-		AudioDevices::ChangeOutputSampleRateTo44100();
+	if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000) {
+		std::cout << "[!] Overriding Output Sample Rate to " << Settings::GetModSetting("AlternativeOutputSampleRate") << std::endl;
+		AudioDevices::output_SampleRate = Settings::GetModSetting("AlternativeOutputSampleRate");
+		AudioDevices::ChangeOutputSampleRate();
+	}
 	
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 
@@ -1195,7 +1198,7 @@ unsigned WINAPI MainThread() {
 			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") // Yay We Loaded :P (or the user opened a new user profile. This prevents us from creating a loop that the user cannot leave.
 				GameLoaded = true;
 
-			if (Settings::ReturnSettingValue("Use44100HzForOutput") == "on" && *(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
+			if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000 && *(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
 				*(int*)Offsets::ptr_sampleRateSize = 2;
 				*(int*)Offsets::ptr_sampleRateBuffer = 128;
 			}

@@ -256,9 +256,9 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 }
 
 
-void __declspec(naked) hook_changeSampleRateTo44100() {
+void __declspec(naked) hook_changeSampleRate() {
 	__asm {
-		mov EAX, AudioDevices::output_SampleRate // Move 44100 into EAX
+		mov EAX, AudioDevices::output_SampleRate // Move user-provided sample rate into EAX
 		jmp Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck // Jump back to the original instruction set.
 	}
 }
@@ -272,7 +272,7 @@ void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 	}
 }
 
-void AudioDevices::ChangeOutputSampleRateTo44100() {
-	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRateTo44100, 5);
+void AudioDevices::ChangeOutputSampleRate() {
+	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRate, 5);
 	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateDivZeroCrash, hook_sampleRate_FixDivZeroCrash, 5);
 }
