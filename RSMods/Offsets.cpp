@@ -157,6 +157,14 @@ namespace Offsets {
 	uintptr_t ptr_luaopen_epgmGFx = 0x01c75fcc; // Scaleform x Flash
 	uintptr_t ptr_luaopen_epgmWwise = 0x01cb197d; // Wwise (Not really needed since we have access to all the raw functions, but better safe than sorry)
 
+	// Adjust sample rate requirements
+	uintptr_t ptr_sampleRateRequirementAudioOutput = 0x01F5C80B;
+	uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck = 0x01F5C810;
+	uintptr_t ptr_sampleRateDivZeroCrash = 0x01FB24D0;
+	uintptr_t ptr_sampleRateDivZeroCrash_JmpBck = 0x01FB24D5;
+	uintptr_t ptr_sampleRateSize = 0x0134E90C;
+	uintptr_t ptr_sampleRateBuffer = 0x0124EA9C;
+
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135C50C;
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
@@ -164,8 +172,7 @@ namespace Offsets {
 	uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40;
 	volatile double& ref_scrollSpeedMultiplier = *((volatile double *)ptr_scrollSpeedMultiplier);
 	uintptr_t patch_SongPreviewWwiseEvent = 0x011AE6E0;
-	uintptr_t ptr_sampleRateRequirementAudioOutput = 0x01F5C80B;
-	uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck = 0x01F5C810;
+
 
 	// Objects
 	uintptr_t ptr_rootObject = 0x00F5C508;

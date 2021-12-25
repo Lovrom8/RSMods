@@ -258,12 +258,21 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 
 void __declspec(naked) hook_changeSampleRateTo44100() {
 	__asm {
-		mov EAX, 44100 // Move 44100 into EAX
+		mov EAX, AudioDevices::output_SampleRate // Move 44100 into EAX
 		jmp Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck // Jump back to the original instruction set.
 	}
 }
 
+void __declspec(naked) hook_fixCrashDivZerio() {
+	__asm {
+		// There is a div EBX that we are replacing, but EBX is always 1 (unless the sample rate is above 48kHz) so we just remove it to place this hook.
+		mov EBX, 0x1	// Move 1 into the EBX register. This prevents the divide by 0 error when using a sample rate above 48kHz.
+		shr esi, 0x10	// Replace the original code we overwrote.
+		jmp Offsets::ptr_sampleRateDivZeroCrash_JmpBck // Jump back to the original instruction set.
+	}
+}
 
 void AudioDevices::ChangeOutputSampleRateTo44100() {
 	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRateTo44100, 5);
+	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateDivZeroCrash, hook_fixCrashDivZerio, 5);
 }

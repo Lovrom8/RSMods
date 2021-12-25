@@ -1195,6 +1195,11 @@ unsigned WINAPI MainThread() {
 			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") // Yay We Loaded :P (or the user opened a new user profile. This prevents us from creating a loop that the user cannot leave.
 				GameLoaded = true;
 
+			if (*(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
+				*(int*)Offsets::ptr_sampleRateSize = 2;
+				*(int*)Offsets::ptr_sampleRateBuffer = 128;
+			}
+				
 			// Auto Load Profile. AKA "Fork in the toaster".
 			if (Settings::ReturnSettingValue("ForceProfileEnabled") == "on" && !(MemHelpers::IsInStringArray(currentMenu, dontAutoEnter)) && !forkInToasterNewProfile) {
 				// If the user user says "I want to always load this profile"

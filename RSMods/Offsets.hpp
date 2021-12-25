@@ -141,13 +141,19 @@ namespace Offsets {
 	extern uintptr_t ptr_luaopen_epgmGFx;
 	extern uintptr_t ptr_luaopen_epgmWwise;
 
+	// Adjust sample rate requirements
+	extern uintptr_t ptr_sampleRateRequirementAudioOutput;
+	extern uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck;
+	extern uintptr_t ptr_sampleRateDivZeroCrash;
+	extern uintptr_t ptr_sampleRateDivZeroCrash_JmpBck;
+	extern uintptr_t ptr_sampleRateSize;
+	extern uintptr_t ptr_sampleRateBuffer;
+
 	// Misc Mods
 	extern uintptr_t ptr_stringColor;
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
 	extern uintptr_t ptr_scrollSpeedMultiplier;
 	extern uintptr_t patch_SongPreviewWwiseEvent;
-	extern uintptr_t ptr_sampleRateRequirementAudioOutput;
-	extern uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck;
 
 	extern volatile double& ref_scrollSpeedMultiplier;
 

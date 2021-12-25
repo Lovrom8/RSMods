@@ -19,4 +19,6 @@ namespace AudioDevices {
 	void ChangeOutputSampleRateTo44100();
 
 	inline std::map<std::string, LPWSTR> activeMicrophones;
+
+	inline int output_SampleRate = 44100;
 };
