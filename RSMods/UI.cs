@@ -618,7 +618,9 @@ namespace RSMods
             checkBox_AllowAudioInBackground.Checked         = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
             checkBox_BypassTwoRTCMessageBox.Checked         = ReadSettings.ProcessSettings(ReadSettings.BypassTwoRTCMessageBoxIdentifier) == "on";
             checkBox_LinearRiffRepeater.Checked             = ReadSettings.ProcessSettings(ReadSettings.LinearRiffRepeaterIdentifier) == "on";
-            checkBox_Use44100HzForOutput.Checked            = ReadSettings.ProcessSettings(ReadSettings.Use44100HzForOutputIdentifier) == "on";
+            checkBox_UseAltSampleRate_Output.Checked        = ReadSettings.ProcessSettings(ReadSettings.UseAlternativeOutputSampleRateIdentifier) == "on";
+            groupBox_SampleRateOutput.Visible               = checkBox_UseAltSampleRate_Output.Checked;
+            listBox_AltSampleRatesOutput.SelectedItem       = ReadSettings.ProcessSettings(ReadSettings.AlternativeOutputSampleRateIdentifier) + " Hz";
             nUpDown_ForceEnumerationXMS.Value               = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
             listBox_AvailableInputDevices.SelectedItem      = ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeDeviceIdentifier);
             nUpDown_OverrideInputVolume.Value               = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeIdentifier), 17);
@@ -2358,7 +2360,19 @@ namespace RSMods
         private void Save_BypassTwoRTCMessageBox(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.BypassTwoRTCMessageBoxIdentifier, checkBox_BypassTwoRTCMessageBox.Checked.ToString().ToLower());
         private void Save_LinearRiffRepeater(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LinearRiffRepeaterIdentifier, checkBox_LinearRiffRepeater.Checked.ToString().ToLower());
 
-        private void Save_Use44100HzForOutput(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.Use44100HzForOutputIdentifier, checkBox_Use44100HzForOutput.Checked.ToString().ToLower());
+        private void Save_UseAlternativeSampleRate_Output(object sender, EventArgs e)
+        {
+            groupBox_SampleRateOutput.Visible = checkBox_UseAltSampleRate_Output.Checked;
+            SaveSettings_Save(ReadSettings.UseAlternativeOutputSampleRateIdentifier, checkBox_UseAltSampleRate_Output.Checked.ToString().ToLower());
+        }
+
+        private void Save_AltSampleRatesOutput(object sender, EventArgs e)
+        {
+            if (listBox_AltSampleRatesOutput.SelectedItem != null)
+            {
+                SaveSettings_Save(ReadSettings.AlternativeOutputSampleRateIdentifier, listBox_AltSampleRatesOutput.SelectedItem.ToString().Split(' ')[0]);
+            }
+        }
 
         #endregion
         #region ToolTips

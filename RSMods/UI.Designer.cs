@@ -62,7 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
-            this.checkBox_Use44100HzForOutput = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseAltSampleRate_Output = new System.Windows.Forms.CheckBox();
             this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
             this.checkBox_BypassTwoRTCMessageBox = new System.Windows.Forms.CheckBox();
             this.checkBox_AllowAudioInBackground = new System.Windows.Forms.CheckBox();
@@ -246,6 +246,8 @@
             this.radio_SongTimerManual = new System.Windows.Forms.RadioButton();
             this.radio_SongTimerAlways = new System.Windows.Forms.RadioButton();
             this.tabPage_ModSettings_Automation = new System.Windows.Forms.TabPage();
+            this.groupBox_SampleRateOutput = new System.Windows.Forms.GroupBox();
+            this.listBox_AltSampleRatesOutput = new System.Windows.Forms.ListBox();
             this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
@@ -536,6 +538,7 @@
             this.groupBox_ControlSongVolumeWhen.SuspendLayout();
             this.groupBox_SongTimer.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
+            this.groupBox_SampleRateOutput.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.tabPage_ModSettings_AutoTuning.SuspendLayout();
             this.groupBox_MidiInDevice.SuspendLayout();
@@ -1014,7 +1017,7 @@
             // 
             // groupBox_EnabledMods
             // 
-            this.groupBox_EnabledMods.Controls.Add(this.checkBox_Use44100HzForOutput);
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_UseAltSampleRate_Output);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_LinearRiffRepeater);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BypassTwoRTCMessageBox);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowAudioInBackground);
@@ -1053,17 +1056,17 @@
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
             // 
-            // checkBox_Use44100HzForOutput
+            // checkBox_UseAltSampleRate_Output
             // 
-            this.checkBox_Use44100HzForOutput.AutoSize = true;
-            this.checkBox_Use44100HzForOutput.Location = new System.Drawing.Point(144, 356);
-            this.checkBox_Use44100HzForOutput.Name = "checkBox_Use44100HzForOutput";
-            this.checkBox_Use44100HzForOutput.Size = new System.Drawing.Size(141, 17);
-            this.checkBox_Use44100HzForOutput.TabIndex = 74;
-            this.checkBox_Use44100HzForOutput.Text = "Use 44.1kHz For Output";
-            this.checkBox_Use44100HzForOutput.UseVisualStyleBackColor = true;
-            this.checkBox_Use44100HzForOutput.CheckedChanged += new System.EventHandler(this.Save_Use44100HzForOutput);
-            this.checkBox_Use44100HzForOutput.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.checkBox_UseAltSampleRate_Output.AutoSize = true;
+            this.checkBox_UseAltSampleRate_Output.Location = new System.Drawing.Point(144, 356);
+            this.checkBox_UseAltSampleRate_Output.Name = "checkBox_UseAltSampleRate_Output";
+            this.checkBox_UseAltSampleRate_Output.Size = new System.Drawing.Size(152, 17);
+            this.checkBox_UseAltSampleRate_Output.TabIndex = 74;
+            this.checkBox_UseAltSampleRate_Output.Text = "Alt Sample Rate for Output";
+            this.checkBox_UseAltSampleRate_Output.UseVisualStyleBackColor = true;
+            this.checkBox_UseAltSampleRate_Output.CheckedChanged += new System.EventHandler(this.Save_UseAlternativeSampleRate_Output);
+            this.checkBox_UseAltSampleRate_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_LinearRiffRepeater
             // 
@@ -3261,6 +3264,7 @@
             // tabPage_ModSettings_Automation
             // 
             this.tabPage_ModSettings_Automation.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_SampleRateOutput);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_GuitarSpeak);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_HowToEnumerate);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_AutoLoadProfiles);
@@ -3270,6 +3274,33 @@
             this.tabPage_ModSettings_Automation.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Automation.TabIndex = 1;
             this.tabPage_ModSettings_Automation.Text = "Automation";
+            // 
+            // groupBox_SampleRateOutput
+            // 
+            this.groupBox_SampleRateOutput.Controls.Add(this.listBox_AltSampleRatesOutput);
+            this.groupBox_SampleRateOutput.Location = new System.Drawing.Point(555, 18);
+            this.groupBox_SampleRateOutput.Name = "groupBox_SampleRateOutput";
+            this.groupBox_SampleRateOutput.Size = new System.Drawing.Size(200, 129);
+            this.groupBox_SampleRateOutput.TabIndex = 100006;
+            this.groupBox_SampleRateOutput.TabStop = false;
+            this.groupBox_SampleRateOutput.Text = "Alt Sample Rate for Output";
+            this.groupBox_SampleRateOutput.Visible = false;
+            // 
+            // listBox_AltSampleRatesOutput
+            // 
+            this.listBox_AltSampleRatesOutput.FormattingEnabled = true;
+            this.listBox_AltSampleRatesOutput.Items.AddRange(new object[] {
+            "44100 Hz",
+            "48000 Hz",
+            "88200 Hz",
+            "96000 Hz",
+            "176400 Hz",
+            "192000 Hz"});
+            this.listBox_AltSampleRatesOutput.Location = new System.Drawing.Point(7, 26);
+            this.listBox_AltSampleRatesOutput.Name = "listBox_AltSampleRatesOutput";
+            this.listBox_AltSampleRatesOutput.Size = new System.Drawing.Size(187, 95);
+            this.listBox_AltSampleRatesOutput.TabIndex = 0;
+            this.listBox_AltSampleRatesOutput.SelectedIndexChanged += new System.EventHandler(this.Save_AltSampleRatesOutput);
             // 
             // groupBox_AutoLoadProfiles
             // 
@@ -6315,6 +6346,7 @@
             this.groupBox_SongTimer.ResumeLayout(false);
             this.groupBox_SongTimer.PerformLayout();
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
+            this.groupBox_SampleRateOutput.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
             this.groupBox_MidiInDevice.ResumeLayout(false);
@@ -6860,7 +6892,7 @@
         private System.Windows.Forms.ListBox listBox_ListMidiInDevices;
         private System.Windows.Forms.Label label_SelectedMidiInDevice;
         private System.Windows.Forms.CheckBox checkBox_LinearRiffRepeater;
-        private System.Windows.Forms.CheckBox checkBox_Use44100HzForOutput;
+        private System.Windows.Forms.CheckBox checkBox_UseAltSampleRate_Output;
         private System.Windows.Forms.GroupBox groupBox_OnScreenFont;
         private System.Windows.Forms.Label label_FontTestNumbers;
         private System.Windows.Forms.Label label_FontTestlowercase;
@@ -6879,6 +6911,8 @@
         private System.Windows.Forms.Button button_ChangeNotewayGutter;
         private System.Windows.Forms.Button button_ChangeUnNumberedFrets;
         private System.Windows.Forms.Button button_ChangeNumberedFrets;
+        private System.Windows.Forms.GroupBox groupBox_SampleRateOutput;
+        private System.Windows.Forms.ListBox listBox_AltSampleRatesOutput;
     }
 }
 

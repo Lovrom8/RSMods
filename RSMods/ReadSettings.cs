@@ -25,7 +25,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, Use44100HzForOutput,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate,
 
 
                              // String Colors
@@ -37,7 +37,8 @@ namespace RSMods
 
 
                              // Mod Settings
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset, VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset,
+                            VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -128,7 +129,7 @@ namespace RSMods
             AllowAudioInBackgroundIdentifier            = "AllowAudioInBackground = ",
             BypassTwoRTCMessageBoxIdentifier            = "BypassTwoRTCMessageBox = ",
             LinearRiffRepeaterIdentifier                = "LinearRiffRepeater = ",
-            Use44100HzForOutputIdentifier               = "Use44100HzForOutput = ",
+            UseAlternativeOutputSampleRateIdentifier    = "AltOutputSampleRate = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -164,16 +165,17 @@ namespace RSMods
 
 
             // Mod Settings
-            ExtendedRangeTuningIdentifier       = "ExtendedRangeModeAt = ",
-            CheckForNewSongIntervalIdentifier   = "CheckForNewSongsInterval = ",
-            RiffRepeaterSpeedIntervalIdentifier = "RRSpeedInterval = ",
-            TuningPedalIdentifier               = "TuningPedal = ",
-            MidiTuningOffsetIdentifier          = "TuningOffset = ",
-            VolumeControlIntervalIdentifier     = "VolumeControlInterval = ",
-            SecondaryMonitorXPositionIdentifier = "SecondaryMonitorXPosition = ",
-            SecondaryMonitorYPositionIdentifier = "SecondaryMonitorYPosition = ",
-            SeparateNoteColorsModeIdentifier    = "SeparateNoteColorsMode = ",
-            OverrideInputVolumeIdentifier       = "OverrideInputVolume = ",
+            ExtendedRangeTuningIdentifier           = "ExtendedRangeModeAt = ",
+            CheckForNewSongIntervalIdentifier       = "CheckForNewSongsInterval = ",
+            RiffRepeaterSpeedIntervalIdentifier     = "RRSpeedInterval = ",
+            TuningPedalIdentifier                   = "TuningPedal = ",
+            MidiTuningOffsetIdentifier              = "TuningOffset = ",
+            VolumeControlIntervalIdentifier         = "VolumeControlInterval = ",
+            SecondaryMonitorXPositionIdentifier     = "SecondaryMonitorXPosition = ",
+            SecondaryMonitorYPositionIdentifier     = "SecondaryMonitorYPosition = ",
+            SeparateNoteColorsModeIdentifier        = "SeparateNoteColorsMode = ",
+            OverrideInputVolumeIdentifier           = "OverrideInputVolume = ",
+            AlternativeOutputSampleRateIdentifier   = "AlternativeOutputSampleRate = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier     = "GuitarSpeakDeleteWhen = ",
@@ -414,8 +416,8 @@ namespace RSMods
                     return FillSettingVariable(BypassTwoRTCMessageBoxIdentifier, SettingType.ON_OFF, currentLine, out BypassTwoRTCMessageBox);
                 if (IdentifierIsFound(currentLine, LinearRiffRepeaterIdentifier, identifierToGrab))
                     return FillSettingVariable(LinearRiffRepeaterIdentifier, SettingType.ON_OFF, currentLine, out LinearRiffRepeater);
-                if (IdentifierIsFound(currentLine, Use44100HzForOutputIdentifier, identifierToGrab))
-                    return FillSettingVariable(Use44100HzForOutputIdentifier, SettingType.ON_OFF, currentLine, out Use44100HzForOutput);
+                if (IdentifierIsFound(currentLine, UseAlternativeOutputSampleRateIdentifier, identifierToGrab))
+                    return FillSettingVariable(UseAlternativeOutputSampleRateIdentifier, SettingType.ON_OFF, currentLine, out UseAlternativeOutputSampleRate);
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})
@@ -502,6 +504,8 @@ namespace RSMods
                     return FillSettingVariable(SeparateNoteColorsModeIdentifier, SettingType.STRING, currentLine, out SeparateNoteColorsMode);
                 if (IdentifierIsFound(currentLine, OverrideInputVolumeIdentifier, identifierToGrab))
                     return FillSettingVariable(OverrideInputVolumeIdentifier, SettingType.STRING, currentLine, out OverrideInputVolume);
+                if (IdentifierIsFound(currentLine, AlternativeOutputSampleRateIdentifier, identifierToGrab))
+                    return FillSettingVariable(AlternativeOutputSampleRateIdentifier, SettingType.STRING, currentLine, out AlternativeOutputSampleRate);
                 #endregion
                 #region Guitar Speak
 
