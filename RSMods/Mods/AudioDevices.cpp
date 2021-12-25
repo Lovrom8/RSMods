@@ -255,7 +255,9 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 	}
 }
 
-
+/// <summary>
+/// x86 ASM hook to change the sample rate requirement for audio output (headphones / speaker) devices.
+/// </summary>
 void __declspec(naked) hook_changeSampleRate() {
 	__asm {
 		mov EAX, AudioDevices::output_SampleRate // Move user-provided sample rate into EAX
@@ -263,6 +265,9 @@ void __declspec(naked) hook_changeSampleRate() {
 	}
 }
 
+/// <summary>
+/// Fixes a divide by zero crash when using a sample rate above 48000Hz / 48kHz.
+/// </summary>
 void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 	__asm {
 		// There is a div EBX that we are replacing, but EBX is always 1 (unless the sample rate is above 48kHz) so we just remove it to place this hook.
@@ -272,6 +277,10 @@ void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 	}
 }
 
+/// <summary>
+/// Reads the sample rate from output_SampleRate and tells the audio engine to approve devices with that sample rate.
+/// Must be run on boot. Has no effect when run after the audio engine has initialized.
+/// </summary>
 void AudioDevices::ChangeOutputSampleRate() {
 	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRate, 5);
 	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateDivZeroCrash, hook_sampleRate_FixDivZeroCrash, 5);
