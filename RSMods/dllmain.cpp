@@ -1195,7 +1195,7 @@ unsigned WINAPI MainThread() {
 			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") // Yay We Loaded :P (or the user opened a new user profile. This prevents us from creating a loop that the user cannot leave.
 				GameLoaded = true;
 
-			if (*(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
+			if (Settings::ReturnSettingValue("Use44100HzForOutput") == "on" && *(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
 				*(int*)Offsets::ptr_sampleRateSize = 2;
 				*(int*)Offsets::ptr_sampleRateBuffer = 128;
 			}

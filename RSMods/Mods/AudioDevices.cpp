@@ -263,7 +263,7 @@ void __declspec(naked) hook_changeSampleRateTo44100() {
 	}
 }
 
-void __declspec(naked) hook_fixCrashDivZerio() {
+void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 	__asm {
 		// There is a div EBX that we are replacing, but EBX is always 1 (unless the sample rate is above 48kHz) so we just remove it to place this hook.
 		mov EBX, 0x1	// Move 1 into the EBX register. This prevents the divide by 0 error when using a sample rate above 48kHz.
@@ -274,5 +274,5 @@ void __declspec(naked) hook_fixCrashDivZerio() {
 
 void AudioDevices::ChangeOutputSampleRateTo44100() {
 	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRateTo44100, 5);
-	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateDivZeroCrash, hook_fixCrashDivZerio, 5);
+	MemUtil::PlaceHook((void*)Offsets::ptr_sampleRateDivZeroCrash, hook_sampleRate_FixDivZeroCrash, 5);
 }
