@@ -538,7 +538,7 @@ namespace RSMods
                 groupBox_MidiAutoTuningOffset.Visible = true;
                 listBox_MidiAutoTuningOffset.SelectedIndex = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.MidiTuningOffsetIdentifier), 0) + 3;
                 groupBox_MidiAutoTuningWhen.Visible = true;
-                groupBox_MidiInDevice.Visible = true;
+                //groupBox_MidiInDevice.Visible = true;
                 label_SelectedMidiInDevice.Text = "Midi Device: " + ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
 
                 if (ReadSettings.ProcessSettings(ReadSettings.TuningPedalIdentifier) != "")
