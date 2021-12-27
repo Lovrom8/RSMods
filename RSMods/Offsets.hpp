@@ -154,6 +154,7 @@ namespace Offsets {
 	extern uintptr_t ptr_drunkShit; //search for float 0.333333, seems like it's static
 	extern uintptr_t ptr_scrollSpeedMultiplier;
 	extern uintptr_t patch_SongPreviewWwiseEvent;
+	extern uintptr_t steamApiUri;
 
 	extern volatile double& ref_scrollSpeedMultiplier;
 

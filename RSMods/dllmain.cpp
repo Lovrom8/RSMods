@@ -893,6 +893,9 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
+#ifdef _FIX_STORE
+	MemUtil::PatchAdr((void*)Offsets::steamApiUri, "%s://localhost:5154/api/requests/%d,%s,%s", 42); // Proxy available here: https://github.com/ffio1/SteamAPIProxy
+#endif
 
 	if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000) {
 		std::cout << "[!] Overriding Output Sample Rate to " << Settings::GetModSetting("AlternativeOutputSampleRate") << std::endl;

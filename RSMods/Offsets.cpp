@@ -172,6 +172,7 @@ namespace Offsets {
 	uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40;
 	volatile double& ref_scrollSpeedMultiplier = *((volatile double *)ptr_scrollSpeedMultiplier);
 	uintptr_t patch_SongPreviewWwiseEvent = 0x011AE6E0;
+	uintptr_t steamApiUri = 0x011d9ea0;
 
 
 	// Objects
