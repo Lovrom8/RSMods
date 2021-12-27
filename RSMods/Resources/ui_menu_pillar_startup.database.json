@@ -246,7 +246,7 @@
 					"othercable":
 					{
 						"ID": "othercable",
-						"Label": "$[37287]OTHER CABLE",
+						"Label": "DIRECT CONNECT",
 						"Description": "$[37291]Use a cable other than the Real Tone Cable to plug in your electric guitar or bass.",
 						"State": "up",
 						"SortOrder": 1
