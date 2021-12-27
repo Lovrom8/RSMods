@@ -124,6 +124,9 @@ namespace RSMods
 
             if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_main.database.json" });
+
+            if (!File.Exists(Path.Combine(Constants.DirectConnectStartupJson_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_startup.database.json" });
         }
         #endregion
         #region Custom Tunings
@@ -252,6 +255,7 @@ namespace RSMods
                 UnpackCachePsarc();
 
             ZipUtilities.InjectFile(Constants.ExtendedMenuJson_CustomPath, Constants.Cache7_7zPath, Constants.ExtendedMenuJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+            ZipUtilities.InjectFile(Constants.DirectConnectStartupJson_CustomPath, Constants.Cache7_7zPath, Constants.DirectConnectStartupJson_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
             RepackCachePsarc();
         }

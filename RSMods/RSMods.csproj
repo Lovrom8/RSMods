@@ -207,6 +207,7 @@
     <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json" />
     <EmbeddedResource Include="Resources\introsequence_mid.gfx" />
     <EmbeddedResource Include="Resources\original.rs_soundpack" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_startup.database.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
