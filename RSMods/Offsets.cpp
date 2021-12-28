@@ -14,8 +14,10 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
 	// Current Tuning
-	uintptr_t ptr_tuning = 0x00F5C4FC;
-	std::vector<unsigned int> ptr_tuningOffsets{ 0x10, 0x8, 0x44 };
+	// uintptr_t ptr_tuning = 0x00F5C4FC; // Works in most cases EXCEPT disconnected mode.
+	// std::vector<unsigned int> ptr_tuningOffsets{ 0x10, 0x8, 0x44 }; // Works in most cases EXCEPT disconnected mode.
+	uintptr_t ptr_tuning = 0x00F5C5AC;
+	std::vector<unsigned int> ptr_tuningOffsets{ 0x68, 0x10, 0x28, 0x38, 0x78, 0x110, 0x0 };
 	
 	// True Tuning
 	uintptr_t ptr_trueTuning = 0x00F5C4FC;
