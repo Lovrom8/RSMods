@@ -185,6 +185,8 @@ typedef void (*tuningFunction)(int highestTuning, float TrueTuning_Hertz);
 /// </summary>
 struct MidiPedal {
 	std::string pedalName;
+	char CC_Bank;
+	char PC_Channel;
 	char CC_Channel;
 	bool supportsDropTuning, supportsTrueTuning;
 	std::vector<float> semiTones;
@@ -194,6 +196,8 @@ struct MidiPedal {
 
 	MidiPedal() {
 		pedalName = "DUMMY PEDAL";
+		CC_Bank = 0;
+		PC_Channel = 0;
 		CC_Channel = 0;
 		supportsDropTuning = false;
 		supportsTrueTuning = false;
@@ -202,8 +206,10 @@ struct MidiPedal {
 		softwarePedal = false;
 	}
 
-	MidiPedal(std::string _pedalName, char _CC_Channel, bool _supportsDropTuning, bool _supportsTrueTuning, std::vector<float> _semiTones, std::map<char, char> _activeBypassMap, tuningFunction _tuningFunction, bool _softwarePedal = false) {
+	MidiPedal(std::string _pedalName, char _CC_Bank, char _PC_Channel, char _CC_Channel, bool _supportsDropTuning, bool _supportsTrueTuning, std::vector<float> _semiTones, std::map<char, char> _activeBypassMap, tuningFunction _tuningFunction, bool _softwarePedal = false) {
 		pedalName = _pedalName;
+		CC_Bank = _CC_Bank;
+		PC_Channel = _PC_Channel;
 		CC_Channel = _CC_Channel;
 		supportsDropTuning = _supportsDropTuning;
 		supportsTrueTuning = _supportsTrueTuning;

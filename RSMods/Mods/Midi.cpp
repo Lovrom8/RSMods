@@ -233,10 +233,13 @@ namespace Midi {
 	/// Send PC to pedal.
 	/// </summary>
 	/// <param name="programChange"> - Value of PC</param>
+	/// <param name="alternativeChannel"> - Channel to use over the default. Mainly used for software pedals.</param>
 	/// <returns>Message was sent or not.</returns>
-	bool SendProgramChange(char programChange) {
+	bool SendProgramChange(char programChange, char alternativeChannel) {
 		RtMidiOut* midiout = new RtMidiOut();
 		std::vector<unsigned char> message;
+
+		char channel = alternativeChannel == (char)255 ? selectedPedal.PC_Channel : alternativeChannel; // If we want to bypass the PC channel (mainly for software pedals) then alternative channel won't be default.
 
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
 			std::cout << "(MIDI) SendPC: DUMMY PEDAL" << std::endl;
@@ -256,10 +259,10 @@ namespace Midi {
 			midiout->openPort(SelectedMidiOutDevice);
 
 			// Send MIDI message
-			message.push_back(programChangeStatus); // It's a Program Change
-			message.push_back(programChange); // What program we changing?
-			std::cout << "Sending Midi Message: " << "PC: " << (int)message.back() << std::endl;
+			message.push_back(programChangeStatus + channel); // Say it's a Program Change + channel
+			message.push_back(programChange); // What program we changing to?
 			midiout->sendMessage(&message);
+			std::cout << "Sent Midi Message: PC" << (int)channel << ": " << (int)programChange << std::endl;
 		}
 		catch (RtMidiError& error) {
 			std::cout << "(MIDI) Error: " << error.getMessage() << std::endl;
@@ -276,9 +279,11 @@ namespace Midi {
 	/// Send CC to pedal
 	/// </summary>
 	/// <param name="toePosition"> - Value of CC</param>
+	/// <param name="alternativeBank"> - Bank to use over the default one. Mainly used for software pedals.</param>
+	/// <param name="alternativeChannel"> - Channel to use over the default. Mainly used for software pedals.</param>
 	/// <returns>Message wwas sent or not.</returns>
-	bool SendControlChange(char toePosition, char alternativeChannel) {
-
+	bool SendControlChange(char toePosition, char alternativeBank, char alternativeChannel) {
+		char bank = alternativeBank == (char)255 ? selectedPedal.CC_Bank : alternativeBank; // If we want to bypass the CC bank (mainly for software pedals) then alternative bank won't be default.
 		char channel = alternativeChannel == (char)255 ? selectedPedal.CC_Channel : alternativeChannel; // If we want to bypass the CC channel (mainly for software pedals) then alternative channel won't be default.
 
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
@@ -303,11 +308,11 @@ namespace Midi {
 			midiout->openPort(SelectedMidiOutDevice);
 
 			// Send MIDI Message
-			message.push_back(controlChangeStatus); // Say it's a Control Change
-			message.push_back(channel); // Control to change
+			message.push_back(controlChangeStatus + channel); // Say it's a Control Change + channel#
+			message.push_back(bank); // Bank to change
 			message.push_back(toePosition); // New Control Value || 0 = off, 127 = on
-			std::cout << "Sending Midi Message: " << "CC: " << (int)message.rbegin()[1] << " " << (int)message.back() << std::endl;
 			midiout->sendMessage(&message);
+			std::cout << "Sending Midi Message: CC" << (int)channel << ": " << (int)bank << " " << (int)toePosition << std::endl;
 		}
 		catch (RtMidiError& error) {
 			std::cout << "(MIDI) Error: " << error.getMessage() << std::endl;
@@ -404,12 +409,20 @@ namespace Midi {
 			std::cout << "(MIDI) Attmepting to turn off automatic tuning" << std::endl;
 
 			if (selectedPedal.softwarePedal) {
-				if (Midi::Software::sendSemitoneCommand == programChangeStatus)
-					SendProgramChange(Midi::Software::semiToneShutoffTrigger);
-				else if (Midi::Software::sendSemitoneCommand == controlChangeStatus)
-					SendControlChange(Midi::Software::semiToneShutoffTrigger);
-				if (Midi::Software::sentTrueTuningInThisSong)
-					SendControlChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::sendTrueTuningCommand); // Range is 0 - 80 which maps to 400 - 480. Sending 40 should reset the user back to 440.
+				if (Midi::Software::sentSemitoneInThisSong) {
+					if (Midi::Software::sendSemitoneCommand == programChangeStatus)
+						SendProgramChange(Midi::Software::semiToneShutoffTrigger);
+					else if (Midi::Software::sendSemitoneCommand == controlChangeStatus)
+						SendControlChange(Midi::Software::semiToneShutoffTrigger);
+
+					Midi::Software::sentSemitoneInThisSong = false;
+				}
+				if (Midi::Software::sentTrueTuningInThisSong) {
+					if (Midi::Software::sendTrueTuningCommand == programChangeStatus)
+						SendProgramChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::sendTrueTuningChannel);
+					else if (Midi::Software::sendTrueTuningCommand == controlChangeStatus)
+						SendControlChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::trueTuningBank, Midi::Software::sendTrueTuningChannel);
+				}
 
 				Midi::Software::sentTrueTuningInThisSong = false;
 				alreadyAutomatedTuningInThisSong = false;
@@ -846,8 +859,10 @@ namespace Midi {
 			if (semiToneMap.find(highestTuning) != semiToneMap.end()) {
 				if (sendSemitoneCommand == programChangeStatus)
 					SendProgramChange(semiToneMap.find(highestTuning)->second);
-				if (sendSemitoneCommand == controlChangeStatus)
+				else if (sendSemitoneCommand == controlChangeStatus)
 					SendControlChange(semiToneMap.find(highestTuning)->second);
+
+				sentSemitoneInThisSong = true;
 			}
 			else
 				std::cout << "(MIDI) Software Pedal Error: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
@@ -866,9 +881,11 @@ namespace Midi {
 
 			if (trueTuningMap.find(TrueTuning_Hertz) != trueTuningMap.end()) {
 				if (sendTrueTuningCommand == programChangeStatus)
-					SendProgramChange(trueTuningMap.find(TrueTuning_Hertz)->second);
-				if (sendTrueTuningCommand == controlChangeStatus)
-					SendControlChange(trueTuningMap.find(TrueTuning_Hertz)->second, trueTuningChannel);
+					SendProgramChange(trueTuningMap.find(TrueTuning_Hertz)->second, sendTrueTuningChannel);
+				else if (sendTrueTuningCommand == controlChangeStatus)
+					SendControlChange(trueTuningMap.find(TrueTuning_Hertz)->second, trueTuningBank, sendTrueTuningChannel);
+
+				Midi::Software::sentTrueTuningInThisSong = true;
 			}
 			else
 				std::cout << "(MIDI) Software Pedal Error: Attempted to truetune to A" << TrueTuning_Hertz << " but the user doesn't have a value set for it." << std::endl;
@@ -939,13 +956,23 @@ namespace Midi {
 				semiToneShutoffTrigger = std::atoi(separated.at(0).c_str());
 
 				if (separated.size() > 1) {
-					if (separated.at(1) == "PC")
+					if (separated.at(1) == "PC") {
 						sendSemitoneCommand = programChangeStatus;
+						if (separated.size() > 2)
+							selectedPedal.PC_Channel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+						else
+							std::cout << "SOFTWARE LOADSETTINGS ERROR (semitones): PC set as the send method but no channel is specified" << std::endl;
+					}
+						
 					if (separated.at(1) == "CC") {
 						sendSemitoneCommand = controlChangeStatus;
-
-						if (separated.size() > 2)
-							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str());
+						if (separated.size() > 2) {
+							selectedPedal.CC_Channel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							if (separated.size() > 3)
+								selectedPedal.CC_Bank = std::atoi(separated.at(3).c_str());
+							else
+								std::cout << "SOFTWARE LOAD SETTINGS ERROR (semitones): CC set as the send method but no bank is specified. Defaulting to Bank 0." << std::endl;
+						}
 						else
 							std::cout << "SOFTWARE LOADSETTINGS ERROR (semitones): CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
 					}
@@ -1010,15 +1037,26 @@ namespace Midi {
 				trueTuningShutoffTrigger = std::atoi(separated.at(0).c_str());
 
 				if (separated.size() > 1) {
-					if (separated.at(1) == "PC")
+					if (separated.at(1) == "PC") {
 						sendTrueTuningCommand = programChangeStatus;
+						if (separated.size() > 2)
+							sendTrueTuningChannel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+						else
+							std::cout << "SOFTWARE LOADSETTINGS ERROR (truetuning): PC set as the send method but no channel is specified" << std::endl;
+					}
 					if (separated.at(1) == "CC") {
 						sendTrueTuningCommand = controlChangeStatus;
 
-						if (separated.size() > 2)
-							trueTuningChannel = std::atoi(separated.at(2).c_str());
+						if (separated.size() > 2) {
+							sendTrueTuningChannel = std::atoi(separated.at(2).c_str()) % 16; // Only 16 channels are supported.
+							if (separated.size() > 3)
+								trueTuningBank = std::atoi(separated.at(3).c_str());
+							else
+								std::cout << "SOFTWARE LOAD SETTINGS ERROR (truetuning): CC set as the send method but no bank is specified. Defaulting to Bank 0." << std::endl;
+						}
 						else
-							std::cout << "SOFTWARE LOADSETTINGS ERROR (truetuning): CC set as the send method but no channel is specified. Defaulting to Channel 1." << std::endl;
+							std::cout << "SOFTWARE LOADSETTINGS ERROR (truetuning): CC set as the send method but no channel is specified. Defaulting to Channel 0." << std::endl;
+
 					}
 				}
 			}

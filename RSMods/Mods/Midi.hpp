@@ -20,8 +20,8 @@ namespace Midi {
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string MidiOutDevice, std::string MidiInDevice);
-	bool SendProgramChange(char programChange = '\000');
-	bool SendControlChange(char toePosition = '\000', char alternativeChannel = 255);
+	bool SendProgramChange(char programChange = '\000', char alternativeChannel = 255);
+	bool SendControlChange(char toePosition = '\000', char alternativeBank = 255, char alternativeChannel = 255);
 	std::string GetTuningOffsetName(int offset);
 	bool IsValidMidiMessage(std::vector<unsigned char>* message);
 	unsigned WINAPI ListenToMidiInThread();
@@ -278,17 +278,19 @@ namespace Midi {
 
 		inline unsigned char sendSemitoneCommand = '\0';
 		inline unsigned char sendTrueTuningCommand = '\0';
+		inline unsigned char sendTrueTuningChannel = '\0';
 		inline unsigned char semiToneShutoffTrigger = '\0';
 		inline unsigned char trueTuningShutoffTrigger = '\0';
-		inline unsigned char trueTuningChannel = '\1';
+		inline unsigned char trueTuningBank = '\1';
 		inline bool sentTrueTuningInThisSong = false;
+		inline bool sentSemitoneInThisSong = false;
 	}
 
 	inline std::vector<MidiPedal> supportedPedals = {
-		MidiPedal("DIGITECH Whammy DT", 11, true, true, Digitech::WhammyDT::semiTones, Digitech::WhammyDT::activeBypassMap, Digitech::WhammyDT::AutoTuning),
-		MidiPedal("DIGITECH Bass Whammy", 11, true, true, Digitech::BassWhammy::semiTones, Digitech::BassWhammy::activeBypassMap, Digitech::BassWhammy::AutoTuningAndTrueTuning),
-		MidiPedal("DIGITECH Whammy", 11, true, true, Digitech::Whammy::semiTones, Digitech::Whammy::activeBypassMap, Digitech::Whammy::AutoTuningAndTrueTuning),
-		MidiPedal("Software Pedal", 0, true, true, std::vector<float>{}, Software::semiToneMap, Software::AutoTuning, true),
+		MidiPedal("DIGITECH Whammy DT", 11, 0, 0, true, true, Digitech::WhammyDT::semiTones, Digitech::WhammyDT::activeBypassMap, Digitech::WhammyDT::AutoTuning),
+		MidiPedal("DIGITECH Bass Whammy", 11, 0, 0, true, true, Digitech::BassWhammy::semiTones, Digitech::BassWhammy::activeBypassMap, Digitech::BassWhammy::AutoTuningAndTrueTuning),
+		MidiPedal("DIGITECH Whammy", 11, 0, 0, true, true, Digitech::Whammy::semiTones, Digitech::Whammy::activeBypassMap, Digitech::Whammy::AutoTuningAndTrueTuning),
+		MidiPedal("Software Pedal", 0, 0, 0, true, true, std::vector<float>{}, Software::semiToneMap, Software::AutoTuning, true),
 	};
 };
 
