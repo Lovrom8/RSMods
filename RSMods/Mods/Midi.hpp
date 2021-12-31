@@ -11,7 +11,6 @@
 #include "../MemHelpers.hpp"
 #include "../Structs.hpp"
 #include "../WwiseHijack.hpp"
-#include "RiffRepeater.hpp"
 
 namespace Midi {
 	void InitMidi();
