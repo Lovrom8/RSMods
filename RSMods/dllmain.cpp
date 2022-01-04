@@ -65,14 +65,17 @@ unsigned WINAPI RiffRepeaterThread() {
 	while (!D3DHooks::GameClosing) {
 		Sleep(100);
 
-		if (MemHelpers::GetSongKey() != previousSongKey) {
-			RiffRepeater::readyToLogSongID = false;
-			previousSongKey = MemHelpers::GetSongKey();
+		const auto songKey = MemHelpers::GetSongKey();
+		if (songKey != previousSongKey) {
+			previousSongKey = songKey;
 
 			if (RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey) != RiffRepeater::SongObjectIDs.end()) {
 				RiffRepeater::currentSongID = RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey)->second;
+				RiffRepeater::readyToLogSongID = false;
+				RiffRepeater::loggedCurrentSongID = true; // Song key has already been logged
 			}
 			else {
+				RiffRepeater::loggedCurrentSongID = false;
 				RiffRepeater::readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
 			}
 		}
@@ -1028,6 +1031,10 @@ unsigned WINAPI MainThread() {
 						RiffRepeater::readyToLogSongID = false;
 				}
 
+				// Enable riff repeater time stretching
+				if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on")
+					RiffRepeater::EnableTimeStretch();
+
 				// Remove Headstock (In Song)
 				if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "song")
 					RemoveHeadstockInThisMenu = true;
@@ -1093,8 +1100,6 @@ unsigned WINAPI MainThread() {
 				// Turn off Riff Repeater Speed above 100%
 				if (!MemHelpers::IsInStringArray(currentMenu, scoreScreens) && RiffRepeater::currentlyEnabled_Above100) {
 					RiffRepeater::DisableTimeStretch();
-					RiffRepeater::loggedCurrentSongID = false;
-					realSongSpeed = 100.f;
 				}
 
 				// Turn off Extended Range
