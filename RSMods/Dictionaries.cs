@@ -23,7 +23,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_AutoLoadProfile, "Essentially holds down the ENTER key until the game has reached the main menu.\nLets you auto load the last used profile without needing to interact with the game at all.\nAlso allows you to specify what profile you want to always load");
             TooltipDictionary.Add(checkBox_Fretless, "Removes the Fret Wire from the neck, making your instrument appear to be fretless.");
             TooltipDictionary.Add(checkBox_RemoveInlays, "Disables the guitar neck inlay display entirely.\nNote: This only works with the standard dot inlays.");
-            TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the game is using the in-game mixer without needing to open it.\nAlso includes a hidden \"Master Volume\" control.");
+            TooltipDictionary.Add(checkBox_ControlVolume, "Allows you to control how loud the game is using the in-game mixer without needing to open it.\nAlso includes a hidden \"Master Volume\" control.\nPress the key to go up by the interval set in the \"Misc\" sub-tab.\nHold Control and press the key to go down by the interval.");
             TooltipDictionary.Add(checkBox_GuitarSpeak, "Use your guitar to control the menus!");
             TooltipDictionary.Add(checkBox_RemoveLyrics, "Disables the display of song lyrics while in Learn-A-Song mode.");
             TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
