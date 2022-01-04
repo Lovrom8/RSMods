@@ -522,8 +522,6 @@ namespace RSMods
 
                 if (Decimal.TryParse(val, out decimalVal))
                 {
-                    if (decimalVal < 2)
-                        decimalVal = 2;
                     nUpDown_RiffRepeaterSpeed.Value = decimalVal;
                     SaveSettings_Save(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, decimalVal.ToString());
                 }

@@ -3863,7 +3863,7 @@
             0,
             0});
             this.nUpDown_RiffRepeaterSpeed.Minimum = new decimal(new int[] {
-            2,
+            1,
             0,
             0,
             0});
@@ -3871,7 +3871,7 @@
             this.nUpDown_RiffRepeaterSpeed.Size = new System.Drawing.Size(153, 20);
             this.nUpDown_RiffRepeaterSpeed.TabIndex = 200;
             this.nUpDown_RiffRepeaterSpeed.Value = new decimal(new int[] {
-            2,
+            1,
             0,
             0,
             0});
