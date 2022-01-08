@@ -289,7 +289,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("LoopKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
+			else if (keyPressed == Settings::GetKeyBind("LoopKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) { // Loop small chunks of the song.
+				bool loopStartedInThisIteration = false;
 				if (GetAsyncKeyState(VK_SHIFT) < 0) {
 					if (loopLength != NULL)
 						loopLength -= Settings::GetModSetting("LoopInterval");
@@ -298,13 +299,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 						loopLength = 0;
 				}
 				else {
-					if (loopLength == NULL)
+					if (loopLength == NULL) {
+						loopStartedInThisIteration = true;
 						loopStart = MemHelpers::SongTimer();
+					}		
 
 					loopLength += Settings::GetModSetting("LoopInterval");
 				}
-				
-				WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+				if (!loopStartedInThisIteration) // We don't want to trigger a "go back to the beginning" event when the user turns on the mod, since it would cause the audio to jump back a tiny bit.
+					WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
 			}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
