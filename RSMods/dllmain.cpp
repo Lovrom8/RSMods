@@ -659,15 +659,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 }
 
 std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
-	std::string timeString = std::to_string(timeInSeconds);
-	size_t stringSize;
+	int seconds = 0, minutes = 0, hours = 0;
 
-	int time = std::stoi(timeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
-	int seconds = 0, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
-
-	seconds = time % 60;
-	minutes = (time / 60) % 60;
-	hours = time / 3600;
+	seconds = (int)timeInSeconds % 60;
+	minutes = (int)(timeInSeconds / 60) % 60;
+	hours = timeInSeconds / 3600;
 
 	return std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s";
 }
