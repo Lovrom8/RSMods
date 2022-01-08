@@ -289,25 +289,29 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("LoopKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) { // Loop small chunks of the song.
-				bool loopStartedInThisIteration = false;
-				if (GetAsyncKeyState(VK_SHIFT) < 0) {
-					if (loopLength != NULL)
-						loopLength -= Settings::GetModSetting("LoopInterval");
+			else if (keyPressed == Settings::GetKeyBind("LoopStartKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) { // Loop small chunks of the song.
+				if (GetAsyncKeyState(VK_SHIFT) < 0) // Remove start position
+					loopStart = NULL;
+				else // Place start position.
+					loopStart = MemHelpers::SongTimer();
 
-					if (loopLength < 0) // User changed their loop length value while it was active, causing us to become negative.
-						loopLength = 0;
-				}
-				else {
-					if (loopLength == NULL) {
-						loopStartedInThisIteration = true;
-						loopStart = MemHelpers::SongTimer();
-					}		
-
-					loopLength += Settings::GetModSetting("LoopInterval");
-				}
-				if (!loopStartedInThisIteration) // We don't want to trigger a "go back to the beginning" event when the user turns on the mod, since it would cause the audio to jump back a tiny bit.
+				if (loopStart != NULL && loopEnd != NULL && loopEnd > loopStart)
 					WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+			}
+
+			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
+				if (GetAsyncKeyState(VK_SHIFT) < 0) // Remove end position
+					loopEnd = NULL;
+				else if (loopStart != NULL) // Place end position
+					loopEnd = MemHelpers::SongTimer();
+
+				if (loopStart != NULL) {
+					if (loopEnd < loopStart)
+						loopEnd = NULL;
+
+					if (loopEnd != NULL)
+						WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+				}
 			}
 
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
@@ -635,11 +639,17 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && loopStart != NULL && loopLength != NULL) {
-			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopStart + loopLength), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
+		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && (loopStart != NULL || loopEnd != NULL)) {
+			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 
-			if (MemHelpers::SongTimer() >= loopStart + loopLength) // Reset loop
-				WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+			if (loopStart != NULL && loopEnd != NULL && MemHelpers::SongTimer() >= loopEnd) { 
+				if (loopStart == loopEnd) // Verify that the user didn't press both loop keys at the same time
+					loopEnd = NULL;
+				else
+					WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false); // Return to the beginning of the loop.
+			}
+			else if (loopStart == NULL && loopEnd != NULL) // User originally set LoopStart and LoopEnd, but then removed LoopStart after placing LoopEnd. Reset LoopEnd to NULL.
+				loopEnd = NULL;
 		}
 
 		// Regenerate Twitch Solid Note Color for a new color
@@ -1126,9 +1136,12 @@ unsigned WINAPI MainThread() {
 					UseERInTuner = false;
 				}
 
-				if (Settings::ReturnSettingValue("AllowLooping") == "on" && loopLength != NULL) {
-					loopStart = NULL;
-					loopLength = NULL;
+				if (Settings::ReturnSettingValue("AllowLooping") == "on") {
+					if (loopStart != NULL)
+						loopStart = NULL;
+
+					if (loopEnd != NULL)
+						loopEnd = NULL;
 				}
 
 				// Turn off Riff Repeater Speed above 100%

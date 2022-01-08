@@ -45,7 +45,7 @@ inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Disab
 
 // Looping functionality.
 inline float loopStart = NULL;
-inline float loopLength = NULL;
+inline float loopEnd = NULL;
 
 inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
 		{""}, // Disabled (Don't show the user any values)

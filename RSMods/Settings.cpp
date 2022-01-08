@@ -19,7 +19,8 @@ void Settings::Initialize()
 		{"MenuToggleKey", "M"},
 		{"TuningOffsetKey", "O"},
 		{"ToggleExtendedRangeKey", "E"},
-		{"LoopKey", "Y"},
+		{"LoopStartKey", "Y"},
+		{"LoopEndKey", "U"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -96,7 +97,6 @@ void Settings::Initialize()
 		{"OverrideInputVolume", 17},
 		{"CustomStringColors", 0},
 		{"AlternativeOutputSampleRate", 48000},
-		{"LoopInterval", 5},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
 		{"GuitarSpeakEnter", 0},
@@ -170,7 +170,8 @@ void Settings::ReadKeyBinds() {
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
 			{ "TuningOffsetKey", reader.GetValue("Keybinds", "TuningOffsetKey", "O")},
 			{ "ToggleExtendedRangeKey", reader.GetValue("Keybinds", "ToggleExtendedRangeKey", "E")},
-			{ "LoopKey", reader.GetValue("Keybinds", "LoopKey", "Y")},
+			{ "LoopStartKey", reader.GetValue("Keybinds", "LoopStartKey", "Y")},
+			{ "LoopEndKey", reader.GetValue("Keybinds", "LoopEndKey", "U")},
 
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
@@ -207,7 +208,6 @@ void Settings::ReadModSettings() {
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
 		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
-		{"LoopInterval", reader.GetLongValue("Mod Settings", "LoopInterval", 5)},
 
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
