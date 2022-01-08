@@ -289,6 +289,24 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
+			else if (keyPressed == Settings::GetKeyBind("LoopKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
+				if (GetAsyncKeyState(VK_SHIFT) < 0) {
+					if (loopLength != NULL)
+						loopLength -= Settings::GetModSetting("LoopInterval");
+
+					if (loopLength < 0) // User changed their loop length value while it was active, causing us to become negative.
+						loopLength = 0;
+				}
+				else {
+					if (loopLength == NULL)
+						loopStart = MemHelpers::SongTimer();
+
+					loopLength += Settings::GetModSetting("LoopInterval");
+				}
+				
+				WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+			}
+
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
 			}
@@ -594,17 +612,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) { // Show Song Timer
-			std::string currentSongTimeString = std::to_string(MemHelpers::SongTimer());
-			size_t stringSize;
-
-			int currentSongTime = std::stoi(currentSongTimeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
-			int seconds = 0, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
-			
-			seconds = currentSongTime % 60;
-			minutes = (currentSongTime / 60) % 60;
-			hours = currentSongTime / 3600;
-			
-			MemHelpers::DX9DrawText(std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s", whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
+			MemHelpers::DX9DrawText(ConvertFloatTimeToStringTime(MemHelpers::SongTimer()), whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
 		}
 
 		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled_Above100) { // Riff Repeater over 100%
@@ -624,6 +632,13 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
 		}
 
+		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && loopStart != NULL && loopLength != NULL) {
+			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopStart + loopLength), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
+
+			if (MemHelpers::SongTimer() >= loopStart + loopLength) // Reset loop
+				WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+		}
+
 		// Regenerate Twitch Solid Note Color for a new color
 		if (D3DHooks::regenerateUserDefinedTexture) {
 			Color userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue("SolidNoteColor"));
@@ -641,6 +656,20 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 	}
 	return hRet;
+}
+
+std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
+	std::string timeString = std::to_string(timeInSeconds);
+	size_t stringSize;
+
+	int time = std::stoi(timeString, &stringSize); // We don't need to tell them the EXACT microsecond it is, just a second is fine.
+	int seconds = 0, minutes = 0, hours = 0; // Can't leave them uninitialized or the (minutes >= 60) will freak out and throw a warning.
+
+	seconds = time % 60;
+	minutes = (time / 60) % 60;
+	hours = time / 3600;
+
+	return std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s";
 }
 
 /// <summary>
@@ -1096,6 +1125,11 @@ unsigned WINAPI MainThread() {
 				else {
 					AttemptedERInTuner = false;
 					UseERInTuner = false;
+				}
+
+				if (Settings::ReturnSettingValue("AllowLooping") == "on" && loopLength != NULL) {
+					loopStart = NULL;
+					loopLength = NULL;
 				}
 
 				// Turn off Riff Repeater Speed above 100%

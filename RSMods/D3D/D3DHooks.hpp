@@ -103,6 +103,8 @@ namespace D3DHooks {
 	inline bool GameClosing = false; // Inform the threads that their work is done just before the game closes
 
 	inline const char* windowName = "Rocksmith 2014"; // Console Window Title
+
+	extern std::string ConvertFloatTimeToStringTime(float timeInSeconds);
 }
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

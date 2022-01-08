@@ -368,7 +368,7 @@ namespace WwiseVariables {
 	//tResetRTPCValue_Char Wwise_Sound_ResetRTPCValue_Char = (tResetRTPCValue_Char)func_Wwise_Sound_ResetRTPCValue_Char;
 	//tSeekOnEvent_UniqueID_Int32 Wwise_Sound_SeekOnEvent_UniqueID_Int32 = (tSeekOnEvent_UniqueID_Int32)func_Wwise_Sound_SeekOnEvent_UniqueID_Int32;
 	//tSeekOnEvent_UniqueID_Float Wwise_Sound_SeekOnEvent_UniqueID_Float = (tSeekOnEvent_UniqueID_Float)func_Wwise_Sound_SeekOnEvent_UniqueID_Float;
-	//tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32 = (tSeekOnEvent_Char_Int32)func_Wwise_Sound_SeekOnEvent_Char_Int32;
+	tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32 = (tSeekOnEvent_Char_Int32)func_Wwise_Sound_SeekOnEvent_Char_Int32;
 	//tSeekOnEvent_Char_Float Wwise_Sound_SeekOnEvent_Char_Float = (tSeekOnEvent_Char_Float)func_Wwise_Sound_SeekOnEvent_Char_Float;
 	//tSetEffectParam Wwise_Sound_SetEffectParam = (tSetEffectParam)func_Wwise_Sound_SetEffectParam;
 	//tSetPositionInternal Wwise_Sound_SetPositionInternal = (tSetPositionInternal)func_Wwise_Sound_SetPositionInternal;

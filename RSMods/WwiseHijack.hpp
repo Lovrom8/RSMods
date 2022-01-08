@@ -2037,7 +2037,7 @@ typedef AKRESULT(__cdecl* tSetRTPCValue_Char) (const char* in_pszRtpcName, AkRtp
 //typedef AKRESULT(__cdecl* tResetRTPCValue_RTPCID)(AkRtpcID in_rtpcID, UINT param_2, long param_3, AkCurveInterpolation in_curveInterpolation);
 //typedef AKRESULT(__cdecl* tResetRTPCValue_Char)(const char* in_pszRtpcName, UINT param_2, long param_3, AkCurveInterpolation in_curveInterpolation);
 //typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Int32)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
-//typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Int32)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
+typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Int32)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker);
 //typedef AKRESULT(__cdecl* tSeekOnEvent_UniqueID_Float)(AkUniqueID in_eventID, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
 //typedef AKRESULT(__cdecl* tSeekOnEvent_Char_Float)(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkReal32 in_iPosition, bool in_bSeekToNearestMarker);
 //typedef AKRESULT(__cdecl* tSetEffectParam)(AkUInt32 param_1, short param_2, void* in_pCookie);
@@ -2415,7 +2415,7 @@ namespace WwiseVariables {
 	//extern 	tResetRTPCValue_Char Wwise_Sound_ResetRTPCValue_Char;
 	//extern 	tSeekOnEvent_UniqueID_Int32 Wwise_Sound_SeekOnEvent_UniqueID_Int32;
 	//extern 	tSeekOnEvent_UniqueID_Float Wwise_Sound_SeekOnEvent_UniqueID_Float;
-	//extern 	tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32;
+	extern 	tSeekOnEvent_Char_Int32 Wwise_Sound_SeekOnEvent_Char_Int32;
 	//extern 	tSeekOnEvent_Char_Float Wwise_Sound_SeekOnEvent_Char_Float;
 	//extern 	tSetEffectParam Wwise_Sound_SetEffectParam;
 	//extern 	tSetPositionInternal Wwise_Sound_SetPositionInternal;

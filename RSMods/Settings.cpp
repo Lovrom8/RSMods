@@ -19,6 +19,7 @@ void Settings::Initialize()
 		{"MenuToggleKey", "M"},
 		{"TuningOffsetKey", "O"},
 		{"ToggleExtendedRangeKey", "E"},
+		{"LoopKey", "Y"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -78,7 +79,8 @@ void Settings::Initialize()
 		{"AllowAudioInBackground", "off"},
 		{"BypassTwoRTCMessageBox", "off"},
 		{"LinearRiffRepeater", "off"},
-		{"AltOutputSampleRate", "off"}
+		{"AltOutputSampleRate", "off"},
+		{"AllowLooping", "off"}
 	};
 
 	customSettings = {
@@ -94,6 +96,7 @@ void Settings::Initialize()
 		{"OverrideInputVolume", 17},
 		{"CustomStringColors", 0},
 		{"AlternativeOutputSampleRate", 48000},
+		{"LoopInterval", 5},
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
 		{"GuitarSpeakEnter", 0},
@@ -167,6 +170,8 @@ void Settings::ReadKeyBinds() {
 			{ "RRSpeedKey", reader.GetValue("Keybinds", "RRSpeedKey", "R")},
 			{ "TuningOffsetKey", reader.GetValue("Keybinds", "TuningOffsetKey", "O")},
 			{ "ToggleExtendedRangeKey", reader.GetValue("Keybinds", "ToggleExtendedRangeKey", "E")},
+			{ "LoopKey", reader.GetValue("Keybinds", "LoopKey", "Y")},
+
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
 			{ "Player1VolumeKey", reader.GetValue("Audio Keybindings", "Player1VolumeKey", "7") },
@@ -202,6 +207,8 @@ void Settings::ReadModSettings() {
 		{"CustomStringColors", reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
 		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
+		{"LoopInterval", reader.GetLongValue("Mod Settings", "LoopInterval", 5)},
+
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
 		{"GuitarSpeakEnter", reader.GetLongValue("Guitar Speak", "GuitarSpeakEnterWhen", 0)},
@@ -270,6 +277,7 @@ void Settings::ReadModSettings() {
 	modSettings["BypassTwoRTCMessageBox"] = reader.GetValue("Toggle Switches", "BypassTwoRTCMessageBox", "off");
 	modSettings["LinearRiffRepeater"] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
 	modSettings["AltOutputSampleRate"] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
+	modSettings["AllowLooping"] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
 }
 
 /// <summary>
