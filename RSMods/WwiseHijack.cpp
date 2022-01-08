@@ -502,5 +502,33 @@ namespace WwiseLogging {
 	void Setup_log_SetRTPCValue() {
 		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_SetRTPCValueHook, hook_log_SetRTPCValue, 5);
 	}
+
+	void __stdcall log_SeekOnEvent(char* eventName, AkGameObjectID gameObject, AkTimeMs position, bool seekToNearestMarker) {
+		std::cout << "(Wwise) SeekOnEvent: " << eventName << " on object 0x" << std::hex << gameObject << " at time " << (float)(position / 1000) << " seconds. Seek to nearest marker: " << std::boolalpha << seekToNearestMarker << std::endl;
+	}
+
+	void __declspec(naked) hook_log_SeekOnEvent() {
+		__asm {
+			push ESP // Save current state of ESP to the stack
+			push EAX // Save current state of EAX to the stack
+
+			push [EBP+0x14] // Seek To Nearest Marker
+			push [EBP+0x10] // Position (in ms)
+			push [EBP+0xC]	// Game Object
+			push [EBP+0x8]	// Event Name
+			call log_SeekOnEvent
+
+			pop EAX // Get old EAX
+			pop ESP // Get old ESP
+
+			mov ECX, dword ptr[EBP+0x14] // Assembly we removed to place this hook
+			mov EDX, dword ptr[EBP+0x10] // Assembly we removed to place this hook
+			jmp Offsets::ptr_Wwise_Log_SeekOnEventHookJmpBck // Jump back to the original code
+		}
+	}
+
+	void Setup_log_SeekOnEvent() {
+		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_SeekOnEventHook, hook_log_SeekOnEvent, 6);
+	}
 }
 #endif

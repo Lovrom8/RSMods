@@ -2435,5 +2435,8 @@ namespace WwiseLogging {
 
 	void hook_log_SetRTPCValue();
 	void Setup_log_SetRTPCValue();
+
+	void hook_log_SeekOnEvent();
+	void Setup_log_SeekOnEvent();
 }
 #endif

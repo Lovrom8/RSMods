@@ -117,6 +117,8 @@ namespace Offsets {
 	extern uintptr_t ptr_Wwise_Log_PostEventHookJmpBck;
 	extern uintptr_t ptr_Wwise_Log_SetRTPCValueHook;
 	extern uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck;
+	extern uintptr_t ptr_Wwise_Log_SeekOnEventHook;
+	extern uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck;
 
 	// Audio In Background
 	extern uintptr_t ptr_IsWindowInFocus;

@@ -918,6 +918,7 @@ unsigned WINAPI MainThread() {
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
 	WwiseLogging::Setup_log_PostEvent();
 	WwiseLogging::Setup_log_SetRTPCValue();
+	WwiseLogging::Setup_log_SeekOnEvent();
 #endif
 
 	if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on")

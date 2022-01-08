@@ -131,9 +131,11 @@ namespace Offsets {
 
 	// Wwise Logging
 	uintptr_t ptr_Wwise_Log_PostEventHook = 0x01f5b2d6;
-	uintptr_t ptr_Wwise_Log_PostEventHookJmpBck = 0x01f5b2d6 + 5;
+	uintptr_t ptr_Wwise_Log_PostEventHookJmpBck = ptr_Wwise_Log_PostEventHook + 5;
 	uintptr_t ptr_Wwise_Log_SetRTPCValueHook = 0x01f58a9d;
-	uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck = 0x01f58a9d + 5;
+	uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck = ptr_Wwise_Log_SetRTPCValueHook + 5;
+	uintptr_t ptr_Wwise_Log_SeekOnEventHook = 0x01f5b4bb;
+	uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck = ptr_Wwise_Log_SeekOnEventHook + 6;
 
 
 	// Audio In Background
