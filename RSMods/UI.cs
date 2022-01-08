@@ -258,6 +258,7 @@ namespace RSMods
             label_RRSpeedKey.Text = "RR Speed: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier));
             label_TuningOffsetKey.Text = "Tuning Offset: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier));
             label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier));
+            label_LoopKey.Text = "Enable Looping: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()
@@ -594,6 +595,13 @@ namespace RSMods
             {
                 checkBox_OverrideInputVolume.Checked = true;
                 groupBox_OverrideInputVolume.Visible = true;
+            }
+
+            if (ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on")
+            {
+                checkBox_EnableLooping.Checked = true;
+                groupBox_LoopTiming.Visible = true;
+                nUpDown_LoopInterval.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.LoopIntervalIdentifier), 5);
             }
 
             listBox_ExtendedRangeTunings.SelectedIndex      = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
@@ -2372,6 +2380,14 @@ namespace RSMods
             }
         }
 
+        private void Save_EnableLooping(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.AllowLoopingIdentifier, checkBox_EnableLooping.Checked.ToString().ToLower());
+            groupBox_LoopTiming.Visible = checkBox_EnableLooping.Checked;
+        }
+
+        private void Save_LoopInterval(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LoopIntervalIdentifier, nUpDown_LoopInterval.Value.ToString());
+
         #endregion
         #region ToolTips
 
@@ -3843,6 +3859,7 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
+
     }
 
     public class Midi

@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_EnableLooping = new System.Windows.Forms.CheckBox();
             this.checkBox_UseAltSampleRate_Output = new System.Windows.Forms.CheckBox();
             this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
             this.checkBox_BypassTwoRTCMessageBox = new System.Windows.Forms.CheckBox();
@@ -270,6 +271,8 @@
             this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.groupBox_LoopTiming = new System.Windows.Forms.GroupBox();
+            this.nUpDown_LoopInterval = new System.Windows.Forms.NumericUpDown();
             this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
             this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
             this.listBox_Profiles_ListBackups = new System.Windows.Forms.ListBox();
@@ -499,6 +502,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.label_LoopKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -546,6 +550,8 @@
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
+            this.groupBox_LoopTiming.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopInterval)).BeginInit();
             this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_OverrideInputVolume.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
@@ -615,7 +621,7 @@
             this.listBox_Modlist_MODS.FormattingEnabled = true;
             this.listBox_Modlist_MODS.Location = new System.Drawing.Point(22, 29);
             this.listBox_Modlist_MODS.Name = "listBox_Modlist_MODS";
-            this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 134);
+            this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 160);
             this.listBox_Modlist_MODS.TabIndex = 5;
             this.listBox_Modlist_MODS.SelectedIndexChanged += new System.EventHandler(this.Keypress_LoadKeys);
             // 
@@ -1017,6 +1023,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_EnableLooping);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_UseAltSampleRate_Output);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_LinearRiffRepeater);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_BypassTwoRTCMessageBox);
@@ -1051,10 +1058,22 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 378);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 400);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_EnableLooping
+            // 
+            this.checkBox_EnableLooping.AutoSize = true;
+            this.checkBox_EnableLooping.Location = new System.Drawing.Point(11, 378);
+            this.checkBox_EnableLooping.Name = "checkBox_EnableLooping";
+            this.checkBox_EnableLooping.Size = new System.Drawing.Size(100, 17);
+            this.checkBox_EnableLooping.TabIndex = 75;
+            this.checkBox_EnableLooping.Text = "Enable Looping";
+            this.checkBox_EnableLooping.UseVisualStyleBackColor = true;
+            this.checkBox_EnableLooping.CheckedChanged += new System.EventHandler(this.Save_EnableLooping);
+            this.checkBox_EnableLooping.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_UseAltSampleRate_Output
             // 
@@ -1354,6 +1373,7 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_LoopKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_ToggleExtendedRangeKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_TuningOffsetKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RainbowNotesKey);
@@ -1369,7 +1389,7 @@
             this.groupBox_Keybindings_MODS.Controls.Add(this.listBox_Modlist_MODS);
             this.groupBox_Keybindings_MODS.Location = new System.Drawing.Point(15, 17);
             this.groupBox_Keybindings_MODS.Name = "groupBox_Keybindings_MODS";
-            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 191);
+            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 217);
             this.groupBox_Keybindings_MODS.TabIndex = 52;
             this.groupBox_Keybindings_MODS.TabStop = false;
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
@@ -2772,7 +2792,7 @@
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_NewAssignmentAUDIO);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.textBox_NewKeyAssignment_AUDIO);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.listBox_Modlist_AUDIO);
-            this.groupBox_Keybindings_AUDIO.Location = new System.Drawing.Point(15, 214);
+            this.groupBox_Keybindings_AUDIO.Location = new System.Drawing.Point(15, 253);
             this.groupBox_Keybindings_AUDIO.Name = "groupBox_Keybindings_AUDIO";
             this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 222);
             this.groupBox_Keybindings_AUDIO.TabIndex = 53;
@@ -3565,6 +3585,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_LoopTiming);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OverrideInputVolume);
             this.tabPage_ModSettings_Misc.Controls.Add(this.checkBox_TurnOffAllMods);
@@ -3579,6 +3600,40 @@
             this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
+            // groupBox_LoopTiming
+            // 
+            this.groupBox_LoopTiming.Controls.Add(this.nUpDown_LoopInterval);
+            this.groupBox_LoopTiming.Location = new System.Drawing.Point(348, 267);
+            this.groupBox_LoopTiming.Name = "groupBox_LoopTiming";
+            this.groupBox_LoopTiming.Size = new System.Drawing.Size(159, 56);
+            this.groupBox_LoopTiming.TabIndex = 100011;
+            this.groupBox_LoopTiming.TabStop = false;
+            this.groupBox_LoopTiming.Text = "Loop Interval (in seconds)";
+            this.groupBox_LoopTiming.Visible = false;
+            // 
+            // nUpDown_LoopInterval
+            // 
+            this.nUpDown_LoopInterval.Location = new System.Drawing.Point(7, 23);
+            this.nUpDown_LoopInterval.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
+            this.nUpDown_LoopInterval.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_LoopInterval.Name = "nUpDown_LoopInterval";
+            this.nUpDown_LoopInterval.Size = new System.Drawing.Size(143, 20);
+            this.nUpDown_LoopInterval.TabIndex = 0;
+            this.nUpDown_LoopInterval.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_LoopInterval.ValueChanged += new System.EventHandler(this.Save_LoopInterval);
             // 
             // groupBox_Profiles_RevertBackup
             // 
@@ -6274,6 +6329,15 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // label_LoopKey
+            // 
+            this.label_LoopKey.AutoSize = true;
+            this.label_LoopKey.Location = new System.Drawing.Point(464, 191);
+            this.label_LoopKey.Name = "label_LoopKey";
+            this.label_LoopKey.Size = new System.Drawing.Size(87, 13);
+            this.label_LoopKey.TabIndex = 57;
+            this.label_LoopKey.Text = "Enable Looping: ";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6358,6 +6422,8 @@
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.tabPage_ModSettings_Misc.PerformLayout();
+            this.groupBox_LoopTiming.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopInterval)).EndInit();
             this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.PerformLayout();
@@ -6913,6 +6979,10 @@
         private System.Windows.Forms.Button button_ChangeNumberedFrets;
         private System.Windows.Forms.GroupBox groupBox_SampleRateOutput;
         private System.Windows.Forms.ListBox listBox_AltSampleRatesOutput;
+        private System.Windows.Forms.CheckBox checkBox_EnableLooping;
+        private System.Windows.Forms.GroupBox groupBox_LoopTiming;
+        private System.Windows.Forms.NumericUpDown nUpDown_LoopInterval;
+        private System.Windows.Forms.Label label_LoopKey;
     }
 }
 

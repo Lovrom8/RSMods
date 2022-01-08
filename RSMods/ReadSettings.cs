@@ -13,7 +13,8 @@ namespace RSMods
                              Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
 
                              // Mod Key Bindings
-                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey, RemoveLyricsKey, RRSpeedKey, TuningOffsetKey, ToggleExtendedRangeKey,
+                             ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey,
+                             RemoveLyricsKey, RRSpeedKey, TuningOffsetKey, ToggleExtendedRangeKey, LoopKey,
 
                              // Audio Key Bindings
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
@@ -25,7 +26,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping,
 
 
                              // String Colors
@@ -38,7 +39,8 @@ namespace RSMods
 
                              // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset,
-                            VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate,
+                             VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate,
+                             LoopInterval,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -69,6 +71,7 @@ namespace RSMods
             RRSpeedKeyIdentifier                = "RRSpeedKey = ",
             TuningOffsetKeyIdentifier           = "TuningOffsetKey = ",
             ToggleExtendedRangeKeyIdentifier    = "ToggleExtendedRangeKey = ",
+            LoopKeyIdentifier                   = "LoopKey = ",
 
             // Audio Keybindings
             MasterVolumeKeyIdentifier           = "MasterVolumeKey = ",
@@ -130,6 +133,7 @@ namespace RSMods
             BypassTwoRTCMessageBoxIdentifier            = "BypassTwoRTCMessageBox = ",
             LinearRiffRepeaterIdentifier                = "LinearRiffRepeater = ",
             UseAlternativeOutputSampleRateIdentifier    = "AltOutputSampleRate = ",
+            AllowLoopingIdentifier                      = "AllowLooping = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -176,6 +180,7 @@ namespace RSMods
             SeparateNoteColorsModeIdentifier        = "SeparateNoteColorsMode = ",
             OverrideInputVolumeIdentifier           = "OverrideInputVolume = ",
             AlternativeOutputSampleRateIdentifier   = "AlternativeOutputSampleRate = ",
+            LoopIntervalIdentifier                  = "LoopInterval = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier     = "GuitarSpeakDeleteWhen = ",
@@ -294,6 +299,8 @@ namespace RSMods
                     return FillSettingVariable(TuningOffsetKeyIdentifier, SettingType.VKEY, currentLine, out TuningOffsetKey);
                 if (IdentifierIsFound(currentLine, ToggleExtendedRangeKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(ToggleExtendedRangeKeyIdentifier, SettingType.VKEY, currentLine, out ToggleExtendedRangeKey);
+                if (IdentifierIsFound(currentLine, LoopKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(LoopKeyIdentifier, SettingType.VKEY, currentLine, out LoopKey);
                 
                 #endregion
                 #region Audio Keybindings
@@ -418,6 +425,9 @@ namespace RSMods
                     return FillSettingVariable(LinearRiffRepeaterIdentifier, SettingType.ON_OFF, currentLine, out LinearRiffRepeater);
                 if (IdentifierIsFound(currentLine, UseAlternativeOutputSampleRateIdentifier, identifierToGrab))
                     return FillSettingVariable(UseAlternativeOutputSampleRateIdentifier, SettingType.ON_OFF, currentLine, out UseAlternativeOutputSampleRate);
+                if (IdentifierIsFound(currentLine, AllowLoopingIdentifier, identifierToGrab))
+                    return FillSettingVariable(AllowLoopingIdentifier, SettingType.ON_OFF, currentLine, out AllowLooping);
+
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})
@@ -506,6 +516,8 @@ namespace RSMods
                     return FillSettingVariable(OverrideInputVolumeIdentifier, SettingType.STRING, currentLine, out OverrideInputVolume);
                 if (IdentifierIsFound(currentLine, AlternativeOutputSampleRateIdentifier, identifierToGrab))
                     return FillSettingVariable(AlternativeOutputSampleRateIdentifier, SettingType.STRING, currentLine, out AlternativeOutputSampleRate);
+                if (IdentifierIsFound(currentLine, LoopIntervalIdentifier, identifierToGrab))
+                    return FillSettingVariable(LoopIntervalIdentifier, SettingType.STRING, currentLine, out LoopInterval);
                 #endregion
                 #region Guitar Speak
 

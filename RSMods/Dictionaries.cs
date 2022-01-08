@@ -42,6 +42,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_BypassTwoRTCMessageBox, "Allows you to have two Real Tone Cables plugged in while playing singleplayer.\nWith this mod disabled, Rocksmith will stop you from doing this.\nIf you are using RS_ASIO v0.5.7, this will always be enabled.");
             TooltipDictionary.Add(checkBox_LinearRiffRepeater, "By default, the speed for Riff Repeater is now linear.\nEnabling this mod will fix that.\nIn standard Rocksmith 2014: 68% speed in Riff Repeater = 50% real speed.\nWith this mod: 68% speed in Riff Repeater = 68% real speed.");
             TooltipDictionary.Add(checkBox_UseAltSampleRate_Output, "Tells Rocksmith to look for headphones / speakers using a sample rate that isn't 48kHz.\nThis can be used to play with bluetooth headphones (there will be latency).\nSupport for this mod is \"as-is\" as we cannot help with every headset / speaker configuration.\nChanges made to this setting won't take effect until you restart Rocksmith.");
+            TooltipDictionary.Add(checkBox_EnableLooping, "Allows you to loop sections of songs.\nThis differs from Riff Repeater as we let you pick sections by the amount of time.\nSet a keybind in the \"Keybindings\" tab.\nSet interval in Misc tab.\nPressing the key will start the loop, then last for the interval.\nPressing the key again, causes another interval to be added.\nPressing Shift + Keybind makes the loop get shorter by the interval");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");
@@ -333,7 +334,8 @@ namespace RSMods
             ReadSettings.RemoveLyricsKeyIdentifier,
             ReadSettings.RRSpeedKeyIdentifier,
             ReadSettings.TuningOffsetKeyIdentifier,
-            ReadSettings.ToggleExtendedRangeKeyIdentifier
+            ReadSettings.ToggleExtendedRangeKeyIdentifier,
+            ReadSettings.LoopKeyIdentifier
         };
 
         public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
@@ -441,7 +443,8 @@ namespace RSMods
             "Remove Lyrics",
             "RR Speed Change",
             "Change Tuning Offset",
-            "Toggle Extended Range"
+            "Toggle Extended Range",
+            "Enable Loop"
         };
 
         public static List<string> currentAudioKeypressList = new List<string>()
@@ -473,6 +476,7 @@ namespace RSMods
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier)));
             savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier)));
+            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopKeyIdentifier)));
             return savedKeysForModToggles;
         }
 

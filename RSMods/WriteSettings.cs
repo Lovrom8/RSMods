@@ -57,6 +57,7 @@ namespace RSMods
                     { ReadSettings.RRSpeedKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RRSpeedKeyIdentifier, "") }, // Riff Repeater Above 100% key.
                     { ReadSettings.TuningOffsetKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningOffsetKeyIdentifier, "") }, // Change Auto Tune For Song Offset Ingame.
                     { ReadSettings.ToggleExtendedRangeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.ToggleExtendedRangeKeyIdentifier, "") }, // Toggle ER Mode on / off
+                    { ReadSettings.LoopKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopKeyIdentifier, "") }, // Allows looping of smaller sections than RR allows.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -124,6 +125,7 @@ namespace RSMods
                     { ReadSettings.BypassTwoRTCMessageBoxIdentifier, CreateDefaultOnOldINI(ReadSettings.BypassTwoRTCMessageBoxIdentifier, "off")}, // Allows the user to play singleplayer with 2 RTCs connected without the message box appearing.
                     { ReadSettings.LinearRiffRepeaterIdentifier, CreateDefaultOnOldINI(ReadSettings.LinearRiffRepeaterIdentifier, "off") }, // Makes Riff Repeater linear, so 68% speed = 68% real speed.
                     { ReadSettings.UseAlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.UseAlternativeOutputSampleRateIdentifier, "off") }, // Forces Rocksmith to look for audio output devices set to a different frequency (not 48kHz).
+                    { ReadSettings.AllowLoopingIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowLoopingIdentifier, "off") }, // Allows the user to loop smaller sections of notes than RR allows.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -173,6 +175,7 @@ namespace RSMods
                     { ReadSettings.SeparateNoteColorsModeIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsModeIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
                     { ReadSettings.OverrideInputVolumeIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeIdentifier, "17")}, // What volume should we use when the user wants to override the default input volume?
                     { ReadSettings.AlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.AlternativeOutputSampleRateIdentifier, "48000") }, // Alternative frequency to use when looking for Audio Output devices.
+                    { ReadSettings.LoopIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopIntervalIdentifier, "5") }, // The amount of time we set the loop for.
                 }
             );
             saveSettingsOrDefaults.Add(
