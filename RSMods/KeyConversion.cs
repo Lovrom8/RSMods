@@ -23,7 +23,7 @@ namespace RSMods {
             // Special Keys
             Keys.Pause, Keys.Scroll, Keys.Insert,
             // Symbol Keys
-            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion, Keys.Oem4, Keys.Oem6,
+            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion, Keys.OemOpenBrackets, Keys.OemCloseBrackets,
             // Modifier Keys
             Keys.CapsLock, Keys.Apps,
             // Numlock Keys
