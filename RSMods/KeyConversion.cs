@@ -15,7 +15,7 @@ namespace RSMods {
         }
         #endregion
         #region Acceptable Keys
-        public static Keys[] KeyDownDictionary = new Keys[38] { // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://pastebin.com/raw/7f1CvkUt | https://i.imgur.com/lpNv3yG.png
+        public static Keys[] KeyDownDictionary = new Keys[40] { // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://pastebin.com/raw/7f1CvkUt | https://i.imgur.com/lpNv3yG.png
             // Standard Function Keys
             Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F9, Keys.F10,
             // Elgato Keys / Extended Function Keys
@@ -23,7 +23,7 @@ namespace RSMods {
             // Special Keys
             Keys.Pause, Keys.Scroll, Keys.Insert,
             // Symbol Keys
-            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion,
+            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion, Keys.Oem4, Keys.Oem6,
             // Modifier Keys
             Keys.CapsLock, Keys.Apps,
             // Numlock Keys
@@ -407,11 +407,11 @@ namespace RSMods {
                 return "VK_OEM_2";
             else if(String.Equals(Key, "Tilda", CurrentCultureIgnoreCase) ^ String.Equals(Key, "BackTick", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oemtilde", CurrentCultureIgnoreCase)) // Back Tick / Tilda Key
                 return "VK_OEM_3";
-            else if(String.Equals(Key, "OpenBrackets", CurrentCultureIgnoreCase) ^ String.Equals(Key, "[", CurrentCultureIgnoreCase) ^ String.Equals(Key, "[", CurrentCultureIgnoreCase)) // Open Curly () & Block ([) Brackets Key
+            else if(String.Equals(Key, "OemOpenBrackets", CurrentCultureIgnoreCase) ^ String.Equals(Key, "[", CurrentCultureIgnoreCase) ^ String.Equals(Key, "[", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem4", CurrentCultureIgnoreCase)) // Open Curly () & Block ([) Brackets Key
                 return "VK_OEM_4";
             else if(String.Equals(Key, "BackSlashPipe", CurrentCultureIgnoreCase) ^ String.Equals(Key, "PipeBackSlash", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem5", CurrentCultureIgnoreCase) ^ String.Equals(Key, "|\\", CurrentCultureIgnoreCase)) // Backslash & Pipe key
                 return "VK_OEM_5";
-            else if(String.Equals(Key, "CloseBrackets", CurrentCultureIgnoreCase) ^ String.Equals(Key, "]", CurrentCultureIgnoreCase) ^ String.Equals(Key, "]", CurrentCultureIgnoreCase)) // Close Curly () & Block (]) Brackets Key
+            else if(String.Equals(Key, "CloseBrackets", CurrentCultureIgnoreCase) ^ String.Equals(Key, "]", CurrentCultureIgnoreCase) ^ String.Equals(Key, "]", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem6", CurrentCultureIgnoreCase)) // Close Curly () & Block (]) Brackets Key
                 return "VK_OEM_6";
             else if(String.Equals(Key, "Quotes", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Oem7", CurrentCultureIgnoreCase) ^ String.Equals(Key, "\"'", CurrentCultureIgnoreCase)) // Single & Double Quotes Key
                 return "VK_OEM_7";
