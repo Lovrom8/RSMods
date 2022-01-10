@@ -255,33 +255,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
 
-
-			else if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && RiffRepeater::loggedCurrentSongID) { // Riff Repeater over 100%
-
-				// Convert UI Speed -> Real Speed
-				realSongSpeed = RiffRepeater::GetSpeed(true);
-
-				// Add / Subtract User's Interval
-
-				if (GetAsyncKeyState(VK_SHIFT) < 0)
-					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
-				else
-					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
-
-				// Set Limits
-				if (realSongSpeed > 400.f) // Cap at 400. Plugin only goes down to 25. 10000 / 25 = 400.
-					realSongSpeed = 400.f;
-
-				if (realSongSpeed < 25.f) // Cap at 25. Plugin only goes up to 400. 10000 / 400 = 25.
-					realSongSpeed = 25.f;
-
-				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
-				RiffRepeater::SetSpeed(realSongSpeed, true);
-				RiffRepeater::EnableTimeStretch();
-				saveNewRRSpeedToFile = true;
-
-				std::cout << "Triggered Mod: Riff Repeater Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl;
-			}
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
 				Settings::ToggleExtendedRangeMode();
@@ -316,7 +289,38 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (debug) {
 			if (keyPressed == VK_INSERT) // Debug menu | ImGUI
 				D3DHooks::menuEnabled = !D3DHooks::menuEnabled;
+		}
+	}
 
+	// Repeatedly trigger mod on key hold
+	else if (msg == WM_KEYDOWN) {
+		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
+			if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && RiffRepeater::loggedCurrentSongID) { // Riff Repeater over 100%
+
+				// Convert UI Speed -> Real Speed
+				realSongSpeed = RiffRepeater::GetSpeed(true);
+
+				// Add / Subtract User's Interval
+
+				if (GetAsyncKeyState(VK_SHIFT) < 0)
+					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
+				else
+					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
+
+				// Set Limits
+				if (realSongSpeed > 400.f) // Cap at 400. Plugin only goes down to 25. 10000 / 25 = 400.
+					realSongSpeed = 400.f;
+
+				if (realSongSpeed < 25.f) // Cap at 25. Plugin only goes up to 400. 10000 / 400 = 25.
+					realSongSpeed = 25.f;
+
+				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
+				RiffRepeater::SetSpeed(realSongSpeed, true);
+				RiffRepeater::EnableTimeStretch();
+				saveNewRRSpeedToFile = true;
+
+				std::cout << "Triggered Mod: Song Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl;
+			}
 		}
 	}
 
