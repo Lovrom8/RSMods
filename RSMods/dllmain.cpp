@@ -294,9 +294,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					loopStart = NULL;
 				else // Place start position.
 					loopStart = MemHelpers::SongTimer();
-
-				if (loopStart != NULL && loopEnd != NULL && loopEnd > loopStart)
-					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
@@ -308,9 +305,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (loopStart != NULL) {
 					if (loopEnd < loopStart)
 						loopEnd = NULL;
-
-					if (loopEnd != NULL)
-						Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
 				}
 			}
 
@@ -614,18 +608,44 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			RTPCValue_type type = RTPCValue_GameObject;
 			Wwise::SoundEngine::Query::GetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
 
-			if (currentVolumeIndex != 0)
-				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
+			if (currentVolumeIndex != 0) {
+				MemHelpers::DX9DrawText(
+						drawMixerTextName[currentVolumeIndex] + std::to_string(static_cast<int>(volume)) + "%",
+						whiteText,
+						static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
+						static_cast<int>(WindowSize.height / 54.0f), // 20 pixels from top 
+						static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
+						static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
+						pDevice);
+			}
 		}
 
 		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) { // Show Song Timer
-			MemHelpers::DX9DrawText(ConvertFloatTimeToStringTime(MemHelpers::SongTimer()), whiteText, (int)(WindowSize.width / 1.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 1.45), (int)(WindowSize.height / 8), pDevice);
+			MemHelpers::DX9DrawText(
+					ConvertFloatTimeToStringTime(MemHelpers::SongTimer()),
+					whiteText,
+					static_cast<int>(WindowSize.width - WindowSize.width / 16.0f), // 120 pixels left from right edge in 1920x1080 resolution
+					static_cast<int>(WindowSize.height / 54.0f),                   // 20 pixels from top
+					static_cast<int>(WindowSize.width - WindowSize.width / 96.0f), // 20 left from right edge
+					static_cast<int>(WindowSize.height / 16.0f),                   // 120 pixels from top
+					pDevice,
+					{ NULL, NULL },
+					DT_RIGHT | DT_NOCLIP);
 		}
 
 		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled_Above100) { // Riff Repeater over 100%
 			realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
 
-			MemHelpers::DX9DrawText("Riff Repeater Speed: " + std::to_string((int)roundf(realSongSpeed)) + "%", whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
+			MemHelpers::DX9DrawText(
+					"Song Speed: " + std::to_string(static_cast<int>(roundf(realSongSpeed))) + "%",
+					whiteText,
+					static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
+					static_cast<int>(WindowSize.height / 54.0f),                          // 20 pixels from top
+					static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
+					static_cast<int>(WindowSize.height / 16.0f),                          // 120 pixels from top
+					pDevice,
+					{ NULL, NULL },
+					DT_CENTER | DT_NOCLIP);
 		}
 
 		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") { // Show Current Note On Screen
@@ -640,16 +660,24 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && (loopStart != NULL || loopEnd != NULL)) {
-			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
+			MemHelpers::DX9DrawText(
+					"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
+					whiteText,
+					static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
+					static_cast<int>(WindowSize.height / 7.4f),                           // 145 pixels from top
+					static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
+					static_cast<int>(WindowSize.height / 4.4f),                           // 245 pixels from top
+					pDevice,
+					{ NULL, NULL },
+					DT_CENTER | DT_NOCLIP);
 
-			if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) { // Resets the grey note timer if the user places the loop in the pause menu, and starts in the middle of the section.
-				if (MemHelpers::GetGreyNoteTimer() > loopStart) { 
-					MemHelpers::SetGreyNoteTimer(loopStart);
-					std::cout << "Set grey note timer to " << loopStart << std::endl;
-				}
+			if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
+				// Resets grey note timer (for some reason this needs to be done perpetually while paused or it doesn't work)
+				// This makes it so notes in the loop do not appear greyed out and also sets the loop back to the start when resuming
+				// As an added bonus the game also automatically adds a bit of lead time so the player has a few seconds to prepare
+				MemHelpers::SetGreyNoteTimer(loopStart);
 			}
-
-			if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd || MemHelpers::SongTimer() <= loopStart)) { 
+			else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) { 
 				if (loopStart == loopEnd) // Verify that the user didn't press both loop keys at the same time
 					loopEnd = NULL;
 				else if (!MemHelpers::IsInStringArray(currentMenu, lasPauseMenus))
