@@ -639,3 +639,33 @@ std::string MemHelpers::GetSongKey() {
 	}
 	return lastSongKey;
 }
+
+/// <summary>
+/// When the user passes a note in the pause menu, notes become grey. This gets the time at which notes go from being grey (deactivated) to being colored (activated).
+/// </summary>
+/// <returns>Time where all notes before it are grey / deactivated.</returns>
+float MemHelpers::GetGreyNoteTimer() {
+	uintptr_t greyNoteTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_greyOutNoteTimer, Offsets::ptr_greyOutNoteTimerOffsets);
+
+	if (!greyNoteTimer) {
+		std::cout << "greyNoteTimer = NULL" << std::endl;
+		return NULL;
+	}
+
+	return *(float*)greyNoteTimer;
+}
+
+/// <summary>
+/// Sets the time at which all notes before it turn grey (deactivated) and all notes after it are colorful (activated)
+/// </summary>
+/// <param name="timeInSeconds"> - Time to set the "deactivate before" at.</param>
+void MemHelpers::SetGreyNoteTimer(float timeInSeconds) {
+	uintptr_t greyNoteTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_greyOutNoteTimer, Offsets::ptr_greyOutNoteTimerOffsets);
+
+	if (!greyNoteTimer) {
+		std::cout << "greyNoteTimer = NULL" << std::endl;
+		return;
+	}
+
+	*(float*)greyNoteTimer = timeInSeconds;
+}

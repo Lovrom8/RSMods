@@ -96,6 +96,10 @@ namespace Offsets {
 	//std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 }; // Single Player Only Value
 	std::vector<unsigned int> ptr_timerOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 }; // Singleplayer & Multiplayer
 
+	// Grey Out Note Timer
+	uintptr_t ptr_greyOutNoteTimer = 0x00F5C5AC;
+	std::vector<unsigned int> ptr_greyOutNoteTimerOffsets{ 0x68, 0x10, 0x2C, 0x28, 0x3DC };
+
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
 	uintptr_t ptr_previewName = 0x00F5C494;
 	std::vector<unsigned int> ptr_previewNameOffsets{ 0xBC, 0x0 };

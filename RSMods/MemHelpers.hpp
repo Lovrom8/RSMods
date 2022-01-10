@@ -38,6 +38,8 @@ namespace MemHelpers {
 	bool IsMultiplayer();
 	std::string CurrentSelectedUser();
 	std::string GetSongKey();
+	float GetGreyNoteTimer();
+	void SetGreyNoteTimer(float timeInSeconds);
 
 	inline std::string lastSongKey = "";
 

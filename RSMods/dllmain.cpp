@@ -642,11 +642,19 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && (loopStart != NULL || loopEnd != NULL)) {
 			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 
+			if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) { // Resets the grey note timer if the user places the loop in the pause menu, and starts in the middle of the section.
+				if (MemHelpers::GetGreyNoteTimer() > loopStart) { 
+					MemHelpers::SetGreyNoteTimer(loopStart);
+					std::cout << "Set grey note timer to " << loopStart << std::endl;
+				}
+			}
+
 			if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd || MemHelpers::SongTimer() <= loopStart)) { 
 				if (loopStart == loopEnd) // Verify that the user didn't press both loop keys at the same time
 					loopEnd = NULL;
-				else
-					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false); // Return to the beginning of the loop.
+				else if (!MemHelpers::IsInStringArray(currentMenu, lasPauseMenus))
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false); // Return to the beginning of the loop.	
+					
 			}
 			else if (loopStart == NULL && loopEnd != NULL) // User originally set LoopStart and LoopEnd, but then removed LoopStart after placing LoopEnd. Reset LoopEnd to NULL.
 				loopEnd = NULL;
