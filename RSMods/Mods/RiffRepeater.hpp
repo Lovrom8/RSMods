@@ -5,8 +5,8 @@
 #include <string>
 
 #include "../MemHelpers.hpp"
-#include "../WwiseHijack.hpp"
 #include "../Offsets.hpp"
+#include "../Wwise/SoundEngine.hpp"
 
 
 namespace RiffRepeater {

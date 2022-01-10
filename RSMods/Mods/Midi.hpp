@@ -10,8 +10,8 @@
 #include "../Lib/Midi/RtMidi.h"
 #include "../MemHelpers.hpp"
 #include "../Structs.hpp"
-#include "../WwiseHijack.hpp"
 #include "RiffRepeater.hpp"
+#include "../Wwise/SoundEngine.hpp"
 
 namespace Midi {
 	void InitMidi();

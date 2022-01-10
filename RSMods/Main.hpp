@@ -11,7 +11,8 @@
 #include "Functions.hpp"
 #include "D3D/D3D.hpp"
 #include "D3D/D3DHooks.hpp"
-#include "WwiseHijack.hpp"
+#include "Wwise/SoundEngine.hpp"
+#include "Wwise/Logging.hpp"
 #include "CC/ControlServer.hpp"
 
 // Windows Libraries

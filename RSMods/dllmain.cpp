@@ -296,7 +296,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					loopStart = MemHelpers::SongTimer();
 
 				if (loopStart != NULL && loopEnd != NULL && loopEnd > loopStart)
-					WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
@@ -310,7 +310,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 						loopEnd = NULL;
 
 					if (loopEnd != NULL)
-						WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false);
+						Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
 				}
 			}
 
@@ -612,7 +612,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) { // Show Selected Volume
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
-			WwiseVariables::Wwise_Sound_Query_GetRTPCValue_Char(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
+			Wwise::SoundEngine::Query::GetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
 
 			if (currentVolumeIndex != 0)
 				MemHelpers::DX9DrawText(drawMixerTextName[currentVolumeIndex] + std::to_string((int)volume) + "%", whiteText, (int)(WindowSize.width / 54.85), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 14.22), (int)(WindowSize.height / 8), pDevice);
@@ -642,11 +642,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && (loopStart != NULL || loopEnd != NULL)) {
 			MemHelpers::DX9DrawText("Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd), whiteText, (int)(WindowSize.width / 2.35), (int)(WindowSize.height / 20), (int)(WindowSize.width / 2.50), (int)(WindowSize.height / 8), pDevice);
 
-			if (loopStart != NULL && loopEnd != NULL && MemHelpers::SongTimer() >= loopEnd) { 
+			if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd || MemHelpers::SongTimer() <= loopStart)) { 
 				if (loopStart == loopEnd) // Verify that the user didn't press both loop keys at the same time
 					loopEnd = NULL;
 				else
-					WwiseVariables::Wwise_Sound_SeekOnEvent_Char_Int32(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (loopStart * 1000), false); // Return to the beginning of the loop.
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false); // Return to the beginning of the loop.
 			}
 			else if (loopStart == NULL && loopEnd != NULL) // User originally set LoopStart and LoopEnd, but then removed LoopStart after placing LoopEnd. Reset LoopEnd to NULL.
 				loopEnd = NULL;
@@ -954,9 +954,9 @@ unsigned WINAPI MainThread() {
 		RiffRepeater::EnableLinearSpeeds();
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
-	WwiseLogging::Setup_log_PostEvent();
-	WwiseLogging::Setup_log_SetRTPCValue();
-	WwiseLogging::Setup_log_SeekOnEvent();
+	Wwise::Logging::Setup_log_PostEvent();
+	Wwise::Logging::Setup_log_SetRTPCValue();
+	Wwise::Logging::Setup_log_SeekOnEvent();
 #endif
 
 	if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on")

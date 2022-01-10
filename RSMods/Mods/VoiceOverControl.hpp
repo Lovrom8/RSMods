@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../Structs.hpp"
-#include "../WwiseHijack.hpp"
+#include "../Wwise/SoundEngine.hpp"
 
 namespace VoiceOverControl {
 	void PlayVoiceOver(VoiceOver voiceOver);

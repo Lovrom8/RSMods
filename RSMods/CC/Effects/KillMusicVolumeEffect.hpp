@@ -1,6 +1,7 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../WwiseHijack.hpp"
+#include "../../Wwise/Types.hpp"
+#include "../../Wwise/SoundEngine.hpp"
 #include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {

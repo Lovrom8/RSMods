@@ -40,6 +40,13 @@
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
+    <ClCompile Include="Wwise\Logging.cpp" />
+    <ClCompile Include="Wwise\MemoryMgr.cpp" />
+    <ClCompile Include="Wwise\Monitor.cpp" />
+    <ClCompile Include="Wwise\MotionEngine.cpp" />
+    <ClCompile Include="Wwise\MusicEngine.cpp" />
+    <ClCompile Include="Wwise\Root.cpp" />
+    <ClCompile Include="Wwise\SoundEngine.cpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
@@ -52,7 +59,6 @@
     <ClInclude Include="CC\Effects\ZoomEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
-    <ClCompile Include="WwiseHijack.cpp" />
     <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\SolidNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp" />
@@ -80,7 +86,16 @@
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
     <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp" />
-    <ClInclude Include="WwiseHijack.hpp" />
+    <ClInclude Include="Wwise\Logging.hpp" />
+    <ClInclude Include="Wwise\MemoryMgr.hpp" />
+    <ClInclude Include="Wwise\Monitor.hpp" />
+    <ClInclude Include="Wwise\MotionEngine.hpp" />
+    <ClInclude Include="Wwise\Exports.hpp" />
+    <ClInclude Include="Wwise\MusicEngine.hpp" />
+    <ClInclude Include="Wwise\PluginRegistration.hpp" />
+    <ClInclude Include="Wwise\Root.hpp" />
+    <ClInclude Include="Wwise\SoundEngine.hpp" />
+    <ClInclude Include="Wwise\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CC\Effects\DrunkModeEffect.cpp" />

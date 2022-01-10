@@ -5,10 +5,10 @@
 #include <endpointvolume.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
-#include "../WwiseHijack.hpp"
 #include "../MemHelpers.hpp"
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"
+#include "../Wwise/SoundEngine.hpp"
 
 
 namespace VolumeControl {

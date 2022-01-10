@@ -55,6 +55,12 @@
     <Filter Include="Main Headers\Json">
       <UniqueIdentifier>{518ead06-0e18-411b-ac85-8d3e10854984}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Wwise">
+      <UniqueIdentifier>{090f1866-084e-4456-bd37-52cb5cebb6d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wwise\Headers">
+      <UniqueIdentifier>{e3351a06-44ce-49d9-bd8b-d3ed727b7c58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -144,9 +150,6 @@
     <ClCompile Include="CC\Effects\KillMusicVolumeEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="WwiseHijack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -224,6 +227,27 @@
     </ClCompile>
     <ClCompile Include="Mods\AudioDevices.cpp">
       <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\SoundEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Root.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MemoryMgr.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Monitor.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MotionEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MusicEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Logging.cpp">
+      <Filter>Wwise</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -322,9 +346,6 @@
     </ClInclude>
     <ClInclude Include="D3D/D3D.hpp">
       <Filter>D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="WwiseHijack.hpp">
-      <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="ObjectUtil.hpp">
       <Filter>Main Headers</Filter>
@@ -442,6 +463,36 @@
     </ClInclude>
     <ClInclude Include="Mods\AudioDevices.hpp">
       <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Exports.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\SoundEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Types.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Root.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MemoryMgr.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Monitor.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MotionEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MusicEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Logging.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\PluginRegistration.hpp">
+      <Filter>Wwise\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
