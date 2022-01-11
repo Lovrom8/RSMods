@@ -675,37 +675,41 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		if (Settings::ReturnSettingValue("AllowLooping") == "on" && (loopStart != NULL || loopEnd != NULL)) {
 
-			// Only enable looping in learn a song modes
-			if (MemHelpers::IsInStringArray(currentMenu, fastRRModes)) {
+			// Only enable looping in learn a song modes (learn a song & non-stop play)
+			if (MemHelpers::IsInStringArray(currentMenu, learnASongModes)) {
 
-				// Only display loop start/end times when not in the riff repeater
-				if (MemHelpers::IsInStringArray(currentMenu, learnASongModes)) {
-					MemHelpers::DX9DrawText(
-							"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
-							whiteText,
-							static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-							static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
-							static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-							static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
-							pDevice,
-							{ NULL, NULL },
-							DT_CENTER | DT_NOCLIP);
-				}
+				// Display loop start/end times
+				MemHelpers::DX9DrawText(
+						"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
+						whiteText,
+						static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
+						static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
+						static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
+						static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
+						pDevice,
+						{ NULL, NULL },
+						DT_CENTER | DT_NOCLIP);
 
-				// If paused reset the grey note timer
+				// If we are paused, reset the grey note timer.
 				if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
-					// Resets grey note timer (for some reason this needs to be done perpetually while paused or it doesn't work)
-					// This makes it so notes in the loop do not appear greyed out and also sets the loop back to the start when resuming
-					// As an added bonus the game also automatically adds a bit of lead time so the player has a few seconds to prepare
-					MemHelpers::SetGreyNoteTimer(loopStart);
-				}
-
-				// If not paused and we are at the end of the loop, seek to the start
-				else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) {
-					if (!MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
-						Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
+					// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
+					// Deactivated notes are greyed out, and do not register with note detection.
+					// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
+					if (MemHelpers::GetGreyNoteTimer() > loopStart) {
+						MemHelpers::SetGreyNoteTimer(loopStart);
 					}
 				}
+
+				// If not paused AND we are at the end of the loop, seek to the start of the loop.
+				else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) {
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
+				}
+			}
+			// Difference between learnASongModes & fastRRModes is the inclusion of RR. This means that this check is only gets the RR menus.
+			else if (MemHelpers::IsInStringArray(currentMenu, fastRRModes)) {
+				// Reset loopStart and loopEnd to NULL as the user wants to do a loop with RR, or is changing some settings.
+				loopStart = NULL;
+				loopEnd = NULL;
 			}
 		}
 

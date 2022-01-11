@@ -112,6 +112,7 @@ inline std::vector<std::string> fastRRModes = {
 	"NonStopPlay_Game",
 	"LearnASong_Pause",
 	"NonStopPlay_Pause",
+	"LearnASong_RiffRepeater",
 	"RiffRepeater",
 	"RiffRepeater_AdvancedSettings",
 	"RiffRepeater_Pause",
