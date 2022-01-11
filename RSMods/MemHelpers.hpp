@@ -51,7 +51,7 @@ namespace MemHelpers {
 
 	inline HRESULT CustomDX9Font = NULL;
 	inline ID3DXFont* DX9FontEncapsulation = NULL;
-	inline int WindowSizeX = NULL, WindowSizeY = NULL;
+	inline int fontWidth = NULL, fontHeight = NULL;
 };
 
 namespace Util {
