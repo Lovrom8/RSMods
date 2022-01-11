@@ -182,6 +182,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		Settings::UpdateSettings();
 		D3D::GenerateTextures(pDevice, D3D::Strings);
 		D3D::GenerateTextures(pDevice, D3D::Notes);
+		D3D::GenerateTextures(pDevice, D3D::Rainbow);
 		std::cout << "Reloaded settings" << std::endl;
 	}
 
