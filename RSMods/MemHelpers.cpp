@@ -526,6 +526,7 @@ bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::ve
 /// <param name="bottomRightY"> - BOTTOM right of textbox</param>
 /// <param name="pDevice"> - Device Pointer</param>
 /// <param name="setFontSize"> - Override font size</param>
+/// <param name="format"> - DrawText format</param>
 void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize, DWORD format)
 {
 	Resolution WindowSize = MemHelpers::GetWindowSize();

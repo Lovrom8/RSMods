@@ -668,9 +668,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 					"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
 					whiteText,
 					static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-					static_cast<int>(WindowSize.height / 7.4f),                           // 145 pixels from top
+					static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
 					static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-					static_cast<int>(WindowSize.height / 4.4f),                           // 245 pixels from top
+					static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
 					pDevice,
 					{ NULL, NULL },
 					DT_CENTER | DT_NOCLIP);
