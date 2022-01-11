@@ -696,7 +696,6 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 					// Deactivated notes are greyed out, and do not register with note detection.
 					// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
 					if (MemHelpers::GetGreyNoteTimer() != loopStart) {
-						std::cout << "Set Grey Note Timer" << std::endl;
 						MemHelpers::SetGreyNoteTimer(loopStart);
 					}
 				}
