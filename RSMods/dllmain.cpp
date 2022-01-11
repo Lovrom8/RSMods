@@ -262,22 +262,32 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("LoopStartKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) { // Loop small chunks of the song.
-				if (GetAsyncKeyState(VK_SHIFT) < 0) // Remove start position
+			// Set loop start point
+			else if (keyPressed == Settings::GetKeyBind("LoopStartKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
+				if (GetAsyncKeyState(VK_SHIFT) < 0) {
 					loopStart = NULL;
-				else // Place start position.
+					loopEnd = NULL;
+				}
+				else {
 					loopStart = MemHelpers::SongTimer();
+
+					if (loopEnd <= loopStart) {
+						loopEnd = NULL;
+					}
+				}
 			}
 
+			// Set loop end point
 			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
-				if (GetAsyncKeyState(VK_SHIFT) < 0) // Remove end position
+				if (GetAsyncKeyState(VK_SHIFT) < 0) {
 					loopEnd = NULL;
-				else if (loopStart != NULL) // Place end position
+				}
+				else {
 					loopEnd = MemHelpers::SongTimer();
 
-				if (loopStart != NULL) {
-					if (loopEnd < loopStart)
+					if (loopEnd <= loopStart) {
 						loopEnd = NULL;
+					}
 				}
 			}
 
@@ -663,33 +673,40 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(currentMenu, fastRRModes) && (loopStart != NULL || loopEnd != NULL)) {
-			MemHelpers::DX9DrawText(
-					"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
-					whiteText,
-					static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-					static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
-					static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-					static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
-					pDevice,
-					{ NULL, NULL },
-					DT_CENTER | DT_NOCLIP);
+		if (Settings::ReturnSettingValue("AllowLooping") == "on" && (loopStart != NULL || loopEnd != NULL)) {
 
-			if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
-				// Resets grey note timer (for some reason this needs to be done perpetually while paused or it doesn't work)
-				// This makes it so notes in the loop do not appear greyed out and also sets the loop back to the start when resuming
-				// As an added bonus the game also automatically adds a bit of lead time so the player has a few seconds to prepare
-				MemHelpers::SetGreyNoteTimer(loopStart);
+			// Only enable looping in learn a song modes
+			if (MemHelpers::IsInStringArray(currentMenu, fastRRModes)) {
+
+				// Only display loop start/end times when not in the riff repeater
+				if (MemHelpers::IsInStringArray(currentMenu, learnASongModes)) {
+					MemHelpers::DX9DrawText(
+							"Loop: " + ConvertFloatTimeToStringTime(loopStart) + " - " + ConvertFloatTimeToStringTime(loopEnd),
+							whiteText,
+							static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
+							static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
+							static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
+							static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
+							pDevice,
+							{ NULL, NULL },
+							DT_CENTER | DT_NOCLIP);
+				}
+
+				// If paused reset the grey note timer
+				if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
+					// Resets grey note timer (for some reason this needs to be done perpetually while paused or it doesn't work)
+					// This makes it so notes in the loop do not appear greyed out and also sets the loop back to the start when resuming
+					// As an added bonus the game also automatically adds a bit of lead time so the player has a few seconds to prepare
+					MemHelpers::SetGreyNoteTimer(loopStart);
+				}
+
+				// If not paused and we are at the end of the loop, seek to the start
+				else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) {
+					if (!MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
+						Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
+					}
+				}
 			}
-			else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) { 
-				if (loopStart == loopEnd) // Verify that the user didn't press both loop keys at the same time
-					loopEnd = NULL;
-				else if (!MemHelpers::IsInStringArray(currentMenu, lasPauseMenus))
-					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false); // Return to the beginning of the loop.	
-					
-			}
-			else if (loopStart == NULL && loopEnd != NULL) // User originally set LoopStart and LoopEnd, but then removed LoopStart after placing LoopEnd. Reset LoopEnd to NULL.
-				loopEnd = NULL;
 		}
 
 		// Regenerate Twitch Solid Note Color for a new color
