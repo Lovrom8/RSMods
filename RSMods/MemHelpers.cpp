@@ -534,12 +534,12 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 	// Allow Font Size Declaration
 	bool useInputFontSize = (setFontSize.width != NULL && setFontSize.height != NULL);
 
-	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and WindowSize variables are all null to begin with.
-	if ((WindowSizeX != (WindowSize.width / 96) || WindowSizeY != (WindowSize.height / 72) || CustomDX9Font == NULL) && !useInputFontSize) {
-		WindowSizeX = (WindowSize.width / 96);
-		WindowSizeY = (WindowSize.height / 72);
+	// If the user changes resolutions, we want to scale the text dynamically. This also covers the first font creation as the font and fontSize variables are all null to begin with.
+	if ((fontWidth != (WindowSize.width / 96) || fontHeight != (WindowSize.height / 72) || CustomDX9Font == NULL) && !useInputFontSize) {
+		fontWidth = (WindowSize.width / 96);
+		fontHeight = (WindowSize.height / 72);
 
-		CustomDX9Font = D3DXCreateFontA(pDevice, WindowSizeX, WindowSizeY, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
+		CustomDX9Font = D3DXCreateFontA(pDevice, fontWidth, fontHeight, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
 	}
 	else if (useInputFontSize)
 		CustomDX9Font = D3DXCreateFontA(pDevice, setFontSize.width, setFontSize.height, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
