@@ -88,6 +88,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_LoopEndKey = new System.Windows.Forms.Label();
             this.label_LoopStartKey = new System.Windows.Forms.Label();
             this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
             this.label_TuningOffsetKey = new System.Windows.Forms.Label();
@@ -272,6 +273,8 @@
             this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.groupBox_LoopingLeadUp = new System.Windows.Forms.GroupBox();
+            this.nUpDown_LoopingLeadUp = new System.Windows.Forms.NumericUpDown();
             this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
             this.button_Profiles_RevertBackup = new System.Windows.Forms.Button();
             this.listBox_Profiles_ListBackups = new System.Windows.Forms.ListBox();
@@ -501,7 +504,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_LoopEndKey = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -549,6 +551,8 @@
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
+            this.groupBox_LoopingLeadUp.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopingLeadUp)).BeginInit();
             this.groupBox_Profiles_RevertBackup.SuspendLayout();
             this.groupBox_OverrideInputVolume.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_OverrideInputVolume)).BeginInit();
@@ -1393,6 +1397,15 @@
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_LoopEndKey
+            // 
+            this.label_LoopEndKey.AutoSize = true;
+            this.label_LoopEndKey.Location = new System.Drawing.Point(466, 211);
+            this.label_LoopEndKey.Name = "label_LoopEndKey";
+            this.label_LoopEndKey.Size = new System.Drawing.Size(56, 13);
+            this.label_LoopEndKey.TabIndex = 58;
+            this.label_LoopEndKey.Text = "End Loop:";
             // 
             // label_LoopStartKey
             // 
@@ -3592,6 +3605,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_LoopingLeadUp);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OverrideInputVolume);
             this.tabPage_ModSettings_Misc.Controls.Add(this.checkBox_TurnOffAllMods);
@@ -3606,6 +3620,36 @@
             this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
+            // groupBox_LoopingLeadUp
+            // 
+            this.groupBox_LoopingLeadUp.Controls.Add(this.nUpDown_LoopingLeadUp);
+            this.groupBox_LoopingLeadUp.Location = new System.Drawing.Point(358, 267);
+            this.groupBox_LoopingLeadUp.Name = "groupBox_LoopingLeadUp";
+            this.groupBox_LoopingLeadUp.Size = new System.Drawing.Size(154, 62);
+            this.groupBox_LoopingLeadUp.TabIndex = 100011;
+            this.groupBox_LoopingLeadUp.TabStop = false;
+            this.groupBox_LoopingLeadUp.Text = "Looping Lead Up (seconds)";
+            this.groupBox_LoopingLeadUp.Visible = false;
+            // 
+            // nUpDown_LoopingLeadUp
+            // 
+            this.nUpDown_LoopingLeadUp.DecimalPlaces = 3;
+            this.nUpDown_LoopingLeadUp.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            196608});
+            this.nUpDown_LoopingLeadUp.Location = new System.Drawing.Point(16, 23);
+            this.nUpDown_LoopingLeadUp.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_LoopingLeadUp.Name = "nUpDown_LoopingLeadUp";
+            this.nUpDown_LoopingLeadUp.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_LoopingLeadUp.TabIndex = 0;
+            this.nUpDown_LoopingLeadUp.ValueChanged += new System.EventHandler(this.Save_LoopingLeadUp);
             // 
             // groupBox_Profiles_RevertBackup
             // 
@@ -6301,15 +6345,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_LoopEndKey
-            // 
-            this.label_LoopEndKey.AutoSize = true;
-            this.label_LoopEndKey.Location = new System.Drawing.Point(466, 211);
-            this.label_LoopEndKey.Name = "label_LoopEndKey";
-            this.label_LoopEndKey.Size = new System.Drawing.Size(56, 13);
-            this.label_LoopEndKey.TabIndex = 58;
-            this.label_LoopEndKey.Text = "End Loop:";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6394,6 +6429,8 @@
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.tabPage_ModSettings_Misc.PerformLayout();
+            this.groupBox_LoopingLeadUp.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopingLeadUp)).EndInit();
             this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.ResumeLayout(false);
             this.groupBox_OverrideInputVolume.PerformLayout();
@@ -6952,6 +6989,8 @@
         private System.Windows.Forms.CheckBox checkBox_EnableLooping;
         private System.Windows.Forms.Label label_LoopStartKey;
         private System.Windows.Forms.Label label_LoopEndKey;
+        private System.Windows.Forms.GroupBox groupBox_LoopingLeadUp;
+        private System.Windows.Forms.NumericUpDown nUpDown_LoopingLeadUp;
     }
 }
 

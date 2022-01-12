@@ -39,7 +39,7 @@ namespace RSMods
 
                              // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset,
-                             VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate,
+                             VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate, LoopingLeadUp,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -180,6 +180,7 @@ namespace RSMods
             SeparateNoteColorsModeIdentifier        = "SeparateNoteColorsMode = ",
             OverrideInputVolumeIdentifier           = "OverrideInputVolume = ",
             AlternativeOutputSampleRateIdentifier   = "AlternativeOutputSampleRate = ",
+            LoopingLeadUpIdentifier                 = "LoopingLeadUp = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier     = "GuitarSpeakDeleteWhen = ",
@@ -517,6 +518,8 @@ namespace RSMods
                     return FillSettingVariable(OverrideInputVolumeIdentifier, SettingType.STRING, currentLine, out OverrideInputVolume);
                 if (IdentifierIsFound(currentLine, AlternativeOutputSampleRateIdentifier, identifierToGrab))
                     return FillSettingVariable(AlternativeOutputSampleRateIdentifier, SettingType.STRING, currentLine, out AlternativeOutputSampleRate);
+                if (IdentifierIsFound(currentLine, LoopingLeadUpIdentifier, identifierToGrab))
+                    return FillSettingVariable(LoopingLeadUpIdentifier, SettingType.STRING, currentLine, out LoopingLeadUp);
                 #endregion
                 #region Guitar Speak
 

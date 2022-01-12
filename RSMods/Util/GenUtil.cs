@@ -28,6 +28,13 @@ namespace RSMods.Util
             return @default;
         }
 
+        public static decimal EstablishMaxValue(decimal value, decimal max)
+        {
+            if (value > max)
+                return max;
+            return value;
+        }
+
         public static bool IsDirectoryEmpty(string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();

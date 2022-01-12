@@ -176,6 +176,7 @@ namespace RSMods
                     { ReadSettings.SeparateNoteColorsModeIdentifier, CreateDefaultOnOldINI(ReadSettings.SeparateNoteColorsModeIdentifier, "0") }, // Should we display different colors on the notes, than on the strings? 0 = No | 1 = Default Colors | 2 = Custom
                     { ReadSettings.OverrideInputVolumeIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeIdentifier, "17")}, // What volume should we use when the user wants to override the default input volume?
                     { ReadSettings.AlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.AlternativeOutputSampleRateIdentifier, "48000") }, // Alternative frequency to use when looking for Audio Output devices.
+                    { ReadSettings.LoopingLeadUpIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopingLeadUpIdentifier, "0") }, // Amount of lead-up time we should give for loops.
                 }
             );
             saveSettingsOrDefaults.Add(

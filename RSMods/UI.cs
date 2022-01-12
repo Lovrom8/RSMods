@@ -599,6 +599,8 @@ namespace RSMods
             }
 
             checkBox_EnableLooping.Checked                  = ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on";
+            groupBox_LoopingLeadUp.Visible                  = checkBox_EnableLooping.Checked;
+            nUpDown_LoopingLeadUp.Value                     = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.LoopingLeadUpIdentifier), 0) / 1000), 5.000m);
             listBox_ExtendedRangeTunings.SelectedIndex      = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
             checkBox_GuitarSpeakWhileTuning.Checked         = ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on";
             checkBox_ChangeTheme.Checked                    = ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on";
@@ -2375,7 +2377,13 @@ namespace RSMods
             }
         }
 
-        private void Save_EnableLooping(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.AllowLoopingIdentifier, checkBox_EnableLooping.Checked.ToString().ToLower());
+        private void Save_EnableLooping(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.AllowLoopingIdentifier, checkBox_EnableLooping.Checked.ToString().ToLower());
+            groupBox_LoopingLeadUp.Visible = checkBox_EnableLooping.Checked;
+        }
+
+        private void Save_LoopingLeadUp(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LoopingLeadUpIdentifier, ((int)(nUpDown_LoopingLeadUp.Value * 1000)).ToString());
 
         #endregion
         #region ToolTips
@@ -3848,7 +3856,6 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
-
     }
 
     public class Midi
