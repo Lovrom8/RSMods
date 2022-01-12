@@ -45,8 +45,9 @@ bool saveNewRRSpeedToFile = false;
 inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Disabled, 1 - Master, 2 - Song, 3 - P1, 4 - P2, 5 - Mic, 6 - VO, 7 - SFX
 
 // Looping functionality.
-inline float loopStart = NULL;
-inline float loopEnd = NULL;
+inline float loopStart = NULL; // The start of the loop, as specified by the user.
+inline float roughLoopStart = NULL; // Just like loopStart, except we account for the lead-in time.
+inline float loopEnd = NULL; // The end of the loop, as specified by the user.
 
 inline std::vector<std::string> mixerInternalNames = { // Needs to be char* as that's what SetRTPCValue needs.
 		{""}, // Disabled (Don't show the user any values)

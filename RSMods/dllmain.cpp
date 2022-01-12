@@ -690,6 +690,14 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 						{ NULL, NULL },
 						DT_CENTER | DT_NOCLIP);
 
+				// Prevent the user from creating a loop that starts at a negative timestamp.
+				if ((Settings::GetModSetting("LoopingLeadUp") / 1000.f) >= loopStart) { 
+					roughLoopStart = 0.f;
+				}
+				else {
+					roughLoopStart = loopStart - (Settings::GetModSetting("LoopingLeadUp") / 1000.f);
+				}
+
 				// If we are paused, reset the grey note timer.
 				if (MemHelpers::IsInStringArray(currentMenu, lasPauseMenus)) {
 					// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
@@ -702,7 +710,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 				// If not paused AND we are at the end of the loop, seek to the start of the loop.
 				else if (loopStart != NULL && loopEnd != NULL && (MemHelpers::SongTimer() >= loopEnd)) {
-					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(loopStart * 1000), false);
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(roughLoopStart * 1000), false);
 				}
 			}
 			// Difference between learnASongModes & fastRRModes is the inclusion of RR. This means that this check is only gets the RR menus.
