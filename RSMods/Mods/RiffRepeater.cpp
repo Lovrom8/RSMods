@@ -12,9 +12,11 @@ float RiffRepeater::GetSpeed(bool realSpeed) {
 	float currentTimeStretch = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
+	// Get the current Time Stretch Value
 	Wwise::SoundEngine::Query::GetRTPCValue("Time_Stretch", 0x1234, &currentTimeStretch, &type);
 
-	if (floorf(currentTimeStretch) == 100) // Rocksmith doesn't always set 100% speed to 100. This causes us to read 100 as 99.
+	// Rocksmith doesn't always set 100% speed to 100. This causes us to read 100 as 99.
+	if (floorf(currentTimeStretch) == 100) 
 		currentTimeStretch = 100;
 
 	return realSpeed ? ConvertSpeed(currentTimeStretch) : currentTimeStretch;
@@ -29,9 +31,11 @@ void RiffRepeater::SetSpeed(float newSpeed, bool isRealSpeed) {
 	if (isRealSpeed)
 		newSpeed = ConvertSpeed(newSpeed);
 
+	// Set Time_Stretch to newSpeed.
 	Wwise::SoundEngine::SetRTPCValue("Time_Stretch", newSpeed, 0x1234, 0, AkCurveInterpolation_Linear);
 	Wwise::SoundEngine::SetRTPCValue("Time_Stretch", newSpeed, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 
+	// Update realSongSpeed with the current speed.
 	realSongSpeed = ConvertSpeed(newSpeed);
 }
 
@@ -68,30 +72,36 @@ void RiffRepeater::DisableTimeStretch() {
 /// <returns>QueryAudioObjectIDs == AK_SUCCESS</returns>
 bool RiffRepeater::LogSongID(std::string songKey) {
 	std::string playEvent = "Play_" + songKey;
-
 	AkUInt32 totalObjects = 0;
 
-	Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, NULL); // Gets total number of objects so we know how much memory we need to allocate.
+	// Gets total number of objects so we know how much memory we need to allocate.
+	Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, NULL); 
 
-	void* memoryBlock = malloc(totalObjects * 0xC); // Allocate a memory block, 12 wide per object. Should only ever be 1 object, but just to be sure.
+	// Allocate a memory block, 12 wide per object. Should only ever be 1 object, but just to be sure.
+	void* memoryBlock = malloc(totalObjects * 0xC); 
 
-	AKRESULT soundObjects = Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, (AkObjectInfo*)memoryBlock); // Get the Actor-Mixer ID that we need to manipulate the Time_Stretch parameter.
+	// Get the Actor-Mixer ID that we need to manipulate the Time_Stretch parameter.
+	AKRESULT soundObjects = Wwise::SoundEngine::Query::QueryAudioObjectIDs(playEvent.c_str(), &totalObjects, (AkObjectInfo*)memoryBlock); 
 
 	if (totalObjects > 0 && memoryBlock != NULL) {
-		SongObjectIDs.insert({ playEvent, *(AkUInt32*)memoryBlock }); // Save the Play_{SongKey} event and the Actor-Mixer ID to a map so we don't need to get it multiple times if the user leaves and comes back to the song.
-																	  // These values are static, PER SONG, so we could even make a database file (and/or csv) with these IDs in it to have an even bigger cache of them.
-		currentSongID = *(AkUInt32*)memoryBlock; // The Actor-Mixer ID we need is at the very beginning of the memory block.
+		// Save the Play_{SongKey} event and the Actor-Mixer ID to a map so we don't need to get it multiple times if the user leaves and comes back to the song.
+		// These values are static, PER SONG, so we could even make a database file (and/or csv) with these IDs in it to have an even bigger cache of them.
+		SongObjectIDs.insert({ playEvent, *(AkUInt32*)memoryBlock }); 
+												
+		// The Actor-Mixer ID we need is at the very beginning of the memory block.
+		currentSongID = *(AkUInt32*)memoryBlock; 
 		loggedCurrentSongID = true;
 	}
 
-	free(memoryBlock); // Free the memory we allocated earlier in this function.
+	// Free the memory we allocated earlier in this function.
+	free(memoryBlock); 
 
 	return soundObjects == AK_Success;
 }
 
 
 /// <summary>
-/// x87 ASM hook for making Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
+/// x86 ASM hook for making Riff Repeater speeds linear. 68% on the slider -> 68% song speed.
 /// </summary>
 void __declspec(naked) hook_timeStretchCalulations() {
 	__asm {

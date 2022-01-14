@@ -9,14 +9,16 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
+	// Mixer sent is not a valid mixer.
 	if (!MemHelpers::IsInStringArray(mixerToIncrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}
 
-	
-	Wwise::SoundEngine::Query::GetRTPCValue(mixerToIncrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); // Fill Volume Variable With Current Volume
+	// Fill Volume Variable With Current Volume
+	Wwise::SoundEngine::Query::GetRTPCValue(mixerToIncrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); 
 
+	// Increase the volume by the amountToIncrease.
 	if (volume <= (100.0f - amountToIncrease))
 		volume += amountToIncrease;
 	else
@@ -38,14 +40,16 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
+	// Mixer sent is not a valid mixer.
 	if (!MemHelpers::IsInStringArray(mixerToDecrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}
 
-	
-	Wwise::SoundEngine::Query::GetRTPCValue(mixerToDecrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); // Fill Volume Variable With Current Volume
+	// Fill Volume Variable With Current Volume
+	Wwise::SoundEngine::Query::GetRTPCValue(mixerToDecrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); 
 
+	// Decrease the volume by the amountToDecrease.
 	if (volume >= (0.0f + amountToDecrease))
 		volume -= amountToDecrease;
 	else
@@ -63,6 +67,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 /// </summary>
 void VolumeControl::DisableSongPreviewAudio() {
 	if (!disabledSongPreviewAudio) {
+		// Changes the string "Play_%s_Preview" to "Play_%s_Invalid" so song previews never play.
 		MemUtil::PatchAdr((void*)Offsets::patch_SongPreviewWwiseEvent, "Play_%s_Invalid", 16);
 		disabledSongPreviewAudio = true;
 	}
@@ -76,6 +81,7 @@ void VolumeControl::DisableSongPreviewAudio() {
 /// </summary>
 void VolumeControl::EnableSongPreviewAudio() {
 	if (disabledSongPreviewAudio) {
+		// Changes the string "Play_%s_Invalid" to "Play_%s_Preview" so song previews will play again.
 		MemUtil::PatchAdr((void*)Offsets::patch_SongPreviewWwiseEvent, "Play_%s_Preview", 16);
 		disabledSongPreviewAudio = false;
 	}

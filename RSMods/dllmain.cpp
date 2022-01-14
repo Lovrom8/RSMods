@@ -1,9 +1,9 @@
 #include "Main.hpp"
 
 #ifdef _DEBUG
-bool debug = true;
+bool debug = true; // You ARE on a debug build.
 #else
-bool debug = false;
+bool debug = false; // You are NOT on a debug build.
 #endif
 
 
@@ -12,24 +12,31 @@ bool debug = false;
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI EnumerationThread() {
+
+	// User has not seen the main menu yet.
+	// Please wait until the user has seen the main menu before doing anything.
 	while (!D3DHooks::GameLoaded)
 		Sleep(5000);
 
+	// Read the users Keybinds and Mod Settings, so verify we have the latest data from the INI.
 	Settings::ReadKeyBinds();
 	Settings::ReadModSettings();
 
+	// Set an inital count for number of DLC songs.
 	int oldDLCCount = Enumeration::GetCurrentDLCCount(), newDLCCount = oldDLCCount;
 
-	// Look for new dlc files loop. If there is any, trigger Enumeration, else sleep. Break when game is closing.
+	// Look for new dlc files. Break when game is closing.
 	while (!D3DHooks::GameClosing) {
 		if (Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "automatic") {
 			oldDLCCount = newDLCCount;
 			newDLCCount = Enumeration::GetCurrentDLCCount();
 
+			// If there is any new dlc files, trigger Enumeration.
 			if (oldDLCCount != newDLCCount)
 				Enumeration::ForceEnumeration();
 		}
 
+		// Sleep for a user provided interval (milliseconds).
 		Sleep(Settings::GetModSetting("CheckForNewSongsInterval"));
 	}
 
@@ -37,23 +44,33 @@ unsigned WINAPI EnumerationThread() {
 }
 
 /// <summary>
-/// Send Midi Data Async
+/// Send Midi Data Async. Only really used in debug builds to test MIDI commands.
+/// Secondary purpose of remaking D3D textures every 32 ticks (~ 1 second).
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {
+	// Initial some values.
 	int everyXcyclesCheckD3DTextures = 31;
 	int currentCount = 0;
+
 	while (!D3DHooks::GameClosing) {
+		// If this is the 32nd loop, remake the D3D textures.
+		// This allows us to have real-time updates to textures.
 		if (currentCount == 31) {
 			currentCount = 0;
 			D3DHooks::RecreateTextureTimer = true;
 		}
 
+		// If we have sent a Midi PC value to this thread, send the Midi value.
 		if (Midi::sendPC)
 			Midi::SendProgramChange(Midi::dataToSendPC);
+
+		// If we have sent a Midi CC value to this thread, send the Midi value.
 		if (Midi::sendCC)
 			Midi::SendControlChange(Midi::dataToSendCC);
-		Sleep(Midi::sleepFor); // Sleep for 1/33rd of a second so we don't drain resources.
+
+		// Sleep for ~ 1/33rd of a second so we don't waste that many cycles.
+		Sleep(Midi::sleepFor); 
 		currentCount++;
 	}
 	
@@ -62,24 +79,33 @@ unsigned WINAPI MidiThread() {
 
 unsigned WINAPI RiffRepeaterThread() {
 	std::string previousSongKey = "";
+
+	// We can only user Riff Repeater while the game is open, so verify it's open. Runs every 100 ms.
 	while (!D3DHooks::GameClosing) {
 		Sleep(100);
 
+		// Get SongKey for the song. We need this to reference the audio event by name.
 		const auto songKey = MemHelpers::GetSongKey();
+
+		// If this isn't the song we saw on the last loop.
 		if (songKey != previousSongKey) {
 			previousSongKey = songKey;
 
+			// If we have cached this event, then use the cached version, and tell the other threads to enable the Riff Repeater speed mod.
 			if (RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey) != RiffRepeater::SongObjectIDs.end()) {
 				RiffRepeater::currentSongID = RiffRepeater::SongObjectIDs.find("Play_" + previousSongKey)->second;
 				RiffRepeater::readyToLogSongID = false;
-				RiffRepeater::loggedCurrentSongID = true; // Song key has already been logged
+				RiffRepeater::loggedCurrentSongID = true;
 			}
+			// We have not seen this event yet, so we need to log the internal ID for the song and cache it.
 			else {
 				RiffRepeater::loggedCurrentSongID = false;
 				RiffRepeater::readyToLogSongID = true; // Wait until the user gets into the song so we can grab this ID.
 			}
 		}
 		
+		// If we have recently changed the Riff Repeater speed through the mod, then save the new value to a text file.
+		// This is primarily for streamers who want to make a custom overlay with the song speed.
 		if (Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes) && saveNewRRSpeedToFile) {
 			std::ofstream rrText = std::ofstream("riff_repeater_speed.txt", std::ofstream::out);
 			rrText << std::to_string((int)realSongSpeed) << std::endl;
@@ -100,36 +126,43 @@ unsigned WINAPI RiffRepeaterThread() {
 /// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
+	// Makes ALT + ENTER cause F11 to be pressed.
+	// This is mainly so a user can use a common shortcut, that works in most games now-a-days.
 	if (msg == WM_SYSCOMMAND && keyPressed == SC_KEYMENU) {
-		if (lParam == VK_RETURN) // Alt+Enter = F11
+		if (lParam == VK_RETURN) 
 			WndProc(hWnd, WM_KEYUP, VK_F11, 0);
 
 		return true;
 	}
-		
-
+	
+	// Prevent a weird bug when trying to play Guitarcade or Score Attack with a key combination.
 	if (msg == WM_SYSCOMMAND && keyPressed == SC_MOVE + 0x2 && MemHelpers::IsInStringArray(D3DHooks::currentMenu, onlineModes))
 		return true;
 
 	// Trigger Mod on Keypress
 	if (msg == WM_KEYUP) {
 		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
-			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") { // Toggle Loft
+
+			// Toggle Loft mod
+			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") {
 				MemHelpers::ToggleLoft();
 				std::cout << "Triggered Mod: Toggle Loft" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") { // Show Song Timer
+			// Show Song Timer mod
+			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") {
 				D3DHooks::showSongTimerOnScreen = !D3DHooks::showSongTimerOnScreen;
 				std::cout << "Triggered Mod: Show Song Timer" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") { // Force Enumeration (Manual | Keypress)
+			// Force Enumeration mod
+			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
 				Enumeration::ForceEnumeration();
 				std::cout << "Triggered Mod: Force Enumeration" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") { // Rainbow Strings
+			// Rainbow Strings mod
+			else if (keyPressed == Settings::GetKeyBind("RainbowStringsKey") && Settings::ReturnSettingValue("RainbowStringsEnabled") == "on") {
 				ERMode::ToggleRainbowMode();
 
 				if (!ERMode::RainbowEnabled)
@@ -138,64 +171,91 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Rainbow Strings" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") { // Rainbow Notes
+			// Rainbow Notes mod
+			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") {
 				ERMode::ToggleRainbowNotes();
 				std::cout << "Triggered Mod: Rainbow Notes" << std::endl;
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") { // Remove Lyrics (Manual | Keypress)
+			// Remove Lyrics mod
+			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
 				std::cout << "Triggered Mod: Remove Lyrics" << std::endl;
 			}
-			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) { //CTRL + A
+
+			// Control + A. Force us to read the Settings from the INI again, to renew our cached values.
+			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) {
 				Settings::UpdateSettings();
 				std::cout << "Triggered Setting Update" << std::endl;
 			}
-			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Master Volume
+
+			// Change Master Volume mod
+			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
 			}
-			else if (keyPressed == Settings::GetKeyBind("SongVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Song Volume
+
+			// Change Song Volume mod
+			else if (keyPressed == Settings::GetKeyBind("SongVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
 			}
-			else if (keyPressed == Settings::GetKeyBind("Player1VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // P1 Guitar & Bass Volume
+
+			// Change P1 Guitar & P1 Bass Volume mod
+			else if (keyPressed == Settings::GetKeyBind("Player1VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
 			}
-			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // P2 Guitar & Bass Volume
+
+			// Change P2 Guitar & P2 Bass Volume mod
+			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
 			}
-			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Mic Volume
+
+			// Change Microphone Volume mod
+			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
 			}
-			else if (keyPressed == Settings::GetKeyBind("VoiceOverVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Voice-Over Volume
+
+			// Change Voice-Over Volume mod
+			else if (keyPressed == Settings::GetKeyBind("VoiceOverVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
 			}
-			else if (keyPressed == Settings::GetKeyBind("SFXVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // SFX Volume
+			
+			// Change SFX Volume mod
+			else if (keyPressed == Settings::GetKeyBind("SFXVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
 					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
 				else
 					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
 			}
 
-			else if (keyPressed == Settings::GetKeyBind("TuningOffsetKey") && Settings::ReturnSettingValue("AutoTuneForSong") == "on") { // Change Tuning Offset In Game
-				if (GetKeyState(VK_SHIFT) & 0x8000)
+			// Changed Displayed Volume mod
+			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+			currentVolumeIndex++;
+
+			if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit, so loop back.
+				currentVolumeIndex = 0;
+			}
+
+			// Change Tuning Offset mod
+			else if (keyPressed == Settings::GetKeyBind("TuningOffsetKey") && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
+				if (GetKeyState(VK_SHIFT) & 0x8000) // Is Shift Pressed
 					Midi::tuningOffset--;
 				else
 					Midi::tuningOffset++;
@@ -223,13 +283,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				}
 			} */
 
-			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") { // Show Selected Volume
-				currentVolumeIndex++;
-
-				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit.
-					currentVolumeIndex = 0;
-			}
-
 			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
 			//	DisableControllers::DisableControllers();
 
@@ -255,6 +308,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			//	std::cout << "Restart Complete!" << std::endl;
 			//}
 
+			// Toggle Extended Range mod
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
 				Settings::ToggleExtendedRangeMode();
@@ -262,69 +316,81 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
 
-			// Set loop start point
+			// Looping mod. Set loop starting point.
 			else if (keyPressed == Settings::GetKeyBind("LoopStartKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
-				if (GetAsyncKeyState(VK_SHIFT) < 0) {
+				if (GetAsyncKeyState(VK_SHIFT) < 0) { // Is Shift Pressed.
 					loopStart = NULL;
 					loopEnd = NULL;
 				}
 				else {
+					// Set the start of the loop to the current time in the song.
 					loopStart = MemHelpers::SongTimer();
 
+					// If end point of the loop comes at the same time as, or before, the start of the loop, reset it to 0.
 					if (loopEnd <= loopStart) {
 						loopEnd = NULL;
 					}
 				}
 			}
 
-			// Set loop end point
+			// Looping mod. Set loop ending point.
 			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
-				if (GetAsyncKeyState(VK_SHIFT) < 0) {
+				if (GetAsyncKeyState(VK_SHIFT) < 0) { // Is Shift Pressed.
 					loopEnd = NULL;
 				}
 				else {
+					// Set the end of the loop to the current time in the song.
 					loopEnd = MemHelpers::SongTimer();
 
+					// If end point of the loop comes at the same time as, or before, the start of the loop, reset it to 0.
 					if (loopEnd <= loopStart) {
 						loopEnd = NULL;
 					}
 				}
 			}
 
+			// Auto Tuning via MIDI mod. 
+			// Checks if we are in a tuning menu, and the user tried to skip tuning.
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
 				Midi::userWantsToUseAutoTuning = true;
 			}
 		}
 
+		// If we are using a debug version of the mods.
 		if (debug) {
-			if (keyPressed == VK_INSERT) // Debug menu | ImGUI
+			if (keyPressed == VK_INSERT) { // Debug menu. ImGUI
 				D3DHooks::menuEnabled = !D3DHooks::menuEnabled;
+			}
 		}
 	}
 
 	// Repeatedly trigger mod on key hold
 	else if (msg == WM_KEYDOWN) {
-		if (D3DHooks::GameLoaded) { // Game must not be on the startup videos or it will crash
-			if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && RiffRepeater::loggedCurrentSongID) { // Riff Repeater over 100%
-
-				// Convert UI Speed -> Real Speed
+		// Game must not be on the startup videos or it might crash
+		if (D3DHooks::GameLoaded) { 
+			// Riff Repeater > 100% mod.
+			if (keyPressed == Settings::GetKeyBind("RRSpeedKey") && Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && (MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) && RiffRepeater::loggedCurrentSongID) {
+				
+				// Get the current speed of Riff Repeater.
 				realSongSpeed = RiffRepeater::GetSpeed(true);
 
-				// Add / Subtract User's Interval
-
+				// Add / Subtract User specified Interval
 				if (GetAsyncKeyState(VK_SHIFT) < 0)
 					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
 				else
 					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
 
-				// Set Limits
-				if (realSongSpeed > 400.f) // Cap at 400. Plugin only goes down to 25. 10000 / 25 = 400.
+				// Set limits to the speed
+				// Cap at 400. Plugin only goes down to 25. 10000 / 25 = 400.
+				// Cap at 25. Plugin only goes up to 400. 10000 / 400 = 25.
+
+				if (realSongSpeed > 400.f) 
 					realSongSpeed = 400.f;
 
-				if (realSongSpeed < 25.f) // Cap at 25. Plugin only goes up to 400. 10000 / 400 = 25.
+				if (realSongSpeed < 25.f) 
 					realSongSpeed = 25.f;
 
-				// Save new speed, and save it to a file (for streamers to use as an on-screen overlay)
+				// Save new speed, and save it to a file (for streamers to use as a custom on-screen overlay)
 				RiffRepeater::SetSpeed(realSongSpeed, true);
 				RiffRepeater::EnableTimeStretch();
 				saveNewRRSpeedToFile = true;
@@ -334,7 +400,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		}
 	}
 
-	// Update settings from GUI. Done on GUI open AND on GUI setting save.
+	// Update settings from GUI.
+	// Done on GUI setting save.
 	else if (msg == WM_COPYDATA) {
 		COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
 		if (pcds->dwData == 1)
@@ -342,6 +409,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			std::string currMsg = (char*)pcds->lpData;
 			std::cout << currMsg << std::endl;
 
+			// GUI sent a "update" message. We need to re-read the INI.
 			if (Contains(currMsg, "update")) {
 				if (Contains(currMsg, "all"))
 					Settings::UpdateSettings();
@@ -349,6 +417,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 					Settings::ParseSettingUpdate(currMsg);
 			}
 
+			// GUI sent a "WwiseEvent" message. We need to trigger a Voice-Over so the user can test their Sound Pack.
 			else if (Contains(currMsg, "WwiseEvent")) {
 				auto msgParts = Settings::SplitByWhitespace(currMsg);
 
@@ -537,6 +606,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 		ImGui::End();
 
+		// ImGUI Microhones menu.
 		ImGui::Begin("Microphones");
 
 		static std::string previewMicrophone = "Select a Microphone";
@@ -549,6 +619,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			}
 		}
 		
+		// Drop-down list of all microphones.
 		if (ImGui::BeginCombo("Microphones", previewMicrophone.c_str())) {
 			for (int n = 0; n < microphones.size(); n++)
 			{
@@ -563,16 +634,19 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			ImGui::EndCombo();
 		}
 
+		// Button for testing setting volume on the microphone.
 		if (ImGui::Button("Random Volume"))
 			AudioDevices::SetMicrophoneVolume(selectedMicrophone, rand() % 100);
 
 		ImGui::End();
 
+		// ImGUI Voicelines menu.
 		ImGui::Begin("Voicelines");
 
 		static std::string previewVoiceline = "Select a voiceline";
 		static std::vector<VoiceOver> selectedVoiceOverList = VoiceOverControl::VO_ResultsScreens;
 
+		// Drop-down list of all voice-overs in the selected Voice-Over list.
 		if (ImGui::BeginCombo("Voicelines", previewVoiceline.c_str())) {
 			for (int n = 0; n < selectedVoiceOverList.size(); n++)
 			{
@@ -598,13 +672,14 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	// Render ImGUI
 	ImGui::EndFrame();
 	ImGui::Render();
-
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 	// Restart mouse and keyboard in game
 	ImGui::CaptureKeyboardFromApp(false);
 	ImGui::CaptureMouseFromApp(false);
 
+	// Regenerate string colors when the user changes their string colors in the GUI.
+	// Needed to have real-time textures.
 	if (generateTexture) {
 		D3D::GenerateTextures(pDevice, D3D::Strings);
 
@@ -614,10 +689,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	int whiteText = 0xFFFFFFFF;
 	Resolution WindowSize = MemHelpers::GetWindowSize();
 
-	// Draw text on screen || NOTE: NEVER USE SET VALUES. Always do division of WindowSize X AND Y so every resolution should have the text in around the same spot.
+	// Draw text on screen
+	// NOTE: NEVER USE SET VALUES. Always do division of WindowSize width AND heigh so every resolution should have the text in around the same spot.
 	if (D3DHooks::GameLoaded) {
 
-		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) { // Show Selected Volume
+		// Show Selected Volume mod.
+		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) {
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
 			Wwise::SoundEngine::Query::GetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
@@ -634,7 +711,8 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			}
 		}
 
-		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) { // Show Song Timer
+		// Show Song Timer mod.
+		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) {
 			MemHelpers::DX9DrawText(
 					ConvertFloatTimeToStringTime(MemHelpers::SongTimer()),
 					whiteText,
@@ -647,7 +725,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 					DT_RIGHT | DT_NOCLIP);
 		}
 
-		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID && (MemHelpers::IsInStringArray(currentMenu, fastRRModes) || MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled_Above100) { // Riff Repeater over 100%
+		// Riff Repeater > 100% mod.
+		if ((Settings::ReturnSettingValue("RRSpeedAboveOneHundred") == "on" && RiffRepeater::loggedCurrentSongID &&
+		(MemHelpers::IsInStringArray(currentMenu, fastRRModes)|| MemHelpers::IsInStringArray(currentMenu, scoreScreens))) || RiffRepeater::currentlyEnabled_Above100) {
 			realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
 
 			MemHelpers::DX9DrawText(
@@ -662,17 +742,42 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 					DT_CENTER | DT_NOCLIP);
 		}
 
-		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") { // Show Current Note On Screen
+		// Show Current Note On Screen mod
+		if (Settings::ReturnSettingValue("ShowCurrentNoteOnScreen") == "on" && GuitarSpeak::GetCurrentNoteName() != (std::string)"") {
+
 			if (MemHelpers::IsInSong())
-				MemHelpers::DX9DrawText(GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 1.75), (int)(WindowSize.width / 5.75), (int)(WindowSize.height / 8), pDevice);
+				MemHelpers::DX9DrawText(
+					GuitarSpeak::GetCurrentNoteName(),
+					whiteText,
+					(int)(WindowSize.width / 5.5),		// 349 pixels left of the center in 1920x1080 resolution.
+					(int)(WindowSize.height / 1.75),	// 617 pixels from the top
+					(int)(WindowSize.width / 5.75),		// 334 pixels right of center
+					(int)(WindowSize.height / 8),		// 135 pixels from the top
+					pDevice);
 			else // Show outside of the song at the top of the screen.
-				MemHelpers::DX9DrawText("Current Note: " + GuitarSpeak::GetCurrentNoteName(), whiteText, (int)(WindowSize.width / 3.87), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 4), (int)(WindowSize.height / 8), pDevice);
+				MemHelpers::DX9DrawText(
+					"Current Note: " + GuitarSpeak::GetCurrentNoteName(),
+					whiteText,
+					(int)(WindowSize.width / 3.87),		// 496 pixels left of the center in 1920x1080 resolution
+					(int)(WindowSize.height / 30.85),	// 35 pixels from the top
+					(int)(WindowSize.width / 4),		// 480 pixel right of the center
+					(int)(WindowSize.height / 8),		// 135 pixels from the top
+					pDevice);
 		}
 
-		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::GetKeyBind("TuningOffsetKey") != NULL && MemHelpers::IsInStringArray(currentMenu, tuningMenus)) { // Show current tuning
-			MemHelpers::DX9DrawText("Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset), whiteText, (int)(WindowSize.width / 5.5), (int)(WindowSize.height / 30.85), (int)(WindowSize.width / 5.65), (int)(WindowSize.height / 8), pDevice);
+		// Show current tuning for Auto Tune via MIDI mod.
+		if (Settings::ReturnSettingValue("AutoTuneForSong") == "on" && Settings::GetKeyBind("TuningOffsetKey") != NULL && MemHelpers::IsInStringArray(currentMenu, tuningMenus)) {
+			MemHelpers::DX9DrawText(
+				"Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset),
+				whiteText, 
+				(int)(WindowSize.width / 5.5),		// 349 pixels left of the center in 1920x1080 resolution
+				(int)(WindowSize.height / 30.85),	// 35 pixels from the top
+				(int)(WindowSize.width / 5.65),		// 339 pixels right of center
+				(int)(WindowSize.height / 8),		// 135 pixels from the top
+				pDevice);
 		}
 
+		// Looping mod.
 		if (Settings::ReturnSettingValue("AllowLooping") == "on" && (loopStart != NULL || loopEnd != NULL)) {
 
 			// Only enable looping in learn a song modes (learn a song & non-stop play)
@@ -727,7 +832,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			//unsigned int red = userDefColor.r * 255, green = userDefColor.g * 255, blue = userDefColor.b * 255;
 			//D3D::GenerateSolidTexture(pDevice, &twitchUserDefinedTexture, D3DCOLOR_ARGB(255, red, green, blue));
 
-			ColorList customColorList(16, userDefColor); // I feel like the gradient color looks a bit better
+			ColorList customColorList(16, userDefColor); 
 			D3D::GenerateTexture(pDevice, &twitchUserDefinedTexture, customColorList);
 
 			ERMode::customSolidColor.clear();
@@ -740,6 +845,11 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	return hRet;
 }
 
+/// <summary>
+/// Convert time stored as a float of seconds, to h:m:s
+/// </summary>
+/// <param name="timeInSeconds"> - Float containing number of seconds elapsed.</param>
+/// <returns>std::string of time in "h:m:s" format.</returns>
 std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
 	int seconds = 0, minutes = 0, hours = 0;
 
@@ -757,22 +867,31 @@ std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
 /// <param name="type"> - Should We Enable or Disable.</param>
 /// <returns>BOOL. If effects triggered.</returns>
 bool HandleMessage(std::string currMsg, std::string type) {
+	
+	// Twitch wants Rainbow String mod.
 	if (Contains(currMsg, "RainbowStrings")) {
 		if (type == "enable")
 			ERMode::RainbowEnabled = true;
 		else
 			ERMode::RainbowEnabled = false;
 	}
+
+	// Twitch wants Drunk Mode.
 	else if (Contains(currMsg, "DrunkMode")) {
 		MemHelpers::ToggleDrunkMode(type == "enable");
 		Settings::ParseTwitchToggle(currMsg, type);
 	}
+	
+	// Twitch wants Solid Note colors.
 	else if (Contains(currMsg, "SolidNotes")) {
-		if (!ERMode::ColorsSaved) // Don't apply any effects if we haven't even been in a song yet
+		// Don't apply any effects if we haven't even been in a song yet
+		if (!ERMode::ColorsSaved) 
 			return false;
 
 		if (type == "enable") {
-			if (Contains(currMsg, "Random")) { // For Random Colors
+
+			// For Random Colors
+			if (Contains(currMsg, "Random")) {
 				static std::uniform_real_distribution<> urd(0, 9);
 				currentRandomTexture = (int)urd(rng);
 
@@ -784,9 +903,11 @@ bool HandleMessage(std::string currMsg, std::string type) {
 
 				twitchUserDefinedTexture = randomTextures[currentRandomTexture];
 			}
-			else { // If colors are not random, set colors which the user defined for this reward
+
+			// If colors are not random, set colors which the user defined for this reward
+			else { 
 				Settings::ParseSolidColorsMessage(currMsg);
-				D3DHooks::regenerateUserDefinedTexture = true; //Smh... that's why namespaces are important my children
+				D3DHooks::regenerateUserDefinedTexture = true;
 			}
 		}
 		else
@@ -874,7 +995,9 @@ void GUI() {
 
 	std::cout << "Running in Wine: " << std::boolalpha << runningThroughWine << std::endl;
 
-	// Proton / Wine Check
+	// Proton / Wine Check.
+	// We do NOT support linux. There is some issues with the D3D pointers.
+	// This check is meant so if someone does load our mods on Linux, we won't just crash. Most mods will just not work.
 	if (runningThroughWine) {
 		std::cout << "Performing Wine check" << std::endl;
 		adr = MemUtil::FindPattern<uint32_t>(0x2000000, 0x2B778CC, (PBYTE)Offsets::d3dDevice_Pattern, Offsets::d3dDevice_Mask) + 2;
@@ -907,7 +1030,6 @@ void GUI() {
 		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexDeclaration_Index], (PBYTE)D3DHooks::Hook_SetVertexDeclaration, 7); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexdeclaration
 		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexShaderConstantF_Index], (PBYTE)D3DHooks::Hook_SetVertexShaderConstantF, 7); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshaderconstantf
 		oReset = (tReset)DetourFunction((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)D3DHooks::Hook_Reset); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-reset
-		//oReset = (tReset)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::Reset_Index], (PBYTE)Hook_Reset, 5); // You'd expect this to work, given the effect is extremely similar to what DetourFunction does, but... it crashes instead
 	}
 
 	oSetVertexShader = (tSetVertexShader)MemUtil::TrampHook((PBYTE)vTable[D3DInfo::SetVertexShader_Index], (PBYTE)D3DHooks::Hook_SetVertexShader, 7); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshader
@@ -919,7 +1041,7 @@ void GUI() {
 }
 
 /// <summary>
-/// Press enter. Normally used in a loop to skip most of the login dialog. "Fork in the toaster" method
+/// Presses Enter. Normally used in a loop to skip most of the login dialog. "Fork in the toaster" method
 /// </summary>
 void AutoEnterGame() {
 	PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_RETURN, 0);
@@ -946,7 +1068,7 @@ void TakeScreenshot() {
 /// <summary>
 /// Update settings so users don't need to restart the game for every mod they want to toggle on / off.
 /// </summary>
-void UpdateSettings() { // Live updates from the INI
+void UpdateSettings() {
 	Settings::UpdateSettings();
 	Sleep(500);
 	CustomSongTitles::LoadSettings();
@@ -972,7 +1094,7 @@ void ClearMDMPs() {
 		}
 
 		if (didWeDeleteFiles)
-			std::cout << "Deleting Useless Log Files" << std::endl;
+			std::cout << "Deleting dump files" << std::endl;
 	}
 }
 
@@ -1007,18 +1129,22 @@ unsigned WINAPI MainThread() {
 	MemUtil::PatchAdr((void*)Offsets::steamApiUri, "%s://localhost:5154/api/requests/%d,%s,%s", 42); // Proxy available here: https://github.com/ffio1/SteamAPIProxy
 #endif
 
+	// AltOutputSampleRate mod.
+	// We have to do this early in execution as we need to change it before the audio engine starts up.
 	if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000) {
 		std::cout << "[!] Overriding Output Sample Rate to " << Settings::GetModSetting("AlternativeOutputSampleRate") << std::endl;
 		AudioDevices::output_SampleRate = Settings::GetModSetting("AlternativeOutputSampleRate");
 		AudioDevices::ChangeOutputSampleRate();
 	}
 	
+	// Look to see if RS_ASIO applied the 2 RTC input bypass.
+	// If they did, then we disregard the results from our version of the mod.
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
-
 	std::cout << "RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl;
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 
+	// Patch x86 assembly for Riff Repeater speed logic to make it linear.
 	if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on")
 		RiffRepeater::EnableLinearSpeeds();
 
@@ -1028,6 +1154,7 @@ unsigned WINAPI MainThread() {
 	Wwise::Logging::Setup_log_SeekOnEvent();
 #endif
 
+	// Allow the user to have a small amount of time to Alt+Tab while the game continues playing the audio.
 	if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on")
 		VolumeControl::AllowAltTabbingWithAudio();	
 
@@ -1043,33 +1170,40 @@ unsigned WINAPI MainThread() {
 
 		// If Game Is Loaded (No need to run these while the game is loading.)
 		if (GameLoaded) {
-			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used else where.
+			currentMenu = MemHelpers::GetCurrentMenu(); // This loads without checking if memory is safe... This can cause crashes if used when GameLoaded is false.
 
 			// Override the default microphone volume.
 			if (Settings::ReturnSettingValue("OverrideInputVolumeEnabled") == "on" && Settings::ReturnSettingValue("OverrideInputVolumeDevice") != "" && AudioDevices::GetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice")) != Settings::GetModSetting("OverrideInputVolume"))
 				AudioDevices::SetMicrophoneVolume(Settings::ReturnSettingValue("OverrideInputVolumeDevice"), Settings::GetModSetting("OverrideInputVolume"));
 
+			// User originally wanted to NOT allow audio in the background, but they changed their mind, so we have to turn it on/
 			if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on" && !VolumeControl::allowedAltTabbingWithAudio)
 				VolumeControl::AllowAltTabbingWithAudio();
 
+			// User originally wanted to allow audio in the background, but they changed their mind, so we have to turn it off.
 			else if (Settings::ReturnSettingValue("AllowAudioInBackground") == "off" && VolumeControl::allowedAltTabbingWithAudio) {
 				VolumeControl::DisableAltTabbingWithAudio();
 			}
 
-			if (!rs_asio_BypassTwoRTC) { // If the patch was set by RS_ASIO, don't change it!
-				if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "off" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_patch[0]) // User originally had BypassTwoRTCMessageBox on, but now they want it turned off.
+			// If the bypass for the 2 RTC dialog was set by RS_ASIO, don't change it!
+			if (!rs_asio_BypassTwoRTC) { 
+
+				// User originally had BypassTwoRTCMessageBox on, but now they want it turned off.
+				if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "off" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_patch[0]) 
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_original, 6);
 
-				else if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_original[0]) // User originally had BypassTwoRTCMessageBox off, but now they want it turned on.
+				// User originally had BypassTwoRTCMessageBox off, but now they want it turned on.
+				else if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_original[0]) 
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 			}
 
-			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_LinearRR) // User had Linear RR off, but now they want it turned on.
+			// User had Linear RR off, but now they want it turned on.
+			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_LinearRR) 
 				RiffRepeater::EnableLinearSpeeds();
-			else if (Settings::ReturnSettingValue("LinearRiffRepeater") == "off" && RiffRepeater::currentlyEnabled_LinearRR) // User had Linear RR on, but now they want it turned off.
-				RiffRepeater::DisableLinearSpeeds();
 
-			//std::cout << currentMenu << std::endl;
+			// User had Linear RR on, but now they want it turned off.
+			else if (Settings::ReturnSettingValue("LinearRiffRepeater") == "off" && RiffRepeater::currentlyEnabled_LinearRR) 
+				RiffRepeater::DisableLinearSpeeds();
 
 			// Scan for MIDI devices for Automated Tuning / True-Tuning
 			if (!Midi::scannedForMidiDevices && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
@@ -1077,13 +1211,14 @@ unsigned WINAPI MainThread() {
 				Midi::ReadMidiSettingsFromINI(Settings::ReturnSettingValue("ChordsMode"), Settings::GetModSetting("TuningPedal"), Settings::ReturnSettingValue("AutoTuneForSongDevice"), Settings::ReturnSettingValue("MidiInDevice"));
 			}
 
+			// Scan for MIDI In devices.
 			if (!Midi::attemptedToDetachMidiInThread && Settings::ReturnSettingValue("MidiInDevice") != "") {
 				Midi::attemptedToDetachMidiInThread = true;
 				Midi::FindMidiInDevices(Settings::ReturnSettingValue("MidiInDevice")); // Just in-case the user has AutoTuneForSong off but MidiInDevice selected.
 				std::thread(Midi::ListenToMidiInThread).detach();
 			}
 
-			/// If User Is Entering / In Lesson Mode
+			// If User Is Entering / In Lesson Mode
 
 			LessonMode = MemHelpers::IsInStringArray(currentMenu, lessonModes);
 
@@ -1093,8 +1228,8 @@ unsigned WINAPI MainThread() {
 			if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup")
 				RemoveHeadstockInThisMenu = true; // In this case, the user always wants to remove the headstock. This value should never turn to false in this mode.
 
-			// Toggle Loft (In Song / Always Off). Turn off in Lesson Mode (or video won't appear). Emulate effect with GreenScreenWall.
-			if (LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") != "manual") { // Is User In A Lesson Mode AND set to turn loft off
+			// Toggle Loft (In Song / Always Off). Turn off in Lesson Mode (or the videos won't appear). Emulate effect with GreenScreenWall.
+			if (LessonMode && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on" && Settings::ReturnSettingValue("ToggleLoftWhen") != "manual") {
 				if (LoftOff)
 					MemHelpers::ToggleLoft();
 				LoftOff = false;
@@ -1115,7 +1250,7 @@ unsigned WINAPI MainThread() {
 			}
 
 			// Toggle Skyline (Always Off)
-			if (!SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "startup") // Turn the skyline off on startup
+			if (!SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "startup")
 				toggleSkyline = true;
 
 			// Remove Lyrics (Always Off)
@@ -1127,13 +1262,13 @@ unsigned WINAPI MainThread() {
 				Midi::AttemptTuningInTuner();
 				skipERSleep = true;
 			}	
-
 			/// If User Is Entering Song
 			if (MemHelpers::IsInSong()) {
 				GuitarSpeakPresent = false;
 				AttemptedERInTuner = false;
 				UseERInTuner = false;
 
+				// We are in a song we've haven't seen in this play session. Log its Id so we can prep for the Riff Repeater > 100% mod.
 				if (RiffRepeater::readyToLogSongID) {
 					if (RiffRepeater::LogSongID(MemHelpers::GetSongKey()))
 						RiffRepeater::readyToLogSongID = false;
@@ -1166,7 +1301,7 @@ unsigned WINAPI MainThread() {
 					Midi::AutomateTuning();
 					
 				// Show Song Timer (In Song)
-				if (!AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
+				if (!AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") {
 					AutomatedSongTimer = true;
 					showSongTimerOnScreen = true;
 				}
@@ -1205,6 +1340,7 @@ unsigned WINAPI MainThread() {
 					UseERInTuner = false;
 				}
 
+				// Turn off Looping mod
 				if (Settings::ReturnSettingValue("AllowLooping") == "on") {
 					if (loopStart != NULL)
 						loopStart = NULL;
@@ -1226,13 +1362,13 @@ unsigned WINAPI MainThread() {
 				}
 				
 				// Turn off Show Song Timer (In Song)
-				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") { // User always wants to see the song timer.
+				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") {
 					AutomatedSongTimer = false;
 					showSongTimerOnScreen = false;
 				}	
 
 				// Turn off Show Selected Volume (In Song)
-				if (AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") { // User only wants to see selected volume in game.
+				if (AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") {
 					currentVolumeIndex = 0;
 					AutomatedSelectedVolume = false;
 				}
@@ -1259,7 +1395,7 @@ unsigned WINAPI MainThread() {
 				}
 
 				// Turn off Remove Skyline (In Song)
-				if (SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") { // Turn the skyline back on after exiting a song
+				if (SkylineOff && Settings::ReturnSettingValue("RemoveSkylineEnabled") == "on" && Settings::ReturnSettingValue("ToggleSkylineWhen") == "song") {
 					toggleSkyline = true;
 					DrawSkylineInMenu = true;
 				}
@@ -1289,7 +1425,7 @@ unsigned WINAPI MainThread() {
 			/// "Other" menus. These will normally state what menus they need to be in.
 
 			// Screenshot Scores
-			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, scoreScreens)) // Screenshot Scores
+			if (Settings::ReturnSettingValue("ScreenShotScores") == "on" && MemHelpers::IsInStringArray(currentMenu, scoreScreens))
 				TakeScreenshot();
 			else
 				takenScreenshotOfThisScreen = false;
@@ -1312,16 +1448,18 @@ unsigned WINAPI MainThread() {
 		/// Game Hasn't Loaded Yet
 
 		else {
-			
-			// Disable Controllers: XInput (Xbox) and DirectInput (other)
-			//DisableControllers::DisableControllers();
 
 			// Change Current Menu status to the current menu while the game is loading.
-			currentMenu = MemHelpers::GetCurrentMenu(true); // This is the safe version of checking the current menu. It is only used while the game boots to help performance.
+			// This is the safe version of checking the current menu.
+			// It is only used while the game boots, else the game may crash.
+			currentMenu = MemHelpers::GetCurrentMenu(true); 
 
-			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") // Yay We Loaded :P (or the user opened a new user profile. This prevents us from creating a loop that the user cannot leave.
+			// Have We Loaded? Or has the user opened a new user profile?
+			// This prevents the user from being locked in a loop.
+			if (currentMenu == "MainMenu" || currentMenu == "PlayedRS1Select") 
 				GameLoaded = true;
 
+			// Set buffer settings if the user uses an alternative sample rate on their audio output.
 			if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000 && *(int*)Offsets::ptr_sampleRateBuffer != 5 && *(int*)Offsets::ptr_sampleRateBuffer != 2) {
 				*(int*)Offsets::ptr_sampleRateSize = 2;
 				*(int*)Offsets::ptr_sampleRateBuffer = 128;
@@ -1344,6 +1482,7 @@ unsigned WINAPI MainThread() {
 						PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_DOWN, 0);
 					} 
 				}
+				// User doesn't care what profile we select, just select the first / top one.
 				else
 					AutoEnterGame();
 			}
@@ -1375,23 +1514,33 @@ void Initialize() {
 /// <param name="lpReserved"></param>
 /// <returns>Always returns TRUE</returns>
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
+	// Init boos
 	bool debugLogPresent = std::ifstream("RSMods_debug.txt").good();
 	std::ofstream clearDebugLog = std::ofstream("RSMods_debug.txt");
+
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
+		// Setup logging system
 		FILE* streamRead, * streamWrite;
-		if (debug) // Give debug console
+
+		// If running a debug build, give us a console.
+		if (debug) 
 			AllocConsole();
+
+		// Connect stdin, stdout, and stderr to our console / log.
 		freopen_s(&streamRead, "CONIN$", "r", stdin);
 		freopen_s(&streamWrite, "CONOUT$", "w", stdout);
 		freopen_s(&streamWrite, "CONOUT$", "w", stderr);
 
-		if (debugLogPresent) { // Dump console to log (mainly for debugging release build issues)
+		// Dump console to log (mainly for debugging release build issues)
+		if (debugLogPresent) { 
+
 			// Clear log so it isn't full of junk from the last launch
 			clearDebugLog.open("RSMods_debug.txt", std::ofstream::out | std::ofstream::trunc);
 			clearDebugLog.close();
 
-			// Attach log to stdout / std::cout so we can get the logs. | Doesn't work on debug clients as it takes over the console output.
+			// Attach log to stdout and stderr.
+			// Doesn't work on debug clients as it takes over the console output.
 			if (!debug) {
 				FILE* debugLog;
 				freopen_s(&debugLog, "RSMods_debug.txt", "w", stdout);
@@ -1401,7 +1550,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
 		Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
-		Initialize(); // Inject our code.
+		Initialize(); // Inject our mod code.
 		return TRUE;
 	case DLL_PROCESS_DETACH:
 		Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll

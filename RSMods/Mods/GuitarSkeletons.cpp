@@ -22,8 +22,9 @@ xyzPosition GuitarSkeletons::StringAttachPosition(bool leftHanded, bool bass, in
 	X = 1.33226762955E-15;
 	Y = -53.6527178626;
 
+	// Move to the opposite end of the fret board if left handed
 	if (leftHanded)
-		Y = -Y; // Move to the opposite end of the fret board
+		Y = -Y; 
 
 	if (setToDefaults) {
 		if (stringNumber == 0 || stringNumber == 3) // Shared across guitar & bass

@@ -1,6 +1,12 @@
 #include "FYourFCEffect.hpp"
 
 namespace CrowdControl::Effects { // Kills user's current note streak
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult FYourFCEffect::Test(Request request)
 	{
 		std::cout << "FYourFC::Test()" << std::endl;
@@ -32,6 +38,9 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void FYourFCEffect::Run()
 	{
 		// Stop automatically after duration has elapsed
@@ -43,6 +52,10 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult FYourFCEffect::Stop()
 	{
 		std::cout << "FYourFC::Stop()" << std::endl;

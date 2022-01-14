@@ -1,6 +1,12 @@
 #include "RemoveNotesEffect.hpp"
 
 namespace CrowdControl::Effects { // Prevents the game from drawing note head meshes
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RemoveNotesEffect::Test(Request request)
 	{
 		std::cout << "RemoveNotesEffect::Test()" << std::endl;
@@ -32,9 +38,12 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 		return EffectResult::Success;
 	}
 
+
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void RemoveNotesEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -43,6 +52,10 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult RemoveNotesEffect::Stop()
 	{
 		std::cout << "RemoveNotesEffect::Stop()" << std::endl;
@@ -50,11 +63,14 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 		ScaleNotes(1);
 
 		running = false;
-		//Settings::UpdateTwitchSetting("RemoveNotes", "off");
 
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Change the scale of the notes
+	/// </summary>
+	/// <param name="scale"> - Scale to set the notes.</param>
 	void RemoveNotesEffect::ScaleNotes(float scale) {
 		std::cout << "RemoveNotesEffect::ScaleNotes(" << scale << ")" << std::endl;
 

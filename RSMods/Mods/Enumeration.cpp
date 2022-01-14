@@ -4,8 +4,10 @@
 /// Trigger Enumeration
 /// </summary>
 void Enumeration::ForceEnumeration() {
+		// Get memory address for Enumeration flag
 		uintptr_t rsSteamServiceFlagsPtr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_enumerateService, Offsets::ptr_enumerateServiceOffsets);
 
+		// Set Enumeration flags to 1.
 		*(BYTE*)rsSteamServiceFlagsPtr = 1;
 		*(BYTE*)(rsSteamServiceFlagsPtr + 1) = 1;
 }

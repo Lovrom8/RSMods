@@ -12,7 +12,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
-	// Extended Range / Custom Colors
+	// Note-tails for Extended Range / Custom Colors
 	if (AttemptedERInThisSong && UseEROrColorsInThisSong && NOTE_TAILS) {
 		MemHelpers::ToggleCB(UseERExclusivelyInThisSong);
 
@@ -30,13 +30,15 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		}
 	}
 
+	// Note-tails for Twitch mod - Remove Notes.
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes") && NOTE_TAILS)
 		return REMOVE_TEXTURE;
 
+	// Note-tails for Twitch mod - Transparent Notes.
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes") && NOTE_TAILS)
 		pDevice->SetTexture(1, nonexistentTexture);
 
-	// Solid Notes Twitch Reward
+	// Note-tails for Twitch mod - Solid Colored notes.
 	if (Settings::IsTwitchSettingEnabled("SolidNotes") && NOTE_TAILS) {
 		if (Settings::ReturnSettingValue("SolidNoteColor") == "random")
 			pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
@@ -44,10 +46,11 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 			pDevice->SetTexture(1, twitchUserDefinedTexture);
 	}
 	
-	// Rainbow Notes
-	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS) // Rainbow Notes
+	// Note-tails for Rainbow Notes.
+	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS)
 		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 
+	// Call the original DrawPrimitive.
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 }
 
@@ -61,6 +64,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexDeclaration(LPDIRECT3DDEVICE9 pDevice, 
 	if (pdecl != NULL)
 		pdecl->GetDeclaration(decl, &NumElements);
 
+	// Call the original SetVertexDeclaration.
 	return oSetVertexDeclaration(pDevice, pdecl);
 }
 
@@ -78,6 +82,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevi
 		VectorCount = Vector4fCount;
 	}
 
+	// Call the original SetVertexShaderConstantF
 	return oSetVertexShaderConstantF(pDevice, i_StartRegister, pConstantData, Vector4fCount);
 }
 
@@ -92,11 +97,8 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 		vShader = veShader;
 		vShader->GetFunction(NULL, &vSize);
 	}
-
-	//// Thicc fretboard note indicators.
-	//if (vSize == 480 && MemHelpers::IsInStringArray(currentMenu, NULL, songModes))
-	//	return D3D_OK;
 	
+	// Call the original SetVertexShader.
 	return oSetVertexShader(pDevice, veShader);
 }
 
@@ -112,6 +114,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 		pShader->GetFunction(NULL, &pSize);
 	}
 
+	// Call the original SetPixelShader.
 	return oSetPixelShader(pDevice, piShader);
 }
 
@@ -127,12 +130,13 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT i_Stride) {
 	D3DVERTEXBUFFER_DESC desc;
 
-	// Remove Line Markers
+	// Remove Line Markers mod.
 	if (i_Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { 
 		pStreamData->GetDesc(&desc);
 		vertexBufferSize = desc.Size;
 	}
 
+	// Call original SetStreamSource.
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, i_Stride);
 }
 
@@ -149,7 +153,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	if (MemHelpers::DX9FontEncapsulation)
 		MemHelpers::DX9FontEncapsulation->OnLostDevice();
 
-	// Reset Device
+	// Reset Device. Call original Reset.
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
 
 	ImGui_ImplDX9_CreateDeviceObjects();
@@ -194,6 +198,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	Mesh current(Stride, PrimCount, NumVertices);
 	ThiccMesh currentThicc(Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
+	// Debugging of DIP.
 	if (debug) {
 		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)// Page up
 			currIdx++;
@@ -261,25 +266,21 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (pBaseNotewayTexture) {
 			if (CRCForTexture(pCurrNotewayTexture, pDevice, crc)) {
+
+				// Noteway Texture
 				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
 					pDevice->SetTexture(1, notewayTexture);
+
+				// Fret Number texture
 				else if (crc == crcNotewayFretNumbers && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
 					pDevice->SetTexture(1, fretNumTexture);
+
+				// Gutter texture
 				else if (crc == crcNotewayGutters && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
 					pDevice->SetTexture(1, gutterTexture);
 			}
 		}
 	}
-
-	//if (IsExtraRemoved(headstonks, currentThicc) && (GetAsyncKeyState(VK_CONTROL) & 1)) {
-
-	//	// Save Headstock Texture to file
-	//	pDevice->GetTexture(1, &pBaseTextures[1]);
-	//	D3DXSaveTextureToFile(L"headstock.png", D3DXIFF_PNG, pBaseTextures[1], NULL);
-
-	//	// Use Custom Texture
-	//	pDevice->SetTexture(1, customHeadstockTexture);
-	//}
 
 
 	// // Custom Loft Gameplay Wall / Narnia / Portal / Venue wall
@@ -297,7 +298,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	//	// Example: What is shown - https://cdn.discordapp.com/attachments/711634485388771439/813523398587711488/unknown.png vs What is sent - https://cdn.discordapp.com/attachments/711634485388771439/813523420947152916/stage0.png
 	//	// Example: Full wall (which you will never see for more than a second or so) - https://cdn.discordapp.com/attachments/711634485388771439/813524110390460436/unknown.png
 
-	//	pDevice->SetTexture(0, customGreenScreenWall_Stage0); // Background Tile | loft_concrete_wall_b.dds | 1024x1024 | Can be modified. Used for the background.
+	//	pDevice->SetTexture(0, customGreenScreenWall_Stage0);   // Background Tile | loft_concrete_wall_b.dds | 1024x1024 | Can be modified. Used for the background.
 	//	//pDevice->SetTexture(1, customGreenScreenWall_Stage1); // Noise | noise03.dds | 256x256 | Doesn't have any effect
 	//	//pDevice->SetTexture(2, customGreenScreenWall_Stage2); // Caustic (Indirect) | caustic_indirect01.dds | 256x256 | Doesn't have any effect
 	//	//pDevice->SetTexture(3, customGreenScreenWall_Stage3); // Narnia / Venue Fade In Mask | fade_shape.dds | 512x512 | Can be modified. If you use a single colored square, you can make an almost "movie like" flashback.
@@ -313,6 +314,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			ERMode::customNoteColorH -= 180;
 
 		RainbowNotes = true;
+
+		// Colors for note stems (part below the note), bends, slides, and accents
 		if (NOTE_STEMS || OPEN_NOTE_ACCENTS) {
 			pDevice->GetTexture(1, &pBaseRainbowTexture);
 			pCurrRainbowTexture = (IDirect3DTexture9*)pBaseRainbowTexture;
@@ -321,12 +324,15 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrRainbowTexture, pDevice, crc)) {
+
+				// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
 				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)
 					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 			}
 		}
 
-		if (PrideMode && NOTE_TAILS) // As of right now, this requires rainbow strings to be toggled on
+		// As of right now, this requires rainbow strings to be toggled on
+		if (PrideMode && NOTE_TAILS) 
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
 	}
 
@@ -390,17 +396,22 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		// Settings::GetModSetting("SeparateNoteColors") == 1 -> Default Colors, so don't do anything.
 
-		if (Settings::GetModSetting("SeparateNoteColorsMode") == 0 || (Settings::ReturnSettingValue("SeparateNoteColors") == "on" && Settings::GetModSetting("SeparateNoteColorsMode") == 2)) { // Use same color scheme on notes as we do on strings (0) || Use Custom Note Color Scheme (2)
+		// Use same color scheme on notes as we do on strings (0) || Use Custom Note Color Scheme (2)
+		if (Settings::GetModSetting("SeparateNoteColorsMode") == 0 || (Settings::ReturnSettingValue("SeparateNoteColors") == "on" && Settings::GetModSetting("SeparateNoteColorsMode") == 2)) { 
 
-			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture; // Color notes like string colors
+			// Color notes like string colors
+			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture; 
 
+			// Custom colored notes
 			if (Settings::GetModSetting("SeparateNoteColorsMode") == 2)
-				textureToUseOnNotes = customNoteColorTexture; // Custom colored notes
+				textureToUseOnNotes = customNoteColorTexture; 
 
-			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  // Change all pieces of note head's textures
+			// Change all pieces of note head's textures
+			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  
 				pDevice->SetTexture(1, textureToUseOnNotes);
 
-			else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+			// Colors for note stems (part below the note), bends, slides, and accents
+			else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { 
 				pDevice->GetTexture(1, &pBaseTexture);
 				pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -408,10 +419,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 					return SHOW_TEXTURE;
 
 				if (CRCForTexture(pCurrTexture, pDevice, crc)) {
-					//if (startLogging)
-					//	Log("0x%08x", crc);
 
-					if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+					// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+					if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  
 						pDevice->SetTexture(1, textureToUseOnNotes);
 				}
 
@@ -420,11 +430,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	// Twitch Settings
+	// Twitch wants notes to be removed.
 	if (Settings::IsTwitchSettingEnabled("RemoveNotes"))
+		// Note textures, outside of note stems and open note accents.
 		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))
 			return REMOVE_TEXTURE;
-		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+
+		// Colors for note stems (part below the note), bends, slides, and accents
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { 
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -432,20 +445,23 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				return REMOVE_TEXTURE;
 
 			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
-				//if (startLogging)
-				//	Log("0x%08x", crc);
 
-				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+				// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  
 					return REMOVE_TEXTURE;
 			}
 
 			return REMOVE_TEXTURE;
 		}
 
+	// Twitch wants transparent notes.
 	if (Settings::IsTwitchSettingEnabled("TransparentNotes"))
+		// Note textures, outside of note stems and open note accents.
 		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc) || NOTE_STEMS || OPEN_NOTE_ACCENTS)
 			pDevice->SetTexture(1, nonexistentTexture);
-		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+
+		// Colors for note stems (part below the note), bends, slides, and accents
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { 
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -453,24 +469,30 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
-				//if (startLogging)
-				//	Log("0x%08x", crc);
 
-				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+				// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)  
 					pDevice->SetTexture(1, nonexistentTexture);
 			}
 
 			return SHOW_TEXTURE;
 		}
 
+	// Twitch wants solid note colors
 	if (Settings::IsTwitchSettingEnabled("SolidNotes")) {
+		// Note textures, outside of note stems and open note accents.
 		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) {
-			if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
+
+			// Random Colors
+			if (Settings::ReturnSettingValue("SolidNoteColor") == "random") 
 				pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
-			else // They set the color they want in the GUI | TODO: Colors are changed on chord boxes
+			// They set the color they want in the GUI | TODO: Colors are changed on chord boxes
+			else 
 				pDevice->SetTexture(1, twitchUserDefinedTexture);
 		}
-		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { // Colors for note stems (part below the note), bends, slides, and accents
+
+		// Colors for note stems (part below the note), bends, slides, and accents
+		else if (NOTE_STEMS || OPEN_NOTE_ACCENTS) { 
 			pDevice->GetTexture(1, &pBaseTexture);
 			pCurrTexture = (IDirect3DTexture9*)pBaseTexture;
 
@@ -478,11 +500,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				return SHOW_TEXTURE;
 
 			if (CRCForTexture(pCurrTexture, pDevice, crc)) {
-				//if (startLogging)
-				//	Log("0x%08x", crc);
 
-				if (crc == crcStemsAccents || crc == crcBendSlideIndicators) {  // Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
-					if (Settings::ReturnSettingValue("SolidNoteColor") == "random") // Random Colors
+				// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
+				if (crc == crcStemsAccents || crc == crcBendSlideIndicators) {  
+
+					// Random Colors
+					if (Settings::ReturnSettingValue("SolidNoteColor") == "random") 
 						pDevice->SetTexture(1, randomTextures[currentRandomTexture]);
 					else
 						pDevice->SetTexture(1, twitchUserDefinedTexture);
@@ -493,6 +516,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
+	// Twitch wants us to reset your note streak.
 	if (Settings::IsTwitchSettingEnabled("FYourFC")) {
 		uintptr_t currentNoteStreak = 0;
 
@@ -505,6 +529,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			*(BYTE*)currentNoteStreak = 0;
 	}
 
+	// Twitch wants to see the user play in Drunk Mode.
 	if (Settings::IsTwitchSettingEnabled("DrunkMode")) {
 		std::uniform_real_distribution<> keepValueWithin(-1.5, 1.5);
 		*(float*)Offsets::ptr_drunkShit = (float)keepValueWithin(rng);
@@ -514,7 +539,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if ((Settings::ReturnSettingValue("GreenScreenWallEnabled") == "on" || GreenScreenWall) && IsExtraRemoved(greenScreenWallMesh, currentThicc))
 		return REMOVE_TEXTURE;
 
-	// Thicc Mesh Mods
+	// Thicc Mesh Mods that are as simple as doing a simple check against the params of this function.
 	if (MemHelpers::IsInSong()) {
 		if (Settings::ReturnSettingValue("FretlessModeEnabled") == "on" && IsExtraRemoved(fretless, currentThicc))
 			return REMOVE_TEXTURE;
@@ -529,17 +554,25 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	// Remove Headstock Artifacts
 	else if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
-		if (IsExtraRemoved(tuningLetters, currentThicc)) // This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+		// This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
+		if (IsExtraRemoved(tuningLetters, currentThicc)) 
 			return REMOVE_TEXTURE;
-		if (IsExtraRemoved(tunerHighlight, currentThicc)) // This is called to remove the tuner's highlights
+
+		// This is called to remove the tuner's highlights
+		if (IsExtraRemoved(tunerHighlight, currentThicc))
 			return REMOVE_TEXTURE;
-		if (IsExtraRemoved(leftyFix, currentThicc)) // Lefties need their own little place in life...
+
+		// Lefties need their own little place in life...
+		if (IsExtraRemoved(leftyFix, currentThicc)) 
 			return REMOVE_TEXTURE;
 	}
 
 	// Skyline Removal
 	if (toggleSkyline && POSSIBLE_SKYLINE) {
-		if (DrawSkylineInMenu) { // If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI
+
+		// If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI.
+		// This means we show the skyline in the learn a song - Song Details page.
+		if (DrawSkylineInMenu) { 
 			SkylineOff = false;
 			return SHOW_TEXTURE;
 		}
@@ -547,9 +580,12 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		pDevice->GetTexture(1, &pBaseTextures[1]);
 		pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
-		if (pBaseTextures[1]) {  // There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return D3D_OK directly
+		// There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return REMOVE_TEXTURE directly
+		if (pBaseTextures[1]) {  
 			if (CRCForTexture(pCurrTextures[1], pDevice, crc)) {
-				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { // Purple rectangles + orange line beneath them
+
+				// Purple rectangles + orange line beneath them
+				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { 
 					SkylineOff = true;
 					return REMOVE_TEXTURE;
 				}
@@ -561,7 +597,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (pBaseTextures[0]) {
 			if (CRCForTexture(pCurrTextures[0], pDevice, crc)) {
-				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  // There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles
+
+				// There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles.
+				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  
 					SkylineOff = true;
 					return REMOVE_TEXTURE;
 				}
@@ -578,31 +616,33 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			pDevice->GetTexture(1, &pBaseTextures[1]);
 			pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
 
+			// Need to reset cache, and this is a headstock texture.
 			if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
 				if (!pBaseTextures[1]) //if there's no texture for Stage 1
 					return REMOVE_TEXTURE;
 
+				// Take a CRC of the texture, and check it against our preset CRCs.
 				if (CRCForTexture(pCurrTextures[1], pDevice, crc)) {
 					if (crc == crcHeadstock0 || crc == crcHeadstock1 || crc == crcHeadstock2 || crc == crcHeadstock3 || crc == crcHeadstock4)
 						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
 				}
 
-				//Log("0x%08x", crc);
-
 				int headstockCRCLimit = 3;
 
+				// If the user is in multiplayer, we have to make sure our CRC limit is double or some bugs appear.
 				if (MemHelpers::IsInStringArray(currentMenu, multiplayerTuners))
 					headstockCRCLimit = 6;
 
+				// We've calculated all CRCs that we can, within our limit.
 				if (headstockTexturePointers.size() == headstockCRCLimit) {
 					calculatedHeadstocks = true;
 					resetHeadstockCache = false;
-					//std::cout << "Calculated headstock CRCs (Menu: " << currentMenu << " )" << std::endl;
 				}
 
 				return REMOVE_TEXTURE;
 			}
 
+			// We've already cached the headstocks we're using, so find the one we are working with and remove it.
 			if (calculatedHeadstocks)
 				if (std::find(std::begin(headstockTexturePointers), std::end(headstockTexturePointers), pCurrTextures[1]) != std::end(headstockTexturePointers))
 					return REMOVE_TEXTURE;
@@ -611,10 +651,14 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	// Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
 	if (RainbowNotes) { 
-		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) // Note Heads
+
+		// Rainbow Note Heads
+		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) 
 			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+
 		RainbowNotes = false;
 	}
 
+	
 	return SHOW_TEXTURE; // KEEP THIS LINE. This translates to "Display Graphics".
 }

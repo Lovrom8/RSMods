@@ -3,6 +3,12 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
+
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TurboSpeedEffect::Test(Request request)
 	{
 		std::cout << "TurboSpeedEffect::Test()" << std::endl;
@@ -13,6 +19,11 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Set Riff Repeater speed to 200%.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TurboSpeedEffect::Start(Request request)
 	{
 		std::cout << "TurboSpeedEffect::Start()" << std::endl;
@@ -22,7 +33,6 @@ namespace CrowdControl::Effects {
 
 		running = true;
 
-		// TODO: check if it works correctly
 		RiffRepeater::SetSpeed(200.f, true);
 		RiffRepeater::EnableTimeStretch();
 
@@ -32,9 +42,11 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void TurboSpeedEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -43,11 +55,14 @@ namespace CrowdControl::Effects {
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult TurboSpeedEffect::Stop()
 	{
 		std::cout << "TurboSpeedEffect::Stop()" << std::endl;
 
-		// TODO: check if it works correctly
 		RiffRepeater::SetSpeed(100.f);
 		RiffRepeater::DisableTimeStretch();
 

@@ -66,6 +66,7 @@ typedef AkUInt32		AkChannelMask;				///< Channel mask (similar to WAVE_FORMAT_EX
 static const AkGameObjectID	AK_INVALID_GAME_OBJECT = (AkGameObjectID)-1;	///< Invalid game object (may also mean all game objects)
 static const AkUniqueID AK_INVALID_UNIQUE_ID = (AkUniqueID)0;
 static const AkUniqueID AK_ID_Default_Time_Stretch = 0xB3745FC2;
+static const AkPlayingID AK_INVALID_PLAYING_ID = (AkPlayingID)0;
 
 enum AKRESULT
 {

@@ -1,6 +1,13 @@
 #include "BigNoteheadEffect.hpp"
 
 namespace CrowdControl::Effects { // Scales notes in a song to unusually big size
+	
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult BigNoteheadEffect::Test(Request request)
 	{
 		std::cout << "BigNoteheadEffect::Test()" << std::endl;
@@ -11,6 +18,10 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Start the mod by making noteheads 2.5x the size.
+	/// </summary>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult BigNoteheadEffect::Start(Request request)
 	{
 		std::cout << "BigNoteheadEffect::Start()" << std::endl;
@@ -28,9 +39,11 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void BigNoteheadEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -39,6 +52,10 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult BigNoteheadEffect::Stop()
 	{
 		std::cout << "BigNoteheadEffect::Stop()" << std::endl;

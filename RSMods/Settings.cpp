@@ -2,7 +2,8 @@
 #include <regex>
 
 /// <summary>
-/// Load Default Settings
+/// Load Default Settings.
+/// Used if the user has the DLL but no INI.
 /// </summary>
 void Settings::Initialize()
 {
@@ -290,32 +291,39 @@ void Settings::ReadStringColors() {
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return;
 
+	// Clear the previous string colors
 	customStringColorsNormal.clear();
 	customStringColorsCB.clear();
 	customNoteColorsNormal.clear();
 	customNoteColorsCB.clear();
 
+	// Loop throught the strings to make the code easier to read.
 	for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
 		std::string strKey = "";
 		std::string val;
 
+		// Read string colors (normal)
 		strKey = "string" + std::to_string(stringIdx) + "_N";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 		customStringColorsNormal.push_back(ConvertHexToColor(val));
 
+		// Read string colors (colorblind)
 		strKey = "string" + std::to_string(stringIdx) + "_CB";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
 		customStringColorsCB.push_back(ConvertHexToColor(val));
 
+		// Read note colors (normal)
 		strKey = "note" + std::to_string(stringIdx) + "_N";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 		customNoteColorsNormal.push_back(ConvertHexToColor(val));
 
+		// Read note colors (colorblind)
 		strKey = "note" + std::to_string(stringIdx) + "_CB";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
 		customNoteColorsCB.push_back(ConvertHexToColor(val));
 	}
 
+	// Set the default colors for deactivated notes.
 	for (int stringIdx = 6; stringIdx < 8; stringIdx++) {
 		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
 		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));

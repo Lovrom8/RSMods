@@ -32,12 +32,12 @@ Color CollectColors::GetAmbientStringColor(int stringHue, bool colorBlind) {
 /// <param name="colorBlind"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetDisabledStringColor(int stringHue, float stringSaturation, float stringLightness, bool colorBlind) {
 	if (colorBlind) {
-		S = stringSaturation - (float).428;
-		L = stringLightness / (float)2.812;
+		S = stringSaturation - 0.428f;
+		L = stringLightness / 2.812f;
 	}
 	else {
-		S = stringSaturation - (float).144;
-		L = stringLightness / (float)3.136;
+		S = stringSaturation - 0.144f;
+		L = stringLightness / 3.136f;
 	}
 
 	H = stringHue;
@@ -74,7 +74,7 @@ Color CollectColors::GetTuningPegColor(int stringHue) {
 /// </summary>
 /// <returns>Always returns black</returns>
 Color CollectColors::GetPegResetColor() {
-	H = (int)0.0f;
+	H = 0;
 	S = 0.0f;
 	L = 0.0f;
 
@@ -94,7 +94,7 @@ Color CollectColors::GetPegSuccessColor(bool colorBlind) {
 		L = 0.0f;
 	}
 
-	H = (int)0.0f;
+	H = 0;
 	S = 0.0f;
 
 	return GetColor();
@@ -124,9 +124,9 @@ Color CollectColors::GetPegInTuneColor(int stringHue, bool colorBlind) {
 /// </summary>
 /// <returns>Always returns white</returns>
 Color CollectColors::GetPegOutTuneColor() {
-	H = (int)0.0f;
-	S = (int)0.0f;
-	L = (int)1.0f;
+	H = 0;
+	S = 0.f;
+	L = 1.f;
 
 	return GetColor();
 }
@@ -199,7 +199,7 @@ Color CollectColors::GetNotewayNormalColor(int stringHue, float stringSaturation
 /// <param name="colorBlind"> - Should we make a ColorBlind color</param>
 Color CollectColors::GetNotewayAccentColor(int stringHue, bool colorBlind) {
 	if (colorBlind) {
-		H = (int)0.0f;
+		H = 0;
 		S = 0.0f;
 		L = 1.0f;
 	}

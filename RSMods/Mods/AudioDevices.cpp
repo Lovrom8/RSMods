@@ -7,7 +7,10 @@ void AudioDevices::SetupMicrophones() {
 	// Initialization
 	activeMicrophones.clear();
 
+	// CoInitialize
 	HRESULT coInit = CoInitialize(NULL);
+
+	// Check response of CoInitialize
 	if (coInit != S_OK) {
 		std::cout << "Unable to get microphone volume. CoInitialize is not S_OK. Returned ";
 		switch (coInit) {
@@ -24,9 +27,11 @@ void AudioDevices::SetupMicrophones() {
 		return;
 	}
 
+	// CoCreateInstance
 	IMMDeviceEnumerator* deviceEnumerator = NULL;
 	HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
+	// Check response of CoCreateInstance
 	if (coCI != S_OK) {
 		std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned ";
 		switch (coCI) {
@@ -50,6 +55,7 @@ void AudioDevices::SetupMicrophones() {
 		return;
 	}
 
+	// Null-Check
 	if (!deviceEnumerator) {
 		std::cout << "CoCreateInstance failed while setting up microphones. DeviceEnumerator is null" << std::endl;
 		return;
@@ -193,9 +199,11 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 		LPWSTR microphoneId = activeMicrophones[microphoneName];
 		IMMDevice* microphone = NULL;
 
+		// CoCreateInstance
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
 		HRESULT coCI = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
 
+		// Check response of CoCreateInstance
 		if (coCI != S_OK) {
 			std::cout << "Unable to get microphone volume. CoCreateInstance is not S_OK. Returned ";
 			switch (coCI) {
@@ -219,6 +227,7 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 			return 17.f;
 		}
 
+		// Null-Check
 		if (!deviceEnumerator) {
 			std::cout << "CoCreateInstance failed while getting microphone volume. DeviceEnumerator is null" << std::endl;
 			return 17.f;
@@ -260,8 +269,8 @@ int AudioDevices::GetMicrophoneVolume(std::string microphoneName) {
 /// </summary>
 void __declspec(naked) hook_changeSampleRate() {
 	__asm {
-		mov EAX, AudioDevices::output_SampleRate // Move user-provided sample rate into EAX
-		jmp Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck // Jump back to the original instruction set.
+		mov EAX, AudioDevices::output_SampleRate					// Move user-provided sample rate into EAX
+		jmp Offsets::ptr_sampleRateRequirementAudioOutput_JmpBck	// Jump back to the original instruction set.
 	}
 }
 
@@ -271,9 +280,10 @@ void __declspec(naked) hook_changeSampleRate() {
 void __declspec(naked) hook_sampleRate_FixDivZeroCrash() {
 	__asm {
 		// There is a div EBX that we are replacing, but EBX is always 1 (unless the sample rate is above 48kHz) so we just remove it to place this hook.
-		mov EBX, 0x1	// Move 1 into the EBX register. This prevents the divide by 0 error when using a sample rate above 48kHz.
-		shr esi, 0x10	// Replace the original code we overwrote.
-		jmp Offsets::ptr_sampleRateDivZeroCrash_JmpBck // Jump back to the original instruction set.
+
+		mov EBX, 0x1									// Move 1 into the EBX register. This prevents the divide by 0 crash when using a sample rate above 48kHz.
+		shr esi, 0x10									// Replace the original code we overwrote.
+		jmp Offsets::ptr_sampleRateDivZeroCrash_JmpBck	// Jump back to the original instruction set.
 	}
 }
 
