@@ -4,6 +4,7 @@
 #include "Offsets.hpp"
 #include <string>
 #include <map>
+#include <iostream>
 
 namespace ObjectUtil {
 	struct Object {
