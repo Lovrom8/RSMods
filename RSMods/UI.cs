@@ -2300,6 +2300,9 @@ namespace RSMods
 
         private void Save_DumpRSModsLogToFile(object sender, EventArgs e)
         {
+            if (!AllowSaving)
+                return;
+
             if (checkBox_ModsLog.Checked)
                 File.Create(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             else
