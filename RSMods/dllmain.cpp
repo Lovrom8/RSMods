@@ -349,6 +349,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				}
 			}
 
+			// Rewind song by X seconds mod.
+			else if (keyPressed == Settings::GetKeyBind("RewindKey") && Settings::ReturnSettingValue("AllowRewind") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, learnASongModes) && !MemHelpers::IsInStringArray(D3DHooks::currentMenu, lasPauseMenus)) {
+				// SongTimer is stored in seconds, while RewindBy is stored in milliseconds.
+				// We need milliseconds to send to Wwise, so change SongTimer to milliseconds, then subtract the Rewind value.
+				AkTimeMs seekTo = (AkTimeMs)((MemHelpers::SongTimer() * 1000) - Settings::GetModSetting("RewindBy")); 
+																													  
+				// RewindBy is greater than the amount of time we've been in the song.
+				// Reset seekTo to 0 to prevent seeking to a negative time.
+				if (seekTo < 0) {
+					std::cout << "(REWIND) Tried to seek to " << seekTo << "ms into the song. Resetting to 0." << std::endl;
+					seekTo = 0;
+				}
+
+				// Send event to Wwise to rewind the song.
+				// Or more accurately, move to the seek time since Wwise doesn't have a rewind function.
+				Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + MemHelpers::GetSongKey()).c_str(), 0x1234, seekTo, false);
+
+				// Tell Rocksmith to make all notes before the section we want the user to play to be greyed out.
+				// While this isn't absolutely necessary, it is best to have this run just in case.
+				// Our seek time needs to be stored as milliseconds when sending to Wwise, but we need to have it in seconds when setting the GreyNoteTimer.
+				MemHelpers::SetGreyNoteTimer(seekTo / 1000.f);
+
+				std::cout << "(REWIND) Seeked to " << seekTo << "ms." << std::endl;
+			}
+
 			// Auto Tuning via MIDI mod. 
 			// Checks if we are in a tuning menu, and the user tried to skip tuning.
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {

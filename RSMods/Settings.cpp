@@ -22,6 +22,7 @@ void Settings::Initialize()
 		{"ToggleExtendedRangeKey", "E"},
 		{"LoopStartKey", "Y"},
 		{"LoopEndKey", "U"},
+		{"RewindKey", "Z"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -82,7 +83,8 @@ void Settings::Initialize()
 		{"BypassTwoRTCMessageBox", "off"},
 		{"LinearRiffRepeater", "off"},
 		{"AltOutputSampleRate", "off"},
-		{"AllowLooping", "off"}
+		{"AllowLooping", "off"},
+		{"AllowRewind", "off"}
 	};
 
 	customSettings = {
@@ -99,6 +101,8 @@ void Settings::Initialize()
 		{"CustomStringColors", 0},
 		{"AlternativeOutputSampleRate", 48000},
 		{"LoopingLeadUp", 0},
+		{"RewindBy", 0},
+
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
 		{"GuitarSpeakEnter", 0},
@@ -174,6 +178,7 @@ void Settings::ReadKeyBinds() {
 			{ "ToggleExtendedRangeKey", reader.GetValue("Keybinds", "ToggleExtendedRangeKey", "E")},
 			{ "LoopStartKey", reader.GetValue("Keybinds", "LoopStartKey", "Y")},
 			{ "LoopEndKey", reader.GetValue("Keybinds", "LoopEndKey", "U")},
+			{ "RewindKey", reader.GetValue("Keybinds", "RewindKey", "Z")},
 
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
@@ -211,6 +216,7 @@ void Settings::ReadModSettings() {
 		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
 		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
 		{"LoopingLeadUp", reader.GetLongValue("Mod Settings", "LoopingLeadUp", 0)},
+		{"RewindBy", reader.GetLongValue("Mod Settings", "RewindBy", 0)},
 
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -281,6 +287,7 @@ void Settings::ReadModSettings() {
 	modSettings["LinearRiffRepeater"] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
 	modSettings["AltOutputSampleRate"] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 	modSettings["AllowLooping"] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
+	modSettings["AllowRewind"] = reader.GetValue("Toggle Switches", "AllowRewind", "off");
 }
 
 /// <summary>
