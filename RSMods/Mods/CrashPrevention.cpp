@@ -9,5 +9,6 @@ namespace CrashPrevention {
 	/// </summary>
 	void PreventOculusCrash() {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_OculusCrashJmp, "\xE9\x19\x02\x00\x00\x90", 6);
+		std::cout << "(CRASH PREVENTION) Prevented Oculus Crash" << std::endl;
 	}
 }
