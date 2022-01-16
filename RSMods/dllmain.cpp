@@ -350,7 +350,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			}
 
 			// Rewind song by X seconds mod.
-			else if (keyPressed == Settings::GetKeyBind("RewindKey") && Settings::ReturnSettingValue("AllowRewind") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, learnASongModes) && !MemHelpers::IsInStringArray(D3DHooks::currentMenu, lasPauseMenus)) {
+			else if (keyPressed == Settings::GetKeyBind("RewindKey") && Settings::ReturnSettingValue("AllowRewind") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, learnASongPlaying)) {
 				// SongTimer is stored in seconds, while RewindBy is stored in milliseconds.
 				// We need milliseconds to send to Wwise, so change SongTimer to milliseconds, then subtract the Rewind value.
 				AkTimeMs seekTo = (AkTimeMs)((MemHelpers::SongTimer() * 1000) - Settings::GetModSetting("RewindBy")); 
