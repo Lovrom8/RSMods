@@ -27,7 +27,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash,
 
 
                              // String Colors
@@ -138,6 +138,8 @@ namespace RSMods
             UseAlternativeOutputSampleRateIdentifier    = "AltOutputSampleRate = ",
             AllowLoopingIdentifier                      = "AllowLooping = ",
             AllowRewindIdentifier                       = "AllowRewind = ",
+            FixOculusCrashIdentifier                    = "FixOculusCrash = ",
+
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -437,6 +439,8 @@ namespace RSMods
                     return FillSettingVariable(AllowLoopingIdentifier, SettingType.ON_OFF, currentLine, out AllowLooping);
                 if (IdentifierIsFound(currentLine, AllowRewindIdentifier, identifierToGrab))
                     return FillSettingVariable(AllowRewindIdentifier, SettingType.ON_OFF, currentLine, out AllowRewind);
+                if (IdentifierIsFound(currentLine, FixOculusCrashIdentifier, identifierToGrab))
+                    return FillSettingVariable(FixOculusCrashIdentifier, SettingType.ON_OFF, currentLine, out FixOculusCrash);
 
                 #endregion
                 #region String Colors
@@ -603,7 +607,7 @@ namespace RSMods
                 
                 #endregion
             }
-            return ""; // Yeah, we don't know what you're looking for...
+            return string.Empty; // Yeah, we don't know what you're looking for...
         }
     }
 }

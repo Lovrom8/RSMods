@@ -637,6 +637,7 @@ namespace RSMods
             checkBox_AllowRewind.Checked                    = ReadSettings.ProcessSettings(ReadSettings.AllowRewindIdentifier) == "on";
             groupBox_RewindBy.Visible                       = checkBox_AllowRewind.Checked;
             nUpDown_RewindBy.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
+            checkBox_FixOculusCrash.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixOculusCrashIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2399,6 +2400,8 @@ namespace RSMods
         }
 
         private void Save_RewindBy(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RewindByIdentifier, ((int)(nUpDown_RewindBy.Value * 1000)).ToString());
+
+        private void Save_FixOculusCrash(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixOculusCrashIdentifier, checkBox_FixOculusCrash.Checked.ToString().ToLower());
 
         #endregion
         #region ToolTips

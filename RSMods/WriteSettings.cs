@@ -129,6 +129,7 @@ namespace RSMods
                     { ReadSettings.UseAlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.UseAlternativeOutputSampleRateIdentifier, "off") }, // Forces Rocksmith to look for audio output devices set to a different frequency (not 48kHz).
                     { ReadSettings.AllowLoopingIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowLoopingIdentifier, "off") }, // Allows the user to loop smaller sections of notes than RR allows.
                     { ReadSettings.AllowRewindIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowRewindIdentifier, "off") }, // Allows the user to press a key to go back a specified number of milliseconds in the song.
+                    { ReadSettings.FixOculusCrashIdentifier, CreateDefaultOnOldINI(ReadSettings.FixOculusCrashIdentifier, "off") }, // When the user has an Oculus / Meta headset connected to their computer, Rocksmith might crash. Turning this on might fix that.
                 }
             );
             saveSettingsOrDefaults.Add(

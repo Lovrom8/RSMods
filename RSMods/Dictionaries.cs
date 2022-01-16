@@ -44,6 +44,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_UseAltSampleRate_Output, "Tells Rocksmith to look for headphones / speakers using a sample rate that isn't 48kHz.\nThis can be used to play with bluetooth headphones (there will be latency).\nSupport for this mod is \"as-is\" as we cannot help with every headset / speaker configuration.\nChanges made to this setting won't take effect until you restart Rocksmith.");
             TooltipDictionary.Add(checkBox_EnableLooping, "Allows you to loop sections of songs.\nThis differs from Riff Repeater as we let you pick sections by the amount of time.\nSet two keybindings in the \"Keybindings\" tab.\nOne specifies when the loop should start, and the other when the loop should end.\nPress the key to place the loop, and press Shift + key to remove the loop.");
             TooltipDictionary.Add(checkBox_AllowRewind, "Allows you to go back a set number of seconds in a song.\nThis can be useful if you mess up a section, and want to retry it.");
+            TooltipDictionary.Add(checkBox_FixOculusCrash, "When you try to open Rocksmith with a Oculus / Meta headset connected to your PC, it typically crashes.\nThis mod tries to avoid the crash by preventing the bad code from running.\nThis may fix other audio-related crashes when Rocksmith opens.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");

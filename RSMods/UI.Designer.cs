@@ -89,6 +89,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_RewindKey = new System.Windows.Forms.Label();
             this.label_LoopEndKey = new System.Windows.Forms.Label();
             this.label_LoopStartKey = new System.Windows.Forms.Label();
             this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
@@ -507,7 +508,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_RewindKey = new System.Windows.Forms.Label();
+            this.checkBox_FixOculusCrash = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1030,6 +1031,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixOculusCrash);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowRewind);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_EnableLooping);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_UseAltSampleRate_Output);
@@ -1066,7 +1068,7 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 400);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 424);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -1417,6 +1419,15 @@
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_RewindKey
+            // 
+            this.label_RewindKey.AutoSize = true;
+            this.label_RewindKey.Location = new System.Drawing.Point(464, 197);
+            this.label_RewindKey.Name = "label_RewindKey";
+            this.label_RewindKey.Size = new System.Drawing.Size(77, 13);
+            this.label_RewindKey.TabIndex = 59;
+            this.label_RewindKey.Text = "Rewind Song: ";
             // 
             // label_LoopEndKey
             // 
@@ -6396,14 +6407,17 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_RewindKey
+            // checkBox_FixOculusCrash
             // 
-            this.label_RewindKey.AutoSize = true;
-            this.label_RewindKey.Location = new System.Drawing.Point(464, 197);
-            this.label_RewindKey.Name = "label_RewindKey";
-            this.label_RewindKey.Size = new System.Drawing.Size(77, 13);
-            this.label_RewindKey.TabIndex = 59;
-            this.label_RewindKey.Text = "Rewind Song: ";
+            this.checkBox_FixOculusCrash.AutoSize = true;
+            this.checkBox_FixOculusCrash.Location = new System.Drawing.Point(11, 400);
+            this.checkBox_FixOculusCrash.Name = "checkBox_FixOculusCrash";
+            this.checkBox_FixOculusCrash.Size = new System.Drawing.Size(105, 17);
+            this.checkBox_FixOculusCrash.TabIndex = 77;
+            this.checkBox_FixOculusCrash.Text = "Fix Oculus Crash";
+            this.checkBox_FixOculusCrash.UseVisualStyleBackColor = true;
+            this.checkBox_FixOculusCrash.CheckedChanged += new System.EventHandler(this.Save_FixOculusCrash);
+            this.checkBox_FixOculusCrash.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
@@ -7057,6 +7071,7 @@
         private System.Windows.Forms.GroupBox groupBox_RewindBy;
         private System.Windows.Forms.NumericUpDown nUpDown_RewindBy;
         private System.Windows.Forms.Label label_RewindKey;
+        private System.Windows.Forms.CheckBox checkBox_FixOculusCrash;
     }
 }
 
