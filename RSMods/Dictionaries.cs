@@ -490,12 +490,27 @@ namespace RSMods
         public static List<string> refreshSonglists()
         {
             songlists.Clear();
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier));
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier));
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier));
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier));
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
-            songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
+
+            // Is this the users first time opening the GUI?
+            if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == string.Empty)
+            {
+                songlists.Add("Define Song List 1 Here");
+                songlists.Add("Define Song List 2 Here");
+                songlists.Add("Define Song List 3 Here");
+                songlists.Add("Define Song List 4 Here");
+                songlists.Add("Define Song List 5 Here");
+                songlists.Add("Define Song List 6 Here");
+            }
+            else
+            {
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier));
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier));
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier));
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier));
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
+                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
+            }
+           
             return songlists;
         }
 
