@@ -260,6 +260,7 @@ namespace RSMods
             label_ToggleExtendedRangeKey.Text = "Toggle Extended Range: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier));
             label_LoopStartKey.Text = "Start Loop: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopStartKeyIdentifier));
             label_LoopEndKey.Text = "End Loop: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopEndKeyIdentifier));
+            label_RewindKey.Text = "Rewind Song: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RewindKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()
@@ -633,6 +634,9 @@ namespace RSMods
             checkBox_ModsLog.Checked                        = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
             checkBox_TurnOffAllMods.Checked                 = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
             checkBox_ForceEnumeration.Checked               = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
+            checkBox_AllowRewind.Checked                    = ReadSettings.ProcessSettings(ReadSettings.AllowRewindIdentifier) == "on";
+            groupBox_RewindBy.Visible                       = checkBox_AllowRewind.Checked;
+            nUpDown_RewindBy.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2387,6 +2391,14 @@ namespace RSMods
         }
 
         private void Save_LoopingLeadUp(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.LoopingLeadUpIdentifier, ((int)(nUpDown_LoopingLeadUp.Value * 1000)).ToString());
+
+        private void Save_AllowRewind(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.AllowRewindIdentifier, checkBox_AllowRewind.Checked.ToString().ToLower());
+            groupBox_RewindBy.Visible = checkBox_AllowRewind.Checked;
+        }
+
+        private void Save_RewindBy(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RewindByIdentifier, ((int)(nUpDown_RewindBy.Value * 1000)).ToString());
 
         #endregion
         #region ToolTips
