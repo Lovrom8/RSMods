@@ -124,6 +124,9 @@ namespace Offsets {
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHook;
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck;
 
+	// Fix Oculus Crash
+	extern uintptr_t ptr_OculusCrashJmp;
+
 	// Audio In Background
 	extern uintptr_t ptr_IsWindowInFocus;
 	extern uintptr_t ptr_WindowNotInFocusValue;

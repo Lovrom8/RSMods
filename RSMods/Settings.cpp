@@ -84,7 +84,8 @@ void Settings::Initialize()
 		{"LinearRiffRepeater", "off"},
 		{"AltOutputSampleRate", "off"},
 		{"AllowLooping", "off"},
-		{"AllowRewind", "off"}
+		{"AllowRewind", "off"},
+		{"FixOculusCrash", "off"}
 	};
 
 	customSettings = {
@@ -288,6 +289,7 @@ void Settings::ReadModSettings() {
 	modSettings["AltOutputSampleRate"] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 	modSettings["AllowLooping"] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
 	modSettings["AllowRewind"] = reader.GetValue("Toggle Switches", "AllowRewind", "off");
+	modSettings["FixOculusCrash"] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 }
 
 /// <summary>

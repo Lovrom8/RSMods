@@ -1150,6 +1150,10 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
+
+	if (Settings::ReturnSettingValue("FixOculusCrash") == "on")
+		CrashPrevention::PreventOculusCrash();
+
 #ifdef _FIX_STORE
 	MemUtil::PatchAdr((void*)Offsets::steamApiUri, "%s://localhost:5154/api/requests/%d,%s,%s", 42); // Proxy available here: https://github.com/ffio1/SteamAPIProxy
 #endif

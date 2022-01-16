@@ -141,6 +141,8 @@ namespace Offsets {
 	uintptr_t ptr_Wwise_Log_SeekOnEventHook = 0x01f5b4bb;
 	uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck = ptr_Wwise_Log_SeekOnEventHook + 6;
 
+	// Fix Oculus Crash
+	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
 
 	// Audio In Background
 	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.
