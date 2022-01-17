@@ -6,6 +6,7 @@
 #include "../MemUtil.hpp"
 #include "../Offsets.hpp"
 
-namespace CrashPrevention {
+namespace BugPrevention {
 	void PreventOculusCrash();
+	void PreventToneBug();
 }

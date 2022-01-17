@@ -246,7 +246,7 @@
     <ClCompile Include="Wwise\Logging.cpp">
       <Filter>Wwise</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\CrashPrevention.cpp">
+    <ClCompile Include="Mods\BugPrevention.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
   </ItemGroup>
@@ -494,7 +494,7 @@
     <ClInclude Include="Wwise\PluginRegistration.hpp">
       <Filter>Wwise\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\CrashPrevention.hpp">
+    <ClInclude Include="Mods\BugPrevention.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>

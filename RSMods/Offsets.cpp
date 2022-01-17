@@ -145,8 +145,9 @@ namespace Offsets {
 	uintptr_t ptr_Wwise_Log_CloneBusEffect = 0x01f5bd7c;
 	uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck = ptr_Wwise_Log_CloneBusEffect + 6;
 
-	// Fix Oculus Crash
+	// Bug Prevention
 	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
+	uintptr_t ptr_ToneBugJmp = 0x017CB373;
 
 	// Audio In Background
 	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.
