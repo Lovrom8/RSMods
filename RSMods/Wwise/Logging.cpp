@@ -141,5 +141,84 @@ namespace Wwise::Logging {
 	void Setup_log_SeekOnEvent() {
 		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_SeekOnEventHook, hook_log_SeekOnEvent, 6);
 	}
+
+	/// <summary>
+	/// Console print out for Wwise::SoundEngine::SetBusEffect()
+	/// </summary>
+	/// <param name="in_audioNodeID"> - Bus Short ID.</param>
+	/// <param name="in_uFXIndex"> - Effect slot index (0-3)</param>
+	/// <param name="in_shareSetID"> - ShareSets ID; pass AK_INVALID_UNIQUE_ID (0) to clear the Effect slot</param>
+	/// <returns></returns>
+	void __stdcall log_SetBusEffect(AkUniqueID in_audioNodeID, AkUInt32 in_uFXIndex, AkUniqueID in_shareSetID) {
+		std::cout << "(Wwise) SetBusEffect: On audio bus: 0x" << std::hex << in_audioNodeID << " in slot " << std::dec << in_uFXIndex << " set the bus effect to 0x" << std::hex << in_shareSetID << std::dec << std::endl;
+	}
+
+	/// <summary>
+	/// x86 Assembly hook to allow us to log Wwise::SoundEngine::SetBusEffect()
+	/// </summary>
+	void __declspec(naked) hook_log_SetBusEffect() {
+		__asm {
+
+			push [EBP+0x10] // Effect ShareSet
+			push [EBP+0xC]	// Effect Slot
+			push [EBP+0x8]	// Bus Short ID
+
+			call log_SetBusEffect
+
+			mov EAX, 0x27 // Assembly we removed to place this hook
+			jmp Offsets::ptr_Wwise_Log_SetBusEffectJmpBck; // Jump back to the original code
+		}
+	}
+
+	/// <summary>
+	/// Place x86 Assembly hook for logging Wwise::SoundEngine::SetBusEffect()
+	/// </summary>
+	void Setup_log_SetBusEffect() {
+		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_SetBusEffect, hook_log_SetBusEffect, 5);
+	}
+
+	/// <summary>
+	/// Console print out for Wwise::SoundEngine::CloneBusEffect()
+	/// </summary>
+	/// <param name="toBus"> - Bus ID to send the effect to</param>
+	/// <param name="in_uFXIndex"> - Slot to send the effect to</param>
+	/// <param name="fromBus"> - Bus ID to get the effect from</param>
+	/// <param name="effectName"> - Name of the effect</param>
+	/// <returns></returns>
+	void __stdcall log_CloneBusEffect(AkUniqueID toBus, AkUInt32 in_uFXIndex, AkUniqueID fromBus, char* effectName) {
+		char* name = effectName;
+
+		if (effectName[0] < 0x41 || effectName[0] > 0x5A || effectName[1] < 0x61 || effectName[1] > 0x7A) {
+			name = *(char**)effectName;
+		}
+
+		std::cout << "(Wwise) CloneBusEffect: From bus 0x" << std::hex << fromBus << " in slot " << std::dec << in_uFXIndex << " to bus 0x" << std::hex << toBus << std::dec << " with name: " << name << std::endl;
+	}
+
+	/// <summary>
+	/// x86 Assembly hook to allow us to log Wwise::SoundEngine::CloneBusEffect()
+	/// </summary>
+	void __declspec(naked) hook_log_CloneBusEffect() {
+		__asm {
+			push EBX	// Effect Name (Pointer to a pointer)
+			push [EBP+0x10] // Bus to copy effect from
+			push [EBP+0xC]  // Slot to place effect
+			push [EBP+0x8]  // Bus to copy effect to
+
+			call log_CloneBusEffect
+
+			mov EAX, dword ptr ss:[EBP+0x10] // Assembly we removed to place this hook
+			mov ECX, dword ptr ss:[EBP+0xC]  // Assembly we removed to place this hook
+			jmp Offsets::ptr_Wwise_Log_CloneBusEffectJmpBck // Jump back to the original code
+		}
+	}
+
+
+	/// <summary>
+	/// Place x86 Assembly hook for logging Wwise::SoundEngine::CloneBusEffect()
+	/// </summary>
+	void Setup_log_CloneBusEffect() {
+		MemUtil::PlaceHook((void*)Offsets::ptr_Wwise_Log_CloneBusEffect, hook_log_CloneBusEffect, 6);
+	}
 }
 #endif

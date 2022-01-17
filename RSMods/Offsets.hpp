@@ -123,6 +123,10 @@ namespace Offsets {
 	extern uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck;
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHook;
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck;
+	extern uintptr_t ptr_Wwise_Log_SetBusEffect;
+	extern uintptr_t ptr_Wwise_Log_SetBusEffectJmpBck;
+	extern uintptr_t ptr_Wwise_Log_CloneBusEffect;
+	extern uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck;
 
 	// Fix Oculus Crash
 	extern uintptr_t ptr_OculusCrashJmp;

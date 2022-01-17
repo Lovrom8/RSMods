@@ -140,6 +140,10 @@ namespace Offsets {
 	uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck = ptr_Wwise_Log_SetRTPCValueHook + 5;
 	uintptr_t ptr_Wwise_Log_SeekOnEventHook = 0x01f5b4bb;
 	uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck = ptr_Wwise_Log_SeekOnEventHook + 6;
+	uintptr_t ptr_Wwise_Log_SetBusEffect = 0x01f58200;
+	uintptr_t ptr_Wwise_Log_SetBusEffectJmpBck = ptr_Wwise_Log_SetBusEffect + 5;
+	uintptr_t ptr_Wwise_Log_CloneBusEffect = 0x01f5bd7c;
+	uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck = ptr_Wwise_Log_CloneBusEffect + 6;
 
 	// Fix Oculus Crash
 	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
