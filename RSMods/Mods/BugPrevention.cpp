@@ -17,8 +17,8 @@ namespace BugPrevention {
 	/// This mod prevents that by changing a conditional jump to a jump that always happens.
 	/// So when the user encounters a broken tone, all they need to do is change the tone and the tones should start working again.
 	/// </summary>
-	void PreventToneBug() {
-		MemUtil::PatchAdr((LPVOID)Offsets::ptr_ToneBugJmp, "\xEB", 1);
+	void PreventStuckTone() {
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_StuckToneJmp, "\xEB", 1);
 		std::cout << "(BUG PREVENTION) Prevented Tone Bug" << std::endl;
 	}
 }

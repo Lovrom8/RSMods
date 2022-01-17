@@ -8,5 +8,5 @@
 
 namespace BugPrevention {
 	void PreventOculusCrash();
-	void PreventToneBug();
+	void PreventStuckTone();
 }

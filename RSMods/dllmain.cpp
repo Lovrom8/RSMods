@@ -1150,7 +1150,7 @@ unsigned WINAPI MainThread() {
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
-	BugPrevention::PreventToneBug();
+	BugPrevention::PreventStuckTone();
 
 	if (Settings::ReturnSettingValue("FixOculusCrash") == "on")
 		BugPrevention::PreventOculusCrash();
