@@ -6,6 +6,15 @@ bool debug = true; // You ARE on a debug build.
 bool debug = false; // You are NOT on a debug build.
 #endif
 
+#ifdef _WWISE_LOGS
+bool wwiseLogging = true; // You ARE on a Wwise logging build.
+#else
+bool wwiseLogging = false; // You are NOT on a Wwise logging build.
+#endif
+
+#ifndef _RSMODS_VERSION
+#define _RSMODS_VERSION "RSMODS Version: 1.2.6.5 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#endif
 
 /// <summary>
 /// Handle Force Enumeration
@@ -1133,6 +1142,8 @@ unsigned WINAPI MainThread() {
 		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
 		RSModsFileOutput.close();
 	}
+
+	std::cout << _RSMODS_VERSION << std::endl; // Put version info in the output log.
 
 	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
 	bool skipERSleep = false; // If using RR past 100%, remove the 1.5s sleep on ER mode, to stop flickering colors.
