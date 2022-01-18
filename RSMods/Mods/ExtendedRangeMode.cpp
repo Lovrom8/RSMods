@@ -97,11 +97,13 @@ bool ERMode::ResetAllStrings() {
 void ERMode::ResetString(int strIndex) {
 	std::vector<uintptr_t> stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
+	// Get the original values for a string.
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
 	//InitStrings(stringsAmb, Ambient);
 	InitStrings(stringsEnabled, Enabled);
 
+	// Set the origial values.
 	*(Color*)stringsGlow[strIndex] = oldGlow[strIndex];
 	*(Color*)stringsDisabled[strIndex] = oldDisabled[strIndex];
 	//*(Color*)stringsAmb[strIndex] = oldAmb[strIndex];
@@ -118,6 +120,7 @@ std::vector<std::vector<Color>> defaultColors;
 void ERMode::Toggle7StringMode() {
 	std::vector<uintptr_t> stringsTest, stringsGlow, stringsDisabled, stringsAmb, stringsEnabled, stringsPegInTune, stringsPegNotInTune, pegsTuning, stringsText, stringsPart, stringsBodyNorm, stringsBodyAcc, stringsBodyPrev;
 
+	// Get the original values for the strings.
 	InitStrings(stringsGlow, Glow);
 	InitStrings(stringsDisabled, Disabled);
 	InitStrings(stringsAmb, Ambient);
@@ -217,6 +220,7 @@ void ERMode::Toggle7StringMode() {
 			saveDefaults = false;
 		}
 
+		// Restore previously saved defaults.
 		if (restoreDefaults) {
 			for (int idx = 0; idx < 17; idx++) {
 				InitStrings(stringsTest, (idx * 0x18 + 0x350));
@@ -283,12 +287,14 @@ void ERMode::DoRainbow() {
 	std::vector<uintptr_t> stringsDisabled;
 	std::vector<Color> oldEnabledColors, oldHigh, oldDisabledColors;
 
+	// Get original string colors.
 	for (int i = 0; i < 6; i++) {
 		stringsEnabled.push_back(GetStringColor(i, Enabled));
 		stringsHigh.push_back(GetStringColor(i, Glow));
 		stringsDisabled.push_back(GetStringColor(i, Disabled));
 	}
 
+	// Start with Red.
 	Color c;
 	c.r = 1.f;
 	c.g = 0.f;
@@ -299,9 +305,15 @@ void ERMode::DoRainbow() {
 	float stringOffset = 20.f;
 	bool didWeUseRainbowStrings = false; // If we don't use this, then the strings won't reset to default colors unless you end with rainbow strings.
 	while (RainbowEnabled || RainbowNotesEnabled) {
+		// Increment Hue by the speed we are trying to mimick.
 		h += speed;
+
+		// Hue can only be a value from 0-360, so reset it to 0 if it's over 360.
 		if (h >= 360.f) { h = 0.f; }
+
+		// For each string
 		for (int i = 0; i < 6; i++) {
+			// Save the previous colors
 			if (RainbowEnabled) {
 				oldEnabledColors.push_back(*(Color*)stringsEnabled[i]);
 				oldHigh.push_back(*(Color*)stringsHigh[i]);
@@ -312,19 +324,24 @@ void ERMode::DoRainbow() {
 			int newH = h + (stringOffset * i);
 			c.setH(newH);
 
+			// Hue only goes from 0-360.
 			if (newH > 360)
 				newH -= 360;
 
+			// Since we only make textures for 180 possiblities, we can narrow out results down to 180 different values (0-179).
 			if (newH > 4)
 				customNoteColorH = (newH / 2) - 1;
 			else
 				customNoteColorH = 1;
+
+			// Set the new rainbow colors.
 			if (RainbowEnabled) {
 				*(Color*)stringsEnabled[i] = c;
 				*(Color*)stringsHigh[i] = c;
 				*(Color*)stringsDisabled[i] = c;
 			}
 
+			// Reset back to the original colors.
 			if (!RainbowEnabled && didWeUseRainbowStrings) {
 				if (oldEnabledColors.size() == 0)
 					return;

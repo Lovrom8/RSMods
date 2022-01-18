@@ -11,27 +11,27 @@ namespace Wwise::SoundEngine {
 	AKRESULT ClearBanks(void);
 	AKRESULT ClearPreparedEvents(void);
 	namespace DynamicDialogue {
-		AkUniqueID ResolveDialogueEvent(AkUniqueID in_eventID, AkArgumentValueID* in_aArgumentValues, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);
-		AkUniqueID ResolveDialogueEvent(const char* in_pszEventName, const char** in_aArgumentValueNames, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);
+		AkUniqueID ResolveDialogueEvent(AkUniqueID in_eventID, AkArgumentValueID* in_aArgumentValues, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence = AK_INVALID_PLAYING_ID);
+		AkUniqueID ResolveDialogueEvent(const char* in_pszEventName, const char** in_aArgumentValueNames, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence = AK_INVALID_PLAYING_ID);
 	}
 	namespace DynamicSequence {
 		AKRESULT Break(AkPlayingID in_playingID);
 		AKRESULT Close(AkPlayingID in_playingID);
 		Playlist* LockPlaylist(AkPlayingID in_playingID);
-		AkPlayingID Open(AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, DynamicSequenceType in_eDynamicSequenceType);
-		AKRESULT Pause(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
-		AKRESULT Play(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
-		AKRESULT Resume(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
-		AKRESULT Stop(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
+		AkPlayingID Open(AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags = NULL, AkCallbackFunc in_pfnCallback = NULL, void* in_pCookie = NULL, DynamicSequenceType in_eDynamicSequenceType = DynamicSequenceType_SampleAccurate);
+		AKRESULT Pause(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear);
+		AKRESULT Play(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear);
+		AKRESULT Resume(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear);
+		AKRESULT Stop(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear);
 		AKRESULT UnlockPlaylist(AkPlayingID in_playingID);
 	}
-	AKRESULT ExecuteActionOnEvent(AkUniqueID in_eventID, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
-	AKRESULT ExecuteActionOnEvent(const char* in_pszEventName, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve, AkPlayingID in_PlayingID);
+	AKRESULT ExecuteActionOnEvent(AkUniqueID in_eventID, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID = AK_INVALID_GAME_OBJECT, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear, AkPlayingID in_PlayingID = AK_INVALID_PLAYING_ID);
+	AKRESULT ExecuteActionOnEvent(const char* in_pszEventName, AkActionOnEventType in_ActionType, AkGameObjectID in_gameObjectID = AK_INVALID_GAME_OBJECT, AkTimeMs in_uTransitionDuration = NULL, AkCurveInterpolation in_eFadeCurve = AkCurveInterpolation_Linear, AkPlayingID in_PlayingID = AK_INVALID_PLAYING_ID);
 	void GetDefaultInitSettings(AkInitSettings* out_settings);
 	void GetDefaultPlatformInitSettings(AkPlatformInitSettings* out_platformSettings);
 	AkUInt32 GetIDFromString(const char* in_pszString);
-	AKRESULT GetPanningRule(AkPanningRule* out_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
-	AKRESULT GetSourcePlayPosition(AkPlayingID in_PlayingID, AkTimeMs* out_puPosition, bool in_bExtrapolate);
+	AKRESULT GetPanningRule(AkPanningRule* out_ePanningRule, AkAudioOutputType in_eSinkType = AkOutput_Main, AkUInt32 in_iOutputID = NULL);
+	AKRESULT GetSourcePlayPosition(AkPlayingID in_PlayingID, AkTimeMs* out_puPosition, bool in_bExtrapolate = true);
 	AkUInt32 GetSpeakerConfiguration(void);
 	AKRESULT Init(AkInitSettings* in_pSettings, AkPlatformInitSettings* in_pPlatformSettings);
 	bool IsInitialized(void);
@@ -71,7 +71,7 @@ namespace Wwise::SoundEngine {
 		bool GetIsGameObjectActive(AkGameObjectID in_GameObjId);
 		AKRESULT GetListenerPosition(AkUInt32 in_uIndex, AkListenerPosition* out_rPosition);
 		AKRESULT GetMaxRadius(AkRadiusList* io_RadiusList);
-		AKRESULT GetMaxRadius(AkGameObjectID in_GameObjId);
+		AkReal32 GetMaxRadius(AkGameObjectID in_GameObjId);
 		AKRESULT GetObjectObstructionAndOcclusion(AkGameObjectID in_ObjectID, AkUInt32 in_uListener, AkReal32* out_rfObstructionLevel, AkReal32* out_rfOcclusionLevel);
 		AKRESULT GetPlayingIDsFromGameObject(AkGameObjectID in_GameObjId, AkUInt32* io_ruNumIds, AkPlayingID* out_aPlayingIDs);
 		AKRESULT GetPosition(AkGameObjectID in_GameObjectID, AkSoundPosition* out_rPosition);
@@ -115,7 +115,7 @@ namespace Wwise::SoundEngine {
 	AKRESULT SetPanningRule(AkPanningRule in_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
 	AKRESULT SetPosition(AkGameObjectID in_GameObjectID, const AkSoundPosition* in_Position);
 	AKRESULT SetPositionInternal(AkGameObjectID in_GameObjectID, AkSoundPosition* in_soundPosition);
-	AKRESULT SetRTPCValue(AkRtpcID in_rtpcID, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCruve, bool in_bBypassInternalValueInterpolation);
+	AKRESULT SetRTPCValue(AkRtpcID in_rtpcID, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCruve);
 	AKRESULT SetRTPCValue(const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
 	AKRESULT SetState(AkStateGroupID in_stateGroup, AkStateID in_state);
 	AKRESULT SetState(const char* in_pszStateGroup, const char* in_pszState);
@@ -127,7 +127,7 @@ namespace Wwise::SoundEngine {
 	AKRESULT StopOutputCapture(void);
 	AKRESULT StopPlayingID(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 	AKRESULT StopSourcePlugin(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
-	AKRESULT Term(void);
+	void Term(void);
 	AKRESULT UnloadBank(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);
 	AKRESULT UnloadBank(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 	AKRESULT UnloadBank(const char* in_pszString, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);
@@ -207,7 +207,7 @@ typedef AkGameObjectID(__cdecl* tQuery_GetGameObjectFromPlayingID)(AkPlayingID i
 typedef bool(__cdecl* tQuery_GetIsGameObjectActive)(AkGameObjectID in_GameObjId);
 typedef AKRESULT(__cdecl* tQuery_GetListenerPosition)(AkUInt32 in_uIndex, AkListenerPosition* out_rPosition);
 typedef AKRESULT(__cdecl* tQuery_GetMaxRadius_RadiusList)(AkRadiusList* io_RadiusList);
-typedef AKRESULT(__cdecl* tQuery_GetMaxRadius_GameObject)(AkGameObjectID in_GameObjId);
+typedef AkReal32(__cdecl* tQuery_GetMaxRadius_GameObject)(AkGameObjectID in_GameObjId);
 typedef AKRESULT(__cdecl* tQuery_GetObjectObstructionAndOcclusion)(AkGameObjectID in_ObjectID, AkUInt32 in_uListener, AkReal32* out_rfObstructionLevel, AkReal32* out_rfOcclusionLevel);
 typedef AKRESULT(__cdecl* tQuery_GetPlayingIDsFromGameObject)(AkGameObjectID in_GameObjId, AkUInt32* io_ruNumIds, AkPlayingID* out_aPlayingIDs);
 typedef AKRESULT(__cdecl* tQuery_GetPosition)(AkGameObjectID in_GameObjectID, AkSoundPosition* out_rPosition);
@@ -252,7 +252,7 @@ typedef AKRESULT(__cdecl* tSetObjectObstructionAndOcclusion)(AkGameObjectID in_O
 typedef AKRESULT(__cdecl* tSetPanningRule)(AkPanningRule in_ePanningRule, AkAudioOutputType in_eSinkType, AkUInt32 in_iOutputID);
 typedef AKRESULT(__cdecl* tSetPosition)(AkGameObjectID in_GameObjectID, const AkSoundPosition* in_Position);
 typedef AKRESULT(__cdecl* tSetPositionInternal)(AkGameObjectID in_GameObjectID, AkSoundPosition* in_soundPosition);
-typedef AKRESULT(__cdecl* tSetRTPCValue_RTPCID)(AkRtpcID in_rtpcID, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCruve, bool in_bBypassInternalValueInterpolation);
+typedef AKRESULT(__cdecl* tSetRTPCValue_RTPCID)(AkRtpcID in_rtpcID, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCruve);
 typedef AKRESULT(__cdecl* tSetRTPCValue_Char) (const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tSetState_StateGroupID)(AkStateGroupID in_stateGroup, AkStateID in_state);
 typedef AKRESULT(__cdecl* tSetState_Char)(const char* in_pszStateGroup, const char* in_pszState);
@@ -264,7 +264,7 @@ typedef void(__cdecl* tStopAll)(AkGameObjectID in_gameObjectID);
 typedef AKRESULT(__cdecl* tStopOutputCapture)(void);
 typedef AKRESULT(__cdecl* tStopPlayingID)(AkPlayingID in_playingID, AkTimeMs in_uTransitionDuration, AkCurveInterpolation in_eFadeCurve);
 typedef AKRESULT(__cdecl* tStopSourcePlugin)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
-typedef AKRESULT(__cdecl* tTerm)(void);
+typedef void(__cdecl* tTerm)(void);
 typedef AKRESULT(__cdecl* tUnloadBank_BankID_MemPoolID)(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);
 typedef AKRESULT(__cdecl* tUnloadBank_BankID_Callback)(AkBankID in_bankID, const void* in_pInMemoryBankPtr, AkBankCallbackFunc in_pfnBankCallback, void* in_pCookie);
 typedef AKRESULT(__cdecl* tUnloadBank_Char_MemPoolID)(const char* in_pszString, const void* in_pInMemoryBankPtr, AkMemPoolId* out_pMemPoolId);

@@ -18,5 +18,11 @@ namespace Wwise::Logging {
 
 	void hook_log_SeekOnEvent();
 	void Setup_log_SeekOnEvent();
+
+	void hook_log_SetBusEffect();
+	void Setup_log_SetBusEffect();
+
+	void hook_log_CloneBusEffect();
+	void Setup_log_CloneBusEffect();
 }
 #endif

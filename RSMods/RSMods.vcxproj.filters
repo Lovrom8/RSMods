@@ -153,9 +153,6 @@
     <ClCompile Include="ObjectUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WwiseHijack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mods\DisableControllers.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -248,6 +245,9 @@
     </ClCompile>
     <ClCompile Include="Wwise\Logging.cpp">
       <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\BugPrevention.cpp">
+      <Filter>Mods</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="Wwise\PluginRegistration.hpp">
       <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\BugPrevention.hpp">
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

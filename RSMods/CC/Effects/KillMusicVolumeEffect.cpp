@@ -1,6 +1,12 @@
 #include "KillMusicVolumeEffect.hpp"
 
 namespace CrowdControl::Effects {
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult KillMusicVolumeEffect::Test(Request request)
 	{
 		std::cout << "KillMusicVolumeEffect::Test()" << std::endl;
@@ -39,9 +45,11 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void KillMusicVolumeEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);

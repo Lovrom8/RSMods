@@ -3,6 +3,12 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult ChangeToToneSlot::Test(Request request)
 	{
 		std::cout << "ChangeToToneSlot::Test()" << std::endl;
@@ -37,5 +43,10 @@ namespace CrowdControl::Effects {
 	/// It's an instant effect and doesn't have a duration
 	/// </summary>
 	void ChangeToToneSlot::Run() { }
+
+	/// <summary>
+	/// Mod cannot be stopped, since it has an instant effect.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult ChangeToToneSlot::Stop() { return EffectResult::Success; }
 }

@@ -2,7 +2,8 @@
 #include <regex>
 
 /// <summary>
-/// Load Default Settings
+/// Load Default Settings.
+/// Used if the user has the DLL but no INI.
 /// </summary>
 void Settings::Initialize()
 {
@@ -21,6 +22,7 @@ void Settings::Initialize()
 		{"ToggleExtendedRangeKey", "E"},
 		{"LoopStartKey", "Y"},
 		{"LoopEndKey", "U"},
+		{"RewindKey", "Z"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -81,7 +83,9 @@ void Settings::Initialize()
 		{"BypassTwoRTCMessageBox", "off"},
 		{"LinearRiffRepeater", "off"},
 		{"AltOutputSampleRate", "off"},
-		{"AllowLooping", "off"}
+		{"AllowLooping", "off"},
+		{"AllowRewind", "off"},
+		{"FixOculusCrash", "off"}
 	};
 
 	customSettings = {
@@ -98,6 +102,8 @@ void Settings::Initialize()
 		{"CustomStringColors", 0},
 		{"AlternativeOutputSampleRate", 48000},
 		{"LoopingLeadUp", 0},
+		{"RewindBy", 0},
+
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
 		{"GuitarSpeakEnter", 0},
@@ -173,6 +179,7 @@ void Settings::ReadKeyBinds() {
 			{ "ToggleExtendedRangeKey", reader.GetValue("Keybinds", "ToggleExtendedRangeKey", "E")},
 			{ "LoopStartKey", reader.GetValue("Keybinds", "LoopStartKey", "Y")},
 			{ "LoopEndKey", reader.GetValue("Keybinds", "LoopEndKey", "U")},
+			{ "RewindKey", reader.GetValue("Keybinds", "RewindKey", "Z")},
 
 			{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 			{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
@@ -210,6 +217,7 @@ void Settings::ReadModSettings() {
 		{"OverrideInputVolume", reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
 		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
 		{"LoopingLeadUp", reader.GetLongValue("Mod Settings", "LoopingLeadUp", 0)},
+		{"RewindBy", reader.GetLongValue("Mod Settings", "RewindBy", 0)},
 
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -280,6 +288,8 @@ void Settings::ReadModSettings() {
 	modSettings["LinearRiffRepeater"] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
 	modSettings["AltOutputSampleRate"] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 	modSettings["AllowLooping"] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
+	modSettings["AllowRewind"] = reader.GetValue("Toggle Switches", "AllowRewind", "off");
+	modSettings["FixOculusCrash"] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 }
 
 /// <summary>
@@ -290,32 +300,39 @@ void Settings::ReadStringColors() {
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return;
 
+	// Clear the previous string colors
 	customStringColorsNormal.clear();
 	customStringColorsCB.clear();
 	customNoteColorsNormal.clear();
 	customNoteColorsCB.clear();
 
+	// Loop throught the strings to make the code easier to read.
 	for (int stringIdx = 0; stringIdx < 6; stringIdx++) {
 		std::string strKey = "";
 		std::string val;
 
+		// Read string colors (normal)
 		strKey = "string" + std::to_string(stringIdx) + "_N";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 		customStringColorsNormal.push_back(ConvertHexToColor(val));
 
+		// Read string colors (colorblind)
 		strKey = "string" + std::to_string(stringIdx) + "_CB";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
 		customStringColorsCB.push_back(ConvertHexToColor(val));
 
+		// Read note colors (normal)
 		strKey = "note" + std::to_string(stringIdx) + "_N";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColors[stringIdx].c_str());
 		customNoteColorsNormal.push_back(ConvertHexToColor(val));
 
+		// Read note colors (colorblind)
 		strKey = "note" + std::to_string(stringIdx) + "_CB";
 		val = reader.GetValue("String Colors", strKey.c_str(), defaultStrColorsCB[stringIdx].c_str());
 		customNoteColorsCB.push_back(ConvertHexToColor(val));
 	}
 
+	// Set the default colors for deactivated notes.
 	for (int stringIdx = 6; stringIdx < 8; stringIdx++) {
 		customStringColorsNormal.push_back(ConvertHexToColor(defaultStrColors[stringIdx]));
 		customStringColorsCB.push_back(ConvertHexToColor(defaultStrColorsCB[stringIdx]));

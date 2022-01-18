@@ -3,6 +3,12 @@
 #include <sstream>
 
 namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesCustomEffect::Test(Request request)
 	{
 		std::cout << "SolidNotesCustomEffect::Test()" << std::endl;
@@ -13,6 +19,9 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Default colors for strings.
+	/// </summary>
 	std::map<std::string, std::string> CustomColorMap = {
 		{"red", "FF0000"},
 		{"yellow", "FFFF00"},
@@ -22,6 +31,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		{"purple", "800080"}
 	};
 
+	/// <summary>
+	/// Change the color of the strings to the ones specified in the request.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesCustomEffect::Start(Request request)
 	{
 		std::cout << "SolidNotesCustomEffect::Start()" << std::endl;
@@ -35,6 +49,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		auto color = request.parameters.at(0).get<std::string>();
 		auto hexColor = CustomColorMap[color];
 
+		// Update note texture
 		Settings::UpdateModSetting("SolidNoteColor", hexColor);
 		D3DHooks::regenerateUserDefinedTexture = true;
 
@@ -47,9 +62,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void SolidNotesCustomEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -58,6 +75,10 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult SolidNotesCustomEffect::Stop()
 	{
 		std::cout << "SolidNotesCustomEffect::Stop()" << std::endl;
@@ -71,6 +92,12 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 	//////////////////////////////////////////////////////////////
 
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesRandomEffect::Test(Request request)
 	{
 		std::cout << "SolidNotesRandomEffect::Test()" << std::endl;
@@ -81,6 +108,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Change the color of the strings to the ones specified in the request.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesRandomEffect::Start(Request request)
 	{
 		std::cout << "SolidNotesRandomEffect::Start()" << std::endl;
@@ -98,6 +130,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		static std::uniform_real_distribution<> urd(0, 9);
 		currentRandomTexture = urd(rng);
 
+		// Set random solid color
 		ERMode::customSolidColor.clear();
 		ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
 
@@ -110,9 +143,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void SolidNotesRandomEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -121,6 +156,10 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult SolidNotesRandomEffect::Stop()
 	{
 		std::cout << "SolidNotesRandomEffect::Stop()" << std::endl;
@@ -134,6 +173,12 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 	//////////////////////////////////////////////////////////////
 
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesCustomRGBEffect::Test(Request request)
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Test()" << std::endl;
@@ -144,6 +189,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Change the color of the strings to the ones specified in the request.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SolidNotesCustomRGBEffect::Start(Request request)
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Start()" << std::endl;
@@ -161,10 +211,12 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		std::cout << "Color: " << (int)r << "," << (int)g << "," << (int)b << std::endl;
 
-		std::stringstream ss; // Convert RGB to hex
+		// Convert RGB to hex
+		std::stringstream ss; 
 		ss << std::setw(6) << std::setfill('0') << std::hex;
 		ss << (r << 16 | g << 8 | b);
 
+		// Update note texture
 		Settings::UpdateModSetting("SolidNoteColor", ss.str());
 		D3DHooks::regenerateUserDefinedTexture = true;
 
@@ -176,9 +228,11 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void SolidNotesCustomRGBEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -187,6 +241,10 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult SolidNotesCustomRGBEffect::Stop()
 	{
 		std::cout << "SolidNotesCustomRGBEffect::Stop()" << std::endl;

@@ -48,12 +48,14 @@ bool GuitarSpeak::RunGuitarSpeak() {
 
 		std::string currentMenu = MemHelpers::GetCurrentMenu();
 
-		if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { // If someone wants to tune in the setting menu they skip the check
+		// If someone wants to tune in the setting menu they skip the check
+		if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") { 
 			if (verbose)
 				std::cout << "(GS) Entered Tuning Menu! Stopping Guitar Speak." << std::endl;
 			break; // We aren't needed here anymore.
 		}
 
+		// Disabled due to entering Lessons, a song, or a calibration menu.
 		if (MemHelpers::IsInStringArray(currentMenu, lessonModes) || MemHelpers::IsInSong() || MemHelpers::IsInStringArray(currentMenu, calibrationMenus)) {
 			if (verbose)
 				std::cout << "(GS) Entered Song Menu! Stopping Guitar Speak." << std::endl;
@@ -63,7 +65,9 @@ bool GuitarSpeak::RunGuitarSpeak() {
 		int currentNote = GetCurrentNote();
 		std::string buttonToPress = "";
 
-		if (currentNote >= 96) // The limit of Rocksmith | If you go over 96, the values will fall out of the array and the game will crash as it's looking for a value that doesn't exist | C7
+		// The limit of Rocksmith.
+		// If you go over 96, the values will fall out of the array and the game will crash as it's looking for a value that doesn't exist | C7
+		if (currentNote >= 96) 
 			currentNote = noNote;
 
 		if (verbose && currentNote != endOfNote && currentNote != noNote)
@@ -78,14 +82,16 @@ bool GuitarSpeak::RunGuitarSpeak() {
 		if (currentNote != lastNoteBuffer)
 			lastNoteBuffer = currentNote;
 
-		if (currentNoteBuffer != endOfNote && currentNoteBuffer != lastNote) { // New note detected
+		// New note detected
+		if (currentNoteBuffer != endOfNote && currentNoteBuffer != lastNote) { 
 			newNote = true;
 			lastNote = currentNote;
 
 			if (verbose)
 				std::cout << "(GS) New Note Detected" << std::endl;
 		}
-		if (currentNoteBuffer == endOfNote && lastNote != noNote) { // If the note ends
+		// If the note ends
+		if (currentNoteBuffer == endOfNote && lastNote != noNote) { 
 			newNote = false;
 			currentNote = 0;
 			lastNote = 0;
@@ -100,7 +106,9 @@ bool GuitarSpeak::RunGuitarSpeak() {
 		newNote = false;
 
 		if (buttonToPress.c_str() != "") {
-			if (sendKeystrokesToRS2014) { // We should send a keystroke, and the key being pressed isn't null.
+
+			// We should send a keystroke, and the key being pressed isn't null.
+			if (sendKeystrokesToRS2014) { 
 
 				if (buttonToPress == (std::string)"CLOSE") {
 					sendKeystrokesToRS2014 = false;
@@ -111,6 +119,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 					break; // We aren't needed here anymore.
 				}
 
+				// Press the key the user set for this note.
 				else if(keyToVKey.find(buttonToPress) != keyToVKey.end()) {
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, keyToVKey.find(buttonToPress)->second, 0);
 					Sleep(30);
@@ -120,8 +129,11 @@ bool GuitarSpeak::RunGuitarSpeak() {
 						std::cout << "(GS) " << keyToVKey.find(buttonToPress)->first << " was used by Guitar Speak." << std::endl;
 				}
 			}
-			else { // We shouldn't be reading commands here
-				if (buttonToPress == (std::string)"CLOSE") { // In this case, we want to re-open Guitar Speak. Use-case: User already closed Guitar Speak previously, but pressed the button again which indicates they want to re-enable us.
+			// We shouldn't be reading commands here
+			else { 
+
+				// In this case, we want to re-open Guitar Speak. Use-case: User already closed Guitar Speak previously, but pressed the button again which indicates they want to re-enable us.
+				if (buttonToPress == (std::string)"CLOSE") { 
 					sendKeystrokesToRS2014 = true;
 
 					if (verbose)
@@ -137,19 +149,19 @@ bool GuitarSpeak::RunGuitarSpeak() {
 /// Add available keybinds
 /// </summary>
 void GuitarSpeak::FillKeyList() {
-	strKeyList[Settings::GetModSetting("GuitarSpeakDelete")] = "DELETE";
-	strKeyList[Settings::GetModSetting("GuitarSpeakSpace")] = "SPACE";
-	strKeyList[Settings::GetModSetting("GuitarSpeakEnter")] = "ENTER";
-	strKeyList[Settings::GetModSetting("GuitarSpeakTab")] = "TAB";
-	strKeyList[Settings::GetModSetting("GuitarSpeakPageUp")] = "PGUP";
-	strKeyList[Settings::GetModSetting("GuitarSpeakPageDown")] = "PGDN";
-	strKeyList[Settings::GetModSetting("GuitarSpeakUpArrow")] = "UP";
+	strKeyList[Settings::GetModSetting("GuitarSpeakDelete")]	= "DELETE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakSpace")]		= "SPACE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakEnter")]		= "ENTER";
+	strKeyList[Settings::GetModSetting("GuitarSpeakTab")]		= "TAB";
+	strKeyList[Settings::GetModSetting("GuitarSpeakPageUp")]	= "PGUP";
+	strKeyList[Settings::GetModSetting("GuitarSpeakPageDown")]	= "PGDN";
+	strKeyList[Settings::GetModSetting("GuitarSpeakUpArrow")]	= "UP";
 	strKeyList[Settings::GetModSetting("GuitarSpeakDownArrow")] = "DOWN";
-	strKeyList[Settings::GetModSetting("GuitarSpeakEscape")] = "ESCAPE";
-	strKeyList[Settings::GetModSetting("GuitarSpeakClose")] = "CLOSE";
-	strKeyList[Settings::GetModSetting("GuitarSpeakOBracket")] = "OBRACKET";
-	strKeyList[Settings::GetModSetting("GuitarSpeakCBracket")] = "CBRACKET";
-	strKeyList[Settings::GetModSetting("GuitarSpeakTildea")] = "TILDEA";
-	strKeyList[Settings::GetModSetting("GuitarSpeakForSlash")] = "FORSLASH";
-	strKeyList[Settings::GetModSetting("GuitarSpeakAlt")] = "ALT";
+	strKeyList[Settings::GetModSetting("GuitarSpeakEscape")]	= "ESCAPE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakClose")]		= "CLOSE";
+	strKeyList[Settings::GetModSetting("GuitarSpeakOBracket")]	= "OBRACKET";
+	strKeyList[Settings::GetModSetting("GuitarSpeakCBracket")]	= "CBRACKET";
+	strKeyList[Settings::GetModSetting("GuitarSpeakTildea")]	= "TILDEA";
+	strKeyList[Settings::GetModSetting("GuitarSpeakForSlash")]	= "FORSLASH";
+	strKeyList[Settings::GetModSetting("GuitarSpeakAlt")]		= "ALT";
 }

@@ -140,7 +140,14 @@ namespace Offsets {
 	uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck = ptr_Wwise_Log_SetRTPCValueHook + 5;
 	uintptr_t ptr_Wwise_Log_SeekOnEventHook = 0x01f5b4bb;
 	uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck = ptr_Wwise_Log_SeekOnEventHook + 6;
+	uintptr_t ptr_Wwise_Log_SetBusEffect = 0x01f58200;
+	uintptr_t ptr_Wwise_Log_SetBusEffectJmpBck = ptr_Wwise_Log_SetBusEffect + 5;
+	uintptr_t ptr_Wwise_Log_CloneBusEffect = 0x01f5bd7c;
+	uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck = ptr_Wwise_Log_CloneBusEffect + 6;
 
+	// Bug Prevention
+	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
+	uintptr_t ptr_StuckToneJmp = 0x017CB373;
 
 	// Audio In Background
 	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.

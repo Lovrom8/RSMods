@@ -6,16 +6,19 @@
 /// Apply Custom String Colors
 /// </summary>
 void D3D::SetCustomColors() {
+	// Fpr each string
 	for (int strIdx = 0; strIdx < 6;strIdx++) {
 		ColorMap customColorsFull;
 
+		// Get normal and colorblind colors.
 		ColorMap normalColors = GetCustomColors(strIdx, false);
 		ColorMap cbColors = GetCustomColors(strIdx, true);
 
-
+		// Save Colors into ColorMap.
 		customColorsFull.insert(normalColors.begin(), normalColors.end());
 		customColorsFull.insert(cbColors.begin(), cbColors.end());
 
+		// Set Custom Colors
 		ERMode::SetCustomColors(strIdx, customColorsFull);
 	}
 }
@@ -32,11 +35,13 @@ ColorMap D3D::GetCustomColors(int strIdx, bool CB) {
 	else
 		ext = "_N";
 
+	// Get user-defined string color
 	iniColor = Settings::GetStringColors(CB)[strIdx];
 	int H;
 	float S, L;
 	CollectColors::RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
 
+	// Create different colors from the user-defined color.
 	ColorMap customColors = {
 		{"Ambient" + ext, CollectColors::GetAmbientStringColor(H, CB)},
 		{"Disabled" + ext, CollectColors::GetDisabledStringColor(H, S, L, CB)},
@@ -83,22 +88,28 @@ RSColor GenerateRandomColor() {
 /// <param name="in_lineHeight"> - How thick should each line be?</param>
 /// <param name="howManyLines"> - How many lines should there be?</param>
 void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width, UINT in_height, int in_lineHeight, int howManyLines) {
-	while (GetModuleHandleA("gdiplus.dll") == NULL) // JIC, to prevent crashing
+	
+	// JIC, to prevent crashing
+	while (GetModuleHandleA("gdiplus.dll") == NULL) 
 		Sleep(500);
 
 	using namespace Gdiplus;
+
+	// Initialize GDI+
 	UINT width = in_width, height = in_height;
 	int lineHeight = in_lineHeight;
 
 	if (Ok != GdiplusStartup(&token_, &inp, NULL))
 		std::cout << "GDI+ failed to start up!" << std::endl;
 
+	// Create bitmap image
 	Bitmap bmp(width, height, PixelFormat32bppARGB);
 	Graphics graphics(&bmp);
 	RSColor currColor;
 
 	REAL blendPositions[] = { 0.0f, 0.4f, 1.0f };
 
+	// Create string color bitmap.
 	for (int i = 0; i < howManyLines; i++) {
 		currColor = colorSet[i]; // If we are in range of 0-7, grab the normal colors, otherwise grab CB colors
 
@@ -118,7 +129,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 
 		linGrBrush.SetInterpolationColors(gradientColors, blendPositions, 3);
 		graphics.FillRectangle(&linGrBrush, 0, i * lineHeight, width, lineHeight);
-		graphics.FillRectangle(&whiteCoverupBrush, width - 3, i * lineHeight, width, lineHeight); // Don't hate me for this hacky fix to the black bars.
+		graphics.FillRectangle(&whiteCoverupBrush, width - 3, i * lineHeight, width, lineHeight);
 	}
 
 	// Uncomment if you want to save the generated texture
@@ -129,6 +140,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	BitmapData bitmapData;
 	D3DLOCKED_RECT lockedRect;
 
+	// Create texture from bitmap.
 	HRESULT hr_D3DX = D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture);
 
 	if (*ppTexture == NULL) { // User is spam updating their INI through the GUI. D3DX textures are becoming NULL references.
@@ -157,6 +169,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 		return;
 	}
 	
+	// Lock texture and lock bitmap.
 	(*ppTexture)->LockRect(0, &lockedRect, 0, 0);
 
 	bmp.LockBits(&Rect(0, 0, width, height), ImageLockModeRead, PixelFormat32bppARGB, &bitmapData); // Strings
@@ -164,6 +177,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	unsigned char* pSourcePixels = (unsigned char*)bitmapData.Scan0;
 	unsigned char* pDestPixels = (unsigned char*)lockedRect.pBits;
 
+	// Copy colors from bitmap into locked rect.
 	for (unsigned int y = 0; y < height; ++y)
 	{
 		// copy a row
@@ -188,7 +202,8 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 /// <param name="type"> - What type of texture should be created? (enum D3D::TextureType)</param>
 void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 	ColorList colorSet;
-
+	
+	// Create Random colors.
 	if (type == Random || type == Random_Solid) {
 		for (int textIdx = 0; textIdx < randomTextureCount;textIdx++) {
 			if (type == Random_Solid) {
@@ -208,6 +223,7 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			colorSet.clear();
 		}
 	}
+	// Create Rainbow colors.
 	else if (type == Rainbow) {
 		float h = 0.0f, stringOffset = 20.0f;
 		int currTexture = 0;
@@ -218,7 +234,8 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 		while (h < 360.f) {
 			h += rainbowSpeed;
 
-			for (int i = 0; i < 6;i++) { // There's two extra colors per string, so we may need to think about this a bit more
+			// There's two extra colors per string, so we may need to think about this a bit more
+			for (int i = 0; i < 6;i++) { 
 				c.setH(h + (stringOffset * i));
 
 				if (c.r > 1.0f)
@@ -242,7 +259,8 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			for (int i = 0; i < 2;i++)
 				colorsRainbow.push_back(c);
 
-			colorSet.insert(colorSet.begin(), colorsRainbow.begin(), colorsRainbow.end()); // Both CB and regular colors will still look the same in rainbow mode
+			// Both CB and regular colors will still look the same in rainbow mode
+			colorSet.insert(colorSet.begin(), colorsRainbow.begin(), colorsRainbow.end()); 
 			colorSet.insert(colorSet.end(), colorsRainbow.begin(), colorsRainbow.end());
 
 			GenerateTexture(pDevice, &rainbowTextures[currTexture], colorSet);
@@ -251,9 +269,10 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			colorsRainbow.clear();
 
 			currTexture++;
-			//h += rainbowSpeed;
 		}
 	}
+
+	// Generate Custom String color Texture
 	else if (type == Strings) {
 		ColorList colorsN = Settings::GetStringColors(false);
 		ColorList colorsCB = Settings::GetStringColors(true);
@@ -263,6 +282,8 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 
 		GenerateTexture(pDevice, &customStringColorTexture, colorSet);
 	}
+
+	// Generate Custom Note color Texture
 	else if (type == Notes) {
 		ColorList colorsN = Settings::GetNoteColors(false);
 		ColorList colorsCB = Settings::GetNoteColors(true);
@@ -272,16 +293,22 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 
 		GenerateTexture(pDevice, &customNoteColorTexture, colorSet);
 	}
+
+	// Generate Custom Noteway color Texture
 	else if (type == Noteway) {
 		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayNumbered")));
 		colorSet.insert(colorSet.end(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayUnNumbered")));
 
 		GenerateTexture(pDevice, &notewayTexture, colorSet, 256, 32, 16, 2);
 	}
+
+	// Generate Custom Gutter color Texture
 	else if (type == Gutter) {
 		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomHighwayGutter")));
 		GenerateTexture(pDevice, &gutterTexture, colorSet, 256, 16, 16, 1);
 	}
+
+	// Generate Custom FretNums color Texture
 	else if (type == FretNums) {
 		colorSet.insert(colorSet.begin(), Settings::ConvertHexToColor(Settings::ReturnNotewayColor("CustomFretNubmers")));
 
@@ -297,21 +324,26 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 /// <param name="colour32"> - Color for Texture</param>
 /// <returns>E_FAIL if a texture can't be created, S_OK if it was created.</returns>
 HRESULT D3D::GenerateSolidTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32) {
+	// Create Texture
 	if (FAILED(pDevice->CreateTexture(8, 8, 1, 0, D3DFMT_A4R4G4B4, D3DPOOL_MANAGED, ppD3Dtex, NULL)))
 		return E_FAIL;
 
+	// Get the color
 	WORD colour16 = ((WORD)((colour32 >> 28) & 0xF) << 12)
 		| (WORD)(((colour32 >> 20) & 0xF) << 8)
 		| (WORD)(((colour32 >> 12) & 0xF) << 4)
 		| (WORD)(((colour32 >> 4) & 0xF) << 0);
 
+	// Lock the texture
 	D3DLOCKED_RECT d3dlr;
 	(*ppD3Dtex)->LockRect(0, &d3dlr, 0, 0);
 	WORD* pDst16 = (WORD*)d3dlr.pBits;
 
+	// Copy the color into the texture
 	for (int xy = 0; xy < 8 * 8; xy++)
 		*pDst16++ = colour16;
 
+	// Unlock the texture
 	(*ppD3Dtex)->UnlockRect(0);
 
 	return S_OK;

@@ -12,6 +12,7 @@ namespace Midi {
 	/// </summary>
 	void InitMidi() {
 		try {
+			// Try to init a Midi in device.
 			RtMidiIn midiin;
 			std::cout << "Starting MIDI" << std::endl;
 		}
@@ -24,13 +25,18 @@ namespace Midi {
 	/// Get all MIDI devices connected.
 	/// </summary>
 	void GetMidiDeviceNames() {
+		// Get the number of Midi Out, and Midi In ports
 		NumberOfOutPorts = midiOutGetNumDevs();
 		NumberOfInPorts = midiInGetNumDevs();
+
+		// For each Midi Out device, get it's capabilities.
 		for (int device = 0; device < NumberOfOutPorts; device++) {
 			MIDIOUTCAPSA temp;
 			midiOutGetDevCapsA(device, &temp, sizeof(MIDIOUTCAPSA));
 			midiOutDevices.push_back(temp);
 		}
+
+		// For each Midi In device, get it's capabilities.
 		for (int device = 0; device < NumberOfInPorts; device++) {
 			MIDIINCAPSA temp;
 			midiInGetDevCapsA(device, &temp, sizeof(MIDIINCAPSA));
@@ -46,11 +52,14 @@ namespace Midi {
 	/// <param name="MidiOutDevice"> - Name of MIDI device to send MIDI to.</param>
 	/// <param name="MidiInDevice"> - Name of MIDI device to listen to.</param>
 	void ReadMidiSettingsFromINI(std::string ChordsMode, int PedalToUse, std::string MidiOutDevice, std::string MidiInDevice) {
-		if (ChordsMode == "on") { // Is Chords mode on (only some pedals)
+		
+		// Is Chords mode on (only some Digitech pedals support it.)
+		if (ChordsMode == "on") { 
 			Digitech::DIGITECH_CHORDS_MODE = true;
 			std::cout << "(MIDI) Chords Mode: Enabled" << std::endl;
 		}
 		
+		// Verify that we have an actual pedal specified.
 		if (PedalToUse != NULL)
 			selectedPedal = supportedPedals.at((PedalToUse - 1) % supportedPedals.size());
 		else
@@ -58,8 +67,10 @@ namespace Midi {
 
 		std::cout << "(MIDI) Pedal To Use: " << selectedPedal.pedalName << std::endl;
 
+		// Fill the list of Midi In, and Midi Out devices.
 		GetMidiDeviceNames();
 
+		// Find, and select, the devices that the user specified in their INI file.
 		FindMidiOutDevices(MidiOutDevice);
 		FindMidiInDevices(MidiInDevice);
 	}
@@ -76,11 +87,13 @@ namespace Midi {
 				deviceName.push_back(midiOutDevices.at(device).szPname[i]);
 			}
 
+			// We found the device that is specified in the INI.
 			if (deviceName.find(deviceToLookFor) != std::string::npos) {
 				std::cout << "(MIDI) Connecting To Midi OUT Device: " << midiOutDevices.at(device).szPname << std::endl;
 				SelectedMidiOutDevice = device;
 				break;
 			}
+			// This is not the device specified in the INI.
 			else
 				std::cout << "(MIDI) Available MIDI OUT device: " << midiOutDevices.at(device).szPname << std::endl;
 		}
@@ -96,12 +109,13 @@ namespace Midi {
 					break;
 				deviceName.push_back(midiInDevices.at(device).szPname[i]);
 			}
-
+			// We found the device that is specified in the INI.
 			if (deviceName.find(deviceToLookFor) != std::string::npos) {
 				std::cout << "(MIDI) Connecting To Midi IN Device: " << midiInDevices.at(device).szPname << std::endl;
 				SelectedMidiInDevice = device;
 				break;
 			}
+			// This is not the device specified in the INI.
 			else
 				std::cout << "(MIDI) Available MIDI IN device: " << midiInDevices.at(device).szPname << std::endl;
 		}
@@ -246,6 +260,7 @@ namespace Midi {
 
 		char channel = alternativeChannel == (char)255 ? selectedPedal.PC_Channel : alternativeChannel; // If we want to bypass the PC channel (mainly for software pedals) then alternative channel won't be default.
 
+		// Are we using a dummy pedal?
 		if (selectedPedal.pedalName == MidiPedal().pedalName) {
 			std::cout << "(MIDI) SendPC: DUMMY PEDAL" << std::endl;
 			return false;
@@ -413,7 +428,9 @@ namespace Midi {
 
 			std::cout << "(MIDI) Attmepting to turn off automatic tuning" << std::endl;
 
+			// User is using a software pedal (or a custom defined pedal).
 			if (selectedPedal.softwarePedal) {
+				// Did we drop tune in the last song?
 				if (Midi::Software::sentSemitoneInThisSong) {
 					if (Midi::Software::sendSemitoneCommand == programChangeStatus)
 						SendProgramChange(Midi::Software::semiToneShutoffTrigger);
@@ -422,6 +439,7 @@ namespace Midi {
 
 					Midi::Software::sentSemitoneInThisSong = false;
 				}
+				// Did we true tune in the last song?
 				if (Midi::Software::sentTrueTuningInThisSong) {
 					if (Midi::Software::sendTrueTuningCommand == programChangeStatus)
 						SendProgramChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::sendTrueTuningChannel);
@@ -429,6 +447,7 @@ namespace Midi {
 						SendControlChange(Midi::Software::trueTuningShutoffTrigger, Midi::Software::trueTuningBank, Midi::Software::sendTrueTuningChannel);
 				}
 
+				// Reset the bools.
 				Midi::Software::sentTrueTuningInThisSong = false;
 				alreadyAutomatedTuningInThisSong = false;
 				alreadyAutomatedTrueTuningInThisSong = false;
@@ -438,14 +457,17 @@ namespace Midi {
 			std::map<char, char> activeBypassMap = selectedPedal.activeBypassMap;
 			char originalPC = lastPC;
 
-			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  // If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
+			// If the user was in a song that requires a down tune AND true tuning, we use this. Ex: If 6 was 9 (Eb Standard AND A431)
+			if (lastPC_TUNING != 0 && lastPC_TUNING != lastPC)  
 				SendProgramChange(activeBypassMap.find(lastPC_TUNING)->second);
 
+			// Send the bypass code to revert back to normal guitar.
 			if (activeBypassMap.find(originalPC) != activeBypassMap.end())
-				SendProgramChange(activeBypassMap.find(originalPC)->second); // Send the bypass code to revert back to normal guitar.
+				SendProgramChange(activeBypassMap.find(originalPC)->second); 
 
+			// Reset the expression pedal
 			if (lastCC != 0)
-				SendControlChange(0); // Reset the expression pedal
+				SendControlChange(0); 
 		}
 
 		alreadyAutomatedTuningInThisSong = false;
@@ -856,11 +878,14 @@ namespace Midi {
 		/// <param name="highestTuning"> - Highest tuned string in the current song.</param>
 		/// <param name="TrueTuning_Hertz"> - True Tuning (non-concert pitch)</param>
 		void AutoTuning(int highestTuning, float TrueTuning_Hertz) {
+			
+			// User wants us to reload our settings.
 			if (Settings::async_UpdateMidiSettings) {
 				ReloadSettings();
 				Settings::async_UpdateMidiSettings = false;
 			}
 
+			// Send MIDI command to pedal if we find the tuning in the INI.
 			if (semiToneMap.find(highestTuning) != semiToneMap.end()) {
 				if (sendSemitoneCommand == programChangeStatus)
 					SendProgramChange(semiToneMap.find(highestTuning)->second);
@@ -872,6 +897,7 @@ namespace Midi {
 			else
 				std::cout << "(MIDI) Software Pedal Error: Attempted to tune to " << highestTuning << " but the user doesn't have a value set for it." << std::endl;
 
+			// Bass fix was applied, so we need to adjust the true tuning.
 			if (TrueTuning_Hertz < 260.f)
 				TrueTuning_Hertz *= 2;
 
@@ -884,6 +910,7 @@ namespace Midi {
 			if (TrueTuning_Hertz < 260.f)
 				TrueTuning_Hertz *= 2;
 
+			// Send MIDI command to pedal if we find the true tuning in the INI.
 			if (trueTuningMap.find(TrueTuning_Hertz) != trueTuningMap.end()) {
 				if (sendTrueTuningCommand == programChangeStatus)
 					SendProgramChange(trueTuningMap.find(TrueTuning_Hertz)->second, sendTrueTuningChannel);
@@ -904,7 +931,6 @@ namespace Midi {
 			FillSemitoneMap();
 			FillTrueTuningMap();
 			LoadTrueTuningSettings();
-
 		}
 
 		void FillSemitoneMap() {
@@ -956,6 +982,13 @@ namespace Midi {
 				settings.erase(0, position + delim.length());
 			}
 			separated.push_back(settings); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+
+			// Example: 24, PC, 4
+			// Send PC on channel 4 (0 indexed). When we leave a song, send 24 to PC channel 4.
+
+			// Example: 45, CC, 12, 15
+			// Send CC on channel 12 (0 indexed). Use bank 15. When we leave a song, send 45 to CC channel 12 bank 15.
 
 			if (separated.size() > 0) {
 				semiToneShutoffTrigger = std::atoi(separated.at(0).c_str());
@@ -1037,6 +1070,12 @@ namespace Midi {
 				settings.erase(0, position + delim.length());
 			}
 			separated.push_back(settings); // If we don't do this, the last value won't get thrown in if the user forgot a trailing comma
+
+			// Example: 24, PC, 4
+			// Send PC on channel 4 (0 indexed). When we leave a song, send 24 to PC channel 4.
+
+			// Example: 45, CC, 12, 15
+			// Send CC on channel 12 (0 indexed). Use bank 15. When we leave a song, send 45 to CC channel 12 bank 15.
 
 			if (separated.size() > 0) {
 				trueTuningShutoffTrigger = std::atoi(separated.at(0).c_str());

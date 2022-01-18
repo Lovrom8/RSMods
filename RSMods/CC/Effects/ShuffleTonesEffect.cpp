@@ -1,6 +1,12 @@
 #include "ShuffleTonesEffect.hpp"
 
 namespace CrowdControl::Effects { // Scales notes in a song to unusually small size TODO actually implement
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult ShuffleTonesEffect::Test(Request request)
 	{
 		std::cout << "ShuffleTonesEffect::Test()" << std::endl;
@@ -11,6 +17,11 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Shuffle the tone used by the player
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult ShuffleTonesEffect::Start(Request request)
 	{
 		std::cout << "ShuffleTonesEffect::Start()" << std::endl;
@@ -25,6 +36,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Change the tone to a random (int) value 1-4
+	/// </summary>
 	void SwitchToneRand() {
 		static std::random_device rd;
 		static std::mt19937 rng(rd());
@@ -34,11 +48,13 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		Util::SendKey(Settings::GetVKCodeForString(std::to_string(distrib(rng))));
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// Also changes the tone every tick.
+	/// </summary>
 	void ShuffleTonesEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
-			//std::cout << "ShuffleTonesEffect::Run()" << std::endl;
 
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (nextTickTime - now);
@@ -55,6 +71,10 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod by setting the tone back to the tone of the song.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult ShuffleTonesEffect::Stop()
 	{
 		std::cout << "ShuffleTonesEffect::Stop()" << std::endl;

@@ -1,6 +1,12 @@
 #include "SmallNoteheadEffect.hpp"
 
 namespace CrowdControl::Effects { // Scales notes in a song to unusually small size
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SmallNoteheadEffect::Test(Request request)
 	{
 		std::cout << "SmallNoteheadEffect::Test()" << std::endl;
@@ -11,6 +17,11 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Set the scale of the noteheads to 0.5x
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SmallNoteheadEffect::Start(Request request)
 	{
 		std::cout << "SmallNoteheadEffect::Start()" << std::endl;
@@ -28,9 +39,11 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void SmallNoteheadEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			
 			auto now = std::chrono::steady_clock::now();
@@ -40,6 +53,10 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult SmallNoteheadEffect::Stop()
 	{
 		std::cout << "SmallNoteheadEffect::Stop()" << std::endl;
@@ -50,6 +67,10 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Sets the scale only for objects which are of note meshe type
+	/// </summary>
+	/// <param name="scale"></param>
 	void SmallNoteheadEffect::SetNoteHeadScale(float scale) {
 		std::cout << "SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl;
 

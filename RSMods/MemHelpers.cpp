@@ -53,7 +53,8 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 Tuning MemHelpers::GetTuningAtTuner() {
 	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
 
-	if (!std::filesystem::exists(pathToTuningList)) { // If we can't find the list of tunings, just return a default value
+	// If we can't find the list of tunings, just return a default value
+	if (!std::filesystem::exists(pathToTuningList)) { 
 		std::cout << "Invalid File: GetTuningAtTuner - Path To Tuning File Doesn't Exist." << std::endl;
 		return Tuning();
 	}
@@ -107,8 +108,8 @@ Tuning MemHelpers::GetTuningAtTuner() {
 	jsonFile.close();
 	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in
 
-
-	for (auto& tuning : tuningJson.items()) { // Unforunately we can't use json.contains due to difference in formatting
+	// Unforunately we can't use json.contains due to difference in formatting
+	for (auto& tuning : tuningJson.items()) { 
 		std::string jsonKeyUpper = tuning.key(), jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
 		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
 
@@ -135,18 +136,6 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") != "on")
 		return false;
 
-	/*
-	Old method:
-	
-	byte currentTuning = MemHelpers::getLowestStringTuning();
-
-	if (currentTuning > 24 && currentTuning <= (256 + Settings::GetModSetting("ExtendedRangeMode")))
-		return true;
-	return false;
-	
-	Below is the new method
-	*/
-
 	// Get lowest tuned string
 	int* highestLowest = MemHelpers::GetHighestLowestString();
 	int lowestTuning = highestLowest[1];
@@ -162,7 +151,8 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (currentTuning)
 		delete[] currentTuning;
 
-	if (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on") { // When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	// When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
+	if (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on") { 
 		tuning.strB = tuning.strG;
 		tuning.highE = tuning.strG;
 	}
@@ -205,6 +195,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		return false;
 	}
 
+	// Verify the user actually wants Extended Range enabled.
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") != "on")
 		return false;
 	
@@ -320,6 +311,7 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 
 	bool bassOctaveEffect = GetTrueTuning() == 220;
 
+	// If the song is in A220, we need to remove 12 from the bass tuning to get the real tuning.
 	if (bassOctaveEffect) {
 		tuningOverride.lowE		-= 12;
 		tuningOverride.strA		-= 12;
@@ -329,6 +321,7 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 		tuningOverride.highE	-= 12;
 	}
 
+	// Get the value for the strings.
 	int string_lowE = tuningOverride.lowE <= 24		? tuningOverride.lowE + 256		: tuningOverride.lowE;
 	int string_A = tuningOverride.strA <= 24		? tuningOverride.strA + 256		: tuningOverride.strA;
 	int string_D = tuningOverride.strD <= 24		? tuningOverride.strD + 256		: tuningOverride.strD;
@@ -336,25 +329,30 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 	int string_B = tuningOverride.strB <= 24		? tuningOverride.strB + 256		: tuningOverride.strB;
 	int string_highE = tuningOverride.highE <= 24	? tuningOverride.highE + 256	: tuningOverride.highE;
 
+	// Get the highest tuning used.
 	highestTuning = string_lowE > highestTuning ? string_lowE	: highestTuning;
 	highestTuning = string_A	> highestTuning ? string_A		: highestTuning;
 	highestTuning = string_D	> highestTuning ? string_D		: highestTuning;
 	highestTuning = string_G	> highestTuning ? string_G		: highestTuning;
 
+	// Get the lowest tuning used
 	lowestTuning = string_lowE	< lowestTuning	? string_lowE	: lowestTuning;
 	lowestTuning = string_A		< lowestTuning	? string_A		: lowestTuning;
 	lowestTuning = string_D		< lowestTuning	? string_D		: lowestTuning;
 	lowestTuning = string_G		< lowestTuning	? string_G		: lowestTuning;
 
 	if (numberOfStrings == 6) {
+		// Get the highest tuning used (guitar).
 		highestTuning = string_B		> highestTuning ? string_B		: highestTuning;
 		highestTuning = string_highE	> highestTuning ? string_highE	: highestTuning;
 
+		// Get the lowest tuning used (guitar).
 		lowestTuning = string_B			< lowestTuning	? string_B		: lowestTuning;
 		lowestTuning = string_highE		< lowestTuning	? string_highE	: lowestTuning;
 	}
 
-	if (bassOctaveEffect) { // Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.
+	// Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.
+	if (bassOctaveEffect) { 
 		highestTuning += 12;
 		lowestTuning += 12;
 	}
@@ -403,12 +401,16 @@ int MemHelpers::GetTrueTuning() {
 /// <param name="GameNotLoaded"> - Should we trust the pointer?</param>
 /// <returns>Internal Menu Name</returns>
 std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
-	if (GameNotLoaded) { // It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen, but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay" (before you reach the login) or some gibberish that's always the same (after that) 
+	// It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen,
+	// but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay"
+	// (before you reach the login) or some gibberish that's always the same (after that) 
+	if (GameNotLoaded) { 
 		uintptr_t preMainMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_preMainMenuOffsets, GameNotLoaded);
 
 		std::string currentMenu((char*)preMainMenuAdr);
 
-		if (lastMenu == "TitleScreen" && lastMenu != currentMenu)  // I.e. check if its neither one of the possible states
+		// I.e. check if its neither one of the possible states
+		if (lastMenu == "TitleScreen" && lastMenu != currentMenu)  
 			canGetRealMenu = true;
 		else {
 			lastMenu = currentMenu;
@@ -419,11 +421,8 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 	if (!canGetRealMenu)
 		return "pre_enter_prompt";
 
-	uintptr_t currentMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_currentMenuOffsets, GameNotLoaded); // If game hasn't loaded, take the safer, but possibly slower route
-
-	// Thank you for serving the cause comrade, but you aren't needed any more
-	//if (currentMenuAdr > 0x30000000) // Ghetto checks for life, if you haven't eneterd the game it usually points to 0x6XXXXXXX and if you try to dereference that, you get yourself a nice crash
-	//	return "pre_enter_prompt";
+	// If game hasn't loaded, take the safer, but possibly slower route
+	uintptr_t currentMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_currentMenuOffsets, GameNotLoaded); 
 
 	// Null Pointer Check
 	if (!currentMenuAdr) {
@@ -439,13 +438,6 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 /// Turn the background / "map" on or off.
 /// </summary>
 void MemHelpers::ToggleLoft() {
-
-	// Old Method (Works for most builds but bugged out for some)
-	//uintptr_t nearAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_nearOffsets);
-	//if (*(float*)nearAddr == 10)
-	//	*(float*)nearAddr = 10000;
-	//else
-	//	*(float*)nearAddr = 10;
 
 	uintptr_t farAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
@@ -480,9 +472,9 @@ void MemHelpers::ToggleCB(bool enabled) {
 		// std::cout << "Invalid Pointers: ToggleCB(" << std::boolalpha << enabled << ")" << std::endl; // Disabled because it causes log to get huge real quick
 		return;
 	}
-		
-
-	if (*(byte*)cbEnabled != (byte)enabled) //JIC, no need to write the same value constantly
+	
+	// JIC, no need to write the same value constantly
+	if (*(byte*)cbEnabled != (byte)enabled) 
 		*(byte*)cbEnabled = enabled;
 }
 
@@ -565,8 +557,10 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 void MemHelpers::ToggleDrunkMode(bool enable) {
 	uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
+	
 	if (enable) {
-		if (*(float*)noLoft == 1) { // Turn on loft so the effects of the mod are actually shown.
+		// Turn on loft so the effects of the mod are actually shown.
+		if (*(float*)noLoft == 1) {
 			D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
 			MemHelpers::ToggleLoft();
 		}
@@ -574,6 +568,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 	else {
 		*(float*)Offsets::ptr_drunkShit = 0.3333333333f;
 
+		// User originally had the loft off, but then we turned on this mod, so turn the loft back off.
 		if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
 			MemHelpers::ToggleLoft();
 			D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
@@ -632,7 +627,11 @@ std::string MemHelpers::GetSongKey() {
 	if (previewEvent) {
 		std::string previewName = std::string((char*)previewEvent);
 
+		// If the preview name contains "Play_", which is required by Wwise.
 		if (previewName.length() > 13 && previewName._Starts_with("Play_")) {
+			
+			// Verify that we are working with a "_Preview" audio.
+			// "_Invalid" is used when the user turns off their song previews.
 			if (previewName.compare(previewName.length() - 9, 9, "_Preview") || previewName.compare(previewName.length() - 9, 9, "_Invalid")) {
 				lastSongKey = previewName.substr(5, previewName.length() - 13);
 			}

@@ -3,6 +3,12 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects { // Makes some of game's object very woobly (lyrics, backgrounds, etc.)
+	
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult DrunkModeEffect::Test(Request request)
 	{
 		std::cout << "DrunkModeEffect::Test()" << std::endl;
@@ -36,9 +42,11 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void DrunkModeEffect::Run()
 	{
-		// Stop automatically after duration has elapsed
 		if (running) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> duration = (endTime - now);
@@ -47,6 +55,10 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult DrunkModeEffect::Stop()
 	{
 		std::cout << "DrunkModeEffect::Stop()" << std::endl;

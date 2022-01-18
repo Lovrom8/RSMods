@@ -123,6 +123,14 @@ namespace Offsets {
 	extern uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck;
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHook;
 	extern uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck;
+	extern uintptr_t ptr_Wwise_Log_SetBusEffect;
+	extern uintptr_t ptr_Wwise_Log_SetBusEffectJmpBck;
+	extern uintptr_t ptr_Wwise_Log_CloneBusEffect;
+	extern uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck;
+
+	// Bug Prevention
+	extern uintptr_t ptr_OculusCrashJmp;
+	extern uintptr_t ptr_StuckToneJmp;
 
 	// Audio In Background
 	extern uintptr_t ptr_IsWindowInFocus;

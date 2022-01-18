@@ -1,6 +1,12 @@
 #include "RemoveInstrumentEffect.hpp"
 
 namespace CrowdControl::Effects { 
+
+	/// <summary>
+	/// Test the twitch mod's requirements.
+	/// </summary>
+	/// <param name="request"> - JSON Request</param>
+	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RemoveInstrumentEffect::Test(Request request)
 	{
 		std::cout << "RemoveInstrumentEffect::Test()" << std::endl;
@@ -29,6 +35,9 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Ensure that the mod only lasts for the time specified in the JSON request.
+	/// </summary>
 	void RemoveInstrumentEffect::Run()
 	{
 		// Stop automatically after duration has elapsed
@@ -41,6 +50,10 @@ namespace CrowdControl::Effects {
 		}
 	}
 
+	/// <summary>
+	/// Stops the mod.
+	/// </summary>
+	/// <returns>EffectResult::Success</returns>
 	EffectResult RemoveInstrumentEffect::Stop()
 	{
 		std::cout << "RemoveInstrumentEffect::Stop()" << std::endl;
@@ -51,6 +64,10 @@ namespace CrowdControl::Effects {
 		return EffectResult::Success;
 	}
 
+	/// <summary>
+	/// Set the scale of the instrument.
+	/// </summary>
+	/// <param name="scale"> - Scale to set the instrument to.</param>
 	void RemoveInstrumentEffect::SetInstrumentScale(float scale) {
 		std::cout << "RemoveInstrumentEffect::SetInstrumentScale(" << scale << ")" << std::endl;
 
