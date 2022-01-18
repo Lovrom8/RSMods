@@ -59,6 +59,7 @@ namespace RSMods
                     { ReadSettings.ToggleExtendedRangeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.ToggleExtendedRangeKeyIdentifier, "") }, // Toggle ER Mode on / off
                     { ReadSettings.LoopStartKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopStartKeyIdentifier, "") }, // Start loop
                     { ReadSettings.LoopEndKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopEndKeyIdentifier, "")}, // End loop
+                    { ReadSettings.RewindKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindKeyIdentifier, "") } // Rewind song by X seconds (defined by user with other settings).
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -127,6 +128,8 @@ namespace RSMods
                     { ReadSettings.LinearRiffRepeaterIdentifier, CreateDefaultOnOldINI(ReadSettings.LinearRiffRepeaterIdentifier, "off") }, // Makes Riff Repeater linear, so 68% speed = 68% real speed.
                     { ReadSettings.UseAlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.UseAlternativeOutputSampleRateIdentifier, "off") }, // Forces Rocksmith to look for audio output devices set to a different frequency (not 48kHz).
                     { ReadSettings.AllowLoopingIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowLoopingIdentifier, "off") }, // Allows the user to loop smaller sections of notes than RR allows.
+                    { ReadSettings.AllowRewindIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowRewindIdentifier, "off") }, // Allows the user to press a key to go back a specified number of milliseconds in the song.
+                    { ReadSettings.FixOculusCrashIdentifier, CreateDefaultOnOldINI(ReadSettings.FixOculusCrashIdentifier, "off") }, // When the user has an Oculus / Meta headset connected to their computer, Rocksmith might crash. Turning this on might fix that.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -177,6 +180,7 @@ namespace RSMods
                     { ReadSettings.OverrideInputVolumeIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeIdentifier, "17")}, // What volume should we use when the user wants to override the default input volume?
                     { ReadSettings.AlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.AlternativeOutputSampleRateIdentifier, "48000") }, // Alternative frequency to use when looking for Audio Output devices.
                     { ReadSettings.LoopingLeadUpIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopingLeadUpIdentifier, "0") }, // Amount of lead-up time we should give for loops.
+                    { ReadSettings.RewindByIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindByIdentifier, "250") }, // Amount of time (in ms) to go back when the user presses the rewind key.
                 }
             );
             saveSettingsOrDefaults.Add(

@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_AllowRewind = new System.Windows.Forms.CheckBox();
             this.checkBox_EnableLooping = new System.Windows.Forms.CheckBox();
             this.checkBox_UseAltSampleRate_Output = new System.Windows.Forms.CheckBox();
             this.checkBox_LinearRiffRepeater = new System.Windows.Forms.CheckBox();
@@ -88,6 +89,7 @@
             this.groupBox_Songlist = new System.Windows.Forms.GroupBox();
             this.label_SonglistWarning = new System.Windows.Forms.Label();
             this.groupBox_Keybindings_MODS = new System.Windows.Forms.GroupBox();
+            this.label_RewindKey = new System.Windows.Forms.Label();
             this.label_LoopEndKey = new System.Windows.Forms.Label();
             this.label_LoopStartKey = new System.Windows.Forms.Label();
             this.label_ToggleExtendedRangeKey = new System.Windows.Forms.Label();
@@ -273,6 +275,8 @@
             this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.groupBox_RewindBy = new System.Windows.Forms.GroupBox();
+            this.nUpDown_RewindBy = new System.Windows.Forms.NumericUpDown();
             this.groupBox_LoopingLeadUp = new System.Windows.Forms.GroupBox();
             this.nUpDown_LoopingLeadUp = new System.Windows.Forms.NumericUpDown();
             this.groupBox_Profiles_RevertBackup = new System.Windows.Forms.GroupBox();
@@ -504,6 +508,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.checkBox_FixOculusCrash = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -551,6 +556,8 @@
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
             this.groupBox_MidiAutoTuneDevice.SuspendLayout();
             this.tabPage_ModSettings_Misc.SuspendLayout();
+            this.groupBox_RewindBy.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RewindBy)).BeginInit();
             this.groupBox_LoopingLeadUp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopingLeadUp)).BeginInit();
             this.groupBox_Profiles_RevertBackup.SuspendLayout();
@@ -620,9 +627,9 @@
             // listBox_Modlist_MODS
             // 
             this.listBox_Modlist_MODS.FormattingEnabled = true;
-            this.listBox_Modlist_MODS.Location = new System.Drawing.Point(22, 29);
+            this.listBox_Modlist_MODS.Location = new System.Drawing.Point(6, 19);
             this.listBox_Modlist_MODS.Name = "listBox_Modlist_MODS";
-            this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 160);
+            this.listBox_Modlist_MODS.Size = new System.Drawing.Size(185, 199);
             this.listBox_Modlist_MODS.TabIndex = 5;
             this.listBox_Modlist_MODS.SelectedIndexChanged += new System.EventHandler(this.Keypress_LoadKeys);
             // 
@@ -664,7 +671,7 @@
             // label_SongTimerKey
             // 
             this.label_SongTimerKey.AutoSize = true;
-            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 29);
+            this.label_SongTimerKey.Location = new System.Drawing.Point(464, 27);
             this.label_SongTimerKey.Name = "label_SongTimerKey";
             this.label_SongTimerKey.Size = new System.Drawing.Size(67, 13);
             this.label_SongTimerKey.TabIndex = 17;
@@ -673,7 +680,7 @@
             // label_ReEnumerationKey
             // 
             this.label_ReEnumerationKey.AutoSize = true;
-            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 47);
+            this.label_ReEnumerationKey.Location = new System.Drawing.Point(464, 44);
             this.label_ReEnumerationKey.Name = "label_ReEnumerationKey";
             this.label_ReEnumerationKey.Size = new System.Drawing.Size(72, 13);
             this.label_ReEnumerationKey.TabIndex = 18;
@@ -734,7 +741,7 @@
             // label_RainbowStringsKey
             // 
             this.label_RainbowStringsKey.AutoSize = true;
-            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 68);
+            this.label_RainbowStringsKey.Location = new System.Drawing.Point(464, 61);
             this.label_RainbowStringsKey.Name = "label_RainbowStringsKey";
             this.label_RainbowStringsKey.Size = new System.Drawing.Size(90, 13);
             this.label_RainbowStringsKey.TabIndex = 28;
@@ -1024,6 +1031,8 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixOculusCrash);
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowRewind);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_EnableLooping);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_UseAltSampleRate_Output);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_LinearRiffRepeater);
@@ -1059,10 +1068,22 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 400);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 424);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_AllowRewind
+            // 
+            this.checkBox_AllowRewind.AutoSize = true;
+            this.checkBox_AllowRewind.Location = new System.Drawing.Point(144, 378);
+            this.checkBox_AllowRewind.Name = "checkBox_AllowRewind";
+            this.checkBox_AllowRewind.Size = new System.Drawing.Size(104, 17);
+            this.checkBox_AllowRewind.TabIndex = 76;
+            this.checkBox_AllowRewind.Text = "Allow Rewinding";
+            this.checkBox_AllowRewind.UseVisualStyleBackColor = true;
+            this.checkBox_AllowRewind.CheckedChanged += new System.EventHandler(this.Save_AllowRewind);
+            this.checkBox_AllowRewind.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_EnableLooping
             // 
@@ -1374,6 +1395,7 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_RewindKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_LoopEndKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_LoopStartKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_ToggleExtendedRangeKey);
@@ -1398,10 +1420,19 @@
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // label_RewindKey
+            // 
+            this.label_RewindKey.AutoSize = true;
+            this.label_RewindKey.Location = new System.Drawing.Point(464, 197);
+            this.label_RewindKey.Name = "label_RewindKey";
+            this.label_RewindKey.Size = new System.Drawing.Size(77, 13);
+            this.label_RewindKey.TabIndex = 59;
+            this.label_RewindKey.Text = "Rewind Song: ";
+            // 
             // label_LoopEndKey
             // 
             this.label_LoopEndKey.AutoSize = true;
-            this.label_LoopEndKey.Location = new System.Drawing.Point(466, 211);
+            this.label_LoopEndKey.Location = new System.Drawing.Point(464, 180);
             this.label_LoopEndKey.Name = "label_LoopEndKey";
             this.label_LoopEndKey.Size = new System.Drawing.Size(56, 13);
             this.label_LoopEndKey.TabIndex = 58;
@@ -1410,7 +1441,7 @@
             // label_LoopStartKey
             // 
             this.label_LoopStartKey.AutoSize = true;
-            this.label_LoopStartKey.Location = new System.Drawing.Point(464, 191);
+            this.label_LoopStartKey.Location = new System.Drawing.Point(464, 163);
             this.label_LoopStartKey.Name = "label_LoopStartKey";
             this.label_LoopStartKey.Size = new System.Drawing.Size(59, 13);
             this.label_LoopStartKey.TabIndex = 57;
@@ -1419,7 +1450,7 @@
             // label_ToggleExtendedRangeKey
             // 
             this.label_ToggleExtendedRangeKey.AutoSize = true;
-            this.label_ToggleExtendedRangeKey.Location = new System.Drawing.Point(464, 169);
+            this.label_ToggleExtendedRangeKey.Location = new System.Drawing.Point(464, 146);
             this.label_ToggleExtendedRangeKey.Name = "label_ToggleExtendedRangeKey";
             this.label_ToggleExtendedRangeKey.Size = new System.Drawing.Size(129, 13);
             this.label_ToggleExtendedRangeKey.TabIndex = 56;
@@ -1428,7 +1459,7 @@
             // label_TuningOffsetKey
             // 
             this.label_TuningOffsetKey.AutoSize = true;
-            this.label_TuningOffsetKey.Location = new System.Drawing.Point(464, 149);
+            this.label_TuningOffsetKey.Location = new System.Drawing.Point(464, 129);
             this.label_TuningOffsetKey.Name = "label_TuningOffsetKey";
             this.label_TuningOffsetKey.Size = new System.Drawing.Size(77, 13);
             this.label_TuningOffsetKey.TabIndex = 55;
@@ -1437,7 +1468,7 @@
             // label_RainbowNotesKey
             // 
             this.label_RainbowNotesKey.AutoSize = true;
-            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 89);
+            this.label_RainbowNotesKey.Location = new System.Drawing.Point(464, 78);
             this.label_RainbowNotesKey.Name = "label_RainbowNotesKey";
             this.label_RainbowNotesKey.Size = new System.Drawing.Size(86, 13);
             this.label_RainbowNotesKey.TabIndex = 54;
@@ -1446,7 +1477,7 @@
             // label_RRSpeedKey
             // 
             this.label_RRSpeedKey.AutoSize = true;
-            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 129);
+            this.label_RRSpeedKey.Location = new System.Drawing.Point(464, 112);
             this.label_RRSpeedKey.Name = "label_RRSpeedKey";
             this.label_RRSpeedKey.Size = new System.Drawing.Size(110, 13);
             this.label_RRSpeedKey.TabIndex = 53;
@@ -1455,7 +1486,7 @@
             // label_RemoveLyricsKey
             // 
             this.label_RemoveLyricsKey.AutoSize = true;
-            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 109);
+            this.label_RemoveLyricsKey.Location = new System.Drawing.Point(464, 95);
             this.label_RemoveLyricsKey.Name = "label_RemoveLyricsKey";
             this.label_RemoveLyricsKey.Size = new System.Drawing.Size(83, 13);
             this.label_RemoveLyricsKey.TabIndex = 30;
@@ -2814,7 +2845,7 @@
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.listBox_Modlist_AUDIO);
             this.groupBox_Keybindings_AUDIO.Location = new System.Drawing.Point(15, 253);
             this.groupBox_Keybindings_AUDIO.Name = "groupBox_Keybindings_AUDIO";
-            this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 222);
+            this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 166);
             this.groupBox_Keybindings_AUDIO.TabIndex = 53;
             this.groupBox_Keybindings_AUDIO.TabStop = false;
             this.groupBox_Keybindings_AUDIO.Text = "Audio Key Bindings";
@@ -2824,7 +2855,7 @@
             // label_ChangeSelectedVolumeKey
             // 
             this.label_ChangeSelectedVolumeKey.AutoSize = true;
-            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(463, 195);
+            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(463, 129);
             this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
             this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(132, 13);
             this.label_ChangeSelectedVolumeKey.TabIndex = 61;
@@ -2833,7 +2864,7 @@
             // label_SFXVolumeKey
             // 
             this.label_SFXVolumeKey.AutoSize = true;
-            this.label_SFXVolumeKey.Location = new System.Drawing.Point(464, 169);
+            this.label_SFXVolumeKey.Location = new System.Drawing.Point(464, 112);
             this.label_SFXVolumeKey.Name = "label_SFXVolumeKey";
             this.label_SFXVolumeKey.Size = new System.Drawing.Size(71, 13);
             this.label_SFXVolumeKey.TabIndex = 60;
@@ -2842,7 +2873,7 @@
             // label_VoiceOverVolumeKey
             // 
             this.label_VoiceOverVolumeKey.AutoSize = true;
-            this.label_VoiceOverVolumeKey.Location = new System.Drawing.Point(464, 143);
+            this.label_VoiceOverVolumeKey.Location = new System.Drawing.Point(464, 95);
             this.label_VoiceOverVolumeKey.Name = "label_VoiceOverVolumeKey";
             this.label_VoiceOverVolumeKey.Size = new System.Drawing.Size(104, 13);
             this.label_VoiceOverVolumeKey.TabIndex = 59;
@@ -2851,7 +2882,7 @@
             // label_MicrophoneVolumeKey
             // 
             this.label_MicrophoneVolumeKey.AutoSize = true;
-            this.label_MicrophoneVolumeKey.Location = new System.Drawing.Point(464, 115);
+            this.label_MicrophoneVolumeKey.Location = new System.Drawing.Point(464, 78);
             this.label_MicrophoneVolumeKey.Name = "label_MicrophoneVolumeKey";
             this.label_MicrophoneVolumeKey.Size = new System.Drawing.Size(107, 13);
             this.label_MicrophoneVolumeKey.TabIndex = 58;
@@ -2860,7 +2891,7 @@
             // label_Player2VolumeKey
             // 
             this.label_Player2VolumeKey.AutoSize = true;
-            this.label_Player2VolumeKey.Location = new System.Drawing.Point(464, 88);
+            this.label_Player2VolumeKey.Location = new System.Drawing.Point(464, 61);
             this.label_Player2VolumeKey.Name = "label_Player2VolumeKey";
             this.label_Player2VolumeKey.Size = new System.Drawing.Size(86, 13);
             this.label_Player2VolumeKey.TabIndex = 57;
@@ -2869,7 +2900,7 @@
             // label_Player1VolumeKey
             // 
             this.label_Player1VolumeKey.AutoSize = true;
-            this.label_Player1VolumeKey.Location = new System.Drawing.Point(464, 62);
+            this.label_Player1VolumeKey.Location = new System.Drawing.Point(464, 44);
             this.label_Player1VolumeKey.Name = "label_Player1VolumeKey";
             this.label_Player1VolumeKey.Size = new System.Drawing.Size(86, 13);
             this.label_Player1VolumeKey.TabIndex = 56;
@@ -2878,7 +2909,7 @@
             // label_SongVolumeKey
             // 
             this.label_SongVolumeKey.AutoSize = true;
-            this.label_SongVolumeKey.Location = new System.Drawing.Point(464, 39);
+            this.label_SongVolumeKey.Location = new System.Drawing.Point(464, 27);
             this.label_SongVolumeKey.Name = "label_SongVolumeKey";
             this.label_SongVolumeKey.Size = new System.Drawing.Size(76, 13);
             this.label_SongVolumeKey.TabIndex = 55;
@@ -2887,7 +2918,7 @@
             // label_MasterVolumeKey
             // 
             this.label_MasterVolumeKey.AutoSize = true;
-            this.label_MasterVolumeKey.Location = new System.Drawing.Point(464, 16);
+            this.label_MasterVolumeKey.Location = new System.Drawing.Point(464, 10);
             this.label_MasterVolumeKey.Name = "label_MasterVolumeKey";
             this.label_MasterVolumeKey.Size = new System.Drawing.Size(83, 13);
             this.label_MasterVolumeKey.TabIndex = 54;
@@ -2927,7 +2958,7 @@
             // listBox_Modlist_AUDIO
             // 
             this.listBox_Modlist_AUDIO.FormattingEnabled = true;
-            this.listBox_Modlist_AUDIO.Location = new System.Drawing.Point(22, 29);
+            this.listBox_Modlist_AUDIO.Location = new System.Drawing.Point(6, 19);
             this.listBox_Modlist_AUDIO.Name = "listBox_Modlist_AUDIO";
             this.listBox_Modlist_AUDIO.Size = new System.Drawing.Size(185, 134);
             this.listBox_Modlist_AUDIO.TabIndex = 5;
@@ -3605,6 +3636,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_RewindBy);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_LoopingLeadUp);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Profiles_RevertBackup);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_OverrideInputVolume);
@@ -3620,6 +3652,36 @@
             this.tabPage_ModSettings_Misc.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
+            // 
+            // groupBox_RewindBy
+            // 
+            this.groupBox_RewindBy.Controls.Add(this.nUpDown_RewindBy);
+            this.groupBox_RewindBy.Location = new System.Drawing.Point(358, 343);
+            this.groupBox_RewindBy.Name = "groupBox_RewindBy";
+            this.groupBox_RewindBy.Size = new System.Drawing.Size(154, 62);
+            this.groupBox_RewindBy.TabIndex = 100012;
+            this.groupBox_RewindBy.TabStop = false;
+            this.groupBox_RewindBy.Text = "Rewind By (seconds)";
+            this.groupBox_RewindBy.Visible = false;
+            // 
+            // nUpDown_RewindBy
+            // 
+            this.nUpDown_RewindBy.DecimalPlaces = 3;
+            this.nUpDown_RewindBy.Increment = new decimal(new int[] {
+            250,
+            0,
+            0,
+            196608});
+            this.nUpDown_RewindBy.Location = new System.Drawing.Point(16, 23);
+            this.nUpDown_RewindBy.Maximum = new decimal(new int[] {
+            90,
+            0,
+            0,
+            0});
+            this.nUpDown_RewindBy.Name = "nUpDown_RewindBy";
+            this.nUpDown_RewindBy.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_RewindBy.TabIndex = 0;
+            this.nUpDown_RewindBy.ValueChanged += new System.EventHandler(this.Save_RewindBy);
             // 
             // groupBox_LoopingLeadUp
             // 
@@ -6345,6 +6407,18 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_FixOculusCrash
+            // 
+            this.checkBox_FixOculusCrash.AutoSize = true;
+            this.checkBox_FixOculusCrash.Location = new System.Drawing.Point(11, 400);
+            this.checkBox_FixOculusCrash.Name = "checkBox_FixOculusCrash";
+            this.checkBox_FixOculusCrash.Size = new System.Drawing.Size(105, 17);
+            this.checkBox_FixOculusCrash.TabIndex = 77;
+            this.checkBox_FixOculusCrash.Text = "Fix Oculus Crash";
+            this.checkBox_FixOculusCrash.UseVisualStyleBackColor = true;
+            this.checkBox_FixOculusCrash.CheckedChanged += new System.EventHandler(this.Save_FixOculusCrash);
+            this.checkBox_FixOculusCrash.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6429,6 +6503,8 @@
             this.groupBox_MidiAutoTuneDevice.PerformLayout();
             this.tabPage_ModSettings_Misc.ResumeLayout(false);
             this.tabPage_ModSettings_Misc.PerformLayout();
+            this.groupBox_RewindBy.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_RewindBy)).EndInit();
             this.groupBox_LoopingLeadUp.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_LoopingLeadUp)).EndInit();
             this.groupBox_Profiles_RevertBackup.ResumeLayout(false);
@@ -6991,6 +7067,11 @@
         private System.Windows.Forms.Label label_LoopEndKey;
         private System.Windows.Forms.GroupBox groupBox_LoopingLeadUp;
         private System.Windows.Forms.NumericUpDown nUpDown_LoopingLeadUp;
+        private System.Windows.Forms.CheckBox checkBox_AllowRewind;
+        private System.Windows.Forms.GroupBox groupBox_RewindBy;
+        private System.Windows.Forms.NumericUpDown nUpDown_RewindBy;
+        private System.Windows.Forms.Label label_RewindKey;
+        private System.Windows.Forms.CheckBox checkBox_FixOculusCrash;
     }
 }
 
