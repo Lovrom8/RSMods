@@ -14,7 +14,9 @@
   on_finish:
   - cmd: >-
        7z a DLL.zip %APPVEYOR_BUILD_FOLDER%\Release\xinput1_3.dll
+
        7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\bin\x64\Release\*.* -r
 
        appveyor PushArtifact DLL.zip
+
        appveyor PushArtifact RSMods.zip
