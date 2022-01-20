@@ -3874,10 +3874,190 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
+
+
+
+        private void MidiInProc(int hMidiIn, Midi.Responses wMsg, uint dwInstance, uint midiMessage, uint timeStamp)
+        {
+            switch (wMsg)
+            {
+                case Midi.Responses.MIM_OPEN:
+                    Debug.WriteLine("wMsg=MIM_OPEN");
+                    break;
+                case Midi.Responses.MIM_CLOSE:
+                    Debug.WriteLine("wMsg=MIM_CLOSE");
+                    break;
+                case Midi.Responses.MIM_DATA:
+                    byte[] Data = BitConverter.GetBytes(midiMessage);
+                    byte[] Timestamp = BitConverter.GetBytes(timeStamp);
+
+                    // This should always be the case, but we should check just in case.
+                    // 0xFE - Keep-Alive signal. We don't need to log that.
+                    if (Data.Length == 4)
+                    {
+                        Midi.Status Status = (Midi.Status)Data[0];
+                        byte Channel = (byte)(Data[0] % 16);
+
+                        // Note Off
+                        if (Status >= Midi.Status.NoteOff && Status < Midi.Status.NoteOn)
+                        {
+                            Debug.WriteLine($"Note Off received on channel {Channel}");
+                        }
+                        
+                        // Note On
+                        else if (Status >= Midi.Status.NoteOn && Status < Midi.Status.AfterTouch)
+                        {
+                            Debug.WriteLine($"Note On received on channel {Channel}");
+                        }
+
+                        // Aftertouch
+                        else if (Status >= Midi.Status.AfterTouch && Status < Midi.Status.CC)
+                        {
+                            Debug.WriteLine($"Aftertouch received on channel {Channel}.");
+                        }
+
+                        // CC
+                        else if (Status >= Midi.Status.CC && Status < Midi.Status.PC)
+                        {
+                            Debug.WriteLine($"CC received on channel {Channel}.");
+                        }
+
+                        // PC
+                        else if (Status >= Midi.Status.PC && Status < Midi.Status.Pressure)
+                        {
+                            Debug.WriteLine($"PC received on channel {Channel}.");
+                        }
+
+                        // Pressure
+                        else if (Status >= Midi.Status.Pressure && Status < Midi.Status.PitchBend)
+                        {
+                            Debug.WriteLine($"Pressure received on channel {Channel}.");
+                        }
+
+                        // Pitch Bend
+                        else if (Status >= Midi.Status.PitchBend && Status < Midi.Status.SystemEx)
+                        {
+                            Debug.WriteLine($"Pitch Bend received on channel {Channel}.");
+                        }
+
+                        // SystemEx
+                        else if (Status >= Midi.Status.SystemEx)
+                        {
+                            // Keep-Alive status. Don't log this as it will spam the console.
+                            if (Status == (Midi.Status)0xFE)
+                            {
+                                return;
+                            }
+
+                            Debug.WriteLine($"SystemEX received on channel {Channel}.");
+                        }
+
+                        // Unknown status
+                        else
+                        {
+                            Debug.WriteLine($"Unknown MIDI status received on channel {Channel}!");
+                        }
+
+                    }
+                        
+                   
+                    break;
+                case Midi.Responses.MIM_LONGDATA:
+                    Debug.WriteLine("wMsg=MIM_LONGDATA");
+                    break;
+                case Midi.Responses.MIM_ERROR:
+                    Debug.WriteLine("wMsg=MIM_ERROR");
+                    break;
+                case Midi.Responses.MIM_LONGERROR:
+                    Debug.WriteLine("wMsg=MIM_LONGERROR");
+                    break;
+                case Midi.Responses.MIM_MOREDATA:
+                    Debug.WriteLine("wMsg=MIM_MOREDATA");
+                    break;
+                default:
+                    Debug.WriteLine("wMsg = unknown");
+                    break;
+            }
+        }
+
+        private void checkBox_EnabledMidiIn_CheckedChanged(object sender, EventArgs e)
+        {
+
+            // Enable
+            if (checkBox_EnabledMidiIn.Checked)
+            {
+                if (listBox_ListMidiInDevices.SelectedIndex == -1)
+                    return;
+
+                uint numberOfMidiInDevices = Midi.midiInGetNumDevs();
+
+                Debug.WriteLine("Looking for device");
+
+                for (uint deviceNumber = 0; deviceNumber < numberOfMidiInDevices; deviceNumber++)
+                {
+                    Midi.MIDIINCAPS temp = new Midi.MIDIINCAPS { };
+                    Midi.midiInGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIINCAPS)));
+
+                    if(temp.szPname == listBox_ListMidiInDevices.SelectedItem.ToString())
+                    {
+                        Debug.WriteLine($"Found device: {temp.szPname}");
+                        Midi.SelectedMidiInDeviceId = deviceNumber;
+                        break;
+                    }
+                }
+
+                if (Midi.SelectedMidiInDeviceId == 2014)
+                    return;
+
+                Debug.WriteLine(Midi.midiInOpen(ref Midi.MidiInHandle, Midi.SelectedMidiInDeviceId, MidiInProc, 0, 0x30000));
+
+                Debug.WriteLine(Midi.midiInStart(Midi.MidiInHandle));
+
+                Debug.WriteLine("Set up Midi In");
+            }
+            // Disable
+            else
+            {
+                Midi.midiInStop(Midi.MidiInHandle);
+                Midi.midiInClose(Midi.MidiInHandle);
+
+                Midi.MidiInHandle = (IntPtr)0;
+
+                Debug.WriteLine("Shutdown Midi In");
+            }
+        }
     }
+
+    
 
     public class Midi
     {
+        public enum Status : byte
+        {
+            NoteOff = 0x80,
+            NoteOn = 0x90,
+            AfterTouch = 0xA0,
+            CC = 0xB0,
+            PC = 0xC0,
+            Pressure = 0xD0,
+            PitchBend = 0xE0,
+            SystemEx = 0xF0
+        }
+
+
+        public static IntPtr MidiInHandle = (IntPtr)0;
+        public static uint SelectedMidiInDeviceId = 2014;
+
+        public enum Responses : uint
+        {
+            MIM_OPEN = 0x3C1,
+            MIM_CLOSE = 0x3C2,
+            MIM_DATA = 0x3C3,
+            MIM_LONGDATA = 0x3C4,
+            MIM_ERROR = 0x3C5,
+            MIM_LONGERROR = 0x3C6,
+            MIM_MOREDATA = 0x3CC
+        }
         public enum MMRESULT : uint
         {
             MMSYSERR_NOERROR,
@@ -3905,6 +4085,9 @@ namespace RSMods
             WAVERR_STILLPLAYING = 33,
             WAVERR_UNPREPARED = 34
         }
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void MidiInProc(int hMidiIn, Midi.Responses wMsg, uint dwInstance, uint dwParam1, uint dwParam2);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MIDIOUTCAPS
@@ -3943,6 +4126,18 @@ namespace RSMods
 
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiInGetNumDevs();
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiInOpen(ref IntPtr hmi, uint uDeviceID, [MarshalAs(UnmanagedType.FunctionPtr)] MidiInProc dwCallback, uint dwInstance, uint fdwOpen);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiInStart(IntPtr hmi);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiInStop(IntPtr hmi);
+
+        [DllImport("winmm.dll", SetLastError = true)]
+        public static extern uint midiInClose(IntPtr hmi);
     }
 #endregion
 }

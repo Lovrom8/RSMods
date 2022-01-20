@@ -62,6 +62,7 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_FixOculusCrash = new System.Windows.Forms.CheckBox();
             this.checkBox_AllowRewind = new System.Windows.Forms.CheckBox();
             this.checkBox_EnableLooping = new System.Windows.Forms.CheckBox();
             this.checkBox_UseAltSampleRate_Output = new System.Windows.Forms.CheckBox();
@@ -508,7 +509,8 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_FixOculusCrash = new System.Windows.Forms.CheckBox();
+            this.label_CurrentMidiIn = new System.Windows.Forms.Label();
+            this.checkBox_EnabledMidiIn = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1072,6 +1074,18 @@
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_FixOculusCrash
+            // 
+            this.checkBox_FixOculusCrash.AutoSize = true;
+            this.checkBox_FixOculusCrash.Location = new System.Drawing.Point(11, 400);
+            this.checkBox_FixOculusCrash.Name = "checkBox_FixOculusCrash";
+            this.checkBox_FixOculusCrash.Size = new System.Drawing.Size(105, 17);
+            this.checkBox_FixOculusCrash.TabIndex = 77;
+            this.checkBox_FixOculusCrash.Text = "Fix Oculus Crash";
+            this.checkBox_FixOculusCrash.UseVisualStyleBackColor = true;
+            this.checkBox_FixOculusCrash.CheckedChanged += new System.EventHandler(this.Save_FixOculusCrash);
+            this.checkBox_FixOculusCrash.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_AllowRewind
             // 
@@ -3422,6 +3436,8 @@
             // 
             // groupBox_MidiInDevice
             // 
+            this.groupBox_MidiInDevice.Controls.Add(this.checkBox_EnabledMidiIn);
+            this.groupBox_MidiInDevice.Controls.Add(this.label_CurrentMidiIn);
             this.groupBox_MidiInDevice.Controls.Add(this.label_SelectedMidiInDevice);
             this.groupBox_MidiInDevice.Controls.Add(this.listBox_ListMidiInDevices);
             this.groupBox_MidiInDevice.Location = new System.Drawing.Point(434, 276);
@@ -6407,17 +6423,25 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // checkBox_FixOculusCrash
+            // label_CurrentMidiIn
             // 
-            this.checkBox_FixOculusCrash.AutoSize = true;
-            this.checkBox_FixOculusCrash.Location = new System.Drawing.Point(11, 400);
-            this.checkBox_FixOculusCrash.Name = "checkBox_FixOculusCrash";
-            this.checkBox_FixOculusCrash.Size = new System.Drawing.Size(105, 17);
-            this.checkBox_FixOculusCrash.TabIndex = 77;
-            this.checkBox_FixOculusCrash.Text = "Fix Oculus Crash";
-            this.checkBox_FixOculusCrash.UseVisualStyleBackColor = true;
-            this.checkBox_FixOculusCrash.CheckedChanged += new System.EventHandler(this.Save_FixOculusCrash);
-            this.checkBox_FixOculusCrash.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            this.label_CurrentMidiIn.AutoSize = true;
+            this.label_CurrentMidiIn.Location = new System.Drawing.Point(6, 122);
+            this.label_CurrentMidiIn.Name = "label_CurrentMidiIn";
+            this.label_CurrentMidiIn.Size = new System.Drawing.Size(32, 13);
+            this.label_CurrentMidiIn.TabIndex = 2;
+            this.label_CurrentMidiIn.Text = "Midi: ";
+            // 
+            // checkBox_EnabledMidiIn
+            // 
+            this.checkBox_EnabledMidiIn.AutoSize = true;
+            this.checkBox_EnabledMidiIn.Location = new System.Drawing.Point(254, 122);
+            this.checkBox_EnabledMidiIn.Name = "checkBox_EnabledMidiIn";
+            this.checkBox_EnabledMidiIn.Size = new System.Drawing.Size(65, 17);
+            this.checkBox_EnabledMidiIn.TabIndex = 3;
+            this.checkBox_EnabledMidiIn.Text = "Enabled";
+            this.checkBox_EnabledMidiIn.UseVisualStyleBackColor = true;
+            this.checkBox_EnabledMidiIn.CheckedChanged += new System.EventHandler(this.checkBox_EnabledMidiIn_CheckedChanged);
             // 
             // MainForm
             // 
@@ -7072,6 +7096,8 @@
         private System.Windows.Forms.NumericUpDown nUpDown_RewindBy;
         private System.Windows.Forms.Label label_RewindKey;
         private System.Windows.Forms.CheckBox checkBox_FixOculusCrash;
+        private System.Windows.Forms.Label label_CurrentMidiIn;
+        private System.Windows.Forms.CheckBox checkBox_EnabledMidiIn;
     }
 }
 
