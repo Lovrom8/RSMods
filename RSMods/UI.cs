@@ -3901,19 +3901,19 @@ namespace RSMods
                         // Note Off
                         if (Status >= Midi.Status.NoteOff && Status < Midi.Status.NoteOn)
                         {
-                            Debug.WriteLine($"Note Off received on channel {Channel}");
+                            Debug.WriteLine($"Note Off received on channel {Channel}. Key = {Data[1]}. Velocity = {Data[2]}");
                         }
                         
                         // Note On
                         else if (Status >= Midi.Status.NoteOn && Status < Midi.Status.AfterTouch)
                         {
-                            Debug.WriteLine($"Note On received on channel {Channel}");
+                            Debug.WriteLine($"Note On received on channel {Channel}. Key = {Data[1]}. Velocity = {Data[2]}");
                         }
 
                         // Aftertouch
                         else if (Status >= Midi.Status.AfterTouch && Status < Midi.Status.CC)
                         {
-                            Debug.WriteLine($"Aftertouch received on channel {Channel}.");
+                            Debug.WriteLine($"Aftertouch received on channel {Channel}. Key = {Data[1]}. Touch = {Data[2]}");
                         }
 
                         // CC
@@ -3937,7 +3937,7 @@ namespace RSMods
                         // Pitch Bend
                         else if (Status >= Midi.Status.PitchBend && Status < Midi.Status.SystemEx)
                         {
-                            Debug.WriteLine($"Pitch Bend received on channel {Channel}.");
+                            Debug.WriteLine($"Pitch Bend received on channel {Channel}. LSB = {Data[1]}. MSB = {Data[2]}");
                         }
 
                         // SystemEx
@@ -3949,15 +3949,14 @@ namespace RSMods
                                 return;
                             }
 
-                            Debug.WriteLine($"SystemEX received on channel {Channel}.");
+                            Debug.WriteLine($"SystemEX received on channel {Channel}. Data1 = {Data[1]}. Data2 = {Data[2]}");
                         }
 
                         // Unknown status
                         else
                         {
-                            Debug.WriteLine($"Unknown MIDI status received on channel {Channel}!");
+                            Debug.WriteLine($"Unknown MIDI status received on channel {Channel}! Status = {Data[0]}. Data1 = {Data[1]}. Data2 = {Data[2]}");
                         }
-
                     }
                    
                     break;
