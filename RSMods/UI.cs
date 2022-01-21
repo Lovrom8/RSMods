@@ -3959,7 +3959,6 @@ namespace RSMods
                         }
 
                     }
-                        
                    
                     break;
                 case Midi.Responses.MIM_LONGDATA:
@@ -4009,7 +4008,8 @@ namespace RSMods
                 if (Midi.SelectedMidiInDeviceId == 2014)
                     return;
 
-                Debug.WriteLine(Midi.midiInOpen(ref Midi.MidiInHandle, Midi.SelectedMidiInDeviceId, MidiInProc, 0, 0x30000));
+                Midi.MidiInProcessing = MidiInProc;
+                Debug.WriteLine(Midi.midiInOpen(ref Midi.MidiInHandle, Midi.SelectedMidiInDeviceId, Midi.MidiInProcessing, 0, 0x30000));
 
                 Debug.WriteLine(Midi.midiInStart(Midi.MidiInHandle));
 
@@ -4047,6 +4047,7 @@ namespace RSMods
 
         public static IntPtr MidiInHandle = (IntPtr)0;
         public static uint SelectedMidiInDeviceId = 2014;
+        public static MidiInProc MidiInProcessing = null;
 
         public enum Responses : uint
         {
