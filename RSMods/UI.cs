@@ -3919,13 +3919,13 @@ namespace RSMods
                         // CC
                         else if (Status >= Midi.Status.CC && Status < Midi.Status.PC)
                         {
-                            Debug.WriteLine($"CC received on channel {Channel}.");
+                            Debug.WriteLine($"CC received on channel {Channel}. Bank = {Data[1]}. Value = {Data[2]}");
                         }
 
                         // PC
                         else if (Status >= Midi.Status.PC && Status < Midi.Status.Pressure)
                         {
-                            Debug.WriteLine($"PC received on channel {Channel}.");
+                            Debug.WriteLine($"PC received on channel {Channel}. Program = {Data[1]}");
                         }
 
                         // Pressure
