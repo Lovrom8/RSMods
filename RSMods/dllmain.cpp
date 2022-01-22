@@ -264,7 +264,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// Change Tuning Offset mod
 			else if (keyPressed == Settings::GetKeyBind("TuningOffsetKey") && Settings::ReturnSettingValue("AutoTuneForSong") == "on") {
-				if (GetKeyState(VK_SHIFT) & 0x8000) // Is Shift Pressed
+				if (GetKeyState(VK_CONTROL) & 0x8000) // Is Control Pressed
 					Midi::tuningOffset--;
 				else
 					Midi::tuningOffset++;
@@ -327,7 +327,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// Looping mod. Set loop starting point.
 			else if (keyPressed == Settings::GetKeyBind("LoopStartKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
-				if (GetAsyncKeyState(VK_SHIFT) < 0) { // Is Shift Pressed.
+				if (GetKeyState(VK_CONTROL) & 0x8000) { // Is Control Pressed.
 					loopStart = NULL;
 					loopEnd = NULL;
 				}
@@ -344,7 +344,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// Looping mod. Set loop ending point.
 			else if (keyPressed == Settings::GetKeyBind("LoopEndKey") && Settings::ReturnSettingValue("AllowLooping") == "on" && MemHelpers::IsInStringArray(D3DHooks::currentMenu, fastRRModes)) {
-				if (GetAsyncKeyState(VK_SHIFT) < 0) { // Is Shift Pressed.
+				if (GetKeyState(VK_CONTROL) & 0x8000) { // Is Control Pressed.
 					loopEnd = NULL;
 				}
 				else {
