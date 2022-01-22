@@ -26,7 +26,7 @@ byte MemHelpers::getLowestStringTuning() {
 /// <param name="verbose"> - Should we show the tuning in the console **DEBUG BUILD ONLY**</param>
 /// <returns>Current Tuning in a Byte[6] array.</returns>
 byte* MemHelpers::GetCurrentTuning(bool verbose) {
-	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
+	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets, true);
 
 	// Null Pointer Check
 	if (!addrTuning) {
