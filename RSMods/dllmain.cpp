@@ -409,7 +409,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				realSongSpeed = RiffRepeater::GetSpeed(true);
 
 				// Add / Subtract User specified Interval
-				if (GetAsyncKeyState(VK_SHIFT) < 0)
+				if (GetKeyState(VK_CONTROL) & 0x8000)
 					realSongSpeed -= (float)Settings::GetModSetting("RRSpeedInterval");
 				else
 					realSongSpeed += (float)Settings::GetModSetting("RRSpeedInterval");
