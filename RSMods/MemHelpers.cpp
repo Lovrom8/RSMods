@@ -125,10 +125,10 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 /// <returns>Should we Display The Extended Range Colors?</returns>
 bool MemHelpers::IsExtendedRangeSong() {
-	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
+	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
 
 	// Null Pointer Check
-	if (!addrTimer) {
+	if (!addrTimerEnabled) {
 		std::cout << "Invalid Pointer: IsExtendedRangeSong" << std::endl;
 		return false;
 	}
@@ -448,13 +448,16 @@ void MemHelpers::ToggleLoft() {
 }
 
 float MemHelpers::SongTimer() {
-	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
+	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
+
 
 	// Null Pointer Check
-	if (!addrTimer) {
+	if (!addrTimerEnabled) {
 		std::cout << "Invalid Pointer: ShowSongTimer" << std::endl;
 		return 0.f;
 	}
+
+	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
 
 	return *(float*)addrTimer;
 }
@@ -464,7 +467,7 @@ float MemHelpers::SongTimer() {
 /// </summary>
 /// <param name="enabled"> - Should we turn on colors or turn off?</param>
 void MemHelpers::ToggleCB(bool enabled) {
-	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
+	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
 
 	// Null Pointers Check

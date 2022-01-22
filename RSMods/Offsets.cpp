@@ -93,8 +93,8 @@ namespace Offsets {
 
 	// Timer
 	uintptr_t ptr_timer = 0x00F5C4FC;
-	//std::vector<unsigned int> ptr_timerOffsets{ 0xB0, 0x538, 0x8 }; // Single Player Only Value
-	std::vector<unsigned int> ptr_timerOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 }; // Singleplayer & Multiplayer
+	std::vector<unsigned int> ptr_timerEnabledOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 };
+	std::vector<unsigned int> ptr_timerOffsets{ 0x24, 0x44, 0x4C, 0x54, 0xD8 };
 
 	// Grey Out Note Timer
 	uintptr_t ptr_greyOutNoteTimer = 0x00F5C5AC;
