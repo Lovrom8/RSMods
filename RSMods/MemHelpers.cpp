@@ -125,7 +125,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 /// <returns>Should we Display The Extended Range Colors?</returns>
 bool MemHelpers::IsExtendedRangeSong() {
-	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
+	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 
 	// Null Pointer Check
 	if (!addrTimerEnabled) {
@@ -448,18 +448,32 @@ void MemHelpers::ToggleLoft() {
 }
 
 float MemHelpers::SongTimer() {
-	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
-
+	uintptr_t addrTimerBase = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
+	uintptr_t addrTimerRare = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerRareOffsets);
 
 	// Null Pointer Check
-	if (!addrTimerEnabled) {
-		std::cout << "Invalid Pointer: ShowSongTimer" << std::endl;
+	if (!addrTimerBase) {
+		std::cout << "Invalid Pointer: (BASE) ShowSongTimer" << std::endl;
 		return 0.f;
 	}
 
-	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerOffsets);
+	// Null Pointer Check
+	// At this point, we can verify that the timer is a valid time.
+	if (!addrTimerRare) {
+		std::cout << "Invalid Pointer: (RARE) ShowSongTimer" << std::endl;
+		return *(float*)addrTimerBase;
+	}
 
-	return *(float*)addrTimer;
+	// We entered a song where the base timer does not work.
+	// Cause for this is unknown but we need to check, or time based mods (looping, song timer) will break.
+	// Ex: Desolate Motion, or Rocksmith 2012 Theme.
+	if (IsInStringArray(GetCurrentMenu(), songModes) && *(float*)addrTimerBase == 0.f && *(float*)addrTimerRare != 0.f) {
+		return *(float*)addrTimerRare;
+	}
+	// This is the default case, and will be used 99.99% of the time.
+	else {
+		return *(float*)addrTimerBase;
+	}
 }
 
 /// <summary>
@@ -467,7 +481,7 @@ float MemHelpers::SongTimer() {
 /// </summary>
 /// <param name="enabled"> - Should we turn on colors or turn off?</param>
 void MemHelpers::ToggleCB(bool enabled) {
-	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerEnabledOffsets);
+	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
 
 	// Null Pointers Check
