@@ -180,7 +180,7 @@ namespace RSMods
                     { ReadSettings.OverrideInputVolumeIdentifier, CreateDefaultOnOldINI(ReadSettings.OverrideInputVolumeIdentifier, "17")}, // What volume should we use when the user wants to override the default input volume?
                     { ReadSettings.AlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.AlternativeOutputSampleRateIdentifier, "48000") }, // Alternative frequency to use when looking for Audio Output devices.
                     { ReadSettings.LoopingLeadUpIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopingLeadUpIdentifier, "0") }, // Amount of lead-up time we should give for loops.
-                    { ReadSettings.RewindByIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindByIdentifier, "250") }, // Amount of time (in ms) to go back when the user presses the rewind key.
+                    { ReadSettings.RewindByIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindByIdentifier, "5000") }, // Amount of time (in ms) to go back when the user presses the rewind key.
                 }
             );
             saveSettingsOrDefaults.Add(
