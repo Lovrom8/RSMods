@@ -87,6 +87,7 @@ namespace Offsets {
 	// Timer
 	extern uintptr_t ptr_timer;
 	extern std::vector<unsigned int> ptr_timerBaseOffsets;
+	extern uintptr_t ptr_timerRare;
 	extern std::vector<unsigned int> ptr_timerRareOffsets;
 
 	// Grey Out Note Timer

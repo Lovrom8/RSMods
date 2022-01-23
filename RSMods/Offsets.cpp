@@ -94,7 +94,8 @@ namespace Offsets {
 	// Timer
 	uintptr_t ptr_timer = 0x00F5C4FC;
 	std::vector<unsigned int> ptr_timerBaseOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 };
-	std::vector<unsigned int> ptr_timerRareOffsets{ 0x24, 0x44, 0x4C, 0x54, 0xD8 };
+	uintptr_t ptr_timerRare = 0x00F5C4CC;
+	std::vector<unsigned int> ptr_timerRareOffsets{ 0x20, 0x28, 0x0, 0x24, 0xC, 0x3B4 };
 
 	// Grey Out Note Timer
 	uintptr_t ptr_greyOutNoteTimer = 0x00F5C5AC;
