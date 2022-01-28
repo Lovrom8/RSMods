@@ -460,6 +460,7 @@ float MemHelpers::SongTimer() {
 	// Null Pointer Check
 	// At this point, we can verify that the timer is a valid time.
 	if (!addrTimerRare) {
+		std::cout << "Invalid Pointer: (RARE) ShowSongTimer" << std::endl;
 		return *(float*)addrTimerBase;
 	}
 

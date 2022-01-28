@@ -781,7 +781,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		}
 
 		// Show Song Timer mod.
-		if (D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f) {
+		if ((D3DHooks::showSongTimerOnScreen && MemHelpers::SongTimer() != 0.f)) {
 			MemHelpers::DX9DrawText(
 					ConvertFloatTimeToStringTime(MemHelpers::SongTimer()),
 					whiteText,
