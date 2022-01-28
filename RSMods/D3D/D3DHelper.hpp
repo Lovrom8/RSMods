@@ -79,7 +79,7 @@ inline std::vector<std::string> songModes = { // These are all the menus where y
 
 	// Misc menus
 	"Tuner",
-	"MixerMenu",
+	//"MixerMenu",
 	"HelpList",
 	"SideList",
 	"CalibrationMeter",
