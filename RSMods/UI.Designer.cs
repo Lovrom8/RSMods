@@ -259,6 +259,8 @@
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_AutoTuning = new System.Windows.Forms.TabPage();
             this.groupBox_MidiInDevice = new System.Windows.Forms.GroupBox();
+            this.checkBox_EnabledMidiIn = new System.Windows.Forms.CheckBox();
+            this.label_CurrentMidiIn = new System.Windows.Forms.Label();
             this.label_SelectedMidiInDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiInDevices = new System.Windows.Forms.ListBox();
             this.groupBox_MidiAutoTuningWhen = new System.Windows.Forms.GroupBox();
@@ -473,6 +475,7 @@
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
+            this.button_EncryptProfile = new System.Windows.Forms.Button();
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
@@ -509,8 +512,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_CurrentMidiIn = new System.Windows.Forms.Label();
-            this.checkBox_EnabledMidiIn = new System.Windows.Forms.CheckBox();
+            this.button_DecryptProfile = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -3448,6 +3450,26 @@
             this.groupBox_MidiInDevice.Text = "Midi In Device";
             this.groupBox_MidiInDevice.Visible = false;
             // 
+            // checkBox_EnabledMidiIn
+            // 
+            this.checkBox_EnabledMidiIn.AutoSize = true;
+            this.checkBox_EnabledMidiIn.Location = new System.Drawing.Point(254, 122);
+            this.checkBox_EnabledMidiIn.Name = "checkBox_EnabledMidiIn";
+            this.checkBox_EnabledMidiIn.Size = new System.Drawing.Size(65, 17);
+            this.checkBox_EnabledMidiIn.TabIndex = 3;
+            this.checkBox_EnabledMidiIn.Text = "Enabled";
+            this.checkBox_EnabledMidiIn.UseVisualStyleBackColor = true;
+            this.checkBox_EnabledMidiIn.CheckedChanged += new System.EventHandler(this.checkBox_EnabledMidiIn_CheckedChanged);
+            // 
+            // label_CurrentMidiIn
+            // 
+            this.label_CurrentMidiIn.AutoSize = true;
+            this.label_CurrentMidiIn.Location = new System.Drawing.Point(6, 122);
+            this.label_CurrentMidiIn.Name = "label_CurrentMidiIn";
+            this.label_CurrentMidiIn.Size = new System.Drawing.Size(32, 13);
+            this.label_CurrentMidiIn.TabIndex = 2;
+            this.label_CurrentMidiIn.Text = "Midi: ";
+            // 
             // label_SelectedMidiInDevice
             // 
             this.label_SelectedMidiInDevice.AutoSize = true;
@@ -6051,6 +6073,8 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
+            this.tab_Profiles.Controls.Add(this.button_DecryptProfile);
+            this.tab_Profiles.Controls.Add(this.button_EncryptProfile);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
             this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
@@ -6064,6 +6088,16 @@
             this.tab_Profiles.Size = new System.Drawing.Size(1150, 513);
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
+            // 
+            // button_EncryptProfile
+            // 
+            this.button_EncryptProfile.Location = new System.Drawing.Point(244, 79);
+            this.button_EncryptProfile.Name = "button_EncryptProfile";
+            this.button_EncryptProfile.Size = new System.Drawing.Size(75, 23);
+            this.button_EncryptProfile.TabIndex = 12;
+            this.button_EncryptProfile.Text = "Encrypt";
+            this.button_EncryptProfile.UseVisualStyleBackColor = true;
+            this.button_EncryptProfile.Click += new System.EventHandler(this.button_EncryptProfile_Click);
             // 
             // groupBox_Profiles_Rewards
             // 
@@ -6423,25 +6457,15 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_CurrentMidiIn
+            // button_DecryptProfile
             // 
-            this.label_CurrentMidiIn.AutoSize = true;
-            this.label_CurrentMidiIn.Location = new System.Drawing.Point(6, 122);
-            this.label_CurrentMidiIn.Name = "label_CurrentMidiIn";
-            this.label_CurrentMidiIn.Size = new System.Drawing.Size(32, 13);
-            this.label_CurrentMidiIn.TabIndex = 2;
-            this.label_CurrentMidiIn.Text = "Midi: ";
-            // 
-            // checkBox_EnabledMidiIn
-            // 
-            this.checkBox_EnabledMidiIn.AutoSize = true;
-            this.checkBox_EnabledMidiIn.Location = new System.Drawing.Point(254, 122);
-            this.checkBox_EnabledMidiIn.Name = "checkBox_EnabledMidiIn";
-            this.checkBox_EnabledMidiIn.Size = new System.Drawing.Size(65, 17);
-            this.checkBox_EnabledMidiIn.TabIndex = 3;
-            this.checkBox_EnabledMidiIn.Text = "Enabled";
-            this.checkBox_EnabledMidiIn.UseVisualStyleBackColor = true;
-            this.checkBox_EnabledMidiIn.CheckedChanged += new System.EventHandler(this.checkBox_EnabledMidiIn_CheckedChanged);
+            this.button_DecryptProfile.Location = new System.Drawing.Point(244, 109);
+            this.button_DecryptProfile.Name = "button_DecryptProfile";
+            this.button_DecryptProfile.Size = new System.Drawing.Size(75, 23);
+            this.button_DecryptProfile.TabIndex = 13;
+            this.button_DecryptProfile.Text = "Decrypt";
+            this.button_DecryptProfile.UseVisualStyleBackColor = true;
+            this.button_DecryptProfile.Click += new System.EventHandler(this.button_DecryptProfile_Click);
             // 
             // MainForm
             // 
@@ -7098,6 +7122,8 @@
         private System.Windows.Forms.CheckBox checkBox_FixOculusCrash;
         private System.Windows.Forms.Label label_CurrentMidiIn;
         private System.Windows.Forms.CheckBox checkBox_EnabledMidiIn;
+        private System.Windows.Forms.Button button_EncryptProfile;
+        private System.Windows.Forms.Button button_DecryptProfile;
     }
 }
 

@@ -3203,25 +3203,25 @@ namespace RSMods
 
             Profiles_UnpackProfile();
 
-            List<string> ownedRS1DLC = Profile_Sections.Loaded_Stats.DLCTag.Keys.ToList();
+            // List<string> ownedRS1DLC = Profile_Sections.Loaded_Stats.DLCTag.Keys.ToList();
 
             List<string[]> dlcKeyArrayList = new List<string[]>();
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[0].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[1].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[2].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[3].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[4].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[5].ToArray());
-            dlcKeyArrayList.Add(Profile_Sections.Loaded_FavoritesList.FavoritesList.ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[0].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[1].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[2].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[3].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[4].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_Songlists.SongLists[5].ToArray());
+            // dlcKeyArrayList.Add(Profile_Sections.Loaded_FavoritesList.FavoritesList.ToArray());
 
             foreach (SongData song in Songs.ToList())
             {
 
-                if ((song.RS1AppID != 0 && !ownedRS1DLC.Contains(song.RS1AppID.ToString())) || song.Artist == String.Empty || song.Title == String.Empty || !song.Shipping)
-                {
-                    Songs.Remove(song);
-                    continue;
-                }
+                //if ((song.RS1AppID != 0 && !ownedRS1DLC.Contains(song.RS1AppID.ToString())) || song.Artist == String.Empty || song.Title == String.Empty || !song.Shipping)
+                //{
+                //    Songs.Remove(song);
+                //    continue;
+                //}
 
                 bool inSonglist1 = false, inSonglist2 = false, inSonglist3 = false, inSonglist4 = false, inSonglist5 = false, inSonglist6 = false, inFavorites = false;
 
@@ -3276,7 +3276,7 @@ namespace RSMods
             if (currentUnpackedProfile != listBox_Profiles_AvailableProfiles.SelectedItem.ToString())
             {
                 currentUnpackedProfile = listBox_Profiles_AvailableProfiles.SelectedItem.ToString();
-                Profiles_OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString(), progressBar_Profiles_LoadPsarcs);
+                // Profiles_OpenProfileFromProfileName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString(), progressBar_Profiles_LoadPsarcs);
             }
         }
 
@@ -3286,7 +3286,7 @@ namespace RSMods
             groupBox_Profiles_Rewards.Visible = true;
         }
 
-        private void Profiles_OpenProfileFromProfileName(string profileName, ProgressBar progressbar = null) => Profile_Sections.LoadProfileSections(Profiles_GetProfilePathFromName(profileName), progressbar);
+        // private void Profiles_OpenProfileFromProfileName(string profileName, ProgressBar progressbar = null) => Profile_Sections.LoadProfileSections(Profiles_GetProfilePathFromName(profileName), progressbar);
 
         private string Profiles_GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
 
@@ -3295,8 +3295,8 @@ namespace RSMods
             if (listBox_Profiles_AvailableProfiles.SelectedIndex < 0)
                 return;
 
-            Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
-            Profiles.EncryptProfiles<Profile_Sections.FavoritesListRoot>(Profile_Sections.Loaded_FavoritesList, "FavoritesListRoot", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
+            // Profiles.EncryptProfiles<Profile_Sections.SongListsRoot>(Profile_Sections.Loaded_Songlists, "SongListsRoot", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
+            // Profiles.EncryptProfiles<Profile_Sections.FavoritesListRoot>(Profile_Sections.Loaded_FavoritesList, "FavoritesListRoot", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
             MessageBox.Show("Your songlists and favorites have been saved!");
         }
 
@@ -3308,7 +3308,7 @@ namespace RSMods
                 {
                     Profiles_UnpackProfile();
 
-                    Profile_Sections.LockAndUnlockRewards();
+                    // Profile_Sections.LockAndUnlockRewards();
                     Profiles_SaveRewardsToProfile();
                 }
             }
@@ -3324,7 +3324,7 @@ namespace RSMods
                 {
                     Profiles_UnpackProfile();
 
-                    Profile_Sections.LockAndUnlockRewards(false);
+                    // Profile_Sections.LockAndUnlockRewards(false);
                     Profiles_SaveRewardsToProfile();
                 }
             }
@@ -3334,7 +3334,7 @@ namespace RSMods
 
         private void Profiles_SaveRewardsToProfile()
         {
-            Profiles.EncryptProfiles<Profile_Sections.Prizes>(Profile_Sections.Loaded_Prizes, "Prizes", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
+            // Profiles.EncryptProfiles<Profile_Sections.Prizes>(Profile_Sections.Loaded_Prizes, "Prizes", Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(currentUnpackedProfile)), Profiles_GetProfilePathFromName(listBox_Profiles_AvailableProfiles.SelectedItem.ToString()));
             MessageBox.Show("Changes to Rewards have been saved!");
         }
 
@@ -3344,10 +3344,10 @@ namespace RSMods
             string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value.ToString()} - {dgv_Profiles_Songlists[1, rowIndex].Value.ToString()}";
             string DLCKey = Songs.FirstOrDefault(song => song.CommonName == commonName).DLCKey;
 
-            if (add && !Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
-                Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Add(DLCKey);
-            else if (!add && Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
-                Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Remove(DLCKey);
+            //if (add && !Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
+            //    Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Add(DLCKey);
+            //else if (!add && Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Contains(DLCKey))
+            //    Profile_Sections.Loaded_Songlists.SongLists[songlistNumber - 1].Remove(DLCKey);
 
         }
 
@@ -3357,10 +3357,10 @@ namespace RSMods
             string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value.ToString()} - {dgv_Profiles_Songlists[1, rowIndex].Value.ToString()}";
             string DLCKey = Songs.FirstOrDefault(song => song.CommonName == commonName).DLCKey;
 
-            if (add && !Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
-                Profile_Sections.Loaded_FavoritesList.FavoritesList.Add(DLCKey);
-            else if (!add && Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
-                Profile_Sections.Loaded_FavoritesList.FavoritesList.Remove(DLCKey);
+            //if (add && !Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
+            //    Profile_Sections.Loaded_FavoritesList.FavoritesList.Add(DLCKey);
+            //else if (!add && Profile_Sections.Loaded_FavoritesList.FavoritesList.Contains(DLCKey))
+            //    Profile_Sections.Loaded_FavoritesList.FavoritesList.Remove(DLCKey);
         }
 
         private void Profiles_Songlists_DirtyState(object sender, EventArgs e)
@@ -4025,9 +4025,24 @@ namespace RSMods
                 Debug.WriteLine("Shutdown Midi In");
             }
         }
+
+        private void button_EncryptProfile_Click(object sender, EventArgs e)
+        {
+            using (StreamReader file = File.OpenText("decryptedprofile.json"))
+            {
+                Profiles.EncryptProfile(file.ReadToEnd(), "97CCE6AD412B447DAC28C9DA3A0CAEB1_PRFLDB");
+                MessageBox.Show("Done!");
+            }
+        }
+
+        private void button_DecryptProfile_Click(object sender, EventArgs e)
+        {
+            Profiles.DecryptProfiles("97CCE6AD412B447DAC28C9DA3A0CAEB1_PRFLDB", true, "decryptedprofile.json");
+            MessageBox.Show("Done!");
+        }
     }
 
-    
+
 
     public class Midi
     {
