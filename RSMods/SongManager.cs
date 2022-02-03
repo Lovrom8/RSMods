@@ -112,6 +112,10 @@ namespace RSMods
                     
             });
 
+            // Make sure we remove duplicate instances of the songs.
+            // We need to make our own Comparer class for it, since Equals() and GetHashCode() won't work for our custom type.
+            Songs = Songs.Distinct(new SongDataComparer()).ToList();
+
             if (progressBarAvailable)
             {
                 progressBar.Visible = false;
@@ -136,5 +140,27 @@ namespace RSMods
         public int RS1AppID { get; set; } // AppID from RS1CompatDLC
         public List<int> ArrangementTypes { get; set; } // Lead = 0, Rhythm = 1, Combo = 2, Bass = 3
         public List<SongArrangement.ArrangementAttributes.ArrangementTuning> Tunings { get; set; }
+    }
+
+    public class SongDataComparer : IEqualityComparer<SongData>
+    {
+        public bool Equals(SongData x, SongData y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            if (x.DLCKey == y.DLCKey)
+                return true;
+            else
+                return false;
+        }
+
+        public int GetHashCode(SongData obj)
+        {
+            return obj.DLCKey.GetHashCode();
+        }
+
     }
 }

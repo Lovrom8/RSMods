@@ -195,6 +195,8 @@ namespace RSMods
 
         #region Decrypt Profile
 
+        public static JObject DecryptedProfile = null;
+        
         private static void DecryptFile(Stream input, Stream output, byte[] key)
         {
             using (var rij = new RijndaelManaged())
@@ -295,10 +297,7 @@ namespace RSMods
                         brEnc.BaseStream.CopyTo(sw.BaseStream);
                     }
                 }
-
-                
             }
-            MessageBox.Show("Done!");
         }
 
         private static void EncryptFile(Stream input, Stream output, byte[] key)
@@ -310,5 +309,44 @@ namespace RSMods
             }
         }
         #endregion
+        #region Helpers
+        public static void ChangeRewardStatus(bool unlock)
+        {
+            JToken prizes = DecryptedProfile["Prizes"];
+
+            // Set number of points
+            prizes["NumPrizePoints"] = unlock ? 1300.0 : 0.0;
+            prizes["UnawardedPrizePoints"] = 0.0;
+
+            // Uplay Rewards. Since late 2020, all Uplay rewards are given out by default. Make sure these are always set to true.
+            prizes["UplayAction1"] = true;
+            prizes["UplayAction2"] = true;
+            prizes["UplayAction3"] = true;
+            prizes["UplayAction4"] = true;
+            prizes["UplayDlg1"] = true;
+            prizes["UplayDlg2"] = true;
+            prizes["UplayDlg3"] = true;
+            prizes["UplayDlg4"] = true;
+
+            // Rewards go all the way up to 186, but we have to skip a few entries
+            for (int i = 1; i < 187; i++)
+            {
+                if (i == 7 || i == 14 || i == 22 || i == 29 || i == 36 || i == 45 ||
+                    i == 60 || i == 68 || i == 77 || i == 83 || i == 93 || i == 100 ||
+                    i == 109 || i == 117 || i == 125 || i == 131 || i == 141 ||
+                    i == 148 || i == 154 || i == 155 || i == 164 || i == 169 || i == 184)
+                {
+                    continue;
+                }
+
+                prizes[$"IsPrizeAwarded_{i}"] = unlock;
+                prizes[$"HasPrizeDialogShown_{i}"] = unlock;
+            }
+
+            DecryptedProfile["Prizes"] = prizes;
+        }
+        #endregion
     }
+
+
 }

@@ -475,7 +475,6 @@
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
-            this.button_EncryptProfile = new System.Windows.Forms.Button();
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
             this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
             this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
@@ -512,7 +511,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.button_DecryptProfile = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -6073,8 +6071,6 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
-            this.tab_Profiles.Controls.Add(this.button_DecryptProfile);
-            this.tab_Profiles.Controls.Add(this.button_EncryptProfile);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
             this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
@@ -6088,16 +6084,6 @@
             this.tab_Profiles.Size = new System.Drawing.Size(1150, 513);
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
-            // 
-            // button_EncryptProfile
-            // 
-            this.button_EncryptProfile.Location = new System.Drawing.Point(244, 79);
-            this.button_EncryptProfile.Name = "button_EncryptProfile";
-            this.button_EncryptProfile.Size = new System.Drawing.Size(75, 23);
-            this.button_EncryptProfile.TabIndex = 12;
-            this.button_EncryptProfile.Text = "Encrypt";
-            this.button_EncryptProfile.UseVisualStyleBackColor = true;
-            this.button_EncryptProfile.Click += new System.EventHandler(this.button_EncryptProfile_Click);
             // 
             // groupBox_Profiles_Rewards
             // 
@@ -6456,16 +6442,6 @@
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
-            // button_DecryptProfile
-            // 
-            this.button_DecryptProfile.Location = new System.Drawing.Point(244, 109);
-            this.button_DecryptProfile.Name = "button_DecryptProfile";
-            this.button_DecryptProfile.Size = new System.Drawing.Size(75, 23);
-            this.button_DecryptProfile.TabIndex = 13;
-            this.button_DecryptProfile.Text = "Decrypt";
-            this.button_DecryptProfile.UseVisualStyleBackColor = true;
-            this.button_DecryptProfile.Click += new System.EventHandler(this.button_DecryptProfile_Click);
             // 
             // MainForm
             // 
@@ -7122,8 +7098,6 @@
         private System.Windows.Forms.CheckBox checkBox_FixOculusCrash;
         private System.Windows.Forms.Label label_CurrentMidiIn;
         private System.Windows.Forms.CheckBox checkBox_EnabledMidiIn;
-        private System.Windows.Forms.Button button_EncryptProfile;
-        private System.Windows.Forms.Button button_DecryptProfile;
     }
 }
 
