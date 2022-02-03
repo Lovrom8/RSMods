@@ -217,7 +217,9 @@ namespace RSMods
             using (var brDec = new EndianBinaryReader(dec, decrypted))
             {
                 //EVAS + header
-                br.ReadBytes(16);
+                br.ReadBytes(8);
+                UserId = br.ReadBytes(4);
+                br.ReadBytes(4);
                 uint zLen = br.ReadUInt32();
                 DecryptFile(br.BaseStream, decrypted, PCSaveKey);
 
@@ -261,11 +263,18 @@ namespace RSMods
         #endregion
         #region Encrypt Profile
 
-        private static byte[] SaveHeader = new byte[16]
+        private static byte[] SaveHeader = new byte[8]
         {
-            0x45, 0x56, 0x41, 0x53, 0x01, 0x00, 0x00, 0x00,
-            0x5D, 0x8F, 0xE7, 0x03, 0x00, 0x00, 0x10, 0x01,
+            0x45, 0x56, 0x41, 0x53,
+            0x01, 0x00, 0x00, 0x00
         };
+
+        private static byte[] UserId = new byte[4];
+        private static byte[] EndOfSaveHeader = new byte[4]
+        {
+            0x00, 0x00, 0x10, 0x01
+        };
+
 
         public static void EncryptProfile(string ProfileJson, string FileName)
         {
@@ -282,7 +291,9 @@ namespace RSMods
                 using (var compressed = new MemoryStream())
                 using (var brEnc = new EndianBinaryWriter(EndianBitConverter.Little, encrypted))
                 {
-                    brEnc.Write(SaveHeader, 0, 16);
+                    brEnc.Write(SaveHeader, 0, 8);
+                    brEnc.Write(UserId, 0, 4);
+                    brEnc.Write(EndOfSaveHeader, 0, 4);
                     brEnc.Write((uint)decryptedProfileArray.Length);
 
                     Zip(decryptedProfileArray, compressed, decryptedProfileArray.Length);

@@ -3300,7 +3300,7 @@ namespace RSMods
             if (listBox_Profiles_AvailableProfiles.SelectedIndex < 0)
                 return;
 
-            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), Profiles_GetProfilePathFromName(currentUnpackedProfile));
+            Profiles_ENCRYPT();
             MessageBox.Show("Your songlists and favorites have been saved!");
         }
 
@@ -3336,9 +3336,14 @@ namespace RSMods
                 MessageBox.Show("Make sure you have a profile selected!");
         }
 
+        private void Profiles_ENCRYPT()
+        {
+            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(Newtonsoft.Json.Formatting.None), Profiles_GetProfilePathFromName(currentUnpackedProfile));
+        }
+
         private void Profiles_SaveRewardsToProfile()
         {
-            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), Profiles_GetProfilePathFromName(currentUnpackedProfile));
+            Profiles_ENCRYPT();
             MessageBox.Show("Changes to Rewards have been saved!");
         }
 
