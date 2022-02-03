@@ -3300,7 +3300,7 @@ namespace RSMods
             if (listBox_Profiles_AvailableProfiles.SelectedIndex < 0)
                 return;
 
-            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), "backup_PRFLDB");
+            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), Profiles_GetProfilePathFromName(currentUnpackedProfile));
             MessageBox.Show("Your songlists and favorites have been saved!");
         }
 
@@ -3338,7 +3338,7 @@ namespace RSMods
 
         private void Profiles_SaveRewardsToProfile()
         {
-            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), "backup_PRFLDB");
+            Profiles.EncryptProfile(Profiles.DecryptedProfile.ToString(), Profiles_GetProfilePathFromName(currentUnpackedProfile));
             MessageBox.Show("Changes to Rewards have been saved!");
         }
 
