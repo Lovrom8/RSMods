@@ -116,6 +116,8 @@ namespace RSMods
             // We need to make our own Comparer class for it, since Equals() and GetHashCode() won't work for our custom type.
             Songs = Songs.Distinct(new SongDataComparer()).ToList();
 
+            Songs.Sort(CompareSongs);
+
             if (progressBarAvailable)
             {
                 progressBar.Visible = false;
@@ -123,6 +125,32 @@ namespace RSMods
             }
 
             return Songs;
+        }
+
+        private static int CompareSongs(SongData x, SongData y)
+        {
+            if (x == null)
+            {
+                if (y == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else
+            {
+                if (y == null)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return x.CommonName.CompareTo(y.CommonName); //
+                }
+            }
         }
     }
 
@@ -161,6 +189,7 @@ namespace RSMods
         {
             return obj.DLCKey.GetHashCode();
         }
-
     }
+
+    
 }
