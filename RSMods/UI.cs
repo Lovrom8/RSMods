@@ -3391,21 +3391,15 @@ namespace RSMods
             {
                 bool isChecked = Convert.ToBoolean(dgv_Profiles_Songlists[e.ColumnIndex, e.RowIndex].Value.ToString().ToLower());
 
+                // Favorites
                 if (e.ColumnIndex == 8)
                 {
-                    // Favorites
-                    if (isChecked)
-                        Profiles_SongToFavorites();
-                    else
-                        Profiles_SongToFavorites(false);
+                    Profiles_SongToFavorites(isChecked);
                 }
+                // Songlists
                 else
                 {
-                    // Songlists
-                    if (isChecked)
-                        Profiles_SongToSonglist(e.ColumnIndex - 1);
-                    else
-                        Profiles_SongToSonglist(e.ColumnIndex - 1, false);
+                    Profiles_SongToSonglist(e.ColumnIndex - 1, isChecked);
                 }
             }
         }
