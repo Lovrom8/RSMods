@@ -3291,6 +3291,7 @@ namespace RSMods
         {
             button_Profiles_LoadSongs.Visible = true;
             groupBox_Profiles_Rewards.Visible = true;
+            groupBox_Profile_MoreSongLists.Visible = true;
         }
 
         private string Profiles_GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
@@ -3331,6 +3332,25 @@ namespace RSMods
                     Profiles.ChangeRewardStatus(false);
                     Profiles_SaveRewardsToProfile();
                 }
+            }
+            else
+                MessageBox.Show("Make sure you have a profile selected!");
+        }
+
+        private void Profile_AddNewSongList(object sender, EventArgs e)
+        {
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
+            {
+                Profiles_UnpackProfile();
+
+                List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+
+                SongLists.Add(new List<string>());
+
+                Profiles.DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(SongLists);
+
+                Profiles_ENCRYPT();
+                MessageBox.Show("Your new song list is present in game!");
             }
             else
                 MessageBox.Show("Make sure you have a profile selected!");
