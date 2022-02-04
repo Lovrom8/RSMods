@@ -1,7 +1,7 @@
 #include "CustomSongTitles.hpp"
 #pragma warning(disable: 4302) // Typecast truncated from const _Elem* -> char (Leaving this because the user shouldn't have a song list name over 255).
 
-std::vector<std::string> songTitles(6);
+std::vector<std::string> songTitles(20);
 
 /// <summary>
 /// Hook to grab songlists. EAX = char* str "$[36969]SONG LIST". ESI = SongList Index (One-Indexed)
@@ -10,10 +10,26 @@ void __declspec(naked) hook_fakeTitles() {
 	__asm {
 		mov ecx, dword ptr ds : [0x135CB7C]		// Store the contents of 0x135CB7C into the ECX register. This is the line we are "replacing" to inject this hook.
 		pushad									// Save EAX, ECX, and EDX to the stack. 
-		mov ebx, 0x33							// Sets EBX to 0x33 / 51 / '3' in ASCII
-		add ebx, esi							// Add Song List Index to EBX. One-Indexed
-		mov byte ptr[eax + 0x6], bl				// "$[36969]SONG LIST" -> "$[3696X]SONG LIST" where "X" = 3 + SongList Index. Ex: Song list 2 would result in "$[36965]SONG LIST".
-		mov byte ptr[eax + 0x2], 0x34			// "$[3696X]SONG LIST" -> "$[4696X]SONG LIST". This allows us to throw the localized string into an unknown value, which we can later hijack to put our "localized" version in.
+		mov ebx, 0x2F							// Sets EBX to 0x2F / 47 / "/" in ASCII. This means that when we add the song index, we start at 0.
+		add ebx, esi							// Add Song List Index to EBX. One-Indexed, but we store it as 0 indexed.
+
+		// Defaults for normal songlist configs.
+		mov byte ptr[eax + 0x6], bl				// "$[36969]SONG LIST" -> "$[3696X]SONG LIST" where "X" = SongList Index. Ex: Song list 1 would result in "$[36960]SONG LIST".
+		mov byte ptr[eax + 0x2], 0x39			// "$[3696X]SONG LIST" -> "$[9696X]SONG LIST". This allows us to throw the localized string into an unknown value, which we can later hijack to put our "localized" version in.
+		mov byte ptr[eax + 0x3], 0x30			// "$[9696X]SONG LIST" -> "$[9096X]SONG LIST".
+		mov byte ptr[eax + 0x4], 0x30			// "$[9096X]SONG LIST" -> "$[9006X]SONG LIST".
+		mov byte ptr[eax + 0x5], 0x30			// "$[9006X]SONG LIST" -> "$[9000X]SONG LIST".
+
+		// Configs for users with more than 9 song lists.
+		cmp bl, 0x3A							// If it is below 0x3A, aka is a number in ASCII, jump to the exit.
+		jl ExitHookFakeTitle
+
+		sub bl, 0xA								// Reset the index to 0.
+		mov byte ptr[eax + 0x6], bl				// Set the new index of "X" in "$[9000X]SONG LIST".
+		mov byte ptr[eax + 0x5], 0x31			// "$[9000X]SONG LIST" -> "$[9001X]SONG LIST".
+
+	ExitHookFakeTitle:
+
 		popad									// Return EAX, ECX, and EDX from the stack.
 		jmp[Offsets::hookBackAddr_FakeTitles]	// Return to the original code.
 	}
@@ -31,18 +47,46 @@ const char* __stdcall missingLocalization(int localizationNumber, char* text) {
 
 	switch (localizationNumber)
 	{
-		case 46964:	// Song list 1
+		case 90000:	// Song list 1
 			return songTitles[0].c_str();
-		case 46965: // Song list 2
+		case 90001: // Song list 2
 			return songTitles[1].c_str();
-		case 46966: // Song list 3
+		case 90002: // Song list 3
 			return songTitles[2].c_str();
-		case 46967: // Song list 4
+		case 90003: // Song list 4
 			return songTitles[3].c_str();
-		case 46968: // Song list 5
+		case 90004: // Song list 5
 			return songTitles[4].c_str();
-		case 46969: // Song list 6
+		case 90005: // Song list 6
 			return songTitles[5].c_str();
+		case 90006: // Song list 7
+			return songTitles[6].c_str();
+		case 90007: // Song list 8
+			return songTitles[7].c_str();
+		case 90008: // Song list 9
+			return songTitles[8].c_str();
+		case 90009: // Song list 10
+			return songTitles[9].c_str();
+		case 90010: // Song list 11
+			return songTitles[10].c_str();
+		case 90011: // Song list 12
+			return songTitles[11].c_str();
+		case 90012: // Song list 13
+			return songTitles[12].c_str();
+		case 90013: // Song list 14
+			return songTitles[13].c_str();
+		case 90014: // Song list 15
+			return songTitles[14].c_str();
+		case 90015: // Song list 16
+			return songTitles[15].c_str();
+		case 90016: // Song list 17
+			return songTitles[16].c_str();
+		case 90017: // Song list 18
+			return songTitles[17].c_str();
+		case 90018: // Song list 19
+			return songTitles[18].c_str();
+		case 90019: // Song list 20
+			return songTitles[19].c_str();
 		default:
 			return string_buffer;
 	}

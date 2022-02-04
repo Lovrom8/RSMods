@@ -139,15 +139,14 @@ void Settings::Initialize()
 /// </summary>
 /// <returns>List of Custom Songlist Names</returns>
 std::vector<std::string> Settings::GetCustomSongTitles() {
-	std::vector<std::string> retList(6);
+	std::vector<std::string> retList(20);
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0)
 		return retList;
 
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 20; i++) {
 		std::string songListName = "SongListTitle_" + std::to_string(i + 1);
 		retList[i] = reader.GetValue("SongListTitles", songListName.c_str(), "SONG LIST");
-		//std::cout << "Song List #" << (i+1) << ": " << retList[i] << std::endl;
 	}
 
 	return retList;
