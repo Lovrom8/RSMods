@@ -4951,7 +4951,7 @@
             // 
             this.nUpDown_Rocksmith_LatencyBuffer.Location = new System.Drawing.Point(101, 26);
             this.nUpDown_Rocksmith_LatencyBuffer.Maximum = new decimal(new int[] {
-            10,
+            16,
             0,
             0,
             0});
