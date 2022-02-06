@@ -37,12 +37,29 @@ namespace RSMods
             saveSettingsOrDefaults.Add(
                 "[SongListTitles]", new Dictionary<string, string>
                 {
+                    // Default Song Lists (Included with the main game).
                     { ReadSettings.Songlist1Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist1Identifier, "Define Song List 1 Here") }, // Songlist 1
                     { ReadSettings.Songlist2Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist2Identifier, "Define Song List 2 Here") }, // Songlist 2
                     { ReadSettings.Songlist3Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist3Identifier, "Define Song List 3 Here") }, // Songlist 3
                     { ReadSettings.Songlist4Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist4Identifier, "Define Song List 4 Here") }, // Songlist 4
                     { ReadSettings.Songlist5Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist5Identifier, "Define Song List 5 Here") }, // Songlist 5
                     { ReadSettings.Songlist6Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist6Identifier, "Define Song List 6 Here") }, // Songlist 6
+
+                    // Additional Song Lists (Added through profile modification).
+                    { ReadSettings.Songlist7Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist7Identifier, "Define Song List 7 Here") }, // Songlist 7
+                    { ReadSettings.Songlist8Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist8Identifier, "Define Song List 8 Here") }, // Songlist 8
+                    { ReadSettings.Songlist9Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist9Identifier, "Define Song List 9 Here") }, // Songlist 9
+                    { ReadSettings.Songlist10Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist10Identifier, "Define Song List 10 Here") }, // Songlist 10
+                    { ReadSettings.Songlist11Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist11Identifier, "Define Song List 11 Here") }, // Songlist 11
+                    { ReadSettings.Songlist12Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist12Identifier, "Define Song List 12 Here") }, // Songlist 12
+                    { ReadSettings.Songlist13Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist13Identifier, "Define Song List 13 Here") }, // Songlist 13
+                    { ReadSettings.Songlist14Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist14Identifier, "Define Song List 14 Here") }, // Songlist 14
+                    { ReadSettings.Songlist15Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist15Identifier, "Define Song List 15 Here") }, // Songlist 15
+                    { ReadSettings.Songlist16Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist16Identifier, "Define Song List 16 Here") }, // Songlist 16
+                    { ReadSettings.Songlist17Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist17Identifier, "Define Song List 17 Here") }, // Songlist 17
+                    { ReadSettings.Songlist18Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist18Identifier, "Define Song List 18 Here") }, // Songlist 18
+                    { ReadSettings.Songlist19Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist19Identifier, "Define Song List 19 Here") }, // Songlist 19
+                    { ReadSettings.Songlist20Identifier, CreateDefaultOnOldINI(ReadSettings.Songlist20Identifier, "Define Song List 20 Here") }, // Songlist 20
                 }
             );
             saveSettingsOrDefaults.Add(

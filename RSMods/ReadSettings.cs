@@ -9,8 +9,12 @@ namespace RSMods
     {
         #region Setup Variables
         private static string
-                             // Song Lists
+                             // Song Lists (ones that come without modifying the profile).
                              Songlist1Name, Songlist2Name, Songlist3Name, Songlist4Name, Songlist5Name, Songlist6Name,
+                             // Song Lists (ones that have to be added manually by modifying the user's profile).
+                             Songlist7Name, Songlist8Name, Songlist9Name, Songlist10Name, Songlist11Name, Songlist12Name,
+                             Songlist13Name, Songlist14Name, Songlist15Name, Songlist16Name, Songlist17Name, Songlist18Name,
+                             Songlist19Name, Songlist20Name,
 
                              // Mod Key Bindings
                              ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey,
@@ -54,13 +58,29 @@ namespace RSMods
                              CustomGUITheme, CustomGUIBackgroundColor, CustomGUITextColor, CustomGUIButtonColor, BackupProfile, NumberOfBackups, SpeedUpLoadup;
 
         public static string
-            // Song List Identifiers
+            // Song List Identifiers (the ones that come with the game)
             Songlist1Identifier = "SongListTitle_1 = ",
             Songlist2Identifier = "SongListTitle_2 = ",
             Songlist3Identifier = "SongListTitle_3 = ",
             Songlist4Identifier = "SongListTitle_4 = ",
             Songlist5Identifier = "SongListTitle_5 = ",
             Songlist6Identifier = "SongListTitle_6 = ",
+
+            // Song List Identifiers (the ones that require profile modification)
+            Songlist7Identifier  = "SongListTitle_7 = ",
+            Songlist8Identifier  = "SongListTitle_8 = ",
+            Songlist9Identifier  = "SongListTitle_9 = ",
+            Songlist10Identifier = "SongListTitle_10 = ",
+            Songlist11Identifier = "SongListTitle_11 = ",
+            Songlist12Identifier = "SongListTitle_12 = ",
+            Songlist13Identifier = "SongListTitle_13 = ",
+            Songlist14Identifier = "SongListTitle_14 = ",
+            Songlist15Identifier = "SongListTitle_15 = ",
+            Songlist16Identifier = "SongListTitle_16 = ",
+            Songlist17Identifier = "SongListTitle_17 = ",
+            Songlist18Identifier = "SongListTitle_18 = ",
+            Songlist19Identifier = "SongListTitle_19 = ",
+            Songlist20Identifier = "SongListTitle_20 = ",
 
             // Keybindings
             ToggleLoftIdentifier                = "ToggleLoftKey = ",
@@ -270,7 +290,7 @@ namespace RSMods
             foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
             {
                 #region Song Lists
-                // Song Lists
+                // Song Lists (the ones that come with the game by default).
 
                 if (IdentifierIsFound(currentLine, Songlist1Identifier, identifierToGrab))
                     return FillSettingVariable(Songlist1Identifier, SettingType.STRING, currentLine, out Songlist1Name);
@@ -284,6 +304,36 @@ namespace RSMods
                     return FillSettingVariable(Songlist5Identifier, SettingType.STRING, currentLine, out Songlist5Name);
                 if (IdentifierIsFound(currentLine, Songlist6Identifier, identifierToGrab))
                     return FillSettingVariable(Songlist6Identifier, SettingType.STRING, currentLine, out Songlist6Name);
+
+                // Song Lists (the ones that have to manually be added).
+                if (IdentifierIsFound(currentLine, Songlist7Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist7Identifier, SettingType.STRING, currentLine, out Songlist7Name);
+                if (IdentifierIsFound(currentLine, Songlist8Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist8Identifier, SettingType.STRING, currentLine, out Songlist8Name);
+                if (IdentifierIsFound(currentLine, Songlist9Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist9Identifier, SettingType.STRING, currentLine, out Songlist9Name);
+                if (IdentifierIsFound(currentLine, Songlist10Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist10Identifier, SettingType.STRING, currentLine, out Songlist10Name);
+                if (IdentifierIsFound(currentLine, Songlist11Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist11Identifier, SettingType.STRING, currentLine, out Songlist11Name);
+                if (IdentifierIsFound(currentLine, Songlist12Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist12Identifier, SettingType.STRING, currentLine, out Songlist12Name);
+                if (IdentifierIsFound(currentLine, Songlist13Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist13Identifier, SettingType.STRING, currentLine, out Songlist13Name);
+                if (IdentifierIsFound(currentLine, Songlist14Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist14Identifier, SettingType.STRING, currentLine, out Songlist14Name);
+                if (IdentifierIsFound(currentLine, Songlist15Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist15Identifier, SettingType.STRING, currentLine, out Songlist15Name);
+                if (IdentifierIsFound(currentLine, Songlist16Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist16Identifier, SettingType.STRING, currentLine, out Songlist16Name);
+                if (IdentifierIsFound(currentLine, Songlist17Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist17Identifier, SettingType.STRING, currentLine, out Songlist17Name);
+                if (IdentifierIsFound(currentLine, Songlist18Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist18Identifier, SettingType.STRING, currentLine, out Songlist18Name);
+                if (IdentifierIsFound(currentLine, Songlist19Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist19Identifier, SettingType.STRING, currentLine, out Songlist19Name);
+                if (IdentifierIsFound(currentLine, Songlist20Identifier, identifierToGrab))
+                    return FillSettingVariable(Songlist20Identifier, SettingType.STRING, currentLine, out Songlist20Name);
                 #endregion
                 #region Keybindings
                 // Keybindings

@@ -513,6 +513,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.button_RemoveNewestSongList = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -6091,10 +6092,11 @@
             // 
             // groupBox_Profile_MoreSongLists
             // 
+            this.groupBox_Profile_MoreSongLists.Controls.Add(this.button_RemoveNewestSongList);
             this.groupBox_Profile_MoreSongLists.Controls.Add(this.button_AddNewSongList);
             this.groupBox_Profile_MoreSongLists.Location = new System.Drawing.Point(8, 387);
             this.groupBox_Profile_MoreSongLists.Name = "groupBox_Profile_MoreSongLists";
-            this.groupBox_Profile_MoreSongLists.Size = new System.Drawing.Size(243, 53);
+            this.groupBox_Profile_MoreSongLists.Size = new System.Drawing.Size(245, 53);
             this.groupBox_Profile_MoreSongLists.TabIndex = 12;
             this.groupBox_Profile_MoreSongLists.TabStop = false;
             this.groupBox_Profile_MoreSongLists.Text = "More Song Lists";
@@ -6102,9 +6104,9 @@
             // 
             // button_AddNewSongList
             // 
-            this.button_AddNewSongList.Location = new System.Drawing.Point(7, 20);
+            this.button_AddNewSongList.Location = new System.Drawing.Point(6, 13);
             this.button_AddNewSongList.Name = "button_AddNewSongList";
-            this.button_AddNewSongList.Size = new System.Drawing.Size(110, 23);
+            this.button_AddNewSongList.Size = new System.Drawing.Size(110, 34);
             this.button_AddNewSongList.TabIndex = 0;
             this.button_AddNewSongList.Text = "Add New SongList";
             this.button_AddNewSongList.UseVisualStyleBackColor = true;
@@ -6116,7 +6118,7 @@
             this.groupBox_Profiles_Rewards.Controls.Add(this.button_Profiles_LockAllRewards);
             this.groupBox_Profiles_Rewards.Location = new System.Drawing.Point(5, 313);
             this.groupBox_Profiles_Rewards.Name = "groupBox_Profiles_Rewards";
-            this.groupBox_Profiles_Rewards.Size = new System.Drawing.Size(246, 57);
+            this.groupBox_Profiles_Rewards.Size = new System.Drawing.Size(248, 57);
             this.groupBox_Profiles_Rewards.TabIndex = 11;
             this.groupBox_Profiles_Rewards.TabStop = false;
             this.groupBox_Profiles_Rewards.Text = "Rewards";
@@ -6134,7 +6136,7 @@
             // 
             // button_Profiles_LockAllRewards
             // 
-            this.button_Profiles_LockAllRewards.Location = new System.Drawing.Point(138, 19);
+            this.button_Profiles_LockAllRewards.Location = new System.Drawing.Point(140, 19);
             this.button_Profiles_LockAllRewards.Name = "button_Profiles_LockAllRewards";
             this.button_Profiles_LockAllRewards.Size = new System.Drawing.Size(98, 23);
             this.button_Profiles_LockAllRewards.TabIndex = 10;
@@ -6467,6 +6469,16 @@
             this.button_UpdateRSMods.Visible = false;
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // button_RemoveNewestSongList
+            // 
+            this.button_RemoveNewestSongList.Location = new System.Drawing.Point(137, 13);
+            this.button_RemoveNewestSongList.Name = "button_RemoveNewestSongList";
+            this.button_RemoveNewestSongList.Size = new System.Drawing.Size(98, 34);
+            this.button_RemoveNewestSongList.TabIndex = 1;
+            this.button_RemoveNewestSongList.Text = "Remove Newest SongList";
+            this.button_RemoveNewestSongList.UseVisualStyleBackColor = true;
+            this.button_RemoveNewestSongList.Click += new System.EventHandler(this.Profile_RemoveNewestSongList);
             // 
             // MainForm
             // 
@@ -7126,6 +7138,7 @@
         private System.Windows.Forms.CheckBox checkBox_EnabledMidiIn;
         private System.Windows.Forms.GroupBox groupBox_Profile_MoreSongLists;
         private System.Windows.Forms.Button button_AddNewSongList;
+        private System.Windows.Forms.Button button_RemoveNewestSongList;
     }
 }
 

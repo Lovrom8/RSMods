@@ -296,6 +296,7 @@ namespace RSMods
         public static Dictionary<string, string> RefreshGuitarSpeakPresets()
         {
             GuitarSpeakPresetDictionary.Clear();
+
             GuitarSpeakPresetDictionary.Add("Delete: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)));
             GuitarSpeakPresetDictionary.Add("Space: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)));
             GuitarSpeakPresetDictionary.Add("Enter: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier)));
@@ -473,18 +474,12 @@ namespace RSMods
         public static List<string> refreshKeybindingList()
         {
             savedKeysForModToggles.Clear();
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleLoftIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ShowSongTimerIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowStringsIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RainbowNotesIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RemoveLyricsKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RRSpeedKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.TuningOffsetKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ToggleExtendedRangeKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopStartKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopEndKeyIdentifier)));
-            savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RewindKeyIdentifier)));
+
+            foreach(string setting in KeybindingsIndexToINISetting)
+            {
+                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(setting)));
+            }
+
             return savedKeysForModToggles;
         }
 
@@ -495,21 +490,17 @@ namespace RSMods
             // Is this the users first time opening the GUI?
             if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == string.Empty)
             {
-                songlists.Add("Define Song List 1 Here");
-                songlists.Add("Define Song List 2 Here");
-                songlists.Add("Define Song List 3 Here");
-                songlists.Add("Define Song List 4 Here");
-                songlists.Add("Define Song List 5 Here");
-                songlists.Add("Define Song List 6 Here");
+                for (int i = 0; i < 6; i++)
+                {
+                    songlists.Add($"Define Song List {i + 1} Here");
+                }
             }
             else
             {
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier));
-                songlists.Add(ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier));
+                foreach(string setting in SongListIndexToINISetting)
+                {
+                    songlists.Add(ReadSettings.ProcessSettings(setting));
+                }
             }
            
             return songlists;
@@ -518,14 +509,12 @@ namespace RSMods
         public static List<string> refreshAudioKeybindingList()
         {
             savedKeysForVolumes.Clear();
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MasterVolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SongVolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player1VolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.Player2VolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier)));
-            savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier)));
+
+            foreach(string setting in AudioKeybindingsIndexToINISetting)
+            {
+                savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(setting)));
+            }
+
             return savedKeysForVolumes;
         }
         #endregion

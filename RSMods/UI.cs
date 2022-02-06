@@ -82,9 +82,6 @@ namespace RSMods
             // Fix Legacy Songlist Bug
             Startup_FixLegacySonglistBug();
 
-            // Fill Songlist List
-            Startup_LoadSonglists();
-
             // Fill Mod Keybindings List (Fill list box)
             Startup_LoadKeybindingModNames();
 
@@ -307,10 +304,36 @@ namespace RSMods
 
         private void Startup_LoadRocksmithProfiles()
         {
-            foreach (KeyValuePair<string, string> profileData in Profiles.AvailableProfiles())
+            Dictionary<string, string> AvailableProfiles = Profiles.AvailableProfiles();
+
+            foreach (KeyValuePair<string, string> profileData in AvailableProfiles)
             {
                 listBox_AutoLoadProfiles.Items.Add(profileData.Key);
                 listBox_Profiles_AvailableProfiles.Items.Add(profileData.Key);
+            }
+
+            if (AvailableProfiles != null && AvailableProfiles.Count > 0)
+            {
+                int MaxSongLists = 6;
+                foreach(string prf in AvailableProfiles.Keys)
+                {
+                    // Decrypt Profile
+                    JObject decPrf = JObject.Parse(Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(prf)));
+
+                    // Check how many song lists
+                    int TotalSongLists = decPrf["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>().Count; 
+                    decPrf = null;
+
+                    if (TotalSongLists > MaxSongLists)
+                        MaxSongLists = TotalSongLists;
+                }
+
+                Profiles_Helper_GenerateValidSonglists(MaxSongLists);
+            }
+            // We cannot load the Rocksmith profiles.
+            else
+            {
+                Startup_LoadSonglists();
             }
         }
 
@@ -3267,7 +3290,6 @@ namespace RSMods
 
                 }
 
-
                 dgv_Profiles_Songlists.Rows.Add(song.Artist, song.Title, inSonglist1, inSonglist2, inSonglist3, inSonglist4, inSonglist5, inSonglist6, inFavorites);
             }
 
@@ -3345,15 +3367,148 @@ namespace RSMods
 
                 List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
 
+                if (SongLists.Count >= 20)
+                {
+                    MessageBox.Show("We cannot complete your request!\nHaving more than 20 song lists is extremely unrealistic.\nPlease reach out to the RSMods dev team and we can change this restriction");
+                    return;
+                }
+
                 SongLists.Add(new List<string>());
 
                 Profiles.DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(SongLists);
+
+                Profiles_GenerateNewSonglistsLists();
 
                 Profiles_ENCRYPT();
                 MessageBox.Show("Your new song list is present in game!");
             }
             else
                 MessageBox.Show("Make sure you have a profile selected!");
+        }
+
+
+        private void Profile_RemoveNewestSongList(object sender, EventArgs e)
+        {
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
+            {
+                Profiles_UnpackProfile();
+
+                List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+
+                if (SongLists.Count <= 6)
+                {
+                    MessageBox.Show("We cannot remove anymore songlists.");
+                    return;
+                }
+
+                SongLists.Remove(SongLists[SongLists.Count - 1]);
+
+                Profiles.DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(SongLists);
+
+                Profiles_GenerateNewSonglistsLists();
+
+                Profiles_ENCRYPT();
+                MessageBox.Show("The newest songlist has been removed!");
+            }
+            else
+                MessageBox.Show("Make sure you have a profile selected!");
+        }
+
+        private void Profiles_GenerateNewSonglistsLists()
+        {
+            if (Profiles.DecryptedProfile != null)
+            {
+                List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+
+                Profiles_Helper_GenerateValidSonglists(SongLists.Count);
+            }
+        }
+
+        private void Profiles_Helper_GenerateValidSonglists(int TotalSonglists)
+        {
+            List<string> SongListReferences = new List<string>();
+
+            switch (TotalSonglists)
+            {
+
+                case 20:
+                    SongListReferences.Add(ReadSettings.Songlist20Identifier);
+                    goto case 19;
+                case 19:
+                    SongListReferences.Add(ReadSettings.Songlist19Identifier);
+                    goto case 18;
+                case 18:
+                    SongListReferences.Add(ReadSettings.Songlist18Identifier);
+                    goto case 17;
+                case 17:
+                    SongListReferences.Add(ReadSettings.Songlist17Identifier);
+                    goto case 16;
+                case 16:
+                    SongListReferences.Add(ReadSettings.Songlist16Identifier);
+                    goto case 15;
+                case 15:
+                    SongListReferences.Add(ReadSettings.Songlist15Identifier);
+                    goto case 14;
+                case 14:
+                    SongListReferences.Add(ReadSettings.Songlist14Identifier);
+                    goto case 13;
+                case 13:
+                    SongListReferences.Add(ReadSettings.Songlist13Identifier);
+                    goto case 12;
+                case 12:
+                    SongListReferences.Add(ReadSettings.Songlist12Identifier);
+                    goto case 11;
+                case 11:
+                    SongListReferences.Add(ReadSettings.Songlist11Identifier);
+                    goto case 10;
+                case 10:
+                    SongListReferences.Add(ReadSettings.Songlist10Identifier);
+                    goto case 9;
+                case 9:
+                    SongListReferences.Add(ReadSettings.Songlist9Identifier);
+                    goto case 8;
+                case 8:
+                    SongListReferences.Add(ReadSettings.Songlist8Identifier);
+                    goto case 7;
+                case 7:
+                    SongListReferences.Add(ReadSettings.Songlist7Identifier);
+                    goto case 6;
+                case 6:
+                    SongListReferences.Add(ReadSettings.Songlist6Identifier);
+                    goto case 5;
+                case 5:
+                    SongListReferences.Add(ReadSettings.Songlist5Identifier);
+                    goto case 4;
+                case 4:
+                    SongListReferences.Add(ReadSettings.Songlist4Identifier);
+                    goto case 3;
+                case 3:
+                    SongListReferences.Add(ReadSettings.Songlist3Identifier);
+                    goto case 2;
+                case 2:
+                    SongListReferences.Add(ReadSettings.Songlist2Identifier);
+                    goto case 1;
+
+                case 1:
+                    SongListReferences.Add(ReadSettings.Songlist1Identifier);
+                    break;
+
+                case 0:
+                default:
+                    break;
+            }
+
+            SongListReferences.Reverse();
+
+            Dictionaries.SongListIndexToINISetting = SongListReferences;
+
+            Dictionaries.refreshSonglists();
+            listBox_Songlist.Items.Clear();
+
+            foreach (string SongList in Dictionaries.songlists)
+            {
+                listBox_Songlist.Items.Add(SongList);
+            }
         }
 
         private void Profiles_ENCRYPT()
