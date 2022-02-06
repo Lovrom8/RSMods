@@ -41,6 +41,7 @@ std::vector<std::string> enabledEffects;
 
 bool takenScreenshotOfThisScreen = false; // Has the user taken a screenshot of their scores in this menu
 bool saveNewRRSpeedToFile = false;
+inline bool ImGuiInit = false; // Has ImGui already been init? If we close the game with this being false, then we get an assert.
 
 // Mixer Values
 inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Disabled, 1 - Master, 2 - Song, 3 - P1, 4 - P2, 5 - Mic, 6 - VO, 7 - SFX

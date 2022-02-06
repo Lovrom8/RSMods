@@ -506,11 +506,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (returnAddress > Offsets::baseEnd)
 		return hRet;
 
-	static bool init = false; 
-
 	// Has this been ran before (AKA run only once, at startup)
-	if (!init) {
-		init = true;
+	if (!ImGuiInit) {
+		ImGuiInit = true;
 
 		// Create ImGUI
 		ImGui::CreateContext();
@@ -1634,9 +1632,12 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 		Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 		// Shutdown ImGUI
-		ImGui_ImplWin32_Shutdown();
-		ImGui_ImplDX9_Shutdown();
-		ImGui::DestroyContext();
+		if (ImGuiInit)
+		{
+			ImGui_ImplWin32_Shutdown();
+			ImGui_ImplDX9_Shutdown();
+			ImGui::DestroyContext();
+		}
 		return TRUE;
 	}
 	return TRUE;
