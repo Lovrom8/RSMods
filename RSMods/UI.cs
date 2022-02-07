@@ -3208,12 +3208,12 @@ namespace RSMods
 
         private void Profiles_RefreshSonglistNames()
         {
-            dgv_Profiles_Songlists.Columns[2].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier);
-            dgv_Profiles_Songlists.Columns[3].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist2Identifier);
-            dgv_Profiles_Songlists.Columns[4].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist3Identifier);
-            dgv_Profiles_Songlists.Columns[5].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist4Identifier);
-            dgv_Profiles_Songlists.Columns[6].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist5Identifier);
-            dgv_Profiles_Songlists.Columns[7].HeaderText = ReadSettings.ProcessSettings(ReadSettings.Songlist6Identifier);
+            int startIndex = 3;
+
+            for(int i = 0; i < Dictionaries.SongListIndexToINISetting.Count; i++)
+            {
+                dgv_Profiles_Songlists.Columns[startIndex + i].HeaderText = ReadSettings.ProcessSettings(Dictionaries.SongListIndexToINISetting[i]);
+            }
         }
 
         private void Profiles_LoadSongs(object sender, EventArgs e)
@@ -3221,6 +3221,8 @@ namespace RSMods
             dgv_Profiles_Songlists.ClearSelection();
             dgv_Profiles_Songlists.Rows.Clear();
 
+            groupBox_Profiles_SongLists.Visible = false;
+            button_Profiles_SaveSonglist.Visible = false;
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
 
@@ -3234,14 +3236,15 @@ namespace RSMods
                 ownedRS1DLC.Add(DLCTag.Name);
             }
 
-            List<string[]> dlcKeyArrayList = new List<string[]>();
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][0].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][1].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][2].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][3].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][4].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][5].ToObject<string[]>());
-            dlcKeyArrayList.Add(Profiles.DecryptedProfile["FavoritesListRoot"]["FavoritesList"].ToObject<string[]>());
+            List<List<string>> dlcKeyArrayList = new List<List<string>>();
+            dlcKeyArrayList.Add(Profiles.DecryptedProfile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>());
+
+            List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+
+            foreach(List<string> songlist in SongLists)
+            {
+                dlcKeyArrayList.Add(songlist);
+            }
 
             foreach (SongData song in Songs.ToList())
             {
@@ -3252,9 +3255,14 @@ namespace RSMods
                     continue;
                 }
 
-                bool inSonglist1 = false, inSonglist2 = false, inSonglist3 = false, inSonglist4 = false, inSonglist5 = false, inSonglist6 = false, inFavorites = false;
+                // Default profile
+                bool inFavorites = false, inSonglist1 = false, inSonglist2 = false, inSonglist3 = false, inSonglist4 = false, inSonglist5 = false, inSonglist6 = false;
 
-                foreach (string[] dlcKeyArray in dlcKeyArrayList)
+                // Modified profile
+                bool inSonglist7 = false, inSonglist8 = false, inSonglist9 = false, inSonglist10 = false, inSonglist11 = false, inSonglist12 = false, inSonglist13 = false;
+                bool inSonglist14 = false, inSonglist15 = false, inSonglist16 = false, inSonglist17 = false, inSonglist18 = false, inSonglist19 = false, inSonglist20 = false;
+
+                foreach (List<string> dlcKeyArray in dlcKeyArrayList)
                 {
                     if (dlcKeyArray.Contains(song.DLCKey))
                     {
@@ -3263,25 +3271,67 @@ namespace RSMods
                         switch (songlist)
                         {
                             case 0:
-                                inSonglist1 = true;
+                                inFavorites = true;
                                 break;
                             case 1:
-                                inSonglist2 = true;
+                                inSonglist1 = true;
                                 break;
                             case 2:
-                                inSonglist3 = true;
+                                inSonglist2 = true;
                                 break;
                             case 3:
-                                inSonglist4 = true;
+                                inSonglist3 = true;
                                 break;
                             case 4:
-                                inSonglist5 = true;
+                                inSonglist4 = true;
                                 break;
                             case 5:
-                                inSonglist6 = true;
+                                inSonglist5 = true;
                                 break;
                             case 6:
-                                inFavorites = true;
+                                inSonglist6 = true;
+                                break;
+                            case 7:
+                                inSonglist7 = true;
+                                break;
+                            case 8:
+                                inSonglist8 = true;
+                                break;
+                            case 9:
+                                inSonglist9 = true;
+                                break;
+                            case 10:
+                                inSonglist10 = true;
+                                break;
+                            case 11:
+                                inSonglist11 = true;
+                                break;
+                            case 12:
+                                inSonglist12 = true;
+                                break;
+                            case 13:
+                                inSonglist13 = true;
+                                break;
+                            case 14:
+                                inSonglist14 = true;
+                                break;
+                            case 15:
+                                inSonglist15 = true;
+                                break;
+                            case 16:
+                                inSonglist16 = true;
+                                break;
+                            case 17:
+                                inSonglist17 = true;
+                                break;
+                            case 18:
+                                inSonglist18 = true;
+                                break;
+                            case 19:
+                                inSonglist19 = true;
+                                break;
+                            case 20:
+                                inSonglist20 = true;
                                 break;
                             default:
                                 break;
@@ -3290,10 +3340,23 @@ namespace RSMods
 
                 }
 
-                dgv_Profiles_Songlists.Rows.Add(song.Artist, song.Title, inSonglist1, inSonglist2, inSonglist3, inSonglist4, inSonglist5, inSonglist6, inFavorites);
+                dgv_Profiles_Songlists.Rows.Add(song.Artist, song.Title, inFavorites, inSonglist1, inSonglist2, inSonglist3, inSonglist4, inSonglist5, inSonglist6,
+                                                inSonglist7, inSonglist8, inSonglist9, inSonglist10, inSonglist11, inSonglist12, inSonglist13, inSonglist14, inSonglist15,
+                                                inSonglist16, inSonglist17, inSonglist18, inSonglist19, inSonglist20);
             }
 
             Profiles_RefreshSonglistNames();
+
+            // Hide songlists that the user has not enabled yet.
+            // Unhide songlists that the user has enabled.
+            for(int songlist = 20; songlist > SongLists.Count; songlist--)
+            {
+                dgv_Profiles_Songlists.Columns[$"SongList{songlist}"].Visible = false;
+            }
+            for(int songlist = 1; songlist <= SongLists.Count; songlist++)
+            {
+                dgv_Profiles_Songlists.Columns[$"SongList{songlist}"].Visible = true;
+            }
 
             groupBox_Profiles_SongLists.Visible = true;
             button_Profiles_SaveSonglist.Visible = true;
@@ -3379,6 +3442,13 @@ namespace RSMods
 
                 Profiles_GenerateNewSonglistsLists();
 
+                // Reload the song list readout to show the new songlist.
+                if (groupBox_Profiles_SongLists.Visible)
+                {
+                    Profiles_LoadSongs(sender, e);
+                }
+                
+
                 Profiles_ENCRYPT();
                 MessageBox.Show("Your new song list is present in game!");
             }
@@ -3406,6 +3476,12 @@ namespace RSMods
                 Profiles.DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(SongLists);
 
                 Profiles_GenerateNewSonglistsLists();
+
+                // Reload the song list readout to hide the removed songlist.
+                if (groupBox_Profiles_SongLists.Visible)
+                {
+                    Profiles_LoadSongs(sender, e);
+                }
 
                 Profiles_ENCRYPT();
                 MessageBox.Show("The newest songlist has been removed!");
