@@ -3221,7 +3221,7 @@ namespace RSMods
             dgv_Profiles_Songlists.ClearSelection();
             dgv_Profiles_Songlists.Rows.Clear();
 
-            groupBox_Profiles_SongLists.Visible = false;
+            dgv_Profiles_Songlists.Visible = false;
             button_Profiles_SaveSonglist.Visible = false;
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
@@ -3358,7 +3358,7 @@ namespace RSMods
                 dgv_Profiles_Songlists.Columns[$"SongList{songlist}"].Visible = true;
             }
 
-            groupBox_Profiles_SongLists.Visible = true;
+            dgv_Profiles_Songlists.Visible = true;
             button_Profiles_SaveSonglist.Visible = true;
         }
 
@@ -3443,7 +3443,7 @@ namespace RSMods
                 Profiles_GenerateNewSonglistsLists();
 
                 // Reload the song list readout to show the new songlist.
-                if (groupBox_Profiles_SongLists.Visible)
+                if (dgv_Profiles_Songlists.Visible)
                 {
                     Profiles_LoadSongs(sender, e);
                 }
@@ -3478,7 +3478,7 @@ namespace RSMods
                 Profiles_GenerateNewSonglistsLists();
 
                 // Reload the song list readout to hide the removed songlist.
-                if (groupBox_Profiles_SongLists.Visible)
+                if (dgv_Profiles_Songlists.Visible)
                 {
                     Profiles_LoadSongs(sender, e);
                 }

@@ -475,36 +475,7 @@
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
-            this.groupBox_Profile_MoreSongLists = new System.Windows.Forms.GroupBox();
-            this.button_RemoveNewestSongList = new System.Windows.Forms.Button();
-            this.button_AddNewSongList = new System.Windows.Forms.Button();
-            this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
-            this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
-            this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
-            this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
-            this.groupBox_Profiles_SongLists = new System.Windows.Forms.GroupBox();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
-            this.label_Profiles_AvailableSongs = new System.Windows.Forms.Label();
-            this.button_Profiles_LoadSongs = new System.Windows.Forms.Button();
-            this.label_Profiles_WIP = new System.Windows.Forms.Label();
-            this.progressBar_Profiles_LoadPsarcs = new System.Windows.Forms.ProgressBar();
-            this.listBox_Profiles_AvailableProfiles = new System.Windows.Forms.ListBox();
-            this.label_Profiles_AvailableProfiles = new System.Windows.Forms.Label();
-            this.tab_GUISettings = new System.Windows.Forms.TabPage();
-            this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
-            this.button_ResetCustomColors = new System.Windows.Forms.Button();
-            this.textBox_ChangeButtonColor = new System.Windows.Forms.TextBox();
-            this.button_ChangeButtonColor = new System.Windows.Forms.Button();
-            this.button_ApplyThemeColors = new System.Windows.Forms.Button();
-            this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
-            this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
-            this.button_ChangeTextColor = new System.Windows.Forms.Button();
-            this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
-            this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
-            this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
-            this.label_SettingsSaved = new System.Windows.Forms.Label();
-            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
-            this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Song = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Favorites = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -528,6 +499,33 @@
             this.SongList18 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.SongList19 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.SongList20 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.groupBox_Profile_MoreSongLists = new System.Windows.Forms.GroupBox();
+            this.button_RemoveNewestSongList = new System.Windows.Forms.Button();
+            this.button_AddNewSongList = new System.Windows.Forms.Button();
+            this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
+            this.button_Profiles_UnlockAllRewards = new System.Windows.Forms.Button();
+            this.button_Profiles_LockAllRewards = new System.Windows.Forms.Button();
+            this.button_Profiles_SaveSonglist = new System.Windows.Forms.Button();
+            this.button_Profiles_LoadSongs = new System.Windows.Forms.Button();
+            this.label_Profiles_WIP = new System.Windows.Forms.Label();
+            this.progressBar_Profiles_LoadPsarcs = new System.Windows.Forms.ProgressBar();
+            this.listBox_Profiles_AvailableProfiles = new System.Windows.Forms.ListBox();
+            this.label_Profiles_AvailableProfiles = new System.Windows.Forms.Label();
+            this.tab_GUISettings = new System.Windows.Forms.TabPage();
+            this.groupBox_ChangeTheme = new System.Windows.Forms.GroupBox();
+            this.button_ResetCustomColors = new System.Windows.Forms.Button();
+            this.textBox_ChangeButtonColor = new System.Windows.Forms.TextBox();
+            this.button_ChangeButtonColor = new System.Windows.Forms.Button();
+            this.button_ApplyThemeColors = new System.Windows.Forms.Button();
+            this.textBox_ChangeTextColor = new System.Windows.Forms.TextBox();
+            this.textBox_ChangeBackgroundColor = new System.Windows.Forms.TextBox();
+            this.button_ChangeTextColor = new System.Windows.Forms.Button();
+            this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
+            this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
+            this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
+            this.label_SettingsSaved = new System.Windows.Forms.Label();
+            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.button_UpdateRSMods = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -626,10 +624,9 @@
             this.tab_SoundPacks.SuspendLayout();
             this.groupBox_SoundPacks.SuspendLayout();
             this.tab_Profiles.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).BeginInit();
             this.groupBox_Profile_MoreSongLists.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
-            this.groupBox_Profiles_SongLists.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).BeginInit();
             this.tab_GUISettings.SuspendLayout();
             this.groupBox_ChangeTheme.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
@@ -2820,6 +2817,9 @@
             // 
             // TabController
             // 
+            this.TabController.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TabController.Controls.Add(this.tab_Songlists);
             this.TabController.Controls.Add(this.tab_Keybindings);
             this.TabController.Controls.Add(this.tab_ModToggles);
@@ -6089,10 +6089,10 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
+            this.tab_Profiles.Controls.Add(this.dgv_Profiles_Songlists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profile_MoreSongLists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
             this.tab_Profiles.Controls.Add(this.button_Profiles_SaveSonglist);
-            this.tab_Profiles.Controls.Add(this.groupBox_Profiles_SongLists);
             this.tab_Profiles.Controls.Add(this.button_Profiles_LoadSongs);
             this.tab_Profiles.Controls.Add(this.label_Profiles_WIP);
             this.tab_Profiles.Controls.Add(this.progressBar_Profiles_LoadPsarcs);
@@ -6103,6 +6103,190 @@
             this.tab_Profiles.Size = new System.Drawing.Size(1150, 513);
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
+            // 
+            // dgv_Profiles_Songlists
+            // 
+            this.dgv_Profiles_Songlists.AllowUserToAddRows = false;
+            this.dgv_Profiles_Songlists.AllowUserToDeleteRows = false;
+            this.dgv_Profiles_Songlists.AllowUserToOrderColumns = true;
+            this.dgv_Profiles_Songlists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgv_Profiles_Songlists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Profiles_Songlists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Artist,
+            this.Song,
+            this.Favorites,
+            this.SongList1,
+            this.SongList2,
+            this.SongList3,
+            this.SongList4,
+            this.SongList5,
+            this.SongList6,
+            this.SongList7,
+            this.SongList8,
+            this.SongList9,
+            this.SongList10,
+            this.SongList11,
+            this.SongList12,
+            this.SongList13,
+            this.SongList14,
+            this.SongList15,
+            this.SongList16,
+            this.SongList17,
+            this.SongList18,
+            this.SongList19,
+            this.SongList20});
+            this.dgv_Profiles_Songlists.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.dgv_Profiles_Songlists.Location = new System.Drawing.Point(349, 10);
+            this.dgv_Profiles_Songlists.Name = "dgv_Profiles_Songlists";
+            this.dgv_Profiles_Songlists.RowHeadersVisible = false;
+            this.dgv_Profiles_Songlists.RowHeadersWidth = 20;
+            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(788, 500);
+            this.dgv_Profiles_Songlists.TabIndex = 12;
+            this.dgv_Profiles_Songlists.Visible = false;
+            this.dgv_Profiles_Songlists.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.Profiles_Songlists_ChangedValue);
+            this.dgv_Profiles_Songlists.CurrentCellDirtyStateChanged += new System.EventHandler(this.Profiles_Songlists_DirtyState);
+            // 
+            // Artist
+            // 
+            this.Artist.Frozen = true;
+            this.Artist.HeaderText = "Artist";
+            this.Artist.Name = "Artist";
+            this.Artist.ReadOnly = true;
+            // 
+            // Song
+            // 
+            this.Song.Frozen = true;
+            this.Song.HeaderText = "Song";
+            this.Song.Name = "Song";
+            this.Song.ReadOnly = true;
+            // 
+            // Favorites
+            // 
+            this.Favorites.HeaderText = "Favorites";
+            this.Favorites.Name = "Favorites";
+            this.Favorites.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Favorites.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Favorites.Width = 80;
+            // 
+            // SongList1
+            // 
+            this.SongList1.HeaderText = "SongList1";
+            this.SongList1.Name = "SongList1";
+            this.SongList1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList1.Width = 80;
+            // 
+            // SongList2
+            // 
+            this.SongList2.HeaderText = "SongList2";
+            this.SongList2.Name = "SongList2";
+            this.SongList2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList2.Width = 80;
+            // 
+            // SongList3
+            // 
+            this.SongList3.HeaderText = "SongList3";
+            this.SongList3.Name = "SongList3";
+            this.SongList3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList3.Width = 80;
+            // 
+            // SongList4
+            // 
+            this.SongList4.HeaderText = "SongList4";
+            this.SongList4.Name = "SongList4";
+            this.SongList4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList4.Width = 80;
+            // 
+            // SongList5
+            // 
+            this.SongList5.HeaderText = "SongList5";
+            this.SongList5.Name = "SongList5";
+            this.SongList5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList5.Width = 80;
+            // 
+            // SongList6
+            // 
+            this.SongList6.HeaderText = "SongList6";
+            this.SongList6.Name = "SongList6";
+            this.SongList6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.SongList6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.SongList6.Width = 80;
+            // 
+            // SongList7
+            // 
+            this.SongList7.HeaderText = "SongList7";
+            this.SongList7.Name = "SongList7";
+            // 
+            // SongList8
+            // 
+            this.SongList8.HeaderText = "SongList8";
+            this.SongList8.Name = "SongList8";
+            // 
+            // SongList9
+            // 
+            this.SongList9.HeaderText = "SongList9";
+            this.SongList9.Name = "SongList9";
+            // 
+            // SongList10
+            // 
+            this.SongList10.HeaderText = "SongList10";
+            this.SongList10.Name = "SongList10";
+            // 
+            // SongList11
+            // 
+            this.SongList11.HeaderText = "SongList11";
+            this.SongList11.Name = "SongList11";
+            // 
+            // SongList12
+            // 
+            this.SongList12.HeaderText = "SongList12";
+            this.SongList12.Name = "SongList12";
+            // 
+            // SongList13
+            // 
+            this.SongList13.HeaderText = "SongList13";
+            this.SongList13.Name = "SongList13";
+            // 
+            // SongList14
+            // 
+            this.SongList14.HeaderText = "SongList14";
+            this.SongList14.Name = "SongList14";
+            // 
+            // SongList15
+            // 
+            this.SongList15.HeaderText = "SongList15";
+            this.SongList15.Name = "SongList15";
+            // 
+            // SongList16
+            // 
+            this.SongList16.HeaderText = "SongList16";
+            this.SongList16.Name = "SongList16";
+            // 
+            // SongList17
+            // 
+            this.SongList17.HeaderText = "SongList17";
+            this.SongList17.Name = "SongList17";
+            // 
+            // SongList18
+            // 
+            this.SongList18.HeaderText = "SongList18";
+            this.SongList18.Name = "SongList18";
+            // 
+            // SongList19
+            // 
+            this.SongList19.HeaderText = "SongList19";
+            this.SongList19.Name = "SongList19";
+            // 
+            // SongList20
+            // 
+            this.SongList20.HeaderText = "SongList20";
+            this.SongList20.Name = "SongList20";
             // 
             // groupBox_Profile_MoreSongLists
             // 
@@ -6178,67 +6362,6 @@
             this.button_Profiles_SaveSonglist.UseVisualStyleBackColor = true;
             this.button_Profiles_SaveSonglist.Visible = false;
             this.button_Profiles_SaveSonglist.Click += new System.EventHandler(this.Profiles_SaveSonglists);
-            // 
-            // groupBox_Profiles_SongLists
-            // 
-            this.groupBox_Profiles_SongLists.Controls.Add(this.dgv_Profiles_Songlists);
-            this.groupBox_Profiles_SongLists.Controls.Add(this.label_Profiles_AvailableSongs);
-            this.groupBox_Profiles_SongLists.Location = new System.Drawing.Point(347, 3);
-            this.groupBox_Profiles_SongLists.Name = "groupBox_Profiles_SongLists";
-            this.groupBox_Profiles_SongLists.Size = new System.Drawing.Size(800, 495);
-            this.groupBox_Profiles_SongLists.TabIndex = 6;
-            this.groupBox_Profiles_SongLists.TabStop = false;
-            this.groupBox_Profiles_SongLists.Text = "Songlists";
-            this.groupBox_Profiles_SongLists.Visible = false;
-            // 
-            // dgv_Profiles_Songlists
-            // 
-            this.dgv_Profiles_Songlists.AllowUserToAddRows = false;
-            this.dgv_Profiles_Songlists.AllowUserToDeleteRows = false;
-            this.dgv_Profiles_Songlists.AllowUserToOrderColumns = true;
-            this.dgv_Profiles_Songlists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_Profiles_Songlists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Artist,
-            this.Song,
-            this.Favorites,
-            this.SongList1,
-            this.SongList2,
-            this.SongList3,
-            this.SongList4,
-            this.SongList5,
-            this.SongList6,
-            this.SongList7,
-            this.SongList8,
-            this.SongList9,
-            this.SongList10,
-            this.SongList11,
-            this.SongList12,
-            this.SongList13,
-            this.SongList14,
-            this.SongList15,
-            this.SongList16,
-            this.SongList17,
-            this.SongList18,
-            this.SongList19,
-            this.SongList20});
-            this.dgv_Profiles_Songlists.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.dgv_Profiles_Songlists.Location = new System.Drawing.Point(17, 39);
-            this.dgv_Profiles_Songlists.Name = "dgv_Profiles_Songlists";
-            this.dgv_Profiles_Songlists.RowHeadersVisible = false;
-            this.dgv_Profiles_Songlists.RowHeadersWidth = 20;
-            this.dgv_Profiles_Songlists.Size = new System.Drawing.Size(764, 442);
-            this.dgv_Profiles_Songlists.TabIndex = 12;
-            this.dgv_Profiles_Songlists.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.Profiles_Songlists_ChangedValue);
-            this.dgv_Profiles_Songlists.CurrentCellDirtyStateChanged += new System.EventHandler(this.Profiles_Songlists_DirtyState);
-            // 
-            // label_Profiles_AvailableSongs
-            // 
-            this.label_Profiles_AvailableSongs.AutoSize = true;
-            this.label_Profiles_AvailableSongs.Location = new System.Drawing.Point(14, 23);
-            this.label_Profiles_AvailableSongs.Name = "label_Profiles_AvailableSongs";
-            this.label_Profiles_AvailableSongs.Size = new System.Drawing.Size(76, 13);
-            this.label_Profiles_AvailableSongs.TabIndex = 6;
-            this.label_Profiles_AvailableSongs.Text = "All Your Songs";
             // 
             // button_Profiles_LoadSongs
             // 
@@ -6440,146 +6563,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // Artist
-            // 
-            this.Artist.Frozen = true;
-            this.Artist.HeaderText = "Artist";
-            this.Artist.Name = "Artist";
-            this.Artist.ReadOnly = true;
-            // 
-            // Song
-            // 
-            this.Song.Frozen = true;
-            this.Song.HeaderText = "Song";
-            this.Song.Name = "Song";
-            this.Song.ReadOnly = true;
-            // 
-            // Favorites
-            // 
-            this.Favorites.HeaderText = "Favorites";
-            this.Favorites.Name = "Favorites";
-            this.Favorites.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Favorites.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Favorites.Width = 80;
-            // 
-            // SongList1
-            // 
-            this.SongList1.HeaderText = "SongList1";
-            this.SongList1.Name = "SongList1";
-            this.SongList1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList1.Width = 80;
-            // 
-            // SongList2
-            // 
-            this.SongList2.HeaderText = "SongList2";
-            this.SongList2.Name = "SongList2";
-            this.SongList2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList2.Width = 80;
-            // 
-            // SongList3
-            // 
-            this.SongList3.HeaderText = "SongList3";
-            this.SongList3.Name = "SongList3";
-            this.SongList3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList3.Width = 80;
-            // 
-            // SongList4
-            // 
-            this.SongList4.HeaderText = "SongList4";
-            this.SongList4.Name = "SongList4";
-            this.SongList4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList4.Width = 80;
-            // 
-            // SongList5
-            // 
-            this.SongList5.HeaderText = "SongList5";
-            this.SongList5.Name = "SongList5";
-            this.SongList5.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList5.Width = 80;
-            // 
-            // SongList6
-            // 
-            this.SongList6.HeaderText = "SongList6";
-            this.SongList6.Name = "SongList6";
-            this.SongList6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.SongList6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.SongList6.Width = 80;
-            // 
-            // SongList7
-            // 
-            this.SongList7.HeaderText = "SongList7";
-            this.SongList7.Name = "SongList7";
-            // 
-            // SongList8
-            // 
-            this.SongList8.HeaderText = "SongList8";
-            this.SongList8.Name = "SongList8";
-            // 
-            // SongList9
-            // 
-            this.SongList9.HeaderText = "SongList9";
-            this.SongList9.Name = "SongList9";
-            // 
-            // SongList10
-            // 
-            this.SongList10.HeaderText = "SongList10";
-            this.SongList10.Name = "SongList10";
-            // 
-            // SongList11
-            // 
-            this.SongList11.HeaderText = "SongList11";
-            this.SongList11.Name = "SongList11";
-            // 
-            // SongList12
-            // 
-            this.SongList12.HeaderText = "SongList12";
-            this.SongList12.Name = "SongList12";
-            // 
-            // SongList13
-            // 
-            this.SongList13.HeaderText = "SongList13";
-            this.SongList13.Name = "SongList13";
-            // 
-            // SongList14
-            // 
-            this.SongList14.HeaderText = "SongList14";
-            this.SongList14.Name = "SongList14";
-            // 
-            // SongList15
-            // 
-            this.SongList15.HeaderText = "SongList15";
-            this.SongList15.Name = "SongList15";
-            // 
-            // SongList16
-            // 
-            this.SongList16.HeaderText = "SongList16";
-            this.SongList16.Name = "SongList16";
-            // 
-            // SongList17
-            // 
-            this.SongList17.HeaderText = "SongList17";
-            this.SongList17.Name = "SongList17";
-            // 
-            // SongList18
-            // 
-            this.SongList18.HeaderText = "SongList18";
-            this.SongList18.Name = "SongList18";
-            // 
-            // SongList19
-            // 
-            this.SongList19.HeaderText = "SongList19";
-            this.SongList19.Name = "SongList19";
-            // 
-            // SongList20
-            // 
-            this.SongList20.HeaderText = "SongList20";
-            this.SongList20.Name = "SongList20";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6592,6 +6575,7 @@
             this.Controls.Add(this.TabController);
             this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(1186, 626);
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
             this.groupBox_HowToEnumerate.ResumeLayout(false);
@@ -6735,11 +6719,9 @@
             this.groupBox_SoundPacks.ResumeLayout(false);
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).EndInit();
             this.groupBox_Profile_MoreSongLists.ResumeLayout(false);
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
-            this.groupBox_Profiles_SongLists.ResumeLayout(false);
-            this.groupBox_Profiles_SongLists.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).EndInit();
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
@@ -7086,7 +7068,6 @@
         private System.Windows.Forms.ProgressBar progressBar_Profiles_LoadPsarcs;
         private System.Windows.Forms.Button button_Profiles_LoadSongs;
         private System.Windows.Forms.ListBox listBox_Profiles_AvailableProfiles;
-        private System.Windows.Forms.GroupBox groupBox_Profiles_SongLists;
         private System.Windows.Forms.Label label_Profiles_AvailableProfiles;
         private System.Windows.Forms.Button button_Profiles_SaveSonglist;
         private System.Windows.Forms.TabPage tabPage_ModSettings_DisableUI;
@@ -7095,7 +7076,6 @@
         private System.Windows.Forms.Button button_Profiles_UnlockAllRewards;
         private System.Windows.Forms.GroupBox groupBox_Profiles_Rewards;
         private System.Windows.Forms.DataGridView dgv_Profiles_Songlists;
-        private System.Windows.Forms.Label label_Profiles_AvailableSongs;
         private System.Windows.Forms.NumericUpDown nUpDown_ASIO_Output_AltBaseChannel;
         private System.Windows.Forms.Label label_ASIO_Output_AltBaseChannel;
         private System.Windows.Forms.RadioButton radio_Rocksmith_CustomQuality;
