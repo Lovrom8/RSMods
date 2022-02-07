@@ -116,6 +116,10 @@ namespace Offsets {
 	const char* ptr_twoRTCBypass_patch = "\xE9\x2F\x01\x00\x00\x90";
 	const char* ptr_twoRTCBypass_original = "\x8B\xB5\x8C\xFF\xFF\xFF";
 
+	// Non-stop Play Pre-Song Timer.
+	// STATIC. This does not need any offsets since the address is hard-coded into the executable.
+	uintptr_t ptr_NonStopPlayPreSongTimer = 0x012218F8;
+
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };

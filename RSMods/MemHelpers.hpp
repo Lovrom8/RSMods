@@ -40,6 +40,8 @@ namespace MemHelpers {
 	std::string GetSongKey();
 	float GetGreyNoteTimer();
 	void SetGreyNoteTimer(float timeInSeconds);
+	double GetNonStopPlayTimer();
+	void SetNonStopPlayTimer(double NewTimer);
 
 	inline std::string lastSongKey = "";
 

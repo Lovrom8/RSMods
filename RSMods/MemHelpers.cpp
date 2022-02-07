@@ -686,3 +686,21 @@ void MemHelpers::SetGreyNoteTimer(float timeInSeconds) {
 
 	*(float*)greyNoteTimer = timeInSeconds;
 }
+
+/// <summary>
+/// Gets how long the countdown will last for from start to end, between songs, in NSP.
+/// </summary>
+/// <returns>The amount of time it takes to go from song 1 to song 2.</returns>
+double MemHelpers::GetNonStopPlayTimer()
+{
+	return *(double*)Offsets::ptr_NonStopPlayPreSongTimer;
+}
+
+/// <summary>
+/// Sets the amount of time between song 1 and song 2 in NSP.
+/// </summary>
+/// <param name="NewTimer"> - New time to set</param>
+void MemHelpers::SetNonStopPlayTimer(double NewTimer)
+{
+	MemUtil::SetStaticValue(Offsets::ptr_NonStopPlayPreSongTimer, NewTimer, sizeof(NewTimer));
+}
