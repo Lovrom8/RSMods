@@ -475,6 +475,8 @@
             this.label_AudioPsarcPleaseWait = new System.Windows.Forms.Label();
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
+            this.groupBox_ImportJsonTones = new System.Windows.Forms.GroupBox();
+            this.button_ImportToneManifest = new System.Windows.Forms.Button();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Song = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -624,6 +626,7 @@
             this.tab_SoundPacks.SuspendLayout();
             this.groupBox_SoundPacks.SuspendLayout();
             this.tab_Profiles.SuspendLayout();
+            this.groupBox_ImportJsonTones.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).BeginInit();
             this.groupBox_Profile_MoreSongLists.SuspendLayout();
             this.groupBox_Profiles_Rewards.SuspendLayout();
@@ -6089,6 +6092,7 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
+            this.tab_Profiles.Controls.Add(this.groupBox_ImportJsonTones);
             this.tab_Profiles.Controls.Add(this.dgv_Profiles_Songlists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profile_MoreSongLists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profiles_Rewards);
@@ -6103,6 +6107,27 @@
             this.tab_Profiles.Size = new System.Drawing.Size(1150, 513);
             this.tab_Profiles.TabIndex = 9;
             this.tab_Profiles.Text = "Profile Edits";
+            // 
+            // groupBox_ImportJsonTones
+            // 
+            this.groupBox_ImportJsonTones.Controls.Add(this.button_ImportToneManifest);
+            this.groupBox_ImportJsonTones.Location = new System.Drawing.Point(11, 456);
+            this.groupBox_ImportJsonTones.Name = "groupBox_ImportJsonTones";
+            this.groupBox_ImportJsonTones.Size = new System.Drawing.Size(114, 54);
+            this.groupBox_ImportJsonTones.TabIndex = 13;
+            this.groupBox_ImportJsonTones.TabStop = false;
+            this.groupBox_ImportJsonTones.Text = "Import Tones";
+            this.groupBox_ImportJsonTones.Visible = false;
+            // 
+            // button_ImportToneManifest
+            // 
+            this.button_ImportToneManifest.Location = new System.Drawing.Point(5, 19);
+            this.button_ImportToneManifest.Name = "button_ImportToneManifest";
+            this.button_ImportToneManifest.Size = new System.Drawing.Size(103, 23);
+            this.button_ImportToneManifest.TabIndex = 0;
+            this.button_ImportToneManifest.Text = "Import Tones";
+            this.button_ImportToneManifest.UseVisualStyleBackColor = true;
+            this.button_ImportToneManifest.Click += new System.EventHandler(this.Profiles_ImportToneManifest);
             // 
             // dgv_Profiles_Songlists
             // 
@@ -6719,6 +6744,7 @@
             this.groupBox_SoundPacks.ResumeLayout(false);
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
+            this.groupBox_ImportJsonTones.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).EndInit();
             this.groupBox_Profile_MoreSongLists.ResumeLayout(false);
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
@@ -7233,6 +7259,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn SongList18;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SongList19;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SongList20;
+        private System.Windows.Forms.GroupBox groupBox_ImportJsonTones;
+        private System.Windows.Forms.Button button_ImportToneManifest;
     }
 }
 

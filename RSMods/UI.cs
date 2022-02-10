@@ -3226,8 +3226,6 @@ namespace RSMods
 
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
 
-            Profiles_UnpackProfile();
-
             // Add RS1 owned DLC
             List<string> ownedRS1DLC = new List<string>();
             List <JToken> DLCTags = Profiles.DecryptedProfile["Stats"]["DLCTag"].ToList();
@@ -3377,6 +3375,9 @@ namespace RSMods
             button_Profiles_LoadSongs.Visible = true;
             groupBox_Profiles_Rewards.Visible = true;
             groupBox_Profile_MoreSongLists.Visible = true;
+            groupBox_ImportJsonTones.Visible = true;
+
+            Profiles_UnpackProfile();
         }
 
         private string Profiles_GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
@@ -3396,8 +3397,6 @@ namespace RSMods
             {
                 if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    Profiles_UnpackProfile();
-
                     Profiles.ChangeRewardStatus(true);
                     Profiles_SaveRewardsToProfile();
                 }
@@ -3412,8 +3411,6 @@ namespace RSMods
             {
                 if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
-                    Profiles_UnpackProfile();
-
                     Profiles.ChangeRewardStatus(false);
                     Profiles_SaveRewardsToProfile();
                 }
@@ -3426,8 +3423,6 @@ namespace RSMods
         {
             if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
             {
-                Profiles_UnpackProfile();
-
                 List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
 
                 if (SongLists.Count >= 20)
@@ -3461,8 +3456,6 @@ namespace RSMods
         {
             if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
             {
-                Profiles_UnpackProfile();
-
                 List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
 
                 if (SongLists.Count <= 6)
@@ -3682,6 +3675,128 @@ namespace RSMods
 
 
             MessageBox.Show($"Reverted to the backup: {localizedName}");
+        }
+
+        private void Profiles_ImportToneManifest(object sender, EventArgs e)
+        {
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please select a profile!");
+                return;
+            }
+
+            string filename = string.Empty;
+
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.Filter = "JSON|*.json";
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filename = fileDialog.FileName;
+                }
+            }
+
+            if (filename == string.Empty)
+            {
+                MessageBox.Show("No JSON manifest was imported.");
+                return;
+            }
+
+            string manifestContents = File.ReadAllText(filename);
+
+            JToken manifest = JToken.Parse(manifestContents);
+
+            if (manifest["Entries"] == null)
+            {
+                MessageBox.Show("Input Tone Manifest doesn't have ENTRIES");
+                return;
+            }
+
+            JToken entries = manifest["Entries"];
+
+            if (entries.First == null)
+            {
+                MessageBox.Show("Input Tone Manifest ENTRIES doesn't have children");
+                return;
+            }
+
+            string arrId = string.Empty;
+
+            foreach(var pair in JObject.Parse(entries.ToString()))
+            {
+                arrId = pair.Key;
+            }
+
+            if (arrId == string.Empty)
+            {
+                MessageBox.Show("Input Tone Manifest has no ArrangementId");
+                return;
+            }
+            if (entries[arrId] == null)
+            {
+                MessageBox.Show("Input Tone Manifest has invalid ArrangementId");
+                return;
+            }
+
+            JToken arrangement = entries[arrId];
+
+            if (arrangement["Attributes"] == null)
+            {
+                MessageBox.Show("Input Tone Manifest has no arrangement attributes");
+                return;
+            }
+
+            JToken attributes = arrangement["Attributes"];
+
+            if (attributes["ArrangementName"] == null)
+            {
+                MessageBox.Show("Input Tone Manifest has no arrangement name");
+                return;
+            }
+
+            string arrangementName = attributes["ArrangementName"].ToString();
+
+            if (attributes["Tones"] == null)
+            {
+                MessageBox.Show("Input Tone Manifest has no tones");
+                return;
+            }
+
+            JToken tones = attributes["Tones"];
+
+            List<object> ProfileTones = null;
+            // Bass
+            if (arrangementName.Contains("Bass"))
+            {
+                ProfileTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
+            }
+            // Guitar
+            else
+            {
+                ProfileTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
+            }
+
+            List<object> tonesInSong = tones.ToObject<List<object>>();
+
+            foreach(object tone in tonesInSong)
+            {
+                ProfileTones.Add(tone);
+            }
+
+            // Bass
+            if (arrangementName.Contains("Bass"))
+            {
+                Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(ProfileTones);
+            }
+            // Guitar
+            else
+            {
+                Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(ProfileTones);
+            }
+
+            Profiles_ENCRYPT();
+
+            MessageBox.Show($"Added {tonesInSong.Count} tone(s) to profile!");
         }
 
         #endregion
@@ -4104,7 +4219,6 @@ namespace RSMods
             WinMsgUtil.SendMsgToRS($"WwiseEvent {Dictionaries.ResultVoiceOverDictionary[listBox_Result_VOs.SelectedItem.ToString()]}");
         }
         #endregion
-
         #region Midi
 
         private void Midi_LoadDevices()
