@@ -3687,118 +3687,131 @@ namespace RSMods
                 return;
             }
 
-            string filename = string.Empty;
+            List<string> filenames = new List<string>();
 
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.Filter = "JSON|*.json";
+
+                if (checkBox_ImportTonesBulk.Checked)
+                {
+                    fileDialog.Multiselect = true;
+                }
+
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filename = fileDialog.FileName;
+                    filenames = fileDialog.FileNames.ToList();
                 }
             }
 
-            if (filename == string.Empty)
+            if (filenames.Count == 0)
             {
-                MessageBox.Show("No JSON manifest was imported.");
+                MessageBox.Show("No JSON manifests were imported.");
                 return;
             }
 
-            string manifestContents = File.ReadAllText(filename);
+            List<object> tonesToImport_Guitar = new List<object>();
+            List<object> tonesToImport_Bass = new List<object>();
 
-            JToken manifest = JToken.Parse(manifestContents);
-
-            if (manifest["Entries"] == null)
+            foreach(string filename in filenames)
             {
-                MessageBox.Show("Input Tone Manifest doesn't have ENTRIES");
-                return;
+                string manifestContents = File.ReadAllText(filename);
+
+                JToken manifest = JToken.Parse(manifestContents);
+
+                if (manifest["Entries"] == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest doesn't have ENTRIES.\nFilename: {filename}");
+                    continue;
+                }
+
+                JToken entries = manifest["Entries"];
+
+                if (entries.First == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest ENTRIES doesn't have children.\nFilename: {filename}");
+                    continue;
+                }
+
+                string arrId = string.Empty;
+
+                foreach (var pair in JObject.Parse(entries.ToString()))
+                {
+                    arrId = pair.Key;
+                }
+
+                if (arrId == string.Empty)
+                {
+                    MessageBox.Show($"Input Tone Manifest has no ArrangementId.\nFilename: {filename}");
+                    continue;
+                }
+                if (entries[arrId] == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest has invalid ArrangementId.\nFilename: {filename}");
+                    continue;
+                }
+
+                JToken arrangement = entries[arrId];
+
+                if (arrangement["Attributes"] == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest has no arrangement attributes.\nFilename: {filename}");
+                    continue;
+                }
+
+                JToken attributes = arrangement["Attributes"];
+
+                if (attributes["ArrangementName"] == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest has no arrangement name.\nFilename: {filename}");
+                    continue;
+                }
+
+                string arrangementName = attributes["ArrangementName"].ToString();
+
+                if (attributes["Tones"] == null)
+                {
+                    MessageBox.Show($"Input Tone Manifest has no tones.\nFilename: {filename}");
+                    continue;
+                }
+
+                JToken tones = attributes["Tones"];
+
+                List<object> tonesInSong = tones.ToObject<List<object>>();
+
+                foreach(object tone in tonesInSong)
+                {
+                    // Bass
+                    if (arrangementName.Contains("Bass"))
+                    {
+                        tonesToImport_Bass.Add(tone);
+                    }
+                    // Guitar
+                    else
+                    {
+                        tonesToImport_Guitar.Add(tone);
+                    }
+                }
             }
 
-            JToken entries = manifest["Entries"];
+            List<object> GuitarTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
+            List<object> BassTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
 
-            if (entries.First == null)
+            foreach(object tone in tonesToImport_Guitar)
             {
-                MessageBox.Show("Input Tone Manifest ENTRIES doesn't have children");
-                return;
+                GuitarTones.Add(tone);
+            }
+            foreach(object tone in tonesToImport_Bass)
+            {
+                BassTones.Add(tone);
             }
 
-            string arrId = string.Empty;
-
-            foreach(var pair in JObject.Parse(entries.ToString()))
-            {
-                arrId = pair.Key;
-            }
-
-            if (arrId == string.Empty)
-            {
-                MessageBox.Show("Input Tone Manifest has no ArrangementId");
-                return;
-            }
-            if (entries[arrId] == null)
-            {
-                MessageBox.Show("Input Tone Manifest has invalid ArrangementId");
-                return;
-            }
-
-            JToken arrangement = entries[arrId];
-
-            if (arrangement["Attributes"] == null)
-            {
-                MessageBox.Show("Input Tone Manifest has no arrangement attributes");
-                return;
-            }
-
-            JToken attributes = arrangement["Attributes"];
-
-            if (attributes["ArrangementName"] == null)
-            {
-                MessageBox.Show("Input Tone Manifest has no arrangement name");
-                return;
-            }
-
-            string arrangementName = attributes["ArrangementName"].ToString();
-
-            if (attributes["Tones"] == null)
-            {
-                MessageBox.Show("Input Tone Manifest has no tones");
-                return;
-            }
-
-            JToken tones = attributes["Tones"];
-
-            List<object> ProfileTones = null;
-            // Bass
-            if (arrangementName.Contains("Bass"))
-            {
-                ProfileTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
-            }
-            // Guitar
-            else
-            {
-                ProfileTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
-            }
-
-            List<object> tonesInSong = tones.ToObject<List<object>>();
-
-            foreach(object tone in tonesInSong)
-            {
-                ProfileTones.Add(tone);
-            }
-
-            // Bass
-            if (arrangementName.Contains("Bass"))
-            {
-                Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(ProfileTones);
-            }
-            // Guitar
-            else
-            {
-                Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(ProfileTones);
-            }
+            Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(GuitarTones);
+            Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(BassTones);
 
             Profiles_ENCRYPT();
 
-            MessageBox.Show($"Added {tonesInSong.Count} tone(s) to profile!");
+            MessageBox.Show($"Added {tonesToImport_Guitar.Count + tonesToImport_Bass.Count} tone(s) to profile!");
         }
 
         private void Profiles_ImportTone2014(object sender, EventArgs e)
@@ -3809,64 +3822,76 @@ namespace RSMods
                 return;
             }
 
-            string filename = string.Empty;
+            List<string> filenames = new List<string>();
 
             using (OpenFileDialog fileDialog = new OpenFileDialog())
             {
                 fileDialog.Filter = "XML|*.tone2014.xml";
+
+                if (checkBox_ImportTonesBulk.Checked)
+                {
+                    fileDialog.Multiselect = true;
+                }
+                
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filename = fileDialog.FileName;
+                    filenames = fileDialog.FileNames.ToList();
                 }
             }
 
-            if (filename == string.Empty)
+            if (filenames.Count == 0)
             {
-                MessageBox.Show("No XML tone was imported.");
+                MessageBox.Show("No XML tones were imported.");
                 return;
             }
 
-            Tone2014 tone = Tone2014.LoadFromXmlTemplateFile(filename);
-
-            List<object> ProfileTones = null;
+            List<Tone2014> tonesToImport_Guitar = new List<Tone2014>();
+            List<Tone2014> tonesToImport_Bass = new List<Tone2014>();
 
             MessageBoxManager.OK = "Guitar";
             MessageBoxManager.Cancel = "Bass";
             MessageBoxManager.Register();
-            DialogResult arrangementResult = MessageBox.Show("Do you want to save this for guitar, or for bass?", "Question", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+
+            foreach (string filename in filenames)
+            {
+                Tone2014 tone = Tone2014.LoadFromXmlTemplateFile(filename);
+
+                DialogResult arrangementResult = MessageBox.Show($"Do you want to save {tone.Name} as a guitar tone, or a bass tone?", "Question", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+
+                if (arrangementResult == DialogResult.Cancel)
+                {
+                    tonesToImport_Bass.Add(tone);
+                }
+                else
+                {
+                    tonesToImport_Guitar.Add(tone);
+                }
+            }
+
             MessageBoxManager.Unregister();
             MessageBoxManager.OK = "OK";
             MessageBoxManager.Cancel = "Cancel";
 
-            bool isBass = arrangementResult == DialogResult.Cancel;
+            List<object> GuitarTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
+            List<object> BassTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
 
-            // Bass
-            if (isBass)
+            foreach (Tone2014 tone in tonesToImport_Guitar)
             {
-                ProfileTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
-            }
-            // Guitar
-            else
-            {
-                ProfileTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
+                GuitarTones.Add(tone);
             }
 
-            ProfileTones.Add(tone);
+            foreach (Tone2014 tone in tonesToImport_Bass)
+            {
+                BassTones.Add(tone);
+            }
 
-            // Bass
-            if (isBass)
-            {
-                Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(ProfileTones);
-            }
-            // Guitar
-            else
-            {
-                Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(ProfileTones);
-            }
+
+            Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(GuitarTones);
+            Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(BassTones);
 
             Profiles_ENCRYPT();
 
-            MessageBox.Show($"Added tone \"{tone.Name}\" to your profile");
+            MessageBox.Show($"Added {tonesToImport_Guitar.Count + tonesToImport_Bass.Count} tone(s) to your profile!");
         }
 
         #endregion

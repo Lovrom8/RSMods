@@ -476,6 +476,7 @@
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
             this.groupBox_ImportJsonTones = new System.Windows.Forms.GroupBox();
+            this.button_ImportTone2014 = new System.Windows.Forms.Button();
             this.button_ImportToneManifest = new System.Windows.Forms.Button();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -528,7 +529,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.button_ImportTone2014 = new System.Windows.Forms.Button();
+            this.checkBox_ImportTonesBulk = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -6111,15 +6112,26 @@
             // 
             // groupBox_ImportJsonTones
             // 
+            this.groupBox_ImportJsonTones.Controls.Add(this.checkBox_ImportTonesBulk);
             this.groupBox_ImportJsonTones.Controls.Add(this.button_ImportTone2014);
             this.groupBox_ImportJsonTones.Controls.Add(this.button_ImportToneManifest);
             this.groupBox_ImportJsonTones.Location = new System.Drawing.Point(11, 456);
             this.groupBox_ImportJsonTones.Name = "groupBox_ImportJsonTones";
-            this.groupBox_ImportJsonTones.Size = new System.Drawing.Size(242, 54);
+            this.groupBox_ImportJsonTones.Size = new System.Drawing.Size(332, 54);
             this.groupBox_ImportJsonTones.TabIndex = 13;
             this.groupBox_ImportJsonTones.TabStop = false;
             this.groupBox_ImportJsonTones.Text = "Import Tones";
             this.groupBox_ImportJsonTones.Visible = false;
+            // 
+            // button_ImportTone2014
+            // 
+            this.button_ImportTone2014.Location = new System.Drawing.Point(134, 19);
+            this.button_ImportTone2014.Name = "button_ImportTone2014";
+            this.button_ImportTone2014.Size = new System.Drawing.Size(98, 23);
+            this.button_ImportTone2014.TabIndex = 1;
+            this.button_ImportTone2014.Text = "Import XML";
+            this.button_ImportTone2014.UseVisualStyleBackColor = true;
+            this.button_ImportTone2014.Click += new System.EventHandler(this.Profiles_ImportTone2014);
             // 
             // button_ImportToneManifest
             // 
@@ -6590,15 +6602,15 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // button_ImportTone2014
+            // checkBox_ImportTonesBulk
             // 
-            this.button_ImportTone2014.Location = new System.Drawing.Point(134, 19);
-            this.button_ImportTone2014.Name = "button_ImportTone2014";
-            this.button_ImportTone2014.Size = new System.Drawing.Size(98, 23);
-            this.button_ImportTone2014.TabIndex = 1;
-            this.button_ImportTone2014.Text = "Import XML";
-            this.button_ImportTone2014.UseVisualStyleBackColor = true;
-            this.button_ImportTone2014.Click += new System.EventHandler(this.Profiles_ImportTone2014);
+            this.checkBox_ImportTonesBulk.AutoSize = true;
+            this.checkBox_ImportTonesBulk.Location = new System.Drawing.Point(239, 24);
+            this.checkBox_ImportTonesBulk.Name = "checkBox_ImportTonesBulk";
+            this.checkBox_ImportTonesBulk.Size = new System.Drawing.Size(89, 17);
+            this.checkBox_ImportTonesBulk.TabIndex = 2;
+            this.checkBox_ImportTonesBulk.Text = "Import in bulk";
+            this.checkBox_ImportTonesBulk.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -6757,6 +6769,7 @@
             this.tab_Profiles.ResumeLayout(false);
             this.tab_Profiles.PerformLayout();
             this.groupBox_ImportJsonTones.ResumeLayout(false);
+            this.groupBox_ImportJsonTones.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).EndInit();
             this.groupBox_Profile_MoreSongLists.ResumeLayout(false);
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
@@ -7274,6 +7287,7 @@
         private System.Windows.Forms.GroupBox groupBox_ImportJsonTones;
         private System.Windows.Forms.Button button_ImportToneManifest;
         private System.Windows.Forms.Button button_ImportTone2014;
+        private System.Windows.Forms.CheckBox checkBox_ImportTonesBulk;
     }
 }
 
