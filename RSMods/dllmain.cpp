@@ -320,7 +320,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			// Toggle Extended Range mod
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
 			{
-				Settings::ToggleExtendedRangeMode();
+				D3DHooks::UseERExclusivelyInThisSong = !D3DHooks::UseERExclusivelyInThisSong;
+				MemHelpers::ToggleCB(D3DHooks::UseERExclusivelyInThisSong);
 
 				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
 			}
