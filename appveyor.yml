@@ -11,6 +11,14 @@
   build:
       parallel: true
       verbosity: quiet
-  on_finish:
-  - cmd: >-
-       appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%/Installer/bin/Release/RS2014-Mod-Installer.exe
+  artifacts:
+  - path: '%APPVEYOR_BUILD_FOLDER%/Installer/bin/Release/RS2014-Mod-Installer.exe'
+    name: Installer
+  deploy:
+  - provider: GitHub
+    tag: RSModsInstaller-v$(releaseVersion)
+    release: RSModsInstaller-v$(releaseVersion)
+    auth_token:
+       secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
+    artifact: Installer
+    prerelease: true
