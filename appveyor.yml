@@ -8,6 +8,19 @@
   before_build:
     - ps: >-
         nuget restore
+
+        $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Installer\Properties\AssemblyInfo.cs"
+        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+        $content = [IO.File]::ReadAllText($assemblyFile)
+        $version = $null
+        
+        $match = $regex.Match($content)
+        
+        if($match.Success) {
+            $version = $match.groups[3].value
+        }
+        
+        $env:releaseVersion=$version
   build:
       parallel: true
       verbosity: quiet
