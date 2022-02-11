@@ -8,6 +8,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{9E11FD67-DFFE-40F1-8E69-26D359F896EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399} = {E312CF39-2170-4C1A-AC11-3A9C1C2E7399}
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8} = {0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
