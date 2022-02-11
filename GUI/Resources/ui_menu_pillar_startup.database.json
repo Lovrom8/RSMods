@@ -1,0 +1,1049 @@
+{ "Static" : { "UI" : { "Menus" : { "Entries" :
+{
+    "TitleScreen" :
+    {
+		"Controller" : 
+		{
+			"ClassName" : "TitleScreen",
+			"Id" : "TitleScreen",
+			"Alias" : "titlescreen",
+			"Childs" :
+			[
+				"Notifications"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "TitleScreen",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Images":
+				{
+					"background":
+					{
+						"ID": "background",
+						"File": "title_screen_mockup.png"
+					}
+				},
+				"Buttons" :
+				{
+					"pressstart":
+					{
+						"ID" : "pressstart",
+						"Label" : "$[33136]BEGIN",
+						"State" : "up",
+						"SortOrder" : 0
+					},								
+				},				
+				"TextFields" :
+				{
+					"currentplayer":
+					{
+						"ID" : "currentplayer",
+						"Text": ""
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},
+	"ProfileSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "ProfileSelect",
+			"Id" : "ProfileSelect",
+			"Alias" : "profileselect",
+			"BackStage" : "MainMenu",
+			"Childs" :
+			[
+				"PanelBib",
+				"Notifications"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "ProfileSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[33135]SELECT A PROFILE"
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "Close",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "Open",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},
+	"FE_InputSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "FE_InputSelect",
+			"Id" : "FE_InputSelect",
+			"Alias" : "fe_inputselect",
+			"BackStage" : "HeadstockSelect",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "FE_InputSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[37284]HOW WOULD YOU LIKE TO CONNECT?",
+
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[37285]It sounds like no inputs are plugged-in"
+					}
+				},
+				"Images":
+				{
+					"realtone":
+					{
+						"ID": "realtone",
+						"File": "InputMode_RealToneCable.png",
+						"InputModeIconFileText": "RTC_"
+					},
+					"othercable":
+					{
+						"ID": "othercable",
+						"File": "inputmode_directconnect.png",
+						"InputModeIconFileText": "Directcon_"
+					},
+					"microphone":
+					{
+						"ID": "microphone",
+						"File": "InputMode_Microphone.png",
+						"InputModeIconFileText": "Microphone_"
+					},
+					"disconnected":
+					{
+						"ID": "disconnected",
+						"File": "InputMode_Disconnected.png",
+						"InputModeIconFileText": "Discon_"
+					}
+				},
+				"Buttons" :
+				{
+					"realtone":
+					{
+						"ID" : "realtone",
+						"Label" : "$[37286]REAL TONE CABLE",
+						"Description" : "$[37290]This is the best experience when using an electric guitar.",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+					"othercable":
+					{
+						"ID": "othercable",
+						"Label": "DIRECT CONNECT",
+						"Description": "$[37291]Use a cable other than the Real Tone Cable to plug in your electric guitar or bass.",
+						"State": "up",
+						"SortOrder": 1
+					},
+					"microphone":
+					{
+						"ID" : "microphone",
+						"Label" : "$[37288]MICROPHONE",
+						"Description" : "$[37292]Play your guitar with a microphone.",
+						"State" : "up",
+						"SortOrder" : 2
+					},
+					"disconnected":
+					{
+						"ID" : "disconnected",
+						"Label" : "$[37289]DISCONNECTED",
+						"Description" : "$[37293]Play along with no input - you won't be scored, and the game won't automatically adjust difficulty for you.",
+						"State" : "up",
+						"SortOrder" : 3
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},
+	"HeadstockSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "HeadstockSelect",
+			"Id" : "HeadstockSelect",
+			"Alias" : "headstockselect",
+			"BackStage" : "HandSelect",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "HeadstockSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[27175]SELECT HEADSTOCK",
+
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29379]Which headstock?"
+					}
+				},
+				"Images":
+				{
+					"sixinline":
+					{
+						"ID": "sixinline",
+						"File": "headstock_sixInline.png"
+					},
+					"threebythree":
+					{
+						"ID": "threebythree",
+						"File": "headstock_threeByThree.png"
+					},
+					"fourinline":
+					{
+						"ID": "fourinline",
+						"File": "headstock_fourInline.png"
+					},
+					"twobytwo":
+					{
+						"ID": "twobytwo",
+						"File": "headstock_twoByTwo.png"
+					}
+				},
+				"Buttons" :
+				{
+					"threebythree":
+					{
+						"ID" : "threebythree",
+						"Label" : "$[27121]3x3",
+						"Description" : "$[29389] 6 pegs, 3 on each side",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+
+					"sixinline":
+					{
+						"ID" : "sixinline",
+						"Label" : "$[27120]6 IN LINE",
+						"Description" : "$[29388] 6 all on one side",
+						"State" : "up",
+						"SortOrder" : 1
+					},
+
+					"fourinline":
+					{
+						"ID" : "fourinline",
+						"Label" : "$[27122]4 IN LINE",
+						"Description" : "$[29390] 4 on one side",
+						"State" : "up",
+						"SortOrder" : 2
+					},
+					"twobytwo":
+					{
+						"ID" : "twobytwo",
+						"Label" : "$[27123]2x2",
+						"Description" : "$[29391] 2 on each side",
+						"State" : "up",
+						"SortOrder" : 3
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},	
+	"HandSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "HandSelect",
+			"Id" : "HandSelect",
+			"Alias" : "Handselect",
+			"BackStage" : "PathSelect",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "HandSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[29381]SELECT Hand",
+				"Buttons" :
+				{
+					"right":
+					{
+						"ID" : "right",
+						"Label" : "$[29383]Right",
+						"Description" : "$[29385]",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+					"left":
+					{
+						"ID" : "left",
+						"Label" : "$[29382]Left",
+						"Description" : "$[29384]",
+						"State" : "up",
+						"SortOrder" : 1
+					}
+				},
+				"Images":
+				{
+					"right":
+					{
+						"ID": "right",
+					},
+					"left":
+					{
+						"ID": "left",
+					}
+				},
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29380]Which hand do you play with?"
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},
+	"PlayedRS1Select" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "PlayedRS1Select",
+			"Id" : "PlayedRS1Select",
+			"Alias" : "PlayedRS1select",
+			"BackStage" : "TitleScreen",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "PlayedRS1Select",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[29361]ROCKSMITH",
+				"Buttons" :
+				{
+					"yes":
+					{
+						"ID" : "yes",
+						"Label" : "$[23366]Yes",
+						"State" : "up",
+						"SortOrder" : 1
+					},
+					"no":
+					{
+						"ID" : "no",
+						"Label" : "$[23367]No",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					}
+				},
+				"Images":
+				{
+					"yes":
+					{
+						"ID": "yes",
+						"File": "playedrs1_yes.png"
+					},
+					"no":
+					{
+						"ID": "no",
+						"File": "playedrs1_no.png"
+					}
+				},
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29362]Have you played Rocksmith 1?"
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},
+	"RefresherSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "RefresherSelect",
+			"Id" : "RefresherSelect",
+			"Alias" : "Refresherselect",
+			"BackStage" : "PlayedRS1Select",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "RefresherSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[29374]Refresher",
+	
+				"Buttons" :
+				{
+					"yes":
+					{
+						"ID" : "yes",
+						"Label" : "$[23366]Yes",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+					"no":
+					{
+						"ID" : "no",
+						"Label" : "$[23367]No",
+						"State" : "up",
+						"SortOrder" : 1
+					}
+
+				},
+				"Images":
+				{
+					"yes":
+					{
+						"ID": "yes",
+						"File": "refresher_yes.png"
+					},
+					"no":
+					{
+						"ID": "no",
+						"File": "refresher_no.png"
+					}
+				},
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29375]Do you need a refresher?"
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},	
+	"ExperienceSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "ExperienceSelect",
+			"Id" : "ExperienceSelect",
+			"Alias" : "Experienceselect",
+			"BackStage" : "PlayedRS1Select",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "ExperienceSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[29378]SELECT Experience",
+				"Buttons" :
+				{
+					"beginner":
+					{
+						"ID" : "beginner",
+						"Label" : "$[29364] beginner",
+						"Description" : "$[35777] ive never played before",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+					"novice":
+					{
+						"ID" : "novice",
+						"Label" : "$[35780] novice",
+						"Description" : "$[29366] simply stuff okay",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 1
+					},
+					"average":
+					{
+						"ID" : "average",
+						"Label" : "$[35781] average",
+						"Description" : "$[29367] fake my way through songs",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 2
+					},
+					"experienced":
+					{
+						"ID" : "experienced",
+						"Label" : "$[35782] experienced",
+						"Description" : "$[29368] most stuff pretty well",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 3
+					},
+					"highly experienced":
+					{
+						"ID" : "highly experienced",
+						"Label" : "$[29371]",
+						"Description" : "$[35778]i can play whatever",
+						"State" : "up",
+						"SortOrder" : 4
+					}
+				},
+				"Images":
+				{
+					"beginner":
+					{
+						"ID": "beginner",
+						"File": "exp_beginner.png"
+					},	
+					"novice":
+					{
+						"ID": "novice",
+						"File": "exp_novice.png"
+					},
+					"average":
+					{
+						"ID": "average",
+						"File": "exp_average.png"
+					},
+					"experienced":
+					{
+						"ID": "experienced",
+						"File": "exp_experienced.png"
+					},
+					"highly experienced":
+					{
+						"ID": "highly experienced",
+						"File": "exp_highlyexperienced.png"
+					}
+				},
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29363]What is your experience level?"
+					}
+					"youAreDumbLetsSpellItOutText":
+					{
+						"ID": "youAreDumbLetsSpellItOutText",
+						"Text": "$[35779]Answer based on the instrument you're about to play, today."
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	},	
+	
+	"VideoPlayer" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "VideoPlayer",
+			"Id" : "VideoPlayer",
+			"Alias" : "videoplayer",
+			"StageBuilder" : true,
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "VideoPlayer",
+			"Definition" :
+			{
+				"Title" : " ",
+				"SubTitle" : " ",
+				"OnCancel" :
+				{
+					"StageId" : "LearnASong_PreSongTuner"
+				},
+				"OnComplete" :
+				{
+					"StageId" : "LearnASong_PreSongTuner"
+				}
+			}
+		}
+	},
+	"PathSelect" :
+	{
+		"Controller" : 
+		{
+			"ClassName" : "PathSelect",
+			"Id" : "PathSelect",
+			"Alias" : "pathselect",
+			"BackStage" : "PlayedRS1Select",
+			"Childs" :
+			[
+				"PanelBib"
+			]
+		},
+		"View" :
+		{
+			"MovieName" : "PathSelect",
+			"ItemTemplate":
+			{
+				"SortOrder" : 1,
+				"Label" : "#",
+				"States" : {},
+				"Change" : {}
+			},
+			"ChangeTemplate":
+			{
+				"Delete" : false,
+				"New" : false,
+				"Focused" : false,
+				"Unlocked" : false,
+				"Loading" : false
+			},
+			"StatesTemplate":
+			{
+				"Default" : false,
+				"Focus" : false,
+				"Loading" : false,
+				"Locked" : false
+			},
+			"Definition" :
+			{
+				"Title" : "$[29376]SELECT PATH",
+				"Buttons" :
+				{
+					"lead":
+					{
+						"ID" : "lead",
+						"Label" : "$[32974]LEAD",
+						"Description" : "$[24084] VO's text desc of LEAD ADV",
+						"State" : "up",
+						"States" : { "Default" : true },
+						"SortOrder" : 0
+					},
+					"rhythm":
+					{
+						"ID" : "rhythm",
+						"Label" : "$[32976]RHYTHM",
+						"Description" : "$[24085]VO's text desc of RHYTHM ADV.",
+						"State" : "up",
+						"SortOrder" : 1
+					},
+					"bassStandard":
+					{
+						"ID" : "bassStandard",
+						"Label" : "$[32975]BASS",
+						"Description" : "$[24086]VO's text desc of BASS>Standard ADV",
+						"State" : "up",
+						
+						"SortOrder" : 2
+					}
+				},
+				"TextFields" :
+				{
+					"questionText":
+					{
+						"ID": "questionText",
+						"Text": "$[29377]Which path do you want to start with?"
+					}
+				}
+				"Images":
+				{
+					"lead":
+					{
+						"ID": "lead",
+						"File": "pathsel_lead.png"
+					},
+					"rhythm":
+					{
+						"ID": "rhythm",
+						"File": "pathsel_rhythm.png"
+					},
+					"bassStandard":
+					{
+						"ID": "bassStandard",
+						"File": "pathsel_bass.png"
+					}
+				}
+			}
+		},
+		"Transitions":
+		{
+			"From":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeIn",
+					"WaitForTransitionOut": false 
+				}
+			},
+			"To":
+			{
+				"Default":
+				{
+					"ShowOnTop": true,
+					"Type": "FadeOut",
+					"WaitForTransitionIn": false
+				}
+			}
+		}
+	}
+} } } } }

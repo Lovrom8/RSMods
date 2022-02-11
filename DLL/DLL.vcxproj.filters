@@ -1,0 +1,526 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;CC\CC;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Mods">
+      <UniqueIdentifier>{c3164239-7db1-4636-8512-4903a737ec2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D">
+      <UniqueIdentifier>{210476c1-0572-493c-a9ca-1205a492f02b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CrowdControl">
+      <UniqueIdentifier>{0c9e34c2-578e-44ce-ad2d-1db8c0ddffee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CrowdControl\Effects">
+      <UniqueIdentifier>{640d2f3f-cd69-4671-b21b-d2a19d59ba27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CrowdControl\Effects\EffectHeaders">
+      <UniqueIdentifier>{09c7c9a6-45da-49ba-a53a-9972ed0015c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mods\Headers">
+      <UniqueIdentifier>{a0fe11eb-0e53-49d5-bc06-c579ccb460fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CrowdControl\Headers">
+      <UniqueIdentifier>{6e837f50-05eb-4590-bdce-71840b2f60a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs">
+      <UniqueIdentifier>{6987efde-b923-4637-af53-2105f5971db0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Main Headers\DirectX">
+      <UniqueIdentifier>{9587255a-88e0-485b-9910-d3fb12662ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers\ImGUI">
+      <UniqueIdentifier>{928903e3-aea4-4d1d-a828-c49f6c847b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers\Detours">
+      <UniqueIdentifier>{68a815bd-e966-4cb1-ba5e-b4ac4ceb1052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers\Ini">
+      <UniqueIdentifier>{c07d28f0-a6a8-4144-866a-ceb7d2402a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers\Midi">
+      <UniqueIdentifier>{eaaab380-b419-4045-acca-4b9f28c0e3c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Headers\Json">
+      <UniqueIdentifier>{518ead06-0e18-411b-ac85-8d3e10854984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wwise">
+      <UniqueIdentifier>{090f1866-084e-4456-bd37-52cb5cebb6d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wwise\Headers">
+      <UniqueIdentifier>{e3351a06-44ce-49d9-bd8b-d3ed727b7c58}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Proxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Offsets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scrapped.hpp">
+      <Filter>Main Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="MemHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\Enumeration.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSkeletons.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSpeak.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomSongTitles.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\CollectColors.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="MemUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_draw.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_impl_dx9.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_impl_win32.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_widgets.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\RobotoFont.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D/D3D.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCStructs.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\ControlServer.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\TransparentNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RemoveNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\SolidNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\DrunkModeEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\FYourFCEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ChangeToToneSlot.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\KillGuitarVolumeEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\KillMusicVolumeEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DisableControllers.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\BigNoteheadEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\InvertedStringsEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ExtendedRangeMode.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCEffectList.cpp">
+      <Filter>CrowdControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D/D3DHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCEnums.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\CCStructs.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\Midi.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Midi\RtMidi.cpp">
+      <Filter>Main Headers\Midi</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\VolumeControl.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RainbowNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\RainbowStringsEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControl.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ZoomEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\ImGUI\imgui_tables.cpp">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RiffRepeater.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\AudioDevices.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\SoundEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Root.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MemoryMgr.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Monitor.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MotionEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\MusicEngine.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\Logging.cpp">
+      <Filter>Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\BugPrevention.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MemUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MemHelpers.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Offsets.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Structs.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3d9.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3d9types.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9anim.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9core.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9effect.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9math.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9mesh.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9shader.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9shape.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9tex.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\DirectX\d3dx9xof.h">
+      <Filter>Main Headers\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imgui.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imgui_impl_dx9.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imgui_impl_win32.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imgui_internal.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imstb_rectpack.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imstb_textedit.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imstb_truetype.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ImGUI\imconfig.h">
+      <Filter>Main Headers\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleIni.h">
+      <Filter>Main Headers\Ini</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Detours\detours.h">
+      <Filter>Main Headers\Detours</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHelper.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHooks.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3D.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ChangeToToneSlot.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\DrunkModeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\FYourFCEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\InvertedStringsEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RemoveNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CollectColors.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomSongTitles.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\Enumeration.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSpeak.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GuitarSkeletons.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DisableControllers.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCEffect.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\CCEffectList.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\ControlServer.hpp">
+      <Filter>CrowdControl\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\Midi.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Midi\RtMidi.h">
+      <Filter>Main Headers\Midi</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VolumeControl.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RainbowNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\RainbowStringsEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VoiceOverControl.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CC\Effects\ZoomEffect.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Proxy.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Json\json.hpp">
+      <Filter>Main Headers\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RiffRepeater.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\AudioDevices.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Exports.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\SoundEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Types.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Root.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MemoryMgr.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Monitor.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MotionEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\MusicEngine.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\Logging.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\PluginRegistration.hpp">
+      <Filter>Wwise\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\BugPrevention.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xinput1_3.def">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Lib\DirectX\d3dx9math.inl">
+      <Filter>Main Headers\DirectX</Filter>
+    </None>
+    <None Include="Lib\Detours\detours.pdb">
+      <Filter>Main Headers\Detours</Filter>
+    </None>
+    <None Include="CC/rocksmithcrowdcontrol.cs">
+      <Filter>CrowdControl</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Lib\Detours\detours.lib">
+      <Filter>Main Headers\Detours</Filter>
+    </Library>
+    <Library Include="Lib\DirectX\d3d9.lib">
+      <Filter>Libs</Filter>
+    </Library>
+    <Library Include="Lib\DirectX\d3dx9.lib">
+      <Filter>Libs</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
