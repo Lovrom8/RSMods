@@ -12,7 +12,7 @@
       parallel: true
       verbosity: quiet
   artifacts:
-  - path: '%APPVEYOR_BUILD_FOLDER%/Installer/bin/Release/RS2014-Mod-Installer.exe'
+  - path: 'Installer/bin/Release/RS2014-Mod-Installer.exe'
     name: Installer
   deploy:
   - provider: GitHub
