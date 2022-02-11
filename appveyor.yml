@@ -17,7 +17,7 @@
   deploy:
   - provider: GitHub
     tag: RSModsInstaller-v$(releaseVersion)
-    release: RSModsInstaller-v$(releaseVersion)
+    release: RSModsInstaller-v$(releaseVersion)_OnCommit
     auth_token:
        secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
     artifact: Installer
