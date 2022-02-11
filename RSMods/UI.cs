@@ -21,9 +21,11 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.ComponentModel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
+using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
@@ -3797,6 +3799,74 @@ namespace RSMods
             Profiles_ENCRYPT();
 
             MessageBox.Show($"Added {tonesInSong.Count} tone(s) to profile!");
+        }
+
+        private void Profiles_ImportTone2014(object sender, EventArgs e)
+        {
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please select a profile!");
+                return;
+            }
+
+            string filename = string.Empty;
+
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.Filter = "XML|*.tone2014.xml";
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filename = fileDialog.FileName;
+                }
+            }
+
+            if (filename == string.Empty)
+            {
+                MessageBox.Show("No XML tone was imported.");
+                return;
+            }
+
+            Tone2014 tone = Tone2014.LoadFromXmlTemplateFile(filename);
+
+            List<object> ProfileTones = null;
+
+            MessageBoxManager.OK = "Guitar";
+            MessageBoxManager.Cancel = "Bass";
+            MessageBoxManager.Register();
+            DialogResult arrangementResult = MessageBox.Show("Do you want to save this for guitar, or for bass?", "Question", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            MessageBoxManager.Unregister();
+            MessageBoxManager.OK = "OK";
+            MessageBoxManager.Cancel = "Cancel";
+
+            bool isBass = arrangementResult == DialogResult.Cancel;
+
+            // Bass
+            if (isBass)
+            {
+                ProfileTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
+            }
+            // Guitar
+            else
+            {
+                ProfileTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
+            }
+
+            ProfileTones.Add(tone);
+
+            // Bass
+            if (isBass)
+            {
+                Profiles.DecryptedProfile["BassTones"] = JToken.FromObject(ProfileTones);
+            }
+            // Guitar
+            else
+            {
+                Profiles.DecryptedProfile["CustomTones"] = JToken.FromObject(ProfileTones);
+            }
+
+            Profiles_ENCRYPT();
+
+            MessageBox.Show($"Added tone \"{tone.Name}\" to your profile");
         }
 
         #endregion
