@@ -14,7 +14,7 @@
         $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
 
         $content = [IO.File]::ReadAllText($assemblyFile)
-        
+
         $version = $null
         
         $match = $regex.Match($content)
@@ -32,7 +32,7 @@
     name: Installer
   deploy:
   - provider: GitHub
-    tag: RSModsInstaller-v$(releaseVersion)
+    tag: RSModsInstaller-v$(releaseVersion)_OnCommit
     release: RSModsInstaller-v$(releaseVersion)_OnCommit
     auth_token:
        secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
