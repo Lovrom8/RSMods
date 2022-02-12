@@ -293,7 +293,7 @@
     <PostBuildEvent>xcopy "$(ProjectDir)lib\*.*" "$(TargetDir)" /Y /I /E
 if not exist "$(TargetDir)\CustomMods" mkdir "$(TargetDir)\CustomMods"
 
-xcopy "$(TargetDir)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\RSMods" /Y /I /E
+if exist  "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\RSMods" xcopy "$(TargetDir)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\RSMods" /Y /I /E
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
