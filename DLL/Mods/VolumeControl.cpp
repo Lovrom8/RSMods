@@ -10,7 +10,7 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	RTPCValue_type type = RTPCValue_GameObject;
 
 	// Mixer sent is not a valid mixer.
-	if (!MemHelpers::IsInStringArray(mixerToIncrease, mixerNames)) {
+	if (!MemHelpers::Contains(mixerToIncrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}
@@ -41,7 +41,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	RTPCValue_type type = RTPCValue_GameObject;
 
 	// Mixer sent is not a valid mixer.
-	if (!MemHelpers::IsInStringArray(mixerToDecrease, mixerNames)) {
+	if (!MemHelpers::Contains(mixerToDecrease, mixerNames)) {
 		std::cout << "That mixer doesn't exist" << std::endl;
 		return;
 	}

@@ -8,7 +8,7 @@ using namespace CrowdControl::Enums;
 using nlohmann::json;
 
 namespace CrowdControl::Structs {
-	extern struct Request {
+	struct Request {
 		unsigned int id;
 		std::string code;
 		std::string viewer;
@@ -16,7 +16,7 @@ namespace CrowdControl::Structs {
 		json parameters;
 	};
 
-	extern struct Response {
+	struct Response {
 		unsigned int id;
 		EffectResult status;
 		std::string message;

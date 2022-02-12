@@ -520,9 +520,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	if (Settings::IsTwitchSettingEnabled("FYourFC")) {
 		uintptr_t currentNoteStreak = 0;
 
-		if (MemHelpers::IsInStringArray(currentMenu, learnASongModes))
+		if (MemHelpers::Contains(currentMenu, learnASongModes))
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakLASOffsets);
-		else if (MemHelpers::IsInStringArray(currentMenu, scoreAttackModes))
+		else if (MemHelpers::Contains(currentMenu, scoreAttackModes))
 			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakSAOffsets);
 
 		if (currentNoteStreak != 0)
@@ -552,7 +552,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	}
 
 	// Remove Headstock Artifacts
-	else if (MemHelpers::IsInStringArray(currentMenu, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
+	else if (MemHelpers::Contains(currentMenu, tuningMenus) && Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" && RemoveHeadstockInThisMenu)
 	{
 		// This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 		if (IsExtraRemoved(tuningLetters, currentThicc)) 
@@ -630,7 +630,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				int headstockCRCLimit = 3;
 
 				// If the user is in multiplayer, we have to make sure our CRC limit is double or some bugs appear.
-				if (MemHelpers::IsInStringArray(currentMenu, multiplayerTuners))
+				if (MemHelpers::Contains(currentMenu, multiplayerTuners))
 					headstockCRCLimit = 6;
 
 				// We've calculated all CRCs that we can, within our limit.

@@ -266,6 +266,10 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Message>Deleting potentially problematic obj file</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">
     <ClCompile>
@@ -296,6 +300,10 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     <PostBuildEvent>
       <Message>Copying to RS2014 folder...</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Message>Deleting potentially problematic obj file</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -326,6 +334,10 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     <PostBuildEvent>
       <Message>Copying to solution directory...</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Message>Deleting potentially problematic obj file</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -467,7 +467,7 @@ float MemHelpers::SongTimer() {
 	// We entered a song where the base timer does not work.
 	// Cause for this is unknown but we need to check, or time based mods (looping, song timer) will break.
 	// Ex: Desolate Motion, or Rocksmith 2012 Theme.
-	if (IsInStringArray(GetCurrentMenu(), songModes) && *(float*)addrTimerBase == 0.f && *(float*)addrTimerRare != 0.f) {
+	if (Contains(GetCurrentMenu(), songModes) && *(float*)addrTimerBase == 0.f && *(float*)addrTimerRare != 0.f) {
 		return *(float*)addrTimerRare;
 	}
 	// This is the default case, and will be used 99.99% of the time.
@@ -511,9 +511,8 @@ Resolution MemHelpers::GetWindowSize() {
 }
 
 /// <param name="stringToCheckIfInsideArray"> - Input</param>
-/// <param name="stringArray"> - Is input in list | ARRAY? (NULLABLE)</param>
 /// <param name="stringVector"> - Is input in list | VECTOR? (NULLABLE)</param>
-bool MemHelpers::IsInStringArray(std::string stringToCheckIfInsideArray, std::vector<std::string> stringVector) {
+bool MemHelpers::Contains(std::string stringToCheckIfInsideArray, std::vector<std::string> stringVector) {
 	if (stringVector != std::vector<std::string>()) {
 		for (unsigned int i = 0; i < stringVector.size(); i++) {
 			if (stringToCheckIfInsideArray == stringVector[i])
@@ -597,7 +596,7 @@ void MemHelpers::ToggleDrunkMode(bool enable) {
 /// Are we in a song?
 /// </summary>
 bool MemHelpers::IsInSong() {
-	return IsInStringArray(GetCurrentMenu(), songModes);
+	return Contains(GetCurrentMenu(), songModes);
 }
 
 /// <summary>
