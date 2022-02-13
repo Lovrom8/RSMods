@@ -267,7 +267,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Message>Copying to RS2014 folder...</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Command>IF EXIST "$(Configuration)\CCStructs.obj"  DEL "$(Configuration)\CCStructs.obj"</Command>
       <Message>Deleting potentially problematic obj file</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -301,7 +301,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Message>Copying to RS2014 folder...</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Command>IF EXIST "$(Configuration)\CCStructs.obj" DEL "$(Configuration)\CCStructs.obj"</Command>
       <Message>Deleting potentially problematic obj file</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -335,7 +335,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <Message>Copying to solution directory...</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>del $(MSBuildProjectDirectory)\$(Configuration)\CCStructs.obj</Command>
+      <Command>IF EXIST "$(Configuration)\CCStructs.obj" DEL "$(Configuration)\CCStructs.obj"</Command>
       <Message>Deleting potentially problematic obj file</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
