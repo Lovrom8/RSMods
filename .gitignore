@@ -274,5 +274,6 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
-/RSCDLCEnabler/Mods/Custom Tuning Fix Files/ui_menu_pillar_startup.database.json
 .editorconfig
+
+Installer/Resources/

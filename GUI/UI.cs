@@ -314,26 +314,33 @@ namespace RSMods
                 listBox_Profiles_AvailableProfiles.Items.Add(profileData.Key);
             }
 
-            if (AvailableProfiles != null && AvailableProfiles.Count > 0)
+            try
             {
-                int MaxSongLists = 6;
-                foreach(string prf in AvailableProfiles.Keys)
+                if (AvailableProfiles != null && AvailableProfiles.Count > 0)
                 {
-                    // Decrypt Profile
-                    JObject decPrf = JObject.Parse(Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(prf)));
+                    int MaxSongLists = 6;
+                    foreach (string prf in AvailableProfiles.Keys)
+                    {
+                        // Decrypt Profile
+                        JObject decPrf = JObject.Parse(Profiles.DecryptProfiles(Profiles_GetProfilePathFromName(prf)));
 
-                    // Check how many song lists
-                    int TotalSongLists = decPrf["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>().Count; 
-                    decPrf = null;
+                        // Check how many song lists
+                        int TotalSongLists = decPrf["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>().Count;
+                        decPrf = null;
 
-                    if (TotalSongLists > MaxSongLists)
-                        MaxSongLists = TotalSongLists;
+                        if (TotalSongLists > MaxSongLists)
+                            MaxSongLists = TotalSongLists;
+                    }
+
+                    Profiles_Helper_GenerateValidSonglists(MaxSongLists);
                 }
-
-                Profiles_Helper_GenerateValidSonglists(MaxSongLists);
+                // We cannot load the Rocksmith profiles.
+                else
+                {
+                    Startup_LoadSonglists();
+                }
             }
-            // We cannot load the Rocksmith profiles.
-            else
+            catch
             {
                 Startup_LoadSonglists();
             }
