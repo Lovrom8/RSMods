@@ -32,6 +32,19 @@ namespace Wwise::SoundEngine {
 	}
 
 	/// <summary>
+	/// Clones an effect from one bus to another
+	/// </summary>
+	/// <param name="toBus"> - Bus to send the effect to</param>
+	/// <param name="indexFX"> - Effect Index for the bus to send to</param>
+	/// <param name="fromBus"> - Bus to get the effect from</param>
+	/// <returns></returns>
+	AKRESULT CloneBusEffect(AkUniqueID toBus, AkUInt32 indexFX, AkUniqueID fromBus)
+	{
+		tCloneBusEffect func = (tCloneBusEffect)Wwise::Exports::func_Wwise_Sound_CloneBusEffect;
+		return func(toBus, indexFX, fromBus);
+	}
+
+	/// <summary>
 	/// Unload all currently loaded banks. It also internally calls ClearPreparedEvents() since at least one bank must have been loaded to allow preparing events.
 	/// </summary>
 	/// <returns>AK_Success if successful.AK_Fail if the sound engine was not correctly initialized or if there is not enough memory to handle the command.</returns>

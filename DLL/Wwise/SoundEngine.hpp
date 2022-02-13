@@ -10,6 +10,7 @@ namespace Wwise::SoundEngine {
 	void CancelEventCallbackCookie(void* in_pCookie);
 	AKRESULT ClearBanks(void);
 	AKRESULT ClearPreparedEvents(void);
+	AKRESULT CloneBusEffect(AkUniqueID toBus, AkUInt32 indexFX, AkUniqueID fromBus);
 	namespace DynamicDialogue {
 		AkUniqueID ResolveDialogueEvent(AkUniqueID in_eventID, AkArgumentValueID* in_aArgumentValues, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence = AK_INVALID_PLAYING_ID);
 		AkUniqueID ResolveDialogueEvent(const char* in_pszEventName, const char** in_aArgumentValueNames, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence = AK_INVALID_PLAYING_ID);
@@ -145,7 +146,7 @@ typedef void(__cdecl* tCancelEventCallbackCookie)(void* in_pCookie);
 typedef AKRESULT(__cdecl* tClearBanks)(void);
 typedef AKRESULT(__cdecl* tClearPreparedEvents)(void);
 typedef AkUInt32(__cdecl* tCloneActorMixerEffect)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
-typedef AkUInt32(__cdecl* tCloneBusEffect)(AkUInt32 param_1, AkUInt32 param_2, AkUInt32 param_3);
+typedef AKRESULT(__cdecl* tCloneBusEffect)(AkUniqueID toBus, AkUInt32 indexFX, AkUniqueID fromBus);
 // Dynamic Dialogue
 typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_UniqueID)(AkUniqueID in_eventID, AkArgumentValueID* in_aArgumentValues, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);
 typedef AkUniqueID(__cdecl* tDynamicDialogue_ResolveDialogueEvent_Char)(const char* in_pszEventName, const char** in_aArgumentValueNames, AkUInt32 in_uNumArguments, AkPlayingID in_idSequence);

@@ -138,18 +138,6 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_noteLocationPurpleFourthOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
 	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
 
-	// Wwise Logging
-	uintptr_t ptr_Wwise_Log_PostEventHook = 0x01f5b2d6;
-	uintptr_t ptr_Wwise_Log_PostEventHookJmpBck = ptr_Wwise_Log_PostEventHook + 5;
-	uintptr_t ptr_Wwise_Log_SetRTPCValueHook = 0x01f58a9d;
-	uintptr_t ptr_Wwise_Log_SetRTPCValueHookJmpBck = ptr_Wwise_Log_SetRTPCValueHook + 5;
-	uintptr_t ptr_Wwise_Log_SeekOnEventHook = 0x01f5b4bb;
-	uintptr_t ptr_Wwise_Log_SeekOnEventHookJmpBck = ptr_Wwise_Log_SeekOnEventHook + 6;
-	uintptr_t ptr_Wwise_Log_SetBusEffect = 0x01f58200;
-	uintptr_t ptr_Wwise_Log_SetBusEffectJmpBck = ptr_Wwise_Log_SetBusEffect + 5;
-	uintptr_t ptr_Wwise_Log_CloneBusEffect = 0x01f5bd7c;
-	uintptr_t ptr_Wwise_Log_CloneBusEffectJmpBck = ptr_Wwise_Log_CloneBusEffect + 6;
-
 	// Bug Prevention
 	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
 	uintptr_t ptr_StuckToneJmp = 0x017CB373;

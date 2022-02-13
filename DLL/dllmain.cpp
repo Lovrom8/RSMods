@@ -1224,11 +1224,7 @@ unsigned WINAPI MainThread() {
 		RiffRepeater::EnableLinearSpeeds();
 
 #ifdef _WWISE_LOGS // Only use in a debug environment. Will fill your log with spam!
-	Wwise::Logging::Setup_log_PostEvent();
-	Wwise::Logging::Setup_log_SetRTPCValue();
-	Wwise::Logging::Setup_log_SeekOnEvent();
-	Wwise::Logging::Setup_log_SetBusEffect();
-	Wwise::Logging::Setup_log_CloneBusEffect();
+	Wwise::Logging::Init();
 #endif
 
 	// Allow the user to have a small amount of time to Alt+Tab while the game continues playing the audio.
