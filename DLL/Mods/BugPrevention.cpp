@@ -21,4 +21,13 @@ namespace BugPrevention {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_StuckToneJmp, "\xEB", 1);
 		std::cout << "(BUG PREVENTION) Prevented Tone Bug" << std::endl;
 	}
+
+	/// <summary>
+	/// When a user has a faulty PnP (Plug-n-Play) device connected Rocksmith can crash.
+	/// It crashes with a memory access violation. The following code skips over the while loop.
+	/// </summary>
+	void PreventPnPCrash() {
+		MemUtil::PatchAdr((LPVOID)0x01F0C25E, "\xE9\x19\x02\x00\x00\x90", 6);
+		MemUtil::PatchAdr((LPVOID)0x01f0c48f, "\x90\x90\x90\x90\x90\x90", 6);
+	}
 }
