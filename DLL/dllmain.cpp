@@ -1146,27 +1146,6 @@ void UpdateSettings() {
 }
 
 /// <summary>
-/// Remove .mdmp dump files for when Rocksmith crashes. **ONLY EFFECTS DEBUG BUILDS**
-/// </summary>
-void ClearMDMPs() {
-	if (debug) { 
-		bool didWeDeleteFiles = false;
-
-		std::filesystem::path rocksmithFolder = std::filesystem::current_path();
-		for (const auto& file : std::filesystem::directory_iterator(rocksmithFolder)) {
-			if (file.path().extension().string() == (std::string)".mdmp")
-			{
-				std::filesystem::remove(file.path());
-				didWeDeleteFiles = true;
-			}
-		}
-
-		if (didWeDeleteFiles)
-			std::cout << "Deleting dump files" << std::endl;
-	}
-}
-
-/// <summary>
 /// Main Thread where we trigger the mods to startup.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
@@ -1191,7 +1170,6 @@ unsigned WINAPI MainThread() {
 	UpdateSettings();
 	ERMode::Initialize();
 	GUI();
-	ClearMDMPs();
 	Midi::InitMidi();
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
