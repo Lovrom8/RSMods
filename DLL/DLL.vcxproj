@@ -41,6 +41,7 @@
     <ClCompile Include="ObjectUtil.cpp" />
     <ClCompile Include="CC\Effects\ShuffleTonesEffect.cpp" />
     <ClCompile Include="CC\Effects\SmallNoteheadEffect.cpp" />
+    <ClCompile Include="Tests.cpp" />
     <ClCompile Include="Wwise\Logging.cpp" />
     <ClCompile Include="Wwise\MemoryMgr.cpp" />
     <ClCompile Include="Wwise\Monitor.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
     <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp" />
+    <ClInclude Include="Tests.hpp" />
     <ClInclude Include="Wwise\Logging.hpp" />
     <ClInclude Include="Wwise\MemoryMgr.hpp" />
     <ClInclude Include="Wwise\Monitor.hpp" />

@@ -249,6 +249,9 @@
     <ClCompile Include="Mods\BugPrevention.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -496,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="Mods\BugPrevention.hpp">
       <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,6 +14,7 @@
 #include "Wwise/SoundEngine.hpp"
 #include "Wwise/Logging.hpp"
 #include "CC/ControlServer.hpp"
+#include "Tests.hpp"
 
 // Windows Libraries
 #include <process.h>
