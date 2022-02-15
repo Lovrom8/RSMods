@@ -31,7 +31,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer,
 
 
                              // String Colors
@@ -45,7 +45,7 @@ namespace RSMods
                              // Mod Settings
                              ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset,
                              VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate, LoopingLeadUp,
-                             RewindBy,
+                             RewindBy, CustomNSPTimeLimit,
 
                              // Guitar Speak
                              GuitarSpeakDelete, GuitarSpeakSpace, GuitarSpeakEnter, GuitarSpeakTab, GuitarSpeakPGUP, GuitarSpeakPGDN, GuitarSpeakUP, GuitarSpeakDN, GuitarSpeakESC,
@@ -160,6 +160,7 @@ namespace RSMods
             AllowRewindIdentifier                       = "AllowRewind = ",
             FixOculusCrashIdentifier                    = "FixOculusCrash = ",
             FixBrokenTonesIdentifier                    = "FixBrokenTones = ",
+            UseCustomNSPTimerIdentifier                 = "UseCustomNSPTimer = ",
 
 
                 // String Colors (Normal {N} & Colorblind {CB})
@@ -209,6 +210,7 @@ namespace RSMods
             AlternativeOutputSampleRateIdentifier   = "AlternativeOutputSampleRate = ",
             LoopingLeadUpIdentifier                 = "LoopingLeadUp = ",
             RewindByIdentifier                      = "RewindBy = ",
+            CustomNSPTimeLimitIdentifier            = "CustomNSPTimeLimit = ",
 
             // Guitar Speak
             GuitarSpeakDeleteIdentifier     = "GuitarSpeakDeleteWhen = ",
@@ -494,7 +496,8 @@ namespace RSMods
                     return FillSettingVariable(FixOculusCrashIdentifier, SettingType.ON_OFF, currentLine, out FixOculusCrash);
                 if (IdentifierIsFound(currentLine, FixBrokenTonesIdentifier, identifierToGrab))
                     return FillSettingVariable(FixBrokenTonesIdentifier, SettingType.ON_OFF, currentLine, out FixBrokenTones);
-
+                if (IdentifierIsFound(currentLine, UseCustomNSPTimerIdentifier, identifierToGrab))
+                    return FillSettingVariable(UseCustomNSPTimerIdentifier, SettingType.ON_OFF, currentLine, out UseCustomNSPTimer);
                 #endregion
                 #region String Colors
                 // String Colors (Normal {N} & Colorblind {CB})
@@ -587,6 +590,9 @@ namespace RSMods
                     return FillSettingVariable(LoopingLeadUpIdentifier, SettingType.STRING, currentLine, out LoopingLeadUp);
                 if (IdentifierIsFound(currentLine, RewindByIdentifier, identifierToGrab))
                     return FillSettingVariable(RewindByIdentifier, SettingType.STRING, currentLine, out RewindBy);
+                if (IdentifierIsFound(currentLine, CustomNSPTimeLimitIdentifier, identifierToGrab))
+                    return FillSettingVariable(CustomNSPTimeLimitIdentifier, SettingType.STRING, currentLine, out CustomNSPTimeLimit);
+                
                 #endregion
                 #region Guitar Speak
 

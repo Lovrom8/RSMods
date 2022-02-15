@@ -669,6 +669,9 @@ namespace RSMods
             nUpDown_RewindBy.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
             checkBox_FixOculusCrash.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixOculusCrashIdentifier) == "on";
             checkBox_FixBrokenTones.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixBrokenTonesIdentifier) == "on";
+            checkBox_CustomNSPTimer.Checked                 = ReadSettings.ProcessSettings(ReadSettings.UseCustomNSPTimerIdentifier) == "on";
+            groupBox_NSPTimer.Visible                       = checkBox_CustomNSPTimer.Checked;
+            nUpDown_NSPTimer.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier), 10000) / 1000), 60.000m);
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2435,6 +2438,14 @@ namespace RSMods
         private void Save_FixOculusCrash(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixOculusCrashIdentifier, checkBox_FixOculusCrash.Checked.ToString().ToLower());
 
         private void Save_FixBrokenTones(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixBrokenTonesIdentifier, checkBox_FixBrokenTones.Checked.ToString().ToLower());
+
+        private void Save_UseCustomNSPTimer(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.UseCustomNSPTimerIdentifier, checkBox_CustomNSPTimer.Checked.ToString().ToLower());
+            groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
+        }
+
+        private void Save_NSPTimer(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.CustomNSPTimeLimitIdentifier, ((int)(nUpDown_NSPTimer.Value * 1000)).ToString());
         #endregion
         #region ToolTips
 

@@ -46,6 +46,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_AllowRewind, "Allows you to go back a set number of seconds in a song.\nThis can be useful if you mess up a section, and want to retry it.");
             TooltipDictionary.Add(checkBox_FixOculusCrash, "When you try to open Rocksmith with a Oculus / Meta headset connected to your PC, it typically crashes.\nThis mod tries to avoid the crash by preventing the bad code from running.\nThis may fix other audio-related crashes when Rocksmith opens.\nThis mod must be enabled when you start the game for it to take effect.");
             TooltipDictionary.Add(checkBox_FixBrokenTones, "When you are playing some songs, the tone system may die.\nWhen the tone system dies, you normally have to restart your game to get tones working again.\nThis mod tries to prevent the tone system from dying.\nThis mod must be enabled when you start the game for it to take effect.");
+            TooltipDictionary.Add(checkBox_CustomNSPTimer, "The timer between songs in Non-stop play is 10.9 seconds by default.\nA lot of people find this timer to be too long.\nWith this mod, you can change the amount of time between each song (down to 2 seconds due to technical limitations).\nFind the box to change the amount of time in the Automation tab.");
 
             // Mods
             TooltipDictionary.Add(groupBox_HowToEnumerate, "Choose to Enumerate on key press,\nor automatically scan for changes every X seconds and start enumeration if a new file has been added.");

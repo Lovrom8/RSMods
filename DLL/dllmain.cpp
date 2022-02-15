@@ -1272,6 +1272,14 @@ unsigned WINAPI MainThread() {
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 			}
 
+			// User wants NSP timer changed, and the time limit is not what the user set.
+			if (Settings::ReturnSettingValue("UseCustomNSPTimer") == "on" && MemHelpers::GetNonStopPlayTimer() != (Settings::GetModSetting("CustomNSPTimeLimit") / 1000.0))
+				MemHelpers::SetNonStopPlayTimer(Settings::GetModSetting("CustomNSPTimeLimit") / 1000.0);
+
+			// The user originally wanted NSP timer changed, but now they disabled the mod.
+			if (Settings::ReturnSettingValue("UseCustomNSPTimer") == "off" && MemHelpers::GetNonStopPlayTimer() != DefaultNSPTimeLimit)
+				MemHelpers::SetNonStopPlayTimer(DefaultNSPTimeLimit);
+
 			// User had Linear RR off, but now they want it turned on.
 			if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on" && !RiffRepeater::currentlyEnabled_LinearRR) 
 				RiffRepeater::EnableLinearSpeeds();

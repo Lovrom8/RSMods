@@ -86,7 +86,8 @@ void Settings::Initialize()
 		{"AllowLooping", "off"},
 		{"AllowRewind", "off"},
 		{"FixOculusCrash", "off"},
-		{"FixBrokenTones", "off"}
+		{"FixBrokenTones", "off"},
+		{"UseCustomNSPTimer", "off"}
 	};
 
 	customSettings = {
@@ -104,6 +105,7 @@ void Settings::Initialize()
 		{"AlternativeOutputSampleRate", 48000},
 		{"LoopingLeadUp", 0},
 		{"RewindBy", 0},
+		{"CustomNSPTimeLimit", 10000},
 
 		{"GuitarSpeakDelete", 0},
 		{"GuitarSpeakSpace", 0},
@@ -218,6 +220,7 @@ void Settings::ReadModSettings() {
 		{"AlternativeOutputSampleRate", reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
 		{"LoopingLeadUp", reader.GetLongValue("Mod Settings", "LoopingLeadUp", 0)},
 		{"RewindBy", reader.GetLongValue("Mod Settings", "RewindBy", 0)},
+		{"CustomNSPTimeLimit", reader.GetLongValue("Mod Settings", "CustomNSPTimeLimit", 10000)},
 
 		{"GuitarSpeakDelete", reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{"GuitarSpeakSpace", reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -291,6 +294,7 @@ void Settings::ReadModSettings() {
 	modSettings["AllowRewind"] = reader.GetValue("Toggle Switches", "AllowRewind", "off");
 	modSettings["FixOculusCrash"] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 	modSettings["FixBrokenTones"] = reader.GetValue("Toggle Switches", "FixBrokenTones", "off");
+	modSettings["UseCustomNSPTimer"] = reader.GetValue("Toggle Switches", "UseCustomNSPTimer", "off");
 }
 
 /// <summary>

@@ -148,6 +148,7 @@ namespace RSMods
                     { ReadSettings.AllowRewindIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowRewindIdentifier, "off") }, // Allows the user to press a key to go back a specified number of milliseconds in the song.
                     { ReadSettings.FixOculusCrashIdentifier, CreateDefaultOnOldINI(ReadSettings.FixOculusCrashIdentifier, "off") }, // When the user has an Oculus / Meta headset connected to their computer, Rocksmith might crash. Turning this on might fix that.
                     { ReadSettings.FixBrokenTonesIdentifier, CreateDefaultOnOldINI(ReadSettings.FixBrokenTonesIdentifier, "off") }, // When the user encounters a bad tone, the tone system dies. This mod tries to prevent the tone system from dying.
+                    { ReadSettings.UseCustomNSPTimerIdentifier, CreateDefaultOnOldINI(ReadSettings.UseCustomNSPTimerIdentifier, "off") }, // Allows the user to have a custom timer for Non-stop Play instead of the 10.9 seconds that it defaults to.
                 }
             );
             saveSettingsOrDefaults.Add(
@@ -199,6 +200,7 @@ namespace RSMods
                     { ReadSettings.AlternativeOutputSampleRateIdentifier, CreateDefaultOnOldINI(ReadSettings.AlternativeOutputSampleRateIdentifier, "48000") }, // Alternative frequency to use when looking for Audio Output devices.
                     { ReadSettings.LoopingLeadUpIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopingLeadUpIdentifier, "0") }, // Amount of lead-up time we should give for loops.
                     { ReadSettings.RewindByIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindByIdentifier, "5000") }, // Amount of time (in ms) to go back when the user presses the rewind key.
+                    { ReadSettings.CustomNSPTimeLimitIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomNSPTimeLimitIdentifier, "10000") }, // Amount of time (in ms) to have Non-stop play wait until the next song.
                 }
             );
             saveSettingsOrDefaults.Add(

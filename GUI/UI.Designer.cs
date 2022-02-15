@@ -62,6 +62,8 @@
             this.checkBox_FixBadBassTuning = new System.Windows.Forms.CheckBox();
             this.checkBox_ExtendedRangeDrop = new System.Windows.Forms.CheckBox();
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
+            this.checkBox_CustomNSPTimer = new System.Windows.Forms.CheckBox();
+            this.checkBox_FixBrokenTones = new System.Windows.Forms.CheckBox();
             this.checkBox_FixOculusCrash = new System.Windows.Forms.CheckBox();
             this.checkBox_AllowRewind = new System.Windows.Forms.CheckBox();
             this.checkBox_EnableLooping = new System.Windows.Forms.CheckBox();
@@ -252,6 +254,8 @@
             this.radio_SongTimerManual = new System.Windows.Forms.RadioButton();
             this.radio_SongTimerAlways = new System.Windows.Forms.RadioButton();
             this.tabPage_ModSettings_Automation = new System.Windows.Forms.TabPage();
+            this.groupBox_NSPTimer = new System.Windows.Forms.GroupBox();
+            this.nUpDown_NSPTimer = new System.Windows.Forms.NumericUpDown();
             this.groupBox_SampleRateOutput = new System.Windows.Forms.GroupBox();
             this.listBox_AltSampleRatesOutput = new System.Windows.Forms.ListBox();
             this.groupBox_AutoLoadProfiles = new System.Windows.Forms.GroupBox();
@@ -530,7 +534,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_FixBrokenTones = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -570,6 +573,8 @@
             this.groupBox_ControlSongVolumeWhen.SuspendLayout();
             this.groupBox_SongTimer.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
+            this.groupBox_NSPTimer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NSPTimer)).BeginInit();
             this.groupBox_SampleRateOutput.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.tabPage_ModSettings_AutoTuning.SuspendLayout();
@@ -1054,6 +1059,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomNSPTimer);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixBrokenTones);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixOculusCrash);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowRewind);
@@ -1092,10 +1098,34 @@
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 424);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 448);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
+            // 
+            // checkBox_CustomNSPTimer
+            // 
+            this.checkBox_CustomNSPTimer.AutoSize = true;
+            this.checkBox_CustomNSPTimer.Location = new System.Drawing.Point(11, 424);
+            this.checkBox_CustomNSPTimer.Name = "checkBox_CustomNSPTimer";
+            this.checkBox_CustomNSPTimer.Size = new System.Drawing.Size(115, 17);
+            this.checkBox_CustomNSPTimer.TabIndex = 79;
+            this.checkBox_CustomNSPTimer.Text = "Custom NSP Timer";
+            this.checkBox_CustomNSPTimer.UseVisualStyleBackColor = true;
+            this.checkBox_CustomNSPTimer.CheckedChanged += new System.EventHandler(this.Save_UseCustomNSPTimer);
+            this.checkBox_CustomNSPTimer.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_FixBrokenTones
+            // 
+            this.checkBox_FixBrokenTones.AutoSize = true;
+            this.checkBox_FixBrokenTones.Location = new System.Drawing.Point(144, 400);
+            this.checkBox_FixBrokenTones.Name = "checkBox_FixBrokenTones";
+            this.checkBox_FixBrokenTones.Size = new System.Drawing.Size(129, 17);
+            this.checkBox_FixBrokenTones.TabIndex = 78;
+            this.checkBox_FixBrokenTones.Text = "Prevent Buggy Tones";
+            this.checkBox_FixBrokenTones.UseVisualStyleBackColor = true;
+            this.checkBox_FixBrokenTones.CheckedChanged += new System.EventHandler(this.Save_FixBrokenTones);
+            this.checkBox_FixBrokenTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // checkBox_FixOculusCrash
             // 
@@ -3374,6 +3404,7 @@
             // tabPage_ModSettings_Automation
             // 
             this.tabPage_ModSettings_Automation.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_NSPTimer);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_SampleRateOutput);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_GuitarSpeak);
             this.tabPage_ModSettings_Automation.Controls.Add(this.groupBox_HowToEnumerate);
@@ -3384,6 +3415,46 @@
             this.tabPage_ModSettings_Automation.Size = new System.Drawing.Size(777, 426);
             this.tabPage_ModSettings_Automation.TabIndex = 1;
             this.tabPage_ModSettings_Automation.Text = "Automation";
+            // 
+            // groupBox_NSPTimer
+            // 
+            this.groupBox_NSPTimer.Controls.Add(this.nUpDown_NSPTimer);
+            this.groupBox_NSPTimer.Location = new System.Drawing.Point(233, 312);
+            this.groupBox_NSPTimer.Name = "groupBox_NSPTimer";
+            this.groupBox_NSPTimer.Size = new System.Drawing.Size(166, 70);
+            this.groupBox_NSPTimer.TabIndex = 100007;
+            this.groupBox_NSPTimer.TabStop = false;
+            this.groupBox_NSPTimer.Text = "Non-stop Play Timer (seconds)";
+            this.groupBox_NSPTimer.Visible = false;
+            // 
+            // nUpDown_NSPTimer
+            // 
+            this.nUpDown_NSPTimer.DecimalPlaces = 1;
+            this.nUpDown_NSPTimer.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.nUpDown_NSPTimer.Location = new System.Drawing.Point(14, 32);
+            this.nUpDown_NSPTimer.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.nUpDown_NSPTimer.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nUpDown_NSPTimer.Name = "nUpDown_NSPTimer";
+            this.nUpDown_NSPTimer.Size = new System.Drawing.Size(120, 20);
+            this.nUpDown_NSPTimer.TabIndex = 0;
+            this.nUpDown_NSPTimer.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nUpDown_NSPTimer.ValueChanged += new System.EventHandler(this.Save_NSPTimer);
             // 
             // groupBox_SampleRateOutput
             // 
@@ -6614,18 +6685,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // checkBox_FixBrokenTones
-            // 
-            this.checkBox_FixBrokenTones.AutoSize = true;
-            this.checkBox_FixBrokenTones.Location = new System.Drawing.Point(144, 400);
-            this.checkBox_FixBrokenTones.Name = "checkBox_FixBrokenTones";
-            this.checkBox_FixBrokenTones.Size = new System.Drawing.Size(129, 17);
-            this.checkBox_FixBrokenTones.TabIndex = 78;
-            this.checkBox_FixBrokenTones.Text = "Prevent Buggy Tones";
-            this.checkBox_FixBrokenTones.UseVisualStyleBackColor = true;
-            this.checkBox_FixBrokenTones.CheckedChanged += new System.EventHandler(this.Save_FixBrokenTones);
-            this.checkBox_FixBrokenTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6699,6 +6758,8 @@
             this.groupBox_SongTimer.ResumeLayout(false);
             this.groupBox_SongTimer.PerformLayout();
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
+            this.groupBox_NSPTimer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_NSPTimer)).EndInit();
             this.groupBox_SampleRateOutput.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
@@ -7303,6 +7364,9 @@
         private System.Windows.Forms.Button button_ImportTone2014;
         private System.Windows.Forms.CheckBox checkBox_ImportTonesBulk;
         private System.Windows.Forms.CheckBox checkBox_FixBrokenTones;
+        private System.Windows.Forms.CheckBox checkBox_CustomNSPTimer;
+        private System.Windows.Forms.GroupBox groupBox_NSPTimer;
+        private System.Windows.Forms.NumericUpDown nUpDown_NSPTimer;
     }
 }
 
