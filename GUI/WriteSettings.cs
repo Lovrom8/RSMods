@@ -243,7 +243,6 @@ namespace RSMods
                     { ReadSettings.CustomGUIButtonColorIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomGUIButtonColorIdentifier, "E3E3E3") }, // Custom Button Background Color
                     { ReadSettings.BackupProfileIdentifier, CreateDefaultOnOldINI(ReadSettings.BackupProfileIdentifier, "on") }, // Should we backup profiles
                     { ReadSettings.NumberOfBackupsIdentifier, CreateDefaultOnOldINI(ReadSettings.NumberOfBackupsIdentifier, "50") }, // How many backups should we store before we start deleting them.
-                    { ReadSettings.SpeedUpLoadupIdentifier, CreateDefaultOnOldINI(ReadSettings.SpeedUpLoadupIdentifier, "off") }, // Block Rocksmith from connecting to the internet. Speeds up enumeration.
                 }
             );
         }
