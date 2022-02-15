@@ -476,6 +476,7 @@
             this.button_UnpackAudioPsarc = new System.Windows.Forms.Button();
             this.tab_Profiles = new System.Windows.Forms.TabPage();
             this.groupBox_ImportJsonTones = new System.Windows.Forms.GroupBox();
+            this.checkBox_ImportTonesBulk = new System.Windows.Forms.CheckBox();
             this.button_ImportTone2014 = new System.Windows.Forms.Button();
             this.button_ImportToneManifest = new System.Windows.Forms.Button();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
@@ -529,7 +530,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.checkBox_ImportTonesBulk = new System.Windows.Forms.CheckBox();
+            this.checkBox_FixBrokenTones = new System.Windows.Forms.CheckBox();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -1053,6 +1054,7 @@
             // 
             // groupBox_EnabledMods
             // 
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixBrokenTones);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixOculusCrash);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_AllowRewind);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_EnableLooping);
@@ -6123,6 +6125,16 @@
             this.groupBox_ImportJsonTones.Text = "Import Tones";
             this.groupBox_ImportJsonTones.Visible = false;
             // 
+            // checkBox_ImportTonesBulk
+            // 
+            this.checkBox_ImportTonesBulk.AutoSize = true;
+            this.checkBox_ImportTonesBulk.Location = new System.Drawing.Point(239, 24);
+            this.checkBox_ImportTonesBulk.Name = "checkBox_ImportTonesBulk";
+            this.checkBox_ImportTonesBulk.Size = new System.Drawing.Size(89, 17);
+            this.checkBox_ImportTonesBulk.TabIndex = 2;
+            this.checkBox_ImportTonesBulk.Text = "Import in bulk";
+            this.checkBox_ImportTonesBulk.UseVisualStyleBackColor = true;
+            // 
             // button_ImportTone2014
             // 
             this.button_ImportTone2014.Location = new System.Drawing.Point(134, 19);
@@ -6602,15 +6614,17 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // checkBox_ImportTonesBulk
+            // checkBox_FixBrokenTones
             // 
-            this.checkBox_ImportTonesBulk.AutoSize = true;
-            this.checkBox_ImportTonesBulk.Location = new System.Drawing.Point(239, 24);
-            this.checkBox_ImportTonesBulk.Name = "checkBox_ImportTonesBulk";
-            this.checkBox_ImportTonesBulk.Size = new System.Drawing.Size(89, 17);
-            this.checkBox_ImportTonesBulk.TabIndex = 2;
-            this.checkBox_ImportTonesBulk.Text = "Import in bulk";
-            this.checkBox_ImportTonesBulk.UseVisualStyleBackColor = true;
+            this.checkBox_FixBrokenTones.AutoSize = true;
+            this.checkBox_FixBrokenTones.Location = new System.Drawing.Point(144, 400);
+            this.checkBox_FixBrokenTones.Name = "checkBox_FixBrokenTones";
+            this.checkBox_FixBrokenTones.Size = new System.Drawing.Size(129, 17);
+            this.checkBox_FixBrokenTones.TabIndex = 78;
+            this.checkBox_FixBrokenTones.Text = "Prevent Buggy Tones";
+            this.checkBox_FixBrokenTones.UseVisualStyleBackColor = true;
+            this.checkBox_FixBrokenTones.CheckedChanged += new System.EventHandler(this.Save_FixBrokenTones);
+            this.checkBox_FixBrokenTones.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
@@ -7288,6 +7302,7 @@
         private System.Windows.Forms.Button button_ImportToneManifest;
         private System.Windows.Forms.Button button_ImportTone2014;
         private System.Windows.Forms.CheckBox checkBox_ImportTonesBulk;
+        private System.Windows.Forms.CheckBox checkBox_FixBrokenTones;
     }
 }
 

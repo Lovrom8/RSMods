@@ -31,7 +31,7 @@ namespace RSMods
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
-                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash,
+                             AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones,
 
 
                              // String Colors
@@ -159,6 +159,7 @@ namespace RSMods
             AllowLoopingIdentifier                      = "AllowLooping = ",
             AllowRewindIdentifier                       = "AllowRewind = ",
             FixOculusCrashIdentifier                    = "FixOculusCrash = ",
+            FixBrokenTonesIdentifier                    = "FixBrokenTones = ",
 
 
                 // String Colors (Normal {N} & Colorblind {CB})
@@ -491,6 +492,8 @@ namespace RSMods
                     return FillSettingVariable(AllowRewindIdentifier, SettingType.ON_OFF, currentLine, out AllowRewind);
                 if (IdentifierIsFound(currentLine, FixOculusCrashIdentifier, identifierToGrab))
                     return FillSettingVariable(FixOculusCrashIdentifier, SettingType.ON_OFF, currentLine, out FixOculusCrash);
+                if (IdentifierIsFound(currentLine, FixBrokenTonesIdentifier, identifierToGrab))
+                    return FillSettingVariable(FixBrokenTonesIdentifier, SettingType.ON_OFF, currentLine, out FixBrokenTones);
 
                 #endregion
                 #region String Colors

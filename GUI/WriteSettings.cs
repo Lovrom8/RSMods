@@ -147,6 +147,7 @@ namespace RSMods
                     { ReadSettings.AllowLoopingIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowLoopingIdentifier, "off") }, // Allows the user to loop smaller sections of notes than RR allows.
                     { ReadSettings.AllowRewindIdentifier, CreateDefaultOnOldINI(ReadSettings.AllowRewindIdentifier, "off") }, // Allows the user to press a key to go back a specified number of milliseconds in the song.
                     { ReadSettings.FixOculusCrashIdentifier, CreateDefaultOnOldINI(ReadSettings.FixOculusCrashIdentifier, "off") }, // When the user has an Oculus / Meta headset connected to their computer, Rocksmith might crash. Turning this on might fix that.
+                    { ReadSettings.FixBrokenTonesIdentifier, CreateDefaultOnOldINI(ReadSettings.FixBrokenTonesIdentifier, "off") }, // When the user encounters a bad tone, the tone system dies. This mod tries to prevent the tone system from dying.
                 }
             );
             saveSettingsOrDefaults.Add(

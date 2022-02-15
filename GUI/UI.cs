@@ -21,7 +21,6 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.ComponentModel;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
@@ -32,7 +31,6 @@ using NAudio.CoreAudioApi;
 using SevenZip;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
-using System.Management;
 
 namespace RSMods
 {
@@ -670,6 +668,7 @@ namespace RSMods
             groupBox_RewindBy.Visible                       = checkBox_AllowRewind.Checked;
             nUpDown_RewindBy.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
             checkBox_FixOculusCrash.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixOculusCrashIdentifier) == "on";
+            checkBox_FixBrokenTones.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixBrokenTonesIdentifier) == "on";
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2435,6 +2434,7 @@ namespace RSMods
 
         private void Save_FixOculusCrash(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixOculusCrashIdentifier, checkBox_FixOculusCrash.Checked.ToString().ToLower());
 
+        private void Save_FixBrokenTones(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.FixBrokenTonesIdentifier, checkBox_FixBrokenTones.Checked.ToString().ToLower());
         #endregion
         #region ToolTips
 
@@ -4351,8 +4351,6 @@ namespace RSMods
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
         }
-
-
 
         private void MidiInProc(int hMidiIn, Midi.Responses wMsg, uint dwInstance, uint midiMessage, uint timeStamp)
         {
