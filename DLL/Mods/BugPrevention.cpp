@@ -29,5 +29,6 @@ namespace BugPrevention {
 	void PreventPnPCrash() {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PnpJmp_1, "\xE9\x19\x02\x00\x00\x90", 6);
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PnpJmp_2, "\x90\x90\x90\x90\x90\x90", 6);
+		std::cout << "(BUG PREVENTION) Prevented PnP Crash" << std::endl;
 	}
 }
