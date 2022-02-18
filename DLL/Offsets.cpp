@@ -141,6 +141,8 @@ namespace Offsets {
 	// Bug Prevention
 	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
 	uintptr_t ptr_StuckToneJmp = 0x017CB373;
+	uintptr_t ptr_PnpJmp_1 = 0x01F0C25E;
+	uintptr_t ptr_PnpJmp_2 = 0x01F0C48F;
 
 	// Audio In Background
 	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.

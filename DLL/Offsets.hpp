@@ -137,6 +137,8 @@ namespace Offsets {
 	// Bug Prevention
 	extern uintptr_t ptr_OculusCrashJmp;
 	extern uintptr_t ptr_StuckToneJmp;
+	extern uintptr_t ptr_PnpJmp_1;
+	extern uintptr_t ptr_PnpJmp_2;
 
 	// Audio In Background
 	extern uintptr_t ptr_IsWindowInFocus;
