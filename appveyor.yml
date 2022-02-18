@@ -35,6 +35,6 @@
     tag: RSModsInstaller-v$(releaseVersion)_OnCommit
     release: RSModsInstaller-v$(releaseVersion)_OnCommit
     auth_token:
-       secure: iGjQAEJQs6QvWb7qRiIvNPKshY1XviAbJcjt+QcIqGBQjcP/MzSejpINlgnm2ZzK
+       secure: T1iaEkeQ71AuYfG6vdQbYxW5Xs0HHpa/+LfPJ87qaY8bDUC9hS+caJ1n8GahVshD
     artifact: Installer
     prerelease: true
