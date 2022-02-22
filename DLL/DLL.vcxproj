@@ -78,6 +78,7 @@
     <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp" />
     <ClInclude Include="Lib\Json\json.hpp" />
     <ClInclude Include="Lib\Midi\RtMidi.h" />
+    <ClInclude Include="Log.hpp" />
     <ClInclude Include="Mods\AudioDevices.hpp" />
     <ClInclude Include="Mods\BugPrevention.hpp" />
     <ClInclude Include="Mods\DisableControllers.hpp" />

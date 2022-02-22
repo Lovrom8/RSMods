@@ -503,6 +503,9 @@
     <ClInclude Include="Tests.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Log.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="xinput1_3.def">

@@ -15,6 +15,7 @@
 #include "Wwise/Logging.hpp"
 #include "CC/ControlServer.hpp"
 #include "Tests.hpp"
+#include "Log.hpp"
 
 // Windows Libraries
 #include <process.h>

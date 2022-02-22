@@ -12,6 +12,10 @@ bool wwiseLogging = true; // You ARE on a Wwise logging build.
 bool wwiseLogging = false; // You are NOT on a Wwise logging build.
 #endif
 
+#ifndef _LOG_INIT
+#define _LOG_INIT Log LOG; // Use log in place of cout or cerr, to help consolidate logging.
+#endif;
+
 #ifndef _RSMODS_VERSION
 #define _RSMODS_VERSION "RSMODS Version: 1.2.6.5 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
@@ -26,6 +30,7 @@ unsigned WINAPI EnumerationThread() {
 	// Please wait until the user has seen the main menu before doing anything.
 	while (!D3DHooks::GameLoaded)
 		Sleep(5000);
+
 
 	// Read the users Keybinds and Mod Settings, so verify we have the latest data from the INI.
 	Settings::ReadKeyBinds();
@@ -1215,7 +1220,7 @@ unsigned WINAPI MainThread() {
 	using namespace D3DHooks;
 	while (!GameClosing) {
 		Sleep(250); // We don't need to call these settings always, we just want it to run every 1/4 of a second so the user doesn't notice it.
-			
+
 		// Move Rocksmith to second monitor on boot (if specified)
 		if (!movedToExternalDisplay && Settings::ReturnSettingValue("SecondaryMonitor") == "on") {
 			LaunchOnExternalMonitor::SendRocksmithToScreen(Settings::GetModSetting("SecondaryMonitorXPosition"), Settings::GetModSetting("SecondaryMonitorYPosition")); // Move to Location in INI
@@ -1583,7 +1588,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		// Setup logging system
-		FILE* streamRead, * streamWrite;
+		FILE* streamRead, *streamWrite;
 
 		// If running a debug build, give us a console.
 		if (debug) 
