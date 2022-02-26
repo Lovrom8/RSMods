@@ -31,4 +31,19 @@ namespace BugPrevention {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PnpJmp_2, "\x90\x90\x90\x90\x90\x90", 6);
 		std::cout << "(BUG PREVENTION) Prevented PnP Crash" << std::endl;
 	}
+
+
+	/// <summary>
+	/// Ubisoft lets you put almost any character in your Uplay password.
+	/// However, Rocksmith does not allow some characters.
+	/// This means that the user will have to change their password if they are using an invalid character, and they want to use leaderboards.
+	/// Some of those invalid characters are as follows: " \ / and =
+	/// This mod prevents the checks for those characters to allow the user to have more complex passwords.
+	/// </summary>
+	void AllowComplexPasswords() {
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_Password_LimitCharacters, "\x90\x90", 2);
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_Password_LimitCharacters_Clipboard, "\x90\x90", 2);
+
+		std::cout << "(BUG PREVENTION) Allowed Complex Uplay Passwords" << std::endl;
+	}
 }
