@@ -189,7 +189,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		D3D::GenerateTextures(pDevice, D3D::Strings);
 		D3D::GenerateTextures(pDevice, D3D::Notes);
 		D3D::GenerateTextures(pDevice, D3D::Rainbow);
-		_LOG_HEAD << "Reloaded settings" << LOG.endl();
+		_LOG("Reloaded settings" << std::endl);
 	}
 
 	if (setAllToNoteGradientTexture) {
@@ -208,11 +208,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			currIdx--;
 
 		if (GetAsyncKeyState(VK_END) & 1) { // Toggle logging
-			_LOG_HEAD << "Logging is ";
+			_LOG("Logging is ");
 			startLogging = !startLogging;
 			if (!startLogging)
-				LOG << "no longer ";
-			LOG << "armed!" << LOG.endl();
+				_LOG_NOHEAD("no longer ");
+			_LOG_NOHEAD("armed!" << std::endl);
 		}
 
 		if (GetAsyncKeyState(VK_F8) & 1) { // Save logged meshes to file
@@ -234,7 +234,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 				if (std::find(allMeshes.begin(), allMeshes.end(), currentThicc) == allMeshes.end()) // Make sure we don't log what we'd already logged
 					allMeshes.push_back(currentThicc);
 				if (NOTE_STEMS) // Criteria for search
-					_LOG_HEAD << "{ " << Stride << ", "
+					_LOG("{ " << Stride << ", "
 									  << PrimCount << ", "
 									  << NumVertices << ", "
 									  << StartIndex << ", "
@@ -243,10 +243,10 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 									  << (UINT)decl->Type << ", "
 									  << VectorCount << ", "
 									  << NumElements << " },"
-									  << LOG.endl(); // Thicc Mesh -> Log
+									  << std::endl); // Thicc Mesh -> Log
 				
-				//_LOG_HEAD << "{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," LOG.endl(); // Mesh -> Console
-				//_LOG_HEAD << std::hex << crc << LOG.endl();
+				//_LOG("{ "<< Stride << ", " << PrimCount << ", " << NumVertices << " }," std::endl; // Mesh -> Console
+				//_LOG(std::hex << crc << std::endl);
 			}
 
 		if (std::size(allMeshes) > 0 && allMeshes.at(currIdx) == currentThicc) {
@@ -394,9 +394,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			if (crc != crcLyrics) {
 				D3DXSaveTextureToFile(L"lyrics.png", D3DXIFF_PNG, pBaseTexture, NULL);
 				crcLyrics = crc;
-				_LOG_HEAD << "new lyric posted to lyrics.png" << LOG.endl();
+				_LOG("new lyric posted to lyrics.png" << std::endl);
 			}
-			_LOG_HEAD << std::hex << crcLyrics << " = " << std::hex << crc << LOG.endl();
+			_LOG(std::hex << crcLyrics << " = " << std::hex << crc << std::endl);
 		}
 	}*/
 

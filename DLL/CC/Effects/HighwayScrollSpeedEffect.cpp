@@ -13,7 +13,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Test()" << LOG.endl();
+		_LOG("HighwayScrollSpeedEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -29,7 +29,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Start()" << LOG.endl();
+		_LOG("HighwayScrollSpeedEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -65,7 +65,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Stop()" << LOG.endl();
+		_LOG("HighwayScrollSpeedEffect::Stop()" << std::endl);
 
 		WriteScrollSpeedMultiplier(5.0);
 
@@ -81,7 +81,7 @@ namespace CrowdControl::Effects {
 	void HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(double val) {
 		_LOG_INIT;
 
-		_LOG_HEAD << "HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(" << val << ")" << LOG.endl();
+		_LOG("HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(" << val << ")" << std::endl);
 
 		// The scroll speed has special memory PAGE flags sets, which prevent it from being written over, so first they need to be set to PAGE_READWRITE
 		DWORD oldProtect;

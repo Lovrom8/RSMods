@@ -7,18 +7,18 @@
 /// <param name="mixerToIncrease"> - Name of Mixer Value</param>
 void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncrease) {
 	_LOG_INIT;
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
 	// Mixer sent is not a valid mixer.
 	if (!MemHelpers::Contains(mixerToIncrease, mixerNames)) {
-		_LOG_HEAD << "That mixer doesn't exist" << LOG.endl();
+		_LOG("That mixer doesn't exist" << std::endl);
 		return;
 	}
 
-	LOG.level = LogLevel::Info;
+	_LOG_SETLEVEL(LogLevel::Info);
 
 	// Fill Volume Variable With Current Volume
 	Wwise::SoundEngine::Query::GetRTPCValue(mixerToIncrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); 
@@ -33,7 +33,7 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 	Wwise::SoundEngine::SetRTPCValue(mixerToIncrease.c_str(), (float)volume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 	Wwise::SoundEngine::SetRTPCValue(mixerToIncrease.c_str(), (float)volume, 0x1234, 0, AkCurveInterpolation_Linear);
 
-	_LOG_HEAD << "Increase volume of " << mixerToIncrease << " by " << amountToIncrease << " with a new volume of " << volume << LOG.endl();
+	_LOG("Increase volume of " << mixerToIncrease << " by " << amountToIncrease << " with a new volume of " << volume << std::endl);
 }
 
 /// <summary>
@@ -43,18 +43,18 @@ void VolumeControl::IncreaseVolume(int amountToIncrease, std::string mixerToIncr
 /// <param name="mixerToDecrease"> - Name of Mixer Value</param>
 void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecrease) {
 	_LOG_INIT;
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	float volume = 0;
 	RTPCValue_type type = RTPCValue_GameObject;
 
 	// Mixer sent is not a valid mixer.
 	if (!MemHelpers::Contains(mixerToDecrease, mixerNames)) {
-		_LOG_HEAD << "That mixer doesn't exist" << LOG.endl();
+		_LOG("That mixer doesn't exist" << std::endl);
 		return;
 	}
 
-	LOG.level = LogLevel::Info;
+	_LOG_SETLEVEL(LogLevel::Info);
 
 	// Fill Volume Variable With Current Volume
 	Wwise::SoundEngine::Query::GetRTPCValue(mixerToDecrease.c_str(), AK_INVALID_GAME_OBJECT, &volume, &type); 
@@ -69,7 +69,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 	Wwise::SoundEngine::SetRTPCValue(mixerToDecrease.c_str(), (float)volume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 	Wwise::SoundEngine::SetRTPCValue(mixerToDecrease.c_str(), (float)volume, 0x1234, 0, AkCurveInterpolation_Linear);
 	
-	_LOG_HEAD << "Decrease volume of " << mixerToDecrease << " by " << amountToDecrease << " with a new volume of " << volume << LOG.endl();
+	_LOG("Decrease volume of " << mixerToDecrease << " by " << amountToDecrease << " with a new volume of " << volume << std::endl);
 }
 
 /// <summary>
@@ -77,7 +77,7 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 /// </summary>
 void VolumeControl::DisableSongPreviewAudio() {
 	_LOG_INIT;
-	LOG.level = LogLevel::Warning;
+	_LOG_SETLEVEL(LogLevel::Warning);
 
 	if (!disabledSongPreviewAudio) {
 		// Changes the string "Play_%s_Preview" to "Play_%s_Invalid" so song previews never play.
@@ -85,7 +85,7 @@ void VolumeControl::DisableSongPreviewAudio() {
 		disabledSongPreviewAudio = true;
 	}
 	else {
-		_LOG_HEAD << "Tried to disable song previews when they are already disabled!" << LOG.endl();
+		_LOG("Tried to disable song previews when they are already disabled!" << std::endl);
 	}
 }
 
@@ -94,7 +94,7 @@ void VolumeControl::DisableSongPreviewAudio() {
 /// </summary>
 void VolumeControl::EnableSongPreviewAudio() {
 	_LOG_INIT;
-	LOG.level = LogLevel::Warning;
+	_LOG_SETLEVEL(LogLevel::Warning);
 
 	if (disabledSongPreviewAudio) {
 		// Changes the string "Play_%s_Invalid" to "Play_%s_Preview" so song previews will play again.
@@ -102,7 +102,7 @@ void VolumeControl::EnableSongPreviewAudio() {
 		disabledSongPreviewAudio = false;
 	}
 	else {
-		_LOG_HEAD << "Tried to enable song previews when they are already enabled!" << LOG.endl();
+		_LOG("Tried to enable song previews when they are already enabled!" << std::endl);
 	}
 }
 
@@ -114,7 +114,7 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 
 	*(char*)Offsets::ptr_WindowNotInFocusValue = (char)0x1; // Return with the value of 1, "window in focus", every time you alt+tab.
 	*(char*)Offsets::ptr_IsWindowInFocus = (char)0x1; // Tell the game that you currently have the window in focus.
-	_LOG_HEAD << "Allowed audio to be played in the background!" << LOG.endl();
+	_LOG("Allowed audio to be played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = true;
 }
 
@@ -126,6 +126,6 @@ void VolumeControl::DisableAltTabbingWithAudio() {
 	_LOG_INIT;
 	*(char*)Offsets::ptr_WindowNotInFocusValue = (char)0x0; // Return with the value of 0, "window out of focus", every time you alt+tab.
 	*(char*)Offsets::ptr_IsWindowInFocus = (char)0x0; // Tell the game that you are currently alt+tabbed.
-	_LOG_HEAD << "Stopped audio from being played in the background!" << LOG.endl();
+	_LOG("Stopped audio from being played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = false;
 }

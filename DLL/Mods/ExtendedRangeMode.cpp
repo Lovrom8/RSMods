@@ -245,7 +245,7 @@ void ERMode::Toggle7StringMode() {
 
 		InitStrings(stringsTest, Text);
 		SetColors(stringsTest, colorsTest);
-		_LOG_HEAD << "Set custom colors" << LOG.endl();
+		_LOG("Set custom colors" << std::endl);
 	}
 }
 
@@ -380,7 +380,7 @@ bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
 	int g = (int)std::round((*(Color*)strings[0]).g * 255);
 	int b = (int)std::round((*(Color*)strings[0]).b * 255);
 	if (R == 63)
-		_LOG_HEAD << std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << LOG.endl();
+		_LOG(std::dec << R << " " << r << " " << (R == r) << " " << G << " " << g << " " << (G == g) << " " << B << " " << b << " " << (B == b) << std::endl);
 
 	if (R == r && G == g && B == b)
 		return true;
@@ -388,22 +388,22 @@ bool IsMatch(std::vector<uintptr_t> strings, int R, int G, int B) {
 }
 
 
-//_LOG_HEAD << std::hex << stringsEnabled[0] << LOG.endl();
+//_LOG(std::hex << stringsEnabled[0] << std::endl);
 
 /*
-_LOG_HEAD << "Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Glow" << i << " " << (*(Color*)stringsGlow[i]).r * 255 << " " << (*(Color*)stringsGlow[i]).g * 255 << " " << (*(Color*)stringsGlow[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Amb" << i << " " << (*(Color*)stringsAmb[i]).r * 255 << " " << (*(Color*)stringsAmb[i]).g * 255 << " " << (*(Color*)stringsAmb[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "PegInTune" << i << " " << (*(Color*)stringsPegInTune[i]).r * 255 << " " << (*(Color*)stringsPegInTune[i]).g * 255 << " " << (*(Color*)stringsPegInTune[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "PegNotInTune" << i << " " << (*(Color*)stringsPegNotInTune[i]).r * 255 << " " << (*(Color*)stringsPegNotInTune[i]).g * 255 << " " << (*(Color*)stringsPegNotInTune[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Text" << i << " " << (*(Color*)stringsText[i]).r * 255 << " " << (*(Color*)stringsText[i]).g * 255 << " " << (*(Color*)stringsText[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "Part" << i << " " << (*(Color*)stringsPart[i]).r * 255 << " " << (*(Color*)stringsPart[i]).g * 255 << " " << (*(Color*)stringsPart[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "BodyNorm" << i << " " << (*(Color*)stringsBodyNorm[i]).r * 255 << " " << (*(Color*)stringsBodyNorm[i]).g * 255 << " " << (*(Color*)stringsBodyNorm[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "BodyAcc" << i << " " << (*(Color*)stringsBodyAcc[i]).r * 255 << " " << (*(Color*)stringsBodyAcc[i]).g * 255 << " " << (*(Color*)stringsBodyAcc[i]).b * 255 << LOG.endl();
-_LOG_HEAD << "BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << LOG.endl();
-_LOG_HEAD << LOG.endl();
+_LOG("Normal" << i << " " << (*(Color*)stringsNormal[i]).r * 255 << " " << (*(Color*)stringsNormal[i]).g * 255 << " " << (*(Color*)stringsNormal[i]).b * 255 << std::endl);
+_LOG("Disabled" << i << " " << (*(Color*)stringsDisabled[i]).r * 255 << " " << (*(Color*)stringsDisabled[i]).g * 255 << " " << (*(Color*)stringsDisabled[i]).b * 255 << std::endl);
+_LOG("Enabled" << i << " " << (*(Color*)stringsEnabled[i]).r * 255 << " " << (*(Color*)stringsEnabled[i]).g * 255 << " " << (*(Color*)stringsEnabled[i]).b * 255 << std::endl);
+_LOG("Glow" << i << " " << (*(Color*)stringsGlow[i]).r * 255 << " " << (*(Color*)stringsGlow[i]).g * 255 << " " << (*(Color*)stringsGlow[i]).b * 255 << std::endl);
+_LOG("Amb" << i << " " << (*(Color*)stringsAmb[i]).r * 255 << " " << (*(Color*)stringsAmb[i]).g * 255 << " " << (*(Color*)stringsAmb[i]).b * 255 << std::endl);
+_LOG("PegInTune" << i << " " << (*(Color*)stringsPegInTune[i]).r * 255 << " " << (*(Color*)stringsPegInTune[i]).g * 255 << " " << (*(Color*)stringsPegInTune[i]).b * 255 << std::endl);
+_LOG("PegNotInTune" << i << " " << (*(Color*)stringsPegNotInTune[i]).r * 255 << " " << (*(Color*)stringsPegNotInTune[i]).g * 255 << " " << (*(Color*)stringsPegNotInTune[i]).b * 255 << std::endl);
+_LOG("Text" << i << " " << (*(Color*)stringsText[i]).r * 255 << " " << (*(Color*)stringsText[i]).g * 255 << " " << (*(Color*)stringsText[i]).b * 255 << std::endl);
+_LOG("Part" << i << " " << (*(Color*)stringsPart[i]).r * 255 << " " << (*(Color*)stringsPart[i]).g * 255 << " " << (*(Color*)stringsPart[i]).b * 255 << std::endl);
+_LOG("BodyNorm" << i << " " << (*(Color*)stringsBodyNorm[i]).r * 255 << " " << (*(Color*)stringsBodyNorm[i]).g * 255 << " " << (*(Color*)stringsBodyNorm[i]).b * 255 << std::endl);
+_LOG("BodyAcc" << i << " " << (*(Color*)stringsBodyAcc[i]).r * 255 << " " << (*(Color*)stringsBodyAcc[i]).g * 255 << " " << (*(Color*)stringsBodyAcc[i]).b * 255 << std::endl);
+_LOG("BodyPrev" << i << " " << (*(Color*)stringsBodyPrev[i]).r * 255 << " " << (*(Color*)stringsBodyPrev[i]).g * 255 << " " << (*(Color*)stringsBodyPrev[i]).b * 255 << std::endl);
+_LOG(std::endl;
 */
 
 
@@ -415,53 +415,53 @@ _LOG_HEAD << LOG.endl();
 		InitStrings(stringsTest, current);
 
 		if (IsMatch(stringsTest, 191, 95, 95))
-			_LOG_HEAD << "Ambient " << std::hex << current << LOG.endl();
+			_LOG("Ambient " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 255, 79, 90))
-			_LOG_HEAD << "Enabled " << std::hex << current << LOG.endl();
+			_LOG("Enabled " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 76, 23, 27))
-			_LOG_HEAD<< "Disabled " << std::hex << current << LOG.endl();
+			_LOG_HEAD<< "Disabled " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 255, 0, 16))
-			_LOG_HEAD << "StringsGlow " << std::hex << current << LOG.endl();
+			_LOG("StringsGlow " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 191, 0, 15))
-			_LOG_HEAD << "PegsTuning " << std::hex << current << LOG.endl();
+			_LOG("PegsTuning " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 0, 0, 0)) {
 			a0++;
 			if (a0 == 1)
-				_LOG_HEAD << "PegsReset " << std::hex << current << LOG.endl();
+				_LOG("PegsReset " << std::hex << current << std::endl);
 			else if (a0 == 2)
-				_LOG_HEAD << "PegsSuccess " << std::hex << current << LOG.endl();
+				_LOG("PegsSuccess " << std::hex << current << std::endl);
 		}
 		else if (IsMatch(stringsTest, 255, 255, 255))
-			_LOG_HEAD << "PegsOutOfTune " << std::hex << current << LOG.endl();
+			_LOG("PegsOutOfTune " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 249, 146, 137))
-			_LOG_HEAD << "BodypartsAccent " << std::hex << current << LOG.endl();
+			_LOG("BodypartsAccent " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 178, 0, 14))
-			_LOG_HEAD << "PegsInTune " << std::hex << current << LOG.endl();
+			_LOG("PegsInTune " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 255, 64, 64)) {
 			a2++;
 			if (a2 == 1)
-				_LOG_HEAD << "RegistarTextIndicator " << std::hex << current << LOG.endl();
+				_LOG("RegistarTextIndicator " << std::hex << current << std::endl);
 			else if (a2 == 2)
-				_LOG_HEAD << "ForkParticles " << std::hex << current << LOG.endl();
+				_LOG("ForkParticles " << std::hex << current << std::endl);
 		}
 		else if (IsMatch(stringsTest, 64, 41, 41))
-			_LOG_HEAD << "BodypartsPreview " << std::hex << current << LOG.endl();
+			_LOG("BodypartsPreview " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 255, 0, 0))
-			_LOG_HEAD << "BodypartsNormal " << std::hex << current << LOG.endl();
+			_LOG("BodypartsNormal " << std::hex << current << std::endl);
 		else if (IsMatch(stringsTest, 255, 5, 0)) {
 			a3++;
 			if (a3 == 1)
-				_LOG_HEAD << "GA_Main " << std::hex << current << LOG.endl();
+				_LOG("GA_Main " << std::hex << current << std::endl);
 			else if (a3 == 2)
-				_LOG_HEAD << "GA_Additive " << std::hex << current << LOG.endl();
+				_LOG("GA_Additive " << std::hex << current << std::endl);
 			else if (a3 == 3)
-				_LOG_HEAD << "GA_UI " << std::hex << current << LOG.endl();
+				_LOG("GA_UI " << std::hex << current << std::endl);
 		}
 	} */
 
 	/*for (int i = 0; i < 6;i++) {
-		_LOG_HEAD << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
+		_LOG(std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).r * 255);
 		LOG << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).g * 255);
 		LOG << std::hex << std::setfill('0') << std::setw(2) << (int)((*(Color*)stringsGlow[i]).b * 255);
-		LOG << LOG.endl();
+		LOG << std::endl);
 	}*/

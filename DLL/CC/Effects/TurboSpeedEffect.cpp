@@ -13,7 +13,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TurboSpeedEffect::Test()" << LOG.endl();
+		_LOG("TurboSpeedEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -30,7 +30,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TurboSpeedEffect::Start()" << LOG.endl();
+		_LOG("TurboSpeedEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -67,7 +67,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TurboSpeedEffect::Stop()" << LOG.endl();
+		_LOG("TurboSpeedEffect::Stop()" << std::endl);
 
 		RiffRepeater::SetSpeed(100.f);
 		RiffRepeater::DisableTimeStretch();

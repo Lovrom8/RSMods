@@ -12,7 +12,7 @@ namespace VoiceOverControl {
 		Wwise::SoundEngine::PostEvent(voiceOver.EventName.c_str(), AK_INVALID_GAME_OBJECT, 0, NULL, NULL, 0, NULL, 0);
 		Wwise::SoundEngine::PostEvent(voiceOver.EventName.c_str(), 0x1234, 0, NULL, NULL, 0, NULL, 0);
 
-		_LOG_HEAD << "Played VoiceOver: " << voiceOver.Text << LOG.endl();
+		_LOG("Played VoiceOver: " << voiceOver.Text << std::endl);
 	}
 
 	/// <summary>
@@ -25,6 +25,6 @@ namespace VoiceOverControl {
 		Wwise::SoundEngine::PostEvent(voiceOver.c_str(), AK_INVALID_GAME_OBJECT, 0, NULL, NULL, 0, NULL, 0);
 		Wwise::SoundEngine::PostEvent(voiceOver.c_str(), 0x1234, 0, NULL, NULL, 0, NULL, 0);
 
-		_LOG_HEAD << "Played VoiceOver: " << voiceOver << LOG.endl();
+		_LOG("Played VoiceOver: " << voiceOver << std::endl);
 	}
 }

@@ -13,7 +13,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "DrunkModeEffect::Test()" << LOG.endl();
+		_LOG("DrunkModeEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -30,7 +30,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "DrunkModeEffect::Start()" << LOG.endl();
+		_LOG("DrunkModeEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -67,7 +67,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "DrunkModeEffect::Stop()" << LOG.endl();
+		_LOG("DrunkModeEffect::Stop()" << std::endl);
 
 		running = false;
 		MemHelpers::ToggleDrunkMode(false);

@@ -11,7 +11,7 @@ namespace BugPrevention {
 		_LOG_INIT;
 
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_OculusCrashJmp, "\xE9\x19\x02\x00\x00\x90", 6);
-		_LOG_HEAD << "(BUG PREVENTION) Prevented Oculus Crash" << LOG.endl();
+		_LOG("(BUG PREVENTION) Prevented Oculus Crash" << std::endl);
 	}
 
 	/// <summary>
@@ -23,7 +23,7 @@ namespace BugPrevention {
 		_LOG_INIT;
 
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_StuckToneJmp, "\xEB", 1);
-		_LOG_HEAD << "(BUG PREVENTION) Prevented Tone Bug" << LOG.endl();
+		_LOG("(BUG PREVENTION) Prevented Tone Bug" << std::endl);
 	}
 
 	/// <summary>
@@ -35,7 +35,7 @@ namespace BugPrevention {
 
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PnpJmp_1, "\xE9\x19\x02\x00\x00\x90", 6);
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PnpJmp_2, "\x90\x90\x90\x90\x90\x90", 6);
-		_LOG_HEAD << "(BUG PREVENTION) Prevented PnP Crash" << LOG.endl();
+		_LOG("(BUG PREVENTION) Prevented PnP Crash" << std::endl);
 	}
 
 
@@ -52,6 +52,6 @@ namespace BugPrevention {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_Password_LimitCharacters, "\x90\x90", 2);
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_Password_LimitCharacters_Clipboard, "\x90\x90", 2);
 
-		_LOG_HEAD << "(BUG PREVENTION) Allowed Complex Uplay Passwords" << LOG.endl();
+		_LOG("(BUG PREVENTION) Allowed Complex Uplay Passwords" << std::endl);
 	}
 }

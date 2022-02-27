@@ -11,12 +11,12 @@ Open source here: https://cdn.discordapp.com/attachments/711634414240530462/7355
 /// <returns>Current Note (MIDI Number)</returns>
 byte GuitarSpeak::GetCurrentNote() {
 	_LOG_INIT;
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets);
 
 	if (!noteAdr) {
-		_LOG_HEAD << "(GS) Note Address can't be found!" << LOG.endl();
+		_LOG("(GS) Note Address can't be found!" << std::endl);
 		return (BYTE)noNote;
 	}
 
@@ -56,14 +56,14 @@ bool GuitarSpeak::RunGuitarSpeak() {
 		// If someone wants to tune in the setting menu they skip the check
 		if (MemHelpers::Contains(currentMenu, tuningMenus) && Settings::ReturnSettingValue("GuitarSpeakWhileTuning") == "off") {
 			if (verbose)
-				_LOG_HEAD << "(GS) Entered Tuning Menu! Stopping Guitar Speak." << LOG.endl();
+				_LOG("(GS) Entered Tuning Menu! Stopping Guitar Speak." << std::endl);
 			break; // We aren't needed here anymore.
 		}
 
 		// Disabled due to entering Lessons, a song, or a calibration menu.
 		if (MemHelpers::Contains(currentMenu, lessonModes) || MemHelpers::IsInSong() || MemHelpers::Contains(currentMenu, calibrationMenus)) {
 			if (verbose)
-				_LOG_HEAD << "(GS) Entered Song Menu! Stopping Guitar Speak." << LOG.endl();
+				_LOG("(GS) Entered Song Menu! Stopping Guitar Speak." << std::endl);
 			break; // We aren't needed here anymore.
 		}
 
@@ -76,7 +76,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 			currentNote = noNote;
 
 		if (verbose && currentNote != endOfNote && currentNote != noNote)
-			_LOG_HEAD << "(GS) Note: " << currentNote << LOG.endl();
+			_LOG("(GS) Note: " << currentNote << std::endl);
 
 		lastNoteBuffer = currentNoteBuffer;
 		currentNoteBuffer = currentNote;
@@ -93,7 +93,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 			lastNote = currentNote;
 
 			if (verbose)
-				_LOG_HEAD << "(GS) New Note Detected" << LOG.endl();
+				_LOG("(GS) New Note Detected" << std::endl);
 		}
 		// If the note ends
 		if (currentNoteBuffer == endOfNote && lastNote != noNote) { 
@@ -102,7 +102,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 			lastNote = 0;
 
 			if (verbose)
-				_LOG_HEAD << "(GS) Note Ended" << LOG.endl();
+				_LOG("(GS) Note Ended" << std::endl);
 		}
 
 		if (newNote && currentNote != noNote)
@@ -119,7 +119,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 					sendKeystrokesToRS2014 = false;
 
 					if (verbose)
-						_LOG_HEAD << "(GS) Closing Guitar Speak." << LOG.endl();
+						_LOG("(GS) Closing Guitar Speak." << std::endl);
 
 					break; // We aren't needed here anymore.
 				}
@@ -131,7 +131,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 					PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, keyToVKey.find(buttonToPress)->second, 0);
 
 					if (verbose)
-						_LOG_HEAD << "(GS) " << keyToVKey.find(buttonToPress)->first << " was used by Guitar Speak." << LOG.endl();
+						_LOG("(GS) " << keyToVKey.find(buttonToPress)->first << " was used by Guitar Speak." << std::endl);
 				}
 			}
 			// We shouldn't be reading commands here
@@ -142,7 +142,7 @@ bool GuitarSpeak::RunGuitarSpeak() {
 					sendKeystrokesToRS2014 = true;
 
 					if (verbose)
-						_LOG_HEAD << "(GS) Reopening Guitar Speak. " << LOG.endl();
+						_LOG("(GS) Reopening Guitar Speak. " << std::endl);
 				}
 			}
 		}

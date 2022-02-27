@@ -11,7 +11,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "FYourFC::Test()" << LOG.endl();
+		_LOG("FYourFC::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -27,7 +27,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "FYourFC::Start()" << LOG.endl();
+		_LOG("FYourFC::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -64,7 +64,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "FYourFC::Stop()" << LOG.endl();
+		_LOG("FYourFC::Stop()" << std::endl);
 
 		running = false;
 		Settings::UpdateTwitchSetting("FYourFC", "off");

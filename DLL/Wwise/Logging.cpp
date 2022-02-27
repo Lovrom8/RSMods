@@ -48,11 +48,11 @@ namespace Wwise::Logging {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "(Wwise) PostEvent: "
+		_LOG("(Wwise) PostEvent: "
 				  << in_pszEventName
 				  << " on game object 0x"
 				  << std::hex << in_gameObjectID
-				  << std::dec << LOG.endl();
+				  << std::dec << std::endl);
 
 		return oPostEvent(in_pszEventName, in_gameObjectID, in_uFlags, in_pfnCallback, in_pCookie, in_cExternals, in_pExternalSources, in_PlayingID);
 	}
@@ -68,7 +68,7 @@ namespace Wwise::Logging {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "(Wwise) SeekOnEvent: "
+		_LOG("(Wwise) SeekOnEvent: "
 				  << in_pszEventName
 				  << " on object 0x"
 				  << std::hex << in_gameObjectID
@@ -76,7 +76,7 @@ namespace Wwise::Logging {
 				  << (float)(in_iPosition / 1000)
 				  << " seconds. Seek to nearest marker: "
 				  << std::boolalpha << in_bSeekToNearestMarker
-				  << LOG.endl();
+				  << std::endl);
 
 		return oSeekOnEvent(in_pszEventName, in_gameObjectID, in_iPosition, in_bSeekToNearestMarker);
 	}
@@ -91,13 +91,13 @@ namespace Wwise::Logging {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "(Wwise) CloneBusEffect: From bus 0x"
+		_LOG("(Wwise) CloneBusEffect: From bus 0x"
 				  << std::hex << fromBus
 				  << " in slot "
 				  << std::dec << indexFX
 				  << " to bus 0x"
 				  << std::hex << toBus
-				  << std::dec << LOG.endl();
+				  << std::dec << std::endl);
 
 		return oCloneBusEffect(toBus, indexFX, fromBus);
 	}
@@ -116,7 +116,7 @@ namespace Wwise::Logging {
 
 		if (!MemHelpers::Contains(std::string(in_pszRtpcName), SetRTPCBlacklist))
 		{
-			_LOG_HEAD << "(Wwise) SetRTPCValue: "
+			_LOG("(Wwise) SetRTPCValue: "
 					  << in_pszRtpcName
 					  << " to "
 					  << in_value
@@ -127,7 +127,7 @@ namespace Wwise::Logging {
 					  << "ms, with "
 					  << CurveInterpolation(in_eFadeCurve)
 					  << " curve."
-					  << LOG.endl();
+					  << std::endl);
 		}
 		
 		return oSetRTPCValue_Char(in_pszRtpcName, in_value, in_gameObjectID, in_uValueChangeDuration, in_eFadeCurve);

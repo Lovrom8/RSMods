@@ -13,7 +13,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TransparentNotesEffect::Test()" << LOG.endl();
+		_LOG("TransparentNotesEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -30,7 +30,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TransparentNotesEffect::Start()" << LOG.endl();
+		_LOG("TransparentNotesEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -67,7 +67,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "TransparentNotesEffect::Stop()" << LOG.endl();
+		_LOG("TransparentNotesEffect::Stop()" << std::endl);
 
 		running = false;
 		Settings::UpdateTwitchSetting("TransparentNotes", "off");

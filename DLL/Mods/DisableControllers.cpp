@@ -35,10 +35,10 @@ void DirectInput() {
 void DisableControllers::DisableControllers() {
 	_LOG_INIT;
 
-	_LOG_HEAD << "Disabling Controllers..." << LOG.endl();
+	_LOG("Disabling Controllers..." << std::endl);
 
 	XInput();
 	DirectInput();
 
-	_LOG_HEAD << "DI8-Pointer: " << DirectInputPointer << LOG.endl();
+	_LOG("DI8-Pointer: " << DirectInputPointer << std::endl);
 }

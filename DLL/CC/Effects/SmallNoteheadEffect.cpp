@@ -11,7 +11,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "SmallNoteheadEffect::Test()" << LOG.endl();
+		_LOG("SmallNoteheadEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -28,7 +28,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "SmallNoteheadEffect::Start()" << LOG.endl();
+		_LOG("SmallNoteheadEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -65,7 +65,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "SmallNoteheadEffect::Stop()" << LOG.endl();
+		_LOG("SmallNoteheadEffect::Stop()" << std::endl);
 
 		running = false;
 		SetNoteHeadScale(1);
@@ -80,7 +80,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	void SmallNoteheadEffect::SetNoteHeadScale(float scale) {
 		_LOG_INIT;
 
-		_LOG_HEAD << "SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << LOG.endl();
+		_LOG("SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl);
 
 		ObjectUtil::SetObjectScales({
 			{"MeshNoteSingleLH", scale},

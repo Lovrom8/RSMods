@@ -161,15 +161,15 @@ std::vector<std::string> Settings::GetCustomSongTitles() {
 void Settings::ReadKeyBinds() {
 	_LOG_INIT;
 
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
-		_LOG_HEAD << "Error reading saved settings" << LOG.endl();
+		_LOG("Error reading saved settings" << std::endl);
 		return;
 	}
 
-	//_LOG_HEAD << reader.GetValue("Keybinds", "ToggleLoftKey", "T") << LOG.endl();
+	//_LOG(reader.GetValue("Keybinds", "ToggleLoftKey", "T") << std::endl);
 	modSettings = {
 		// Mods
 			{ "ToggleLoftKey", reader.GetValue("Keybinds", "ToggleLoftKey", "T") },
@@ -196,7 +196,7 @@ void Settings::ReadKeyBinds() {
 			{ "SFXVolumeKey", reader.GetValue("Audio Keybindings", "SFXVolumeKey", "S") },
 			{ "ChangedSelectedVolumeKey", reader.GetValue("Audio Keybindings", "ChangedSelectedVolumeKey", "P") }
 	};
-	// _LOG_HEAD << "Read " << modSettings["ToggleLoftKey"] << LOG.endl();
+	// _LOG("Read " << modSettings["ToggleLoftKey"] << std::endl);
 }
 
 /// <summary>
@@ -205,11 +205,11 @@ void Settings::ReadKeyBinds() {
 void Settings::ReadModSettings() {
 	_LOG_INIT;
 
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
-		_LOG_HEAD << "Error reading saved settings" << LOG.endl();
+		_LOG("Error reading saved settings" << std::endl);
 		return;
 	}
 
@@ -360,11 +360,11 @@ void Settings::ReadStringColors() {
 void Settings::ReadNotewayColors() {
 	_LOG_INIT;
 
-	LOG.level = LogLevel::Error;
+	_LOG_SETLEVEL(LogLevel::Error);
 
 	CSimpleIniA reader;
 	if (reader.LoadFile("RSMods.ini") < 0) {
-		_LOG_HEAD << "Error reading saved settings" << LOG.endl();
+		_LOG("Error reading saved settings" << std::endl);
 		return;
 	}
 

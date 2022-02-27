@@ -11,7 +11,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "RemoveInstrumentEffect::Test()" << LOG.endl();
+		_LOG("RemoveInstrumentEffect::Test()" << std::endl);
 
 		return EffectResult::Success;
 	}
@@ -24,7 +24,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "RemoveInstrumentEffect::Start()" << LOG.endl();
+		_LOG("RemoveInstrumentEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -62,7 +62,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "RemoveInstrumentEffect::Stop()" << LOG.endl();
+		_LOG("RemoveInstrumentEffect::Stop()" << std::endl);
 
 		running = false;
 		SetInstrumentScale(1);
@@ -77,7 +77,7 @@ namespace CrowdControl::Effects {
 	void RemoveInstrumentEffect::SetInstrumentScale(float scale) {
 		_LOG_INIT;
 
-		_LOG_HEAD << "RemoveInstrumentEffect::SetInstrumentScale(" << scale << ")" << LOG.endl();
+		_LOG("RemoveInstrumentEffect::SetInstrumentScale(" << scale << ")" << std::endl);
 
 		ObjectUtil::SetObjectScales({
 			{"ActorGuitarStringStandard", scale},

@@ -3,12 +3,12 @@
 namespace ObjectUtil {
 	Object* GetRootObject() {
 		_LOG_INIT;
-		LOG.level = LogLevel::Error;
+		_LOG_SETLEVEL(LogLevel::Error);
 
 		Object* root = (Object*)MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_rootObject, Offsets::ptr_rootObjectOffsets, true);
 
 		if (root == NULL)
-			_LOG_HEAD << "(ObjUtil) Root object is NULL. Some Twitch mods may not work" << LOG.endl();
+			_LOG("(ObjUtil) Root object is NULL. Some Twitch mods may not work" << std::endl);
 
 		return root;
 	}

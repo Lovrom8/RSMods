@@ -11,7 +11,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillMusicVolumeEffect::Test()" << LOG.endl();
+		_LOG("KillMusicVolumeEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -29,7 +29,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillMusicVolumeEffect::Start()" << LOG.endl();
+		_LOG("KillMusicVolumeEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -78,7 +78,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillMusicVolumeEffect::Stop()" << LOG.endl();
+		_LOG("KillMusicVolumeEffect::Stop()" << std::endl);
 
 		// Make sure volume was set to original value by setting it immediately effective
 		Wwise::SoundEngine::SetRTPCValue("Mixer_Music", oldVolume, AK_INVALID_GAME_OBJECT, 2000, AkCurveInterpolation_Linear);

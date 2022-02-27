@@ -13,7 +13,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "ChangeToToneSlot::Test()" << LOG.endl();
+		_LOG("ChangeToToneSlot::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -30,14 +30,14 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "ChangeToToneSlot::Start()" << LOG.endl();
+		_LOG("ChangeToToneSlot::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
 		Util::SendKey(Settings::GetVKCodeForString(std::to_string(ChangeToToneSlot::slot)));
 	
-		_LOG_HEAD << "Changing tone to slot " << slot << LOG.endl();
+		_LOG("Changing tone to slot " << slot << std::endl);
 
 		return EffectResult::Success;
 	}

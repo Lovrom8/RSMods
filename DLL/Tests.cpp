@@ -13,35 +13,35 @@ namespace Tests
 		Sleep(3500);
 
 		// Enter LAS menu
-		_LOG_HEAD << "Entering LAS" << LOG.endl();
+		_LOG("Entering LAS" << std::endl);
 		PressKey(VK_RETURN);
 		
 		// Wait for LAS menu animation
 		Sleep(2500);
 
 		// Select the song
-		_LOG_HEAD << "Entering song" << LOG.endl();
+		_LOG("Entering song" << std::endl);
 		PressKey(VK_RETURN);
 
 		// Wait for the animation
 		Sleep(3500);
 
 		// Enter the tuner
-		_LOG_HEAD << "Entering tuner" << LOG.endl();
+		_LOG("Entering tuner" << std::endl);
 		PressKey(VK_RETURN);
 
 		// Wait for the animation
 		Sleep(3000);
 
 		// Enter tuner skip menu
-		_LOG_HEAD << "Opening skip tuner menu" << LOG.endl();
+		_LOG("Opening skip tuner menu" << std::endl);
 		PressKey(VK_DELETE);
 
 		// Wait for the animation
 		Sleep(1000);
 		
 		// Skip the tuner
-		_LOG_HEAD << "Skipping tuner" << LOG.endl();
+		_LOG("Skipping tuner" << std::endl);
 		PressKey(VK_RETURN);
 
 		// Sleep till we enter the song

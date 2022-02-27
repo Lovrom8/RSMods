@@ -11,7 +11,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillGuitarVolumeEffect::Test()" << LOG.endl();
+		_LOG("KillGuitarVolumeEffect::Test()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -29,7 +29,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillGuitarVolumeEffect::Start()" << LOG.endl();
+		_LOG("KillGuitarVolumeEffect::Start()" << std::endl);
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -79,7 +79,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG_HEAD << "KillGuitarVolumeEffect::Stop()" << LOG.endl();
+		_LOG("KillGuitarVolumeEffect::Stop()" << std::endl);
 
 		// Make sure volume was set to original value by setting it immediately effective
 		Wwise::SoundEngine::SetRTPCValue("Mixer_Player1", oldVolume, AK_INVALID_GAME_OBJECT, 2000, AkCurveInterpolation_Linear);
