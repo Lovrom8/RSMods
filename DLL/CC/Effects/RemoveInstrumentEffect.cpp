@@ -9,7 +9,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RemoveInstrumentEffect::Test(Request request)
 	{
-		std::cout << "RemoveInstrumentEffect::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveInstrumentEffect::Test()" << LOG.endl();
 
 		return EffectResult::Success;
 	}
@@ -20,7 +22,9 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RemoveInstrumentEffect::Start(Request request)
 	{
-		std::cout << "RemoveInstrumentEffect::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveInstrumentEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -56,7 +60,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success</returns>
 	EffectResult RemoveInstrumentEffect::Stop()
 	{
-		std::cout << "RemoveInstrumentEffect::Stop()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveInstrumentEffect::Stop()" << LOG.endl();
 
 		running = false;
 		SetInstrumentScale(1);
@@ -69,7 +75,9 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="scale"> - Scale to set the instrument to.</param>
 	void RemoveInstrumentEffect::SetInstrumentScale(float scale) {
-		std::cout << "RemoveInstrumentEffect::SetInstrumentScale(" << scale << ")" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveInstrumentEffect::SetInstrumentScale(" << scale << ")" << LOG.endl();
 
 		ObjectUtil::SetObjectScales({
 			{"ActorGuitarStringStandard", scale},

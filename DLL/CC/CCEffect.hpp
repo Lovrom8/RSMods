@@ -4,8 +4,11 @@
 #include <chrono>
 #include <iostream>
 #include <chrono>
+
 #include "CCEnums.hpp"
 #include "CCStructs.hpp"
+
+#include "../Log.hpp"
 #include "../Settings.hpp"
 #include "../ObjectUtil.hpp"
 #include "../Offsets.hpp"
@@ -32,10 +35,12 @@ namespace CrowdControl::Effects {
 		/// Manually loops through the JSON members of the struct and sets the value of the member called "duration"
 		/// </summary>
 		void SetDuration(Request req) {
+			_LOG_INIT;
+
 			for (auto& el : req.parameters.items()) {
 				if (el.value().contains("duration")) {
 					el.value().at("duration").get_to(duration);
-					std::cout << "Set duration to : " << duration << " seconds" << std::endl;
+					_LOG_HEAD << "Set duration to : " << duration << " seconds" << LOG.endl();
 					break;
 				}
 			}

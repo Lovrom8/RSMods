@@ -11,7 +11,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TurboSpeedEffect::Test(Request request)
 	{
-		std::cout << "TurboSpeedEffect::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TurboSpeedEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -26,7 +28,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TurboSpeedEffect::Start(Request request)
 	{
-		std::cout << "TurboSpeedEffect::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TurboSpeedEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -61,7 +65,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success</returns>
 	EffectResult TurboSpeedEffect::Stop()
 	{
-		std::cout << "TurboSpeedEffect::Stop()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TurboSpeedEffect::Stop()" << LOG.endl();
 
 		RiffRepeater::SetSpeed(100.f);
 		RiffRepeater::DisableTimeStretch();

@@ -46,7 +46,13 @@ namespace Wwise::Logging {
 	/// <returns>The playing ID of the event launched, or AK_INVALID_PLAYING_ID if posting the event failed</returns>
 	AkPlayingID log_PostEvent_Name(const char* in_pszEventName, AkGameObjectID in_gameObjectID, AkUInt32 in_uFlags, AkCallbackFunc in_pfnCallback, void* in_pCookie, AkUInt32 in_cExternals, AkExternalSourceInfo* in_pExternalSources, AkPlayingID in_PlayingID)
 	{
-		std::cout << "(Wwise) PostEvent: " << in_pszEventName << " on game object 0x" << std::hex << in_gameObjectID << std::dec << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "(Wwise) PostEvent: "
+				  << in_pszEventName
+				  << " on game object 0x"
+				  << std::hex << in_gameObjectID
+				  << std::dec << LOG.endl();
 
 		return oPostEvent(in_pszEventName, in_gameObjectID, in_uFlags, in_pfnCallback, in_pCookie, in_cExternals, in_pExternalSources, in_PlayingID);
 	}
@@ -60,7 +66,17 @@ namespace Wwise::Logging {
 	/// <param name="in_bSeekToNearestMarker"> - Should we skip to the nearest marker</param>
 	AKRESULT log_SeekOnEvent(char* in_pszEventName, AkGameObjectID in_gameObjectID, AkTimeMs in_iPosition, bool in_bSeekToNearestMarker)
 	{
-		std::cout << "(Wwise) SeekOnEvent: " << in_pszEventName << " on object 0x" << std::hex << in_gameObjectID << " at time " << (float)(in_iPosition / 1000) << " seconds. Seek to nearest marker: " << std::boolalpha << in_bSeekToNearestMarker << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "(Wwise) SeekOnEvent: "
+				  << in_pszEventName
+				  << " on object 0x"
+				  << std::hex << in_gameObjectID
+				  << " at time "
+				  << (float)(in_iPosition / 1000)
+				  << " seconds. Seek to nearest marker: "
+				  << std::boolalpha << in_bSeekToNearestMarker
+				  << LOG.endl();
 
 		return oSeekOnEvent(in_pszEventName, in_gameObjectID, in_iPosition, in_bSeekToNearestMarker);
 	}
@@ -73,7 +89,15 @@ namespace Wwise::Logging {
 	/// <param name="fromBus"> - Bus to read the effect from</param>
 	AKRESULT log_CloneBusEffect(AkUniqueID toBus, AkUInt32 indexFX, AkUniqueID fromBus)
 	{
-		std::cout << "(Wwise) CloneBusEffect: From bus 0x" << std::hex << fromBus << " in slot " << std::dec << indexFX << " to bus 0x" << std::hex << toBus << std::dec << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "(Wwise) CloneBusEffect: From bus 0x"
+				  << std::hex << fromBus
+				  << " in slot "
+				  << std::dec << indexFX
+				  << " to bus 0x"
+				  << std::hex << toBus
+				  << std::dec << LOG.endl();
 
 		return oCloneBusEffect(toBus, indexFX, fromBus);
 	}
@@ -88,9 +112,22 @@ namespace Wwise::Logging {
 	/// <param name="in_eFadeCurve"> - Curve to fade into the new value.</param>
 	AKRESULT log_SetRTPCValue(const char* in_pszRtpcName, AkRtpcValue in_value, AkGameObjectID in_gameObjectID, AkTimeMs in_uValueChangeDuration, AkCurveInterpolation in_eFadeCurve)
 	{
+		_LOG_INIT;
+
 		if (!MemHelpers::Contains(std::string(in_pszRtpcName), SetRTPCBlacklist))
 		{
-			std::cout << "(Wwise) SetRTPCValue: " << in_pszRtpcName << " to " << in_value << " on game object 0x" << std::hex << in_gameObjectID << " with duration of " << std::dec << in_uValueChangeDuration << "ms, with " << CurveInterpolation(in_eFadeCurve) << " curve." << std::endl;
+			_LOG_HEAD << "(Wwise) SetRTPCValue: "
+					  << in_pszRtpcName
+					  << " to "
+					  << in_value
+					  << " on game object 0x"
+					  << std::hex << in_gameObjectID
+					  << " with duration of "
+					  << std::dec << in_uValueChangeDuration
+					  << "ms, with "
+					  << CurveInterpolation(in_eFadeCurve)
+					  << " curve."
+					  << LOG.endl();
 		}
 		
 		return oSetRTPCValue_Char(in_pszRtpcName, in_value, in_gameObjectID, in_uValueChangeDuration, in_eFadeCurve);

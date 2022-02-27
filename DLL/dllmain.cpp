@@ -12,10 +12,6 @@ bool wwiseLogging = true; // You ARE on a Wwise logging build.
 bool wwiseLogging = false; // You are NOT on a Wwise logging build.
 #endif
 
-#ifndef _LOG_INIT
-#define _LOG_INIT Log LOG; // Use log in place of cout or cerr, to help consolidate logging.
-#endif;
-
 #ifndef _RSMODS_VERSION
 #define _RSMODS_VERSION "RSMODS Version: 1.2.6.5 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
@@ -139,6 +135,7 @@ unsigned WINAPI RiffRepeaterThread() {
 /// <param name="lParam"> - Data Sent</param>
 /// <returns>Verification that message was sent.</returns>
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
+	_LOG_INIT;
 
 	// Makes ALT + ENTER cause F11 to be pressed.
 	// This is mainly so a user can use a common shortcut, that works in most games now-a-days.
@@ -160,19 +157,19 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			// Toggle Loft mod
 			if (keyPressed == Settings::GetKeyBind("ToggleLoftKey") && Settings::ReturnSettingValue("ToggleLoftEnabled") == "on") {
 				MemHelpers::ToggleLoft();
-				std::cout << "Triggered Mod: Toggle Loft" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Toggle Loft" << LOG.endl();
 			}
 
 			// Show Song Timer mod
 			else if (keyPressed == Settings::GetKeyBind("ShowSongTimerKey") && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on") {
 				D3DHooks::showSongTimerOnScreen = !D3DHooks::showSongTimerOnScreen;
-				std::cout << "Triggered Mod: Show Song Timer" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Show Song Timer" << LOG.endl();
 			}
 
 			// Force Enumeration mod
 			else if (keyPressed == Settings::GetKeyBind("ForceReEnumerationKey") && Settings::ReturnSettingValue("ForceReEnumerationEnabled") == "manual") {
 				Enumeration::ForceEnumeration();
-				std::cout << "Triggered Mod: Force Enumeration" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Force Enumeration" << LOG.endl();
 			}
 
 			// Rainbow Strings mod
@@ -182,25 +179,25 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				if (!ERMode::RainbowEnabled)
 					ERMode::ResetAllStrings();
 
-				std::cout << "Triggered Mod: Rainbow Strings" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Rainbow Strings" << LOG.endl();
 			}
 
 			// Rainbow Notes mod
 			else if (keyPressed == Settings::GetKeyBind("RainbowNotesKey") && Settings::ReturnSettingValue("RainbowNotesEnabled") == "on") {
 				ERMode::ToggleRainbowNotes();
-				std::cout << "Triggered Mod: Rainbow Notes" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Rainbow Notes" << LOG.endl();
 			}
 
 			// Remove Lyrics mod
 			else if (keyPressed == Settings::GetKeyBind("RemoveLyricsKey") && Settings::ReturnSettingValue("RemoveLyricsWhen") == "manual") {
 				D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
-				std::cout << "Triggered Mod: Remove Lyrics" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Remove Lyrics" << LOG.endl();
 			}
 
 			// Control + A. Force us to read the Settings from the INI again, to renew our cached values.
 			else if (keyPressed == 0x41 && (GetKeyState(VK_CONTROL) & 0x8000)) {
 				Settings::UpdateSettings();
-				std::cout << "Triggered Setting Update" << std::endl;
+				_LOG_HEAD << "Triggered Setting Update" << LOG.endl();
 			}
 
 			// Change Master Volume mod
@@ -261,10 +258,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// Changed Displayed Volume mod
 			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-			currentVolumeIndex++;
+				currentVolumeIndex++;
 
-			if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit, so loop back.
-				currentVolumeIndex = 0;
+				if (currentVolumeIndex > (mixerInternalNames.size() - 1)) // There are only so many values we know we can edit, so loop back.
+					currentVolumeIndex = 0;
 			}
 
 			// Change Tuning Offset mod
@@ -280,47 +277,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				else if (Midi::tuningOffset > 12)
 					Midi::tuningOffset = 12;
 
-				std::cout << "Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << std::endl;
+				_LOG_HEAD << "Triggered Mod Setting: Tuning Offset is now set to " << Midi::tuningOffset << LOG.endl();
 			}
-
-
-			/* else if (keyPressed == VK_F9) { // Disco Mode | Current State: No easy way to toggle it off.
-				DiscoModeEnabled = !DiscoModeEnabled;
-
-				if (debug) {
-					std::cout << "Turning ";
-					if (!DiscoModeEnabled)
-						std::cout << "off";
-					else
-						std::cout << "on";
-					std::cout << " Disco Mode!" << std::endl;
-				}
-			} */
-
-			//else if (keyPressed == VK_F9) // Controller Killswitch | Current State: Kills XInput Controllers (Xbox), but won't kill DirectInput (else)
-			//	DisableControllers::DisableControllers();
-
-			//else if (keyPressed == VK_F9) { // Current State: Will restart the sound system, but requires the user to change input methods, and switch back. When the user encounters a tone-bug, the audio will never come back.
-			//	std::cout << "Trying to restart Wwise Music Engine" << std::endl;
-			//	WwiseVariables::Wwise_Music_Term(); // Kill all sounds
-			//	WwiseVariables::Wwise_Music_Init((AkMusicSettings*)0x01384964); // Restart the music
-
-			//	WwiseVariables::Rocksmith_SetAudioInputCallbacks((AkAudioInputPluginExecuteCallbackFunc*)0x01c9f415, (AkAudioInputPluginGetFormatCallbackFunc*)0x01c9f34e, (AkAudioInputPluginGetGainCallbackFunc*)0x01c9f2ae, (int*)0x01c9f31e);
-
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3E8, 0, NULL, NULL, 0, NULL, 0); // Fix event char
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3E9, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EA, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EB, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EC, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3ED, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EE, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3EF, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F0, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F1, 0, NULL, NULL, 0, NULL, 0);
-			//	WwiseVariables::Wwise_Sound_PostEvent_Char("w_='", (AkGameObjectID)0x3F2, 0, NULL, NULL, 0, NULL, 0);
-
-			//	std::cout << "Restart Complete!" << std::endl;
-			//}
 
 			// Toggle Extended Range mod
 			else if (keyPressed == Settings::GetKeyBind("ToggleExtendedRangeKey"))
@@ -328,7 +286,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				D3DHooks::UseERExclusivelyInThisSong = !D3DHooks::UseERExclusivelyInThisSong;
 				MemHelpers::ToggleCB(D3DHooks::UseERExclusivelyInThisSong);
 
-				std::cout << "Triggered Mod: Toggle Extended Range" << std::endl;
+				_LOG_HEAD << "Triggered Mod: Toggle Extended Range" << LOG.endl();
 			}
 
 			// Looping mod. Set loop starting point.
@@ -373,7 +331,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				// RewindBy is greater than the amount of time we've been in the song.
 				// Reset seekTo to 0 to prevent seeking to a negative time.
 				if (seekTo < 0) {
-					std::cout << "(REWIND) Tried to seek to " << seekTo << "ms into the song. Resetting to 0." << std::endl;
+					_LOG_HEAD << "(REWIND) Tried to seek to " << seekTo << "ms into the song. Resetting to 0." << LOG.endl();
 					seekTo = 0;
 				}
 
@@ -386,7 +344,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				// Our seek time needs to be stored as milliseconds when sending to Wwise, but we need to have it in seconds when setting the GreyNoteTimer.
 				MemHelpers::SetGreyNoteTimer(seekTo / 1000.f);
 
-				std::cout << "(REWIND) Seeked to " << seekTo << "ms." << std::endl;
+				_LOG_HEAD << "(REWIND) Seeked to " << seekTo << "ms." << LOG.endl();
 			}
 
 			// Auto Tuning via MIDI mod. 
@@ -435,7 +393,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				RiffRepeater::EnableTimeStretch();
 				saveNewRRSpeedToFile = true;
 
-				std::cout << "Triggered Mod: Song Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl;
+				_LOG_HEAD << "Triggered Mod: Song Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << LOG.endl();
 			}
 		}
 	}
@@ -447,7 +405,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 		if (pcds->dwData == 1)
 		{
 			std::string currMsg = (char*)pcds->lpData;
-			std::cout << currMsg << std::endl;
+			_LOG_HEAD << currMsg << LOG.endl();
 
 			// GUI sent a "update" message. We need to re-read the INI.
 			if (Contains(currMsg, "update")) {
@@ -467,9 +425,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 
 			// **Deprecated** Twitch Integration. Use CrowdControl.
 			else if (Contains(currMsg, "TurboSpeed"))
-				if (Contains(currMsg, "enable")) {
+			{
+				if (Contains(currMsg, "enable"))
 					RiffRepeater::EnableTimeStretch();
-				}
+				else
+					RiffRepeater::DisableTimeStretch();
+			}
 			else if (Contains(currMsg, "enable"))
 				effectQueue.push_back(currMsg);
 			else if (Contains(currMsg, "Reconnect"))
@@ -506,6 +467,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 /// <param name="pDevice"> - Device Pointer</param>
 /// <returns>HRESULT of the official EndScene</returns>
 HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
+	_LOG_INIT;
+
 	HRESULT hRet = oEndScene(pDevice); // Get real result so we can call it later.
 	uint32_t returnAddress = (uint32_t)_ReturnAddress(); // EndScene is called both by the game and by Steam's overlay renderer, and there's no need to draw our stuff twice
 
@@ -547,7 +510,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 		
 		D3DXCreateTextureFromFile(pDevice, L"nonexistenttexture.dds", &nonexistentTexture); // Black Notes
 
-		std::cout << "ImGUI Init" << std::endl;
+		_LOG_HEAD << "ImGUI Init" << LOG.endl();
 
 		Settings::UpdateSettings();
 
@@ -571,7 +534,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (D3DHooks::menuEnabled) {
 
 		// Draw ImGUI UI
-		ImGui::Begin("RS Modz");
+		ImGui::Begin("RS Mods");
 
 		// Stop mouse and keyboard in game
 		//ImGui::CaptureKeyboardFromApp(true);
@@ -996,25 +959,27 @@ bool HandleMessage(std::string currMsg, std::string type) {
 /// </summary>
 /// <param name="currEffectMsg"> - Mod to Trigger.</param>
 void HandleEffect(std::string currEffectMsg) {
+	_LOG_INIT;
+
 	// Split message into chunks
 	auto msgParts = Settings::SplitByWhitespace(currEffectMsg);
 	std::string effectName = msgParts[1];
-	std::cout << "Entering the thread for: " << currEffectMsg << std::endl;
+	_LOG_HEAD << "Entering the thread for: " << currEffectMsg << LOG.endl();
 
 	// Don't allow the current effect to apply twice. Also blocks mods from triggering when not in a song.
 	while (MemHelpers::Contains(effectName, enabledEffects) && !MemHelpers::IsInSong())
 		Sleep(150);
-	std::cout << enabledEffects.size() << std::endl;
+	_LOG_HEAD << enabledEffects.size() << LOG.endl();
 
 	// Enable Effect
-	std::cout << "Enabling " << effectName << std::endl;
+	_LOG_HEAD << "Enabling " << effectName << LOG.endl();
 	if (HandleMessage(currEffectMsg, "enable")) {
 		// Sleep for the duration of the effect.
 		Sleep(std::stoi(msgParts.back()) * 1000);
 
 		// Disable the effect after it's done
 		HandleMessage(currEffectMsg, "disable");
-		std::cout << "Disabling " << effectName << std::endl;
+		_LOG_HEAD << "Disabling " << effectName << LOG.endl();
 		if (MemHelpers::Contains(effectName, enabledEffects)) // JIC
 			enabledEffects.erase(std::find(enabledEffects.begin(), enabledEffects.end(), effectName));
 	}
@@ -1057,6 +1022,8 @@ unsigned WINAPI HandleEffectQueueThread() {
 /// Hook Game Functions For Our Own Uses (On Alt-Tab, Draw UI, etc).
 /// </summary>
 void GUI() {
+	_LOG_INIT;
+
 	uint32_t d3d9Base, adr, * vTable = NULL;
 
 	// Find D3D Device
@@ -1066,25 +1033,28 @@ void GUI() {
 
 	bool runningThroughWine = adr == (uint32_t)2;
 
-	std::cout << "Running in Wine: " << std::boolalpha << runningThroughWine << std::endl;
+	_LOG_HEAD << "Running in Wine: " << std::boolalpha << runningThroughWine << LOG.endl();
 
 	// Proton / Wine Check.
 	// We do NOT support linux. There is some issues with the D3D pointers.
 	// This check is meant so if someone does load our mods on Linux, we won't just crash. Most mods will just not work.
 	if (runningThroughWine) {
-		std::cout << "Performing Wine check" << std::endl;
+		_LOG_HEAD << "Performing Wine check" << LOG.endl();
 		adr = MemUtil::FindPattern<uint32_t>(0x2000000, 0x2B778CC, (PBYTE)Offsets::d3dDevice_Pattern, Offsets::d3dDevice_Mask) + 2;
-		std::cout << adr << std::endl;
+		_LOG_HEAD << adr << LOG.endl();
 	}
+
+	LOG.level = LogLevel::Error;
 
 	// Null-check
 	if (!adr) {
-		std::cout << "Could not find D3D9 device pointer" << std::endl;
+		_LOG_HEAD << "Could not find D3D9 device pointer." << LOG.endl();
 		return;
 	}
 
 	// Null-Check x2
 	if (!*(uint32_t*)adr) { // Wing it
+		_LOG_HEAD << "Could not find DX9 device." << LOG.endl();
 		MessageBoxA(NULL, "Could not find DX9 device, please restart the game!", "Error", NULL);
 		return;
 	}
@@ -1093,6 +1063,7 @@ void GUI() {
 
 	// Third times the charm?
 	if (!vTable || vTable < (uint32_t*)Offsets::baseHandle) {
+		_LOG_HEAD << "Could not find D3D device's vTable address." << LOG.endl();
 		MessageBoxA(NULL, "Could not find D3D device's vTable address \n Restart the game and if you still get this error after a few tries, please report the error!", "Error", NULL);
 		return;
 	}
@@ -1126,13 +1097,14 @@ void AutoEnterGame() {
 /// Force a Steam screenshot. Requires the default "F12" screenshot key for Steam.
 /// </summary>
 void TakeScreenshot() {
+	_LOG_INIT;
 	if (!takenScreenshotOfThisScreen) {
 		takenScreenshotOfThisScreen = true;
 		Sleep(8000); // The menu title changes while the animation is running so we are giving it so time to show the actual results. (8 seconds)
 
 		// Press F12
 		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYDOWN, VK_F12, 0);
-		std::cout << "Took screenshot" << std::endl;
+		_LOG_HEAD << "Took screenshot" << LOG.endl();
 		Sleep(30);
 		PostMessage(FindWindow(NULL, L"Rocksmith 2014"), WM_KEYUP, VK_F12, 0);
 	}
@@ -1155,13 +1127,15 @@ void UpdateSettings() {
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MainThread() {
+	_LOG_INIT;
+
 	std::ifstream RSModsFileInput("RSMods.ini"); // Check if this file exists
 	if (!RSModsFileInput) {
-		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash for some reason :(
+		std::ofstream RSModsFileOutput("RSMods.ini"); // If we don't call this, the game will crash.
 		RSModsFileOutput.close();
 	}
 
-	std::cout << _RSMODS_VERSION << std::endl; // Put version info in the output log.
+	LOG << _RSMODS_VERSION << LOG.endl(); // Put version info in the output log.
 
 	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
 	bool skipERSleep = false; // If using RR past 100%, remove the 1.5s sleep on ER mode, to stop flickering colors.
@@ -1176,6 +1150,8 @@ unsigned WINAPI MainThread() {
 	ERMode::Initialize();
 	GUI();
 	Midi::InitMidi();
+	
+	// Misc mods / Bug Prevention that can only be ran on startup.
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
 	BugPrevention::PreventPnPCrash();
@@ -1194,7 +1170,7 @@ unsigned WINAPI MainThread() {
 	// AltOutputSampleRate mod.
 	// We have to do this early in execution as we need to change it before the audio engine starts up.
 	if (Settings::ReturnSettingValue("AltOutputSampleRate") == "on" && Settings::GetModSetting("AlternativeOutputSampleRate") != 48000) {
-		std::cout << "[!] Overriding Output Sample Rate to " << Settings::GetModSetting("AlternativeOutputSampleRate") << std::endl;
+		_LOG_HEAD << "[!] Overriding Output Sample Rate to " << Settings::GetModSetting("AlternativeOutputSampleRate") << LOG.endl();
 		AudioDevices::output_SampleRate = Settings::GetModSetting("AlternativeOutputSampleRate");
 		AudioDevices::ChangeOutputSampleRate();
 	}
@@ -1202,7 +1178,8 @@ unsigned WINAPI MainThread() {
 	// Look to see if RS_ASIO applied the 2 RTC input bypass.
 	// If they did, then we disregard the results from our version of the mod.
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
-	std::cout << "RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl;
+	_LOG_HEAD << "RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << LOG.endl();
+
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 
@@ -1541,7 +1518,9 @@ unsigned WINAPI MainThread() {
 					if (selectedUser == Settings::ReturnSettingValue("ProfileToLoad")) // The profile we're looking for
 						AutoEnterGame();
 					else if (selectedUser == (std::string)"New profile") { // Yeah, the profile they're looking for doesn't exist :(
-						std::cout << "(Auto Load) Invalid Profile Name" << std::endl;
+						LOG.level = LogLevel::Error;
+						_LOG_HEAD << "(Auto Load) Invalid Profile Name" << LOG.endl();
+						LOG.level = LogSettings::defaultLogLevel;
 						forkInToasterNewProfile = true;
 					}
 					else { // Not the profile we're looking for. Move down 1.
@@ -1564,6 +1543,8 @@ unsigned WINAPI MainThread() {
 /// Unhook all threads to take advantage of multi-threading.
 /// </summary>
 void Initialize() {
+	LogSettings::startupTime = clock();
+
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
 	std::thread(EnumerationThread).detach(); // Force Enumeration
 	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects
@@ -1589,31 +1570,27 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 	case DLL_PROCESS_ATTACH:
 		// Setup logging system
-		FILE* streamRead, *streamWrite;
+		FILE* streamRead, *streamConsole;
 
 		// If running a debug build, give us a console.
 		if (debug) 
 			AllocConsole();
 
-		// Connect stdin, stdout, and stderr to our console / log.
+		// Connect stdin, stdout to the debug console.
 		freopen_s(&streamRead, "CONIN$", "r", stdin);
-		freopen_s(&streamWrite, "CONOUT$", "w", stdout);
-		freopen_s(&streamWrite, "CONOUT$", "w", stderr);
+		freopen_s(&streamConsole, "CONOUT$", "w", stdout);
 
-		// Dump console to log (mainly for debugging release build issues)
+		// Create log file to both help with debugging release builds,
+		// and allow the user to examine their debug logs after a crash.
 		if (debugLogPresent) { 
 
 			// Clear log so it isn't full of junk from the last launch
 			clearDebugLog.open("RSMods_debug.txt", std::ofstream::out | std::ofstream::trunc);
 			clearDebugLog.close();
 
-			// Attach log to stdout and stderr.
-			// Doesn't work on debug clients as it takes over the console output.
-			if (!debug) {
-				FILE* debugLog;
-				freopen_s(&debugLog, "RSMods_debug.txt", "w", stdout);
-				freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr);
-			}
+			// Attach log to stderr.
+			FILE* debugLog;
+			freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr);
 		}
 
 		DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls

@@ -1,10 +1,11 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "Offsets.hpp"
 #include <string>
 #include <map>
-#include <iostream>
+
+#include "Log.hpp"
+#include "Offsets.hpp"
 
 namespace ObjectUtil {
 	struct Object {

@@ -11,7 +11,9 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult ChangeToToneSlot::Test(Request request)
 	{
-		std::cout << "ChangeToToneSlot::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "ChangeToToneSlot::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -26,14 +28,16 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Retry if we aren't currently in a song, or EffectResult::Sucess if we are</returns>
 	EffectResult ChangeToToneSlot::Start(Request request)
 	{
-		std::cout << "ChangeToToneSlot::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "ChangeToToneSlot::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong())
 			return EffectResult::Retry;
 
 		Util::SendKey(Settings::GetVKCodeForString(std::to_string(ChangeToToneSlot::slot)));
 	
-		std::cout << "Changing tone to slot " << slot << std::endl;
+		_LOG_HEAD << "Changing tone to slot " << slot << LOG.endl();
 
 		return EffectResult::Success;
 	}

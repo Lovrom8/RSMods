@@ -11,7 +11,9 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TransparentNotesEffect::Test(Request request)
 	{
-		std::cout << "TransparentNotesEffect::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TransparentNotesEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -26,7 +28,9 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult TransparentNotesEffect::Start(Request request)
 	{
-		std::cout << "TransparentNotesEffect::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TransparentNotesEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -61,7 +65,9 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// <returns>EffectResult::Success</returns>
 	EffectResult TransparentNotesEffect::Stop()
 	{
-		std::cout << "TransparentNotesEffect::Stop()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "TransparentNotesEffect::Stop()" << LOG.endl();
 
 		running = false;
 		Settings::UpdateTwitchSetting("TransparentNotes", "off");

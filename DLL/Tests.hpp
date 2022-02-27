@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Windows.h"
-#include <iostream>
+#include "Log.hpp"
 
 #include "MemHelpers.hpp"
 

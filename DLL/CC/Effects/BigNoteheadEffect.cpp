@@ -10,7 +10,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult BigNoteheadEffect::Test(Request request)
 	{
-		std::cout << "BigNoteheadEffect::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "BigNoteheadEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -24,7 +26,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult BigNoteheadEffect::Start(Request request)
 	{
-		std::cout << "BigNoteheadEffect::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "BigNoteheadEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -58,7 +62,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	/// <returns>EffectResult::Success</returns>
 	EffectResult BigNoteheadEffect::Stop()
 	{
-		std::cout << "BigNoteheadEffect::Stop()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "BigNoteheadEffect::Stop()" << LOG.endl();
 
 		running = false;
 
@@ -71,7 +77,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	/// Sets the scale only for objects which are of note meshe type
 	/// </summary>
 	void BigNoteheadEffect::SetNoteHeadScale(float scale) {
-		std::cout << "BigNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "BigNoteheadEffect::SetNoteHeadScale(" << scale << ")" << LOG.endl();
 
 		ObjectUtil::SetObjectScales({
 			{"MeshNoteSingleLH", scale},

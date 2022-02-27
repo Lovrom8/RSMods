@@ -2,12 +2,12 @@
 
 #include "Windows.h"
 #include <string>
-#include <iostream>
 #include <map>
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
+#include "../Log.hpp"
 #include "../MemUtil.hpp"
 #include "../Offsets.hpp"
 

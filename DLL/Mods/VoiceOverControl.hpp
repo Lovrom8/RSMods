@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../Log.hpp"
 #include "../Structs.hpp"
 #include "../Wwise/SoundEngine.hpp"
 

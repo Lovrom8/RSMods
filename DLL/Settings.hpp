@@ -1,10 +1,12 @@
 #pragma once
 
 // Libraries
-#include "windows.h"
-#include <iostream>
-#include "Structs.hpp"
+#include "Windows.h"
 #include <vector>
+
+#include "Log.hpp"
+#include "Structs.hpp"
+
 #include "Lib/Ini/SimpleIni.h"
 #include "D3D/D3DHooks.hpp"
 

@@ -9,7 +9,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RemoveNotesEffect::Test(Request request)
 	{
-		std::cout << "RemoveNotesEffect::Test()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveNotesEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -23,7 +25,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RemoveNotesEffect::Start(Request request)
 	{
-		std::cout << "RemoveNotesEffect::Start()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveNotesEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -58,7 +62,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	/// <returns>EffectResult::Success</returns>
 	EffectResult RemoveNotesEffect::Stop()
 	{
-		std::cout << "RemoveNotesEffect::Stop()" << std::endl;
+		_LOG_INIT;
+
+		_LOG_HEAD << "RemoveNotesEffect::Stop()" << LOG.endl();
 
 		ScaleNotes(1);
 
@@ -72,7 +78,9 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	/// </summary>
 	/// <param name="scale"> - Scale to set the notes.</param>
 	void RemoveNotesEffect::ScaleNotes(float scale) {
-		std::cout << "RemoveNotesEffect::ScaleNotes(" << scale << ")" << std::endl;
+		_LOG_INIT;
+		
+		_LOG_HEAD << "RemoveNotesEffect::ScaleNotes(" << scale << ")" << LOG.endl();
 
 		std::map<std::string, float> scaleMap;
 

@@ -3,10 +3,11 @@
 #include "windows.h"
 #include <vector>
 #include <string>
-#include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <codecvt>
+
+#include "Log.hpp"
 #include "Lib/DirectX/d3dx9.h"
 #include "Lib/DirectX/d3d9types.h"
 #include "Lib/Json/json.hpp"

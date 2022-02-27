@@ -5,11 +5,14 @@
 /// </summary>
 /// <returns>NULL if invalid address, else if ExtendedRangeDropTuning == true LowE-String Tuning else A-String Tuning.</returns>
 byte MemHelpers::getLowestStringTuning() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets);
 
 	// Null Pointer Check
 	if (!addrTuning) {
-		std::cout << "Invalid Pointer: getLowestStringTuning" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: getLowestStringTuning" << LOG.endl();
 		return NULL;
 	}
 		
@@ -26,11 +29,14 @@ byte MemHelpers::getLowestStringTuning() {
 /// <param name="verbose"> - Should we show the tuning in the console **DEBUG BUILD ONLY**</param>
 /// <returns>Current Tuning in a Byte[6] array.</returns>
 byte* MemHelpers::GetCurrentTuning(bool verbose) {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
 	uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets, true);
 
 	// Null Pointer Check
 	if (!addrTuning) {
-		// std::cout << "Invalid Pointer: GetCurrentTuning" << std::endl; // Disabled because it causes log to get huge real quick
+		// _LOG_HEAD << "Invalid Pointer: GetCurrentTuning" << LOG.endl(); // Disabled because it causes log to get huge real quick
 		return NULL;
 	}
 		
@@ -40,7 +46,7 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 	// Print tuning to console. **DEBUG BUILD ONLY**
 	if (verbose) {
 		for (int i = 0; i < 6; i++)
-			std::cout << "String" << i << " - " << (int)AllTunings[i] << std::endl;
+			_LOG_HEAD << "String" << i << " - " << (int)AllTunings[i] << LOG.endl();
 	}
 
 	return AllTunings;
@@ -51,11 +57,14 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 /// </summary>
 /// <returns>Guess of Current Tuning</returns>
 Tuning MemHelpers::GetTuningAtTuner() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
 	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
 
 	// If we can't find the list of tunings, just return a default value
 	if (!std::filesystem::exists(pathToTuningList)) { 
-		std::cout << "Invalid File: GetTuningAtTuner - Path To Tuning File Doesn't Exist." << std::endl;
+		_LOG_HEAD << "Invalid File: GetTuningAtTuner - Path To Tuning File Doesn't Exist." << LOG.endl();
 		return Tuning();
 	}
 
@@ -63,10 +72,9 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 	// Null Pointer Check
 	if (!addrTuningText) {
-		std::cout << "Invalid Pointer: GetTuningAtTuner" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: GetTuningAtTuner" << LOG.endl();
 		return Tuning();
 	}
-		
 
 	std::string unsanitized_tuningText = std::string((const char*)addrTuningText);
 
@@ -91,12 +99,13 @@ Tuning MemHelpers::GetTuningAtTuner() {
 
 	std::string tuningText = unsanitized_tuningText;
 
+	LOG.level = LogLevel::Warning;
+
 	// If it's a custom tuning we don't know the tuning, so we might as well stop here.
 	if (tuningText == (std::string)"CUSTOM TUNING") {
-		std::cout << "Invalid Tuning: CUSTOM TUNING" << std::endl;
+		_LOG_HEAD << "Invalid Tuning: CUSTOM TUNING" << LOG.endl();
 		return Tuning();
 	}
-		
 
 	// In the JSON, tunings have no whitespaces, so get rid of them
 	tuningText.erase(std::remove_if(tuningText.begin(), tuningText.end(), isspace), tuningText.end());
@@ -119,17 +128,21 @@ Tuning MemHelpers::GetTuningAtTuner() {
 		}
 	}
 
-	std::cout << "Invalid Tuning: Tuning doesn't exist in RSMods tuning list" << std::endl;
+	_LOG_HEAD << "Invalid Tuning: Tuning doesn't exist in RSMods tuning list" << LOG.endl();
 	return Tuning();
 }
 
 /// <returns>Should we Display The Extended Range Colors?</returns>
 bool MemHelpers::IsExtendedRangeSong() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t addrTimerEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 
 	// Null Pointer Check
 	if (!addrTimerEnabled) {
-		std::cout << "Invalid Pointer: IsExtendedRangeSong" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: IsExtendedRangeSong" << LOG.endl();
 		return false;
 	}
 	
@@ -161,7 +174,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 
 	// HighestLowest Tuning Pointer is invalid
 	if (lowestTuning == 666) {
-		 std::cout << "Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << std::endl;
+		_LOG_HEAD << "Invalid Tuning: GetHighestLowestString -> IsExtendedRangeSong" << LOG.endl();
 		return false;
 	}
 
@@ -169,29 +182,35 @@ bool MemHelpers::IsExtendedRangeSong() {
 	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
 	
+	LOG.level = LogLevel::Info;
+
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && dropTuning) {
-		 std::cout << "Successful: IsExtendedRangeSong in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
+		_LOG_HEAD << "Successful: IsExtendedRangeSong in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << LOG.endl();
 		return true;
 	}
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
 	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!dropTuning || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2)) {
-		 std::cout << "Successful: IsExtendedRangeSong in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << dropTuning << std::endl;
+		_LOG_HEAD << "Successful: IsExtendedRangeSong in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << dropTuning << LOG.endl();
 		return true;
 	}
 		
-	 std::cout << "Failed: IsExtendedRangeSong. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl;
+	_LOG_HEAD << "Failed: IsExtendedRangeSong. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << LOG.endl();
 	return false;
 }
 
 /// <returns>Should we Display The Extended Range Colors In The Tuner?</returns>
 bool MemHelpers::IsExtendedRangeTuner() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t addrTuningText = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuningText, Offsets::ptr_tuningTextOffsets);
 
 	// Null Pointer Check or not in a pre-song tuner
 	if (!addrTuningText) {
-		std::cout << "Invalid Pointer: IsExtendedRangeTuner" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: IsExtendedRangeTuner" << LOG.endl();
 		return false;
 	}
 
@@ -203,7 +222,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 
 	// Tuning Not Found
 	if (tuner_songTuning.lowE == 69) {
-		std::cout << "Invalid Tuning: IsExtendedRangeTuner" << std::endl;
+		_LOG_HEAD << "Invalid Tuning: IsExtendedRangeTuner" << LOG.endl();
 		return false;
 	}
 
@@ -213,6 +232,8 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
 
+	LOG.level = LogLevel::Info;
+
 	bool inDrop = IsSongInDrop(tuner_songTuning);
 
 	// The games stores tunings in unsigned chars (bytes) so we need to convert it to our int Extended Range toggle.
@@ -221,18 +242,18 @@ bool MemHelpers::IsExtendedRangeTuner() {
 
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on" && inDrop && lowestTuning <= Settings::GetModSetting("ExtendedRangeMode")) {
-		std::cout << "Successful: IsExtendedRangeTuner in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << std::endl;
+		_LOG_HEAD << "Successful: IsExtendedRangeTuner in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << LOG.endl();
 		return true;
 	}
 		
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
 	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!inDrop || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2)) {
-		std::cout << "Successful: IsExtendedRangeTuner in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << inDrop << std::endl;
+		_LOG_HEAD << "Successful: IsExtendedRangeTuner in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << inDrop << LOG.endl();
 		return true;
 	}
 		
-	std::cout << "Failed: IsExtendedRangeTuner. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl;
+	_LOG_HEAD << "Failed: IsExtendedRangeTuner. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << LOG.endl();
 	return false;
 }
 
@@ -241,13 +262,17 @@ bool MemHelpers::IsExtendedRangeTuner() {
 /// </summary>
 /// <returns>[0] - Highest, [1] - Lowest</returns>
 int* MemHelpers::GetHighestLowestString() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	int highestTuning = 0, lowestTuning = 256, currentStringTuning = 0;
 	std::unique_ptr<byte[]> songTuning = std::unique_ptr<byte[]>(MemHelpers::GetCurrentTuning());
 
 	// Null Pointer Check
 	if (!songTuning) {
 		int* fakeReturns = new int[2]{ 666, 666 };
-		// std::cout << "Failed: GetHighestLowestString. GetCurrentTuning returned an invalid tuning" << std::endl; // Disabled because it causes log to get huge real quick
+		// _LOG_HEAD << "Failed: GetHighestLowestString. GetCurrentTuning returned an invalid tuning" << LOG.endl(); // Disabled because it causes log to get huge real quick
 		return fakeReturns;
 	}
 
@@ -303,7 +328,7 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 	// Null Pointer Check
 	if (tuningOverride.lowE == 69) {
 		int* fakeReturns = new int[2]{ 666, 666 };
-		// std::cout << "Failed: GetHighestLowestString. GetCurrentTuning returned an invalid tuning" << std::endl; // Disabled because it causes log to get huge real quick
+		// _LOG_HEAD << "Failed: GetHighestLowestString. GetCurrentTuning returned an invalid tuning" << LOG.endl(); // Disabled because it causes log to get huge real quick
 		return fakeReturns;
 	}
 
@@ -385,11 +410,15 @@ bool MemHelpers::IsSongInStandard(Tuning tuning) {
 
 /// <returns>True Tuning. ex: A440, A432</returns>
 int MemHelpers::GetTrueTuning() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t trueTunePointer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_trueTuning, Offsets::ptr_trueTuningOffsets);
 
 	// Null Pointer Check
 	if (!trueTunePointer) {
-		// std::cout << "Invalid Pointer: GetTrueTuning" << std::endl; // Disabled because it causes log to get huge real quick
+		// _LOG_HEAD << "Invalid Pointer: GetTrueTuning" << LOG.endl(); // Disabled because it causes log to get huge real quick
 		return 440;
 	}
 		
@@ -401,6 +430,10 @@ int MemHelpers::GetTrueTuning() {
 /// <param name="GameNotLoaded"> - Should we trust the pointer?</param>
 /// <returns>Internal Menu Name</returns>
 std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	// It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen,
 	// but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay"
 	// (before you reach the login) or some gibberish that's always the same (after that) 
@@ -426,7 +459,7 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 
 	// Null Pointer Check
 	if (!currentMenuAdr) {
-		std::cout << "Invalid Pointer: GetCurrentMenu(" << std::boolalpha << GameNotLoaded << ") @ LVL 3" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: GetCurrentMenu(" << std::boolalpha << GameNotLoaded << ") @ LVL 3" << LOG.endl();
 		return "where are we actually";
 	}
 
@@ -438,7 +471,6 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 /// Turn the background / "map" on or off.
 /// </summary>
 void MemHelpers::ToggleLoft() {
-
 	uintptr_t farAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
 	if (*(float*)farAddr == 10000)
@@ -448,19 +480,23 @@ void MemHelpers::ToggleLoft() {
 }
 
 float MemHelpers::SongTimer() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t addrTimerBase = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 	uintptr_t addrTimerRare = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timerRare, Offsets::ptr_timerRareOffsets, true);
 
 	// Null Pointer Check
 	if (!addrTimerBase) {
-		std::cout << "Invalid Pointer: (BASE) ShowSongTimer" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: (BASE) ShowSongTimer" << LOG.endl();
 		return 0.f;
 	}
 
 	// Null Pointer Check
 	// At this point, we can verify that the timer is a valid time.
 	if (!addrTimerRare) {
-		std::cout << "Invalid Pointer: (RARE) ShowSongTimer" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: (RARE) ShowSongTimer" << LOG.endl();
 		return *(float*)addrTimerBase;
 	}
 
@@ -481,12 +517,16 @@ float MemHelpers::SongTimer() {
 /// </summary>
 /// <param name="enabled"> - Should we turn on colors or turn off?</param>
 void MemHelpers::ToggleCB(bool enabled) {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t addrTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_timer, Offsets::ptr_timerBaseOffsets);
 	uintptr_t cbEnabled = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_colorBlindMode, Offsets::ptr_colorBlindModeOffsets);
 
 	// Null Pointers Check
 	if (!addrTimer || !cbEnabled) {
-		// std::cout << "Invalid Pointers: ToggleCB(" << std::boolalpha << enabled << ")" << std::endl; // Disabled because it causes log to get huge real quick
+		// _LOG_HEAD << "Invalid Pointers: ToggleCB(" << std::boolalpha << enabled << ")" << LOG.endl(); // Disabled because it causes log to get huge real quick
 		return;
 	}
 	
@@ -547,10 +587,32 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 		fontWidth = (WindowSize.width / 96);
 		fontHeight = (WindowSize.height / 72);
 
-		CustomDX9Font = D3DXCreateFontA(pDevice, fontWidth, fontHeight, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
+		CustomDX9Font = D3DXCreateFontA(pDevice,
+										fontWidth,
+										fontHeight,
+										FW_NORMAL,
+										1,
+										false,
+										DEFAULT_CHARSET,
+										OUT_DEFAULT_PRECIS,
+										ANTIALIASED_QUALITY,
+										DEFAULT_PITCH | FF_DONTCARE,
+										Settings::ReturnSettingValue("OnScreenFont").c_str(),
+										&DX9FontEncapsulation); // Create a new font
 	}
 	else if (useInputFontSize)
-		CustomDX9Font = D3DXCreateFontA(pDevice, setFontSize.width, setFontSize.height, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, Settings::ReturnSettingValue("OnScreenFont").c_str(), &DX9FontEncapsulation); // Create a new font
+		CustomDX9Font = D3DXCreateFontA(pDevice,
+										setFontSize.width,
+										setFontSize.height,
+										FW_NORMAL,
+										1,
+										false,
+										DEFAULT_CHARSET,
+										OUT_DEFAULT_PRECIS,
+										ANTIALIASED_QUALITY,
+										DEFAULT_PITCH | FF_DONTCARE,
+										Settings::ReturnSettingValue("OnScreenFont").c_str(),
+										&DX9FontEncapsulation); // Create a new font
 
 	// Create Area To Draw Text
 	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
@@ -612,22 +674,25 @@ bool MemHelpers::IsMultiplayer() {
 /// </summary>
 /// <returns>Profile Name</returns>
 std::string MemHelpers::CurrentSelectedUser() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
+
 	uintptr_t badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
 
 	// If the pointer is invalid just return nothing
 	if (!badValue) {
-		std::cout << "Invalid Pointer: CurrentSelectedUser" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: CurrentSelectedUser" << LOG.endl();
 		return (std::string)"";
 	}
 		
-
-	int i = 0;
-
 	// This value 90% of the time starts with an invalid pointer. We must wait ~2.5 seconds to guarantee that it is correct, or until the pointer changes (whichever comes first).
-	while (badValue < 0x10000000 && i < 25) {
-		Sleep(100);
+	for (int i = 0; i < 25; i++)
+	{
+		if (badValue >= 0x10000000)
+			break;
+
 		badValue = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_selectedProfileName, Offsets::ptr_selectedProfileNameOffsets);
-		i++;
 	}
 
 	return std::string((const char*)badValue);
@@ -661,10 +726,13 @@ std::string MemHelpers::GetSongKey() {
 /// </summary>
 /// <returns>Time where all notes before it are grey / deactivated.</returns>
 float MemHelpers::GetGreyNoteTimer() {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
 	uintptr_t greyNoteTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_greyOutNoteTimer, Offsets::ptr_greyOutNoteTimerOffsets);
 
 	if (!greyNoteTimer) {
-		std::cout << "greyNoteTimer = NULL" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: GetGreyNoteTimer = NULL" << LOG.endl();
 		return NULL;
 	}
 
@@ -676,10 +744,13 @@ float MemHelpers::GetGreyNoteTimer() {
 /// </summary>
 /// <param name="timeInSeconds"> - Time to set the "deactivate before" at.</param>
 void MemHelpers::SetGreyNoteTimer(float timeInSeconds) {
+	_LOG_INIT;
+
+	LOG.level = LogLevel::Error;
 	uintptr_t greyNoteTimer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_greyOutNoteTimer, Offsets::ptr_greyOutNoteTimerOffsets);
 
 	if (!greyNoteTimer) {
-		std::cout << "greyNoteTimer = NULL" << std::endl;
+		_LOG_HEAD << "Invalid Pointer: SetGreyNoteTimer = NULL" << LOG.endl();
 		return;
 	}
 

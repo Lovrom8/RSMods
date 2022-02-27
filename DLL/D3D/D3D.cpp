@@ -88,7 +88,9 @@ RSColor GenerateRandomColor() {
 /// <param name="in_lineHeight"> - How thick should each line be?</param>
 /// <param name="howManyLines"> - How many lines should there be?</param>
 void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width, UINT in_height, int in_lineHeight, int howManyLines) {
-	
+	_LOG_INIT;
+	LOG.level = LogLevel::Error;
+
 	// JIC, to prevent crashing
 	while (GetModuleHandleA("gdiplus.dll") == NULL) 
 		Sleep(500);
@@ -100,7 +102,7 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	int lineHeight = in_lineHeight;
 
 	if (Ok != GdiplusStartup(&token_, &inp, NULL))
-		std::cout << "GDI+ failed to start up!" << std::endl;
+		_LOG_HEAD << "GDI+ failed to start up!" << LOG.endl();
 
 	// Create bitmap image
 	Bitmap bmp(width, height, PixelFormat32bppARGB);
@@ -144,26 +146,26 @@ void D3D::GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTextu
 	HRESULT hr_D3DX = D3DXCreateTexture(pDevice, width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, ppTexture);
 
 	if (*ppTexture == NULL) { // User is spam updating their INI through the GUI. D3DX textures are becoming NULL references.
-		std::cout << "User is spam updating their INI through the GUI. D3DXCreateTexture returned ";
+		_LOG_HEAD << "User is spam updating their INI through the GUI. D3DXCreateTexture returned ";
 
 		switch (hr_D3DX) {
 			case (D3D_OK):
-				std::cout << "D3D_OK" << std::endl;
+				LOG << "D3D_OK" << LOG.endl();
 				break;
 			case (D3DERR_INVALIDCALL):
-				std::cout << "D3DERR_INVALIDCALL" << std::endl;
+				LOG << "D3DERR_INVALIDCALL" << LOG.endl();
 				break;
 			case (D3DERR_NOTAVAILABLE):
-				std::cout << "D3DERR_NOTAVAILABLE" << std::endl;
+				LOG << "D3DERR_NOTAVAILABLE" << LOG.endl();
 				break;
 			case (D3DERR_OUTOFVIDEOMEMORY):
-				std::cout << "D3DERR_OUTOFVIDEOMEMORY" << std::endl;
+				LOG << "D3DERR_OUTOFVIDEOMEMORY" << LOG.endl();
 				break;
 			case (E_OUTOFMEMORY):
-				std::cout << "E_OUTOFMEMORY" << std::endl;
+				LOG << "E_OUTOFMEMORY" << LOG.endl();
 				break;
 			default: // Non-documented error
-				std::cout << "NOT DOCUMENTED!" << std::endl;
+				LOG << "NOT DOCUMENTED!" << LOG.endl();
 				break;
 		}
 		return;
