@@ -125,6 +125,19 @@ namespace RSMods.Util
             return true;
         }
 
+        public static bool IsSavePath(this string savePath)
+        {
+            if (!Directory.Exists(savePath))
+                return false;
+
+            string localProfiles = Path.Combine(savePath, "LocalProfiles.json");
+
+            if (!File.Exists(localProfiles))
+                return false;
+
+            return true;
+        }
+
         private static string GetStringValueFromRegistry(string keyName, string valueName)
         {
             try
@@ -255,6 +268,51 @@ namespace RSMods.Util
                 return String.Empty;
         }
 
+        public static string GetSaveFolder(bool overrideSkipPrompt = false)
+        {
+            if (!IsSavePath(Constants.SavePath))
+            {
+                if (File.Exists(Constants.SettingsPath))
+                {
+                    Constants.SavePath = GetSettingsEntry("SavePath");
+                    Constants.BypassSavePrompt = GetSettingsEntry("BypassSavePrompt");
+                    if (Constants.SavePath != string.Empty)
+                    {
+                        return Constants.SavePath;
+                    }
+                    else if (Constants.BypassSavePrompt == "true" && !overrideSkipPrompt)
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
+            else
+                return Constants.SavePath;
+
+            try
+            {
+                string potentialSaveFolder = Profiles.GetSaveDirectory();
+
+                while (!potentialSaveFolder.IsSavePath())
+                {
+                    if (MessageBox.Show("The save folder we found does not appear to be correct.\nPlease select your save folder.\nIt should follow the format: <Where Steam Is Installed>/userdata/#####/221680/remote\nPressing \"Cancel\" will prevent the usage of the \"Profile Edits\" tab", "Warning: Invalid Save Path", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
+                    {
+                        Constants.BypassSavePrompt = "true";
+                        return string.Empty;
+                    }
+                    
+                    potentialSaveFolder = AskUserForSavePath();
+                }
+
+                return potentialSaveFolder;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<Warning> GetSaveFolder, " + ex.Message);
+            }
+            return string.Empty;
+        }
+
         public static string GetRSDirectory()
         {
             if (!IsRSFolder(Constants.RSFolder))
@@ -295,8 +353,6 @@ namespace RSMods.Util
                             }
                         }
 
-
-
                         rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
 
                         if (String.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
@@ -325,10 +381,10 @@ namespace RSMods.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show("<Warning> GetStreamDirectory, " + ex.Message);
+                MessageBox.Show("<Warning> GetSteamDirectory, " + ex.Message);
             }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         public static string AskUserForRSFolder()
@@ -348,6 +404,25 @@ namespace RSMods.Util
                 }
             }
             return String.Empty;
+        }
+
+        public static string AskUserForSavePath()
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            {
+                DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string savePath = dialog.SelectedPath;
+
+                    if (savePath.IsSavePath())
+                    {
+                        Constants.SavePath = savePath;
+                        return savePath;
+                    }
+                }
+            }
+            return string.Empty;
         }
 
         public static string GetSteamProfilesFolderManual()

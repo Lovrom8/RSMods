@@ -534,6 +534,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.button_SetSavePath = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -3768,6 +3769,7 @@
             // tabPage_ModSettings_Misc
             // 
             this.tabPage_ModSettings_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_Misc.Controls.Add(this.button_SetSavePath);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_RewindBy);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_LoopingLeadUp);
             this.tabPage_ModSettings_Misc.Controls.Add(this.groupBox_Profiles_RevertBackup);
@@ -3933,7 +3935,7 @@
             // checkBox_TurnOffAllMods
             // 
             this.checkBox_TurnOffAllMods.AutoSize = true;
-            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(651, 306);
+            this.checkBox_TurnOffAllMods.Location = new System.Drawing.Point(651, 334);
             this.checkBox_TurnOffAllMods.Name = "checkBox_TurnOffAllMods";
             this.checkBox_TurnOffAllMods.Size = new System.Drawing.Size(108, 17);
             this.checkBox_TurnOffAllMods.TabIndex = 100008;
@@ -6685,6 +6687,17 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // button_SetSavePath
+            // 
+            this.button_SetSavePath.Location = new System.Drawing.Point(651, 263);
+            this.button_SetSavePath.Name = "button_SetSavePath";
+            this.button_SetSavePath.Size = new System.Drawing.Size(108, 23);
+            this.button_SetSavePath.TabIndex = 100013;
+            this.button_SetSavePath.Text = "Set Save Path";
+            this.button_SetSavePath.UseVisualStyleBackColor = true;
+            this.button_SetSavePath.Visible = false;
+            this.button_SetSavePath.Click += new System.EventHandler(this.Save_SetSavePath);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -7367,6 +7380,7 @@
         private System.Windows.Forms.CheckBox checkBox_CustomNSPTimer;
         private System.Windows.Forms.GroupBox groupBox_NSPTimer;
         private System.Windows.Forms.NumericUpDown nUpDown_NSPTimer;
+        private System.Windows.Forms.Button button_SetSavePath;
     }
 }
 

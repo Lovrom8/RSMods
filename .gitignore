@@ -277,3 +277,4 @@ __pycache__/
 .editorconfig
 
 Installer/Resources/
+*.user

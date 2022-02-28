@@ -12,6 +12,17 @@ namespace RSMods.Data
             get { return _rsFolder; }
             set { _rsFolder = value; }
         }
+
+        private static string _savePath;
+
+        public static string SavePath
+        {
+            get { return _savePath; }
+            set { _savePath = value; }
+        }
+
+        public static string BypassSavePrompt;
+
         public static string SettingsPath { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GUI_Settings.ini"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
         public static string WorkFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Temp"); } }

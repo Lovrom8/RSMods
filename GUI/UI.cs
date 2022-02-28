@@ -67,9 +67,6 @@ namespace RSMods
             // Locate Rocksmith Folder
             Startup_LocateRocksmith(GenUtil.GetRSDirectory());
 
-            // Check if the GUI settings, and DLL settings already exist
-            Startup_VerifyGUIInstall();
-
             // Read Ini, or create an default one.
             Startup_ReadIniOrCreateDefault();
 
@@ -78,6 +75,12 @@ namespace RSMods
 
             // Initialize WinForms
             Startup_InitWinForms();
+
+            // Locate Rocksmith Saves
+            Startup_LocateSaves(GenUtil.GetSaveFolder());
+
+            // Check if the GUI settings, and DLL settings already exist
+            Startup_VerifyGUIInstall();
 
             // Setup bindings for Twitch events
             Twitch_Setup();
@@ -219,14 +222,67 @@ namespace RSMods
             }
                 
         }
+
+        private void Startup_LocateSaves(string SavePath)
+        {
+            if (Constants.BypassSavePrompt == "true")
+            {
+                button_SetSavePath.Visible = true;
+                return;
+            }
+
+            if (SavePath == string.Empty)
+            {
+                MessageBox.Show("It looks like your Rocksmith 2014 save folder cannot be found. Please tell us where it is located!\nThis can be found in your Steam install folder.\n<Path To Steam Install>/userdata/#/221680/remote", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string newSavePath = GenUtil.AskUserForSavePath();
+
+                if (newSavePath == string.Empty)
+                {
+                    MessageBox.Show("We cannot detect where you have Rocksmith2014 saves are located.", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
+                }
+
+                Constants.SavePath = newSavePath;
+                Constants.BypassSavePrompt = "false";
+            }
+            else
+            {
+                if (!Directory.Exists(SavePath))
+                {
+                    string newSavePath = Profiles.GetSaveDirectory(true);
+
+                    if (newSavePath == string.Empty)
+                    {
+                        MessageBox.Show("It looks like your Rocksmith 2014 save folder cannot be found. Please tell us where it is located!\nThis can be found in your Steam install folder.\n<Path To Steam Install>/userdata/#/221680/remote", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        newSavePath = GenUtil.AskUserForSavePath();
+
+                        if (newSavePath == string.Empty)
+                        {
+                            MessageBox.Show("We cannot detect where you have Rocksmith2014 saves are located.", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Environment.Exit(1);
+                        }
+                    }
+
+                    Constants.SavePath = newSavePath;
+                    Constants.BypassSavePrompt = "false";
+                }
+                else
+                {
+                    Constants.SavePath = SavePath;
+                    Constants.BypassSavePrompt = "false";
+                }
+            }
+        }
+
         private void Startup_VerifyGUIInstall()
         {
             WriteSettings.IsVoid(GenUtil.GetRSDirectory());
             if (!File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
                 WriteSettings.WriteINI(WriteSettings.saveSettingsOrDefaults); // Creates Settings File
 
-            if (!File.Exists(Constants.SettingsPath))
-                File.WriteAllText(Constants.SettingsPath, "RSPath = " + Constants.RSFolder);
+            List<string> settings = new List<string>() { $"RSPath = {Constants.RSFolder}", $"SavePath = {Constants.SavePath}", $"BypassSavePrompt = {Constants.BypassSavePrompt}" };
+
+            File.WriteAllLines(Constants.SettingsPath, settings);
         }
 
         private void Startup_LoadSonglists()
@@ -397,7 +453,7 @@ namespace RSMods
             ProfileEditsTab = tab_Profiles;
             ProfileEditsTabIndex = TabController.TabPages.IndexOf(ProfileEditsTab);
 
-            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on" || !shipProfileEdits)
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) != "on" || !shipProfileEdits || !Constants.SavePath.IsSavePath())
                 TabController.TabPages.Remove(tab_Profiles);
         }
 
@@ -2218,7 +2274,7 @@ namespace RSMods
                     Startup_UnlockProfileEdits();
                 }
             }
-            else
+            else if (AllowSaving)
             {
                 Startup_LockProfileEdits();
             }
@@ -2458,6 +2514,31 @@ namespace RSMods
         }
 
         private void Save_NSPTimer(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.CustomNSPTimeLimitIdentifier, ((int)(nUpDown_NSPTimer.Value * 1000)).ToString());
+
+        private void Save_SetSavePath(object sender, EventArgs e)
+        {
+            string saveFolder = GenUtil.GetSaveFolder(true);
+
+            if (saveFolder == string.Empty)
+            {
+                MessageBox.Show("We did not save a Save Folder");
+                return;
+            }
+
+            // Backup profiles & prevent the user from pressing this button again
+            checkBox_BackupProfile.Checked = true;
+            button_SetSavePath.Visible = false;
+
+            // Save some constants
+            Constants.SavePath = saveFolder;
+            Constants.BypassSavePrompt = "false";
+            List<string> settings = new List<string>() { $"RSPath = {Constants.RSFolder}", $"SavePath = {Constants.SavePath}", $"BypassSavePrompt = {Constants.BypassSavePrompt}" };
+            File.WriteAllLines(Constants.SettingsPath, settings);
+
+            // Refresh the Profile Edits UI, now that we have the information we need.
+            Startup_LoadRocksmithProfiles();
+        }
+
         #endregion
         #region ToolTips
 

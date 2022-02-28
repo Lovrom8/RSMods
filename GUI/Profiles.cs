@@ -14,6 +14,7 @@ using Microsoft.Win32;
 using System.Windows.Forms;
 using RSMods.Util;
 using System.Linq;
+using RSMods.Data;
 
 namespace RSMods
 {
@@ -124,34 +125,45 @@ namespace RSMods
             return profiles;
         }
 
-        public static string GetSaveDirectory()
+        public static string GetSaveDirectory(bool forceRegistry = false)
         {
-            string fullProfileFolder = String.Empty;
+            string fullProfileFolder = forceRegistry ? string.Empty : Constants.SavePath;
 
             try
             {
-                RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
-
-                if (availableUser == null) // If the key doesn't exist for whatever reason, try to manually find the path by searching for files with 
-                    return GenUtil.GetSteamProfilesFolderManual();
-
-                string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/";
-
-                foreach (string user in availableUser.GetSubKeyNames())
+                if (fullProfileFolder == string.Empty)
                 {
-                    try
+                    RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
+
+                    if (availableUser == null) // If the key doesn't exist for whatever reason, try to manually find the path by searching for files with 
+                        return GenUtil.GetSteamProfilesFolderManual();
+
+                    string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/";
+
+                    foreach (string user in availableUser.GetSubKeyNames())
                     {
-                        if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                        try
                         {
-                            fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
-                            break;
+                            if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
+                            {
+                                fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
+                                break;
+                            }
+                            else
+                                continue;
                         }
-                        else
+                        catch (Exception) // Directory doesn't exist and shoots an error.
+                        {
                             continue;
+                        }
                     }
-                    catch (Exception) // Directory doesn't exist and shoots an error.
+                }
+                else
+                {
+                    if (!fullProfileFolder.IsSavePath())
                     {
-                        continue;
+                        Constants.SavePath = string.Empty;
+                        return GetSaveDirectory();
                     }
                 }
             }

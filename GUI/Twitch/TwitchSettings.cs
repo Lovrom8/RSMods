@@ -178,6 +178,8 @@ namespace RSMods.Twitch
             var configLines = new List<string>
             {
                 $"RSPath = {Constants.RSFolder}",
+                $"SavePath = {Constants.SavePath}",
+                $"BypassSavePrompt = {Constants.BypassSavePrompt}",
 
                 $"Chatbot_Username = {ChatbotUsername}",
                 $"Chatbot_AccessToken = {ChatbotAccessToken}",
