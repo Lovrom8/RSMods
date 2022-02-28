@@ -29,7 +29,6 @@ void __declspec(naked) hook_fakeTitles() {
 		mov byte ptr[eax + 0x5], 0x31			// "$[9000X]SONG LIST" -> "$[9001X]SONG LIST".
 
 	ExitHookFakeTitle:
-
 		popad									// Return EAX, ECX, and EDX from the stack.
 		jmp[Offsets::hookBackAddr_FakeTitles]	// Return to the original code.
 	}

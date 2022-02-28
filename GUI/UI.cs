@@ -36,7 +36,10 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
-        bool shipProfileEdits = false;
+        /// <summary>
+        /// Leaving this boolean in-case we need to quickly disable the Profiles tab due to a bug.
+        /// </summary>
+        bool shipProfileEdits = true;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr FindWindow(string strClassName, string strWindowName);
@@ -381,6 +384,12 @@ namespace RSMods
         {
             if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on")
                 Profiles.SaveProfile();
+        }
+
+        private void Startup_UnlockProfileEdits()
+        {
+            if (ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on" && shipProfileEdits)
+                TabController.TabPages.Insert(ProfileEditsTabIndex, tab_Profiles);
         }
 
         private void Startup_LockProfileEdits()
@@ -2199,17 +2208,20 @@ namespace RSMods
             {
                 Profiles.SaveProfile();
 
-                //TabController.TabPages.Insert(ProfileEditsTabIndex, ProfileEditsTab);
-
                 if (Profiles.GetSaveDirectory() == String.Empty)
                 {
                     MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
                     checkBox_BackupProfile.Checked = false;
                 }
+                else
+                {
+                    Startup_UnlockProfileEdits();
+                }
             }
-
-            //else
-            //    TabController.TabPages.Remove(ProfileEditsTab);
+            else
+            {
+                Startup_LockProfileEdits();
+            }
         }
 
         private void UnlimitedBackups(object sender, EventArgs e)
