@@ -107,7 +107,6 @@ namespace RSMods
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show($"Unable to read {file}\n{e.Message}\n{e.StackTrace}");
                 }
                     
             });
