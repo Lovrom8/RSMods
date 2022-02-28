@@ -389,6 +389,8 @@ namespace RSMods
                             MaxSongLists = TotalSongLists;
                     }
 
+                    label_TotalSonglists.Text = MaxSongLists.ToString();
+
                     Profiles_Helper_GenerateValidSonglists(MaxSongLists);
                 }
                 // We cannot load the Rocksmith profiles.
@@ -3491,6 +3493,9 @@ namespace RSMods
             groupBox_ImportJsonTones.Visible = true;
 
             Profiles_UnpackProfile();
+
+            List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+            label_TotalSonglists.Text = SongLists.Count.ToString();
         }
 
         private string Profiles_GetProfilePathFromName(string profileName) => Path.Combine(Profiles.GetSaveDirectory(), Profiles.AvailableProfiles()[profileName] + "_PRFLDB");
@@ -3555,7 +3560,8 @@ namespace RSMods
                 {
                     Profiles_LoadSongs(sender, e);
                 }
-                
+
+                label_TotalSonglists.Text = SongLists.Count.ToString();
 
                 Profiles_ENCRYPT();
                 MessageBox.Show("Your new song list is present in game!");
@@ -3588,6 +3594,8 @@ namespace RSMods
                 {
                     Profiles_LoadSongs(sender, e);
                 }
+
+                label_TotalSonglists.Text = SongLists.Count.ToString();
 
                 Profiles_ENCRYPT();
                 MessageBox.Show("The newest songlist has been removed!");

@@ -282,6 +282,7 @@
             this.label_SelectedMidiOutDevice = new System.Windows.Forms.Label();
             this.listBox_ListMidiOutDevices = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_Misc = new System.Windows.Forms.TabPage();
+            this.button_SetSavePath = new System.Windows.Forms.Button();
             this.groupBox_RewindBy = new System.Windows.Forms.GroupBox();
             this.nUpDown_RewindBy = new System.Windows.Forms.NumericUpDown();
             this.groupBox_LoopingLeadUp = new System.Windows.Forms.GroupBox();
@@ -534,7 +535,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.button_SetSavePath = new System.Windows.Forms.Button();
+            this.label_TotalSonglists = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -3787,6 +3788,17 @@
             this.tabPage_ModSettings_Misc.TabIndex = 2;
             this.tabPage_ModSettings_Misc.Text = "Misc";
             // 
+            // button_SetSavePath
+            // 
+            this.button_SetSavePath.Location = new System.Drawing.Point(651, 263);
+            this.button_SetSavePath.Name = "button_SetSavePath";
+            this.button_SetSavePath.Size = new System.Drawing.Size(108, 23);
+            this.button_SetSavePath.TabIndex = 100013;
+            this.button_SetSavePath.Text = "Set Save Path";
+            this.button_SetSavePath.UseVisualStyleBackColor = true;
+            this.button_SetSavePath.Visible = false;
+            this.button_SetSavePath.Click += new System.EventHandler(this.Save_SetSavePath);
+            // 
             // groupBox_RewindBy
             // 
             this.groupBox_RewindBy.Controls.Add(this.nUpDown_RewindBy);
@@ -6414,11 +6426,12 @@
             // 
             // groupBox_Profile_MoreSongLists
             // 
+            this.groupBox_Profile_MoreSongLists.Controls.Add(this.label_TotalSonglists);
             this.groupBox_Profile_MoreSongLists.Controls.Add(this.button_RemoveNewestSongList);
             this.groupBox_Profile_MoreSongLists.Controls.Add(this.button_AddNewSongList);
             this.groupBox_Profile_MoreSongLists.Location = new System.Drawing.Point(8, 387);
             this.groupBox_Profile_MoreSongLists.Name = "groupBox_Profile_MoreSongLists";
-            this.groupBox_Profile_MoreSongLists.Size = new System.Drawing.Size(245, 53);
+            this.groupBox_Profile_MoreSongLists.Size = new System.Drawing.Size(245, 63);
             this.groupBox_Profile_MoreSongLists.TabIndex = 12;
             this.groupBox_Profile_MoreSongLists.TabStop = false;
             this.groupBox_Profile_MoreSongLists.Text = "More Song Lists";
@@ -6687,16 +6700,14 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // button_SetSavePath
+            // label_TotalSonglists
             // 
-            this.button_SetSavePath.Location = new System.Drawing.Point(651, 263);
-            this.button_SetSavePath.Name = "button_SetSavePath";
-            this.button_SetSavePath.Size = new System.Drawing.Size(108, 23);
-            this.button_SetSavePath.TabIndex = 100013;
-            this.button_SetSavePath.Text = "Set Save Path";
-            this.button_SetSavePath.UseVisualStyleBackColor = true;
-            this.button_SetSavePath.Visible = false;
-            this.button_SetSavePath.Click += new System.EventHandler(this.Save_SetSavePath);
+            this.label_TotalSonglists.AutoSize = true;
+            this.label_TotalSonglists.Location = new System.Drawing.Point(118, 47);
+            this.label_TotalSonglists.Name = "label_TotalSonglists";
+            this.label_TotalSonglists.Size = new System.Drawing.Size(13, 13);
+            this.label_TotalSonglists.TabIndex = 11;
+            this.label_TotalSonglists.Text = "6";
             // 
             // MainForm
             // 
@@ -6860,6 +6871,7 @@
             this.groupBox_ImportJsonTones.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Profiles_Songlists)).EndInit();
             this.groupBox_Profile_MoreSongLists.ResumeLayout(false);
+            this.groupBox_Profile_MoreSongLists.PerformLayout();
             this.groupBox_Profiles_Rewards.ResumeLayout(false);
             this.tab_GUISettings.ResumeLayout(false);
             this.tab_GUISettings.PerformLayout();
@@ -7381,6 +7393,7 @@
         private System.Windows.Forms.GroupBox groupBox_NSPTimer;
         private System.Windows.Forms.NumericUpDown nUpDown_NSPTimer;
         private System.Windows.Forms.Button button_SetSavePath;
+        private System.Windows.Forms.Label label_TotalSonglists;
     }
 }
 
