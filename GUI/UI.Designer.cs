@@ -509,6 +509,7 @@
             this.SongList19 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.SongList20 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.groupBox_Profile_MoreSongLists = new System.Windows.Forms.GroupBox();
+            this.label_TotalSonglists = new System.Windows.Forms.Label();
             this.button_RemoveNewestSongList = new System.Windows.Forms.Button();
             this.button_AddNewSongList = new System.Windows.Forms.Button();
             this.groupBox_Profiles_Rewards = new System.Windows.Forms.GroupBox();
@@ -535,7 +536,7 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_TotalSonglists = new System.Windows.Forms.Label();
+            this.button_TurnItUpToEleven = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -2444,6 +2445,7 @@
             // tabPage_SetAndForget_Misc
             // 
             this.tabPage_SetAndForget_Misc.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_SetAndForget_Misc.Controls.Add(this.button_TurnItUpToEleven);
             this.tabPage_SetAndForget_Misc.Controls.Add(this.button_AddFastLoad);
             this.tabPage_SetAndForget_Misc.Controls.Add(this.button_AddExitGame);
             this.tabPage_SetAndForget_Misc.Controls.Add(this.button_RemoveTemp);
@@ -6437,6 +6439,15 @@
             this.groupBox_Profile_MoreSongLists.Text = "More Song Lists";
             this.groupBox_Profile_MoreSongLists.Visible = false;
             // 
+            // label_TotalSonglists
+            // 
+            this.label_TotalSonglists.AutoSize = true;
+            this.label_TotalSonglists.Location = new System.Drawing.Point(118, 47);
+            this.label_TotalSonglists.Name = "label_TotalSonglists";
+            this.label_TotalSonglists.Size = new System.Drawing.Size(13, 13);
+            this.label_TotalSonglists.TabIndex = 11;
+            this.label_TotalSonglists.Text = "6";
+            // 
             // button_RemoveNewestSongList
             // 
             this.button_RemoveNewestSongList.Location = new System.Drawing.Point(137, 13);
@@ -6700,14 +6711,16 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_TotalSonglists
+            // button_TurnItUpToEleven
             // 
-            this.label_TotalSonglists.AutoSize = true;
-            this.label_TotalSonglists.Location = new System.Drawing.Point(118, 47);
-            this.label_TotalSonglists.Name = "label_TotalSonglists";
-            this.label_TotalSonglists.Size = new System.Drawing.Size(13, 13);
-            this.label_TotalSonglists.TabIndex = 11;
-            this.label_TotalSonglists.Text = "6";
+            this.button_TurnItUpToEleven.Location = new System.Drawing.Point(17, 120);
+            this.button_TurnItUpToEleven.Name = "button_TurnItUpToEleven";
+            this.button_TurnItUpToEleven.Size = new System.Drawing.Size(187, 24);
+            this.button_TurnItUpToEleven.TabIndex = 112;
+            this.button_TurnItUpToEleven.Text = "Turn it up to 11";
+            this.button_TurnItUpToEleven.UseVisualStyleBackColor = true;
+            this.button_TurnItUpToEleven.Click += new System.EventHandler(this.SetForget_TurnItUpToEleven);
+            this.button_TurnItUpToEleven.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // MainForm
             // 
@@ -7394,6 +7407,7 @@
         private System.Windows.Forms.NumericUpDown nUpDown_NSPTimer;
         private System.Windows.Forms.Button button_SetSavePath;
         private System.Windows.Forms.Label label_TotalSonglists;
+        private System.Windows.Forms.Button button_TurnItUpToEleven;
     }
 }
 

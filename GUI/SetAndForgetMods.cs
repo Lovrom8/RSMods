@@ -86,7 +86,7 @@ namespace RSMods
 
             ZipUtilities.DeleteDirectory(Constants.CachePcPath, true);
 
-            SetAndForgetMods.UnpackCachePsarc();
+            UnpackCachePsarc();
         }
 
         public static bool ImportExistingSettings()
@@ -127,6 +127,9 @@ namespace RSMods
 
             if (!File.Exists(Path.Combine(Constants.DirectConnectStartupJson_CustomPath)))
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_startup.database.json" });
+
+            if (!File.Exists(Path.Combine(Constants.WwiseInitBnk_CustomPath)))
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "init.bnk" });
         }
         #endregion
         #region Custom Tunings
@@ -491,6 +494,17 @@ namespace RSMods
             }
 
             ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+
+            RepackCachePsarc();
+        }
+        #endregion
+        #region Custom Wwise
+        public static void AddIncreasedVolumeWwiseBank()
+        {
+            if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
+                UnpackCachePsarc();
+
+            ZipUtilities.InjectFile(Constants.WwiseInitBnk_CustomPath, Constants.Cache3_7zPath, Constants.WwiseInitBnk_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
             RepackCachePsarc();
         }

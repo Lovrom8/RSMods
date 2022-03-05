@@ -115,6 +115,7 @@ namespace RSMods
             TooltipDictionary.Add(button_AddDCInput, "Adds the Direct Connect mode - microphone mode with tone simulations.");
             TooltipDictionary.Add(button_AddCustomTunings, "Adds some preset definitions for the most common Custom Tunings.");
             TooltipDictionary.Add(button_AddFastLoad, "Requires: SSD drive or faster.\nSkips some of the intro sequences.\nThis may cause the game to not launch properly.\nCombined with Auto Load Last Profile and huzzah!");
+            TooltipDictionary.Add(button_TurnItUpToEleven, "Makes Rocksmith +6dB louder overall, with an additional +6dB increase to tone volume.");
 
             // Misc
             TooltipDictionary.Add(button_RemoveTemp, "Removes the temporary files used by RSMods.");

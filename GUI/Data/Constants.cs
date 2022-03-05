@@ -27,8 +27,11 @@ namespace RSMods.Data
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
         public static string WorkFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Temp"); } }
         public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache_psarc_RS2014_Pc"); } }
+        public static string Cache3_7zPath { get { return Path.Combine(CachePcPath, "cache3.7z"); } }
         public static string Cache4_7zPath { get { return Path.Combine(CachePcPath, "cache4.7z"); } }
         public static string Cache7_7zPath { get { return Path.Combine(CachePcPath, "cache7.7z"); } }
+        public static string WwiseInitBnk_InternalPath { get { return Path.Combine("audio", "windows", "init.bnk"); } }
+        public static string WwiseInitBnk_CustomPath { get { return Path.Combine(CustomModsFolder, "init.bnk"); } }
         public static string LocalizationCSV_InternalPath { get { return Path.Combine("localization", "maingame.csv"); } }
         public static string TuningsJSON_InternalPath { get { return Path.Combine("manifests", "tuning.database.json"); } }
         public static string CustomModsFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "CustomMods"); } }

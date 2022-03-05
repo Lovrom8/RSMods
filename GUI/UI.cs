@@ -1453,6 +1453,7 @@ namespace RSMods
         private void SetForget_LoadSetAndForgetMods()
         {
             SetAndForgetMods.LoadDefaultFiles();
+            SetAndForgetMods.UnpackCachePsarc(); // We need to unpack the cache AGAIN in-case the user resets their psarc, and we don't know.
             SetForget_FillUI();
             SetForget_SetTunerColors();
         }
@@ -1537,6 +1538,8 @@ namespace RSMods
             }
 
         }
+        private void SetForget_TurnItUpToEleven(object sender, EventArgs e) => SetAndForgetMods.AddIncreasedVolumeWwiseBank();
+
         private void SetForget_UnpackCacheAgain(object sender, EventArgs e) => SetAndForgetMods.CleanUnpackedCache();
 
         private void SetForget_AddCustomTunings(object sender, EventArgs e) => SetAndForgetMods.AddCustomTunings();
