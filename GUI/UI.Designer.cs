@@ -173,6 +173,7 @@
             this.radio_DefaultBassTone = new System.Windows.Forms.RadioButton();
             this.button_AssignNewDefaultTone = new System.Windows.Forms.Button();
             this.tabPage_SetAndForget_Misc = new System.Windows.Forms.TabPage();
+            this.button_TurnItUpToEleven = new System.Windows.Forms.Button();
             this.button_AddFastLoad = new System.Windows.Forms.Button();
             this.button_AddExitGame = new System.Windows.Forms.Button();
             this.button_RemoveTemp = new System.Windows.Forms.Button();
@@ -246,10 +247,6 @@
             this.label_FontTestlowercase = new System.Windows.Forms.Label();
             this.label_FontTestCAPITALS = new System.Windows.Forms.Label();
             this.listBox_AvailableFonts = new System.Windows.Forms.ListBox();
-            this.groupBox_ControlSongVolumeWhen = new System.Windows.Forms.GroupBox();
-            this.radio_ControlSongVolumeManual = new System.Windows.Forms.RadioButton();
-            this.radio_ControlSongVolumeInSong = new System.Windows.Forms.RadioButton();
-            this.radio_ControlSongVolumeAlways = new System.Windows.Forms.RadioButton();
             this.groupBox_SongTimer = new System.Windows.Forms.GroupBox();
             this.radio_SongTimerManual = new System.Windows.Forms.RadioButton();
             this.radio_SongTimerAlways = new System.Windows.Forms.RadioButton();
@@ -536,7 +533,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.button_TurnItUpToEleven = new System.Windows.Forms.Button();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -573,7 +569,6 @@
             this.groupBox_NoteColors.SuspendLayout();
             this.tabPage_ModSettings_DisableUI.SuspendLayout();
             this.groupBox_OnScreenFont.SuspendLayout();
-            this.groupBox_ControlSongVolumeWhen.SuspendLayout();
             this.groupBox_SongTimer.SuspendLayout();
             this.tabPage_ModSettings_Automation.SuspendLayout();
             this.groupBox_NSPTimer.SuspendLayout();
@@ -2459,6 +2454,17 @@
             this.tabPage_SetAndForget_Misc.TabIndex = 2;
             this.tabPage_SetAndForget_Misc.Text = "Misc";
             // 
+            // button_TurnItUpToEleven
+            // 
+            this.button_TurnItUpToEleven.Location = new System.Drawing.Point(17, 120);
+            this.button_TurnItUpToEleven.Name = "button_TurnItUpToEleven";
+            this.button_TurnItUpToEleven.Size = new System.Drawing.Size(187, 24);
+            this.button_TurnItUpToEleven.TabIndex = 112;
+            this.button_TurnItUpToEleven.Text = "Turn it up to 11";
+            this.button_TurnItUpToEleven.UseVisualStyleBackColor = true;
+            this.button_TurnItUpToEleven.Click += new System.EventHandler(this.SetForget_TurnItUpToEleven);
+            this.button_TurnItUpToEleven.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
             // button_AddFastLoad
             // 
             this.button_AddFastLoad.Location = new System.Drawing.Point(17, 21);
@@ -2930,7 +2936,7 @@
             this.label_DisplayMixerKey.AutoSize = true;
             this.label_DisplayMixerKey.Location = new System.Drawing.Point(463, 129);
             this.label_DisplayMixerKey.Name = "label_DisplayMixerKey";
-            this.label_DisplayMixerKey.Size = new System.Drawing.Size(132, 13);
+            this.label_DisplayMixerKey.Size = new System.Drawing.Size(75, 13);
             this.label_DisplayMixerKey.TabIndex = 61;
             this.label_DisplayMixerKey.Text = "Display Mixer: ";
             // 
@@ -3255,7 +3261,6 @@
             // 
             this.tabPage_ModSettings_DisableUI.BackColor = System.Drawing.Color.Azure;
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_OnScreenFont);
-            this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_ControlSongVolumeWhen);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_ToggleLyricsOffWhen);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_SongTimer);
             this.tabPage_ModSettings_DisableUI.Controls.Add(this.groupBox_LoftOffWhen);
@@ -3319,55 +3324,6 @@
             this.listBox_AvailableFonts.Size = new System.Drawing.Size(174, 82);
             this.listBox_AvailableFonts.TabIndex = 0;
             this.listBox_AvailableFonts.SelectedIndexChanged += new System.EventHandler(this.Fonts_Change);
-            // 
-            // groupBox_ControlSongVolumeWhen
-            // 
-            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeManual);
-            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeInSong);
-            this.groupBox_ControlSongVolumeWhen.Controls.Add(this.radio_ControlSongVolumeAlways);
-            this.groupBox_ControlSongVolumeWhen.Location = new System.Drawing.Point(8, 164);
-            this.groupBox_ControlSongVolumeWhen.Name = "groupBox_ControlSongVolumeWhen";
-            this.groupBox_ControlSongVolumeWhen.Size = new System.Drawing.Size(166, 92);
-            this.groupBox_ControlSongVolumeWhen.TabIndex = 100008;
-            this.groupBox_ControlSongVolumeWhen.TabStop = false;
-            this.groupBox_ControlSongVolumeWhen.Text = "Control Song Volume When";
-            this.groupBox_ControlSongVolumeWhen.Visible = false;
-            // 
-            // radio_ControlSongVolumeManual
-            // 
-            this.radio_ControlSongVolumeManual.AutoSize = true;
-            this.radio_ControlSongVolumeManual.Location = new System.Drawing.Point(11, 69);
-            this.radio_ControlSongVolumeManual.Name = "radio_ControlSongVolumeManual";
-            this.radio_ControlSongVolumeManual.Size = new System.Drawing.Size(59, 17);
-            this.radio_ControlSongVolumeManual.TabIndex = 2;
-            this.radio_ControlSongVolumeManual.TabStop = true;
-            this.radio_ControlSongVolumeManual.Text = "Hotkey";
-            this.radio_ControlSongVolumeManual.UseVisualStyleBackColor = true;
-            this.radio_ControlSongVolumeManual.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeManual);
-            // 
-            // radio_ControlSongVolumeInSong
-            // 
-            this.radio_ControlSongVolumeInSong.AutoSize = true;
-            this.radio_ControlSongVolumeInSong.Location = new System.Drawing.Point(11, 46);
-            this.radio_ControlSongVolumeInSong.Name = "radio_ControlSongVolumeInSong";
-            this.radio_ControlSongVolumeInSong.Size = new System.Drawing.Size(69, 17);
-            this.radio_ControlSongVolumeInSong.TabIndex = 1;
-            this.radio_ControlSongVolumeInSong.TabStop = true;
-            this.radio_ControlSongVolumeInSong.Text = "In a song";
-            this.radio_ControlSongVolumeInSong.UseVisualStyleBackColor = true;
-            this.radio_ControlSongVolumeInSong.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeInSong);
-            // 
-            // radio_ControlSongVolumeAlways
-            // 
-            this.radio_ControlSongVolumeAlways.AutoSize = true;
-            this.radio_ControlSongVolumeAlways.Location = new System.Drawing.Point(11, 23);
-            this.radio_ControlSongVolumeAlways.Name = "radio_ControlSongVolumeAlways";
-            this.radio_ControlSongVolumeAlways.Size = new System.Drawing.Size(58, 17);
-            this.radio_ControlSongVolumeAlways.TabIndex = 0;
-            this.radio_ControlSongVolumeAlways.TabStop = true;
-            this.radio_ControlSongVolumeAlways.Text = "Always";
-            this.radio_ControlSongVolumeAlways.UseVisualStyleBackColor = true;
-            this.radio_ControlSongVolumeAlways.CheckedChanged += new System.EventHandler(this.Save_ControlSongVolumeAlways);
             // 
             // groupBox_SongTimer
             // 
@@ -6711,17 +6667,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // button_TurnItUpToEleven
-            // 
-            this.button_TurnItUpToEleven.Location = new System.Drawing.Point(17, 120);
-            this.button_TurnItUpToEleven.Name = "button_TurnItUpToEleven";
-            this.button_TurnItUpToEleven.Size = new System.Drawing.Size(187, 24);
-            this.button_TurnItUpToEleven.TabIndex = 112;
-            this.button_TurnItUpToEleven.Text = "Turn it up to 11";
-            this.button_TurnItUpToEleven.UseVisualStyleBackColor = true;
-            this.button_TurnItUpToEleven.Click += new System.EventHandler(this.SetForget_TurnItUpToEleven);
-            this.button_TurnItUpToEleven.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6790,8 +6735,6 @@
             this.tabPage_ModSettings_DisableUI.ResumeLayout(false);
             this.groupBox_OnScreenFont.ResumeLayout(false);
             this.groupBox_OnScreenFont.PerformLayout();
-            this.groupBox_ControlSongVolumeWhen.ResumeLayout(false);
-            this.groupBox_ControlSongVolumeWhen.PerformLayout();
             this.groupBox_SongTimer.ResumeLayout(false);
             this.groupBox_SongTimer.PerformLayout();
             this.tabPage_ModSettings_Automation.ResumeLayout(false);
@@ -7224,10 +7167,6 @@
         private System.Windows.Forms.GroupBox groupBox_SongTimer;
         private System.Windows.Forms.RadioButton radio_SongTimerManual;
         private System.Windows.Forms.RadioButton radio_SongTimerAlways;
-        private System.Windows.Forms.GroupBox groupBox_ControlSongVolumeWhen;
-        private System.Windows.Forms.RadioButton radio_ControlSongVolumeManual;
-        private System.Windows.Forms.RadioButton radio_ControlSongVolumeInSong;
-        private System.Windows.Forms.RadioButton radio_ControlSongVolumeAlways;
         private System.Windows.Forms.TabPage tab_Profiles;
         private System.Windows.Forms.ProgressBar progressBar_Profiles_LoadPsarcs;
         private System.Windows.Forms.Button button_Profiles_LoadSongs;

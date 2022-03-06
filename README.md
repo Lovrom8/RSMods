@@ -165,7 +165,6 @@ Section        | Entry             | Possible values | Info   |
 &nbsp; | OnScreenFont | _font_name_ | Name of the font you want us to use when we need to show you text on screen. Default is Arial if we can't find the font you specify. |
 &nbsp; | ProfileToLoad | _profile_name_ | An extension of "ForceProfileLoad" where we will look for the profile you specify in the list of all profiles. This is helpful if you have multiple profiles, or multiple users who play on the same computer. |
 &nbsp; | ShowSongTimerWhen | automatic/manual | When do you want the "SongTimer" to be shown? |
-&nbsp; | ShowSelectedVolumeWhen | automatic/song/manual | When do you want the "SelectedVolume" to be shown?  |
 &nbsp; | SecondaryMonitor | on/off | Launch Rocksmith and move it to another monitor automatically. |
 **String Colors** | &nbsp; | hex defined color (eg. FF0000) | &nbsp; |
 &nbsp; | string0_N | &nbsp; | Colors for strings to be used in non-ER songs |
