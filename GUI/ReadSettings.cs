@@ -22,7 +22,7 @@ namespace RSMods
                              RewindKey,
 
                              // Audio Key Bindings
-                             MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, ChangeSelectedVolumeKey,
+                             MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, DisplayMixerKey,
 
                              // Mod On / Off
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled,
@@ -104,7 +104,7 @@ namespace RSMods
             MicrophoneVolumeKeyIdentifier       = "MicrophoneVolumeKey = ",
             VoiceOverVolumeKeyIdentifier        = "VoiceOverVolumeKey = ",
             SFXVolumeKeyIdentifier              = "SFXVolumeKey = ",
-            ChangeSelectedVolumeKeyIdentifier   = "ChangedSelectedVolumeKey = ",
+            DisplayMixerKeyIdentifier           = "DisplayMixerKey = ",
 
             // Toggle Effects
             ToggleLoftEnabledIdentifier                 = "ToggleLoft = ",
@@ -382,8 +382,8 @@ namespace RSMods
                     return FillSettingVariable(VoiceOverVolumeKeyIdentifier, SettingType.VKEY, currentLine, out VoiceOverVolumeKey);
                 if (IdentifierIsFound(currentLine, SFXVolumeKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(SFXVolumeKeyIdentifier, SettingType.VKEY, currentLine, out SFXVolumeKey);
-                if (IdentifierIsFound(currentLine, ChangeSelectedVolumeKeyIdentifier, identifierToGrab))
-                    return FillSettingVariable(ChangeSelectedVolumeKeyIdentifier, SettingType.VKEY, currentLine, out ChangeSelectedVolumeKey);
+                if (IdentifierIsFound(currentLine, DisplayMixerKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DisplayMixerKeyIdentifier, SettingType.VKEY, currentLine, out DisplayMixerKey);
 
                 #endregion
                 #region Toggle Switches

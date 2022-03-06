@@ -328,7 +328,7 @@ namespace RSMods
             label_MicrophoneVolumeKey.Text = "Microphone Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier));
             label_VoiceOverVolumeKey.Text = "Voice-Over Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier));
             label_SFXVolumeKey.Text = "SFX Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier));
-            label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
+            label_DisplayMixerKey.Text = "Display Mixer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DisplayMixerKeyIdentifier));
         }
 
         private void Startup_LoadInputDevices()
@@ -517,7 +517,6 @@ namespace RSMods
                 checkBox_ControlVolume.Checked = true;
                 groupBox_Keybindings_AUDIO.Visible = true;
                 groupBox_ControlVolumeIncrement.Visible = true;
-                groupBox_ControlSongVolumeWhen.Visible = true;
 
                 string valStr = ReadSettings.ProcessSettings(ReadSettings.VolumeControlIntervalIdentifier);
                 int intVal = 0;
@@ -682,13 +681,6 @@ namespace RSMods
                 nUpDown_NumberOfBackups.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50);
                 groupBox_Backups.Visible = true;
             }
-
-            if (ReadSettings.ProcessSettings(ReadSettings.ShowSelectedVolumeWhenIdentifier) == "automatic")
-                radio_ControlSongVolumeAlways.Checked = true;
-            else if (ReadSettings.ProcessSettings(ReadSettings.ShowSelectedVolumeWhenIdentifier) == "song")
-                radio_ControlSongVolumeInSong.Checked = true;
-            else
-                radio_ControlSongVolumeManual.Checked = true;
 
             if (ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeEnabledIdentifier) == "on")
             {
@@ -2176,7 +2168,6 @@ namespace RSMods
         {
             groupBox_Keybindings_AUDIO.Visible = checkBox_ControlVolume.Checked;
             groupBox_ControlVolumeIncrement.Visible = checkBox_ControlVolume.Checked;
-            groupBox_ControlSongVolumeWhen.Visible = checkBox_ControlVolume.Checked;
             SaveSettings_Save(ReadSettings.VolumeControlEnabledIdentifier, checkBox_ControlVolume.Checked.ToString().ToLower());
         }
 
@@ -2335,24 +2326,6 @@ namespace RSMods
         {
             if (radio_SongTimerManual.Checked)
                 SaveSettings_Save(ReadSettings.ShowSongTimerWhenIdentifier, "manual");
-        }
-
-        private void Save_ControlSongVolumeManual(object sender, EventArgs e)
-        {
-            if (radio_ControlSongVolumeManual.Checked)
-                SaveSettings_Save(ReadSettings.ShowSelectedVolumeWhenIdentifier, "manual");
-        }
-
-        private void Save_ControlSongVolumeInSong(object sender, EventArgs e)
-        {
-            if (radio_ControlSongVolumeInSong.Checked)
-                SaveSettings_Save(ReadSettings.ShowSelectedVolumeWhenIdentifier, "song");
-        }
-
-        private void Save_ControlSongVolumeAlways(object sender, EventArgs e)
-        {
-            if (radio_ControlSongVolumeAlways.Checked)
-                SaveSettings_Save(ReadSettings.ShowSelectedVolumeWhenIdentifier, "automatic");
         }
 
         private void Save_SecondaryMonitorStartPosition(object sender, EventArgs e)

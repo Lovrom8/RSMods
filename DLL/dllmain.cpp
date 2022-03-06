@@ -200,62 +200,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				_LOG("Triggered Setting Update" << std::endl);
 			}
 
-			// Change Master Volume mod
-			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
-			}
-
-			// Change Song Volume mod
-			else if (keyPressed == Settings::GetKeyBind("SongVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
-			}
-
-			// Change P1 Guitar & P1 Bass Volume mod
-			else if (keyPressed == Settings::GetKeyBind("Player1VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
-			}
-
-			// Change P2 Guitar & P2 Bass Volume mod
-			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
-			}
-
-			// Change Microphone Volume mod
-			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
-			}
-
-			// Change Voice-Over Volume mod
-			else if (keyPressed == Settings::GetKeyBind("VoiceOverVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
-			}
-			
-			// Change SFX Volume mod
-			else if (keyPressed == Settings::GetKeyBind("SFXVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
-				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
-					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
-				else
-					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
-			}
-
 			// Changed Displayed Volume mod
 			else if (keyPressed == Settings::GetKeyBind("ChangedSelectedVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
 				currentVolumeIndex++;
@@ -347,6 +291,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				_LOG("(REWIND) Seeked to " << seekTo << "ms." << std::endl);
 			}
 
+			// Hide the mixer if it is not actively being pressed
+			if (keyPressed == Settings::GetKeyBind("DisplayMixerKey")) {
+				displayMixer = false;
+			}
+
 			// Auto Tuning via MIDI mod. 
 			// Checks if we are in a tuning menu, and the user tried to skip tuning.
 			if (Settings::ReturnSettingValue("AutoTuneForSongWhen") == "manual" && MemHelpers::Contains(D3DHooks::currentMenu, tuningMenus) && keyPressed == VK_DELETE) {
@@ -394,6 +343,95 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				saveNewRRSpeedToFile = true;
 
 				_LOG("Triggered Mod: Song Speed set to " << realSongSpeed << "% which is equivalent to " << RiffRepeater::ConvertSpeed(realSongSpeed) << " Wwise RTPC." << std::endl);
+			}
+
+			// Display Mixer  mod
+			else if (keyPressed == Settings::GetKeyBind("DisplayMixerKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				displayMixer = true;
+			}
+
+			// Change Master Volume mod
+			else if (keyPressed == Settings::GetKeyBind("MasterVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Master_Volume");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 0;
+			}
+
+			// Change Song Volume mod
+			else if (keyPressed == Settings::GetKeyBind("SongVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Music");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 1;
+			}
+
+			// Change P1 Guitar & P1 Bass Volume mod
+			else if (keyPressed == Settings::GetKeyBind("Player1VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player1");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 2;
+			}
+
+			// Change P2 Guitar & P2 Bass Volume mod
+			else if (keyPressed == Settings::GetKeyBind("Player2VolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Player2");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 3;
+			}
+
+			// Change Microphone Volume mod
+			else if (keyPressed == Settings::GetKeyBind("MicrophoneVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_Mic");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 4;
+			}
+
+			// Change Voice-Over Volume mod
+			else if (keyPressed == Settings::GetKeyBind("VoiceOverVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_VO");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 5;
+			}
+
+			// Change SFX Volume mod
+			else if (keyPressed == Settings::GetKeyBind("SFXVolumeKey") && Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				if ((GetKeyState(VK_CONTROL) & 0x8000)) // Is Control Pressed
+					VolumeControl::DecreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
+				else
+					VolumeControl::IncreaseVolume(Settings::GetModSetting("VolumeControlInterval"), "Mixer_SFX");
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 6;
 			}
 		}
 	}
@@ -630,13 +668,13 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 			Wwise::SoundEngine::SetRTPCValue("Meter_Tone_Balance_Return", NewToneBalance, 0x1234, 0, AkCurveInterpolation_Linear);
 			Wwise::SoundEngine::SetRTPCValue("Meter_Tone_Balance_Return", NewToneBalance, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 
-			// Input Volume
-			Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration", NewInputVolume, 0x1234, 0, AkCurveInterpolation_Linear);
-			Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration", NewInputVolume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+// Input Volume
+Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration", NewInputVolume, 0x1234, 0, AkCurveInterpolation_Linear);
+Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration", NewInputVolume, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 
-			// Input Volume Return
-			Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration_Return", NewInputVolumeReturn, 0x1234, 0, AkCurveInterpolation_Linear);
-			Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration_Return", NewInputVolumeReturn, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+// Input Volume Return
+Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration_Return", NewInputVolumeReturn, 0x1234, 0, AkCurveInterpolation_Linear);
+Wwise::SoundEngine::SetRTPCValue("P1_InputVol_Calibration_Return", NewInputVolumeReturn, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
 		}
 
 		ImGui::End();
@@ -654,7 +692,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 				microphones.push_back(it->first);
 			}
 		}
-		
+
 		// Drop-down list of all microphones.
 		if (ImGui::BeginCombo("Microphones", previewMicrophone.c_str())) {
 			for (int n = 0; n < microphones.size(); n++)
@@ -730,21 +768,44 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	if (D3DHooks::GameLoaded) {
 
 		// Show Selected Volume mod.
-		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && (MemHelpers::IsInSong() || AutomatedSelectedVolume)) {
+		// Display the whole mixer if displayMixer is true
+		if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && displayMixer) {
+
+			float offset = 0;
+			for (int volumeIndex = 0; volumeIndex < mixerInternalNames.size(); ++volumeIndex) {
+
+				float volume = 0;
+				RTPCValue_type type = RTPCValue_GameObject;
+				Wwise::SoundEngine::Query::GetRTPCValue(mixerInternalNames[volumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
+
+				MemHelpers::DX9DrawText(
+						drawMixerTextName[volumeIndex] + std::to_string(static_cast<int>(volume)) + "%",
+						whiteText,
+						static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
+						static_cast<int>(WindowSize.height / 54.0f + offset), // 20 pixels from top (plus an offset to display multiple values)
+						static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
+						static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
+						pDevice);
+
+				// Adjust the offset to display the next value
+				offset += WindowSize.height / 54.0f;
+			}
+		}
+
+		// Display just the current volume based on context (This will display the last volume that was adjusted for a few seconds after adjusting it)
+		else if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && displayCurrentVolume) {
 			float volume = 0;
 			RTPCValue_type type = RTPCValue_GameObject;
 			Wwise::SoundEngine::Query::GetRTPCValue(mixerInternalNames[currentVolumeIndex].c_str(), AK_INVALID_GAME_OBJECT, &volume, &type);
 
-			if (currentVolumeIndex != 0) {
-				MemHelpers::DX9DrawText(
-						drawMixerTextName[currentVolumeIndex] + std::to_string(static_cast<int>(volume)) + "%",
-						whiteText,
-						static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
-						static_cast<int>(WindowSize.height / 54.0f), // 20 pixels from top 
-						static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
-						static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
-						pDevice);
-			}
+			MemHelpers::DX9DrawText(
+					drawMixerTextName[currentVolumeIndex] + std::to_string(static_cast<int>(volume)) + "%",
+					whiteText,
+					static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
+					static_cast<int>(WindowSize.height / 54.0f), // 20 pixels from top 
+					static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
+					static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
+					pDevice);
 		}
 
 		// Show Song Timer mod.
@@ -1282,9 +1343,12 @@ unsigned WINAPI MainThread() {
 			}
 
 			// Show Selected Volume
-			if (!AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "automatic") {
-				AutomatedSelectedVolume = true;
-				currentVolumeIndex = 1;
+			if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on") {
+				
+				// Stop displaying volume if 3 seconds have passed since last adjustment
+				const auto currentTime = std::chrono::steady_clock::now();
+				if (currentTime - displayVolumeStartTime > std::chrono::seconds(3))
+					displayCurrentVolume = false;
 			}
 			
 			// Toggle Loft off (Always Off)
@@ -1350,12 +1414,6 @@ unsigned WINAPI MainThread() {
 					AutomatedSongTimer = true;
 					showSongTimerOnScreen = true;
 				}
-				
-				// Show Selected Volume (In Song)
-				if (!AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") {
-					currentVolumeIndex = 1;
-					AutomatedSelectedVolume = true;
-				}
 
 				// Attempt to turn on Extended Range
 				if (!AttemptedERInThisSong) {
@@ -1410,12 +1468,6 @@ unsigned WINAPI MainThread() {
 				if (AutomatedSongTimer && Settings::ReturnSettingValue("ShowSongTimerEnabled") == "on" && Settings::ReturnSettingValue("ShowSongTimerWhen") == "automatic") {
 					AutomatedSongTimer = false;
 					showSongTimerOnScreen = false;
-				}	
-
-				// Turn off Show Selected Volume (In Song)
-				if (AutomatedSelectedVolume && Settings::ReturnSettingValue("VolumeControl") == "on" && Settings::ReturnSettingValue("ShowSelectedVolumeWhen") == "song") {
-					currentVolumeIndex = 0;
-					AutomatedSelectedVolume = false;
 				}
 
 				// Turn off MIDI Auto Tuning / Auto True-Tuning
