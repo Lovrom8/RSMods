@@ -8,15 +8,33 @@
   before_build:
     - ps: >-
         nuget restore
+
+        $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Installer\Properties\AssemblyInfo.cs"
+
+        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+
+        $content = [IO.File]::ReadAllText($assemblyFile)
+
+        $version = $null
+        
+        $match = $regex.Match($content)
+        
+        if($match.Success) {
+            $version = $match.groups[3].value
+        }
+        
+        $env:releaseVersion=$version
   build:
       parallel: true
       verbosity: quiet
-  on_finish:
-  - cmd: >-
-       7z a DLL.zip %APPVEYOR_BUILD_FOLDER%\Release\xinput1_3.dll
-
-       7z a RSMods.zip %APPVEYOR_BUILD_FOLDER%\RSMods\Release\*.* -r
-
-       appveyor PushArtifact DLL.zip
-
-       appveyor PushArtifact RSMods.zip
+  artifacts:
+  - path: 'Installer/bin/Release/RS2014-Mod-Installer.exe'
+    name: Installer
+  deploy:
+  - provider: GitHub
+    tag: RSModsInstaller-v$(releaseVersion)_OnCommit
+    release: RSModsInstaller-v$(releaseVersion)_OnCommit
+    auth_token:
+       secure: T1iaEkeQ71AuYfG6vdQbYxW5Xs0HHpa/+LfPJ87qaY8bDUC9hS+caJ1n8GahVshD
+    artifact: Installer
+    prerelease: true

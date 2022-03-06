@@ -1,12 +1,6 @@
 # The Rocksmith Mods that nobody asked for
 
 [![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
-
-## Branches:
-1) [Develop](https://github.com/Lovrom8/RSMods/tree/develop) - proxy DLL for xinput1_3.dll - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/DLL.zip?branch=develop)
-2) [GUI](https://github.com/Lovrom8/RSMods/tree/GUI) - used to customize settings for the internal mod and to add set-and-forget mods - [latest build](https://ci.appveyor.com/api/projects/Lovrom8/rsmods/artifacts/RSMods.zip?branch=GUI)
-3) [One-Click-Installer](https://github.com/Lovrom8/rsmods/tree/One-Click-Installer) - one big button to start modding :) - [latest build](https://github.com/Lovrom8/RSMods/releases/latest)
-
 ## Features:
 
 * **Extended Range Mode**
@@ -280,14 +274,3 @@ Section        | Entry             | Possible values | Info   |
 * A: Thank you for showing interest in the project. We spent over ten months working on this project trying to flesh it out so people would enjoy using it. The developers are mainly: LovroM8 (Lovro), and Ffio1 (Ffio) but we received a lot of help from ZagatoZee (ZZ), Kokolihapihvi (Koko), and L0fka. All we ask for is a quick thank you, and those can either be sent by starring this project on Github, telling your Rocksmith friends, or just coming into the Discord and saying "Thank You". I know it sounds like it's not much, but it really makes our day(s). 
 
 * If you have any questions, feel free to reach us in the [r/Rocksmith Discord](https://rocksmith.rocks/discord) in the #rsmods channel.
-
-# RS CDLC Enabler GUI
-A GUI tool that communicates with Rocksmith 2014's xinput1_3.dll
-
-How to compile:
-  There's a lot of repos that require a lot of steps to compile. For us you open the .sln Visual Studio project, and press F5. This will compile, and run the latest version.         That's it...
-
-
-Keys You Can Set To A Mod: ![Visual Representation](https://i.imgur.com/lpNv3yG.png)
-
-[Text Representation](https://pastebin.com/raw/7f1CvkUt)

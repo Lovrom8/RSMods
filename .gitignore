@@ -26,6 +26,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# Nuget packages
+[Pp]ackages/
+
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -271,4 +274,7 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
-/RSCDLCEnabler/Mods/Custom Tuning Fix Files/ui_menu_pillar_startup.database.json
+.editorconfig
+
+Installer/Resources/
+*.user
