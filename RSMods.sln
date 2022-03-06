@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DLL", "DLL\DLL.vcxproj", "{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{9E11FD67-DFFE-40F1-8E69-26D359F896EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399} = {E312CF39-2170-4C1A-AC11-3A9C1C2E7399}
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8} = {0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug with Wwise Logging|Win32 = Debug with Wwise Logging|Win32
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Debug with Wwise Logging|Win32.ActiveCfg = Debug with Wwise Logging|Win32
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Debug with Wwise Logging|Win32.Build.0 = Debug with Wwise Logging|Win32
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Debug|Win32.Build.0 = Debug|Win32
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Release|Win32.ActiveCfg = Release|Win32
+		{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}.Release|Win32.Build.0 = Release|Win32
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Debug with Wwise Logging|Win32.ActiveCfg = Debug|x64
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Debug with Wwise Logging|Win32.Build.0 = Debug|x64
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Debug|Win32.ActiveCfg = Debug|x64
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Debug|Win32.Build.0 = Debug|x64
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Release|Win32.ActiveCfg = Release|x64
+		{0EDA6FC0-DD23-45FF-94D4-B242D04F97A8}.Release|Win32.Build.0 = Release|x64
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Debug with Wwise Logging|Win32.ActiveCfg = Debug|Any CPU
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Debug with Wwise Logging|Win32.Build.0 = Debug|Any CPU
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Debug|Win32.Build.0 = Debug|Any CPU
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Release|Win32.ActiveCfg = Release|Any CPU
+		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Release|Win32.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD615902-E2CD-49EC-9B0E-75A379092CD6}
+	EndGlobalSection
+EndGlobal
