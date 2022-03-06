@@ -31,7 +31,7 @@ void Settings::Initialize()
 		{"MicrophoneVolumeKey", "9"},
 		{"VoiceOverVolumeKey", "0"},
 		{"SFXVolumeKey", "S"},
-		{"ChangedSelectedVolumeKey", "P"},
+		{"DisplayMixerKey", "P"},
 
 		{"ForceReEnumerationEnabled", "automatic"},
 
@@ -194,7 +194,7 @@ void Settings::ReadKeyBinds() {
 			{ "MicrophoneVolumeKey", reader.GetValue("Audio Keybindings", "MicrophoneVolumeKey", "9") },
 			{ "VoiceOverVolumeKey", reader.GetValue("Audio Keybindings", "VoiceOverVolumeKey", "0") },
 			{ "SFXVolumeKey", reader.GetValue("Audio Keybindings", "SFXVolumeKey", "S") },
-			{ "ChangedSelectedVolumeKey", reader.GetValue("Audio Keybindings", "ChangedSelectedVolumeKey", "P") }
+			{ "DisplayMixerKey", reader.GetValue("Audio Keybindings", "DisplayMixerKey", "P") }
 	};
 	// _LOG("Read " << modSettings["ToggleLoftKey"] << std::endl);
 }

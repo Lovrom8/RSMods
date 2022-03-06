@@ -355,7 +355,7 @@ namespace RSMods
             ReadSettings.MicrophoneVolumeKeyIdentifier,
             ReadSettings.VoiceOverVolumeKeyIdentifier,
             ReadSettings.SFXVolumeKeyIdentifier,
-            ReadSettings.ChangeSelectedVolumeKeyIdentifier
+            ReadSettings.DisplayMixerKeyIdentifier
         };
         #endregion
         #region VoiceOver
@@ -466,7 +466,7 @@ namespace RSMods
             "Microphone Volume",
             "Voice-Over Volume",
             "SFX Volume",
-            "Show Volume On Screen"
+            "Display Mixer"
         };
         #endregion
         #region Refresh Lists

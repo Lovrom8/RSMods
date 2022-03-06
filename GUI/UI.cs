@@ -328,7 +328,7 @@ namespace RSMods
             label_MicrophoneVolumeKey.Text = "Microphone Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.MicrophoneVolumeKeyIdentifier));
             label_VoiceOverVolumeKey.Text = "Voice-Over Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.VoiceOverVolumeKeyIdentifier));
             label_SFXVolumeKey.Text = "SFX Volume: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.SFXVolumeKeyIdentifier));
-            label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.ChangeSelectedVolumeKeyIdentifier));
+            label_DisplayMixerKey.Text = "Display Mixer: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DisplayMixerKeyIdentifier));
         }
 
         private void Startup_LoadInputDevices()

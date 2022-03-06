@@ -209,7 +209,7 @@
             this.tab_Songlists = new System.Windows.Forms.TabPage();
             this.tab_Keybindings = new System.Windows.Forms.TabPage();
             this.groupBox_Keybindings_AUDIO = new System.Windows.Forms.GroupBox();
-            this.label_ChangeSelectedVolumeKey = new System.Windows.Forms.Label();
+            this.label_DisplayMixerKey = new System.Windows.Forms.Label();
             this.label_SFXVolumeKey = new System.Windows.Forms.Label();
             this.label_VoiceOverVolumeKey = new System.Windows.Forms.Label();
             this.label_MicrophoneVolumeKey = new System.Windows.Forms.Label();
@@ -2904,7 +2904,7 @@
             // 
             // groupBox_Keybindings_AUDIO
             // 
-            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_ChangeSelectedVolumeKey);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_DisplayMixerKey);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_SFXVolumeKey);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_VoiceOverVolumeKey);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_MicrophoneVolumeKey);
@@ -2925,14 +2925,14 @@
             this.groupBox_Keybindings_AUDIO.Visible = false;
             this.groupBox_Keybindings_AUDIO.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_ChangeSelectedVolumeKey
+            // label_DisplayMixerKey
             // 
-            this.label_ChangeSelectedVolumeKey.AutoSize = true;
-            this.label_ChangeSelectedVolumeKey.Location = new System.Drawing.Point(463, 129);
-            this.label_ChangeSelectedVolumeKey.Name = "label_ChangeSelectedVolumeKey";
-            this.label_ChangeSelectedVolumeKey.Size = new System.Drawing.Size(132, 13);
-            this.label_ChangeSelectedVolumeKey.TabIndex = 61;
-            this.label_ChangeSelectedVolumeKey.Text = "Show Volume On Screen: ";
+            this.label_DisplayMixerKey.AutoSize = true;
+            this.label_DisplayMixerKey.Location = new System.Drawing.Point(463, 129);
+            this.label_DisplayMixerKey.Name = "label_DisplayMixerKey";
+            this.label_DisplayMixerKey.Size = new System.Drawing.Size(132, 13);
+            this.label_DisplayMixerKey.TabIndex = 61;
+            this.label_DisplayMixerKey.Text = "Display Mixer: ";
             // 
             // label_SFXVolumeKey
             // 
@@ -7087,7 +7087,7 @@
         private System.Windows.Forms.Label label_NewAssignmentAUDIO;
         private System.Windows.Forms.TextBox textBox_NewKeyAssignment_AUDIO;
         private System.Windows.Forms.ListBox listBox_Modlist_AUDIO;
-        private System.Windows.Forms.Label label_ChangeSelectedVolumeKey;
+        private System.Windows.Forms.Label label_DisplayMixerKey;
         private System.Windows.Forms.Label label_SFXVolumeKey;
         private System.Windows.Forms.Label label_VoiceOverVolumeKey;
         private System.Windows.Forms.Label label_MicrophoneVolumeKey;
