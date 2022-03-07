@@ -7,8 +7,9 @@ namespace ObjectUtil {
 
 		Object* root = (Object*)MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_rootObject, Offsets::ptr_rootObjectOffsets, true);
 
-		if (root == NULL)
-			_LOG("(ObjUtil) Root object is NULL. Some Twitch mods may not work" << std::endl);
+		// Disabled due to spam of the log.
+		/*if (root == NULL)
+			_LOG("(ObjUtil) Root object is NULL. Some Twitch mods may not work" << std::endl);*/
 
 		return root;
 	}
