@@ -9,9 +9,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RainbowNotesEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowNotesEffect::Test()" << LOG.endl();
+		std::cout << "RainbowNotesEffect::Test()" << std::endl;
 
 		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -27,9 +25,7 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RainbowNotesEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowNotesEffect::Start()" << LOG.endl();
+		std::cout << "RainbowNotesEffect::Start()" << std::endl;
 
 		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -63,9 +59,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success</returns>
 	EffectResult RainbowNotesEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowNotesEffect::Stop()" << LOG.endl();
+		std::cout << "RainbowNotesEffect::Stop()" << std::endl;
 
 		running = false;
 		ERMode::ToggleRainbowNotes();

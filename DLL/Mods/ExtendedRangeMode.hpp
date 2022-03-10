@@ -2,9 +2,8 @@
 #include "windows.h"
 #include <vector>
 #include <string>
+#include <iostream>
 #include <iomanip>
-
-#include "../Log.hpp"
 #include "../Structs.hpp"
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"

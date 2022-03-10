@@ -5,9 +5,7 @@ using namespace CrowdControl::Enums;
 namespace CrowdControl::Effects {
 	EffectResult ZoomEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "ZoomEffect::Test()" << LOG.endl();
+		std::cout << "ZoomEffect::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -18,9 +16,7 @@ namespace CrowdControl::Effects {
 
 	EffectResult ZoomEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "ZoomEffect::Start()" << LOG.endl();
+		std::cout << "ZoomEffect::Start()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -49,9 +45,7 @@ namespace CrowdControl::Effects {
 
 	EffectResult ZoomEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "ZoomEffect::Stop()" << LOG.endl();
+		std::cout << "ZoomEffect::Stop()" << std::endl;
 
 		auto rootObject = ObjectUtil::GetRootObject();
 		rootObject->scale = 1.0f;

@@ -9,9 +9,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult FYourFCEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "FYourFC::Test()" << LOG.endl();
+		std::cout << "FYourFC::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -25,9 +23,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
 	EffectResult FYourFCEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "FYourFC::Start()" << LOG.endl();
+		std::cout << "FYourFC::Start()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -62,9 +58,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// <returns>EffectResult::Success</returns>
 	EffectResult FYourFCEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "FYourFC::Stop()" << LOG.endl();
+		std::cout << "FYourFC::Stop()" << std::endl;
 
 		running = false;
 		Settings::UpdateTwitchSetting("FYourFC", "off");

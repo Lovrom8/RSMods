@@ -9,9 +9,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult RainbowStringsEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowStringsEffect::Test()" << LOG.endl();
+		std::cout << "RainbowStringsEffect::Test()" << std::endl;
 
 		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -27,9 +25,7 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
 	EffectResult RainbowStringsEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowStringsEffect::Start()" << LOG.endl();
+		std::cout << "RainbowStringsEffect::Start()" << std::endl;
 
 		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -64,9 +60,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success</returns>
 	EffectResult RainbowStringsEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "RainbowStringsEffect::Stop()" << LOG.endl();
+		std::cout << "RainbowStringsEffect::Stop()" << std::endl;
 
 		running = false;
 		ERMode::RainbowEnabled = false;

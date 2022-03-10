@@ -4,7 +4,6 @@
 #include "D3D.hpp"
 #include <intrin.h>
 #include "../Mods/ExtendedRangeMode.hpp"
-#include "../Log.hpp"
 
 
 #include "../Lib/ImGUI/imgui.h"

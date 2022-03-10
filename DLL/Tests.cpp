@@ -7,41 +7,39 @@ namespace Tests
 	/// </summary>
 	bool EnterTestSong()
 	{
-		_LOG_INIT;
-
 		// User enters main menu
 		Sleep(3500);
 
 		// Enter LAS menu
-		_LOG_HEAD << "Entering LAS" << LOG.endl();
+		std::cout << "Entering LAS" << std::endl;
 		PressKey(VK_RETURN);
 		
 		// Wait for LAS menu animation
 		Sleep(2500);
 
 		// Select the song
-		_LOG_HEAD << "Entering song" << LOG.endl();
+		std::cout << "Entering song" << std::endl;
 		PressKey(VK_RETURN);
 
 		// Wait for the animation
 		Sleep(3500);
 
 		// Enter the tuner
-		_LOG_HEAD << "Entering tuner" << LOG.endl();
+		std::cout << "Entering tuner" << std::endl;
 		PressKey(VK_RETURN);
 
 		// Wait for the animation
 		Sleep(3000);
 
 		// Enter tuner skip menu
-		_LOG_HEAD << "Opening skip tuner menu" << LOG.endl();
+		std::cout << "Opening skip tuner menu" << std::endl;
 		PressKey(VK_DELETE);
 
 		// Wait for the animation
 		Sleep(1000);
 		
 		// Skip the tuner
-		_LOG_HEAD << "Skipping tuner" << LOG.endl();
+		std::cout << "Skipping tuner" << std::endl;
 		PressKey(VK_RETURN);
 
 		// Sleep till we enter the song

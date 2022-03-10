@@ -177,6 +177,9 @@
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="D3D/D3DHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
@@ -209,6 +212,9 @@
     </ClCompile>
     <ClCompile Include="CC\Effects\HighwayScrollSpeedEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="CC\Effects\ZoomEffect.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_tables.cpp">
       <Filter>Main Headers\ImGUI</Filter>
@@ -245,12 +251,6 @@
     </ClCompile>
     <ClCompile Include="Tests.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CC\Effects\ZoomEffect.cpp">
-      <Filter>CrowdControl\Effects</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D/D3DHooks.cpp">
-      <Filter>D3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +349,9 @@
     </ClInclude>
     <ClInclude Include="D3D/D3D.hpp">
       <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
@@ -449,6 +452,9 @@
     <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
+    <ClInclude Include="CC\Effects\ZoomEffect.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Proxy.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
@@ -498,12 +504,6 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Log.hpp">
-      <Filter>Main Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CC\Effects\ZoomEffect.hpp">
-      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectUtil.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>

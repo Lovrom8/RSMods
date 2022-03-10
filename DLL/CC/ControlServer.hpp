@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CCStructs.hpp"
-#include "../Log.hpp"
 
 using namespace CrowdControl::Structs;
 

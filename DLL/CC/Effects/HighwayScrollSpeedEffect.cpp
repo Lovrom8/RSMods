@@ -11,9 +11,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult HighwayScrollSpeedEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Test()" << LOG.endl();
+		std::cout << "HighwayScrollSpeedEffect::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -27,9 +25,7 @@ namespace CrowdControl::Effects {
 	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
 	EffectResult HighwayScrollSpeedEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Start()" << LOG.endl();
+		std::cout << "HighwayScrollSpeedEffect::Start()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -63,9 +59,7 @@ namespace CrowdControl::Effects {
 	/// <returns>EffectResult::Success</returns>
 	EffectResult HighwayScrollSpeedEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "HighwayScrollSpeedEffect::Stop()" << LOG.endl();
+		std::cout << "HighwayScrollSpeedEffect::Stop()" << std::endl;
 
 		WriteScrollSpeedMultiplier(5.0);
 
@@ -79,9 +73,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="val"> - New Scroll Speed Modifier</param>
 	void HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(double val) {
-		_LOG_INIT;
-
-		_LOG_HEAD << "HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(" << val << ")" << LOG.endl();
+		std::cout << "HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(" << val << ")" << std::endl;
 
 		// The scroll speed has special memory PAGE flags sets, which prevent it from being written over, so first they need to be set to PAGE_READWRITE
 		DWORD oldProtect;

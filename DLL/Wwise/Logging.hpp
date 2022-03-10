@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Windows.h"
-
-#include "../Log.hpp"
+#include <iostream>
 #include "../Lib/Detours/detours.h"
 
 #include "Types.hpp"

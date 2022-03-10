@@ -3,9 +3,10 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <iostream>
 #include "windows.h"
 
-#include "../Log.hpp"
+
 #include "../MemHelpers.hpp"
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"

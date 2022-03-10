@@ -9,9 +9,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SmallNoteheadEffect::Test(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "SmallNoteheadEffect::Test()" << LOG.endl();
+		std::cout << "SmallNoteheadEffect::Test()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -26,9 +24,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
 	EffectResult SmallNoteheadEffect::Start(Request request)
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "SmallNoteheadEffect::Start()" << LOG.endl();
+		std::cout << "SmallNoteheadEffect::Start()" << std::endl;
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -63,9 +59,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// <returns>EffectResult::Success</returns>
 	EffectResult SmallNoteheadEffect::Stop()
 	{
-		_LOG_INIT;
-
-		_LOG_HEAD << "SmallNoteheadEffect::Stop()" << LOG.endl();
+		std::cout << "SmallNoteheadEffect::Stop()" << std::endl;
 
 		running = false;
 		SetNoteHeadScale(1);
@@ -78,9 +72,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// </summary>
 	/// <param name="scale"></param>
 	void SmallNoteheadEffect::SetNoteHeadScale(float scale) {
-		_LOG_INIT;
-
-		_LOG_HEAD << "SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << LOG.endl();
+		std::cout << "SmallNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl;
 
 		ObjectUtil::SetObjectScales({
 			{"MeshNoteSingleLH", scale},

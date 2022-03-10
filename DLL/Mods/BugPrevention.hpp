@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Windows.h"
+#include <iostream>
 
-#include "../Log.hpp"
 #include "../MemUtil.hpp"
 #include "../Offsets.hpp"
 

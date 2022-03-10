@@ -66,13 +66,11 @@ namespace CrowdControl {
 	/// </summary>
 	void SendResponse(Response response) {
 		//Serialize response
-		_LOG_INIT;
-
 		json j;
 		CrowdControl::Structs::to_json_response(j, response);
 		std::string jsonstr = j.dump();
 
-		_LOG_HEAD << "Responding: " << jsonstr.c_str() << LOG.endl();
+		std::cout << "Responding: " << jsonstr.c_str() << std::endl;
 
 		//Send response
 		send(sock, jsonstr.c_str(), jsonstr.length(), NULL);
@@ -89,9 +87,7 @@ namespace CrowdControl {
 	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
 	/// </summary>
 	void ClientLoop() {
-		_LOG_INIT;
-
-		_LOG_HEAD << "Starting crowd control client loop" << LOG.endl();
+		std::cout << "Starting crowd control client loop" << std::endl;
 
 		int currentMessageLength = 0;
 		int bytesRead = 0;
@@ -104,8 +100,7 @@ namespace CrowdControl {
 			do {
 				//Read one byte at a time until null byte is read
 				if (currentMessageLength >= sizeof(buffer)) {
-					LOG.level = LogLevel::Error;
-					_LOG_HEAD << "Current message is longer than buffer size" << LOG.endl();
+					std::cout << "Current message is longer than buffer size" << std::endl;
 					return;
 				}
 
@@ -131,15 +126,15 @@ namespace CrowdControl {
 			Request request;
 			CrowdControl::Structs::from_json_request(j, request);
 
-			_LOG_HEAD << "Received command:" << LOG.endl();
-			_LOG_HEAD << j.dump(2) << LOG.endl();
+			std::cout << "Received command:" << std::endl;
+			std::cout << j.dump(2) << std::endl;
 
 			//Run command
-			_LOG_HEAD << "Running command" << LOG.endl();
+			std::cout << "Running command" << std::endl;
 			Response response = RunCommand(request);
 
 			//Respond
-			_LOG_HEAD << "Responding to command" << LOG.endl();
+			std::cout << "Responding to command" << std::endl;
 
 			SendResponse(response);
 		}
@@ -151,12 +146,10 @@ namespace CrowdControl {
 	/// </summary>
 	/// <returns>NULL. Loops while the game is open</returns>
 	unsigned WINAPI CrowdControlThread() {
-		_LOG_INIT;
-
 		while (!D3DHooks::GameLoaded) 
 			Sleep(5000);
 
-		_LOG_HEAD << "Crowd control server starting" << LOG.endl();
+		std::cout << "Crowd control server starting" << std::endl;
 
 		//Create server address struct
 		struct sockaddr_in server_address = {};
@@ -166,39 +159,36 @@ namespace CrowdControl {
 
 		//Resolve and convert ip address
 		if (inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr) <= 0) {
-			LOG.level = LogLevel::Error;
-			_LOG_HEAD << "Invalid address" << LOG.endl();
+			std::cout << "Invalid address" << std::endl;
 			return -1;
 		}
 
 		while (!D3DHooks::GameClosing) {
-			_LOG_HEAD << "Trying to connect to crowd control" << LOG.endl();
+			std::cout << "Trying to connect to crowd control" << std::endl;
 
 			//Open socket
 			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-				LOG.level = LogLevel::Error;
-				_LOG_HEAD << "Unable to open socket for crowd control" << LOG.endl();
+				std::cout << "Unable to open socket for crowd control" << std::endl;
 				return -1;
 			}
 
 			//Connect
 			if (connect(sock, (struct sockaddr*)&server_address, sizeof(server_address)) < 0) {
-				LOG.level = LogLevel::Error;
-				_LOG_HEAD << "Unable to connect to crowd control" << LOG.endl();
+				std::cout << "Unable to connect to crowd control" << std::endl;
 				return -1;
 			}
 			else
 				serverStarted = true;
 
-			_LOG_HEAD << "Connected to crowd control" << LOG.endl();
+			std::cout << "Connected to crowd control" << std::endl;
 
 			//Do client loop
 			ClientLoop();
 
-			_LOG_HEAD << "Disconnected from crowd control" << LOG.endl();
+			std::cout << "Disconnected from crowd control" << std::endl;
 		}
 
-		_LOG_HEAD << "Crowd control stopping" << LOG.endl();
+		std::cout << "Crowd control stopping" << std::endl;
 
 		return 0;
 	}
