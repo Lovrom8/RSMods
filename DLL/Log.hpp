@@ -7,25 +7,17 @@
 /// If changing this file, be sure to do a clean build, else some changes might not go into effect.
 
 #ifndef _LOG_INIT
-#define _LOG_INIT Log LOG; Log LOG_DEV; LOG_DEV.isConsole = true // Use log in place of cout or cerr, to help consolidate logging.
-#endif
+#define _LOG_INIT Log LOG // Use log in place of cout or cerr, to help consolidate logging.
+#endif;
 
-#ifndef _LOG_NOHEAD
-#define _LOG_NOHEAD(X) LOG << X; LOG_DEV << X // Used to append to an existing log message. Will not add timestamp nor level of log.
-#endif
-
-#ifndef _LOG
-#define _LOG(X) LOG << LOG.GetHeader() << X; LOG_DEV << LOG_DEV.GetHeader() << X // Log a specific message to the console (on debug builds) and the log file.
-#endif
-
-#ifndef _LOG_SETLEVEL
-#define _LOG_SETLEVEL(X) LOG.level = X; LOG_DEV.level = X // Sets the logging level of both the file LOG and console LOG.
+#ifndef _LOG_HEAD
+#define _LOG_HEAD LOG << LOG.GetHeader() // Use to start the log message, as it will prepend a timestamp and level of the log message.
 #endif
 
 /// <summary>
 /// Classification of the logs level, whether the log is just a debug message or an error.
 /// </summary>
-enum class LogLevel : unsigned char
+enum class LogLevel
 {
 	Debug,
 	Info,
@@ -51,8 +43,6 @@ struct Log
 {
 	enum LogLevel level = LogSettings::defaultLogLevel;
 
-	bool isConsole = false;
-
 	/// <summary>
 	/// Log a message to both cout (debug console) and cerr (log file).
 	/// </summary>
@@ -60,15 +50,18 @@ struct Log
 	template <typename T>
 	std::ostream& operator<<(const T message)
 	{
-		if (isConsole)
-		{
-			std::cout << message;
-			return std::cout;
-		}
-		else {
-			std::cerr << message;
-			return std::cerr;
-		}
+		std::cout << message;
+		std::cerr << message;
+
+		return std::cout;
+	}
+
+	/// <summary>
+	/// Replaces std::endl.
+	/// </summary>
+	std::string endl()
+	{
+		return "\r\n";
 	}
 
 	/// <summary>
@@ -78,18 +71,12 @@ struct Log
 	{
 		std::string header;
 
-		// Debug console doesn't need header information, as it will just cause a bunch of wasted space.
-		if (isConsole)
-		{
-			return header;
-		}
-
 		// Get the timestamp from starting the game to now.
 		double timeSinceStart = (double)(clock() - LogSettings::startupTime) / CLOCKS_PER_SEC;
 		header += std::to_string(timeSinceStart);
 		
 		// Remove trailing zeros.
-		header.erase(header.size() - 4, std::string::npos);
+		header.erase(header.find_last_not_of('0') + 1, std::string::npos);
 
 		header += " ";
 
@@ -129,5 +116,5 @@ struct Log
 
 		header += " ";
 		return header;
-	};
+	}
 };

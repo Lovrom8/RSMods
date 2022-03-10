@@ -11,7 +11,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowNotesEffect::Test()" << std::endl);
+		_LOG_HEAD << "RainbowNotesEffect::Test()" << LOG.endl();
 
 		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -29,7 +29,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowNotesEffect::Start()" << std::endl);
+		_LOG_HEAD << "RainbowNotesEffect::Start()" << LOG.endl();
 
 		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
 			return EffectResult::Retry;
@@ -65,7 +65,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowNotesEffect::Stop()" << std::endl);
+		_LOG_HEAD << "RainbowNotesEffect::Stop()" << LOG.endl();
 
 		running = false;
 		ERMode::ToggleRainbowNotes();

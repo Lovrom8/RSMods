@@ -11,7 +11,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG("ShuffleTonesEffect::Test()" << std::endl);
+		_LOG_HEAD << "ShuffleTonesEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -28,7 +28,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG("ShuffleTonesEffect::Start()" << std::endl);
+		_LOG_HEAD << "ShuffleTonesEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -83,7 +83,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	{
 		_LOG_INIT;
 
-		_LOG("ShuffleTonesEffect::Stop()" << std::endl);
+		_LOG_HEAD << "ShuffleTonesEffect::Stop()" << LOG.endl();
 
 		running = false;
 

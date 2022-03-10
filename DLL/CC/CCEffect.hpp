@@ -40,7 +40,7 @@ namespace CrowdControl::Effects {
 			for (auto& el : req.parameters.items()) {
 				if (el.value().contains("duration")) {
 					el.value().at("duration").get_to(duration);
-					_LOG("Set duration to : " << duration << " seconds" << std::endl);
+					_LOG_HEAD << "Set duration to : " << duration << " seconds" << LOG.endl();
 					break;
 				}
 			}

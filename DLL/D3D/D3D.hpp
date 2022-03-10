@@ -224,7 +224,7 @@ inline DWORD QuickCheckSum(DWORD* BufferData, size_t Size) // Yes, we are aware 
 inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, DWORD& o_crc) {
 	_LOG_INIT;
 
-	_LOG_SETLEVEL(LogLevel::Error);
+	LOG.level = LogLevel::Error;
 
 	D3DLOCKED_RECT lockedRect;
 
@@ -238,12 +238,12 @@ inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice,
 			return true;
 		}
 		else {
-			_LOG("CRCForTexture: FAILED. lockedRect.pBits == NULL" << std::endl);
+			_LOG_HEAD << "CRCForTexture: FAILED. lockedRect.pBits == NULL" << LOG.endl();
 			return false;
 		}
 	}
 	else {
-		_LOG("CRCForTexture: FAILED. LockRect == D3DERR_INVALIDCALL" << std::endl);
+		_LOG_HEAD << "CRCForTexture: FAILED. LockRect == D3DERR_INVALIDCALL" << LOG.endl();
 
 		D3DCAPS9 pDeviceCaps;
 		IDirect3DSurface9* pRenderTarget, *newRenderTarget;
@@ -252,8 +252,8 @@ inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice,
 		pDevice->GetDeviceCaps(&pDeviceCaps);
 
 		for (int i = 0; i < pDeviceCaps.NumSimultaneousRTs - 1; i++) {
-			_LOG_SETLEVEL(LogLevel::Info);
-			_LOG("CRCForTexture: Trying RenderTarget(" << i << ")" << std::endl);
+			LOG.level = LogLevel::Info;
+			_LOG_HEAD << "CRCForTexture: Trying RenderTarget(" << i << ")" << LOG.endl();
 
 			HRESULT rRenderTarget = pDevice->GetRenderTarget(i, &pRenderTarget);
 			
@@ -284,25 +284,25 @@ inline bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice,
 							poolType = "UNKNOWN";
 				}
 
-				_LOG("CRCForTexture: RenderTarget(" << i << ")->Pool == " << poolType << std::endl);
+				_LOG_HEAD << "CRCForTexture: RenderTarget(" << i << ")->Pool == " << poolType << LOG.endl();
 			}
 			else if (rRenderTarget == D3DERR_NOTFOUND)
 			{
-				_LOG_SETLEVEL(LogLevel::Error);
-				_LOG("CRCForTexture: No Render Target At Index: " << i << std::endl);
+				LOG.level = LogLevel::Error;
+				_LOG_HEAD << "CRCForTexture: No Render Target At Index: " << i << LOG.endl();
 			}
 			else
 			{
-				_LOG_SETLEVEL(LogLevel::Error);
-				_LOG("CRCForTexure: pDevice->GetRenderTarget(" << i << ") has an invalid argument" << std::endl);
+				LOG.level = LogLevel::Error;
+				_LOG_HEAD << "CRCForTexure: pDevice->GetRenderTarget(" << i << ") has an invalid argument" << LOG.endl();
 			}
 			
 
 			if (pRenderTarget != nullptr)
 				pRenderTarget->Release(); // Gotta release it or it'll leak everywhere.
 		}
-		_LOG_SETLEVEL(LogLevel::Info);
-		_LOG("CRCForTexture: END" << std::endl);
+		LOG.level = LogLevel::Info;
+		_LOG_HEAD << "CRCForTexture: END" << LOG.endl();
 		return false;
 	}
 }

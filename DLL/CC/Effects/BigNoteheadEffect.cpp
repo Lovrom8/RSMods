@@ -12,7 +12,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	{
 		_LOG_INIT;
 
-		_LOG("BigNoteheadEffect::Test()" << std::endl);
+		_LOG_HEAD << "BigNoteheadEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -28,7 +28,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	{
 		_LOG_INIT;
 
-		_LOG("BigNoteheadEffect::Start()" << std::endl);
+		_LOG_HEAD << "BigNoteheadEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -64,7 +64,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	{
 		_LOG_INIT;
 
-		_LOG("BigNoteheadEffect::Stop()" << std::endl);
+		_LOG_HEAD << "BigNoteheadEffect::Stop()" << LOG.endl();
 
 		running = false;
 
@@ -79,7 +79,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually big siz
 	void BigNoteheadEffect::SetNoteHeadScale(float scale) {
 		_LOG_INIT;
 
-		_LOG("BigNoteheadEffect::SetNoteHeadScale(" << scale << ")" << std::endl);
+		_LOG_HEAD << "BigNoteheadEffect::SetNoteHeadScale(" << scale << ")" << LOG.endl();
 
 		ObjectUtil::SetObjectScales({
 			{"MeshNoteSingleLH", scale},

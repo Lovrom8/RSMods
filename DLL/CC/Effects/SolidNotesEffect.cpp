@@ -13,7 +13,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomEffect::Test()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomEffect::Test()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -42,7 +42,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomEffect::Start()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomEffect::Start()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -87,7 +87,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomEffect::Stop()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomEffect::Stop()" << LOG.endl();
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
@@ -108,7 +108,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesRandomEffect::Test()" << std::endl);
+		_LOG_HEAD << "SolidNotesRandomEffect::Test()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -125,13 +125,13 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesRandomEffect::Start()" << std::endl);
+		_LOG_HEAD << "SolidNotesRandomEffect::Start()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
 
 
-		_LOG("SolidNotesRandomEffect - Colors Saved" << std::endl);
+		_LOG_HEAD << "SolidNotesRandomEffect - Colors Saved" << LOG.endl();
 
 		running = true;
 
@@ -174,7 +174,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesRandomEffect::Stop()" << std::endl);
+		_LOG_HEAD << "SolidNotesRandomEffect::Stop()" << LOG.endl();
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
@@ -195,7 +195,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomRGBEffect::Test()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomRGBEffect::Test()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -212,7 +212,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomRGBEffect::Start()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomRGBEffect::Start()" << LOG.endl();
 
 		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -225,7 +225,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		request.parameters.at(1).get_to(g);
 		request.parameters.at(2).get_to(b);
 
-		_LOG("Color: " << (int)r << "," << (int)g << "," << (int)b << std::endl);
+		_LOG_HEAD << "Color: " << (int)r << "," << (int)g << "," << (int)b << LOG.endl();
 
 		// Convert RGB to hex
 		std::stringstream ss; 
@@ -265,7 +265,7 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	{
 		_LOG_INIT;
 
-		_LOG("SolidNotesCustomRGBEffect::Stop()" << std::endl);
+		_LOG_HEAD << "SolidNotesCustomRGBEffect::Stop()" << LOG.endl();
 
 		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");

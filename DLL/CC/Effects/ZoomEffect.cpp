@@ -7,7 +7,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Test()" << std::endl);
+		_LOG_HEAD << "ZoomEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || running)
 			return EffectResult::Retry;
@@ -20,7 +20,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Start()" << std::endl);
+		_LOG_HEAD << "ZoomEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -51,7 +51,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Stop()" << std::endl);
+		_LOG_HEAD << "ZoomEffect::Stop()" << LOG.endl();
 
 		auto rootObject = ObjectUtil::GetRootObject();
 		rootObject->scale = 1.0f;

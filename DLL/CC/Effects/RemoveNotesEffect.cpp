@@ -11,7 +11,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		_LOG_INIT;
 
-		_LOG("RemoveNotesEffect::Test()" << std::endl);
+		_LOG_HEAD << "RemoveNotesEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -27,7 +27,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		_LOG_INIT;
 
-		_LOG("RemoveNotesEffect::Start()" << std::endl);
+		_LOG_HEAD << "RemoveNotesEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -64,7 +64,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	{
 		_LOG_INIT;
 
-		_LOG("RemoveNotesEffect::Stop()" << std::endl);
+		_LOG_HEAD << "RemoveNotesEffect::Stop()" << LOG.endl();
 
 		ScaleNotes(1);
 
@@ -80,7 +80,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 	void RemoveNotesEffect::ScaleNotes(float scale) {
 		_LOG_INIT;
 		
-		_LOG("RemoveNotesEffect::ScaleNotes(" << scale << ")" << std::endl);
+		_LOG_HEAD << "RemoveNotesEffect::ScaleNotes(" << scale << ")" << LOG.endl();
 
 		std::map<std::string, float> scaleMap;
 

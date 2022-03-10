@@ -11,7 +11,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowStringsEffect::Test()" << std::endl);
+		_LOG_HEAD << "RainbowStringsEffect::Test()" << LOG.endl();
 
 		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -29,7 +29,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowStringsEffect::Start()" << std::endl);
+		_LOG_HEAD << "RainbowStringsEffect::Start()" << LOG.endl();
 
 		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
 			return EffectResult::Retry;
@@ -66,7 +66,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("RainbowStringsEffect::Stop()" << std::endl);
+		_LOG_HEAD << "RainbowStringsEffect::Stop()" << LOG.endl();
 
 		running = false;
 		ERMode::RainbowEnabled = false;

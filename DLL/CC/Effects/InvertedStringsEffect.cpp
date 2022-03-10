@@ -25,7 +25,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("InvertedStringsEffect::Test()" << std::endl);
+		_LOG_HEAD << "InvertedStringsEffect::Test()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -43,7 +43,7 @@ namespace CrowdControl::Effects {
 		ObjectUtil::Object* rootObject = ObjectUtil::GetRootObject();
 		std::vector<ObjectUtil::Object*> children = ObjectUtil::GetChildrenOfObject(rootObject);
 
-		_LOG(children.size() << "/" << rootObject->childCount << std::endl);
+		_LOG_HEAD << children.size() << "/" << rootObject->childCount << LOG.endl();
 
 		for (auto child : children)
 		{
@@ -53,7 +53,7 @@ namespace CrowdControl::Effects {
 			if (className.find("String") != std::string::npos || className.find("string") != std::string::npos){
 				stringObjs.push_back(child);
 				stringPositions.push_back(StrPos(child->x, child->y, child->z));
-				_LOG(className << std::endl);
+				_LOG_HEAD << className << LOG.endl();
 			}
 		}
 	}
@@ -92,7 +92,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("InvertedStringsEffect::Start()" << std::endl);
+		_LOG_HEAD << "InvertedStringsEffect::Start()" << LOG.endl();
 
 		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
 			return EffectResult::Retry;
@@ -129,7 +129,7 @@ namespace CrowdControl::Effects {
 	{
 		_LOG_INIT;
 
-		_LOG("InvertedStringsEffect::Stop()" << std::endl);
+		_LOG_HEAD << "InvertedStringsEffect::Stop()" << LOG.endl();
 
 		running = false;
 		RevertStringPositions();

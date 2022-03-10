@@ -72,7 +72,7 @@ namespace CrowdControl {
 		CrowdControl::Structs::to_json_response(j, response);
 		std::string jsonstr = j.dump();
 
-		_LOG("Responding: " << jsonstr.c_str() << std::endl);
+		_LOG_HEAD << "Responding: " << jsonstr.c_str() << LOG.endl();
 
 		//Send response
 		send(sock, jsonstr.c_str(), jsonstr.length(), NULL);
@@ -91,7 +91,7 @@ namespace CrowdControl {
 	void ClientLoop() {
 		_LOG_INIT;
 
-		_LOG("Starting crowd control client loop" << std::endl);
+		_LOG_HEAD << "Starting crowd control client loop" << LOG.endl();
 
 		int currentMessageLength = 0;
 		int bytesRead = 0;
@@ -104,8 +104,8 @@ namespace CrowdControl {
 			do {
 				//Read one byte at a time until null byte is read
 				if (currentMessageLength >= sizeof(buffer)) {
-					_LOG_SETLEVEL(LogLevel::Error);
-					_LOG("Current message is longer than buffer size" << std::endl);
+					LOG.level = LogLevel::Error;
+					_LOG_HEAD << "Current message is longer than buffer size" << LOG.endl();
 					return;
 				}
 
@@ -131,15 +131,15 @@ namespace CrowdControl {
 			Request request;
 			CrowdControl::Structs::from_json_request(j, request);
 
-			_LOG("Received command:" << std::endl);
-			_LOG(j.dump(2) << std::endl);
+			_LOG_HEAD << "Received command:" << LOG.endl();
+			_LOG_HEAD << j.dump(2) << LOG.endl();
 
 			//Run command
-			_LOG("Running command" << std::endl);
+			_LOG_HEAD << "Running command" << LOG.endl();
 			Response response = RunCommand(request);
 
 			//Respond
-			_LOG("Responding to command" << std::endl);
+			_LOG_HEAD << "Responding to command" << LOG.endl();
 
 			SendResponse(response);
 		}
@@ -156,7 +156,7 @@ namespace CrowdControl {
 		while (!D3DHooks::GameLoaded) 
 			Sleep(5000);
 
-		_LOG("Crowd control server starting" << std::endl);
+		_LOG_HEAD << "Crowd control server starting" << LOG.endl();
 
 		//Create server address struct
 		struct sockaddr_in server_address = {};
@@ -166,39 +166,39 @@ namespace CrowdControl {
 
 		//Resolve and convert ip address
 		if (inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr) <= 0) {
-			_LOG_SETLEVEL(LogLevel::Error);
-			_LOG("Invalid address" << std::endl);
+			LOG.level = LogLevel::Error;
+			_LOG_HEAD << "Invalid address" << LOG.endl();
 			return -1;
 		}
 
 		while (!D3DHooks::GameClosing) {
-			_LOG("Trying to connect to crowd control" << std::endl);
+			_LOG_HEAD << "Trying to connect to crowd control" << LOG.endl();
 
 			//Open socket
 			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-				_LOG_SETLEVEL(LogLevel::Error);
-				_LOG("Unable to open socket for crowd control" << std::endl);
+				LOG.level = LogLevel::Error;
+				_LOG_HEAD << "Unable to open socket for crowd control" << LOG.endl();
 				return -1;
 			}
 
 			//Connect
 			if (connect(sock, (struct sockaddr*)&server_address, sizeof(server_address)) < 0) {
-				_LOG_SETLEVEL(LogLevel::Error);
-				_LOG("Unable to connect to crowd control" << std::endl);
+				LOG.level = LogLevel::Error;
+				_LOG_HEAD << "Unable to connect to crowd control" << LOG.endl();
 				return -1;
 			}
 			else
 				serverStarted = true;
 
-			_LOG("Connected to crowd control" << std::endl);
+			_LOG_HEAD << "Connected to crowd control" << LOG.endl();
 
 			//Do client loop
 			ClientLoop();
 
-			_LOG("Disconnected from crowd control" << std::endl);
+			_LOG_HEAD << "Disconnected from crowd control" << LOG.endl();
 		}
 
-		_LOG("Crowd control stopping" << std::endl);
+		_LOG_HEAD << "Crowd control stopping" << LOG.endl();
 
 		return 0;
 	}
