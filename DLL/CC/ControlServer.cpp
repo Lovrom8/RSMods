@@ -156,7 +156,7 @@ namespace CrowdControl {
 		while (!D3DHooks::GameLoaded) 
 			Sleep(5000);
 
-		_LOG("Crowd control server starting" << std::endl);
+		_LOG("Crowd control server starting");
 
 		//Create server address struct
 		struct sockaddr_in server_address = {};

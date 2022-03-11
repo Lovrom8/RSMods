@@ -6,6 +6,7 @@
 
 /// If changing this file, be sure to do a clean build, else some changes might not go into effect.
 
+#ifdef _DEBUG
 #ifndef _LOG_INIT
 #define _LOG_INIT Log LOG; Log LOG_DEV; LOG_DEV.isConsole = true // Use log in place of cout or cerr, to help consolidate logging.
 #endif
@@ -20,6 +21,25 @@
 
 #ifndef _LOG_SETLEVEL
 #define _LOG_SETLEVEL(X) LOG.level = X; LOG_DEV.level = X // Sets the logging level of both the file LOG and console LOG.
+#endif
+#else
+
+#ifndef _LOG_INIT
+#define _LOG_INIT Log LOG // Use log in place of cout or cerr, to help consolidate logging.
+#endif
+
+#ifndef _LOG_NOHEAD
+#define _LOG_NOHEAD(X) LOG << X // Used to append to an existing log message. Will not add timestamp nor level of log.
+#endif
+
+#ifndef _LOG
+#define _LOG(X) LOG << LOG.GetHeader() << X // Log a specific message to the log file.
+#endif
+
+#ifndef _LOG_SETLEVEL
+#define _LOG_SETLEVEL(X) LOG.level = X // Sets the logging level of the file LOG.
+#endif
+
 #endif
 
 /// <summary>
