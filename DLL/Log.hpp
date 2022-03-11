@@ -29,11 +29,11 @@
 #endif
 
 #ifndef _LOG_NOHEAD
-#define _LOG_NOHEAD(X) LOG << X // Used to append to an existing log message. Will not add timestamp nor level of log.
+#define _LOG_NOHEAD(X) try { LOG << X; } catch (const std::exception& e) { std::cout << X; }// Used to append to an existing log message. Will not add timestamp nor level of log.
 #endif
 
 #ifndef _LOG
-#define _LOG(X) LOG << LOG.GetHeader() << X // Log a specific message to the log file.
+#define _LOG(X) try { LOG << LOG.GetHeader() << X; } catch ( const std::exception& e) { std::cout << X; }  // Log a specific message to the log file.
 #endif
 
 #ifndef _LOG_SETLEVEL
