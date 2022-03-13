@@ -44,6 +44,7 @@ namespace RSMods.ASIO
 
             // Return the devices, but remove any duplicate entries.
             // Like when there is a x86, and a x64 driver with the same name.
+            // RS_ASIO will combine these into one entry, so we only need to store one.
             return availableDevices.Distinct().ToList();
         }
 
@@ -56,7 +57,7 @@ namespace RSMods.ASIO
                 DriverInfo deviceInfo = new DriverInfo();
                 RegistryKey registry_device = Registry.LocalMachine.OpenSubKey($"{rootRegistryDir}\\{asioDevice}");
 
-                // Set device information from Software\ASIO
+                // Set device information from rootRegistryDir
                 deviceInfo.clsID = (string)registry_device.GetValue("CLSID");
                 deviceInfo.deviceDescription = (string)registry_device.GetValue("Description");
                 deviceInfo.deviceName = asioDevice;

@@ -45,7 +45,7 @@ namespace RSMods
                         {
                             SongData song = new SongData()
                             {
-                                arrangement = arrangement,
+                                Arrangement = arrangement,
                                 DLCKey = arrangement.Attributes.SongKey,
                                 Artist = arrangement.Attributes.ArtistName,
                                 Title = arrangement.Attributes.SongName,
@@ -64,8 +64,8 @@ namespace RSMods
                             if (psarc.ExtractToolkitInfo().PackageAuthor == "Ubisoft")
                             {
                                 song.ODLC = true;
-                                if (song.arrangement.Attributes.SKU == "RS1" && song.arrangement.Attributes.DLCRS1Key != null) 
-                                    song.RS1AppID = song.arrangement.Attributes.DLCRS1Key[0].WIN32;
+                                if (song.Arrangement.Attributes.SKU == "RS1" && song.Arrangement.Attributes.DLCRS1Key != null) 
+                                    song.RS1AppID = song.Arrangement.Attributes.DLCRS1Key[0].WIN32;
                             }
 
                             Songs.RemoveAll(songData => songData == null); // If this isn't run then we can end up with some blank songs getting passed in and crashing the app.
@@ -78,7 +78,7 @@ namespace RSMods
                                 if (index != -1)
                                 {
                                     SongData previousIteration = Songs[index];
-                                    previousIteration.arrangements.Add(arrangement);
+                                    previousIteration.Arrangements.Add(arrangement);
                                     previousIteration.ArrangementTypes.AddRange(song.ArrangementTypes);
                                     previousIteration.Tunings.AddRange(song.Tunings);
                                     Songs[index] = previousIteration;
@@ -87,8 +87,10 @@ namespace RSMods
                                 {
                                     song.ArrangementTypes = arrangementTypes;
                                     song.Tunings = tunings;
-                                    song.arrangements = new List<SongArrangement>();
-                                    song.arrangements.Add(song.arrangement);
+                                    song.Arrangements = new List<SongArrangement>
+                                    {
+                                        song.Arrangement
+                                    };
                                     Songs.Add(song);
                                 }
                             }
@@ -98,14 +100,16 @@ namespace RSMods
                             {
                                 song.ArrangementTypes = arrangementTypes;
                                 song.Tunings = tunings;
-                                song.arrangements = new List<SongArrangement>();
-                                song.arrangements.Add(song.arrangement);
+                                song.Arrangements = new List<SongArrangement>
+                                {
+                                    song.Arrangement
+                                };
                                 Songs.Add(song);
                             }
                         }
                     }
                 }
-                catch (Exception e)
+                catch
                 {
                 }
                     
@@ -147,7 +151,7 @@ namespace RSMods
                 }
                 else
                 {
-                    return x.CommonName.CompareTo(y.CommonName); //
+                    return x.CommonName.CompareTo(y.CommonName);
                 }
             }
         }
@@ -155,8 +159,8 @@ namespace RSMods
 
     public class SongData
     {
-        public SongArrangement arrangement { get; set; } // Raw arrangment, just in-case we need to mess with it.
-        public List<SongArrangement> arrangements { get; set; } // List of arrangements
+        public SongArrangement Arrangement { get; set; } // Raw arrangment, just in-case we need to mess with it.
+        public List<SongArrangement> Arrangements { get; set; } // List of arrangements
         public string DLCKey { get; set; }
         public string Artist { get; set; }
         public string Title { get; set; }
