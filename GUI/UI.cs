@@ -1788,7 +1788,7 @@ namespace RSMods
 
             foreach (SongData song in Songs)
             {
-                foreach (SongArrangement arrangement in song.arrangements)
+                foreach (SongArrangement arrangement in song.Arrangements)
                 {
                     string formatting = string.Empty;
 
@@ -1822,7 +1822,7 @@ namespace RSMods
 
             foreach (SongData song in Songs)
             {
-                foreach(SongArrangement arrangement in song.arrangements)
+                foreach(SongArrangement arrangement in song.Arrangements)
                 {
                     string formatting = string.Empty;
 
@@ -1850,7 +1850,7 @@ namespace RSMods
 
             foreach(SongData song in Songs)
             {
-                foreach(SongArrangement arrangement in song.arrangements)
+                foreach(SongArrangement arrangement in song.Arrangements)
                 {
 
                     string formatting = string.Empty;
