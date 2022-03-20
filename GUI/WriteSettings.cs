@@ -89,7 +89,9 @@ namespace RSMods
                     { ReadSettings.MicrophoneVolumeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.MicrophoneVolumeKeyIdentifier, "") }, // Microphone Volume
                     { ReadSettings.VoiceOverVolumeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.VoiceOverVolumeKeyIdentifier, "") }, // Rocksmith Dad Volume
                     { ReadSettings.SFXVolumeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.SFXVolumeKeyIdentifier, "") }, // SFX Volume
-                    { ReadSettings.DisplayMixerKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DisplayMixerKeyIdentifier, "") }, // Change Selected Volume
+                    { ReadSettings.DisplayMixerKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DisplayMixerKeyIdentifier, "") }, // Display Mixer
+                    { ReadSettings.MutePlayer1KeyIdentifier, CreateDefaultOnOldINI(ReadSettings.MutePlayer1KeyIdentifier, "") }, // Mute / Unmute Player 1
+                    { ReadSettings.MutePlayer2KeyIdentifier, CreateDefaultOnOldINI(ReadSettings.MutePlayer2KeyIdentifier, "") } // Mute / Unmute Player 2
                 }
             );
             saveSettingsOrDefaults.Add(

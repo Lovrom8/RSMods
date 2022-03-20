@@ -355,7 +355,9 @@ namespace RSMods
             ReadSettings.MicrophoneVolumeKeyIdentifier,
             ReadSettings.VoiceOverVolumeKeyIdentifier,
             ReadSettings.SFXVolumeKeyIdentifier,
-            ReadSettings.DisplayMixerKeyIdentifier
+            ReadSettings.DisplayMixerKeyIdentifier,
+            ReadSettings.MutePlayer1KeyIdentifier,
+            ReadSettings.MutePlayer2KeyIdentifier
         };
         #endregion
         #region VoiceOver
@@ -466,7 +468,9 @@ namespace RSMods
             "Microphone Volume",
             "Voice-Over Volume",
             "SFX Volume",
-            "Display Mixer"
+            "Display Mixer",
+            "Mute / Unmute Player 1",
+            "Mute / Unmute Player 2"
         };
         #endregion
         #region Refresh Lists

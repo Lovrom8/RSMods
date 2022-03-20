@@ -533,6 +533,8 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
+            this.label_MutePlayer1Key = new System.Windows.Forms.Label();
+            this.label_MutePlayer2Key = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -2910,6 +2912,8 @@
             // 
             // groupBox_Keybindings_AUDIO
             // 
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_MutePlayer2Key);
+            this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_MutePlayer1Key);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_DisplayMixerKey);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_SFXVolumeKey);
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.label_VoiceOverVolumeKey);
@@ -2924,7 +2928,7 @@
             this.groupBox_Keybindings_AUDIO.Controls.Add(this.listBox_Modlist_AUDIO);
             this.groupBox_Keybindings_AUDIO.Location = new System.Drawing.Point(15, 253);
             this.groupBox_Keybindings_AUDIO.Name = "groupBox_Keybindings_AUDIO";
-            this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 166);
+            this.groupBox_Keybindings_AUDIO.Size = new System.Drawing.Size(701, 182);
             this.groupBox_Keybindings_AUDIO.TabIndex = 53;
             this.groupBox_Keybindings_AUDIO.TabStop = false;
             this.groupBox_Keybindings_AUDIO.Text = "Audio Key Bindings";
@@ -3039,7 +3043,7 @@
             this.listBox_Modlist_AUDIO.FormattingEnabled = true;
             this.listBox_Modlist_AUDIO.Location = new System.Drawing.Point(6, 19);
             this.listBox_Modlist_AUDIO.Name = "listBox_Modlist_AUDIO";
-            this.listBox_Modlist_AUDIO.Size = new System.Drawing.Size(185, 134);
+            this.listBox_Modlist_AUDIO.Size = new System.Drawing.Size(185, 160);
             this.listBox_Modlist_AUDIO.TabIndex = 5;
             this.listBox_Modlist_AUDIO.SelectedIndexChanged += new System.EventHandler(this.Keypress_LoadVolumes);
             // 
@@ -6667,6 +6671,24 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // label_MutePlayer1Key
+            // 
+            this.label_MutePlayer1Key.AutoSize = true;
+            this.label_MutePlayer1Key.Location = new System.Drawing.Point(463, 146);
+            this.label_MutePlayer1Key.Name = "label_MutePlayer1Key";
+            this.label_MutePlayer1Key.Size = new System.Drawing.Size(123, 13);
+            this.label_MutePlayer1Key.TabIndex = 62;
+            this.label_MutePlayer1Key.Text = "Mute / Unmute Player1: ";
+            // 
+            // label_MutePlayer2Key
+            // 
+            this.label_MutePlayer2Key.AutoSize = true;
+            this.label_MutePlayer2Key.Location = new System.Drawing.Point(463, 163);
+            this.label_MutePlayer2Key.Name = "label_MutePlayer2Key";
+            this.label_MutePlayer2Key.Size = new System.Drawing.Size(123, 13);
+            this.label_MutePlayer2Key.TabIndex = 63;
+            this.label_MutePlayer2Key.Text = "Mute / Unmute Player2: ";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -7347,6 +7369,8 @@
         private System.Windows.Forms.Button button_SetSavePath;
         private System.Windows.Forms.Label label_TotalSonglists;
         private System.Windows.Forms.Button button_TurnItUpToEleven;
+        private System.Windows.Forms.Label label_MutePlayer2Key;
+        private System.Windows.Forms.Label label_MutePlayer1Key;
     }
 }
 

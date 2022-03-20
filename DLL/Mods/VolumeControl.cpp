@@ -89,6 +89,56 @@ void VolumeControl::DisableSongPreviewAudio() {
 	}
 }
 
+void VolumeControl::MutePlayer(bool player2)
+{
+	_LOG_INIT;
+
+	RTPCValue_type type = RTPCValue_GameObject;
+
+	const char* mixer = player2 ? "Mixer_Player2" : "Mixer_Player1";
+
+	// Save current volume.
+	if (player2)
+	{
+		Wwise::SoundEngine::Query::GetRTPCValue(mixer, AK_INVALID_GAME_OBJECT, &player2VolumeBeforeMute, &type);
+		player2Muted = true;
+	}
+	else {
+		Wwise::SoundEngine::Query::GetRTPCValue(mixer, AK_INVALID_GAME_OBJECT, &player1VolumeBeforeMute, &type);
+		player1Muted = true;
+	}
+
+	// Mute (set volume to 0).
+	Wwise::SoundEngine::SetRTPCValue(mixer, 0.f, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+	Wwise::SoundEngine::SetRTPCValue(mixer, 0.f, 0x1234, 0, AkCurveInterpolation_Linear);
+
+	_LOG("Muted " << mixer << std::endl);
+}
+
+void VolumeControl::UnmutePlayer(bool player2)
+{
+	_LOG_INIT;
+
+	RTPCValue_type type = RTPCValue_GameObject;
+
+	const char* mixer = player2 ? "Mixer_Player2" : "Mixer_Player1";
+	
+	// Unmute
+	if (player2)
+	{
+		Wwise::SoundEngine::SetRTPCValue(mixer, player2VolumeBeforeMute, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+		Wwise::SoundEngine::SetRTPCValue(mixer, player2VolumeBeforeMute, 0x1234, 0, AkCurveInterpolation_Linear);
+		player2Muted = false;
+	}
+	else {
+		Wwise::SoundEngine::SetRTPCValue(mixer, player1VolumeBeforeMute, AK_INVALID_GAME_OBJECT, 0, AkCurveInterpolation_Linear);
+		Wwise::SoundEngine::SetRTPCValue(mixer, player1VolumeBeforeMute, 0x1234, 0, AkCurveInterpolation_Linear);
+		player1Muted = false;
+	}
+
+	_LOG("Unmuted " << mixer << std::endl);
+}
+
 /// <summary>
 /// Enables the song previews when hovering over a song.
 /// </summary>

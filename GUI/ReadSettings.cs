@@ -22,7 +22,7 @@ namespace RSMods
                              RewindKey,
 
                              // Audio Key Bindings
-                             MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, DisplayMixerKey,
+                             MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, DisplayMixerKey, MutePlayer1Key, MutePlayer2Key,
 
                              // Mod On / Off
                              ToggleLoftEnabled, VolumeControlEnabled, ShowSongTimerEnabled, ForceReEnumerationEnabled, RainbowStringsEnabled, RainbowNotesEnabled,
@@ -105,6 +105,8 @@ namespace RSMods
             VoiceOverVolumeKeyIdentifier        = "VoiceOverVolumeKey = ",
             SFXVolumeKeyIdentifier              = "SFXVolumeKey = ",
             DisplayMixerKeyIdentifier           = "DisplayMixerKey = ",
+            MutePlayer1KeyIdentifier            = "MutePlayer1Key = ",
+            MutePlayer2KeyIdentifier            = "MutePlayer2Key = ",
 
             // Toggle Effects
             ToggleLoftEnabledIdentifier                 = "ToggleLoft = ",
@@ -384,6 +386,10 @@ namespace RSMods
                     return FillSettingVariable(SFXVolumeKeyIdentifier, SettingType.VKEY, currentLine, out SFXVolumeKey);
                 if (IdentifierIsFound(currentLine, DisplayMixerKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(DisplayMixerKeyIdentifier, SettingType.VKEY, currentLine, out DisplayMixerKey);
+                if (IdentifierIsFound(currentLine, MutePlayer1KeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(MutePlayer1KeyIdentifier, SettingType.VKEY, currentLine, out MutePlayer1Key);
+                if (IdentifierIsFound(currentLine, MutePlayer2KeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(MutePlayer2KeyIdentifier, SettingType.VKEY, currentLine, out MutePlayer2Key);
 
                 #endregion
                 #region Toggle Switches

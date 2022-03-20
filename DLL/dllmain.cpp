@@ -291,8 +291,32 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				_LOG("(REWIND) Seeked to " << seekTo << "ms." << std::endl);
 			}
 
+			else if (keyPressed == Settings::GetKeyBind("MutePlayer1Key"))
+			{
+				if (VolumeControl::player1Muted)
+				{
+					VolumeControl::UnmutePlayer();
+				}
+				else
+				{
+					VolumeControl::MutePlayer();
+				}
+			}
+
+			else if (keyPressed == Settings::GetKeyBind("MutePlayer2Key"))
+			{
+				if (VolumeControl::player2Muted)
+				{
+					VolumeControl::UnmutePlayer(true);
+				}
+				else
+				{
+					VolumeControl::MutePlayer(true);
+				}
+			}
+
 			// Hide the mixer if it is not actively being pressed
-			if (keyPressed == Settings::GetKeyBind("DisplayMixerKey")) {
+			else if (keyPressed == Settings::GetKeyBind("DisplayMixerKey")) {
 				displayMixer = false;
 			}
 
