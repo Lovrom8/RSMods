@@ -301,6 +301,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				{
 					VolumeControl::MutePlayer();
 				}
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 2;
 			}
 
 			else if (keyPressed == Settings::GetKeyBind("MutePlayer2Key"))
@@ -313,6 +317,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 				{
 					VolumeControl::MutePlayer(true);
 				}
+
+				displayCurrentVolume = true;
+				displayVolumeStartTime = std::chrono::steady_clock::now();
+				currentVolumeIndex = 3;
 			}
 
 			// Hide the mixer if it is not actively being pressed
