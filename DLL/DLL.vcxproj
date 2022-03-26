@@ -76,6 +76,7 @@
     <ClInclude Include="CC\Effects\KillGuitarVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\KillMusicVolumeEffect.hpp" />
     <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp" />
+    <ClInclude Include="Lib\Ini\SimpleIni.h" />
     <ClInclude Include="Lib\Json\json.hpp" />
     <ClInclude Include="Lib\Midi\RtMidi.h" />
     <ClInclude Include="Log.hpp" />
@@ -167,7 +168,6 @@
     <ClInclude Include="Offsets.hpp" />
     <ClInclude Include="MemHelpers.hpp" />
     <ClInclude Include="Settings.hpp" />
-    <ClInclude Include="SimpleIni.h" />
     <ClInclude Include="Structs.hpp" />
   </ItemGroup>
   <ItemGroup>

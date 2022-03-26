@@ -335,9 +335,6 @@
     <ClInclude Include="Lib\ImGUI\imconfig.h">
       <Filter>Main Headers\ImGUI</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleIni.h">
-      <Filter>Main Headers\Ini</Filter>
-    </ClInclude>
     <ClInclude Include="Lib\Detours\detours.h">
       <Filter>Main Headers\Detours</Filter>
     </ClInclude>
@@ -382,9 +379,6 @@
     </ClInclude>
     <ClInclude Include="CC\Effects\SolidNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectUtil.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\TransparentNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
@@ -505,6 +499,12 @@
     </ClInclude>
     <ClInclude Include="ObjectUtil.hpp">
       <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectUtil.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Ini\SimpleIni.h">
+      <Filter>Main Headers\Ini</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
