@@ -220,7 +220,7 @@ namespace RSMods
                 else
                     Constants.RSFolder = RSFolder;
             }
-                
+
         }
 
         private void Startup_LocateSaves(string SavePath)
@@ -338,7 +338,7 @@ namespace RSMods
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
 
-            foreach(MMDevice device in devices)
+            foreach (MMDevice device in devices)
             {
                 listBox_AvailableInputDevices.Items.Add(device.FriendlyName);
             }
@@ -589,7 +589,7 @@ namespace RSMods
             }
 
             if (ReadSettings.ProcessSettings(ReadSettings.ForceProfileEnabledIdentifier) == "on") // Force Load Profile On Game Boot Enabled / Disabled
-            { 
+            {
                 checkBox_AutoLoadProfile.Checked = true;
                 if (ReadSettings.ProcessSettings(ReadSettings.ProfileToLoadIdentifier) != "")
                     listBox_AutoLoadProfiles.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.ProfileToLoadIdentifier);
@@ -690,49 +690,49 @@ namespace RSMods
                 groupBox_OverrideInputVolume.Visible = true;
             }
 
-            checkBox_EnableLooping.Checked                  = ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on";
-            groupBox_LoopingLeadUp.Visible                  = checkBox_EnableLooping.Checked;
-            nUpDown_LoopingLeadUp.Value                     = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.LoopingLeadUpIdentifier), 0) / 1000), 5.000m);
-            listBox_ExtendedRangeTunings.SelectedIndex      = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
-            checkBox_GuitarSpeakWhileTuning.Checked         = ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on";
-            checkBox_ChangeTheme.Checked                    = ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on";
-            checkBox_ScreenShotScores.Checked               = ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) == "on";
-            checkBox_Fretless.Checked                       = ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on";
-            checkBox_RemoveInlays.Checked                   = ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on";
-            checkBox_RemoveLaneMarkers.Checked              = ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on";
-            checkBox_GreenScreen.Checked                    = ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on";
-            checkBox_RainbowStrings.Checked                 = ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on";
-            checkBox_RainbowNotes.Checked                   = ReadSettings.ProcessSettings(ReadSettings.RainbowNotesEnabledIdentifier) == "on";
-            checkBox_WhammyChordsMode.Checked               = ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on";
-            checkBox_ShowCurrentNote.Checked                = ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on";
-            checkBox_CustomHighway.Checked                  = ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on";
-            checkBox_SecondaryMonitor.Checked               = ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on";
-            checkBox_NoteColors_UseRocksmithColors.Checked  = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsModeIdentifier) == "1";
-            checkBox_FixBadBassTuning.Checked               = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
-            checkBox_RemoveSongPreviews.Checked             = ReadSettings.ProcessSettings(ReadSettings.RemoveSongPreviewsIdentifier) == "on";
-            checkBox_AllowAudioInBackground.Checked         = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
-            checkBox_BypassTwoRTCMessageBox.Checked         = ReadSettings.ProcessSettings(ReadSettings.BypassTwoRTCMessageBoxIdentifier) == "on";
-            checkBox_LinearRiffRepeater.Checked             = ReadSettings.ProcessSettings(ReadSettings.LinearRiffRepeaterIdentifier) == "on";
-            checkBox_UseAltSampleRate_Output.Checked        = ReadSettings.ProcessSettings(ReadSettings.UseAlternativeOutputSampleRateIdentifier) == "on";
-            groupBox_SampleRateOutput.Visible               = checkBox_UseAltSampleRate_Output.Checked;
-            listBox_AltSampleRatesOutput.SelectedItem       = ReadSettings.ProcessSettings(ReadSettings.AlternativeOutputSampleRateIdentifier) + " Hz";
-            nUpDown_ForceEnumerationXMS.Value               = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
-            listBox_AvailableInputDevices.SelectedItem      = ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeDeviceIdentifier);
-            nUpDown_OverrideInputVolume.Value               = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeIdentifier), 17);
-            checkBox_ER_SeparateNoteColors.Checked          = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
-            groupBox_NoteColors.Visible                     = checkBox_ER_SeparateNoteColors.Checked;
-            checkBox_BackupProfile.Checked                  = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
-            checkBox_ModsLog.Checked                        = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
-            checkBox_TurnOffAllMods.Checked                 = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
-            checkBox_ForceEnumeration.Checked               = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
-            checkBox_AllowRewind.Checked                    = ReadSettings.ProcessSettings(ReadSettings.AllowRewindIdentifier) == "on";
-            groupBox_RewindBy.Visible                       = checkBox_AllowRewind.Checked;
-            nUpDown_RewindBy.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
-            checkBox_FixOculusCrash.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixOculusCrashIdentifier) == "on";
-            checkBox_FixBrokenTones.Checked                 = ReadSettings.ProcessSettings(ReadSettings.FixBrokenTonesIdentifier) == "on";
-            checkBox_CustomNSPTimer.Checked                 = ReadSettings.ProcessSettings(ReadSettings.UseCustomNSPTimerIdentifier) == "on";
-            groupBox_NSPTimer.Visible                       = checkBox_CustomNSPTimer.Checked;
-            nUpDown_NSPTimer.Value                          = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier), 10000) / 1000), 60.000m);
+            checkBox_EnableLooping.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on";
+            groupBox_LoopingLeadUp.Visible = checkBox_EnableLooping.Checked;
+            nUpDown_LoopingLeadUp.Value = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.LoopingLeadUpIdentifier), 0) / 1000), 5.000m);
+            listBox_ExtendedRangeTunings.SelectedIndex = (GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeTuningIdentifier), 0) * -1) - 2; // Loads old ER tuning settings
+            checkBox_GuitarSpeakWhileTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTuningIdentifier) == "on";
+            checkBox_ChangeTheme.Checked = ReadSettings.ProcessSettings(ReadSettings.CustomGUIThemeIdentifier) == "on";
+            checkBox_ScreenShotScores.Checked = ReadSettings.ProcessSettings(ReadSettings.ScreenShotScoresIdentifier) == "on";
+            checkBox_Fretless.Checked = ReadSettings.ProcessSettings(ReadSettings.FretlessModeEnabledIdentifier) == "on";
+            checkBox_RemoveInlays.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveInlaysIdentifier) == "on";
+            checkBox_RemoveLaneMarkers.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveLaneMarkersIdentifier) == "on";
+            checkBox_GreenScreen.Checked = ReadSettings.ProcessSettings(ReadSettings.GreenScreenWallIdentifier) == "on";
+            checkBox_RainbowStrings.Checked = ReadSettings.ProcessSettings(ReadSettings.RainbowStringsEnabledIdentifier) == "on";
+            checkBox_RainbowNotes.Checked = ReadSettings.ProcessSettings(ReadSettings.RainbowNotesEnabledIdentifier) == "on";
+            checkBox_WhammyChordsMode.Checked = ReadSettings.ProcessSettings(ReadSettings.ChordsModeIdentifier) == "on";
+            checkBox_ShowCurrentNote.Checked = ReadSettings.ProcessSettings(ReadSettings.ShowCurrentNoteOnScreenIdentifier) == "on";
+            checkBox_CustomHighway.Checked = ReadSettings.ProcessSettings(ReadSettings.CustomHighwayColorsIdentifier) == "on";
+            checkBox_SecondaryMonitor.Checked = ReadSettings.ProcessSettings(ReadSettings.SecondaryMonitorIdentifier) == "on";
+            checkBox_NoteColors_UseRocksmithColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsModeIdentifier) == "1";
+            checkBox_FixBadBassTuning.Checked = ReadSettings.ProcessSettings(ReadSettings.ExtendedRangeFixBassTuningIdentifier) == "on";
+            checkBox_RemoveSongPreviews.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveSongPreviewsIdentifier) == "on";
+            checkBox_AllowAudioInBackground.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowAudioInBackgroundIdentifier) == "on";
+            checkBox_BypassTwoRTCMessageBox.Checked = ReadSettings.ProcessSettings(ReadSettings.BypassTwoRTCMessageBoxIdentifier) == "on";
+            checkBox_LinearRiffRepeater.Checked = ReadSettings.ProcessSettings(ReadSettings.LinearRiffRepeaterIdentifier) == "on";
+            checkBox_UseAltSampleRate_Output.Checked = ReadSettings.ProcessSettings(ReadSettings.UseAlternativeOutputSampleRateIdentifier) == "on";
+            groupBox_SampleRateOutput.Visible = checkBox_UseAltSampleRate_Output.Checked;
+            listBox_AltSampleRatesOutput.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.AlternativeOutputSampleRateIdentifier) + " Hz";
+            nUpDown_ForceEnumerationXMS.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.CheckForNewSongIntervalIdentifier), 5000) / 1000; // Loads old settings for enumeration every x ms
+            listBox_AvailableInputDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeDeviceIdentifier);
+            nUpDown_OverrideInputVolume.Value = GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.OverrideInputVolumeIdentifier), 17);
+            checkBox_ER_SeparateNoteColors.Checked = ReadSettings.ProcessSettings(ReadSettings.SeparateNoteColorsIdentifier) == "on";
+            groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
+            checkBox_BackupProfile.Checked = ReadSettings.ProcessSettings(ReadSettings.BackupProfileIdentifier) == "on";
+            checkBox_ModsLog.Checked = File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods_debug.txt"));
+            checkBox_TurnOffAllMods.Checked = !File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll")) && File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "xinput1_3.dll.off"));
+            checkBox_ForceEnumeration.Checked = ReadSettings.ProcessSettings(ReadSettings.ForceReEnumerationEnabledIdentifier) != "off";
+            checkBox_AllowRewind.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowRewindIdentifier) == "on";
+            groupBox_RewindBy.Visible = checkBox_AllowRewind.Checked;
+            nUpDown_RewindBy.Value = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.RewindByIdentifier), 0) / 1000), 90.000m);
+            checkBox_FixOculusCrash.Checked = ReadSettings.ProcessSettings(ReadSettings.FixOculusCrashIdentifier) == "on";
+            checkBox_FixBrokenTones.Checked = ReadSettings.ProcessSettings(ReadSettings.FixBrokenTonesIdentifier) == "on";
+            checkBox_CustomNSPTimer.Checked = ReadSettings.ProcessSettings(ReadSettings.UseCustomNSPTimerIdentifier) == "on";
+            groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
+            nUpDown_NSPTimer.Value = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier), 10000) / 1000), 60.000m);
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -791,7 +791,7 @@ namespace RSMods
         }
 
         private void PriorSettings_LoadRocksmithSettings()
-        {   
+        {
             // Audio Settings
 
             checkBox_Rocksmith_EnableMicrophone.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(Rocksmith.ReadSettings.ProcessSettings(Rocksmith.ReadSettings.EnableMicrophoneIdentifier), 1));
@@ -1513,7 +1513,7 @@ namespace RSMods
                         nUpDown_String5.BackColor = ColorTranslator.FromHtml("#" + ReadSettings.ProcessSettings(ReadSettings.String5Color_N_Identifier));
                     }
                     break;
-            } 
+            }
         }
 
 
@@ -1806,7 +1806,7 @@ namespace RSMods
                     }
                 }
             }
-            
+
             listBox_SetAndForget_SongsWithCustomTuning.Items.Clear();
             listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(customTunings.Keys.ToArray());
         }
@@ -1824,7 +1824,7 @@ namespace RSMods
 
             foreach (SongData song in Songs)
             {
-                foreach(SongArrangement arrangement in song.Arrangements)
+                foreach (SongArrangement arrangement in song.Arrangements)
                 {
                     string formatting = string.Empty;
 
@@ -1850,9 +1850,9 @@ namespace RSMods
             listBox_SetAndForget_SongsWithBadBassTuning.Items.Clear();
             List<string> songsBeingChanged = new List<string>();
 
-            foreach(SongData song in Songs)
+            foreach (SongData song in Songs)
             {
-                foreach(SongArrangement arrangement in song.Arrangements)
+                foreach (SongArrangement arrangement in song.Arrangements)
                 {
 
                     string formatting = string.Empty;
@@ -1883,7 +1883,7 @@ namespace RSMods
         {
             if (tuning is ArrangementTuning)
             {
-                ArrangementTuning arrTuning = ((ArrangementTuning) tuning);
+                ArrangementTuning arrTuning = ((ArrangementTuning)tuning);
                 if (forceBass)
                     return arrTuning.String0 == arrTuning.String1 && arrTuning.String1 == arrTuning.String2 && arrTuning.String2 == arrTuning.String3;
                 else
@@ -3072,10 +3072,35 @@ namespace RSMods
         private void ASIO_ASIO(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableAsioIdentifier, ASIO.ReadSettings.Sections.Config, Convert.ToInt32(checkBox_ASIO_ASIO.Checked).ToString());
 
         // Driver
-        private void ASIO_ListAvailableInput0(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input0.SelectedItem.ToString());
-        private void ASIO_ListAvailableInput1(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
-        private void ASIO_ListAvailableOutput(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output, listBox_AvailableASIODevices_Output.SelectedItem.ToString());
-        private void ASIO_ListAvailableInputMic(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.InputMic, listBox_AvailableASIODevices_InputMic.SelectedItem.ToString());
+        private void ASIO_ListAvailableInput0(object sender, EventArgs e)
+        {
+            if (listBox_AvailableASIODevices_Input0.SelectedItem != null)
+            {
+                SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0, listBox_AvailableASIODevices_Input0.SelectedItem.ToString());
+            }
+        }
+
+        private void ASIO_ListAvailableInput1(object sender, EventArgs e)
+        {
+            if (listBox_AvailableASIODevices_Input1.SelectedItem != null)
+            {
+                SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1, listBox_AvailableASIODevices_Input1.SelectedItem.ToString());
+            }
+        }
+        private void ASIO_ListAvailableOutput(object sender, EventArgs e)
+        {
+            if (listBox_AvailableASIODevices_Output.SelectedItem != null)
+            {
+                SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output, listBox_AvailableASIODevices_Output.SelectedItem.ToString());
+            }
+        }
+        private void ASIO_ListAvailableInputMic(object sender, EventArgs e)
+        {
+            if (listBox_AvailableASIODevices_InputMic.SelectedItem != null)
+            {
+                SaveSettings_ASIO_Middleware(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.InputMic, listBox_AvailableASIODevices_InputMic.SelectedItem.ToString());
+            }
+        }
 
         // Disable / Comment Out Driver
         private void ASIO_Output_Disable(object sender, EventArgs e)
