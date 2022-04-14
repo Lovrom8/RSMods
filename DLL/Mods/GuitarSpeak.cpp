@@ -2,7 +2,7 @@
 
 /*
 Modified / Translated from the Visual Basic code provided by UKLooney
-Open source here: https://cdn.discordapp.com/attachments/711634414240530462/735574443035721798/G2RS_v0.3_source.zip
+Open source here: https://github.com/uklooney/G2RS
 */
 
 /// <summary>
