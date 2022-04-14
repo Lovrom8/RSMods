@@ -20,6 +20,9 @@ namespace Offsets {
 	// True Tuning
 	extern uintptr_t ptr_trueTuning;
 	extern std::vector<unsigned int> ptr_trueTuningOffsets;
+	extern uintptr_t ptr_disableTrueTuning;
+	extern uintptr_t ptr_disableTrueTuning_jmpBck;
+	extern uintptr_t ptr_disableTrueTuning_forceTT;
 
 	// Tuning - Textual Form
 	extern uintptr_t ptr_tuningText;

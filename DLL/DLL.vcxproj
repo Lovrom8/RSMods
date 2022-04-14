@@ -36,6 +36,7 @@
     <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp" />
     <ClCompile Include="Mods\Midi.cpp" />
     <ClCompile Include="Mods\RiffRepeater.cpp" />
+    <ClCompile Include="Mods\TrueTuning.cpp" />
     <ClCompile Include="Mods\VoiceOverControl.cpp" />
     <ClCompile Include="Mods\VolumeControl.cpp" />
     <ClCompile Include="ObjectUtil.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />
     <ClInclude Include="Mods\RiffRepeater.hpp" />
+    <ClInclude Include="Mods\TrueTuning.hpp" />
     <ClInclude Include="Mods\VoiceOverControl.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
     <ClInclude Include="ObjectUtil.hpp" />

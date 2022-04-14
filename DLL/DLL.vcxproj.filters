@@ -252,6 +252,9 @@
     <ClCompile Include="D3D/D3DHooks.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\TrueTuning.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -505,6 +508,9 @@
     </ClInclude>
     <ClInclude Include="Lib\Ini\SimpleIni.h">
       <Filter>Main Headers\Ini</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\TrueTuning.hpp">
+      <Filter>Mods\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

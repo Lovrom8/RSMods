@@ -22,6 +22,9 @@ namespace Offsets {
 	// True Tuning
 	uintptr_t ptr_trueTuning = 0x00F5C4FC;
 	std::vector<unsigned int> ptr_trueTuningOffsets{ 0x10, 0x4, 0x418, 0xB4, 0xF18 };
+	uintptr_t ptr_disableTrueTuning = 0x0149c621;
+	uintptr_t ptr_disableTrueTuning_jmpBck = 0x0149c627;
+	uintptr_t ptr_disableTrueTuning_forceTT = 0x0149c5f0;
 
 	// Tuning - Textual Form
 	uintptr_t ptr_tuningText = 0x00F5C5AC;
