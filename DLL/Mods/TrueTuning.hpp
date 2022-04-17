@@ -4,6 +4,7 @@
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"
 #include "../Log.hpp"
+#include "../D3D/D3DHooks.hpp"
 
 namespace TrueTuning
 {
