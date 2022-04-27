@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using RSMods.Util;
 using System.Drawing;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 
 namespace RSMods
@@ -268,7 +269,19 @@ namespace RSMods
         #region Is RS Void
         public static void IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
         {
-            if(File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || !CheckExecutable(installLocation))
+            bool fakeSteamApi = true;
+            try
+            {
+                X509Certificate2 cert = new X509Certificate2(X509Certificate.CreateFromSignedFile(Path.Combine(installLocation, "steam_api.dll")));
+
+                if (cert.GetNameInfo(X509NameType.SimpleName, false) == "Valve" || cert.Verify())
+                {
+                    fakeSteamApi = false;
+                }
+            }
+            catch { } // Fall-through = bad cert.
+
+            if (File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || File.Exists(Path.Combine(installLocation, "steamclient.dll")) || fakeSteamApi || !CheckExecutable(installLocation))
             {
                 MessageBox.Show("RSMods doesn't support pirated / stolen copies of Rocksmith 2014!", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.Start("https://store.steampowered.com/app/221680/");
