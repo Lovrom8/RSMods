@@ -354,6 +354,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		D3D::GenerateTextures(pDevice, D3D::Noteway);
 		D3D::GenerateTextures(pDevice, D3D::Gutter);
 		D3D::GenerateTextures(pDevice, D3D::FretNums);
+		D3D::GenerateTextures(pDevice, D3D::Rainbow);
 
 		RecreateTextures = false;
 		RecreateTextureTimer = false;
