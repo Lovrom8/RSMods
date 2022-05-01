@@ -38,7 +38,6 @@ namespace BugPrevention {
 		_LOG("(BUG PREVENTION) Prevented PnP Crash" << std::endl);
 	}
 
-
 	/// <summary>
 	/// Ubisoft lets you put almost any character in your Uplay password.
 	/// However, Rocksmith does not allow some characters.
@@ -53,5 +52,39 @@ namespace BugPrevention {
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_Password_LimitCharacters_Clipboard, "\x90\x90", 2);
 
 		_LOG("(BUG PREVENTION) Allowed Complex Uplay Passwords" << std::endl);
+	}
+
+	void __declspec(naked) advancedDisplayCrashHook()
+	{
+		__asm {
+
+			cmp ECX, 0 // ECX == NULL?
+
+			je prevAdvancedDisplayCrash // If ECX == NULL, then we need to jump to prevAdvancedDisplayCrash
+
+
+			mov DL, BYTE PTR DS : [ECX + 0x4]	// The code we are overwriting to place this hook
+			push EDI						// The code we are overwriting to place this hook
+			MOV EDI, DWORD PTR DS : [ESI + 0xC] // The code we are overwriting to place this hook
+
+			jmp Offsets::ptr_AdvancedDisplayCrashJmpBck // Jump back into the original code.
+
+			prevAdvancedDisplayCrash :
+			ret							// ECX is NULL, so we need to leave this function or we will crash.
+		}
+	}
+
+	/// <summary>
+	/// When a user enters their Advanced Display settings, there is a tendency for Rocksmith 2014 to crash.
+	/// This mod tries to prevent that by exiting the function if ECX (the memory address it is reading from) is NULL.
+	/// </summary>
+	void PreventAdvancedDisplayCrash() {
+		_LOG_INIT;
+
+		MemUtil::PlaceHook((void*)Offsets::ptr_AdvancedDisplayCrash, advancedDisplayCrashHook, 7);
+
+		FlushInstructionCache(GetCurrentProcess(), (void*)Offsets::ptr_AdvancedDisplayCrash, 7);
+
+		_LOG("(BUG PREVENTION) Prevented Advanced Display Crash" << std::endl);
 	}
 }

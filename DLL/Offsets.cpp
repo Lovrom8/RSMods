@@ -148,6 +148,8 @@ namespace Offsets {
 	uintptr_t ptr_PnpJmp_2 = 0x01F0C48F;
 	uintptr_t ptr_Password_LimitCharacters_Clipboard = 0x015B0541;
 	uintptr_t ptr_Password_LimitCharacters = 0x015B063E;
+	uintptr_t ptr_AdvancedDisplayCrash = 0x1934D0C;
+	uintptr_t ptr_AdvancedDisplayCrashJmpBck = 0x1934D13;
 
 	// Audio In Background
 	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.

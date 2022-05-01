@@ -11,4 +11,5 @@ namespace BugPrevention {
 	void PreventStuckTone();
 	void PreventPnPCrash();
 	void AllowComplexPasswords();
+	void PreventAdvancedDisplayCrash();
 }

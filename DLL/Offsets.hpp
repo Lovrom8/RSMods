@@ -144,6 +144,8 @@ namespace Offsets {
 	extern uintptr_t ptr_PnpJmp_2;
 	extern uintptr_t ptr_Password_LimitCharacters_Clipboard;
 	extern uintptr_t ptr_Password_LimitCharacters;
+	extern uintptr_t ptr_AdvancedDisplayCrash;
+	extern uintptr_t ptr_AdvancedDisplayCrashJmpBck;
 
 	// Audio In Background
 	extern uintptr_t ptr_IsWindowInFocus;

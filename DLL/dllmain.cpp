@@ -1249,6 +1249,7 @@ unsigned WINAPI MainThread() {
 	AudioDevices::SetupMicrophones();
 	BugPrevention::PreventPnPCrash();
 	BugPrevention::AllowComplexPasswords();
+	BugPrevention::PreventAdvancedDisplayCrash();
 
 	if (Settings::ReturnSettingValue("FixBrokenTones") == "on")
 		BugPrevention::PreventStuckTone();
