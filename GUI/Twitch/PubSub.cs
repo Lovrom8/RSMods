@@ -171,11 +171,38 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");*/
         }
 
-        public void HandleBitsRecieved(OnBitsReceivedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<BitsReward>().FirstOrDefault(rew => rew.Enabled && rew.BitsAmount == e.BitsUsed));
+        public void HandleBitsRecieved(OnBitsReceivedArgs e)
+        {
+            foreach (var rew in TwitchSettings.Get.Rewards.OfType<BitsReward>())
+            {
+                if (rew.Enabled && rew.BitsAmount == e.BitsUsed)
+                {
+                    SendMessageToRocksmith(rew);
+                }
+            }
+        }
 
-        public void HandleChannelPointsRecieved(OnRewardRedeemedArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>().FirstOrDefault(rew => rew.Enabled && rew.PointsAmount == e.RewardCost));
+        public void HandleChannelPointsRecieved(OnRewardRedeemedArgs e)
+        {
+            foreach (var rew in TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>())
+            {
+                if (rew.Enabled && rew.PointsAmount == e.RewardCost)
+                {
+                    SendMessageToRocksmith(rew);
+                }
+            }
+        }
 
-        public void HandleSubRecieved(OnChannelSubscriptionArgs e) => SendMessageToRocksmith(TwitchSettings.Get.Rewards.OfType<SubReward>().FirstOrDefault(rew => rew.Enabled));
+        public void HandleSubRecieved(OnChannelSubscriptionArgs e)
+        {
+            foreach (var rew in TwitchSettings.Get.Rewards.OfType<SubReward>())
+            {
+                if (rew.Enabled)
+                {
+                    SendMessageToRocksmith(rew);
+                }
+            }
+        }
 
         private PubSub() { }
         public static readonly PubSub Get = new PubSub();
