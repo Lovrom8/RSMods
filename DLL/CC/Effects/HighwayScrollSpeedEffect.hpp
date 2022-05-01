@@ -1,6 +1,7 @@
 #pragma once
 #include "../CCEffect.hpp"
 #include "../CCEffectList.hpp"
+#include "../../MemUtil.hpp"
 
 namespace CrowdControl::Effects {
 	class HighwayScrollSpeedEffect : public CCEffect

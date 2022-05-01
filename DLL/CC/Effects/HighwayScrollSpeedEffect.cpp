@@ -83,10 +83,6 @@ namespace CrowdControl::Effects {
 
 		_LOG("HighwayScrollSpeedEffect::WriteScrollSpeedMultiplier(" << val << ")" << std::endl);
 
-		// The scroll speed has special memory PAGE flags sets, which prevent it from being written over, so first they need to be set to PAGE_READWRITE
-		DWORD oldProtect;
-		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, PAGE_READWRITE, &oldProtect);
-		Offsets::ref_scrollSpeedMultiplier = val;
-		VirtualProtect((LPVOID)Offsets::ptr_scrollSpeedMultiplier, 8, oldProtect, &oldProtect);
+		MemUtil::SetStaticValue(Offsets::ptr_scrollSpeedMultiplier, val, sizeof(double));
 	}
 }
