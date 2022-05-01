@@ -19,7 +19,7 @@ namespace CrowdControl::Effects {
 		EffectResult Stop();
 
 	private:
-		std::vector<std::string> incompatibleEffects = { "halfscrollspeed", "doublescrollspeed", "triplescrollspeed" };
+		std::vector<std::string> incompatibleEffects = { "halfsongspeed", "doublesongspeed", "triplesongspeed" };
 
 		void WriteScrollSpeedMultiplier(double val);
 	};
