@@ -222,14 +222,16 @@ namespace RSMods.Twitch
                 new TwitchReward("Change tone - slot 3", "Switch your tone to slot 3",  "changetoneslot3"),
                 new TwitchReward("Change tone - slot 4", "Switch your tone to slot 4",  "changetoneslot4"),
                 new TwitchReward("Remove Instrument", "Removes your instrument (strings, fretsbars & headstock)",  "removeinstrument"),
+                new TwitchReward("Invert Strings", "Inverts your guitar / bass strings but keeps the notes in the same location", "invertedstrings"),
                 new TwitchReward("Kill guitar volume", "Kills volume of your guitar",  "killguitarvolume"),
                 new TwitchReward("Kill music volume", "Kills volume of the music",  "killmusicvolume"),
                 new TwitchReward("Big note heads", "Makes all note heads big",  "bignoteheads"),
                 new TwitchReward("Small note heads", "Makes all note heads tiny",  "smallnoteheads"),
-                new TwitchReward("Half scroll speed", "Makes scroll speed half (ramp-up effect - not instant!)",  "halfsongspeed"),
-                new TwitchReward("Double scroll speed", "Makes scroll speed double (ramp-up effect)",  "doublesongspeed"),
+                new TwitchReward("Half scroll speed", "Makes scroll speed half (ramp-up effect - not instant!)",  "halfscrollspeed"),
+                new TwitchReward("Double scroll speed", "Makes scroll speed double (ramp-up effect)",  "doublescrollspeed"),
+                new TwitchReward("Triple scroll speed", "Makes scroll speed triple (ramp-up effect)", "triplescrollspeed"),
                 new TwitchReward("Zoom camera in", "Zooms in the main camera",  "zoomin"),
-                new TwitchReward("TurboSpeed", "EXPERIMENTAL: turn up song speed, a lot. NOTE: do not ALT-TAB mid song or this won't work!",  "turbospeed") 
+                new TwitchReward("TurboSpeed", "EXPERIMENTAL: turn up song speed, a lot.",  "turbospeed") 
             });
 
             /*XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.DefaultRewards.GetType());
