@@ -12,4 +12,5 @@ namespace BugPrevention {
 	void PreventPnPCrash();
 	void AllowComplexPasswords();
 	void PreventAdvancedDisplayCrash();
+	void PreventPortAudioInDeviceCrash();
 }

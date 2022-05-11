@@ -87,4 +87,20 @@ namespace BugPrevention {
 
 		_LOG("(BUG PREVENTION) Prevented Advanced Display Crash" << std::endl);
 	}
+
+
+	/// <summary>
+	/// In extremely rare cases, the user may have an audio in device have a driver issue.
+	/// This causes Rocksmith to crash when it reads all of their audio input devices.
+	/// This just patches out those checks, so it won't crash when EBX is a nullptr.
+	/// </summary>
+	void PreventPortAudioInDeviceCrash() {
+		_LOG_INIT;
+
+		// Overwrite some code that doesn't do null checks with NOP.
+		// Be very careful in this code. If you overwrite the next instruction, then you end up breaking audio input.
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PortAudioInCrash, "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
+
+		_LOG("(BUG PREVENTION) Prevented Port Audio In Device Crash" << std::endl);
+	}
 }
