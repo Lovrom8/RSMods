@@ -1248,7 +1248,9 @@ unsigned WINAPI MainThread() {
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
 	BugPrevention::PreventPnPCrash();
-	BugPrevention::AllowComplexPasswords();
+
+	// TODO: may have been replaced, can't find the equivalent block in new version
+	//BugPrevention::AllowComplexPasswords();
 	BugPrevention::PreventAdvancedDisplayCrash();
 	BugPrevention::PreventPortAudioInDeviceCrash();
 
@@ -1272,9 +1274,10 @@ unsigned WINAPI MainThread() {
 	
 	// Look to see if RS_ASIO applied the 2 RTC input bypass.
 	// If they did, then we disregard the results from our version of the mod.
+	// TODO: determine if it needs changes on RS_ASIO is updated
+	
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 	_LOG("RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl);
-
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
 		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
 

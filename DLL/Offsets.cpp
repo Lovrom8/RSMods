@@ -22,9 +22,9 @@ namespace Offsets {
 	// True Tuning
 	uintptr_t ptr_trueTuning = 0x00F5C4FC;
 	std::vector<unsigned int> ptr_trueTuningOffsets{ 0x10, 0x4, 0x418, 0xB4, 0xF18 };
-	uintptr_t ptr_disableTrueTuning = 0x0149c621;
-	uintptr_t ptr_disableTrueTuning_jmpBck = 0x0149c627;
-	uintptr_t ptr_disableTrueTuning_forceTT = 0x0149c5f0;
+	uintptr_t ptr_disableTrueTuning = 0x004DCCF2; // 0x0149c621
+	uintptr_t ptr_disableTrueTuning_jmpBck = 0x004DCCF8; // 0x0149c627
+	uintptr_t ptr_disableTrueTuning_forceTT = 0x004DCCC1; // 0x0149c5f0
 
 	// Tuning - Textual Form
 	uintptr_t ptr_tuningText = 0x00F5C5AC;
@@ -59,22 +59,22 @@ namespace Offsets {
 
 	// Custom Song Lists
 	uintptr_t hookBackAddr_FakeTitles, hookBackAddr_CustomNames, hookBackAddr_missingLocalization;
-	uintptr_t hookAddr_ModifyLocalized = 0x01529F2B;
-	uintptr_t hookAddr_ModifyCleanString = 0x01529F61;
-	uintptr_t hookAddr_MissingLocalization = 0x01834790;
-	uintptr_t func_getStringFromCSV = 0x017B7A3E;
-	uintptr_t func_getLocalizedString = 0x01395763;
-	uintptr_t func_appendString = 0x01395488; //for reference purposes
-	uintptr_t patch_addedSpaces = 0x01529f98;
-	uintptr_t patch_addedNumbers = 0x0152a006;
-	uintptr_t patch_sprintfArg = 0x0183479C;
+	uintptr_t hookAddr_ModifyLocalized = 0x005511EB; // 0x01529F2B
+	uintptr_t hookAddr_ModifyCleanString = 0x0055120F; // 0x01529F61
+	uintptr_t hookAddr_MissingLocalization = 0x00832647; // 0x01834790
+	uintptr_t func_getStringFromCSV = 0x017B7A3E; // Not updated
+	uintptr_t func_getLocalizedString = 0x01395763; // Not updated
+	uintptr_t func_appendString = 0x01395488; //for reference purposes Not updated
+	uintptr_t patch_addedSpaces = 0x00551234; // 0x01529f98
+	uintptr_t patch_addedNumbers = 0x00551275; // 0x0152a006
+	uintptr_t patch_sprintfArg = 0x00832653; // 0x0183479C
 	const char* patch_ListSpaces = "\x58\x58\x90\x90\x90";
 	const char* patch_ListNumbers = "\x5A\x5A\x90\x90\x90";
 	const char* patch_SprintfArgs = "\x04";
 
 	// Disable Controllers
-	uintptr_t hookAddr_DirectInput8 = 0x01c5961a;
-	uintptr_t hookBackAddr_DirectInput8 = 0x01c5961f;
+	uintptr_t hookAddr_DirectInput8 = 0x00C019EC; // 0x01c5961a
+	uintptr_t hookBackAddr_DirectInput8 = 0x00C019F1; // 0x01c5961f
 
 	// D3D Stuff
 	const char* d3dDevice_Pattern = "\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86";
@@ -107,21 +107,28 @@ namespace Offsets {
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
 	uintptr_t ptr_previewName = 0x00F5C494;
 	std::vector<unsigned int> ptr_previewNameOffsets{ 0xBC, 0x0 };
-	uintptr_t ptr_timeStretchCalculations = 0x01398597;
-	uintptr_t ptr_timeStretchCalculationsJmpBck = 0x013985d2;
+	uintptr_t ptr_timeStretchCalculations = 0x00409406; // 0x01398597
+	uintptr_t ptr_timeStretchCalculationsJmpBck = 0x00409441; // 0x013985d2
 
 	// Selected Profile Name
 	uintptr_t ptr_selectedProfileName = 0x00F5C5AC;
 	std::vector<unsigned int> ptr_selectedProfileNameOffsets{ 0x18, 0x3C, 0x28, 0x1FC };
 
 	// Two RTC Bypass
+	/*
+	Previous ver:
+	
 	uintptr_t ptr_twoRTCBypass = 0x017b9518;
 	const char* ptr_twoRTCBypass_patch = "\xE9\x2F\x01\x00\x00\x90";
-	const char* ptr_twoRTCBypass_original = "\x8B\xB5\x8C\xFF\xFF\xFF";
+	const char* ptr_twoRTCBypass_original = "\x8B\xB5\x8C\xFF\xFF\xFF";*/
+
+	uintptr_t ptr_twoRTCBypass = 0x007C0C5C;
+	const char* ptr_twoRTCBypass_patch = "\xE9\x2F\x01";
+	const char* ptr_twoRTCBypass_original = "\x8B\x75\x8C";
 
 	// Non-stop Play Pre-Song Timer.
 	// STATIC. This does not need any offsets since the address is hard-coded into the executable.
-	uintptr_t ptr_NonStopPlayPreSongTimer = 0x012218F8;
+	uintptr_t ptr_NonStopPlayPreSongTimer = 0x1224410; // 0x012218F8
 
 	// Colorblind Mode
 	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
@@ -142,19 +149,19 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
 
 	// Bug Prevention
-	uintptr_t ptr_OculusCrashJmp = 0x01F0C25E;
-	uintptr_t ptr_StuckToneJmp = 0x017CB373;
-	uintptr_t ptr_PnpJmp_1 = 0x01F0C25E;
-	uintptr_t ptr_PnpJmp_2 = 0x01F0C48F;
-	uintptr_t ptr_Password_LimitCharacters_Clipboard = 0x015B0541;
+	uintptr_t ptr_OculusCrashJmp = 0x00E7CFEF;
+	uintptr_t ptr_StuckToneJmp = 0x007D1BCA;
+	uintptr_t ptr_PnpJmp_1 = 0x00E7CFEF;
+	uintptr_t ptr_PnpJmp_2 = 0x00E7D220;
+	uintptr_t ptr_Password_LimitCharacters_Clipboard = 0x015B0541; // TODO: does this stil exist?
 	uintptr_t ptr_Password_LimitCharacters = 0x015B063E;
-	uintptr_t ptr_AdvancedDisplayCrash = 0x1934D0C;
-	uintptr_t ptr_AdvancedDisplayCrashJmpBck = 0x1934D13;
-	uintptr_t ptr_PortAudioInCrash = 0x01c9e858;
+	uintptr_t ptr_AdvancedDisplayCrash = 0x0091FB73;
+	uintptr_t ptr_AdvancedDisplayCrashJmpBck = 0x0091FB7A;
+	uintptr_t ptr_PortAudioInCrash = 0x00C43AF5;
 
 	// Audio In Background
-	uintptr_t ptr_IsWindowInFocus = 0x0124ea78; // Is the window currently in focus? 0 - Out of focus, 1 - In focus.
-	uintptr_t ptr_WindowNotInFocusValue = 0x01f5bfa9; // When the user alt+tabs, the IsWindowInFocus changes to this value.
+	uintptr_t ptr_IsWindowInFocus = 0x1251A78; // 0x0124ea78 - Is the window currently in focus? 0 - Out of focus, 1 - In focus.
+	uintptr_t ptr_WindowNotInFocusValue = 0xEC5D46; // 0x01f5bfa9 When the user alt+tabs, the IsWindowInFocus changes to this value.
 
 	// Lua Hijack
 		// Gamebryo Game Engine
@@ -176,21 +183,21 @@ namespace Offsets {
 	uintptr_t ptr_luaopen_epgmWwise = 0x01cb197d; // Wwise (Not really needed since we have access to all the raw functions, but better safe than sorry)
 
 	// Adjust sample rate requirements
-	uintptr_t ptr_sampleRateRequirementAudioOutput = 0x01F5C80B;
-	uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck = 0x01F5C810;
-	uintptr_t ptr_sampleRateDivZeroCrash = 0x01FB24D0;
-	uintptr_t ptr_sampleRateDivZeroCrash_JmpBck = 0x01FB24D5;
-	uintptr_t ptr_sampleRateSize = 0x0134E90C;
-	uintptr_t ptr_sampleRateBuffer = 0x0124EA9C;
+	uintptr_t ptr_sampleRateRequirementAudioOutput = 0x00EC6508; //0x01F5C80B
+	uintptr_t ptr_sampleRateRequirementAudioOutput_JmpBck = 0x00EC650D; //0x01F5C810
+	uintptr_t ptr_sampleRateDivZeroCrash = 0x00F13896; //0x01FB24D0
+	uintptr_t ptr_sampleRateDivZeroCrash_JmpBck = 0x00F1389B; // 0x01FB24D5
+	uintptr_t ptr_sampleRateSize = 0x135198C; // 0x0134E90C
+	uintptr_t ptr_sampleRateBuffer = 0x1251A9C; //0x0124EA9C
 
 	// Misc Mods
-	uintptr_t ptr_stringColor = 0x135C50C;
+	uintptr_t ptr_stringColor = 0x135F58C; // 0x135C50C
 	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
 	//uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40; // Thank mr. Koko, it's static
-	uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40;
+	uintptr_t ptr_scrollSpeedMultiplier = 0x1190F40; // 0x0118DF40;
 	volatile double& ref_scrollSpeedMultiplier = *((volatile double *)ptr_scrollSpeedMultiplier);
-	uintptr_t patch_SongPreviewWwiseEvent = 0x011AE6E0;
-	uintptr_t steamApiUri = 0x011d9ea0;
+	uintptr_t patch_SongPreviewWwiseEvent = 0x011B1818; // 0x011AE6E0
+	uintptr_t steamApiUri = 0x011DC908; // 0x011d9ea0
 
 
 	// Objects
@@ -198,8 +205,8 @@ namespace Offsets {
 	std::vector<unsigned int> ptr_rootObjectOffsets{ 0xAC, 0x20, 0x24, 0x24, 0x0 };
 
 	// Faster dynamic density / scroll speed change
-	uintptr_t patch_scrollSpeedLTTarget = 0x01406278; // Less than target
-	uintptr_t patch_scrollSpeedGTTarget = 0x01406242; // Greater than target
+	uintptr_t patch_scrollSpeedLTTarget = 0x0046A319; // 0x01406278 - Less than target
+	uintptr_t patch_scrollSpeedGTTarget = 0x0046A2E9; // 0x01406242 - Greater than target
 	const char* patch_scrollSpeedChange = "\xD9\xE8\x90";
 }
 

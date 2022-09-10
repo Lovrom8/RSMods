@@ -99,7 +99,8 @@ namespace BugPrevention {
 
 		// Overwrite some code that doesn't do null checks with NOP.
 		// Be very careful in this code. If you overwrite the next instruction, then you end up breaking audio input.
-		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PortAudioInCrash, "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
+		// NB: JZ has been replaced by JL, now it's 10 bytes in total
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_PortAudioInCrash, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10);
 
 		_LOG("(BUG PREVENTION) Prevented Port Audio In Device Crash" << std::endl);
 	}
