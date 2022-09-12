@@ -162,7 +162,8 @@ void VolumeControl::EnableSongPreviewAudio() {
 void VolumeControl::AllowAltTabbingWithAudio() {
 	_LOG_INIT;
 
-	*(char*)Offsets::ptr_WindowNotInFocusValue = (char)0x1; // Return with the value of 1, "window in focus", every time you alt+tab.
+	char patch[] = { 0x1 };
+	MemUtil::PatchAdr((void*)Offsets::ptr_WindowNotInFocusValue, patch, 1); // Return with the value of 1, "window in focus", every time you alt+tab.
 	*(char*)Offsets::ptr_IsWindowInFocus = (char)0x1; // Tell the game that you currently have the window in focus.
 	_LOG("Allowed audio to be played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = true;
@@ -174,7 +175,9 @@ void VolumeControl::AllowAltTabbingWithAudio() {
 /// </summary>
 void VolumeControl::DisableAltTabbingWithAudio() {
 	_LOG_INIT;
-	*(char*)Offsets::ptr_WindowNotInFocusValue = (char)0x0; // Return with the value of 0, "window out of focus", every time you alt+tab.
+
+	char patch[] = { 0x0 };
+	MemUtil::PatchAdr((void*)Offsets::ptr_WindowNotInFocusValue, patch, 1);  // Return with the value of 0, "window out of focus", every time you alt+tab.
 	*(char*)Offsets::ptr_IsWindowInFocus = (char)0x0; // Tell the game that you are currently alt+tabbed.
 	_LOG("Stopped audio from being played in the background!" << std::endl);
 	allowedAltTabbingWithAudio = false;
