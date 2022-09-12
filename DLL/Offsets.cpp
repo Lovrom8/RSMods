@@ -4,19 +4,19 @@ void Offsets::Initialize() {
 	baseHandle = (uintptr_t)GetModuleHandle(NULL);
 }
 
-namespace Offsets {
+namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	uintptr_t baseHandle; // Beginning of Rocksmith
 	uintptr_t baseEnd = 0x04F80000; // End of Rocksmith
 
 	// Loft Settings
-	uintptr_t ptr_loft = 0x00F5C4EC;
+	uintptr_t ptr_loft = 0x00F5F56CC; // 0x00F5C4EC
 	std::vector<unsigned int> ptr_loft_nearOffsets{ 0x108, 0x14, 0x28, 0x7C };
 	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
 	// Current Tuning
 	// uintptr_t ptr_tuning = 0x00F5C4FC; // Works in most cases EXCEPT disconnected mode.
 	// std::vector<unsigned int> ptr_tuningOffsets{ 0x10, 0x8, 0x44 }; // Works in most cases EXCEPT disconnected mode.
-	uintptr_t ptr_tuning = 0x00F5C5AC;
+	uintptr_t ptr_tuning = 0x00F5F62C; // 0x00F5C5AC
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x68, 0x10, 0x28, 0x38, 0x78, 0x110, 0x0 };
 	
 	// True Tuning
@@ -27,11 +27,11 @@ namespace Offsets {
 	uintptr_t ptr_disableTrueTuning_forceTT = 0x004DCCC1; // 0x0149c5f0
 
 	// Tuning - Textual Form
-	uintptr_t ptr_tuningText = 0x00F5C5AC;
+	uintptr_t ptr_tuningText = 0x00F5F62C; // 0x00F5C5AC
 	std::vector<unsigned int> ptr_tuningTextOffsets{ 0x28, 0x44, 0x0 };
 
 	// Current Note (Midi value: https://djip.co/w/wp-content/uploads/drupal/blog/logic-midi-note-numbers.png | 0 - 96 are used in Rocksmith).
-	uintptr_t ptr_guitarSpeak = 0x00F5C4FC;
+	uintptr_t ptr_guitarSpeak = 0x00F5F57C; // 0x00F5C4FC | TOOD: check if it's right
 	std::vector<unsigned int> ptr_guitarSpeakOffets{ 0x10, 0x4, 0x5FC };
 
 	// Removed do to access to Wwise calls.
@@ -54,7 +54,7 @@ namespace Offsets {
 	// Force Enumeration
 	uintptr_t hookBackAddr_ForceEnumeration, hookBackAddr_Enumeration;
 	uintptr_t func_ForceEnumeration = 0x018D69E7;
-	uintptr_t ptr_enumerateService = 0xF71E10;
+	uintptr_t ptr_enumerateService = 0xF74E90; // 0xF71E10
 	std::vector<unsigned int> ptr_enumerateServiceOffsets{ 0x8, 0x4 };
 
 	// Custom Song Lists
@@ -82,7 +82,7 @@ namespace Offsets {
 	char* d3dDevice_Mask = "xx????xx????xx";
 
 	// Multiplayer
-	uintptr_t ptr_multiplayer = 0x00F5C4FC;
+	uintptr_t ptr_multiplayer = 0x00F5F57C; // | TODO: test
 	std::vector<unsigned int> ptr_multiplayerOffsets {0x24, 0x28, 0x14, 0x90, 0xC};
 
 	void Initialize();
@@ -90,28 +90,28 @@ namespace Offsets {
 	// Current Menu
 	// uintptr_t ptr_currentMenu = 0x00F5C5AC;
 	// std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 }; // Old menu check, decided it loved to not work on some builds
-	uintptr_t ptr_currentMenu = 0x0135c5ac; // https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
+	uintptr_t ptr_currentMenu = 0x135F62C; // 0x0135c5ac | https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
 	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x28, 0x8C, 0x0 }; // But the offsets stay the same, hurray!
 	std::vector<unsigned int> ptr_preMainMenuOffsets{ 0x28, 0x8C };
 
 	// Timer
-	uintptr_t ptr_timer = 0x00F5C4FC;
+	uintptr_t ptr_timer = 0x00F5F57C; // 0x00F5C4FC
 	std::vector<unsigned int> ptr_timerBaseOffsets{ 0x34, 0x1C, 0x3C, 0x1F4, 0x98 };
-	uintptr_t ptr_timerRare = 0x00F5C4CC;
+	uintptr_t ptr_timerRare = 0x00F5F54C; // 0x00F5C4CC
 	std::vector<unsigned int> ptr_timerRareOffsets{ 0x20, 0x28, 0x0, 0x24, 0xC, 0x3B4 };
 
 	// Grey Out Note Timer
-	uintptr_t ptr_greyOutNoteTimer = 0x00F5C5AC;
+	uintptr_t ptr_greyOutNoteTimer = 0x00F5F62C; // 0x00F5C5AC
 	std::vector<unsigned int> ptr_greyOutNoteTimerOffsets{ 0x68, 0x10, 0x2C, 0x28, 0x3DC };
 
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
-	uintptr_t ptr_previewName = 0x00F5C494;
+	uintptr_t ptr_previewName = 0x00F5F62C; // 0x00F5C494
 	std::vector<unsigned int> ptr_previewNameOffsets{ 0xBC, 0x0 };
 	uintptr_t ptr_timeStretchCalculations = 0x00409406; // 0x01398597
 	uintptr_t ptr_timeStretchCalculationsJmpBck = 0x00409441; // 0x013985d2
 
 	// Selected Profile Name
-	uintptr_t ptr_selectedProfileName = 0x00F5C5AC;
+	uintptr_t ptr_selectedProfileName = 0xF5F62C; // 0x00F5C5AC
 	std::vector<unsigned int> ptr_selectedProfileNameOffsets{ 0x18, 0x3C, 0x28, 0x1FC };
 
 	// Two RTC Bypass
@@ -131,19 +131,19 @@ namespace Offsets {
 	uintptr_t ptr_NonStopPlayPreSongTimer = 0x1224410; // 0x012218F8
 
 	// Colorblind Mode
-	uintptr_t ptr_colorBlindMode = 0x00F5C50C;
+	uintptr_t ptr_colorBlindMode = 0x00F5F58C; // 0x00F5C50C
 	std::vector<unsigned int> ptr_colorBlindModeOffsets{ 0x14, 0x24, 0x348 };
 
 	// Twitch Mods
-	uintptr_t ptr_currentNoteStreak = 0x00F5C5AC;
+	uintptr_t ptr_currentNoteStreak = 0x00F5F62C; // 0x00F5C5AC
 	std::vector<unsigned int> ptr_currentNoteStreakLASOffsets{ 0xB0, 0x18, 0x4, 0x84, 0x34 };
 	std::vector<unsigned int> ptr_currentNoteStreakSAOffsets{ 0xB0, 0x18, 0x4, 0x4C, 0x3C };
 
 	// These are based on the RH Guitar values. Nothing else has been added.
-	uintptr_t ptr_stringLocation = 0x00F69D6C;
+	uintptr_t ptr_stringLocation = 0x00F6CDEC; // 0x00F69D6C
 	std::vector<unsigned int> ptr_stringLocationPurpleOffsets = { 0x30, 0x84, 0x8, 0x24, 0xD8, 0xE8, 0x78 };
 
-	uintptr_t ptr_noteLocation = 0x00F5C53C; // Note these are only work on the 3rd, 4th, and 5th frets... I don't know how these are the only ones that stayed constant between launches.
+	uintptr_t ptr_noteLocation = 0x00F5F5BC; // 0x00F5C53C | Note these are only work on the 3rd, 4th, and 5th frets... I don't know how these are the only ones that stayed constant between launches.
 	std::vector<unsigned int> ptr_noteLocationPurpleThirdOffsets = { 0x10, 0xC, 0x30, 0x4, 0x10, 0x558 };
 	std::vector<unsigned int> ptr_noteLocationPurpleFourthOffsets = { 0x10, 0x10, 0x4, 0xC, 0x0, 0x10, 0x724 };
 	std::vector<unsigned int> ptr_noteLocationPurpleFifthOffsets = { 0x10, 0x10, 0x4, 0x1C, 0x0, 0x10, 0xABC };
@@ -192,7 +192,7 @@ namespace Offsets {
 
 	// Misc Mods
 	uintptr_t ptr_stringColor = 0x135F58C; // 0x135C50C
-	uintptr_t ptr_drunkShit = 0x012F4BA8; //search for float 0.333333, seems like it's static
+	uintptr_t ptr_drunkShit = 0x12F7C20; // 0x012F4BA8 | search for float 0.333333, seems like it's static
 	//uintptr_t ptr_scrollSpeedMultiplier = 0x0118DF40; // Thank mr. Koko, it's static
 	uintptr_t ptr_scrollSpeedMultiplier = 0x1190F40; // 0x0118DF40;
 	volatile double& ref_scrollSpeedMultiplier = *((volatile double *)ptr_scrollSpeedMultiplier);

@@ -233,7 +233,7 @@ namespace RSMods.Util
 
         public static List<string> GetSettingsLines()
         {
-            return File.ReadAllLines(Constants.SettingsPath).ToList();
+            return File.Exists(Constants.SettingsPath) ? File.ReadAllLines(Constants.SettingsPath).ToList() : new List<string>();
         }
 
         private static Dictionary<string, string> settingsDict = null;

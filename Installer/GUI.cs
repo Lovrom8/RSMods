@@ -48,6 +48,7 @@ namespace RS2014_Mod_Installer
         /// Hash for Rocksmith2014.exe for the Remastered Update | SHA256
         /// </summary>
         readonly static byte[] HASH_EXE = { 0xA7, 0x25, 0x84, 0x61, 0x10, 0x1D, 0xA0, 0x20, 0x17, 0x07, 0xF5, 0xC2, 0x72, 0xBA, 0xAA, 0x62, 0xA3, 0xD3, 0xD1, 0x0B, 0x3D, 0x22, 0x13, 0xC0, 0xD0, 0xF2, 0x1C, 0xC8, 0x3B, 0x45, 0x88, 0xDA };
+        readonly static byte[] HASH_EXE_NEW = { 0x0d, 0x42, 0xe2, 0xff, 0x3c, 0x7a, 0xf6, 0x84, 0x3e, 0xcb, 0x81, 0x25, 0x9c, 0xc6, 0x4f, 0x1d, 0xde, 0xfa, 0x13, 0x97, 0xb7, 0xce, 0x53, 0xfd, 0xcf, 0x0a, 0x05, 0xd0, 0xb6, 0x1a, 0x0d, 0xc3 };
 
         public static void IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
         {
@@ -83,7 +84,7 @@ namespace RS2014_Mod_Installer
 
                     byte[] hash = sha256.ComputeHash(exeStream);
 
-                    return hash.SequenceEqual(HASH_EXE); // True - User is using Remastered game, False - User is using a NON-Remastered game (VOID).
+                    return hash.SequenceEqual(HASH_EXE) || hash.SequenceEqual(HASH_EXE_NEW); // True - User is using Remastered game, False - User is using a NON-Remastered game (VOID).
                 }
             }
             catch // Game was open when performing the check
