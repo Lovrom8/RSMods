@@ -1237,7 +1237,8 @@ unsigned WINAPI MainThread() {
 	// Initialize Functions
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
-	*(char*)0x0041C640 = (char)0xE0; // Patches out function in Rocksmith.
+	char scrPatch[] = { 0xE0 };
+	MemUtil::PatchAdr((char*)0x0041C640, scrPatch, 1); // Patches out function in Rocksmith.
 	Settings::Initialize();
 	UpdateSettings();
 	ERMode::Initialize();
