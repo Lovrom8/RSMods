@@ -106,7 +106,7 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 
 	// Song Speed (Riff Repeater Speed! Not Scroll Speed)
 	uintptr_t ptr_previewName = 0x00F5F514; // 0x00F5C494
-	std::vector<unsigned int> ptr_previewNameOffsets{ 0x14, 0x4, 0x68, 0x14, 0x44, 0x0 };
+	std::vector<unsigned int> ptr_previewNameOffsets{ 0xBC, 0x0 };
 	uintptr_t ptr_timeStretchCalculations = 0x00409406; // 0x01398597
 	uintptr_t ptr_timeStretchCalculationsJmpBck = 0x00409441; // 0x013985d2
 
