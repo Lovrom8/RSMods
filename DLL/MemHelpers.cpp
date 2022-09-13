@@ -473,7 +473,15 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 /// Turn the background / "map" on or off.
 /// </summary>
 void MemHelpers::ToggleLoft() {
+	_LOG_INIT;
+	_LOG_SETLEVEL(LogLevel::Error);
+
 	uintptr_t farAddr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
+
+	if (!farAddr) {
+		_LOG("Invalid Pointer: ToggleLoft()" << std::endl);
+		return;
+	}
 
 	if (*(float*)farAddr == 10000)
 		*(float*)farAddr = 1; // Loft Off

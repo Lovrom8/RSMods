@@ -9,7 +9,7 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	uintptr_t baseEnd = 0x04F80000; // End of Rocksmith
 
 	// Loft Settings
-	uintptr_t ptr_loft = 0x00F5F56CC; // 0x00F5C4EC
+	uintptr_t ptr_loft = 0x00F5F56C; // 0x00F5C4EC
 	std::vector<unsigned int> ptr_loft_nearOffsets{ 0x108, 0x14, 0x28, 0x7C };
 	std::vector<unsigned int> ptr_loft_farOffsets{ 0x108, 0x14, 0x28, 0x80 };
 
