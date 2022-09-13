@@ -122,7 +122,7 @@ namespace Wwise::Exports {
 	inline uintptr_t func_Wwise_Sound_Query_GetPosition = 0x00ec09e0; // 0x1f560b5;
 	inline uintptr_t func_Wwise_Sound_Query_GetPositioningInfo = 0x00ec0730; // 0x1f55dff;
 	inline uintptr_t func_Wwise_Sound_Query_GetRTPCValue_RTPCID = 0x00ec0b20; // 0x1f561fb;
-	inline uintptr_t func_Wwise_Sound_Query_GetRTPCValue_Char = 0x00ec0c10; // 0x1f5634a;
+	inline uintptr_t func_Wwise_Sound_Query_GetRTPCValue_Char = 0x00ec0c50; // 0x1f5634a;
 	inline uintptr_t func_Wwise_Sound_Query_GetState_StateGroupID = 0x00ec0650; // 0x1f55d1f;
 	inline uintptr_t func_Wwise_Sound_Query_GetState_Char = 0x00ec06e0; // 0x1f55daf;
 	inline uintptr_t func_Wwise_Sound_Query_GetSwitch_SwitchGroupID = 0x00ec0c90; // 0x1f5638a;
