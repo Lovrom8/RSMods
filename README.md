@@ -44,7 +44,40 @@
   
 * **Rainbow Strings**
   * A fun mod which will continously hue-shift the colors of your strings, making them look like a rainbow! 
+
+* **Custom String Colors**
+  * It doesn't all have to be fun and games, so instead of a rainbow, your strings can also be permanently changed in your own color set.
+
+* **Remove song previews**
+  * In case you don't like hearing song previews while scrolling through your song list, they can also be disabled.
+
+* **Play audio in background**
+  *  Allows you to listen to Rocksmith with the game in the background (alt-tabbed out of the game).
   
+* **Linear Riff Repeater**
+  * By default, the speed for Riff Repeater is not linear - In standard Rocksmith 2014: 68% speed in Riff Repeater = 50% real speed. With this mod: 68% speed in Riff Repeater = 68% real speed.
+
+* **Enable looping**
+  * Allows you to loop sections of songs. This differs from Riff Repeater as we let you pick sections by the amount of time using specialized keybindings to set the loop begining and the loop end.
+
+* **Allow rewinding** 
+  * If you mess up a section and want to retry it, you can go back in time for a set amount of seconds. 
+
+* **Custom Non-Stop Play timer**
+  * The timer between songs in Non-stop play is 10.9 seconds by default and a lot of people find this timer to be too long. With this mod, you can change the amount of time between each song (down to 2 seconds due to technical limitations).
+
+* **Start RS on secondary monitor**
+  * Makes Rocksmith run on your second monitor. Though, make sure to pay attention to the tooltips!
+
+* **Bypass 2+ RealToneCable popups**
+  * Allows you to have two Real Tone Cables plugged in while playing singleplayer. Without the mod Rocksmith will stop you from doing this. 
+
+* **Alternative sample rates for sound output**
+  * Rocksmith normally needs sample rate of 48kHz, but this mod tells the game to look for a sample rate that you set. Doing this enables you to use headphones/speakers that don't support 48kHz (eg. some Bluetooth headphones). This won't save you from latency, but at least BT headphones will work in the game.
+
+* **Prevent buggy tones**
+  * When playing some songs, the tone system may just give up and constantly play the clean tone, no matter the currently enabled tone. To fix this, you normally have to restart your game to get tones working again, but this mod may just help the game recover without restarts.
+
 * **GuitarSpeak**
   * What hides behind this mysterious name is an exciting feature that will let you control the game by playing certain notes on your guitar (fully customizable!). Forget your keyboard and mouse, guitar is where it's at! There is an option to continue to use it while in the tuner - it is off by default as it can cause issues, but if you're happy to continue using it there - hit that button. It is OFF while in a song, tuning menus, and calibration menus by default.
 
@@ -64,6 +97,15 @@
   
 * **Show Current Note**
   * While we still don't have a way of forcing the game to show the pause menu tuner while you are playing, you can enable this budget version to see which note you are currently hitting, so that you can finally hit 100% instead of missing those pesky bends due to _bad note detection_.
+
+* **Show Song Timer**
+  * Show a timestamp of your current position in a song. 
+
+* **Override input volume*
+  * Now you can turn your guitar or bass up to 11! Rocksmith sets what volume it wants to listen to your cable at, but this mod allows you to bypass that restriction by changing it to whatever you set.
+
+* **Fix Oculus Crash*
+  * When you try to open Rocksmith with a Oculus / Meta headset connected to your PC, it typically crashes. This mod tries to avoid the crash by preventing the bad code from running. It may also fix other audio-related crashes when Rocksmith opens.
 
 * **Fast Load** - **GUI Only**
   * If you are running the game from an SSD or especially an NVMe SSD drive, you will enjoy this one - it skips the intro screens and lets you load the game in a matter of seconds. It can be fairly unstable, but in general it should work provided you don't try to use it on a good old mechanical HDD. This is not a DLL mod! This means that removing the DLL will not reverse the change of this mod, as you will need to restore the backup of your cache.psarc or verify your steam files.
