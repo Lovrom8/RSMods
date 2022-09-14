@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Rocksmith2014-Mod-Installer")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 // 
-[assembly: AssemblyVersion("1.2.6.5")]
-[assembly: AssemblyFileVersion("1.2.6.5")]
+[assembly: AssemblyVersion("1.2.7.0")]
+[assembly: AssemblyFileVersion("1.2.7.0")]
 

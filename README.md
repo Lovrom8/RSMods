@@ -101,10 +101,10 @@
 * **Show Song Timer**
   * Show a timestamp of your current position in a song. 
 
-* **Override input volume*
+* **Override input volume**
   * Now you can turn your guitar or bass up to 11! Rocksmith sets what volume it wants to listen to your cable at, but this mod allows you to bypass that restriction by changing it to whatever you set.
 
-* **Fix Oculus Crash*
+* **Fix Oculus Crash**
   * When you try to open Rocksmith with a Oculus / Meta headset connected to your PC, it typically crashes. This mod tries to avoid the crash by preventing the bad code from running. It may also fix other audio-related crashes when Rocksmith opens.
 
 * **Fast Load** - **GUI Only**
