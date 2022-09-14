@@ -122,8 +122,12 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	const char* ptr_twoRTCBypass_patch = "\xE9\x2F\x01\x00\x00\x90";
 	const char* ptr_twoRTCBypass_original = "\x8B\xB5\x8C\xFF\xFF\xFF";*/
 
-	uintptr_t ptr_twoRTCBypass = 0x007C0C5C;
-	const char* ptr_twoRTCBypass_patch = "\xE9\x2F\x01";
+	uintptr_t ptr_twoRTCBypass = 0x007C0C5F;
+	const char* ptr_twoRTCBypass_patch_call = "\x90\x90\x90\x90\x90";
+	const char* ptr_twoRTCBypass_patch_test = "\x90\x90";
+	const char* ptr_twoRTCBypass_patch_jz = "\x90\x90";
+	const char* ptr_twoRTCBypass_patch_mov = "\x90\x90\x90\x90\x90";
+	const char* ptr_twoRTCBypass_patch_lea = "\x90\x90\x90\x90\x90\x90";
 	const char* ptr_twoRTCBypass_original = "\x8B\x75\x8C";
 
 	// Non-stop Play Pre-Song Timer.

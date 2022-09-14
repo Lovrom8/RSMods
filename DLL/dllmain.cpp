@@ -13,7 +13,7 @@ bool wwiseLogging = false; // You are NOT on a Wwise logging build.
 #endif
 
 #ifndef _RSMODS_VERSION
-#define _RSMODS_VERSION "RSMODS Version: 1.2.7.0 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#define _RSMODS_VERSION "RSMODS Version: 1.2.7.1 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
 
 /// <summary>
@@ -989,6 +989,16 @@ std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
 	return std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s";
 }
 
+void PatchTwoRTC()
+{
+	MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch_call, 5);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 1), (LPVOID)Offsets::ptr_twoRTCBypass_patch_test, 2);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 2), (LPVOID)Offsets::ptr_twoRTCBypass_patch_jz, 2);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 3), (LPVOID)Offsets::ptr_twoRTCBypass_patch_mov, 5);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 4), (LPVOID)Offsets::ptr_twoRTCBypass_patch_lea, 6);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 5), (LPVOID)Offsets::ptr_twoRTCBypass_patch_call, 5);
+}
+
 /// <summary>
 /// Handle Twitch Toggle Message.
 /// </summary>
@@ -1233,7 +1243,7 @@ unsigned WINAPI MainThread() {
 	bool movedToExternalDisplay = false; // User wants to move the display to a specific location on boot.
 	bool skipERSleep = false; // If using RR past 100%, remove the 1.5s sleep on ER mode, to stop flickering colors.
 	bool forkInToasterNewProfile = false; // If Auto Load Profile has a specified profile, and we can't find it, then this will be true.
-
+	
 	// Initialize Functions
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
@@ -1244,7 +1254,7 @@ unsigned WINAPI MainThread() {
 	ERMode::Initialize();
 	GUI();
 	Midi::InitMidi();
-	
+
 	// Misc mods / Bug Prevention that can only be ran on startup.
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
@@ -1275,12 +1285,11 @@ unsigned WINAPI MainThread() {
 	
 	// Look to see if RS_ASIO applied the 2 RTC input bypass.
 	// If they did, then we disregard the results from our version of the mod.
-	// TODO: determine if it needs changes on RS_ASIO is updated
 	
-	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
+	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x90909090;
 	_LOG("RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl);
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
-		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 3);
+		PatchTwoRTC();
 
 	// Patch x86 assembly for Riff Repeater speed logic to make it linear.
 	if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on")
@@ -1325,12 +1334,12 @@ unsigned WINAPI MainThread() {
 			if (!rs_asio_BypassTwoRTC) { 
 
 				// User originally had BypassTwoRTCMessageBox on, but now they want it turned off.
-				if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "off" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_patch[0]) 
+				if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "off" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_patch_call[0]) 
 					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_original, 6);
 
-				// User originally had BypassTwoRTCMessageBox off, but now they want it turned on.
-				else if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_original[0]) 
-					MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
+				// User originally had BypassTwoRTCMessageBox off, but now they want it turned on
+				else if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on" && *(char*)Offsets::ptr_twoRTCBypass == Offsets::ptr_twoRTCBypass_original[0])
+					PatchTwoRTC();
 			}
 
 			// User wants NSP timer changed, and the time limit is not what the user set.
@@ -1627,7 +1636,6 @@ unsigned WINAPI MainThread() {
 	}
 	return 0;
 }
-
 
 /// <summary>
 /// Unhook all threads to take advantage of multi-threading.

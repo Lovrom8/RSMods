@@ -109,7 +109,12 @@ namespace Offsets {
 
 	// Two RTC Bypass
 	extern uintptr_t ptr_twoRTCBypass;
-	extern const char* ptr_twoRTCBypass_patch;
+	extern const char* ptr_twoRTCBypass_patch_call;
+	extern const char* ptr_twoRTCBypass_patch_test;
+	extern const char* ptr_twoRTCBypass_patch_jz;
+	extern const char* ptr_twoRTCBypass_patch_mov;
+	extern const char* ptr_twoRTCBypass_patch_lea;
+	extern const char* ptr_twoRTCBypass_origina;
 	extern const char* ptr_twoRTCBypass_original;
 
 	// Non-stop Play Pre-Song Timer.
