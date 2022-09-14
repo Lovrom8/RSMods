@@ -1280,7 +1280,7 @@ unsigned WINAPI MainThread() {
 	bool rs_asio_BypassTwoRTC = MemUtil::ReadPtr(Offsets::ptr_twoRTCBypass) == 0x12fe9;
 	_LOG("RS_ASIO Bypass2RTC: " << std::boolalpha << rs_asio_BypassTwoRTC << std::endl);
 	if (Settings::ReturnSettingValue("BypassTwoRTCMessageBox") == "on")
-		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 6);
+		MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch, 3);
 
 	// Patch x86 assembly for Riff Repeater speed logic to make it linear.
 	if (Settings::ReturnSettingValue("LinearRiffRepeater") == "on")
