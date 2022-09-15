@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include "psapi.h"
 
 // Mods
 #include "Mods/Enumeration.hpp"

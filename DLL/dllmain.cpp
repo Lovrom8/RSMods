@@ -989,14 +989,63 @@ std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds) {
 	return std::to_string(hours) + "h:" + std::to_string(minutes) + "m:" + std::to_string(seconds) + "s";
 }
 
+/// <summary>
+/// Patches Two RTC cables error message.
+/// </summary>
 void PatchTwoRTC()
 {
 	MemUtil::PatchAdr((LPVOID)Offsets::ptr_twoRTCBypass, (LPVOID)Offsets::ptr_twoRTCBypass_patch_call, 5);
-	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 1), (LPVOID)Offsets::ptr_twoRTCBypass_patch_test, 2);
-	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 2), (LPVOID)Offsets::ptr_twoRTCBypass_patch_jz, 2);
-	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 3), (LPVOID)Offsets::ptr_twoRTCBypass_patch_mov, 5);
-	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 4), (LPVOID)Offsets::ptr_twoRTCBypass_patch_lea, 6);
-	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 5), (LPVOID)Offsets::ptr_twoRTCBypass_patch_call, 5);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 5), (LPVOID)Offsets::ptr_twoRTCBypass_patch_test, 2);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 7), (LPVOID)Offsets::ptr_twoRTCBypass_patch_jz, 2);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 9), (LPVOID)Offsets::ptr_twoRTCBypass_patch_mov, 5);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 14), (LPVOID)Offsets::ptr_twoRTCBypass_patch_lea, 6);
+	MemUtil::PatchAdr((LPVOID)(Offsets::ptr_twoRTCBypass + 20), (LPVOID)Offsets::ptr_twoRTCBypass_patch_call, 5);
+}
+
+/// <summary>
+/// RS spawns two processes, one of which complains about Steam not being active. 
+/// We find that one and close it.
+/// </summary>
+HANDLE GetMessageBoxProcess()
+{
+	HWND    hWnd;
+	DWORD   dwProcessId = 0;
+	HANDLE  hRET;
+	LPCTSTR g_cszClass = TEXT("#32770"); // Dialog box class
+
+	hWnd = FindWindow(g_cszClass, L"Error.");
+	if (hWnd != NULL)
+	{
+		GetWindowThreadProcessId(hWnd, &dwProcessId);
+		if (dwProcessId != 0)
+			hRET = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE, FALSE, dwProcessId);
+	}
+	return hRET;
+}
+
+/// <summary>
+/// Stops the game from starting two instances
+/// </summary>
+void StopTwoRSInstances() {
+	_LOG_INIT;
+
+	HANDLE hndl = GetMessageBoxProcess();
+
+	if (hndl) {
+		HMODULE hMod;
+		DWORD cNeeded;
+
+		if (EnumProcessModulesEx(hndl, &hMod, sizeof(hMod), &cNeeded, LIST_MODULES_ALL))
+		{
+			TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
+			GetModuleBaseName(hndl, hMod, szProcessName, sizeof(szProcessName) / sizeof(TCHAR));
+
+			_LOG("Title:" << szProcessName); //TODO: Returns a number? Fix & compare with 'Rocksmtih 2014'
+		}
+		
+		_LOG("Terminating parasitic RS process" << std::endl);
+		TerminateProcess(hndl, 0);
+	}
 }
 
 /// <summary>
@@ -1259,6 +1308,7 @@ unsigned WINAPI MainThread() {
 	Midi::tuningOffset = Settings::GetModSetting("TuningOffset");
 	AudioDevices::SetupMicrophones();
 	BugPrevention::PreventPnPCrash();
+	StopTwoRSInstances();
 
 	// TODO: may have been replaced, can't find the equivalent block in new version
 	//BugPrevention::AllowComplexPasswords();
