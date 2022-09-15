@@ -21,7 +21,7 @@ void __declspec(naked) disableTrueTuning()
 	{
 		// We don't need to worry about replacing commands.
 		// I placed this so we always call this code when doing true tuning calculations
-		// Hence the change of 0x0149c5ee to 0xEB (JMP) from 0x74 (JE), so we can guarantee that we run without any issues.
+		// Hence the change of 0x004DCCBF to 0xEB (JMP) from 0x74 (JE), so we can guarantee that we run without any issues.
 
 		push EAX // Save EAX to the stack
 
@@ -47,7 +47,7 @@ void __declspec(naked) disableTrueTuning()
 /// </summary>
 void TrueTuning::DisableTrueTuning()
 {
-	MemUtil::PatchAdr((char*)0x004DCCBF, "0xEB", 1); // Force a jump into our code, JMP.
+	MemUtil::PatchAdr((char*)0x004DCCBF, "\xEB", 1); // Force a jump into our code, JMP.
 	MemUtil::PlaceHook((void*)Offsets::ptr_disableTrueTuning, disableTrueTuning, 6);
 
 	_LOG_INIT;
@@ -59,8 +59,8 @@ void TrueTuning::DisableTrueTuning()
 /// </summary>
 void TrueTuning::EnableTrueTuning()
 {
-	MemUtil::PatchAdr((char*)0x004DCCBF, "0x74", 1); // Change the jump back to a conditional jump, JE.
-	MemUtil::PatchAdr((void*)Offsets::ptr_disableTrueTuning, "\xD9\x05\x50\x19\x22\x01", 6);
+	MemUtil::PatchAdr((char*)0x004DCCBF, "\x74", 1); // Change the jump back to a conditional jump, JE.
+	MemUtil::PatchAdr((void*)Offsets::ptr_disableTrueTuning, "\xD9\x05\x68\x44\x22\x01", 6);
 
 	_LOG_INIT;
 	_LOG("Enabled true tuning" << std::endl);
