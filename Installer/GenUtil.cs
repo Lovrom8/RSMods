@@ -40,6 +40,9 @@ namespace RSMods.Util
             string dlcFolderPath = Path.Combine(folderPath, "dlc");
             string cachePsarcPath = Path.Combine(folderPath, "cache.psarc");
 
+            if (!Directory.Exists(dlcFolderPath))
+                return false;
+
             if (IsDirectoryEmpty(dlcFolderPath))
                 return false;
 

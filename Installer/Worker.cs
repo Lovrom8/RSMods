@@ -5,7 +5,7 @@ namespace RS2014_Mod_Installer
 {
     class Worker
     {
-        private static string RSLocation = string.Empty;
+        public static string RSLocation = string.Empty;
 
         public static string WhereIsRocksmith()
         {
