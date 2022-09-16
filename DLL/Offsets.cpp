@@ -20,8 +20,8 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	std::vector<unsigned int> ptr_tuningOffsets{ 0x68, 0x10, 0x28, 0x38, 0x78, 0x110, 0x0 };
 	
 	// True Tuning
-	uintptr_t ptr_trueTuning = 0x00F5C4FC;
-	std::vector<unsigned int> ptr_trueTuningOffsets{ 0x10, 0x4, 0x418, 0xB4, 0xF18 };
+	uintptr_t ptr_trueTuning = 0x00F5F57C; // 0x00F5C4FC
+	std::vector<unsigned int> ptr_trueTuningOffsets{ 0x10, 0x4, 0x135C };
 	uintptr_t ptr_disableTrueTuning = 0x004DCCF2; // 0x0149c621
 	uintptr_t ptr_disableTrueTuning_jmpBck = 0x004DCCF8; // 0x0149c627
 	uintptr_t ptr_disableTrueTuning_forceTT = 0x004DCCC1; // 0x0149c5f0
