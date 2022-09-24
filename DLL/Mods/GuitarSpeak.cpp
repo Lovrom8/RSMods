@@ -15,8 +15,8 @@ byte GuitarSpeak::GetCurrentNote() {
 
 	uintptr_t noteAdr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_guitarSpeak, Offsets::ptr_guitarSpeakOffets);
 
-	if (!noteAdr) {
-		_LOG("(GS) Note Address can't be found!" << std::endl);
+	if (!noteAdr) { //TODO: check the address 
+		//_LOG("(GS) Note Address can't be found!" << std::endl);
 		return (BYTE)noNote;
 	}
 
