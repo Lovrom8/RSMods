@@ -1300,8 +1300,7 @@ unsigned WINAPI MainThread() {
 	// Initialize Functions
 	D3DHooks::debug = debug;
 	Offsets::Initialize();
-	char scrPatch[] = { 0xE0 };
-	MemUtil::PatchAdr((char*)0x0041C640, scrPatch, 1); // Patches out function in Rocksmith.
+	MemUtil::PatchAdr((char*)0x0041C640, "\xE0", 1); // Patches out function in Rocksmith.
 	Settings::Initialize();
 	UpdateSettings();
 	ERMode::Initialize();
@@ -1314,8 +1313,7 @@ unsigned WINAPI MainThread() {
 	BugPrevention::PreventPnPCrash();
 	StopTwoRSInstances();
 
-	// TODO: may have been replaced, can't find the equivalent block in new version
-	//BugPrevention::AllowComplexPasswords();
+	BugPrevention::AllowComplexPasswords();
 	BugPrevention::PreventAdvancedDisplayCrash();
 	BugPrevention::PreventPortAudioInDeviceCrash();
 

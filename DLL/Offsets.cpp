@@ -157,8 +157,8 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	uintptr_t ptr_StuckToneJmp = 0x007D1BCA;
 	uintptr_t ptr_PnpJmp_1 = 0x00E7CFEF;
 	uintptr_t ptr_PnpJmp_2 = 0x00E7D220;
-	uintptr_t ptr_Password_LimitCharacters_Clipboard = 0x015B0541; // TODO: does this stil exist?
-	uintptr_t ptr_Password_LimitCharacters = 0x015B063E;
+	uintptr_t ptr_Password_LimitCharacters_Clipboard = 0x005CF24E;; // 0x015B063E 
+	uintptr_t ptr_Password_LimitCharacters = 0x005CF318; // 0x015B0541
 	uintptr_t ptr_AdvancedDisplayCrash = 0x0091FB73;
 	uintptr_t ptr_AdvancedDisplayCrashJmpBck = 0x0091FB7A;
 	uintptr_t ptr_PortAudioInCrash = 0x00C43AF5;
