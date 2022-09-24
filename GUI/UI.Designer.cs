@@ -210,6 +210,8 @@
             this.tab_Songlists = new System.Windows.Forms.TabPage();
             this.tab_Keybindings = new System.Windows.Forms.TabPage();
             this.groupBox_Keybindings_AUDIO = new System.Windows.Forms.GroupBox();
+            this.label_MutePlayer2Key = new System.Windows.Forms.Label();
+            this.label_MutePlayer1Key = new System.Windows.Forms.Label();
             this.label_DisplayMixerKey = new System.Windows.Forms.Label();
             this.label_SFXVolumeKey = new System.Windows.Forms.Label();
             this.label_VoiceOverVolumeKey = new System.Windows.Forms.Label();
@@ -314,6 +316,7 @@
             this.tab_SetAndForget = new System.Windows.Forms.TabPage();
             this.tab_RSASIO = new System.Windows.Forms.TabPage();
             this.groupBox_ASIO_InputMic = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_InputMic_EnableRefHack = new System.Windows.Forms.CheckBox();
             this.button_ASIO_InputMic_ClearSelection = new System.Windows.Forms.Button();
             this.checkBox_ASIO_InputMic_Disabled = new System.Windows.Forms.CheckBox();
             this.checkBox_ASIO_InputMic_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
@@ -325,6 +328,7 @@
             this.listBox_AvailableASIODevices_InputMic = new System.Windows.Forms.ListBox();
             this.label_ASIO_Credits = new System.Windows.Forms.Label();
             this.groupBox_ASIO_Output = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Output_EnableRefHack = new System.Windows.Forms.CheckBox();
             this.nUpDown_ASIO_Output_AltBaseChannel = new System.Windows.Forms.NumericUpDown();
             this.label_ASIO_Output_AltBaseChannel = new System.Windows.Forms.Label();
             this.button_ASIO_Output_ClearSelection = new System.Windows.Forms.Button();
@@ -337,6 +341,7 @@
             this.label_ASIO_Output_BaseChannel = new System.Windows.Forms.Label();
             this.listBox_AvailableASIODevices_Output = new System.Windows.Forms.ListBox();
             this.groupBox_ASIO_Input1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Input1_EnableRefHack = new System.Windows.Forms.CheckBox();
             this.button_ASIO_Input1_ClearSelection = new System.Windows.Forms.Button();
             this.checkBox_ASIO_Input1_Disabled = new System.Windows.Forms.CheckBox();
             this.checkBox_ASIO_Input1_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
@@ -347,6 +352,7 @@
             this.label_ASIO_Input1_Channel = new System.Windows.Forms.Label();
             this.listBox_AvailableASIODevices_Input1 = new System.Windows.Forms.ListBox();
             this.groupBox_ASIO_Input0 = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASIO_Input0_EnableRefHack = new System.Windows.Forms.CheckBox();
             this.button_ASIO_Input0_ClearSelection = new System.Windows.Forms.Button();
             this.checkBox_ASIO_Input0_Disabled = new System.Windows.Forms.CheckBox();
             this.checkBox_ASIO_Input0_ControlEndpointVolume = new System.Windows.Forms.CheckBox();
@@ -533,8 +539,6 @@
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
-            this.label_MutePlayer1Key = new System.Windows.Forms.Label();
-            this.label_MutePlayer2Key = new System.Windows.Forms.Label();
             this.groupBox_HowToEnumerate.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).BeginInit();
             this.groupBox_LoftOffWhen.SuspendLayout();
@@ -2866,8 +2870,8 @@
             // 
             // TabController
             // 
-            this.TabController.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.TabController.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TabController.Controls.Add(this.tab_Songlists);
             this.TabController.Controls.Add(this.tab_Keybindings);
@@ -2934,6 +2938,24 @@
             this.groupBox_Keybindings_AUDIO.Text = "Audio Key Bindings";
             this.groupBox_Keybindings_AUDIO.Visible = false;
             this.groupBox_Keybindings_AUDIO.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_MutePlayer2Key
+            // 
+            this.label_MutePlayer2Key.AutoSize = true;
+            this.label_MutePlayer2Key.Location = new System.Drawing.Point(463, 163);
+            this.label_MutePlayer2Key.Name = "label_MutePlayer2Key";
+            this.label_MutePlayer2Key.Size = new System.Drawing.Size(123, 13);
+            this.label_MutePlayer2Key.TabIndex = 63;
+            this.label_MutePlayer2Key.Text = "Mute / Unmute Player2: ";
+            // 
+            // label_MutePlayer1Key
+            // 
+            this.label_MutePlayer1Key.AutoSize = true;
+            this.label_MutePlayer1Key.Location = new System.Drawing.Point(463, 146);
+            this.label_MutePlayer1Key.Name = "label_MutePlayer1Key";
+            this.label_MutePlayer1Key.Size = new System.Drawing.Size(123, 13);
+            this.label_MutePlayer1Key.TabIndex = 62;
+            this.label_MutePlayer1Key.Text = "Mute / Unmute Player1: ";
             // 
             // label_DisplayMixerKey
             // 
@@ -4176,6 +4198,7 @@
             // 
             // groupBox_ASIO_InputMic
             // 
+            this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_EnableRefHack);
             this.groupBox_ASIO_InputMic.Controls.Add(this.button_ASIO_InputMic_ClearSelection);
             this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_Disabled);
             this.groupBox_ASIO_InputMic.Controls.Add(this.checkBox_ASIO_InputMic_ControlEndpointVolume);
@@ -4192,6 +4215,17 @@
             this.groupBox_ASIO_InputMic.TabStop = false;
             this.groupBox_ASIO_InputMic.Text = "Input Microphone";
             this.groupBox_ASIO_InputMic.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_ASIO_InputMic_EnableRefHack
+            // 
+            this.checkBox_ASIO_InputMic_EnableRefHack.AutoSize = true;
+            this.checkBox_ASIO_InputMic_EnableRefHack.Location = new System.Drawing.Point(253, 170);
+            this.checkBox_ASIO_InputMic_EnableRefHack.Name = "checkBox_ASIO_InputMic_EnableRefHack";
+            this.checkBox_ASIO_InputMic_EnableRefHack.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_ASIO_InputMic_EnableRefHack.TabIndex = 18;
+            this.checkBox_ASIO_InputMic_EnableRefHack.Text = "Enable Ref Count Hack";
+            this.checkBox_ASIO_InputMic_EnableRefHack.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_InputMic_EnableRefHack.CheckedChanged += ASIO_InputMic_EnableRefHack;
             // 
             // button_ASIO_InputMic_ClearSelection
             // 
@@ -4217,7 +4251,7 @@
             // checkBox_ASIO_InputMic_ControlEndpointVolume
             // 
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_InputMic_ControlEndpointVolume.Location = new System.Drawing.Point(253, 138);
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.Name = "checkBox_ASIO_InputMic_ControlEndpointVolume";
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
             this.checkBox_ASIO_InputMic_ControlEndpointVolume.TabIndex = 9;
@@ -4229,7 +4263,7 @@
             // checkBox_ASIO_InputMic_ControlMasterVolume
             // 
             this.checkBox_ASIO_InputMic_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_InputMic_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_InputMic_ControlMasterVolume.Location = new System.Drawing.Point(253, 106);
             this.checkBox_ASIO_InputMic_ControlMasterVolume.Name = "checkBox_ASIO_InputMic_ControlMasterVolume";
             this.checkBox_ASIO_InputMic_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
             this.checkBox_ASIO_InputMic_ControlMasterVolume.TabIndex = 8;
@@ -4307,6 +4341,7 @@
             // 
             // groupBox_ASIO_Output
             // 
+            this.groupBox_ASIO_Output.Controls.Add(this.checkBox_ASIO_Output_EnableRefHack);
             this.groupBox_ASIO_Output.Controls.Add(this.nUpDown_ASIO_Output_AltBaseChannel);
             this.groupBox_ASIO_Output.Controls.Add(this.label_ASIO_Output_AltBaseChannel);
             this.groupBox_ASIO_Output.Controls.Add(this.button_ASIO_Output_ClearSelection);
@@ -4325,6 +4360,17 @@
             this.groupBox_ASIO_Output.TabStop = false;
             this.groupBox_ASIO_Output.Text = "Output";
             this.groupBox_ASIO_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_ASIO_Output_EnableRefHack
+            // 
+            this.checkBox_ASIO_Output_EnableRefHack.AutoSize = true;
+            this.checkBox_ASIO_Output_EnableRefHack.Location = new System.Drawing.Point(253, 169);
+            this.checkBox_ASIO_Output_EnableRefHack.Name = "checkBox_ASIO_Output_EnableRefHack";
+            this.checkBox_ASIO_Output_EnableRefHack.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_ASIO_Output_EnableRefHack.TabIndex = 19;
+            this.checkBox_ASIO_Output_EnableRefHack.Text = "Enable Ref Count Hack";
+            this.checkBox_ASIO_Output_EnableRefHack.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Output_EnableRefHack.CheckedChanged += ASIO_Output_EnableRefHack;
             // 
             // nUpDown_ASIO_Output_AltBaseChannel
             // 
@@ -4373,7 +4419,7 @@
             // checkBox_ASIO_Output_ControlEndpointVolume
             // 
             this.checkBox_ASIO_Output_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Output_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_Output_ControlEndpointVolume.Location = new System.Drawing.Point(252, 140);
             this.checkBox_ASIO_Output_ControlEndpointVolume.Name = "checkBox_ASIO_Output_ControlEndpointVolume";
             this.checkBox_ASIO_Output_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
             this.checkBox_ASIO_Output_ControlEndpointVolume.TabIndex = 9;
@@ -4385,7 +4431,7 @@
             // checkBox_ASIO_Output_ControlMasterVolume
             // 
             this.checkBox_ASIO_Output_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Output_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_Output_ControlMasterVolume.Location = new System.Drawing.Point(253, 110);
             this.checkBox_ASIO_Output_ControlMasterVolume.Name = "checkBox_ASIO_Output_ControlMasterVolume";
             this.checkBox_ASIO_Output_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
             this.checkBox_ASIO_Output_ControlMasterVolume.TabIndex = 8;
@@ -4452,6 +4498,7 @@
             // 
             // groupBox_ASIO_Input1
             // 
+            this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_EnableRefHack);
             this.groupBox_ASIO_Input1.Controls.Add(this.button_ASIO_Input1_ClearSelection);
             this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_Disabled);
             this.groupBox_ASIO_Input1.Controls.Add(this.checkBox_ASIO_Input1_ControlEndpointVolume);
@@ -4469,6 +4516,17 @@
             this.groupBox_ASIO_Input1.Text = "Input 2";
             this.groupBox_ASIO_Input1.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
+            // checkBox_ASIO_Input1_EnableRefHack
+            // 
+            this.checkBox_ASIO_Input1_EnableRefHack.AutoSize = true;
+            this.checkBox_ASIO_Input1_EnableRefHack.Location = new System.Drawing.Point(253, 170);
+            this.checkBox_ASIO_Input1_EnableRefHack.Name = "checkBox_ASIO_Input1_EnableRefHack";
+            this.checkBox_ASIO_Input1_EnableRefHack.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_ASIO_Input1_EnableRefHack.TabIndex = 17;
+            this.checkBox_ASIO_Input1_EnableRefHack.Text = "Enable Ref Count Hack";
+            this.checkBox_ASIO_Input1_EnableRefHack.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Input1_EnableRefHack.CheckedChanged += ASIO_Input1_EnableRefHack;
+            // 
             // button_ASIO_Input1_ClearSelection
             // 
             this.button_ASIO_Input1_ClearSelection.Location = new System.Drawing.Point(22, 192);
@@ -4482,7 +4540,7 @@
             // checkBox_ASIO_Input1_Disabled
             // 
             this.checkBox_ASIO_Input1_Disabled.AutoSize = true;
-            this.checkBox_ASIO_Input1_Disabled.Location = new System.Drawing.Point(253, 207);
+            this.checkBox_ASIO_Input1_Disabled.Location = new System.Drawing.Point(253, 204);
             this.checkBox_ASIO_Input1_Disabled.Name = "checkBox_ASIO_Input1_Disabled";
             this.checkBox_ASIO_Input1_Disabled.Size = new System.Drawing.Size(67, 17);
             this.checkBox_ASIO_Input1_Disabled.TabIndex = 10;
@@ -4493,7 +4551,7 @@
             // checkBox_ASIO_Input1_ControlEndpointVolume
             // 
             this.checkBox_ASIO_Input1_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Input1_ControlEndpointVolume.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_Input1_ControlEndpointVolume.Location = new System.Drawing.Point(253, 138);
             this.checkBox_ASIO_Input1_ControlEndpointVolume.Name = "checkBox_ASIO_Input1_ControlEndpointVolume";
             this.checkBox_ASIO_Input1_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
             this.checkBox_ASIO_Input1_ControlEndpointVolume.TabIndex = 9;
@@ -4505,7 +4563,7 @@
             // checkBox_ASIO_Input1_ControlMasterVolume
             // 
             this.checkBox_ASIO_Input1_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Input1_ControlMasterVolume.Location = new System.Drawing.Point(253, 128);
+            this.checkBox_ASIO_Input1_ControlMasterVolume.Location = new System.Drawing.Point(253, 106);
             this.checkBox_ASIO_Input1_ControlMasterVolume.Name = "checkBox_ASIO_Input1_ControlMasterVolume";
             this.checkBox_ASIO_Input1_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
             this.checkBox_ASIO_Input1_ControlMasterVolume.TabIndex = 8;
@@ -4572,6 +4630,7 @@
             // 
             // groupBox_ASIO_Input0
             // 
+            this.groupBox_ASIO_Input0.Controls.Add(this.checkBox_ASIO_Input0_EnableRefHack);
             this.groupBox_ASIO_Input0.Controls.Add(this.button_ASIO_Input0_ClearSelection);
             this.groupBox_ASIO_Input0.Controls.Add(this.checkBox_ASIO_Input0_Disabled);
             this.groupBox_ASIO_Input0.Controls.Add(this.checkBox_ASIO_Input0_ControlEndpointVolume);
@@ -4588,6 +4647,17 @@
             this.groupBox_ASIO_Input0.TabStop = false;
             this.groupBox_ASIO_Input0.Text = "Input 1";
             this.groupBox_ASIO_Input0.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // checkBox_ASIO_Input0_EnableRefHack
+            // 
+            this.checkBox_ASIO_Input0_EnableRefHack.AutoSize = true;
+            this.checkBox_ASIO_Input0_EnableRefHack.Location = new System.Drawing.Point(253, 160);
+            this.checkBox_ASIO_Input0_EnableRefHack.Name = "checkBox_ASIO_Input0_EnableRefHack";
+            this.checkBox_ASIO_Input0_EnableRefHack.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_ASIO_Input0_EnableRefHack.TabIndex = 16;
+            this.checkBox_ASIO_Input0_EnableRefHack.Text = "Enable Ref Count Hack";
+            this.checkBox_ASIO_Input0_EnableRefHack.UseVisualStyleBackColor = true;
+            this.checkBox_ASIO_Input0_EnableRefHack.CheckedChanged += ASIO_Input0_EnableRefHack;
             // 
             // button_ASIO_Input0_ClearSelection
             // 
@@ -4613,7 +4683,7 @@
             // checkBox_ASIO_Input0_ControlEndpointVolume
             // 
             this.checkBox_ASIO_Input0_ControlEndpointVolume.AutoSize = true;
-            this.checkBox_ASIO_Input0_ControlEndpointVolume.Location = new System.Drawing.Point(253, 142);
+            this.checkBox_ASIO_Input0_ControlEndpointVolume.Location = new System.Drawing.Point(253, 129);
             this.checkBox_ASIO_Input0_ControlEndpointVolume.Name = "checkBox_ASIO_Input0_ControlEndpointVolume";
             this.checkBox_ASIO_Input0_ControlEndpointVolume.Size = new System.Drawing.Size(142, 17);
             this.checkBox_ASIO_Input0_ControlEndpointVolume.TabIndex = 11;
@@ -4625,7 +4695,7 @@
             // checkBox_ASIO_Input0_ControlMasterVolume
             // 
             this.checkBox_ASIO_Input0_ControlMasterVolume.AutoSize = true;
-            this.checkBox_ASIO_Input0_ControlMasterVolume.Location = new System.Drawing.Point(253, 110);
+            this.checkBox_ASIO_Input0_ControlMasterVolume.Location = new System.Drawing.Point(253, 97);
             this.checkBox_ASIO_Input0_ControlMasterVolume.Name = "checkBox_ASIO_Input0_ControlMasterVolume";
             this.checkBox_ASIO_Input0_ControlMasterVolume.Size = new System.Drawing.Size(132, 17);
             this.checkBox_ASIO_Input0_ControlMasterVolume.TabIndex = 10;
@@ -6207,8 +6277,8 @@
             this.dgv_Profiles_Songlists.AllowUserToAddRows = false;
             this.dgv_Profiles_Songlists.AllowUserToDeleteRows = false;
             this.dgv_Profiles_Songlists.AllowUserToOrderColumns = true;
-            this.dgv_Profiles_Songlists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgv_Profiles_Songlists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgv_Profiles_Songlists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_Profiles_Songlists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -6671,24 +6741,6 @@
             this.button_UpdateRSMods.Click += new System.EventHandler(this.CheckForUpdates_UpdateRSMods);
             this.button_UpdateRSMods.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // label_MutePlayer1Key
-            // 
-            this.label_MutePlayer1Key.AutoSize = true;
-            this.label_MutePlayer1Key.Location = new System.Drawing.Point(463, 146);
-            this.label_MutePlayer1Key.Name = "label_MutePlayer1Key";
-            this.label_MutePlayer1Key.Size = new System.Drawing.Size(123, 13);
-            this.label_MutePlayer1Key.TabIndex = 62;
-            this.label_MutePlayer1Key.Text = "Mute / Unmute Player1: ";
-            // 
-            // label_MutePlayer2Key
-            // 
-            this.label_MutePlayer2Key.AutoSize = true;
-            this.label_MutePlayer2Key.Location = new System.Drawing.Point(463, 163);
-            this.label_MutePlayer2Key.Name = "label_MutePlayer2Key";
-            this.label_MutePlayer2Key.Size = new System.Drawing.Size(123, 13);
-            this.label_MutePlayer2Key.TabIndex = 63;
-            this.label_MutePlayer2Key.Text = "Mute / Unmute Player2: ";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -6862,7 +6914,7 @@
         }
 
         #endregion
-        
+
 
         private System.Windows.Forms.ListBox listBox_Songlist;
         private System.Windows.Forms.ListBox listBox_Modlist_MODS;
@@ -7371,6 +7423,9 @@
         private System.Windows.Forms.Button button_TurnItUpToEleven;
         private System.Windows.Forms.Label label_MutePlayer2Key;
         private System.Windows.Forms.Label label_MutePlayer1Key;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Input0_EnableRefHack;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Input1_EnableRefHack;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_InputMic_EnableRefHack;
+        private System.Windows.Forms.CheckBox checkBox_ASIO_Output_EnableRefHack;
     }
 }
-

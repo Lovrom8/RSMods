@@ -764,6 +764,7 @@ namespace RSMods
             nUpDown_ASIO_Output_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Output), 0);
             checkBox_ASIO_Output_Disabled.Checked = ASIO.ReadSettings.DisabledOutput;
             listBox_AvailableASIODevices_Output.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Output);
+            checkBox_ASIO_Output_EnableRefHack.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Output), 0));
 
             // Input0
             nUpDown_ASIO_Input0_Channel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input0), 0);
@@ -772,6 +773,7 @@ namespace RSMods
             nUpDown_ASIO_Input0_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input0), 0);
             checkBox_ASIO_Input0_Disabled.Checked = ASIO.ReadSettings.DisabledInput0;
             listBox_AvailableASIODevices_Input0.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input0);
+            checkBox_ASIO_Input0_EnableRefHack.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Input0), 0));
 
             // Input1
             nUpDown_ASIO_Input1_Channel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1), 0);
@@ -780,6 +782,7 @@ namespace RSMods
             nUpDown_ASIO_Input1_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.Input1), 0);
             checkBox_ASIO_Input1_Disabled.Checked = ASIO.ReadSettings.DisabledInput1;
             listBox_AvailableASIODevices_Input1.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.Input1);
+            checkBox_ASIO_Input1_EnableRefHack.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Input1), 0));
 
             // InputMic
             nUpDown_ASIO_InputMic_Channel.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.InputMic), 0);
@@ -788,6 +791,7 @@ namespace RSMods
             nUpDown_ASIO_InputMic_MaxVolume.Value = GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.SoftwareMasterVolumePercentIdentifier, ASIO.ReadSettings.Sections.InputMic), 0);
             checkBox_ASIO_InputMic_Disabled.Checked = ASIO.ReadSettings.DisabledInputMic;
             listBox_AvailableASIODevices_InputMic.SelectedItem = ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.DriverIdentifier, ASIO.ReadSettings.Sections.InputMic);
+            checkBox_ASIO_InputMic_EnableRefHack.Checked = Convert.ToBoolean(GenUtil.StrToIntDef(ASIO.ReadSettings.ProcessSettings(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.InputMic), 0));
         }
 
         private void PriorSettings_LoadRocksmithSettings()
@@ -3161,6 +3165,7 @@ namespace RSMods
             nUpDown_ASIO_Input0_MaxVolume.Visible = checkBox_ASIO_Input0_ControlMasterVolume.Checked;
         }
         private void ASIO_Input0_EndpointVolume(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input0, Convert.ToInt32(checkBox_ASIO_Input0_ControlEndpointVolume.Checked).ToString());
+        private void ASIO_Input0_EnableRefHack(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Input0, Convert.ToInt32(checkBox_ASIO_Input0_EnableRefHack.Checked).ToString());
 
         // Input1 Settings
         private void ASIO_Input1_Channel(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.Input1, nUpDown_ASIO_Input1_Channel.Value.ToString());
@@ -3172,6 +3177,7 @@ namespace RSMods
             nUpDown_ASIO_Input1_MaxVolume.Visible = checkBox_ASIO_Input1_ControlMasterVolume.Checked;
         }
         private void ASIO_Input1_EndpointVolume(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Input1, Convert.ToInt32(checkBox_ASIO_Input1_ControlEndpointVolume.Checked).ToString());
+        private void ASIO_Input1_EnableRefHack(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Input1, Convert.ToInt32(checkBox_ASIO_Input1_EnableRefHack.Checked).ToString());
 
         // Output Settings
         private void ASIO_Output_BaseChannel(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.BaseChannelIdentifier, ASIO.ReadSettings.Sections.Output, nUpDown_ASIO_Output_BaseChannel.Value.ToString());
@@ -3184,6 +3190,7 @@ namespace RSMods
             nUpDown_ASIO_Output_MaxVolume.Visible = checkBox_ASIO_Output_ControlMasterVolume.Checked;
         }
         private void ASIO_Output_EndpointVolume(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.Output, Convert.ToInt32(checkBox_ASIO_Output_ControlEndpointVolume.Checked).ToString());
+        private void ASIO_Output_EnableRefHack(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.Output, Convert.ToInt32(checkBox_ASIO_Output_EnableRefHack.Checked).ToString());
 
         // InputMic Settings
         private void ASIO_InputMic_Channel(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.ChannelIdentifier, ASIO.ReadSettings.Sections.InputMic, nUpDown_ASIO_InputMic_Channel.Value.ToString());
@@ -3195,6 +3202,7 @@ namespace RSMods
             nUpDown_ASIO_InputMic_MaxVolume.Visible = checkBox_ASIO_InputMic_ControlMasterVolume.Checked;
         }
         private void ASIO_InputMic_EndpointVolume(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ASIO.ReadSettings.Sections.InputMic, Convert.ToInt32(checkBox_ASIO_InputMic_ControlEndpointVolume.Checked).ToString());
+        private void ASIO_InputMic_EnableRefHack(object sender, EventArgs e) => SaveSettings_ASIO_Middleware(ASIO.ReadSettings.EnableRefCountHackIdentifier, ASIO.ReadSettings.Sections.InputMic, Convert.ToInt32(checkBox_ASIO_InputMic_EnableRefHack.Checked).ToString());
 
         // Clear Selection
         private void ASIO_ClearSelectedDevice(ListBox deviceList, EventHandler e, ASIO.ReadSettings.Sections section)
@@ -3328,7 +3336,7 @@ namespace RSMods
         {
             int startIndex = 3;
 
-            for(int i = 0; i < Dictionaries.SongListIndexToINISetting.Count; i++)
+            for (int i = 0; i < Dictionaries.SongListIndexToINISetting.Count; i++)
             {
                 dgv_Profiles_Songlists.Columns[startIndex + i].HeaderText = ReadSettings.ProcessSettings(Dictionaries.SongListIndexToINISetting[i]);
             }
@@ -3346,7 +3354,7 @@ namespace RSMods
 
             // Add RS1 owned DLC
             List<string> ownedRS1DLC = new List<string>();
-            List <JToken> DLCTags = Profiles.DecryptedProfile["Stats"]["DLCTag"].ToList();
+            List<JToken> DLCTags = Profiles.DecryptedProfile["Stats"]["DLCTag"].ToList();
             foreach (JProperty DLCTag in DLCTags)
             {
                 ownedRS1DLC.Add(DLCTag.Name);
@@ -3357,7 +3365,7 @@ namespace RSMods
 
             List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
 
-            foreach(List<string> songlist in SongLists)
+            foreach (List<string> songlist in SongLists)
             {
                 dlcKeyArrayList.Add(songlist);
             }
@@ -3465,11 +3473,11 @@ namespace RSMods
 
             // Hide songlists that the user has not enabled yet.
             // Unhide songlists that the user has enabled.
-            for(int songlist = 20; songlist > SongLists.Count; songlist--)
+            for (int songlist = 20; songlist > SongLists.Count; songlist--)
             {
                 dgv_Profiles_Songlists.Columns[$"SongList{songlist}"].Visible = false;
             }
-            for(int songlist = 1; songlist <= SongLists.Count; songlist++)
+            for (int songlist = 1; songlist <= SongLists.Count; songlist++)
             {
                 dgv_Profiles_Songlists.Columns[$"SongList{songlist}"].Visible = true;
             }
@@ -3835,7 +3843,7 @@ namespace RSMods
             List<object> tonesToImport_Guitar = new List<object>();
             List<object> tonesToImport_Bass = new List<object>();
 
-            foreach(string filename in filenames)
+            foreach (string filename in filenames)
             {
                 string manifestContents = File.ReadAllText(filename);
 
@@ -3901,7 +3909,7 @@ namespace RSMods
 
                 List<object> tonesInSong = tones.ToObject<List<object>>();
 
-                foreach(object tone in tonesInSong)
+                foreach (object tone in tonesInSong)
                 {
                     // Bass
                     if (arrangementName.Contains("Bass"))
@@ -3919,11 +3927,11 @@ namespace RSMods
             List<object> GuitarTones = Profiles.DecryptedProfile["CustomTones"].ToObject<List<object>>();
             List<object> BassTones = Profiles.DecryptedProfile["BassTones"].ToObject<List<object>>();
 
-            foreach(object tone in tonesToImport_Guitar)
+            foreach (object tone in tonesToImport_Guitar)
             {
                 GuitarTones.Add(tone);
             }
-            foreach(object tone in tonesToImport_Bass)
+            foreach (object tone in tonesToImport_Bass)
             {
                 BassTones.Add(tone);
             }
@@ -3954,7 +3962,7 @@ namespace RSMods
                 {
                     fileDialog.Multiselect = true;
                 }
-                
+
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
                     filenames = fileDialog.FileNames.ToList();
@@ -4182,11 +4190,12 @@ namespace RSMods
 
         private void SoundPacks_RepackAudioPsarc(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods/", "audio_psarc\\audio_psarc_RS2014_Pc"))) {
+            if (!Directory.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RSMods/", "audio_psarc\\audio_psarc_RS2014_Pc")))
+            {
                 MessageBox.Show("We detect no audio.psarc is decompiled. Give us some time to try to fix that.");
                 SoundPacks_UnpackAudioPsarc(sender, e);
             }
-               
+
             MessageBox.Show("This will take a couple minutes!\nGo do something while this is working it's magic.\nIf RSMods looks like it crashed, it didn't, do NOT attempt to close it or you may need to verify your game files");
             SoundPacks_PleaseWaitMessage(true);
             GlobalExtension.CurrentOperationLabel = label_AudioPsarcPleaseWait;
@@ -4493,7 +4502,7 @@ namespace RSMods
                         {
                             Debug.WriteLine($"Note Off received on channel {Channel}. Key = {Data[1]}. Velocity = {Data[2]}");
                         }
-                        
+
                         // Note On
                         else if (Status >= Midi.Status.NoteOn && Status < Midi.Status.AfterTouch)
                         {
@@ -4548,7 +4557,7 @@ namespace RSMods
                             Debug.WriteLine($"Unknown MIDI status received on channel {Channel}! Status = {Data[0]}. Data1 = {Data[1]}. Data2 = {Data[2]}");
                         }
                     }
-                   
+
                     break;
                 case Midi.Responses.MIM_LONGDATA:
                     Debug.WriteLine("wMsg=MIM_LONGDATA");
@@ -4586,7 +4595,7 @@ namespace RSMods
                     Midi.MIDIINCAPS temp = new Midi.MIDIINCAPS { };
                     Midi.midiInGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIINCAPS)));
 
-                    if(temp.szPname == listBox_ListMidiInDevices.SelectedItem.ToString())
+                    if (temp.szPname == listBox_ListMidiInDevices.SelectedItem.ToString())
                     {
                         Debug.WriteLine($"Found device: {temp.szPname}");
                         Midi.SelectedMidiInDeviceId = deviceNumber;
@@ -4729,5 +4738,5 @@ namespace RSMods
         [DllImport("winmm.dll", SetLastError = true)]
         public static extern uint midiInClose(IntPtr hmi);
     }
-#endregion
+    #endregion
 }

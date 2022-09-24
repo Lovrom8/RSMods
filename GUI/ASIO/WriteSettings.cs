@@ -32,6 +32,7 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.Output)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.Output)},
+                { ReadSettings.EnableRefCountHackIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableRefCountHackIdentifier, ReadSettings.Sections.Output)},
             }},
             {"[Asio.Input.0]", new Dictionary<string, string>
             {
@@ -40,6 +41,7 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.Input0)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.Input0)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.Input0)},
+                { ReadSettings.EnableRefCountHackIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableRefCountHackIdentifier, ReadSettings.Sections.Input0)},
             }},
             {"[Asio.Input.1]", new Dictionary<string, string>
             {
@@ -48,6 +50,7 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.Input1)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.Input1)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.Input1)},
+                { ReadSettings.EnableRefCountHackIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableRefCountHackIdentifier, ReadSettings.Sections.Input1)},
             }},
             {"[Asio.Input.Mic]", new Dictionary<string, string>
             {
@@ -56,6 +59,7 @@ namespace RSMods.ASIO
                 { ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareEndpointVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
                 { ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableSoftwareMasterVolumeControlIdentifier, ReadSettings.Sections.InputMic)},
                 { ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.ProcessSettings(ReadSettings.SoftwareMasterVolumePercentIdentifier, ReadSettings.Sections.InputMic)},
+                { ReadSettings.EnableRefCountHackIdentifier, ReadSettings.ProcessSettings(ReadSettings.EnableRefCountHackIdentifier, ReadSettings.Sections.InputMic)},
             }},
         };
 

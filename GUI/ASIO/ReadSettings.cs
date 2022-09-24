@@ -9,10 +9,10 @@ namespace RSMods.ASIO
     {
         private static string EnableWasapiOutputs, EnableWasapiInputs, EnableAsio,
         BufferSizeMode, CustomBufferSize,
-        OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_AltBaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent,
-        INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent,
-        INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent,
-        INPUTMic_Driver, INPUTMic_Channel, INPUTMic_EnableSoftwareEndpointVolumeControl, INPUTMic_EnableSoftwareMasterVolumeControl, INPUTMic_SoftwareMasterVolumePercent;
+        OUTPUT_Driver, OUTPUT_BaseChannel, OUTPUT_AltBaseChannel, OUTPUT_EnableSoftwareEndpointVolumeControl, OUTPUT_EnableSoftwareMasterVolumeControl, OUTPUT_SoftwareMasterVolumePercent, OUTPUT_EnableRefCountHack,
+        INPUT0_Driver, INPUT0_Channel, INPUT0_EnableSoftwareEndpointVolumeControl, INPUT0_EnableSoftwareMasterVolumeControl, INPUT0_SoftwareMasterVolumePercent, INPUT0_EnableRefCountHack,
+        INPUT1_Driver, INPUT1_Channel, INPUT1_EnableSoftwareEndpointVolumeControl, INPUT1_EnableSoftwareMasterVolumeControl, INPUT1_SoftwareMasterVolumePercent, INPUT1_EnableRefCountHack,
+        INPUTMic_Driver, INPUTMic_Channel, INPUTMic_EnableSoftwareEndpointVolumeControl, INPUTMic_EnableSoftwareMasterVolumeControl, INPUTMic_SoftwareMasterVolumePercent, INPUTMic_EnableRefCountHack;
 
         public static bool DisabledInput0 = false, DisabledInput1 = false, DisabledOutput = false, DisabledInputMic = false;
 
@@ -29,7 +29,8 @@ namespace RSMods.ASIO
         ChannelIdentifier = "Channel=",
         EnableSoftwareEndpointVolumeControlIdentifier = "EnableSoftwareEndpointVolumeControl=",
         EnableSoftwareMasterVolumeControlIdentifier = "EnableSoftwareMasterVolumeControl=",
-        SoftwareMasterVolumePercentIdentifier = "SoftwareMasterVolumePercent=";
+        SoftwareMasterVolumePercentIdentifier = "SoftwareMasterVolumePercent=",
+        EnableRefCountHackIdentifier = "EnableRefCountHack=";
 
         public enum Sections
         {
@@ -45,7 +46,7 @@ namespace RSMods.ASIO
 
         public static string SectionToName(Sections section)
         {
-            switch(section)
+            switch (section)
             {
                 case Sections.Config:
                     return "[Config]";
@@ -68,7 +69,7 @@ namespace RSMods.ASIO
         {
             setting = "";
 
-            if (currentLine.Contains(settingIdentifier) )
+            if (currentLine.Contains(settingIdentifier))
                 setting = currentLine.Substring(settingIdentifier.Length, (currentLine.Length - settingIdentifier.Length));
             return setting;
         }
@@ -112,10 +113,10 @@ namespace RSMods.ASIO
                         continue;
                     }
                 }
-                    
+
 
                 #region Config
-                    // Config
+                // Config
                 if (FoundCorrectSection(sectionToGrab, Sections.Config))
                 {
                     if (IdentifierIsFound(currentLine, EnableWasapiOutputsIdentifier, identifierToGrab))
@@ -154,6 +155,8 @@ namespace RSMods.ASIO
                         return FillSettingVariable(EnableSoftwareMasterVolumeControlIdentifier, sectionToGrab, currentLine, out OUTPUT_EnableSoftwareMasterVolumeControl);
                     if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
                         return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out OUTPUT_SoftwareMasterVolumePercent);
+                    if (IdentifierIsFound(currentLine, EnableRefCountHackIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableRefCountHackIdentifier, sectionToGrab, currentLine, out OUTPUT_EnableRefCountHack);
                 }
                 #endregion
                 #region Input0
@@ -171,6 +174,8 @@ namespace RSMods.ASIO
                         return FillSettingVariable(EnableSoftwareMasterVolumeControlIdentifier, sectionToGrab, currentLine, out INPUT0_EnableSoftwareMasterVolumeControl);
                     if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
                         return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out INPUT0_SoftwareMasterVolumePercent);
+                    if (IdentifierIsFound(currentLine, EnableRefCountHackIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableRefCountHackIdentifier, sectionToGrab, currentLine, out INPUT0_EnableRefCountHack);
                 }
                 #endregion
                 #region Input1
@@ -188,6 +193,8 @@ namespace RSMods.ASIO
                         return FillSettingVariable(EnableSoftwareMasterVolumeControlIdentifier, sectionToGrab, currentLine, out INPUT1_EnableSoftwareMasterVolumeControl);
                     if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
                         return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out INPUT1_SoftwareMasterVolumePercent);
+                    if (IdentifierIsFound(currentLine, EnableRefCountHackIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableRefCountHackIdentifier, sectionToGrab, currentLine, out INPUT1_EnableRefCountHack);
                 }
                 #endregion
                 #region Input Mic
@@ -205,12 +212,14 @@ namespace RSMods.ASIO
                         return FillSettingVariable(EnableSoftwareMasterVolumeControlIdentifier, sectionToGrab, currentLine, out INPUTMic_EnableSoftwareMasterVolumeControl);
                     if (IdentifierIsFound(currentLine, SoftwareMasterVolumePercentIdentifier, identifierToGrab))
                         return FillSettingVariable(SoftwareMasterVolumePercentIdentifier, sectionToGrab, currentLine, out INPUTMic_SoftwareMasterVolumePercent);
+                    if (IdentifierIsFound(currentLine, EnableRefCountHackIdentifier, identifierToGrab))
+                        return FillSettingVariable(EnableRefCountHackIdentifier, sectionToGrab, currentLine, out INPUTMic_EnableRefCountHack);
                 }
 
                 #endregion
             }
             return "";
-                
+
         }
     }
 }
