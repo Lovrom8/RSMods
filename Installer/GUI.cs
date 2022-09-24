@@ -14,7 +14,7 @@ namespace RS2014_Mod_Installer
         {
             InitializeComponent();
         }
-        
+
         private void UseModsButton_Click(object sender, EventArgs e)
         {
             string originalButtonText = UseModsButton.Text;
@@ -42,13 +42,44 @@ namespace RS2014_Mod_Installer
                 // Get GUI from Installer
                 if (DLLStuff.InjectGUI(Worker.WhereIsRocksmith()))
                 {
-                    MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by opening: " + Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe", "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Process.Start(Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe");
-                    Environment.Exit(1);
+                    string rsModsPath = Path.Combine(Worker.WhereIsRocksmith(), "RSMods") + "\\RSMods.exe";
+                    MessageBox.Show("This version of the installer allows you to take advantage of the new mod settings available by opening: " + rsModsPath, "New Mod Settings Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    Process.Start(rsModsPath);
+                    CreateDesktopShortcut(rsModsPath);
+
+                    this.Close();
                 }
             }
 
             UseModsButton.Text = originalButtonText;
+        }
+
+        private void CreateDesktopShortcut(string rsModsPath)
+        {
+            DialogResult dialogResult = MessageBox.Show("Would you like to create RSMods shortcut on your desktop?", "Create shortcut", MessageBoxButtons.YesNo);
+            if (dialogResult != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                string deskDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                using (StreamWriter writer = new StreamWriter(deskDir + @"\\RSMods.url", true))
+                {
+                    writer.WriteLine("[InternetShortcut]");
+                    writer.WriteLine("URL=file:///" + rsModsPath);
+                    writer.WriteLine("IconIndex=0");
+                    string icon = rsModsPath.Replace('\\', '/');
+                    writer.WriteLine("IconFile=" + icon);
+                }
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message, "Error creating the shortcut");
+            }
         }
 
         /// <summary>
@@ -71,7 +102,7 @@ namespace RS2014_Mod_Installer
             }
             catch { } // Fall-through = bad cert.
 
-            if (File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || File.Exists(Path.Combine(installLocation, "steamclient.dll")) ||  fakeSteamApi || !CheckExecutable(installLocation))
+            if (File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || File.Exists(Path.Combine(installLocation, "steamclient.dll")) || fakeSteamApi || !CheckExecutable(installLocation))
             {
                 MessageBox.Show("RSMods doesn't support pirated / stolen copies of Rocksmith 2014!", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.Start("https://store.steampowered.com/app/221680/");
