@@ -88,6 +88,10 @@ unsigned WINAPI MidiThread() {
 }
 
 unsigned WINAPI RiffRepeaterThread() {
+	// Wait for the game to enter the main menu before attempting to read the current song info, in order to prevent crashes
+	while (!D3DHooks::GameLoaded)
+		Sleep(5000);
+
 	std::string previousSongKey = "";
 
 	// We can only user Riff Repeater while the game is open, so verify it's open. Runs every 100 ms.
