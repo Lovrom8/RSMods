@@ -15,7 +15,7 @@ byte MemHelpers::getLowestStringTuning() {
 		_LOG("Invalid Pointer: getLowestStringTuning" << std::endl);
 		return NULL;
 	}
-		
+
 
 	if (Settings::ReturnSettingValue("ExtendedRangeDropTuning") == "on")
 		return (*(Tuning*)addrTuning).lowE;
@@ -39,7 +39,7 @@ byte* MemHelpers::GetCurrentTuning(bool verbose) {
 		// _LOG("Invalid Pointer: GetCurrentTuning" << std::endl); // Disabled because it causes log to get huge real quick
 		return NULL;
 	}
-		
+
 
 	byte* AllTunings = new byte[6]{ (*(Tuning*)addrTuning).lowE, (*(Tuning*)addrTuning).strA, (*(Tuning*)addrTuning).strD, (*(Tuning*)addrTuning).strG, (*(Tuning*)addrTuning).strB, (*(Tuning*)addrTuning).highE };
 
@@ -65,7 +65,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 	std::string pathToTuningList = "RSMods/CustomMods/tuning.database.json";
 
 	// If we can't find the list of tunings, just return a default value
-	if (!std::filesystem::exists(pathToTuningList)) { 
+	if (!std::filesystem::exists(pathToTuningList)) {
 		_LOG("Invalid File: GetTuningAtTuner - Path To Tuning File Doesn't Exist." << std::endl);
 		return Tuning();
 	}
@@ -120,7 +120,7 @@ Tuning MemHelpers::GetTuningAtTuner() {
 	tuningJson = tuningJson["Static"]["TuningDefinitions"]; // Skip directly to the part we are interested in
 
 	// Unforunately we can't use json.contains due to difference in formatting
-	for (auto& tuning : tuningJson.items()) { 
+	for (auto& tuning : tuningJson.items()) {
 		std::string jsonKeyUpper = tuning.key(), jsonKeyOriginal = tuning.key(); // Also you can't just make a separate copy of the uppercase string, so we keep both 
 		std::transform(jsonKeyUpper.begin(), jsonKeyUpper.end(), jsonKeyUpper.begin(), ::toupper);
 
@@ -147,7 +147,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 		_LOG("Invalid Pointer: IsExtendedRangeSong" << std::endl);
 		return false;
 	}
-	
+
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") != "on")
 		return false;
 
@@ -167,7 +167,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 		delete[] currentTuning;
 
 	// When a charter makes a bad bass tuning, and leaves the last two strings blank, let's fix that.
-	if (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on") { 
+	if (Settings::ReturnSettingValue("ExtendedRangeFixBassTuning") == "on") {
 		tuning.strB = tuning.strG;
 		tuning.highE = tuning.strG;
 	}
@@ -183,7 +183,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 	// Bass below C standard fix (A220 range)
 	if (GetTrueTuning() <= 260)
 		lowestTuning -= 12;
-	
+
 	_LOG_SETLEVEL(LogLevel::Info);
 
 	// Does the user's settings allow us to toggle on drop tunings (ER on B, trigger on C# Drop B)
@@ -197,7 +197,7 @@ bool MemHelpers::IsExtendedRangeSong() {
 		_LOG("Successful: IsExtendedRangeSong in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << dropTuning << std::endl);
 		return true;
 	}
-		
+
 	_LOG("Failed: IsExtendedRangeSong. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl);
 	return false;
 }
@@ -219,7 +219,7 @@ bool MemHelpers::IsExtendedRangeTuner() {
 	// Verify the user actually wants Extended Range enabled.
 	if (Settings::ReturnSettingValue("ExtendedRangeEnabled") != "on")
 		return false;
-	
+
 	Tuning tuner_songTuning = GetTuningAtTuner();
 
 	// Tuning Not Found
@@ -247,14 +247,14 @@ bool MemHelpers::IsExtendedRangeTuner() {
 		_LOG("Successful: IsExtendedRangeTuner in DROP where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << std::endl);
 		return true;
 	}
-		
+
 
 	// Does the user's settings allow us to toggle Exteneded Range Mode for this tuning
 	if (lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") && (!inDrop || lowestTuning <= Settings::GetModSetting("ExtendedRangeMode") - 2)) {
 		_LOG("Successful: IsExtendedRangeTuner in standard where " << lowestTuning << " is less than, or equal to, " << Settings::GetModSetting("ExtendedRangeMode") << " minus 2. Drop Tuned: " << std::boolalpha << inDrop << std::endl);
 		return true;
 	}
-		
+
 	_LOG("Failed: IsExtendedRangeTuner. Drop at " << Settings::GetModSetting("ExtendedRangeMode") << " but received " << lowestTuning << " with drop tuning " << Settings::ReturnSettingValue("ExtendedRangeDropTuning") << std::endl);
 	return false;
 }
@@ -316,7 +316,7 @@ int* MemHelpers::GetHighestLowestString() {
 		lowestTuning -= 256;
 
 	int* returnValue = new int[2]{ highestTuning, lowestTuning };
-	
+
 	return returnValue;
 }
 
@@ -340,46 +340,46 @@ int* MemHelpers::GetHighestLowestString(Tuning tuningOverride) {
 
 	// If the song is in A220, we need to remove 12 from the bass tuning to get the real tuning.
 	if (bassOctaveEffect) {
-		tuningOverride.lowE		-= 12;
-		tuningOverride.strA		-= 12;
-		tuningOverride.strD		-= 12;
-		tuningOverride.strG		-= 12;
-		tuningOverride.strB		-= 12;
-		tuningOverride.highE	-= 12;
+		tuningOverride.lowE -= 12;
+		tuningOverride.strA -= 12;
+		tuningOverride.strD -= 12;
+		tuningOverride.strG -= 12;
+		tuningOverride.strB -= 12;
+		tuningOverride.highE -= 12;
 	}
 
 	// Get the value for the strings.
-	int string_lowE = tuningOverride.lowE <= 24		? tuningOverride.lowE + 256		: tuningOverride.lowE;
-	int string_A = tuningOverride.strA <= 24		? tuningOverride.strA + 256		: tuningOverride.strA;
-	int string_D = tuningOverride.strD <= 24		? tuningOverride.strD + 256		: tuningOverride.strD;
-	int string_G = tuningOverride.strG <= 24		? tuningOverride.strG + 256		: tuningOverride.strG;
-	int string_B = tuningOverride.strB <= 24		? tuningOverride.strB + 256		: tuningOverride.strB;
-	int string_highE = tuningOverride.highE <= 24	? tuningOverride.highE + 256	: tuningOverride.highE;
+	int string_lowE = tuningOverride.lowE <= 24 ? tuningOverride.lowE + 256 : tuningOverride.lowE;
+	int string_A = tuningOverride.strA <= 24 ? tuningOverride.strA + 256 : tuningOverride.strA;
+	int string_D = tuningOverride.strD <= 24 ? tuningOverride.strD + 256 : tuningOverride.strD;
+	int string_G = tuningOverride.strG <= 24 ? tuningOverride.strG + 256 : tuningOverride.strG;
+	int string_B = tuningOverride.strB <= 24 ? tuningOverride.strB + 256 : tuningOverride.strB;
+	int string_highE = tuningOverride.highE <= 24 ? tuningOverride.highE + 256 : tuningOverride.highE;
 
 	// Get the highest tuning used.
-	highestTuning = string_lowE > highestTuning ? string_lowE	: highestTuning;
-	highestTuning = string_A	> highestTuning ? string_A		: highestTuning;
-	highestTuning = string_D	> highestTuning ? string_D		: highestTuning;
-	highestTuning = string_G	> highestTuning ? string_G		: highestTuning;
+	highestTuning = string_lowE > highestTuning ? string_lowE : highestTuning;
+	highestTuning = string_A > highestTuning ? string_A : highestTuning;
+	highestTuning = string_D > highestTuning ? string_D : highestTuning;
+	highestTuning = string_G > highestTuning ? string_G : highestTuning;
 
 	// Get the lowest tuning used
-	lowestTuning = string_lowE	< lowestTuning	? string_lowE	: lowestTuning;
-	lowestTuning = string_A		< lowestTuning	? string_A		: lowestTuning;
-	lowestTuning = string_D		< lowestTuning	? string_D		: lowestTuning;
-	lowestTuning = string_G		< lowestTuning	? string_G		: lowestTuning;
+	lowestTuning = string_lowE < lowestTuning ? string_lowE : lowestTuning;
+	lowestTuning = string_A < lowestTuning ? string_A : lowestTuning;
+	lowestTuning = string_D < lowestTuning ? string_D : lowestTuning;
+	lowestTuning = string_G < lowestTuning ? string_G : lowestTuning;
 
 	if (numberOfStrings == 6) {
 		// Get the highest tuning used (guitar).
-		highestTuning = string_B		> highestTuning ? string_B		: highestTuning;
-		highestTuning = string_highE	> highestTuning ? string_highE	: highestTuning;
+		highestTuning = string_B > highestTuning ? string_B : highestTuning;
+		highestTuning = string_highE > highestTuning ? string_highE : highestTuning;
 
 		// Get the lowest tuning used (guitar).
-		lowestTuning = string_B			< lowestTuning	? string_B		: lowestTuning;
-		lowestTuning = string_highE		< lowestTuning	? string_highE	: lowestTuning;
+		lowestTuning = string_B < lowestTuning ? string_B : lowestTuning;
+		lowestTuning = string_highE < lowestTuning ? string_highE : lowestTuning;
 	}
 
 	// Is the song done in A220? If so, we need to add the effect back to our highest / lowest tunings.
-	if (bassOctaveEffect) { 
+	if (bassOctaveEffect) {
 		highestTuning += 12;
 		lowestTuning += 12;
 	}
@@ -423,7 +423,7 @@ int MemHelpers::GetTrueTuning() {
 		// _LOG("Invalid Pointer: GetTrueTuning" << std::endl); // Disabled because it causes log to get huge real quick
 		return 440;
 	}
-		
+
 	int trueTuning = floor(*(float*)trueTunePointer);
 	return trueTuning;
 }
@@ -439,13 +439,13 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 	// It seems like the third level of the pointer isn't initialized until you reach the UPLAY login screen,
 	// but the second level actually is, and in there it keeps either an empty string, "TitleMenu", "MainOverlay"
 	// (before you reach the login) or some gibberish that's always the same (after that) 
-	if (GameNotLoaded) { 
+	if (GameNotLoaded) {
 		uintptr_t preMainMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_preMainMenuOffsets, GameNotLoaded);
 
 		std::string currentMenu((char*)preMainMenuAdr);
 
 		// I.e. check if its neither one of the possible states
-		if (lastMenu == "TitleScreen" && lastMenu != currentMenu)  
+		if (lastMenu == "TitleScreen" && lastMenu != currentMenu)
 			canGetRealMenu = true;
 		else {
 			lastMenu = currentMenu;
@@ -457,7 +457,7 @@ std::string MemHelpers::GetCurrentMenu(bool GameNotLoaded) {
 		return "pre_enter_prompt";
 
 	// If game hasn't loaded, take the safer, but possibly slower route
-	uintptr_t currentMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_currentMenuOffsets, GameNotLoaded); 
+	uintptr_t currentMenuAdr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_currentMenuOffsets, GameNotLoaded);
 
 	// Null Pointer Check
 	if (!currentMenuAdr) {
@@ -543,9 +543,9 @@ void MemHelpers::ToggleCB(bool enabled) {
 		// _LOG("Invalid Pointers: ToggleCB(" << std::boolalpha << enabled << ")" << std::endl); // Disabled because it causes log to get huge real quick
 		return;
 	}
-	
+
 	// JIC, no need to write the same value constantly
-	if (*(byte*)cbEnabled != (byte)enabled) 
+	if (*(byte*)cbEnabled != (byte)enabled)
 		*(byte*)cbEnabled = enabled;
 }
 
@@ -560,7 +560,7 @@ Resolution MemHelpers::GetWindowSize() {
 		currentSize.width = WindowSize.right - WindowSize.left;
 		currentSize.height = WindowSize.bottom - WindowSize.top;
 	}
-	
+
 	return currentSize;
 }
 
@@ -602,33 +602,33 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 		fontHeight = (WindowSize.height / 72);
 
 		CustomDX9Font = D3DXCreateFontA(pDevice,
-										fontWidth,
-										fontHeight,
-										FW_NORMAL,
-										1,
-										false,
-										DEFAULT_CHARSET,
-										OUT_DEFAULT_PRECIS,
-										ANTIALIASED_QUALITY,
-										DEFAULT_PITCH | FF_DONTCARE,
-										Settings::ReturnSettingValue("OnScreenFont").c_str(),
-										&DX9FontEncapsulation); // Create a new font
+			fontWidth,
+			fontHeight,
+			FW_NORMAL,
+			1,
+			false,
+			DEFAULT_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			ANTIALIASED_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE,
+			Settings::ReturnSettingValue("OnScreenFont").c_str(),
+			&DX9FontEncapsulation); // Create a new font
 	}
 	else if (useInputFontSize)
 		CustomDX9Font = D3DXCreateFontA(pDevice,
-										setFontSize.width,
-										setFontSize.height,
-										FW_NORMAL,
-										1,
-										false,
-										DEFAULT_CHARSET,
-										OUT_DEFAULT_PRECIS,
-										ANTIALIASED_QUALITY,
-										DEFAULT_PITCH | FF_DONTCARE,
-										Settings::ReturnSettingValue("OnScreenFont").c_str(),
-										&DX9FontEncapsulation); // Create a new font
+			setFontSize.width,
+			setFontSize.height,
+			FW_NORMAL,
+			1,
+			false,
+			DEFAULT_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			ANTIALIASED_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE,
+			Settings::ReturnSettingValue("OnScreenFont").c_str(),
+			&DX9FontEncapsulation); // Create a new font
 
-	// Create Area To Draw Text
+// Create Area To Draw Text
 	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
 
 	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
@@ -649,7 +649,7 @@ void MemHelpers::DX9DrawText(std::string textToDraw, int textColorHex, int topLe
 void MemHelpers::ToggleDrunkMode(bool enable) {
 	uintptr_t noLoft = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_loft, Offsets::ptr_loft_farOffsets);
 
-	
+
 	if (enable) {
 		// Turn on loft so the effects of the mod are actually shown.
 		if (*(float*)noLoft == 1) {
@@ -699,7 +699,7 @@ std::string MemHelpers::CurrentSelectedUser() {
 		_LOG("Invalid Pointer: CurrentSelectedUser" << std::endl);
 		return (std::string)"";
 	}
-		
+
 	// This value 90% of the time starts with an invalid pointer. We must wait ~2.5 seconds to guarantee that it is correct, or until the pointer changes (whichever comes first).
 	for (int i = 0; i < 25; i++)
 	{
@@ -712,23 +712,38 @@ std::string MemHelpers::CurrentSelectedUser() {
 	return std::string((const char*)badValue);
 }
 
+bool IsSongKeyStringValid(const char* str, size_t max_len)
+{
+	const char* end = (const char*)memchr(str, '\0', max_len);
+	if (end == NULL)
+		return false;
+
+	return strlen(str) > 13 && (strncmp("Play_", str, 3) == 0);
+}
+
 /// <summary>
 /// Gets the SongKey of the current playing song, based on the initial preview.
 /// </summary>
 /// <returns>Last played Song Key</returns>
 std::string MemHelpers::GetSongKey() {
-	uintptr_t previewEvent = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_previewName, Offsets::ptr_previewNameOffsets);
+	uintptr_t previewEventPtr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_previewName, Offsets::ptr_previewNameOffsets);
 
-	if (previewEvent) {
-		std::string previewName = std::string((char*)previewEvent);
+	if (previewEventPtr) {
+		const char* previewEvent = (char*)previewEventPtr;
 
-		// If the preview name contains "Play_", which is required by Wwise.
-		if (previewName.length() > 13 && previewName._Starts_with("Play_")) {
-			
-			// Verify that we are working with a "_Preview" audio.
-			// "_Invalid" is used when the user turns off their song previews.
-			if (previewName.compare(previewName.length() - 9, 9, "_Preview") || previewName.compare(previewName.length() - 9, 9, "_Invalid")) {
-				lastSongKey = previewName.substr(5, previewName.length() - 13);
+		// Check if it's null terminated within a reasonable number of bytes
+		if (IsSongKeyStringValid(previewEvent, 50))
+		{
+			std::string previewName = std::string(previewEvent);
+
+			// If the preview name contains "Play_", which is required by Wwise.
+			if (previewName.length() > 13 && previewName._Starts_with("Play_")) {
+
+				// Verify that we are working with a "_Preview" audio.
+				// "_Invalid" is used when the user turns off their song previews.
+				if (previewName.compare(previewName.length() - 9, 9, "_Preview") || previewName.compare(previewName.length() - 9, 9, "_Invalid")) {
+					lastSongKey = previewName.substr(5, previewName.length() - 13);
+				}
 			}
 		}
 	}
