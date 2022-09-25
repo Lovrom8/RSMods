@@ -718,7 +718,8 @@ bool IsSongKeyStringValid(const char* str, size_t max_len)
 	if (end == NULL)
 		return false;
 
-	return strlen(str) > 13 && (strncmp("Play_", str, 3) == 0);
+	std::string playPrefix = "Play_";
+	return strlen(str) > 13 && strncmp(playPrefix.data(), str, sizeof(playPrefix));
 }
 
 /// <summary>
