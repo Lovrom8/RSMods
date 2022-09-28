@@ -2712,7 +2712,13 @@ namespace RSMods
         private void Twitch_ReAuthorize(object sender, EventArgs e)
         {
             ImplicitAuth auth = new ImplicitAuth();
-            auth.MakeAuthRequest();
+
+            string authRes = auth.MakeAuthRequest();
+
+            if (!authRes.Equals("OK"))
+            {
+                MessageBox.Show($"Please open the following link in your browser: {authRes}", "Can't open your browser!");
+            }
 
             // string authToken = TwitchSettings.Get.AccessToken;
             // while (TwitchSettings.Get.AccessToken == authToken || TwitchSettings.Get.Username == String.Empty) {} // We want to get the new value so we are waiting until this breaks

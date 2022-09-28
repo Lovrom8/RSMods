@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RSMods.Util;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -24,19 +25,29 @@ namespace RSMods.Twitch
         private static readonly string url = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={twitchClientId}&redirect_uri=http://localhost:1069/twitch_login&scope={twitchScope}";
         private WebServer webServer = null;
 
-        public void MakeAuthRequest(bool startMinimized = false)
+        public string MakeAuthRequest(bool startMinimized = false)
         {
-            string browser = GenUtil.GetDefaultBrowser(url);
+            try
+            {
+                string browser = GenUtil.GetDefaultBrowser(url);
 
-            ProcessStartInfo startInfo = new ProcessStartInfo(browser);
+                ProcessStartInfo startInfo = new ProcessStartInfo(browser);
 
-            if (startMinimized)
-                startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                if (startMinimized)
+                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
-            if(!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
-                startInfo.Arguments = url;
+                if (!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
+                    startInfo.Arguments = url;
 
-            Process.Start(startInfo);
+                Process.Start(startInfo);
+
+                return "OK";
+            }
+            catch (Win32Exception)
+            {
+                return url;
+            }
+
 
             // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
         }
