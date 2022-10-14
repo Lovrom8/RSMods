@@ -270,6 +270,7 @@ namespace RSMods
         #region Is RS Void
         public static void IsVoid(string installLocation) // Anti-Piracy Check (False = Real, True = Pirated) || Modified from Beat Saber Mod Assistant
         {
+            string reason = string.Empty;
             bool fakeSteamApi = true;
             try
             {
@@ -279,12 +280,30 @@ namespace RSMods
                 {
                     fakeSteamApi = false;
                 }
+                else
+                {
+                    reason += "Invalid steam_api.dll certificate.";
+                }
             }
             catch { } // Fall-through = bad cert.
 
-            if (File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || File.Exists(Path.Combine(installLocation, "steamclient.dll")) || fakeSteamApi || !CheckExecutable(installLocation))
+            bool areCrackIndicationsPresent = File.Exists(Path.Combine(installLocation, "IGG-GAMES.COM.url")) || File.Exists(Path.Combine(installLocation, "SmartSteamEmu.ini")) || File.Exists(Path.Combine(installLocation, "GAMESTORRENT.CO.url")) || File.Exists(Path.Combine(installLocation, "Codex.ini")) || File.Exists(Path.Combine(installLocation, "Skidrow.ini")) || File.Exists(Path.Combine(installLocation, "steamclient.dll"));
+
+            if (areCrackIndicationsPresent)
             {
-                MessageBox.Show("RSMods doesn't support pirated / stolen copies of Rocksmith 2014!", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                reason += "\nParts of game crack are present in the folder.";
+            }
+
+            bool isExeInvalid = !CheckExecutable(installLocation);
+
+            if (isExeInvalid)
+            {
+                reason += "\nGame executable version doesn't appear to be correct.";
+            }
+
+            if (areCrackIndicationsPresent || fakeSteamApi || isExeInvalid)
+            {
+                MessageBox.Show($"RSMods doesn't support pirated / stolen copies of Rocksmith 2014! {Environment.NewLine}Reason: {reason}", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.Start("https://store.steampowered.com/app/221680/");
                 Environment.Exit(1);
                 return;
@@ -309,7 +328,7 @@ namespace RSMods
             {
                 return true; // Not ideal but if the game is open, there isn't much we can do...
             }
-            
+
         }
         #endregion
     }
