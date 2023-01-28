@@ -29,15 +29,14 @@ namespace RSMods.Twitch
         {
             try
             {
-                string browser = GenUtil.GetDefaultBrowser(url);
+                string browser = GenUtil.GetDefaultBrowser(url); // Just pass the URL instead of browser executable name
 
-                ProcessStartInfo startInfo = new ProcessStartInfo(browser);
+                var startInfo = new ProcessStartInfo(browser) {
+                    WindowStyle = startMinimized ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal
+                };
 
-                if (startMinimized)
-                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
-
-                if (!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
-                    startInfo.Arguments = url;
+                //if (!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
+                //   startInfo.Arguments = url;
 
                 Process.Start(startInfo);
 

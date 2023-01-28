@@ -70,7 +70,7 @@ namespace RSMods.Util
                         object progIdValue = userChoiceKey.GetValue("Progid");
                         if (progIdValue != null)
                         {
-                            if (progIdValue.ToString().ToLower().Contains("chrome"))
+                            /*if (progIdValue.ToString().ToLower().Contains("chrome"))
                                 browserName = "chrome.exe";
                             else if (progIdValue.ToString().ToLower().Contains("firefox"))
                                 browserName = "firefox.exe";
@@ -79,9 +79,12 @@ namespace RSMods.Util
                             else if (progIdValue.ToString().ToLower().Contains("opera"))
                                 browserName = "opera.exe";
                             else if (progIdValue.ToString().ToLower().Contains("brave"))
-                                browserName = "brave.exe";
-                            else if (progIdValue.ToString().ToLower().Contains("edge"))
+                                browserName = "brave.exe";*/
+
+                            if (progIdValue.ToString().ToLower().Contains("edge"))
                                 return $"microsoft-edge:{url}";
+                            else
+                                return url;
                         }
                     }
                 }

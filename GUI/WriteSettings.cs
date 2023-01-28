@@ -303,7 +303,7 @@ namespace RSMods
 
             if (areCrackIndicationsPresent || fakeSteamApi || isExeInvalid)
             {
-                MessageBox.Show($"RSMods doesn't support pirated / stolen copies of Rocksmith 2014! {Environment.NewLine}Reason: {reason}", "ARGGGG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Incompatible Rocksmith version detected! Only the newest RS version is supported - RSMods doesn't support pirated / stolen copies of Rocksmith 2014! {Environment.NewLine}Reason: {reason}", "Incompatible Rocksmith version", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.Start("https://store.steampowered.com/app/221680/");
                 Environment.Exit(1);
                 return;
