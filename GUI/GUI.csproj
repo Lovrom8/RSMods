@@ -152,6 +152,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadSettings.cs" />
+    <Compile Include="Util\FolderPicker.cs" />
     <Compile Include="Util\GenUtil.cs" />
     <Compile Include="Twitch\RSModderBot.cs" />
     <Compile Include="Util\MessageBoxManager.cs" />

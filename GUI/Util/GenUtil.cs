@@ -300,7 +300,7 @@ namespace RSMods.Util
                         Constants.BypassSavePrompt = "true";
                         return string.Empty;
                     }
-                    
+
                     potentialSaveFolder = AskUserForSavePath();
                 }
 
@@ -389,40 +389,36 @@ namespace RSMods.Util
 
         public static string AskUserForRSFolder()
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            FolderPicker dialog = new FolderPicker();
+            if (dialog.ShowDialog(IntPtr.Zero) == true) // Would have been better to pass in the handle of the main form, but that would require a bit too much refactoring
             {
-                DialogResult result = dialog.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    string rsFolder = dialog.SelectedPath;
+                string rsFolder = dialog.ResultPath;
 
-                    if (rsFolder.IsRSFolder())
-                    {
-                        Constants.RSFolder = rsFolder;
-                        return rsFolder;
-                    }
+                if (rsFolder.IsRSFolder())
+                {
+                    Constants.RSFolder = rsFolder;
+                    return rsFolder;
                 }
             }
+
             return String.Empty;
         }
 
         public static string AskUserForSavePath()
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            FolderPicker dialog = new FolderPicker();
+            if (dialog.ShowDialog(IntPtr.Zero) == true)
             {
-                DialogResult result = dialog.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    string savePath = dialog.SelectedPath;
+                string savePath = dialog.ResultPath;
 
-                    if (savePath.IsSavePath())
-                    {
-                        Constants.SavePath = savePath;
-                        return savePath;
-                    }
+                if (savePath.IsSavePath())
+                {
+                    Constants.SavePath = savePath;
+                    return savePath;
                 }
             }
-            return string.Empty;
+
+            return String.Empty;
         }
 
         public static string GetSteamProfilesFolderManual()
