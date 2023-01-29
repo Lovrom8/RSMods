@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using RS2014_Mod_Installer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -206,17 +207,15 @@ namespace RSMods.Util
 
         public static string AskUserForRSFolder()
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog()) // FolderBrowserDialog lacks usability, while using OpenFileDialog can be a bit wonky so this is likely the best solution
+            FolderPicker dialog = new FolderPicker();
+            if (dialog.ShowDialog(IntPtr.Zero) == true)
             {
-                DialogResult result = dialog.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    string rsFolder = dialog.SelectedPath;
+                string rsFolder = dialog.ResultPath;
 
-                    if (rsFolder.IsRSFolder())
-                        return rsFolder;
-                }
+                if (rsFolder.IsRSFolder())
+                    return rsFolder;
             }
+
             return String.Empty;
         }
     }
