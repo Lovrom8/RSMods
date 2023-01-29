@@ -211,6 +211,8 @@ namespace RSMods
                                 sw.Write(',');
                                 sw.Write(tuning.Item2);
                             }
+
+                            csvContents += index;
                         }
                     }
                 }
