@@ -58,7 +58,7 @@ inline LPDIRECT3DTEXTURE9 customHeadstockTexture;
 inline LPDIRECT3DTEXTURE9 customGreenScreenWall_Stage0, customGreenScreenWall_Stage1, customGreenScreenWall_Stage2, customGreenScreenWall_Stage3, customGreenScreenWall_Stage4, customGreenScreenWall_Stage5, customGreenScreenWall_Stage6;
 inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
 inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
-inline std::vector<ColorList> randomTextureColors;
+inline ColorList randomTextureColors;
 
 inline int selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline unsigned int currIdx = 0;

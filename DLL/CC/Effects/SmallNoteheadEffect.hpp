@@ -6,19 +6,17 @@ namespace CrowdControl::Effects {
 	class SmallNoteheadEffect : public CCEffect
 	{
 	public:
-		SmallNoteheadEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		SmallNoteheadEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "transparentnotes", "bignoteheads", "removenotes" };
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 
 	private:
-		void SetNoteHeadScale(float scale);
-
-		std::vector<std::string> incompatibleEffects =
-			{ "transparentnotes", "bignoteheads", "removenotes" };
+		static void SetNoteHeadScale(float scale);
 	};
 }

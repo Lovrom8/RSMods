@@ -8,62 +8,47 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult DrunkModeEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus DrunkModeEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("DrunkModeEffect::Test()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+			return EffectStatus::Success;
 	}
 
 	/// <summary>
-	/// Drunk mode is achieved by writing different continously values to a variable controlling the horiztonal position of the camera
+	/// Drunk mode is achieved by writing different continuously values to a variable controlling the horizontal position of the camera
 	/// Loft needs to be enabled for it to have the full effect, so we also call ToggleDrunkMode
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
-	EffectResult DrunkModeEffect::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or EffectStatus::Success if we are</returns>
+	EffectStatus DrunkModeEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("DrunkModeEffect::Start()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
-
-		running = true;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		Settings::UpdateTwitchSetting("DrunkMode", "on");
 		MemHelpers::ToggleDrunkMode(true);
 
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
-	}
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void DrunkModeEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult DrunkModeEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus DrunkModeEffect::Stop()
 	{
 		_LOG_INIT;
 
@@ -73,6 +58,6 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 		MemHelpers::ToggleDrunkMode(false);
 		Settings::UpdateTwitchSetting("DrunkMode", "off");
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

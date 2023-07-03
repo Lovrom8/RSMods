@@ -6,69 +6,55 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult FYourFCEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus FYourFCEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("FYourFC::Test()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Kills the player's current note streak for a certain duration
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song or incompatible effects are running, or EffectResult::Sucess if we are</returns>
-	EffectResult FYourFCEffect::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or EffectStatus::Sucess if we are</returns>
+	EffectStatus FYourFCEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("FYourFC::Start()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		running = true;
+		uintptr_t currentNoteStreak = 0;
 
-		Settings::UpdateTwitchSetting("FYourFC", "on");
+		if (MemHelpers::Contains(D3DHooks::currentMenu, learnASongModes))
+			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakLASOffsets);
+		else if (MemHelpers::Contains(D3DHooks::currentMenu, scoreAttackModes))
+			currentNoteStreak = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_currentNoteStreak, Offsets::ptr_currentNoteStreakSAOffsets);
 
-		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		if (currentNoteStreak != 0)
+			*(int32_t*)currentNoteStreak = 0;
 
-		return EffectResult::Success;
-	}
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void FYourFCEffect::Run()
-	{
-		// Stop automatically after duration has elapsed
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult FYourFCEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus FYourFCEffect::Stop()
 	{
 		_LOG_INIT;
 
 		_LOG("FYourFC::Stop()" << std::endl);
 
-		running = false;
-		Settings::UpdateTwitchSetting("FYourFC", "off");
-
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

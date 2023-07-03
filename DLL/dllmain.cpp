@@ -1088,7 +1088,7 @@ bool HandleMessage(std::string currMsg, std::string type) {
 				currentRandomTexture = (int)urd(rng);
 
 				ERMode::customSolidColor.clear();
-				ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
+				ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
 
 				//if(twitchUserDefinedTexture != NULL) //determine why this crashes if you send multiple in a row
 				//	twitchUserDefinedTexture->Release();

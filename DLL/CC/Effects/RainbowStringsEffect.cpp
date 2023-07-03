@@ -6,63 +6,47 @@ namespace CrowdControl::Effects {
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult RainbowStringsEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus RainbowStringsEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RainbowStringsEffect::Test()" << std::endl);
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
-	/// Makes strings continously shift their colors 
+	/// Makes strings continuously shift their colors 
 	/// As it is with rainbow notes, all color changing is handled in ERMode, so it just toggles the switch in there
 	/// Does not affect the note heads!
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
-	EffectResult RainbowStringsEffect::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or EffectStatus::Success if we are in a song</returns>
+	EffectStatus RainbowStringsEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RainbowStringsEffect::Start()" << std::endl);
 
-		if (ERMode::IsRainbowEnabled() || !MemHelpers::IsInSong())
-			return EffectResult::Retry;
-
-		running = true;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		ERMode::RainbowEnabled = true;
 
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
-	}
-
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void RainbowStringsEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult RainbowStringsEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus RainbowStringsEffect::Stop()
 	{
 		_LOG_INIT;
 
@@ -72,6 +56,6 @@ namespace CrowdControl::Effects {
 		ERMode::RainbowEnabled = false;
 		ERMode::ResetAllStrings();
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

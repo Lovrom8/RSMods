@@ -255,6 +255,9 @@
     <ClCompile Include="Mods\TrueTuning.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="CC\Effects\WavyNotesEffect.cpp">
+      <Filter>CrowdControl\Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -512,6 +515,9 @@
     <ClInclude Include="Mods\TrueTuning.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CC\Effects\WavyNotesEffect.hpp">
+      <Filter>CrowdControl\Effects\EffectHeaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="xinput1_3.def">
@@ -524,6 +530,9 @@
       <Filter>Main Headers\Detours</Filter>
     </None>
     <None Include="CC/rocksmithcrowdcontrol.cs">
+      <Filter>CrowdControl</Filter>
+    </None>
+    <None Include="CC\rocksmithcrowdcontrol2.cs">
       <Filter>CrowdControl</Filter>
     </None>
   </ItemGroup>

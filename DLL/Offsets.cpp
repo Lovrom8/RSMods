@@ -205,7 +205,7 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 
 
 	// Objects
-	uintptr_t ptr_rootObject = 0x00F5C508;
+	uintptr_t ptr_rootObject = 0x00F5F588; // 0x00F5C508
 	std::vector<unsigned int> ptr_rootObjectOffsets{ 0xAC, 0x20, 0x24, 0x24, 0x0 };
 
 	// Faster dynamic density / scroll speed change

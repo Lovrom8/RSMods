@@ -1,76 +1,59 @@
 #include "RemoveNotesEffect.hpp"
 
-namespace CrowdControl::Effects { // Prevents the game from drawing note head meshes
+namespace CrowdControl::Effects {
 	
 	/// <summary>
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult RemoveNotesEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus RemoveNotesEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RemoveNotesEffect::Test()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
-	/// Sets the scale of each object related to note heads to 0, hence making it temporarily invisble 
+	/// Sets the scale of each object related to note heads to 0, hence making it temporarily invisible 
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
-	EffectResult RemoveNotesEffect::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or EffectStatus::Success if we are in a song</returns>
+	EffectStatus RemoveNotesEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RemoveNotesEffect::Start()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
-
-		running = true;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		ScaleNotes(0);
-	
+
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
-	}
-
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void RemoveNotesEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult RemoveNotesEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus RemoveNotesEffect::Stop()
 	{
 		_LOG_INIT;
 
 		_LOG("RemoveNotesEffect::Stop()" << std::endl);
 
 		ScaleNotes(1);
-
 		running = false;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
@@ -84,7 +67,7 @@ namespace CrowdControl::Effects { // Prevents the game from drawing note head me
 
 		std::map<std::string, float> scaleMap;
 
-		for (auto className : ObjectUtil::AllNoteParts) {
+		for (const auto& className : ObjectUtil::AllNoteParts) {
 			scaleMap[className] = scale;
 		}
 

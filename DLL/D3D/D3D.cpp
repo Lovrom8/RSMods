@@ -222,7 +222,7 @@ void D3D::GenerateTextures(IDirect3DDevice9* pDevice, TextureType type) {
 			}
 
 			GenerateTexture(pDevice, &randomTextures[textIdx], colorSet);
-			randomTextureColors.push_back(colorSet);
+			randomTextureColors = ColorList(colorSet);
 
 			colorSet.clear();
 		}

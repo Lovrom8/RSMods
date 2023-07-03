@@ -24,6 +24,7 @@
     <ClCompile Include="CC\Effects\RainbowNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\RemoveInstrumentEffect.cpp" />
     <ClCompile Include="CC\Effects\TurboSpeedEffect.cpp" />
+    <ClCompile Include="CC\Effects\WavyNotesEffect.cpp" />
     <ClCompile Include="CC\Effects\ZoomEffect.cpp" />
     <ClCompile Include="D3D/D3D.cpp" />
     <ClCompile Include="CC\CCEnums.hpp" />
@@ -59,6 +60,7 @@
     <ClInclude Include="CC\Effects\RainbowNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\RemoveInstrumentEffect.hpp" />
     <ClInclude Include="CC\Effects\TurboSpeedEffect.hpp" />
+    <ClInclude Include="CC\Effects\WavyNotesEffect.hpp" />
     <ClInclude Include="CC\Effects\ZoomEffect.hpp" />
     <ClCompile Include="D3D/D3DHooks.cpp" />
     <ClCompile Include="Mods\DisableControllers.cpp" />
@@ -173,6 +175,7 @@
     <ClInclude Include="Structs.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CC\rocksmithcrowdcontrol2.cs" />
     <None Include="xinput1_3.def" />
     <None Include="Lib\Detours\detours.pdb">
       <FileType>Document</FileType>

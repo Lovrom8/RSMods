@@ -6,19 +6,17 @@ namespace CrowdControl::Effects {
 	class RemoveInstrumentEffect : public CCEffect
 	{
 	public:
-		RemoveInstrumentEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		RemoveInstrumentEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "invertedstrings", "rainbowstrings" };
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 
 	private:
-		void SetInstrumentScale(float scale);
-
-		std::vector<std::string> incompatibleEffects =
-			{ "invertedstrings" };
+		static void SetInstrumentScale(float scale);
 	};
 }

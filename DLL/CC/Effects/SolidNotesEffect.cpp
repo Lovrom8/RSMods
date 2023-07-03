@@ -2,23 +2,23 @@
 #include "../../Lib/Json/json.hpp"
 #include <sstream>
 
-namespace CrowdControl::Effects { // Changes current note heads to a custom generated texture
+namespace CrowdControl::Effects {
 	
 	/// <summary>
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesCustomEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesCustomEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomEffect::Test()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
@@ -37,15 +37,15 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	/// Change the color of the strings to the ones specified in the request.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesCustomEffect::Start(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesCustomEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomEffect::Start()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		running = true;
 
@@ -59,41 +59,26 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		SetDuration(request);
 
-		return EffectResult::Success;
-	}
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void SolidNotesCustomEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult SolidNotesCustomEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus SolidNotesCustomEffect::Stop()
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomEffect::Stop()" << std::endl);
 
-		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
+		running = false;
 		//ERMode::ResetAllStrings();
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -103,84 +88,69 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesRandomEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesRandomEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesRandomEffect::Test()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Change the color of the strings to the ones specified in the request.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesRandomEffect::Start(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesRandomEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesRandomEffect::Start()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
-
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		_LOG("SolidNotesRandomEffect - Colors Saved" << std::endl);
-
-		running = true;
-
-		Settings::UpdateTwitchSetting("SolidNotes", "on");
-
-		static std::uniform_real_distribution<> urd(0, 9);
+		
+		static std::uniform_real_distribution<> urd(0, randomTextureCount - 1);
 		currentRandomTexture = urd(rng);
+
+		_LOG("SolidNotesRandomEffect - Picked color " << currentRandomTexture << "/" << randomTextureCount << std::endl);
 
 		// Set random solid color
 		ERMode::customSolidColor.clear();
-		ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), randomTextureColors[currentRandomTexture].begin(), randomTextureColors[currentRandomTexture].end());
+		ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
 
 		twitchUserDefinedTexture = randomTextures[currentRandomTexture];
 
-		if (request.parameters.contains("duration"))
-			request.parameters.at("duration").get_to(duration);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
-		return EffectResult::Success;
-	}
+		SetDuration(request);
+		running = true;
 
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void SolidNotesRandomEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult SolidNotesRandomEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus SolidNotesRandomEffect::Stop()
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesRandomEffect::Stop()" << std::endl);
 
-		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
+		running = false;
 		//ERMode::ResetAllStrings();
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -190,34 +160,32 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesCustomRGBEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesCustomRGBEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomRGBEffect::Test()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Change the color of the strings to the ones specified in the request.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult SolidNotesCustomRGBEffect::Start(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus SolidNotesCustomRGBEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomRGBEffect::Start()" << std::endl);
 
-		if (!ERMode::ColorsSaved || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects) || running)
-			return EffectResult::Retry;
-
-		running = true;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		//Get color from parameters
 		byte r, g, b;
@@ -239,38 +207,25 @@ namespace CrowdControl::Effects { // Changes current note heads to a custom gene
 		Settings::UpdateTwitchSetting("SolidNotes", "on");
 
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
-	}
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void SolidNotesCustomRGBEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult SolidNotesCustomRGBEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus SolidNotesCustomRGBEffect::Stop()
 	{
 		_LOG_INIT;
 
 		_LOG("SolidNotesCustomRGBEffect::Stop()" << std::endl);
 
-		running = false;
 		Settings::UpdateTwitchSetting("SolidNotes", "off");
+		running = false;
 		//ERMode::ResetAllStrings();
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

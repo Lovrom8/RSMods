@@ -1,21 +1,22 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 #include "../../D3D/D3D.hpp"
 
 namespace CrowdControl::Effects {
 	class ShuffleTonesEffect : public CCEffect
 	{
 	public:
-		ShuffleTonesEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		ShuffleTonesEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
 		}
 
-		unsigned int tickIntervalMilliseconds = 2000;
+		uint32_t tickIntervalMilliseconds = 2000;
 		std::chrono::steady_clock::time_point nextTickTime;
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		void Run() override;
+		EffectStatus Stop() override;
 	};
 }

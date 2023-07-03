@@ -6,38 +6,37 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult ShuffleTonesEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus ShuffleTonesEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("ShuffleTonesEffect::Test()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Shuffle the tone used by the player
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult ShuffleTonesEffect::Start(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus ShuffleTonesEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("ShuffleTonesEffect::Start()" << std::endl);
 
-		if (!MemHelpers::IsInSong() || running)
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		running = true;
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
@@ -78,8 +77,8 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// <summary>
 	/// Stops the mod by setting the tone back to the tone of the song.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult ShuffleTonesEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus ShuffleTonesEffect::Stop()
 	{
 		_LOG_INIT;
 
@@ -90,6 +89,6 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 		// Return to tone slot 1 at the end
 		Util::SendKey(Settings::GetVKCodeForString("1"));
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

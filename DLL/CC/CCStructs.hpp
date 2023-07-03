@@ -9,17 +9,59 @@ using nlohmann::json;
 
 namespace CrowdControl::Structs {
 	struct Request {
-		unsigned int id;
+		/**
+		 * \brief The request ID, all responses to this request should contain the same ID value.
+		 * \details These are not guaranteed to be sequential or increasing.
+		 */
+		uint32_t id;
+		/**
+		 * \brief The identifier of the requested effect.
+		 * \details Only present on request types 0 (Test), 1(Start) and 2 (Stop).
+		 */
 		std::string code;
-		std::string viewer;
-		RequestType type;
+		/**
+		 * \brief This field contains any parameters the user has selected.
+		 */
 		json parameters;
+		/**
+		 * \brief The displayable name of the viewer who requested the effect.
+		 */
+		std::string viewer;
+		/**
+		 * \brief The requested quantity of the effect, if applicable.
+		 */
+		int64_t quantity;
+		/**
+		 * \brief The requested duration of the effect, in milliseconds.
+		 */
+		int64_t duration;
+		/**
+		 * \brief The type of message. See RequestType enum.
+		 */
+		RequestType type;
 	};
 
 	struct Response {
-		unsigned int id;
-		EffectResult status;
-		std::string message;
+		/**
+		 * \brief The request ID, all responses to a request should contain the same ID value.
+		 */
+		int64_t id;
+		/**
+		 * \brief The identifier of the requested effect.
+		 */
+		std::string code;
+		/**
+		 * \brief Indicates the status of the effect request or class.
+		 */
+		EffectStatus status;
+		/**
+		 * \brief The requested duration of the effect, in milliseconds.
+		 */
+		int64_t timeRemaining;
+		/**
+		 * \brief Indicates the type of message. See ResponseType enum below.
+		 */
+		ResponseType type;
 	};
 
 	extern void to_json_request(json& j, const Request& p);

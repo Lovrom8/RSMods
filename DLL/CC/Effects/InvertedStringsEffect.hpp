@@ -7,17 +7,14 @@ namespace CrowdControl::Effects {
 	class InvertedStringsEffect : public CCEffect
 	{
 	public:
-		InvertedStringsEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		InvertedStringsEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "removeinstrument" };
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
-
-	private:
-		std::vector<std::string> incompatibleEffects =
-			{ "removeinstrument" };
+		EffectStatus Test(Request request);
+		EffectStatus Start(Request request);
+		EffectStatus Stop();
 	};
 }

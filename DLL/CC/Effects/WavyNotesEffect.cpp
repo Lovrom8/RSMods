@@ -1,13 +1,13 @@
-#include "ZoomEffect.hpp"
+#include "WavyNotesEffect.hpp"
 
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-	EffectStatus ZoomEffect::Test(Request request)
+	EffectStatus WavyNotesEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Test()" << std::endl);
+		_LOG("WavyNotesEffect::Test()" << std::endl);
 
 		if (!CanStart(&EffectList::AllEffects))
 			return EffectStatus::Retry;
@@ -16,33 +16,29 @@ namespace CrowdControl::Effects {
 	}
 
 
-	EffectStatus ZoomEffect::Start(Request request)
+	EffectStatus WavyNotesEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Start()" << std::endl);
+		_LOG("WavyNotesEffect::Start()" << std::endl);
 
 		if (!CanStart(&EffectList::AllEffects))
 			return EffectStatus::Retry;
-
-		auto rootObject = ObjectUtil::GetRootObject();
-		rootObject->scale = factor;
-
+		
 		SetDuration(request);
 		running = true;
+		wavy_notes_enabled = true;
 
 		return EffectStatus::Success;
 	}
 
-	EffectStatus ZoomEffect::Stop()
+	EffectStatus WavyNotesEffect::Stop()
 	{
 		_LOG_INIT;
 
-		_LOG("ZoomEffect::Stop()" << std::endl);
+		_LOG("WavyNotesEffect::Stop()" << std::endl);
 
-		auto rootObject = ObjectUtil::GetRootObject();
-		rootObject->scale = 1.0f;
-
+		wavy_notes_enabled = false;
 		running = false;
 
 		return EffectStatus::Success;

@@ -1,23 +1,29 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../Mods/ExtendedRangeMode.hpp"
 #include "../CCEffectList.hpp"
+#include "../../Mods/ExtendedRangeMode.hpp"
 
 namespace CrowdControl::Effects {
 	class RainbowNotesEffect : public CCEffect
 	{
 	public:
-		RainbowNotesEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		RainbowNotesEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "removenotes", "transparentnotes", "solidrandom",  "solidcustom", "solidcustomrgb" };
+		}
+		
+		/**
+		 * \brief Can this effect start? By default checks that a song is being played, no incompatible effects are running, and this effect is not running
+		 * \return True when this effect can start, false otherwise
+		 */
+		bool CanStart(std::map<std::string, CCEffect*>* AllEffects) override
+		{
+			return MemHelpers::IsInSong() && !ERMode::IsRainbowNotesEnabled() && !AreIncompatibleEffectsRunning(AllEffects) && !running;
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
-
-	private:
-		std::vector<std::string> incompatibleEffects =
-		{ "removenotes", "transparentnotes", "solidrandom",  "solidcustom", "solidcustomrgb" };
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 	};
 }

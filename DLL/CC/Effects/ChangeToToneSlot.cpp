@@ -8,49 +8,43 @@ namespace CrowdControl::Effects {
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult ChangeToToneSlot::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus ChangeToToneSlot::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("ChangeToToneSlot::Test()" << std::endl);
 
-		if (!MemHelpers::IsInSong())
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 
 	/// <summary>
 	/// Sends a keystroke to the game for the current tone slot (presses number 1 for first tone slot, number 2 for second, etc.)
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song, or EffectResult::Sucess if we are</returns>
-	EffectResult ChangeToToneSlot::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song, or EffectStatus::Success if we are</returns>
+	EffectStatus ChangeToToneSlot::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("ChangeToToneSlot::Start()" << std::endl);
 
-		if (!MemHelpers::IsInSong())
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		Util::SendKey(Settings::GetVKCodeForString(std::to_string(ChangeToToneSlot::slot)));
+		Util::SendKey(Settings::GetVKCodeForString(std::to_string(slot)));
 	
 		_LOG("Changing tone to slot " << slot << std::endl);
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
-
-
-	/// <summary>
-	/// It's an instant effect and doesn't have a duration
-	/// </summary>
-	void ChangeToToneSlot::Run() { }
 
 	/// <summary>
 	/// Mod cannot be stopped, since it has an instant effect.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult ChangeToToneSlot::Stop() { return EffectResult::Success; }
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus ChangeToToneSlot::Stop() { return EffectStatus::Success; }
 }

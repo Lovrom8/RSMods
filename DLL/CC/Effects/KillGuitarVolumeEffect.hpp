@@ -1,5 +1,6 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 #include "../../Wwise/Types.hpp"
 #include "../../Wwise/SoundEngine.hpp"
 #include "../../MemHelpers.hpp"
@@ -8,17 +9,17 @@ namespace CrowdControl::Effects {
 	class KillGuitarVolumeEffect : public CCEffect
 	{
 	public:
-		KillGuitarVolumeEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		KillGuitarVolumeEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		void Run() override;
+		EffectStatus Stop() override;
 
+	private:
 		float oldVolume = 100.0f;
-
 		bool ending = false;
 	};
 }

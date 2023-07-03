@@ -1,19 +1,17 @@
 #pragma once
 #include "../CCEffect.hpp"
-#include "../../MemHelpers.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class DrunkModeEffect : public CCEffect
 	{
 	public:
-		DrunkModeEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		DrunkModeEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 	};
 }
-

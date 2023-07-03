@@ -9,20 +9,19 @@ namespace CrowdControl::Effects {
 	public:
 		double multiplier = 5.0;
 
-		HighwayScrollSpeedEffect(unsigned int durationSeconds, double speedMultiplier) {
-			duration = durationSeconds;
-			multiplier = speedMultiplier;
+		HighwayScrollSpeedEffect(int64_t durationMilliseconds, double speedMultiplier) : multiplier(speedMultiplier)
+		{
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "halfscrollspeed", "doublescrollspeed", "triplescrollspeed" };
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request);
+		EffectStatus Start(Request request);
+		EffectStatus Stop();
 
 	private:
-		std::vector<std::string> incompatibleEffects = { "halfscrollspeed", "doublescrollspeed", "triplescrollspeed" };
-
-		void WriteScrollSpeedMultiplier(double val);
+		static void WriteScrollSpeedMultiplier(double val);
 	};
 }
 

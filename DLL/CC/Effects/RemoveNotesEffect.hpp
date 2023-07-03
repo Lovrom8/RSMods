@@ -3,22 +3,21 @@
 #include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
+	// Prevents the game from drawing note head meshes
 	class RemoveNotesEffect : public CCEffect
 	{
 	public:
-		RemoveNotesEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		RemoveNotesEffect(unsigned int durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "transparentnotes", "bignoteheads", "smallnoteheads", "wavynotes"};
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 
 	private:
-		void ScaleNotes(float scale);
-
-		std::vector<std::string> incompatibleEffects =
-			{ "transparentnotes", "bignoteheads", "smallnoteheads" };
+		static void ScaleNotes(float scale);
 	};
 }

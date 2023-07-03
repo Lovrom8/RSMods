@@ -8,5 +8,5 @@ using namespace CrowdControl::Structs;
 namespace CrowdControl {
 	void StartServer();
 	void StartServerLoop();
-	Response RunCommand(Request request);
+	Response RunCommand(const Request& request);
 }

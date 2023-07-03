@@ -8,15 +8,16 @@ namespace CrowdControl::Effects {
 	class KillMusicVolumeEffect : public CCEffect
 	{
 	public:
-		KillMusicVolumeEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		KillMusicVolumeEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		void Run() override;
+		EffectStatus Stop() override;
 
+	private:
 		float oldVolume = 100.0f;
 		bool ending = false;
 	};

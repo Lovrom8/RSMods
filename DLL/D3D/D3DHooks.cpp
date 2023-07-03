@@ -349,6 +349,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	// User has updated their settings, and we need to recreate our textures
 	if (RecreateTextures && RecreateTextureTimer) {
 		// Generate textures to be called later
+		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
 		D3D::GenerateTextures(pDevice, D3D::Strings);
 		D3D::GenerateTextures(pDevice, D3D::Notes);
 		D3D::GenerateTextures(pDevice, D3D::Noteway);

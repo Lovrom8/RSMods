@@ -6,17 +6,14 @@ namespace CrowdControl::Effects {
 	class TransparentNotesEffect : public CCEffect
 	{
 	public:
-		TransparentNotesEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
+		TransparentNotesEffect(int64_t durationMilliseconds) {
+			duration_ms = durationMilliseconds;
+
+			incompatibleEffects = { "solidcustom", "solidrandom", "solidcustomrgb", "bignoteheads", "smallnoteheads", "removenotes" };
 		}
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
-
-	private:
-		std::vector<std::string> incompatibleEffects =
-			{ "solidcustom", "solidrandom", "solidcustomrgb", "bignoteheads", "smallnoteheads", "removenotes" };
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 	};
 }

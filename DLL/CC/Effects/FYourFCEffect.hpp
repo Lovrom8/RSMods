@@ -1,17 +1,15 @@
 #pragma once
 #include "../CCEffect.hpp"
+#include "../CCEffectList.hpp"
 
 namespace CrowdControl::Effects {
 	class FYourFCEffect : public CCEffect
 	{
 	public:
-		FYourFCEffect(unsigned int durationSeconds) {
-			duration = durationSeconds;
-		}
+		FYourFCEffect() { }
 
-		EffectResult Test(Request request);
-		EffectResult Start(Request request);
-		void Run();
-		EffectResult Stop();
+		EffectStatus Test(Request request) override;
+		EffectStatus Start(Request request) override;
+		EffectStatus Stop() override;
 	};
 }

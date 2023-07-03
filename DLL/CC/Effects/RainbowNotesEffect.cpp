@@ -1,67 +1,51 @@
 #include "RainbowNotesEffect.hpp"
 
 namespace CrowdControl::Effects {
-	
 	/// <summary>
 	/// Test the twitch mod's requirements.
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
-	/// <returns>EffectResult::Success if test completed without any issues. EffectResult::Retry if we have to retry.</returns>
-	EffectResult RainbowNotesEffect::Test(Request request)
+	/// <returns>EffectStatus::Success if test completed without any issues. EffectStatus::Retry if we have to retry.</returns>
+	EffectStatus RainbowNotesEffect::Test(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RainbowNotesEffect::Test()" << std::endl);
 
-		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
-			return EffectResult::Retry;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
-	/// Makes note heads continously shift their colors 
+	/// Makes note heads continuously shift their colors 
 	/// All note head changing is handled in ERMode, so it just toggles the switch in there
 	/// Does not affect the strings!
 	/// </summary>
-	/// <returns> EffectResult::Retry if we aren't currently in a song or the same effect is running already, or EffectResult::Sucess if we are in a song</returns>
-	EffectResult RainbowNotesEffect::Start(Request request)
+	/// <returns> EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or EffectStatus::Success if we are in a song</returns>
+	EffectStatus RainbowNotesEffect::Start(Request request)
 	{
 		_LOG_INIT;
 
 		_LOG("RainbowNotesEffect::Start()" << std::endl);
 
-		if (ERMode::IsRainbowNotesEnabled() || !MemHelpers::IsInSong() || EffectList::AreIncompatibleEffectsEnabled(incompatibleEffects))
-			return EffectResult::Retry;
-
-		running = true;
+		if (!CanStart(&EffectList::AllEffects))
+			return EffectStatus::Retry;
 
 		ERMode::ToggleRainbowNotes();
 
 		SetDuration(request);
-		endTime = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
+		running = true;
 
-		return EffectResult::Success;
-	}
-
-	/// <summary>
-	/// Ensure that the mod only lasts for the time specified in the JSON request.
-	/// </summary>
-	void RainbowNotesEffect::Run()
-	{
-		if (running) {
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<double> duration = (endTime - now);
-
-			if (duration.count() <= 0) Stop();
-		}
+		return EffectStatus::Success;
 	}
 
 	/// <summary>
 	/// Stops the mod.
 	/// </summary>
-	/// <returns>EffectResult::Success</returns>
-	EffectResult RainbowNotesEffect::Stop()
+	/// <returns>EffectStatus::Success</returns>
+	EffectStatus RainbowNotesEffect::Stop()
 	{
 		_LOG_INIT;
 
@@ -70,6 +54,6 @@ namespace CrowdControl::Effects {
 		running = false;
 		ERMode::ToggleRainbowNotes();
 
-		return EffectResult::Success;
+		return EffectStatus::Success;
 	}
 }

@@ -9,6 +9,7 @@
 #include <process.h>
 #include "../Lib/Json/json.hpp"
 
+#include "CCEffect.hpp"
 #include "CCEffectList.hpp"
 #include <thread>
 
@@ -28,11 +29,13 @@ namespace CrowdControl {
 	/// Runs/stops the current effect
 	/// Effects are started externally (from CC or RSMods GUI), but each effect stops itself by running the Run method, which in turn calls Stop when the effect's duration runs out
 	/// </summary>
-	Response RunCommand(Request request) {
+	Response RunCommand(const Request& request) {
 		Response resp{
 			request.id,
-			EffectResult::Unavailable,
-			("Effect: " + request.code)
+			request.code,
+			EffectStatus::Unavailable,
+			0,
+			ResponseType::EffectRequest
 		};
 
 		// Find the effect
@@ -43,28 +46,30 @@ namespace CrowdControl {
 			// Start/Stop the effect
 			switch (request.type)
 			{
-			case Test:
+			case RequestType::Test:
 				resp.status = effect->Test(request);
 				break;
-			case Start:
+			case RequestType::Start:
 				resp.status = effect->Start(request);
 				break;
-			case Stop:
+			case RequestType::Stop:
 				resp.status = effect->Stop();
 				break;
 			default:
 				break;
 			}
+
+			resp.timeRemaining = effect->duration_ms;
 		}
 
 		return resp;
 	}
 
 	/// <summary>
-	/// Sends a response through the same socket it recieved the request from
+	/// Sends a response through the same socket it received the request from
 	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
 	/// </summary>
-	void SendResponse(Response response) {
+	void SendResponse(const Response& response) {
 		//Serialize response
 		_LOG_INIT;
 
@@ -85,7 +90,7 @@ namespace CrowdControl {
 	/// <summary>
 	/// Waits for incoming requests, which are null terminated
 	/// If the client's connection is closed, the current message length will be -1, hence the server can be stopped
-	/// When a request is recieved, parse it as JSON, run the corresponding effect if no incompatible effects are currently running 
+	/// When a request is received, parse it as JSON, run the corresponding effect if no incompatible effects are currently running 
 	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
 	/// </summary>
 	void ClientLoop() {
@@ -128,15 +133,16 @@ namespace CrowdControl {
 			std::string command = std::string(&buffer[0], &buffer[currentMessageLength]);
 
 			json j = json::parse(command);
-			Request request;
-			CrowdControl::Structs::from_json_request(j, request);
 
 			_LOG("Received command:" << std::endl);
 			_LOG(j.dump(2) << std::endl);
 
+			Request request;
+			CrowdControl::Structs::from_json_request(j, request);
+
 			//Run command
 			_LOG("Running command" << std::endl);
-			Response response = RunCommand(request);
+			const Response response = RunCommand(request);
 
 			//Respond
 			_LOG("Responding to command" << std::endl);
@@ -147,7 +153,7 @@ namespace CrowdControl {
 
 	/// <summary>
 	/// Opens a TCP socket on localhost, port 45659
-	/// If a socket has been succesfully opened, it connects to the effect client (CrowdControl or RSMods GUI)
+	/// If a socket has been successfully opened, it connects to the effect client (CrowdControl or RSMods GUI)
 	/// </summary>
 	/// <returns>NULL. Loops while the game is open</returns>
 	unsigned WINAPI CrowdControlThread() {
@@ -215,7 +221,7 @@ namespace CrowdControl {
 
 		while (!D3DHooks::GameClosing) {
 			// Iterate through all effects
-			for (std::map<std::string, CrowdControl::Effects::CCEffect*>::iterator it = AllEffects.begin(); it != AllEffects.end(); ++it) {
+			for (auto it = AllEffects.begin(); it != AllEffects.end(); ++it) {
 				// Run/Update all effects
 				it->second->Run();
 			}

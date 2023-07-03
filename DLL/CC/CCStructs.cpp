@@ -19,9 +19,10 @@ namespace CrowdControl::Structs {
 		j = json{
 			{"id", p.id},
 			{"code", p.code},
+			{"parameters", p.parameters},
+			{"duration", p.duration},
 			{"viewer", p.viewer},
-			{"type", p.type},
-			{"parameters", p.parameters}
+			{"type", p.type}
 		};
 	}
 
@@ -37,12 +38,14 @@ namespace CrowdControl::Structs {
 		j.at("viewer").get_to(p.viewer);
 		j.at("type").get_to(p.type);
 
-		// Try to get parameters
-		try {
-			j.at("parameters").get_to(p.parameters);
+		if (j.contains("duration"))
+		{
+			j.at("duration").get_to(p.duration);
 		}
-		catch (json::exception) {
-			// Ignore missing parameters
+
+		if(j.contains("parameters"))
+		{
+			j.at("parameters").get_to(p.parameters);
 		}
 	}
 
@@ -56,7 +59,9 @@ namespace CrowdControl::Structs {
 		j = json{
 			{"id", p.id},
 			{"status", p.status},
-			{"message", p.message}
+			{"code", p.code},
+			{"timeRemaining", p.timeRemaining},
+			{"type", p.type}
 		};
 	}
 
@@ -70,6 +75,8 @@ namespace CrowdControl::Structs {
 	void from_json_response(const json& j, Response& p) {
 		j.at("id").get_to(p.id);
 		j.at("status").get_to(p.status);
-		j.at("message").get_to(p.message);
+		j.at("code").get_to(p.code);
+		j.at("timeRemaining").get_to(p.timeRemaining);
+		j.at("type").get_to(p.type);
 	}
 }

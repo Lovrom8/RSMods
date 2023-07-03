@@ -22,7 +22,6 @@ public class Rocksmith2014 : SimpleTCPPack
 
         new Effect("Solid Notes (random, 10 seconds)", "solidrandom"),
         new Effect("Solid Notes (custom, 10 seconds)", "solidcustom", new[] { "color" }),
-        new Effect("Solid Notes (custom rgb, 10 seconds)", "solidcustomrgb", new[] {  "sliderred", "slidergreen", "sliderblue"}),
         new Effect("Rainbow notes (20 seconds)", "rainbownotes"),
 
         new Effect("Red", "red", ItemKind.Usable, "color"),
@@ -31,8 +30,6 @@ public class Rocksmith2014 : SimpleTCPPack
         new Effect("Orange", "orange", ItemKind.Usable, "color"),
         new Effect("Green", "green", ItemKind.Usable, "color"),
         new Effect("Purple", "purple", ItemKind.Usable, "color"),
-
-        new Effect("Transparent notes (20 seconds)", "transparentnotes"),
 
         new Effect("Remove notes (20 seconds)", "removenotes"),
         new Effect("Remove instrument (20 seconds)", "removeinstrument"),
@@ -62,9 +59,6 @@ public class Rocksmith2014 : SimpleTCPPack
 
     public override List<ItemType> ItemTypes => new List<ItemType>(new[]
     {
-        new ItemType("Color", "color", ItemType.Subtype.ItemList),
-        new ItemType("Red", "sliderred", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}"),
-        new ItemType("Green", "slidergreen", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}"),
-        new ItemType("Blue", "sliderblue", ItemType.Subtype.Slider, "{\"min\":0,\"max\":255}")
+        new ItemType("Color", "color", ItemType.Subtype.ItemList)
     });
 }
