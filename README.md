@@ -3,11 +3,21 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
 
 ## Fork Notice
-This repository is a fork of [Lovrom8/RSMods](https://github.com/Lovrom8/RSMods), focused on Quad Cortex automation workflows and related quality-of-life improvements.
+This repository is an **unofficial public fork** of [Lovrom8/RSMods](https://github.com/Lovrom8/RSMods), focused on Quad Cortex MIDI automation workflows and related quality-of-life improvements.
+
+The official upstream project is still:
+- [Lovrom8/RSMods](https://github.com/Lovrom8/RSMods)
+
+This fork keeps upstream attribution/credits and ships two user paths:
+- **Ready-built tester releases** (recommended for non-developers): download from this fork's GitHub Releases page after publish.
+- **Build from source**: build locally from this repository.
 
 Quick links for this fork:
 - [Install Guide](docs/install-readme.md)
 - [QC Automation Use Guide](docs/qc-use-readme.md)
+- [QC Architecture Notes](docs/qc-architecture.md)
+- [Release Checklist](docs/release-checklist.md)
+- [Release Notes Template](docs/release-notes-template.md)
 - [Upstream Repository](https://github.com/Lovrom8/RSMods)
 
 ## IMPORTANT NOTE:

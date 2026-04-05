@@ -2,6 +2,8 @@
 
 This guide covers the **QC Automation** tab in `RSMods.exe`.
 
+For non-developers, use a ready-built release artifact. Building from source is optional.
+
 ## What QC Automation Does
 
 - Chooses QC preset targets from Rocksmith authored tone names.
@@ -32,3 +34,25 @@ This guide covers the **QC Automation** tab in `RSMods.exe`.
 
 - **Classifier Preview**: test a tone name against current keywords/priorities.
 - **Song Preview**: inspect tones in a selected `.psarc` and see mapped targets.
+
+## Tester Checklist
+
+1. Confirm QC receives MIDI from Windows USB MIDI.
+2. Confirm QC target presets exist at configured `MyPresets:<bank><slot>` targets.
+3. Verify one song with known auto tone changes and one manual tone override test.
+4. Verify scene behavior on a known non-E-standard song.
+
+## Known v1 Limits
+
+- No true-tuning/cent automation.
+- No transpose expression automation.
+- Quality depends on authored tone naming in song data.
+
+## Issue Reporting
+
+When reporting problems, include:
+
+- fork release tag (for example `qc-v1.0.0`)
+- song/arrangement tested
+- QC preset + MIDI channel setup
+- relevant RSMods log lines

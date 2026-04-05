@@ -1,23 +1,43 @@
-# RSMods Install Guide
+# RSMods QC Fork Install Guide
 
-This package supports two install methods on Windows.
+This fork supports two user paths:
 
-## Recommended: Installer
+- **Tester path (no source build):** use downloadable release artifacts.
+- **Developer path:** build from source locally.
 
-1. Open the `installer` folder.
-2. Run `RS2014-Mod-Installer.exe`.
-3. Select your Rocksmith 2014 install folder.
-4. Complete install.
+## Tester Path (Ready-Built Releases)
 
-## Manual Install
+From this fork's GitHub Releases page, download either:
 
-1. Copy `portable\xinput1_3.dll` into your Rocksmith 2014 root folder.
-2. Copy the full `portable\RSMods` folder into the same Rocksmith 2014 root folder.
-3. Launch Rocksmith 2014.
-4. Open `RSMods\RSMods.exe` to configure mods.
+- `RSMods-QC-<tag>-win32.zip` (full bundle), or
+- `RSMods-QC-<tag>-installer.exe`, or
+- `RSMods-QC-<tag>-portable.zip`.
+
+### Installer
+
+1. Run `RSMods-QC-<tag>-installer.exe`.
+2. Select your Rocksmith 2014 install folder.
+3. Complete install.
+
+### Manual (Portable)
+
+1. Extract `RSMods-QC-<tag>-portable.zip`.
+2. Copy `xinput1_3.dll` into Rocksmith root (same folder as `Rocksmith2014.exe`).
+3. Copy the extracted `RSMods` folder into Rocksmith root.
+4. Launch Rocksmith and open `RSMods\RSMods.exe`.
+
+## Developer Path (Build From Source)
+
+From repo root:
+
+```bat
+build-rsmods-deliverable.bat Release Win32 qc-v1.0.0
+```
+
+Artifacts are written to `dist/`.
 
 ## Notes
 
-- `xinput1_3.dll` must be in the game root (same folder as `Rocksmith2014.exe`).
-- If Rocksmith is running during update, close it first.
-- QC Automation usage is documented in `docs\QC-AUTOMATION-README.md`.
+- Close Rocksmith before replacing files.
+- `xinput1_3.dll` must be in the game root.
+- QC usage and configuration are documented in `docs/qc-use-readme.md`.
