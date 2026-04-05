@@ -1,0 +1,24 @@
+{
+  "songs": [
+    {
+      "songKey": "your_song_key_here",
+      "arrangements": [
+        {
+          "arrangementID": "4C3D2B1A-0000-1111-2222-ABCDEF123456",
+          "persistentID": "4C3D2B1A-0000-1111-2222-ABCDEF123456",
+          "toneBase": "Clean Intro",
+          "toneA": "Clean Verse",
+          "toneB": "Crunch Chorus",
+          "toneC": "Lead Bridge",
+          "toneD": "Solo Lead",
+          "tones": [
+            { "time": 15.250, "authoredToneKey": "tonea", "toneId": 0 },
+            { "time": 42.750, "authoredToneKey": "toneb", "toneId": 1 },
+            { "time": 74.500, "authoredToneName": "Lead Bridge", "toneId": 2 },
+            { "time": 103.000, "authoredToneKey": "toned", "toneId": 3 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,14 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/github/Lovrom8/rsmods?svg=true)](https://ci.appveyor.com/project/Lovrom8/rsmods)
 
+## Fork Notice
+This repository is a fork of [Lovrom8/RSMods](https://github.com/Lovrom8/RSMods), focused on Quad Cortex automation workflows and related quality-of-life improvements.
+
+Quick links for this fork:
+- [Install Guide](docs/install-readme.md)
+- [QC Automation Use Guide](docs/qc-use-readme.md)
+- [Upstream Repository](https://github.com/Lovrom8/RSMods)
+
 ## IMPORTANT NOTE:
 If you are trying to play on a Learn & Play build from Steam that was released on December 19th, 2024, you cannot use the 1.2.7.4 version of the mods without additional work. Please see the instructions on this github issue on how to get the mods to work: https://github.com/Lovrom8/RSMods/issues/196#issuecomment-2564077160.
 
