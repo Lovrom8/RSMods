@@ -123,6 +123,9 @@ namespace RSMods
                     { ReadSettings.MidiAutoTuningDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiAutoTuningDeviceIdentifier, "") }, // Device we should send MIDI signals to.
                     { ReadSettings.MidiInDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiInDeviceIdentifier, "")}, // Device we should listen to MIDI signals from.
                     { ReadSettings.MidiAutoTuningWhenIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiAutoTuningWhenIdentifier, "manual") }, // Should we trigger auto tuning "manual"ly (user skips tuning), or in the "tuner". 
+                    { ReadSettings.QCAutomationEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationEnabledIdentifier, "off") }, // Enables Quad Cortex automation path.
+                    { ReadSettings.QCAutomationTestOnSongStartIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationTestOnSongStartIdentifier, "off") }, // Sends one scene CC when entering a song.
+                    { ReadSettings.QCAutomationDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationDeviceIdentifier, "") }, // MIDI out device for Quad Cortex automation.
                     { ReadSettings.MidiSoftwareSemitoneSettingsIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiSoftwareSemitoneSettingsIdentifier, "") }, // Used to configure a Software Tuning Pedal for drop tuning. Format: OffChannel, PC or CC, CC Channel (optional | defaults to 0). Ex: "0, CC, 25" will send a CC to channel 25 as defined in SemitoneTriggers, and when turning off it will send a CC 0 to channel 25.
                     { ReadSettings.MidiSoftwareSemitoneTriggersIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiSoftwareSemitoneTriggersIdentifier, "") }, // Used to figure out Semitone <-> Control Change / Program Change with a Software Tuning Pedal. Ex: "0 66, 1 77, -2 22" will send a PC or CC, as specified in SemitoneSettings, of 66 when the tuning should be default, 77 when we need to go up 1 semitone, and 22 when going down 2 semitones.
                     { ReadSettings.MidiSoftwareTrueTuningSettingsIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiSoftwareTrueTuningSettingsIdentifier, "") }, // Used to configure a Software Tuning Pedal for true tuning. Format: OffChannel, PC or CC, CC Channel (optional | defaults to 1).  Ex: "0, CC, 25" will send a CC to channel 25 as defined in TrueTuningTriggers, and when turning off it will send a CC 0 to channel 25.
@@ -191,6 +194,9 @@ namespace RSMods
                     { ReadSettings.RiffRepeaterSpeedIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.RiffRepeaterSpeedIntervalIdentifier, "2") }, // The rate of how much one key press should gain the Riff Repeater speed.
                     { ReadSettings.TuningPedalIdentifier, CreateDefaultOnOldINI(ReadSettings.TuningPedalIdentifier, "") }, // What tuning pedal does the user use?
                     { ReadSettings.MidiTuningOffsetIdentifier, CreateDefaultOnOldINI(ReadSettings.MidiTuningOffsetIdentifier, "0") }, // Offset from 0 (E Standard) to 12 (E Standard +OCT) to adjust Midi Auto Tuning for.
+                    { ReadSettings.QCAutomationMidiChannelIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationMidiChannelIdentifier, "0") }, // MIDI channel (0-15) used for QC automation.
+                    { ReadSettings.QCAutomationSceneCCIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSceneCCIdentifier, "43") }, // CC number used for QC scene changes.
+                    { ReadSettings.QCAutomationTestSceneValueIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationTestSceneValueIdentifier, "0") }, // Test scene value sent once per song when enabled.
                     { ReadSettings.VolumeControlIntervalIdentifier, CreateDefaultOnOldINI(ReadSettings.VolumeControlIntervalIdentifier, "5") }, // By what number should we increase / decrease the volume.
                     { ReadSettings.SecondaryMonitorXPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorXPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. X
                     { ReadSettings.SecondaryMonitorYPositionIdentifier, CreateDefaultOnOldINI(ReadSettings.SecondaryMonitorYPositionIdentifier, "0") }, // Where should we place Rocksmith on their secondary monitor. Y
@@ -202,6 +208,37 @@ namespace RSMods
                     { ReadSettings.RewindLeadupIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindLeadupIdentifier, "2000") }, // Amount of time (in ms) to move the grey note timer back after rewinding.
                     { ReadSettings.CustomNSPTimeLimitIdentifier, CreateDefaultOnOldINI(ReadSettings.CustomNSPTimeLimitIdentifier, "10000") }, // Amount of time (in ms) to have Non-stop play wait until the next song.
                     { ReadSettings.OnScreenFontSizeIdentifier, CreateDefaultOnOldINI(ReadSettings.OnScreenFontSizeIdentifier, "24") },
+                }
+            );
+            saveSettingsOrDefaults.Add(
+                "[QCAutomation]", new Dictionary<string, string>
+                {
+                    { ReadSettings.QCAutomationSectionEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionEnabledIdentifier, ReadSettings.ProcessSettings(ReadSettings.QCAutomationEnabledIdentifier) == "on" ? "on" : "off") },
+                    { ReadSettings.QCAutomationSectionMidiOutDeviceIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionMidiOutDeviceIdentifier, ReadSettings.ProcessSettings(ReadSettings.QCAutomationDeviceIdentifier)) },
+                    { ReadSettings.QCAutomationSectionMidiChannelIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionMidiChannelIdentifier, ReadSettings.ProcessSettings(ReadSettings.QCAutomationMidiChannelIdentifier) == String.Empty ? "0" : ReadSettings.ProcessSettings(ReadSettings.QCAutomationMidiChannelIdentifier)) },
+                    { ReadSettings.QCAutomationSectionTransposeEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionTransposeEnabledIdentifier, "off") },
+                    { ReadSettings.QCAutomationSectionIdleSceneIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionIdleSceneIdentifier, "A") },
+                    { ReadSettings.QCAutomationSectionTransposeOutOfRangeIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionTransposeOutOfRangeIdentifier, "clamp") },
+                    { ReadSettings.QCAutomationSectionIgnoreBassIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionIgnoreBassIdentifier, "on") },
+                    { ReadSettings.QCAutomationSectionAutoCleanTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionAutoCleanTargetIdentifier, "MyPresets:32A") },
+                    { ReadSettings.QCAutomationSectionAutoODTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionAutoODTargetIdentifier, "MyPresets:32B") },
+                    { ReadSettings.QCAutomationSectionAutoDistTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionAutoDistTargetIdentifier, "MyPresets:32C") },
+                    { ReadSettings.QCAutomationSectionAutoModTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionAutoModTargetIdentifier, "MyPresets:32D") },
+                    { ReadSettings.QCAutomationSectionAutoSoloTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionAutoSoloTargetIdentifier, "MyPresets:32E") },
+                    { ReadSettings.QCAutomationSectionManual2TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual2TargetIdentifier, "MyPresets:32F") },
+                    { ReadSettings.QCAutomationSectionManual3TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual3TargetIdentifier, "MyPresets:32G") },
+                    { ReadSettings.QCAutomationSectionManual4TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual4TargetIdentifier, "MyPresets:32H") },
+                    { ReadSettings.QCAutomationSectionIdleTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32B") },
+                    { ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, "lead,solo") },
+                    { ReadSettings.QCAutomationSectionDistKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionDistKeywordsIdentifier, "dist,distortion,fuzz,gain,higain,highgain,dis") },
+                    { ReadSettings.QCAutomationSectionODKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionODKeywordsIdentifier, "overdrive,od,drive,crunch,dirty,breakup,over") },
+                    { ReadSettings.QCAutomationSectionCleanKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionCleanKeywordsIdentifier, "clean,acoustic,acous,acc,twang,chime,sparkle") },
+                    { ReadSettings.QCAutomationSectionModKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionModKeywordsIdentifier, "wah,chorus,verb,reverb,delay,echo,trem,tremolo,phase,phaser,flange,flanger,filter,mod,fx,ambient,synth,8va,oct,octave,sitar") },
+                    { ReadSettings.QCAutomationSectionSoloPriorityIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionSoloPriorityIdentifier, "5") },
+                    { ReadSettings.QCAutomationSectionDistPriorityIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionDistPriorityIdentifier, "2") },
+                    { ReadSettings.QCAutomationSectionODPriorityIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionODPriorityIdentifier, "1") },
+                    { ReadSettings.QCAutomationSectionCleanPriorityIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionCleanPriorityIdentifier, "3") },
+                    { ReadSettings.QCAutomationSectionModPriorityIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionModPriorityIdentifier, "4") },
                 }
             );
             saveSettingsOrDefaults.Add(

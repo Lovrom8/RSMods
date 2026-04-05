@@ -186,6 +186,12 @@
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\QCAutomation.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ToneSource.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Midi\RtMidi.cpp">
       <Filter>Main Headers\Midi</Filter>
     </ClCompile>
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="Lib\ImGUI\imgui_tables.cpp">
       <Filter>Main Headers\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Miniz\miniz_tinfl.c">
+      <Filter>Libs</Filter>
     </ClCompile>
     <ClCompile Include="Mods\RiffRepeater.cpp">
       <Filter>Mods</Filter>
@@ -459,6 +468,12 @@
       <Filter>CrowdControl\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\Midi.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\QCAutomation.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ToneSource.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">

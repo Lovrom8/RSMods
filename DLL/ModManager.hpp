@@ -7,6 +7,7 @@
 #include "Mods/LaunchOnExternalMonitor.hpp"
 #include "Keyboard.hpp"
 #include "Mods/Loft.hpp"
+#include "Mods/QCAutomation.hpp"
 #include "Keybindings.hpp"
 #include "Mods/ExtendedRangeMode.hpp"
 #include "Mods/CustomSongTitles.hpp"

@@ -30,6 +30,9 @@ namespace Midi {
 	/// Get all MIDI devices connected.
 	/// </summary>
 	void GetMidiDeviceNames() {
+		midiOutDevices.clear();
+		midiInDevices.clear();
+
 		// Get the number of Midi Out, and Midi In ports
 		NumberOfOutPorts = midiOutGetNumDevs();
 		NumberOfInPorts = midiInGetNumDevs();
@@ -79,7 +82,8 @@ namespace Midi {
 		FindMidiInDevices(MidiInDevice);
 	}
 
-	void FindMidiOutDevices(const std::string& deviceToLookFor) {
+	bool FindMidiOutDevices(const std::string& deviceToLookFor) {
+		bool foundDevice = false;
 		for (int device = 0; device < NumberOfOutPorts; device++) {
 
 			std::string deviceName = "";
@@ -95,12 +99,15 @@ namespace Midi {
 			if (deviceName.find(deviceToLookFor) != std::string::npos) {
 				LOG_INFO("(MIDI) Connecting To Midi OUT Device: " << midiOutDevices.at(device).szPname << std::endl);
 				SelectedMidiOutDevice = device;
+				foundDevice = true;
 				break;
 			}
 			// This is not the device specified in the INI.
 			else
 				LOG_INFO("(MIDI) Available MIDI OUT device: " << midiOutDevices.at(device).szPname << std::endl);
 		}
+
+		return foundDevice;
 	}
 
 	void FindMidiInDevices(const std::string& deviceToLookFor) {
@@ -116,6 +123,11 @@ namespace Midi {
 			else
 				LOG_INFO("(MIDI) Available MIDI IN device: " << midiInDevices.at(device).szPname << std::endl);
 		}
+	}
+
+	bool RefreshMidiOutDevice(const std::string& midiOutDevice) {
+		GetMidiDeviceNames();
+		return FindMidiOutDevices(midiOutDevice);
 	}
 
 	bool IsValidMidiMessage(std::vector<unsigned char>* message) {
@@ -333,6 +345,75 @@ namespace Midi {
 
 		sendCC = false;
 		lastCC = toePosition;
+		return true;
+	}
+
+	bool SendRawControlChange(char controller, char value, char channel) {
+		auto midiout = std::make_unique<RtMidiOut>();
+		std::vector<unsigned char> message;
+
+		NumberOfOutPorts = midiOutGetNumDevs();
+		if (NumberOfOutPorts == 0) {
+			LOG_ERROR("No MIDI OUT ports available!" << std::endl);
+			return false;
+		}
+
+		const int controllerInt = static_cast<int>(controller);
+		const int valueInt = static_cast<int>(value);
+		const int channelInt = static_cast<int>(channel);
+
+		const char safeController = static_cast<char>(controllerInt < 0 ? 0 : (controllerInt > 127 ? 127 : controllerInt));
+		const char safeValue = static_cast<char>(valueInt < 0 ? 0 : (valueInt > 127 ? 127 : valueInt));
+		const char safeChannel = static_cast<char>(channelInt < 0 ? 0 : (channelInt > 15 ? 15 : channelInt));
+
+		try {
+			midiout->openPort(SelectedMidiOutDevice);
+
+			message.push_back(controlChangeStatus + safeChannel);
+			message.push_back(safeController);
+			message.push_back(safeValue);
+			midiout->sendMessage(&message);
+
+			LOG_INFO("Sending Raw MIDI Message: CC" << (int)safeChannel << ": " << (int)safeController << " " << (int)safeValue << std::endl);
+		}
+		catch (RtMidiError& error) {
+			LOG_ERROR("(MIDI) Error: " << error.getMessage() << std::endl);
+			return false;
+		}
+
+		return true;
+	}
+
+	bool SendRawProgramChange(char program, char channel) {
+		auto midiout = std::make_unique<RtMidiOut>();
+		std::vector<unsigned char> message;
+
+		NumberOfOutPorts = midiOutGetNumDevs();
+		if (NumberOfOutPorts == 0) {
+			LOG_ERROR("No MIDI OUT ports available!" << std::endl);
+			return false;
+		}
+
+		const int programInt = static_cast<int>(program);
+		const int channelInt = static_cast<int>(channel);
+
+		const unsigned char safeProgram = static_cast<unsigned char>(programInt < 0 ? 0 : (programInt > 127 ? 127 : programInt));
+		const unsigned char safeChannel = static_cast<unsigned char>(channelInt < 0 ? 0 : (channelInt > 15 ? 15 : channelInt));
+
+		try {
+			midiout->openPort(SelectedMidiOutDevice);
+
+			message.push_back(static_cast<unsigned char>(programChangeStatus + safeChannel));
+			message.push_back(safeProgram);
+			midiout->sendMessage(&message);
+
+			LOG_INFO("Sending Raw MIDI Message: PC" << static_cast<int>(safeChannel) << ": " << static_cast<int>(safeProgram) << std::endl);
+		}
+		catch (RtMidiError& error) {
+			LOG_ERROR("(MIDI) Error: " << error.getMessage() << std::endl);
+			return false;
+		}
+
 		return true;
 	}
 

@@ -164,6 +164,7 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	// std::vector<unsigned int> ptr_currentMenuOffsets{ 0x2C, 0x30, 0x8C, 0x0 }; // Old menu check, decided it loved to not work on some builds
 	std::vector<unsigned int> ptr_currentMenuOffsets{ 0x28, 0x8C, 0x0 }; // But the offsets stay the same, hurray!
 	std::vector<unsigned int> ptr_preMainMenuOffsets{ 0x28, 0x8C };
+	std::vector<unsigned int> ptr_arrangementHashOffsets{ 0x18, 0x18, 0xC, 0x1C0, 0x0 };
 
 	// Timer
 	std::vector<unsigned int> ptr_timerBaseOffsets{ 0xB0, 0x538, 0x8 };
@@ -210,5 +211,4 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 	std::vector<unsigned int> ptr_noteDataOffsets{ 0xB0, 0x18, 0x4, 0x84, 0x0 };
 	std::vector<unsigned int> ptr_scoreAttackNoteDataOffsets{ 0xB0, 0x18, 0x4, 0x4C, 0x0 };
 }
-
 

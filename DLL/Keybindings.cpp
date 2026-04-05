@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Keybindings.hpp"
+#include "Mods/ToneSource.hpp"
 
 namespace Keybindings {
 	std::map<std::string, ModCommand, std::less<>> keyUpCommands;
@@ -185,6 +186,8 @@ namespace Keybindings {
 	void HandleKeyDown(WPARAM keyPressed)
 	{
 		if (!GameState::GameLoaded) return;
+
+		QCAutomation::ToneSource::NotifyManualToneSlotHotkey(keyPressed);
 		DispatchCommand(keyPressed, keyDownCommands);
 
 		HandleVolumeKeyPress(keyPressed);

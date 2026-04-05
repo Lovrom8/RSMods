@@ -89,6 +89,7 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_currentMenu; // https://media.discordapp.net/attachments/711633334983196756/744071651498655814/unknown.png, the game uses this one, so we may as well
 	extern std::vector<unsigned int> ptr_currentMenuOffsets; // But the offsets stay the same, hurray!
 	extern std::vector<unsigned int> ptr_preMainMenuOffsets;
+	extern std::vector<unsigned int> ptr_arrangementHashOffsets;
 
 	// Timer
 	inline VersioningStruct<uintptr_t> ptr_timer;

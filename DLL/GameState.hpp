@@ -14,8 +14,10 @@ namespace GameState {
 	bool IsMultiplayer();
 	std::string CurrentSelectedUser();
 	std::string GetSongKey();
+	std::string GetArrangementID();
 
 	inline std::string lastSongKey = "";
+	inline std::string lastArrangementID = "";
 
 	std::string GetCurrentMenu(bool GameNotLoaded = false);
 	void ToggleCB(bool enabled);

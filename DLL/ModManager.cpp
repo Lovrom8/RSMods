@@ -114,6 +114,7 @@ namespace ModManager {
 		ERMode::Initialize();
 		GUI();
 		Midi::InitMidi();
+		QCAutomation::Initialize();
 		Enumeration::HookEnumerationService();
 
 		CrowdControl::StartServer();
@@ -195,6 +196,10 @@ namespace ModManager {
 				Settings::ReturnSettingValue("AutoTuneForSongDevice"),
 				Settings::ReturnSettingValue("MidiInDevice")
 			);
+		}
+		else if (!Midi::scannedForMidiDevices && Settings::ReturnSettingValue("QCAutomationEnabled") == "on") {
+			Midi::scannedForMidiDevices = true;
+			Midi::RefreshMidiOutDevice(Settings::ReturnSettingValue("QCAutomationDevice"));
 		}
 
 		if (!Midi::attemptedToDetachMidiInThread && Settings::ReturnSettingValue("MidiInDevice") != "") {
@@ -345,6 +350,8 @@ namespace ModManager {
 	/// Cleans up states that are only active during songs.
 	/// </summary>
 	void CleanupSongSpecificStates(GameLoopState& state) {
+		QCAutomation::HandleOutOfSongState();
+
 		if (Settings::ReturnSettingValue("AllowLooping") == "on") {
 			Keybindings::loopStart = NULL;
 			Keybindings::loopEnd = NULL;
@@ -578,6 +585,7 @@ namespace ModManager {
 		EnableRiffRepeaterFeatures();
 		HandleInSongVisualMods(state);
 		HandleMidiAutoTuningInSong();
+		QCAutomation::HandleInSongState();
 		HandleSongTimerDisplay(state);
 		HandleExtendedRangeInSong(state);
 	}

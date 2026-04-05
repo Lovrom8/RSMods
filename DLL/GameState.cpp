@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameState.hpp"
 
+#include <cctype>
+
 /// <summary>
 /// Are we in a song?
 /// </summary>
@@ -64,6 +66,30 @@ bool IsSongKeyStringValid(const char* str, size_t max_len)
 	return sv.size() >= prefix.size() && sv.substr(0, prefix.size()) == prefix;
 }
 
+bool IsArrangementIdStringValid(const char* str, size_t maxLen)
+{
+	if (!str)
+		return false;
+
+	if (MemUtil::IsBadReadPtr((void*)str))
+		return false;
+
+	const size_t strLen = strlen(str);
+	if (strLen < 8 || strLen > maxLen)
+		return false;
+
+	for (size_t i = 0; i < strLen; ++i)
+	{
+		const unsigned char c = static_cast<unsigned char>(str[i]);
+		if (!(std::isalnum(c) || c == '-' || c == '_'))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 /// <summary>
 /// Gets the SongKey of the current playing song, based on the initial preview.
 /// </summary>
@@ -91,6 +117,19 @@ std::string GameState::GetSongKey() {
 		}
 	}
 	return lastSongKey;
+}
+
+std::string GameState::GetArrangementID() {
+	uintptr_t arrangementHashPtr = MemUtil::FindDMAAddy(Offsets::ptr_currentMenu, Offsets::ptr_arrangementHashOffsets, true);
+
+	if (arrangementHashPtr) {
+		const char* arrangementHash = reinterpret_cast<const char*>(arrangementHashPtr);
+		if (IsArrangementIdStringValid(arrangementHash, 64)) {
+			lastArrangementID = arrangementHash;
+		}
+	}
+
+	return lastArrangementID;
 }
 
 /// <param name="GameNotLoaded"> - Should we trust the pointer?</param>

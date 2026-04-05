@@ -21,6 +21,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using RocksmithToolkitLib.DLCPackage;
@@ -29,6 +30,8 @@ using RocksmithToolkitLib.Ogg;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 using SevenZip;
+using Rocksmith2014PsarcLib.Psarc;
+using Rocksmith2014PsarcLib.Psarc.Asset;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 
@@ -60,6 +63,9 @@ namespace RSMods
         string github_UpdateResponse;
 
         bool AllowSaving = false;
+        bool qcaTargetTextChangeSuppressed = false;
+        readonly List<QCAutomationSongPreviewArrangement> qcaSongPreviewArrangements = new List<QCAutomationSongPreviewArrangement>();
+        bool qcaSongPreviewSelectionChangeSuppressed = false;
 
         public MainForm()
         {
@@ -147,6 +153,7 @@ namespace RSMods
 
             // Load Checkbox Values From RSMods.ini
             PriorSettings_LoadModSettings();
+            PriorSettings_LoadQCAutomationSettings();
 
             // Delete Old Backups To Save Space (if user specifies)
             Startup_DeleteOldBackups(GenUtil.StrToIntDef(ReadSettings.ProcessSettings(ReadSettings.NumberOfBackupsIdentifier), 50));
@@ -739,6 +746,385 @@ namespace RSMods
             checkBox_RemoveFingerprints.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveFingerprintsIdentifier) == "on";
             groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
             nUpDown_NSPTimer.Value = GenUtil.EstablishMaxValue((GenUtil.StrToDecDef(ReadSettings.ProcessSettings(ReadSettings.CustomNSPTimeLimitIdentifier), 10000) / 1000), 60.000m);
+        }
+
+        private static string QCAutomation_GetFirstNonEmptySetting(params string[] identifiers)
+        {
+            foreach (string identifier in identifiers)
+            {
+                string value = ReadSettings.ProcessSettings(identifier);
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+            }
+
+            return string.Empty;
+        }
+
+        private enum QCAutomationPreviewBucket
+        {
+            Solo,
+            Dist,
+            Od,
+            Clean,
+            Mod,
+            BassIgnore,
+            Unsupported
+        }
+
+        private sealed class QCAutomationPreviewClassification
+        {
+            public QCAutomationPreviewBucket Bucket { get; set; } = QCAutomationPreviewBucket.Unsupported;
+            public string BucketLabel { get; set; } = "Unsupported";
+            public string MatchedKeyword { get; set; } = string.Empty;
+            public string Notes { get; set; } = string.Empty;
+        }
+
+        private sealed class QCAutomationClassifierPriorityRule
+        {
+            public QCAutomationPreviewBucket Bucket { get; set; } = QCAutomationPreviewBucket.Clean;
+            public int Priority { get; set; }
+            public int FallbackOrder { get; set; }
+        }
+
+        private sealed class QCAutomationSongPreviewToneEntry
+        {
+            public string TimeDisplay { get; set; } = string.Empty;
+            public float? TimeSeconds { get; set; }
+            public string ToneName { get; set; } = string.Empty;
+            public string Source { get; set; } = string.Empty;
+            public string Notes { get; set; } = string.Empty;
+        }
+
+        private sealed class QCAutomationSongPreviewArrangement
+        {
+            public string DisplayName { get; set; } = string.Empty;
+            public string SongTitle { get; set; } = string.Empty;
+            public string SongArtist { get; set; } = string.Empty;
+            public string SongKey { get; set; } = string.Empty;
+            public string ArrangementName { get; set; } = string.Empty;
+            public string ArrangementType { get; set; } = string.Empty;
+            public string PersistentID { get; set; } = string.Empty;
+            public string ManifestUrn { get; set; } = string.Empty;
+            public string SongXmlPath { get; set; } = string.Empty;
+            public string SngPath { get; set; } = string.Empty;
+            public string ToneBase { get; set; } = string.Empty;
+            public string ToneA { get; set; } = string.Empty;
+            public string ToneB { get; set; } = string.Empty;
+            public string ToneC { get; set; } = string.Empty;
+            public string ToneD { get; set; } = string.Empty;
+            public string TimelineStatus { get; set; } = string.Empty;
+            public List<QCAutomationSongPreviewToneEntry> ToneEntries { get; } = new List<QCAutomationSongPreviewToneEntry>();
+        }
+
+        private static int QCAutomation_ClampMidiChannel(int channel)
+        {
+            if (channel < 0)
+                return 0;
+            if (channel > 15)
+                return 15;
+            return channel;
+        }
+
+        private static int QCAutomation_ParseStoredMidiChannelToZeroBased(string rawValue)
+        {
+            int parsed = GenUtil.StrToIntDef(rawValue, 0);
+
+            // Backward-compatible parse:
+            // - legacy RSMods values are zero-based (0..15)
+            // - tolerate one-based values (1..16) if user edited INI manually
+            if (parsed >= 0 && parsed <= 15)
+                return parsed;
+            if (parsed >= 1 && parsed <= 16)
+                return parsed - 1;
+
+            return QCAutomation_ClampMidiChannel(parsed);
+        }
+
+        private static int QCAutomation_DisplayMidiChannelFromZeroBased(int zeroBased) => QCAutomation_ClampMidiChannel(zeroBased) + 1;
+
+        private static string QCAutomation_NormalizeSceneLetter(string rawScene)
+        {
+            if (string.IsNullOrWhiteSpace(rawScene))
+                return "A";
+
+            char scene = char.ToUpperInvariant(rawScene.Trim()[0]);
+            return (scene >= 'A' && scene <= 'H') ? scene.ToString() : "A";
+        }
+
+        private static string QCAutomation_NormalizeOutOfRangeBehavior(string rawBehavior)
+        {
+            string normalized = (rawBehavior ?? string.Empty).Trim().ToLowerInvariant();
+            return normalized == "skip" ? "skip" : "clamp";
+        }
+
+        private static string QCAutomation_GetOrDefault(string identifier, string fallback)
+        {
+            string value = ReadSettings.ProcessSettings(identifier);
+            return string.IsNullOrWhiteSpace(value) ? fallback : value;
+        }
+
+        private static int QCAutomation_ClampClassifierPriority(int priority)
+        {
+            if (priority < 1)
+                return 1;
+            if (priority > 5)
+                return 5;
+            return priority;
+        }
+
+        private static int QCAutomation_ParseClassifierPriority(string rawValue, int fallback)
+        {
+            return QCAutomation_ClampClassifierPriority(GenUtil.StrToIntDef(rawValue, fallback));
+        }
+
+        private static string QCAutomation_GetBucketLabel(QCAutomationPreviewBucket bucket)
+        {
+            switch (bucket)
+            {
+                case QCAutomationPreviewBucket.Solo:
+                    return "SOLO";
+                case QCAutomationPreviewBucket.Dist:
+                    return "DIST";
+                case QCAutomationPreviewBucket.Od:
+                    return "OD";
+                case QCAutomationPreviewBucket.Clean:
+                    return "CLEAN";
+                case QCAutomationPreviewBucket.Mod:
+                    return "MOD";
+                default:
+                    return "Unsupported";
+            }
+        }
+
+        private int QCAutomation_GetPriorityControlValue(NumericUpDown control, int fallback)
+        {
+            if (control == null)
+                return QCAutomation_ClampClassifierPriority(fallback);
+
+            return QCAutomation_ClampClassifierPriority(decimal.ToInt32(control.Value));
+        }
+
+        private List<QCAutomationClassifierPriorityRule> QCAutomation_GetConfiguredClassifierPriorityRules()
+        {
+            List<QCAutomationClassifierPriorityRule> rules = new List<QCAutomationClassifierPriorityRule>
+            {
+                new QCAutomationClassifierPriorityRule { Bucket = QCAutomationPreviewBucket.Od, Priority = QCAutomation_GetPriorityControlValue(nUpDown_QCAutomationODPriority, 1), FallbackOrder = 0 },
+                new QCAutomationClassifierPriorityRule { Bucket = QCAutomationPreviewBucket.Dist, Priority = QCAutomation_GetPriorityControlValue(nUpDown_QCAutomationDistPriority, 2), FallbackOrder = 1 },
+                new QCAutomationClassifierPriorityRule { Bucket = QCAutomationPreviewBucket.Clean, Priority = QCAutomation_GetPriorityControlValue(nUpDown_QCAutomationCleanPriority, 3), FallbackOrder = 2 },
+                new QCAutomationClassifierPriorityRule { Bucket = QCAutomationPreviewBucket.Mod, Priority = QCAutomation_GetPriorityControlValue(nUpDown_QCAutomationModPriority, 4), FallbackOrder = 3 },
+                new QCAutomationClassifierPriorityRule { Bucket = QCAutomationPreviewBucket.Solo, Priority = QCAutomation_GetPriorityControlValue(nUpDown_QCAutomationSoloPriority, 5), FallbackOrder = 4 }
+            };
+
+            return rules
+                .OrderBy(rule => rule.Priority)
+                .ThenBy(rule => rule.FallbackOrder)
+                .ToList();
+        }
+
+        private List<string> QCAutomation_GetKeywordsForBucket(QCAutomationPreviewBucket bucket)
+        {
+            switch (bucket)
+            {
+                case QCAutomationPreviewBucket.Solo:
+                    return QCAutomation_ParseKeywords(textBox_QCAutomationSoloKeywords.Text);
+                case QCAutomationPreviewBucket.Dist:
+                    return QCAutomation_ParseKeywords(textBox_QCAutomationDistKeywords.Text);
+                case QCAutomationPreviewBucket.Od:
+                    return QCAutomation_ParseKeywords(textBox_QCAutomationODKeywords.Text);
+                case QCAutomationPreviewBucket.Clean:
+                    return QCAutomation_ParseKeywords(textBox_QCAutomationCleanKeywords.Text);
+                case QCAutomationPreviewBucket.Mod:
+                    return QCAutomation_ParseKeywords(textBox_QCAutomationModKeywords.Text);
+                default:
+                    return new List<string>();
+            }
+        }
+
+        private void QCAutomation_UpdateClassifierPrecedenceLabel()
+        {
+            if (label_QCAutomationClassifierPrecedence == null)
+                return;
+
+            string orderText = string.Join(" > ", QCAutomation_GetConfiguredClassifierPriorityRules()
+                .Select(rule => $"{QCAutomation_GetBucketLabel(rule.Bucket)}({rule.Priority})"));
+
+            label_QCAutomationClassifierPrecedence.Text = $"Priority order (1=highest): {orderText}";
+        }
+
+        private void QCAutomation_UpdateTransposeControlsEnabledState()
+        {
+            if (checkBox_QCAutomationTransposeEnabled == null)
+                return;
+
+            bool enabled = checkBox_QCAutomationTransposeEnabled.Checked;
+            if (label_QCAutomationIdleScene != null)
+                label_QCAutomationIdleScene.Enabled = enabled;
+            if (comboBox_QCAutomationIdleScene != null)
+                comboBox_QCAutomationIdleScene.Enabled = enabled;
+            if (label_QCAutomationTransposeOutOfRange != null)
+                label_QCAutomationTransposeOutOfRange.Enabled = enabled;
+            if (comboBox_QCAutomationTransposeOutOfRange != null)
+                comboBox_QCAutomationTransposeOutOfRange.Enabled = enabled;
+            if (label_QCAutomationSceneMapHelp != null)
+                label_QCAutomationSceneMapHelp.Enabled = enabled;
+        }
+
+        private static readonly Regex QCAutomationTargetFormatRegex =
+            new Regex(@"^mypresets:(\d+)([a-h])$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static bool QCAutomation_TryNormalizeTarget(string rawTarget, out string normalizedTarget)
+        {
+            normalizedTarget = string.Empty;
+            if (string.IsNullOrWhiteSpace(rawTarget))
+                return false;
+
+            string compact = rawTarget.Trim().Replace(" ", string.Empty);
+            Match match = QCAutomationTargetFormatRegex.Match(compact);
+            if (!match.Success)
+                return false;
+
+            if (!int.TryParse(match.Groups[1].Value, out int bank) || bank < 1)
+                return false;
+
+            char slot = char.ToUpperInvariant(match.Groups[2].Value[0]);
+            normalizedTarget = $"MyPresets:{bank}{slot}";
+            return true;
+        }
+
+        private void QCAutomation_ApplyTargetValidationColor(TextBox targetTextBox, bool isValid)
+        {
+            if (targetTextBox == null)
+                return;
+
+            targetTextBox.BackColor = isValid ? SystemColors.Window : Color.MistyRose;
+            if (ToolTip != null)
+            {
+                ToolTip.SetToolTip(
+                    targetTextBox,
+                    isValid
+                        ? "Valid format."
+                        : "Invalid format. Use MyPresets:32A (My Presets -> Bank 32 -> Slot A)."
+                );
+            }
+        }
+
+        private void QCAutomation_SaveValidatedTarget(TextBox targetTextBox, string identifier)
+        {
+            if (qcaTargetTextChangeSuppressed)
+                return;
+            if (targetTextBox == null)
+                return;
+
+            if (!QCAutomation_TryNormalizeTarget(targetTextBox.Text, out string normalizedTarget))
+            {
+                QCAutomation_ApplyTargetValidationColor(targetTextBox, false);
+                QCAutomation_UpdatePreview(null, EventArgs.Empty);
+                QCAutomation_RefreshSongPreviewClassification();
+                return;
+            }
+
+            qcaTargetTextChangeSuppressed = true;
+            if (!string.Equals(targetTextBox.Text, normalizedTarget, StringComparison.Ordinal))
+                targetTextBox.Text = normalizedTarget;
+            qcaTargetTextChangeSuppressed = false;
+
+            QCAutomation_ApplyTargetValidationColor(targetTextBox, true);
+            SaveSettings_Save(identifier, normalizedTarget);
+            QCAutomation_UpdatePreview(null, EventArgs.Empty);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void QCAutomation_ValidateTargetWithoutSaving(TextBox targetTextBox)
+        {
+            QCAutomation_ApplyTargetValidationColor(
+                targetTextBox,
+                QCAutomation_TryNormalizeTarget(targetTextBox.Text, out _)
+            );
+        }
+
+        private void QCAutomation_ValidateAllTargets()
+        {
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationAutoCleanTarget);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationAutoODTarget);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationAutoDistTarget);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationAutoModTarget);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationAutoSoloTarget);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationManual2Target);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationManual3Target);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationManual4Target);
+            QCAutomation_ValidateTargetWithoutSaving(textBox_QCAutomationIdleTarget);
+        }
+
+        private void PriorSettings_LoadQCAutomationSettings()
+        {
+            string enabledValue = QCAutomation_GetFirstNonEmptySetting(
+                ReadSettings.QCAutomationSectionEnabledIdentifier,
+                ReadSettings.QCAutomationEnabledIdentifier
+            );
+            checkBox_QCAutomationEnabled.Checked = enabledValue == "on";
+
+            string midiOutDevice = QCAutomation_GetFirstNonEmptySetting(
+                ReadSettings.QCAutomationSectionMidiOutDeviceIdentifier,
+                ReadSettings.QCAutomationDeviceIdentifier
+            );
+            if (!string.IsNullOrWhiteSpace(midiOutDevice))
+            {
+                if (!comboBox_QCAutomationMidiOutDevice.Items.Contains(midiOutDevice))
+                    comboBox_QCAutomationMidiOutDevice.Items.Add(midiOutDevice);
+
+                comboBox_QCAutomationMidiOutDevice.SelectedItem = midiOutDevice;
+            }
+
+            string midiChannelValue = QCAutomation_GetFirstNonEmptySetting(
+                ReadSettings.QCAutomationSectionMidiChannelIdentifier,
+                ReadSettings.QCAutomationMidiChannelIdentifier
+            );
+            int internalZeroBasedChannel = QCAutomation_ParseStoredMidiChannelToZeroBased(midiChannelValue);
+            nUpDown_QCAutomationMidiChannel.Value = QCAutomation_DisplayMidiChannelFromZeroBased(internalZeroBasedChannel);
+
+            checkBox_QCAutomationTransposeEnabled.Checked =
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionTransposeEnabledIdentifier, "off") == "on";
+
+            comboBox_QCAutomationIdleScene.SelectedItem =
+                QCAutomation_NormalizeSceneLetter(QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionIdleSceneIdentifier, "A"));
+
+            string outOfRangeBehavior = QCAutomation_NormalizeOutOfRangeBehavior(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionTransposeOutOfRangeIdentifier, "clamp"));
+            comboBox_QCAutomationTransposeOutOfRange.SelectedIndex = outOfRangeBehavior == "skip" ? 1 : 0;
+            QCAutomation_UpdateTransposeControlsEnabledState();
+
+            string ignoreBassValue = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionIgnoreBassIdentifier, "on");
+            checkBox_QCAutomationIgnoreBass.Checked = ignoreBassValue == "on";
+
+            textBox_QCAutomationAutoCleanTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionAutoCleanTargetIdentifier, "MyPresets:32A");
+            textBox_QCAutomationAutoODTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionAutoODTargetIdentifier, "MyPresets:32B");
+            textBox_QCAutomationAutoDistTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionAutoDistTargetIdentifier, "MyPresets:32C");
+            textBox_QCAutomationAutoModTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionAutoModTargetIdentifier, "MyPresets:32D");
+            textBox_QCAutomationAutoSoloTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionAutoSoloTargetIdentifier, "MyPresets:32E");
+            textBox_QCAutomationManual2Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual2TargetIdentifier, "MyPresets:32F");
+            textBox_QCAutomationManual3Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual3TargetIdentifier, "MyPresets:32G");
+            textBox_QCAutomationManual4Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual4TargetIdentifier, "MyPresets:32H");
+            textBox_QCAutomationIdleTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32B");
+
+            textBox_QCAutomationSoloKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, "lead,solo");
+            textBox_QCAutomationDistKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionDistKeywordsIdentifier, "dist,distortion,fuzz,gain,higain,highgain,dis");
+            textBox_QCAutomationODKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionODKeywordsIdentifier, "overdrive,od,drive,crunch,dirty,breakup,over");
+            textBox_QCAutomationCleanKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionCleanKeywordsIdentifier, "clean,acoustic,acous,acc,twang,chime,sparkle");
+            textBox_QCAutomationModKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionModKeywordsIdentifier, "wah,chorus,verb,reverb,delay,echo,trem,tremolo,phase,phaser,flange,flanger,filter,mod,fx,ambient,synth,8va,oct,octave,sitar");
+            nUpDown_QCAutomationSoloPriority.Value = QCAutomation_ParseClassifierPriority(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionSoloPriorityIdentifier, "5"), 5);
+            nUpDown_QCAutomationDistPriority.Value = QCAutomation_ParseClassifierPriority(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionDistPriorityIdentifier, "2"), 2);
+            nUpDown_QCAutomationODPriority.Value = QCAutomation_ParseClassifierPriority(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionODPriorityIdentifier, "1"), 1);
+            nUpDown_QCAutomationCleanPriority.Value = QCAutomation_ParseClassifierPriority(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionCleanPriorityIdentifier, "3"), 3);
+            nUpDown_QCAutomationModPriority.Value = QCAutomation_ParseClassifierPriority(
+                QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionModPriorityIdentifier, "4"), 4);
+            QCAutomation_UpdateClassifierPrecedenceLabel();
+            QCAutomation_ValidateAllTargets();
+
+            QCAutomation_UpdatePreview(null, EventArgs.Empty);
         }
 
         private void PriorSettings_LoadASIOSettings()
@@ -2526,6 +2912,708 @@ namespace RSMods
 
         private void Save_RemoveFingerprints(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RemoveFingerprintsIdentifier, checkBox_RemoveFingerprints.Checked.ToString().ToLower());
 
+        private void Save_QCAutomationEnabled(object sender, EventArgs e)
+        {
+            string onOff = checkBox_QCAutomationEnabled.Checked ? "on" : "off";
+            SaveSettings_Save(ReadSettings.QCAutomationSectionEnabledIdentifier, onOff);
+
+            // Legacy compatibility for currently released DLL settings parser.
+            SaveSettings_Save(ReadSettings.QCAutomationEnabledIdentifier, onOff);
+        }
+
+        private void Save_QCAutomationMidiOutDevice(object sender, EventArgs e)
+        {
+            if (comboBox_QCAutomationMidiOutDevice.SelectedItem == null)
+                return;
+
+            string selectedDevice = comboBox_QCAutomationMidiOutDevice.SelectedItem.ToString();
+            SaveSettings_Save(ReadSettings.QCAutomationSectionMidiOutDeviceIdentifier, selectedDevice);
+
+            // Legacy compatibility for currently released DLL settings parser.
+            SaveSettings_Save(ReadSettings.QCAutomationDeviceIdentifier, selectedDevice);
+        }
+
+        private void Save_QCAutomationMidiChannel(object sender, EventArgs e)
+        {
+            int internalZeroBased = QCAutomation_ClampMidiChannel((int)nUpDown_QCAutomationMidiChannel.Value - 1);
+            SaveSettings_Save(ReadSettings.QCAutomationSectionMidiChannelIdentifier, internalZeroBased.ToString());
+
+            // Legacy compatibility for currently released DLL settings parser.
+            SaveSettings_Save(ReadSettings.QCAutomationMidiChannelIdentifier, internalZeroBased.ToString());
+        }
+
+        private void Save_QCAutomationTransposeEnabled(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionTransposeEnabledIdentifier, checkBox_QCAutomationTransposeEnabled.Checked ? "on" : "off");
+            QCAutomation_UpdateTransposeControlsEnabledState();
+        }
+
+        private void Save_QCAutomationIdleScene(object sender, EventArgs e)
+        {
+            string sceneValue = comboBox_QCAutomationIdleScene.SelectedItem == null
+                ? "A"
+                : comboBox_QCAutomationIdleScene.SelectedItem.ToString();
+            SaveSettings_Save(ReadSettings.QCAutomationSectionIdleSceneIdentifier, QCAutomation_NormalizeSceneLetter(sceneValue));
+        }
+
+        private void Save_QCAutomationTransposeOutOfRange(object sender, EventArgs e)
+        {
+            string behavior = comboBox_QCAutomationTransposeOutOfRange.SelectedIndex == 1 ? "skip" : "clamp";
+            SaveSettings_Save(ReadSettings.QCAutomationSectionTransposeOutOfRangeIdentifier, behavior);
+        }
+
+        private void Save_QCAutomationIgnoreBass(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionIgnoreBassIdentifier, checkBox_QCAutomationIgnoreBass.Checked ? "on" : "off");
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private static string QCAutomation_NormalizeCsvText(string value) => value.Trim();
+
+        private void Save_QCAutomationAutoCleanTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationAutoCleanTarget, ReadSettings.QCAutomationSectionAutoCleanTargetIdentifier);
+        private void Save_QCAutomationAutoODTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationAutoODTarget, ReadSettings.QCAutomationSectionAutoODTargetIdentifier);
+        private void Save_QCAutomationAutoDistTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationAutoDistTarget, ReadSettings.QCAutomationSectionAutoDistTargetIdentifier);
+        private void Save_QCAutomationAutoModTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationAutoModTarget, ReadSettings.QCAutomationSectionAutoModTargetIdentifier);
+        private void Save_QCAutomationAutoSoloTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationAutoSoloTarget, ReadSettings.QCAutomationSectionAutoSoloTargetIdentifier);
+        private void Save_QCAutomationManual2Target(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationManual2Target, ReadSettings.QCAutomationSectionManual2TargetIdentifier);
+        private void Save_QCAutomationManual3Target(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationManual3Target, ReadSettings.QCAutomationSectionManual3TargetIdentifier);
+        private void Save_QCAutomationManual4Target(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationManual4Target, ReadSettings.QCAutomationSectionManual4TargetIdentifier);
+        private void Save_QCAutomationIdleTarget(object sender, EventArgs e) => QCAutomation_SaveValidatedTarget(textBox_QCAutomationIdleTarget, ReadSettings.QCAutomationSectionIdleTargetIdentifier);
+
+        private void Save_QCAutomationSoloKeywords(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, QCAutomation_NormalizeCsvText(textBox_QCAutomationSoloKeywords.Text));
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void Save_QCAutomationDistKeywords(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionDistKeywordsIdentifier, QCAutomation_NormalizeCsvText(textBox_QCAutomationDistKeywords.Text));
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void Save_QCAutomationODKeywords(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionODKeywordsIdentifier, QCAutomation_NormalizeCsvText(textBox_QCAutomationODKeywords.Text));
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void Save_QCAutomationCleanKeywords(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionCleanKeywordsIdentifier, QCAutomation_NormalizeCsvText(textBox_QCAutomationCleanKeywords.Text));
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void Save_QCAutomationModKeywords(object sender, EventArgs e)
+        {
+            SaveSettings_Save(ReadSettings.QCAutomationSectionModKeywordsIdentifier, QCAutomation_NormalizeCsvText(textBox_QCAutomationModKeywords.Text));
+            QCAutomation_UpdatePreview(sender, e);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void QCAutomation_SaveClassifierPriority(NumericUpDown control, string identifier, int fallbackPriority)
+        {
+            int priority = QCAutomation_GetPriorityControlValue(control, fallbackPriority);
+            SaveSettings_Save(identifier, priority.ToString(CultureInfo.InvariantCulture));
+            QCAutomation_UpdateClassifierPrecedenceLabel();
+            QCAutomation_UpdatePreview(null, EventArgs.Empty);
+            QCAutomation_RefreshSongPreviewClassification();
+        }
+
+        private void Save_QCAutomationSoloPriority(object sender, EventArgs e) =>
+            QCAutomation_SaveClassifierPriority(nUpDown_QCAutomationSoloPriority, ReadSettings.QCAutomationSectionSoloPriorityIdentifier, 5);
+
+        private void Save_QCAutomationDistPriority(object sender, EventArgs e) =>
+            QCAutomation_SaveClassifierPriority(nUpDown_QCAutomationDistPriority, ReadSettings.QCAutomationSectionDistPriorityIdentifier, 2);
+
+        private void Save_QCAutomationODPriority(object sender, EventArgs e) =>
+            QCAutomation_SaveClassifierPriority(nUpDown_QCAutomationODPriority, ReadSettings.QCAutomationSectionODPriorityIdentifier, 1);
+
+        private void Save_QCAutomationCleanPriority(object sender, EventArgs e) =>
+            QCAutomation_SaveClassifierPriority(nUpDown_QCAutomationCleanPriority, ReadSettings.QCAutomationSectionCleanPriorityIdentifier, 3);
+
+        private void Save_QCAutomationModPriority(object sender, EventArgs e) =>
+            QCAutomation_SaveClassifierPriority(nUpDown_QCAutomationModPriority, ReadSettings.QCAutomationSectionModPriorityIdentifier, 4);
+
+        private List<string> QCAutomation_ParseKeywords(string csv)
+        {
+            return (csv ?? string.Empty)
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(keyword => keyword.Trim().ToLowerInvariant())
+                .Where(keyword => keyword != string.Empty)
+                .ToList();
+        }
+
+        private bool QCAutomation_TryMatchKeywords(string normalizedToneName, List<string> keywords, out string matchedKeyword)
+        {
+            foreach (string keyword in keywords)
+            {
+                int searchOffset = 0;
+                while (searchOffset < normalizedToneName.Length)
+                {
+                    int foundAt = normalizedToneName.IndexOf(keyword, searchOffset, StringComparison.Ordinal);
+                    if (foundAt < 0)
+                        break;
+
+                    // Keep parity with the current DLL classifier behavior for "od".
+                    if (keyword == "od" && foundAt > 0 && normalizedToneName[foundAt - 1] == 'm')
+                    {
+                        searchOffset = foundAt + 1;
+                        continue;
+                    }
+
+                    matchedKeyword = keyword;
+                    return true;
+                }
+            }
+
+            matchedKeyword = string.Empty;
+            return false;
+        }
+
+        private QCAutomationPreviewClassification QCAutomation_ClassifyToneName(string toneName)
+        {
+            QCAutomationPreviewClassification result = new QCAutomationPreviewClassification();
+            if (string.IsNullOrWhiteSpace(toneName))
+                return result;
+
+            string normalized = toneName.Trim().ToLowerInvariant();
+            bool ignoreBass = checkBox_QCAutomationIgnoreBass != null && checkBox_QCAutomationIgnoreBass.Checked;
+            if (ignoreBass && normalized.Contains("bass"))
+            {
+                result.Bucket = QCAutomationPreviewBucket.BassIgnore;
+                result.BucketLabel = "Bass/Ignore";
+                result.MatchedKeyword = "bass";
+                result.Notes = "bass_guard";
+                return result;
+            }
+
+            string matchedKeyword;
+            foreach (QCAutomationClassifierPriorityRule rule in QCAutomation_GetConfiguredClassifierPriorityRules())
+            {
+                List<string> keywords = QCAutomation_GetKeywordsForBucket(rule.Bucket);
+                if (!QCAutomation_TryMatchKeywords(normalized, keywords, out matchedKeyword))
+                    continue;
+
+                result.Bucket = rule.Bucket;
+                result.BucketLabel = QCAutomation_GetBucketLabel(rule.Bucket);
+                result.MatchedKeyword = matchedKeyword;
+                return result;
+            }
+
+            result.Bucket = QCAutomationPreviewBucket.Clean;
+            result.BucketLabel = "CLEAN";
+            result.MatchedKeyword = "fallback_clean";
+            result.Notes = "fallback";
+            return result;
+        }
+
+        private string QCAutomation_GetTargetForBucket(QCAutomationPreviewBucket bucket, out string note)
+        {
+            note = string.Empty;
+            TextBox sourceTargetBox = null;
+            switch (bucket)
+            {
+                case QCAutomationPreviewBucket.Solo:
+                    sourceTargetBox = textBox_QCAutomationAutoSoloTarget;
+                    break;
+                case QCAutomationPreviewBucket.Dist:
+                    sourceTargetBox = textBox_QCAutomationAutoDistTarget;
+                    break;
+                case QCAutomationPreviewBucket.Od:
+                    sourceTargetBox = textBox_QCAutomationAutoODTarget;
+                    break;
+                case QCAutomationPreviewBucket.Mod:
+                    sourceTargetBox = textBox_QCAutomationAutoModTarget;
+                    break;
+                case QCAutomationPreviewBucket.Clean:
+                    sourceTargetBox = textBox_QCAutomationAutoCleanTarget;
+                    break;
+                case QCAutomationPreviewBucket.BassIgnore:
+                case QCAutomationPreviewBucket.Unsupported:
+                    return string.Empty;
+                default:
+                    return string.Empty;
+            }
+
+            string rawTarget = sourceTargetBox?.Text ?? string.Empty;
+            if (!QCAutomation_TryNormalizeTarget(rawTarget, out string normalizedTarget))
+            {
+                note = "invalid_target_format";
+                return rawTarget.Trim();
+            }
+
+            return normalizedTarget;
+        }
+
+        private static string QCAutomation_CombineNotes(params string[] values)
+        {
+            return string.Join(", ", values.Where(value => !string.IsNullOrWhiteSpace(value)).Distinct(StringComparer.OrdinalIgnoreCase));
+        }
+
+        private void QCAutomation_UpdatePreview(object sender, EventArgs e)
+        {
+            string toneName = textBox_QCAutomationPreviewInput.Text ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(toneName))
+            {
+                textBox_QCAutomationPreviewResult.Text = string.Empty;
+                return;
+            }
+
+            QCAutomationPreviewClassification classification = QCAutomation_ClassifyToneName(toneName);
+            string targetNote;
+            string qcTarget = QCAutomation_GetTargetForBucket(classification.Bucket, out targetNote);
+            string notes = QCAutomation_CombineNotes(classification.Notes, targetNote);
+
+            if (classification.Bucket == QCAutomationPreviewBucket.BassIgnore)
+            {
+                textBox_QCAutomationPreviewResult.Text = "bucket=Bass/Ignore keyword='bass' target='(none)'";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(qcTarget))
+            {
+                textBox_QCAutomationPreviewResult.Text = $"bucket={classification.BucketLabel} keyword='{classification.MatchedKeyword}' target='(none)'";
+                return;
+            }
+
+            textBox_QCAutomationPreviewResult.Text = $"bucket={classification.BucketLabel} keyword='{classification.MatchedKeyword}' target='{qcTarget}'{(string.IsNullOrWhiteSpace(notes) ? string.Empty : $" notes='{notes}'")}";
+        }
+
+        private static string QCAutomation_GetArrangementTypeLabel(int arrangementType)
+        {
+            switch (arrangementType)
+            {
+                case 0: return "Lead";
+                case 1: return "Rhythm";
+                case 2: return "Combo";
+                case 3: return "Bass";
+                default: return arrangementType.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        private static string QCAutomation_NormalizeArchivePath(string path)
+        {
+            return (path ?? string.Empty).Replace('\\', '/').Trim().ToLowerInvariant();
+        }
+
+        private static string QCAutomation_BuildSngPathFromSongXml(string songXmlPath)
+        {
+            string normalizedXml = QCAutomation_NormalizeArchivePath(songXmlPath);
+            if (string.IsNullOrWhiteSpace(normalizedXml))
+                return string.Empty;
+
+            if (normalizedXml.EndsWith(".sng", StringComparison.OrdinalIgnoreCase))
+                return normalizedXml;
+
+            string tail;
+            if (normalizedXml.Length > 20)
+                tail = normalizedXml.Substring(20);
+            else
+                tail = Path.GetFileNameWithoutExtension(normalizedXml);
+
+            if (tail.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                tail = tail.Substring(0, tail.Length - 4);
+
+            tail = tail.Trim('/');
+            if (string.IsNullOrWhiteSpace(tail))
+                return string.Empty;
+
+            return $"songs/bin/generic/{tail}.sng";
+        }
+
+        private static string QCAutomation_FormatSongPreviewTime(float timeSeconds)
+        {
+            double clampedSeconds = Math.Max(0, timeSeconds);
+            TimeSpan time = TimeSpan.FromSeconds(clampedSeconds);
+
+            if (time.TotalHours >= 1)
+                return time.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture);
+
+            return time.ToString(@"mm\:ss", CultureInfo.InvariantCulture);
+        }
+
+        private static string QCAutomation_DisplayValueOrUnknown(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? "(unknown)" : value.Trim();
+        }
+
+        private static void QCAutomation_AddToneEntry(
+            QCAutomationSongPreviewArrangement arrangement,
+            string toneName,
+            string source,
+            string note = "",
+            float? timeSeconds = null)
+        {
+            string normalizedTone = toneName == null ? string.Empty : toneName.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedTone))
+                return;
+
+            float? normalizedTimeSeconds = null;
+            if (timeSeconds.HasValue)
+                normalizedTimeSeconds = Math.Max(0f, timeSeconds.Value);
+
+            if (arrangement.ToneEntries.Any(entry =>
+                entry.Source.Equals(source, StringComparison.OrdinalIgnoreCase) &&
+                entry.ToneName.Equals(normalizedTone, StringComparison.OrdinalIgnoreCase) &&
+                (
+                    (!entry.TimeSeconds.HasValue && !normalizedTimeSeconds.HasValue) ||
+                    (entry.TimeSeconds.HasValue &&
+                        normalizedTimeSeconds.HasValue &&
+                        Math.Abs(entry.TimeSeconds.Value - normalizedTimeSeconds.Value) < 0.001f)
+                )))
+            {
+                return;
+            }
+
+            arrangement.ToneEntries.Add(new QCAutomationSongPreviewToneEntry
+            {
+                TimeSeconds = normalizedTimeSeconds,
+                TimeDisplay = normalizedTimeSeconds.HasValue ? QCAutomation_FormatSongPreviewTime(normalizedTimeSeconds.Value) : string.Empty,
+                ToneName = normalizedTone,
+                Source = source,
+                Notes = note ?? string.Empty
+            });
+        }
+
+        private static string QCAutomation_ResolveTimelineToneName(QCAutomationSongPreviewArrangement arrangement, int toneId, out bool ambiguousToneIdZero)
+        {
+            ambiguousToneIdZero = false;
+            switch (toneId)
+            {
+                case 0:
+                    if (!string.IsNullOrWhiteSpace(arrangement.ToneA) &&
+                        !string.IsNullOrWhiteSpace(arrangement.ToneBase) &&
+                        !arrangement.ToneA.Equals(arrangement.ToneBase, StringComparison.Ordinal))
+                    {
+                        ambiguousToneIdZero = true;
+                        return string.Empty;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(arrangement.ToneA))
+                        return arrangement.ToneA;
+                    return arrangement.ToneBase ?? string.Empty;
+
+                case 1:
+                    return arrangement.ToneB ?? string.Empty;
+
+                case 2:
+                    return arrangement.ToneC ?? string.Empty;
+
+                case 3:
+                    return arrangement.ToneD ?? string.Empty;
+
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private bool QCAutomation_TryPopulateTimelineTones(PsarcFile psarc, QCAutomationSongPreviewArrangement arrangement, out string timelineStatus)
+        {
+            timelineStatus = string.Empty;
+            arrangement.SngPath = QCAutomation_BuildSngPathFromSongXml(arrangement.SongXmlPath);
+            if (string.IsNullOrWhiteSpace(arrangement.SngPath))
+            {
+                timelineStatus = "Timeline unavailable: songXml path is missing or unsupported.";
+                return false;
+            }
+
+            string normalizedSngPath = QCAutomation_NormalizeArchivePath(arrangement.SngPath);
+            var entry = psarc.TOC.Entries.FirstOrDefault(tocEntry =>
+                !string.IsNullOrWhiteSpace(tocEntry.Path) &&
+                QCAutomation_NormalizeArchivePath(tocEntry.Path).Equals(normalizedSngPath, StringComparison.Ordinal));
+
+            if (entry == null)
+            {
+                string wantedFilename = Path.GetFileName(normalizedSngPath);
+                var filenameMatches = psarc.TOC.Entries
+                    .Where(tocEntry => !string.IsNullOrWhiteSpace(tocEntry.Path) &&
+                        Path.GetFileName(QCAutomation_NormalizeArchivePath(tocEntry.Path)).Equals(wantedFilename, StringComparison.Ordinal))
+                    .Take(2)
+                    .ToList();
+
+                if (filenameMatches.Count == 1)
+                    entry = filenameMatches[0];
+            }
+
+            if (entry == null)
+            {
+                timelineStatus = $"Timeline unavailable: SNG not found for '{arrangement.SngPath}'.";
+                return false;
+            }
+
+            SngAsset sngAsset;
+            try
+            {
+                sngAsset = psarc.InflateEntry<SngAsset>(entry);
+            }
+            catch (Exception ex)
+            {
+                timelineStatus = $"Timeline parse failed: {ex.Message}";
+                return false;
+            }
+
+            if (sngAsset?.Tones == null || sngAsset.Tones.Length == 0)
+            {
+                timelineStatus = "Timeline read succeeded: no tone events found.";
+                return true;
+            }
+
+            int unresolved = 0;
+            int unsupportedToneIds = 0;
+            int ambiguousToneIdZero = 0;
+            foreach (var toneEvent in sngAsset.Tones)
+            {
+                bool ambiguous;
+                string resolvedToneName = QCAutomation_ResolveTimelineToneName(arrangement, toneEvent.ToneId, out ambiguous);
+                if (ambiguous)
+                {
+                    ambiguousToneIdZero++;
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(resolvedToneName))
+                {
+                    if (toneEvent.ToneId < 0 || toneEvent.ToneId > 3)
+                        unsupportedToneIds++;
+                    else
+                        unresolved++;
+                    continue;
+                }
+
+                QCAutomation_AddToneEntry(arrangement, resolvedToneName, "timeline", timeSeconds: toneEvent.Time);
+            }
+
+            timelineStatus = $"Timeline read: toneEvents={sngAsset.Tones.Length}";
+            if (ambiguousToneIdZero > 0)
+                timelineStatus += $", ambiguousToneId0={ambiguousToneIdZero}";
+            if (unresolved > 0)
+                timelineStatus += $", unresolved={unresolved}";
+            if (unsupportedToneIds > 0)
+                timelineStatus += $", unsupportedToneIds={unsupportedToneIds}";
+
+            return true;
+        }
+
+        private QCAutomationSongPreviewArrangement QCAutomation_BuildSongPreviewArrangement(PsarcFile psarc, SongArrangement arrangement, int index)
+        {
+            SongArrangement.ArrangementAttributes attributes = arrangement.Attributes;
+            QCAutomationSongPreviewArrangement previewArrangement = new QCAutomationSongPreviewArrangement
+            {
+                SongTitle = attributes.SongName ?? string.Empty,
+                SongArtist = attributes.ArtistName ?? string.Empty,
+                SongKey = attributes.SongKey ?? string.Empty,
+                ArrangementName = attributes.ArrangementName ?? string.Empty,
+                ArrangementType = QCAutomation_GetArrangementTypeLabel(attributes.ArrangementType),
+                PersistentID = attributes.PersistentID ?? string.Empty,
+                ManifestUrn = attributes.ManifestUrn ?? string.Empty,
+                SongXmlPath = attributes.SongXml ?? string.Empty,
+                ToneBase = attributes.Tone_Base ?? string.Empty,
+                ToneA = attributes.Tone_A ?? string.Empty,
+                ToneB = attributes.Tone_B ?? string.Empty,
+                ToneC = attributes.Tone_C ?? string.Empty,
+                ToneD = attributes.Tone_D ?? string.Empty
+            };
+
+            string arrangementLabel = string.IsNullOrWhiteSpace(previewArrangement.ArrangementName)
+                ? "Unnamed"
+                : previewArrangement.ArrangementName;
+            string persistentIdPart = string.IsNullOrWhiteSpace(previewArrangement.PersistentID)
+                ? "persistentID=n/a"
+                : $"persistentID={previewArrangement.PersistentID}";
+
+            previewArrangement.DisplayName = $"{index + 1}. {arrangementLabel} [{previewArrangement.ArrangementType}] {persistentIdPart}";
+
+            QCAutomation_AddToneEntry(previewArrangement, previewArrangement.ToneBase, "toneBase", timeSeconds: 0f);
+            QCAutomation_AddToneEntry(previewArrangement, previewArrangement.ToneA, "toneA");
+            QCAutomation_AddToneEntry(previewArrangement, previewArrangement.ToneB, "toneB");
+            QCAutomation_AddToneEntry(previewArrangement, previewArrangement.ToneC, "toneC");
+            QCAutomation_AddToneEntry(previewArrangement, previewArrangement.ToneD, "toneD");
+
+            try
+            {
+                QCAutomation_TryPopulateTimelineTones(psarc, previewArrangement, out string timelineStatus);
+                previewArrangement.TimelineStatus = timelineStatus;
+            }
+            catch (Exception ex)
+            {
+                previewArrangement.TimelineStatus = $"Timeline parse failed: {ex.Message}";
+            }
+
+            return previewArrangement;
+        }
+
+        private void QCAutomation_ClearSongPreviewState(string statusText)
+        {
+            qcaSongPreviewArrangements.Clear();
+            qcaSongPreviewSelectionChangeSuppressed = true;
+            comboBox_QCAutomationSongPreviewArrangement.Items.Clear();
+            comboBox_QCAutomationSongPreviewArrangement.SelectedIndex = -1;
+            qcaSongPreviewSelectionChangeSuppressed = false;
+            dataGridView_QCAutomationSongPreview.Rows.Clear();
+            textBox_QCAutomationSongPreviewDetails.Text = string.Empty;
+            label_QCAutomationSongPreviewStatus.Text = statusText;
+        }
+
+        private void QCAutomation_BrowseSongPreviewFile(object sender, EventArgs e)
+        {
+            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            {
+                fileDialog.Filter = "Rocksmith PSARC (*.psarc)|*.psarc|All files (*.*)|*.*";
+                fileDialog.Title = "Select Rocksmith song file";
+                fileDialog.Multiselect = false;
+                fileDialog.CheckFileExists = true;
+                if (fileDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                QCAutomation_LoadSongPreviewPsarc(fileDialog.FileName);
+            }
+        }
+
+        private void QCAutomation_LoadSongPreviewPsarc(string psarcPath)
+        {
+            textBox_QCAutomationSongPreviewFilePath.Text = psarcPath ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(psarcPath) || !File.Exists(psarcPath))
+            {
+                QCAutomation_ClearSongPreviewState("Selected file does not exist.");
+                return;
+            }
+
+            Cursor previousCursor = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
+            try
+            {
+                QCAutomation_ClearSongPreviewState("Reading arrangement metadata...");
+                using (PsarcFile psarc = new PsarcFile(psarcPath))
+                {
+                    List<SongArrangement> arrangements = psarc.ExtractArrangementManifests();
+                    int displayIndex = 0;
+                    foreach (SongArrangement arrangement in arrangements)
+                    {
+                        if (arrangement?.Attributes == null)
+                            continue;
+
+                        QCAutomationSongPreviewArrangement previewArrangement;
+                        try
+                        {
+                            previewArrangement = QCAutomation_BuildSongPreviewArrangement(psarc, arrangement, displayIndex);
+                        }
+                        catch (Exception ex)
+                        {
+                            previewArrangement = new QCAutomationSongPreviewArrangement
+                            {
+                                DisplayName = $"{displayIndex + 1}. Failed to parse arrangement [{ex.Message}]",
+                                TimelineStatus = $"Arrangement parse failed: {ex.Message}"
+                            };
+                        }
+
+                        qcaSongPreviewArrangements.Add(previewArrangement);
+                        comboBox_QCAutomationSongPreviewArrangement.Items.Add(previewArrangement.DisplayName);
+                        displayIndex++;
+                    }
+                }
+
+                if (qcaSongPreviewArrangements.Count == 0)
+                {
+                    QCAutomation_ClearSongPreviewState("No arrangements were found in the selected .psarc.");
+                    return;
+                }
+
+                qcaSongPreviewSelectionChangeSuppressed = true;
+                comboBox_QCAutomationSongPreviewArrangement.SelectedIndex = 0;
+                qcaSongPreviewSelectionChangeSuppressed = false;
+
+                QCAutomation_RenderSelectedSongPreviewArrangement();
+                label_QCAutomationSongPreviewStatus.Text = $"Loaded {qcaSongPreviewArrangements.Count} arrangement(s) from selected .psarc.";
+            }
+            catch (Exception ex)
+            {
+                QCAutomation_ClearSongPreviewState($"Failed to read .psarc: {ex.Message}");
+            }
+            finally
+            {
+                Cursor.Current = previousCursor;
+            }
+        }
+
+        private void QCAutomation_SelectSongPreviewArrangement(object sender, EventArgs e)
+        {
+            if (qcaSongPreviewSelectionChangeSuppressed)
+                return;
+
+            QCAutomation_RenderSelectedSongPreviewArrangement();
+        }
+
+        private string QCAutomation_BuildSongPreviewDetails(QCAutomationSongPreviewArrangement arrangement)
+        {
+            return string.Join(Environment.NewLine, new[]
+            {
+                $"Title: {QCAutomation_DisplayValueOrUnknown(arrangement.SongTitle)}",
+                $"Artist: {QCAutomation_DisplayValueOrUnknown(arrangement.SongArtist)}",
+                $"Arrangement: {QCAutomation_DisplayValueOrUnknown(arrangement.ArrangementName)} ({QCAutomation_DisplayValueOrUnknown(arrangement.ArrangementType)})",
+                $"Tone Base: {QCAutomation_DisplayValueOrUnknown(arrangement.ToneBase)}",
+                $"Tone A: {QCAutomation_DisplayValueOrUnknown(arrangement.ToneA)}",
+                $"Tone B: {QCAutomation_DisplayValueOrUnknown(arrangement.ToneB)}",
+                $"Tone C: {QCAutomation_DisplayValueOrUnknown(arrangement.ToneC)}",
+                $"Tone D: {QCAutomation_DisplayValueOrUnknown(arrangement.ToneD)}",
+                $"Timeline: {QCAutomation_DisplayValueOrUnknown(arrangement.TimelineStatus)}"
+            });
+        }
+
+        private void QCAutomation_RenderSelectedSongPreviewArrangement()
+        {
+            int selectedIndex = comboBox_QCAutomationSongPreviewArrangement.SelectedIndex;
+            if (selectedIndex < 0 || selectedIndex >= qcaSongPreviewArrangements.Count)
+            {
+                dataGridView_QCAutomationSongPreview.Rows.Clear();
+                textBox_QCAutomationSongPreviewDetails.Text = string.Empty;
+                return;
+            }
+
+            QCAutomationSongPreviewArrangement arrangement = qcaSongPreviewArrangements[selectedIndex];
+            textBox_QCAutomationSongPreviewDetails.Text = QCAutomation_BuildSongPreviewDetails(arrangement);
+
+            dataGridView_QCAutomationSongPreview.Rows.Clear();
+            foreach (QCAutomationSongPreviewToneEntry toneEntry in arrangement.ToneEntries
+                .OrderBy(entry => entry.TimeSeconds.HasValue ? 0 : 1)
+                .ThenBy(entry => entry.TimeSeconds ?? float.MaxValue)
+                .ThenBy(entry => entry.ToneName, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(entry => entry.Source, StringComparer.OrdinalIgnoreCase))
+            {
+                QCAutomationPreviewClassification classification = QCAutomation_ClassifyToneName(toneEntry.ToneName);
+                string targetNote;
+                string qcTarget = QCAutomation_GetTargetForBucket(classification.Bucket, out targetNote);
+                string notes = QCAutomation_CombineNotes(toneEntry.Notes, classification.Notes, targetNote);
+
+                dataGridView_QCAutomationSongPreview.Rows.Add(
+                    toneEntry.TimeDisplay,
+                    toneEntry.ToneName,
+                    toneEntry.Source,
+                    classification.BucketLabel,
+                    classification.MatchedKeyword,
+                    string.IsNullOrWhiteSpace(qcTarget) ? "(none)" : qcTarget,
+                    notes
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(arrangement.TimelineStatus))
+            {
+                label_QCAutomationSongPreviewStatus.Text = arrangement.TimelineStatus;
+            }
+        }
+
+        private void QCAutomation_RefreshSongPreviewClassification()
+        {
+            if (qcaSongPreviewArrangements.Count == 0)
+                return;
+
+            QCAutomation_RenderSelectedSongPreviewArrangement();
+        }
 
         private void Save_SetSavePath(object sender, EventArgs e)
         {
@@ -4494,6 +5582,7 @@ namespace RSMods
         {
             this.listBox_ListMidiOutDevices.Items.Clear();
             this.listBox_ListMidiInDevices.Items.Clear();
+            this.comboBox_QCAutomationMidiOutDevice.Items.Clear();
 
             uint numberOfMidiOutDevices = Midi.midiOutGetNumDevs();
             uint numberOfMidiInDevices = Midi.midiInGetNumDevs();
@@ -4503,6 +5592,7 @@ namespace RSMods
                 Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS { };
                 Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
                 this.listBox_ListMidiOutDevices.Items.Add(temp.szPname);
+                this.comboBox_QCAutomationMidiOutDevice.Items.Add(temp.szPname);
             }
 
             for (uint deviceNumber = 0; deviceNumber < numberOfMidiInDevices; deviceNumber++)
@@ -4517,6 +5607,18 @@ namespace RSMods
 
             if (ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier) != "")
                 listBox_ListMidiInDevices.SelectedItem = ReadSettings.ProcessSettings(ReadSettings.MidiInDeviceIdentifier);
+
+            string selectedQcMidiOut = QCAutomation_GetFirstNonEmptySetting(
+                ReadSettings.QCAutomationSectionMidiOutDeviceIdentifier,
+                ReadSettings.QCAutomationDeviceIdentifier
+            );
+            if (!string.IsNullOrWhiteSpace(selectedQcMidiOut))
+            {
+                if (!comboBox_QCAutomationMidiOutDevice.Items.Contains(selectedQcMidiOut))
+                    comboBox_QCAutomationMidiOutDevice.Items.Add(selectedQcMidiOut);
+
+                comboBox_QCAutomationMidiOutDevice.SelectedItem = selectedQcMidiOut;
+            }
         }
 
         private void MidiInProc(int hMidiIn, Midi.Responses wMsg, uint dwInstance, uint midiMessage, uint timeStamp)

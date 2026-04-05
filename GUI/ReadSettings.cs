@@ -29,7 +29,12 @@ namespace RSMods
                              ExtendedRangeEnabled, ExtendedRangeDropTuning, ExtendedRangeFixBassTuning, CustomStringColorsNumber, SeparateNoteColors,
                              DiscoModeEnabled, RemoveHeadstockEnabled, RemoveSkylineEnabled, GreenscreenWallEnabled, ForceProfileEnabled, FretlessEnabled, RemoveInlaysEnabled, ToggleLoftWhen,
                              ToggleSkylineWhen, RemoveLaneMarkersEnabled, RemoveLyricsEnabled, RemoveLyricsWhen, GuitarSpeakEnabled, RemoveHeadstockWhen, ScreenShotScores,
-                             MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
+                             MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, QCAutomationEnabled, QCAutomationTestOnSongStart, QCAutomationDevice, QCAutomationSectionEnabled,
+                             QCAutomationSectionMidiOutDevice, QCAutomationSectionTransposeEnabled, QCAutomationSectionIdleScene, QCAutomationSectionTransposeOutOfRange, QCAutomationSectionIgnoreBass, QCAutomationSectionAutoCleanTarget, QCAutomationSectionAutoODTarget, QCAutomationSectionAutoDistTarget,
+                             QCAutomationSectionAutoModTarget, QCAutomationSectionAutoSoloTarget, QCAutomationSectionManual2Target, QCAutomationSectionManual3Target, QCAutomationSectionManual4Target,
+                             QCAutomationSectionIdleTarget, QCAutomationSectionSoloKeywords, QCAutomationSectionDistKeywords, QCAutomationSectionODKeywords, QCAutomationSectionCleanKeywords,
+                             QCAutomationSectionModKeywords, QCAutomationSectionSoloPriority, QCAutomationSectionDistPriority, QCAutomationSectionODPriority, QCAutomationSectionCleanPriority, QCAutomationSectionModPriority,
+                             MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, OnScreenFontSize, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
                              AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints,
 
@@ -43,7 +48,7 @@ namespace RSMods
 
 
                              // Mod Settings
-                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset,
+                             ExtendedRangeTuning, CheckForNewSongInterval, RiffRepeaterSpeedInterval, TuningPedal, MidiTuningOffset, QCAutomationMidiChannel, QCAutomationSceneCC, QCAutomationTestSceneValue, QCAutomationSectionMidiChannel,
                              VolumeControlInterval, SecondaryMonitorXPosition, SecondaryMonitorYPosition, OverrideInputVolume, AlternativeOutputSampleRate, LoopingLeadUp,
                              RewindBy, RewindLeadup, CustomNSPTimeLimit,
 
@@ -141,6 +146,35 @@ namespace RSMods
             MidiAutoTuningDeviceIdentifier              = "AutoTuneForSongDevice = ",
             MidiInDeviceIdentifier                      = "MidiInDevice = ",
             MidiAutoTuningWhenIdentifier                = "AutoTuneForSongWhen = ",
+            QCAutomationEnabledIdentifier               = "QCAutomationEnabled = ",
+            QCAutomationTestOnSongStartIdentifier       = "QCAutomationTestOnSongStart = ",
+            QCAutomationDeviceIdentifier                = "QCAutomationDevice = ",
+            QCAutomationSectionEnabledIdentifier        = "Enabled = ",
+            QCAutomationSectionMidiOutDeviceIdentifier  = "MidiOutDevice = ",
+            QCAutomationSectionMidiChannelIdentifier    = "MidiChannel = ",
+            QCAutomationSectionTransposeEnabledIdentifier = "TransposeEnabled = ",
+            QCAutomationSectionIdleSceneIdentifier      = "IdleScene = ",
+            QCAutomationSectionTransposeOutOfRangeIdentifier = "TransposeOutOfRange = ",
+            QCAutomationSectionIgnoreBassIdentifier     = "IgnoreBass = ",
+            QCAutomationSectionAutoCleanTargetIdentifier= "AutoCleanTarget = ",
+            QCAutomationSectionAutoODTargetIdentifier   = "AutoODTarget = ",
+            QCAutomationSectionAutoDistTargetIdentifier = "AutoDistTarget = ",
+            QCAutomationSectionAutoModTargetIdentifier  = "AutoModTarget = ",
+            QCAutomationSectionAutoSoloTargetIdentifier = "AutoSoloTarget = ",
+            QCAutomationSectionManual2TargetIdentifier  = "Manual2Target = ",
+            QCAutomationSectionManual3TargetIdentifier  = "Manual3Target = ",
+            QCAutomationSectionManual4TargetIdentifier  = "Manual4Target = ",
+            QCAutomationSectionIdleTargetIdentifier     = "IdleTarget = ",
+            QCAutomationSectionSoloKeywordsIdentifier   = "SoloKeywords = ",
+            QCAutomationSectionDistKeywordsIdentifier   = "DistKeywords = ",
+            QCAutomationSectionODKeywordsIdentifier     = "ODKeywords = ",
+            QCAutomationSectionCleanKeywordsIdentifier  = "CleanKeywords = ",
+            QCAutomationSectionModKeywordsIdentifier    = "ModKeywords = ",
+            QCAutomationSectionSoloPriorityIdentifier   = "SoloPriority = ",
+            QCAutomationSectionDistPriorityIdentifier   = "DistPriority = ",
+            QCAutomationSectionODPriorityIdentifier     = "ODPriority = ",
+            QCAutomationSectionCleanPriorityIdentifier  = "CleanPriority = ",
+            QCAutomationSectionModPriorityIdentifier    = "ModPriority = ",
             MidiSoftwareSemitoneTriggersIdentifier      = "AutoTuneForSoftwareSemitoneTriggers = ",
             MidiSoftwareSemitoneSettingsIdentifier      = "AutoTuneForSoftwareSemitoneSettings = ",
             MidiSoftwareTrueTuningTriggersIdentifier    = "AutoTuneForSoftwareTrueTuningTriggers = ",
@@ -207,6 +241,9 @@ namespace RSMods
             RiffRepeaterSpeedIntervalIdentifier     = "RRSpeedInterval = ",
             TuningPedalIdentifier                   = "TuningPedal = ",
             MidiTuningOffsetIdentifier              = "TuningOffset = ",
+            QCAutomationMidiChannelIdentifier       = "QCAutomationMidiChannel = ",
+            QCAutomationSceneCCIdentifier           = "QCAutomationSceneCC = ",
+            QCAutomationTestSceneValueIdentifier    = "QCAutomationTestSceneValue = ",
             VolumeControlIntervalIdentifier         = "VolumeControlInterval = ",
             SecondaryMonitorXPositionIdentifier     = "SecondaryMonitorXPosition = ",
             SecondaryMonitorYPositionIdentifier     = "SecondaryMonitorYPosition = ",
@@ -283,6 +320,8 @@ namespace RSMods
         }
 
         private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
+        private static bool IdentifierIsFoundInSection(string currentLine, string currentSection, string sectionToFind, string settingToFind, string identifierToGrab) =>
+            currentSection == sectionToFind && currentLine.StartsWith(settingToFind) && settingToFind == identifierToGrab;
 
         private static void VerifySettingsINI()
         {
@@ -295,8 +334,15 @@ namespace RSMods
         public static string ProcessSettings(string identifierToGrab)
         {
             VerifySettingsINI();
+            string currentSection = string.Empty;
             foreach (string currentLine in File.ReadLines(Path.Combine(GenUtil.GetRSDirectory(), "RSMods.ini")))
             {
+                if (currentLine.StartsWith("[") && currentLine.EndsWith("]"))
+                {
+                    currentSection = currentLine.Trim();
+                    continue;
+                }
+
                 #region Song Lists
                 // Song Lists (the ones that come with the game by default).
 
@@ -461,6 +507,62 @@ namespace RSMods
                     return FillSettingVariable(MidiInDeviceIdentifier, SettingType.STRING, currentLine, out MidiInDevice);
                 if (IdentifierIsFound(currentLine, MidiAutoTuningWhenIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiAutoTuningWhenIdentifier, SettingType.STRING, currentLine, out MidiAutoTuningWhen);
+                if (IdentifierIsFound(currentLine, QCAutomationEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationEnabledIdentifier, SettingType.ON_OFF, currentLine, out QCAutomationEnabled);
+                if (IdentifierIsFound(currentLine, QCAutomationTestOnSongStartIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationTestOnSongStartIdentifier, SettingType.ON_OFF, currentLine, out QCAutomationTestOnSongStart);
+                if (IdentifierIsFound(currentLine, QCAutomationDeviceIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationDeviceIdentifier, SettingType.STRING, currentLine, out QCAutomationDevice);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionEnabledIdentifier, SettingType.ON_OFF, currentLine, out QCAutomationSectionEnabled);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionMidiOutDeviceIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionMidiOutDeviceIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionMidiOutDevice);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionTransposeEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionTransposeEnabledIdentifier, SettingType.ON_OFF, currentLine, out QCAutomationSectionTransposeEnabled);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionIdleSceneIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionIdleSceneIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionIdleScene);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionTransposeOutOfRangeIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionTransposeOutOfRangeIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionTransposeOutOfRange);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionIgnoreBassIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionIgnoreBassIdentifier, SettingType.ON_OFF, currentLine, out QCAutomationSectionIgnoreBass);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionAutoCleanTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionAutoCleanTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionAutoCleanTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionAutoODTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionAutoODTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionAutoODTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionAutoDistTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionAutoDistTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionAutoDistTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionAutoModTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionAutoModTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionAutoModTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionAutoSoloTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionAutoSoloTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionAutoSoloTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionManual2TargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionManual2TargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionManual2Target);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionManual3TargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionManual3TargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionManual3Target);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionManual4TargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionManual4TargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionManual4Target);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionIdleTargetIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionIdleTargetIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionIdleTarget);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionSoloKeywordsIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionSoloKeywordsIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionSoloKeywords);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionDistKeywordsIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionDistKeywordsIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionDistKeywords);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionODKeywordsIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionODKeywordsIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionODKeywords);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionCleanKeywordsIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionCleanKeywordsIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionCleanKeywords);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionModKeywordsIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionModKeywordsIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionModKeywords);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionSoloPriorityIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionSoloPriorityIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionSoloPriority);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionDistPriorityIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionDistPriorityIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionDistPriority);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionODPriorityIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionODPriorityIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionODPriority);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionCleanPriorityIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionCleanPriorityIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionCleanPriority);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionModPriorityIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionModPriorityIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionModPriority);
                 if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneSettingsIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiSoftwareSemitoneSettingsIdentifier, SettingType.STRING, currentLine, out MidiSoftwareSemitoneSettings);
                 if (IdentifierIsFound(currentLine, MidiSoftwareSemitoneTriggersIdentifier, identifierToGrab))
@@ -592,6 +694,14 @@ namespace RSMods
                     return FillSettingVariable(TuningPedalIdentifier, SettingType.STRING, currentLine, out TuningPedal);
                 if (IdentifierIsFound(currentLine, MidiTuningOffsetIdentifier, identifierToGrab))
                     return FillSettingVariable(MidiTuningOffsetIdentifier, SettingType.STRING, currentLine, out MidiTuningOffset);
+                if (IdentifierIsFound(currentLine, QCAutomationMidiChannelIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationMidiChannelIdentifier, SettingType.STRING, currentLine, out QCAutomationMidiChannel);
+                if (IdentifierIsFoundInSection(currentLine, currentSection, "[QCAutomation]", QCAutomationSectionMidiChannelIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSectionMidiChannelIdentifier, SettingType.STRING, currentLine, out QCAutomationSectionMidiChannel);
+                if (IdentifierIsFound(currentLine, QCAutomationSceneCCIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationSceneCCIdentifier, SettingType.STRING, currentLine, out QCAutomationSceneCC);
+                if (IdentifierIsFound(currentLine, QCAutomationTestSceneValueIdentifier, identifierToGrab))
+                    return FillSettingVariable(QCAutomationTestSceneValueIdentifier, SettingType.STRING, currentLine, out QCAutomationTestSceneValue);
                 if (IdentifierIsFound(currentLine, VolumeControlIntervalIdentifier, identifierToGrab))
                     return FillSettingVariable(VolumeControlIntervalIdentifier, SettingType.STRING, currentLine, out VolumeControlInterval);
                 if (IdentifierIsFound(currentLine, SecondaryMonitorXPositionIdentifier, identifierToGrab))

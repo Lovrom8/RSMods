@@ -12,14 +12,17 @@ namespace Midi {
 	void SendDataToThread_PC(char program, bool shouldWeSendPC = true);
 	void SendDataToThread_CC(char toePosition, bool shouldWeSendCC = true);
 	void ReadMidiSettingsFromINI(const std::string& ChordsMode, int PedalToUse, const std::string& MidiOutDevice, const std::string& MidiInDevice);
+	bool RefreshMidiOutDevice(const std::string& midiOutDevice);
 	bool SendProgramChange(char programChange = '\000', char alternativeChannel = 255);
 	bool SendControlChange(char toePosition = '\000', char alternativeBank = 255, char alternativeChannel = 255);
+	bool SendRawControlChange(char controller, char value, char channel = 0);
+	bool SendRawProgramChange(char program, char channel = 0);
 	std::string GetTuningOffsetName(int offset);
 	bool IsValidMidiMessage(std::vector<unsigned char>* message);
 	unsigned WINAPI ListenToMidiInThread();
 	void RespondToMidiIn(double deltaTime, std::vector<unsigned char>* message, void* userData);
 	void FindMidiInDevices(const std::string& deviceToLookFor);
-	void FindMidiOutDevices(const std::string& deviceToLookFor);
+	bool FindMidiOutDevices(const std::string& deviceToLookFor);
 
 	inline bool disableMidiIn = false;
 	extern int MidiCC, MidiPC;

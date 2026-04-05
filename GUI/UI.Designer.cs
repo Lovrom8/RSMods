@@ -7079,10 +7079,876 @@
             this.tab_GUISettings.PerformLayout();
             this.groupBox_ChangeTheme.ResumeLayout(false);
             this.groupBox_ChangeTheme.PerformLayout();
+            this.InitializeQCAutomationTab();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void InitializeQCAutomationTab()
+        {
+            this.tab_QCAutomation = new System.Windows.Forms.TabPage();
+            this.groupBox_QCAutomationGeneral = new System.Windows.Forms.GroupBox();
+            this.checkBox_QCAutomationEnabled = new System.Windows.Forms.CheckBox();
+            this.label_QCAutomationMidiOutDevice = new System.Windows.Forms.Label();
+            this.comboBox_QCAutomationMidiOutDevice = new System.Windows.Forms.ComboBox();
+            this.label_QCAutomationMidiChannel = new System.Windows.Forms.Label();
+            this.nUpDown_QCAutomationMidiChannel = new System.Windows.Forms.NumericUpDown();
+            this.checkBox_QCAutomationIgnoreBass = new System.Windows.Forms.CheckBox();
+            this.checkBox_QCAutomationTransposeEnabled = new System.Windows.Forms.CheckBox();
+            this.label_QCAutomationIdleScene = new System.Windows.Forms.Label();
+            this.comboBox_QCAutomationIdleScene = new System.Windows.Forms.ComboBox();
+            this.label_QCAutomationTransposeOutOfRange = new System.Windows.Forms.Label();
+            this.comboBox_QCAutomationTransposeOutOfRange = new System.Windows.Forms.ComboBox();
+            this.label_QCAutomationSceneMapHelp = new System.Windows.Forms.Label();
+            this.groupBox_QCAutomationTargets = new System.Windows.Forms.GroupBox();
+            this.label_QCAutomationTargetFormatHelp = new System.Windows.Forms.Label();
+            this.label_QCAutomationAutoCleanTarget = new System.Windows.Forms.Label();
+            this.label_QCAutomationAutoODTarget = new System.Windows.Forms.Label();
+            this.label_QCAutomationAutoDistTarget = new System.Windows.Forms.Label();
+            this.label_QCAutomationAutoModTarget = new System.Windows.Forms.Label();
+            this.label_QCAutomationAutoSoloTarget = new System.Windows.Forms.Label();
+            this.label_QCAutomationManual2Target = new System.Windows.Forms.Label();
+            this.label_QCAutomationManual3Target = new System.Windows.Forms.Label();
+            this.label_QCAutomationManual4Target = new System.Windows.Forms.Label();
+            this.label_QCAutomationIdleTarget = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationAutoCleanTarget = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationAutoODTarget = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationAutoDistTarget = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationAutoModTarget = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationAutoSoloTarget = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationManual2Target = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationManual3Target = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationManual4Target = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationIdleTarget = new System.Windows.Forms.TextBox();
+            this.groupBox_QCAutomationClassifier = new System.Windows.Forms.GroupBox();
+            this.label_QCAutomationClassifierPrecedence = new System.Windows.Forms.Label();
+            this.label_QCAutomationSoloKeywords = new System.Windows.Forms.Label();
+            this.label_QCAutomationDistKeywords = new System.Windows.Forms.Label();
+            this.label_QCAutomationODKeywords = new System.Windows.Forms.Label();
+            this.label_QCAutomationCleanKeywords = new System.Windows.Forms.Label();
+            this.label_QCAutomationModKeywords = new System.Windows.Forms.Label();
+            this.label_QCAutomationPriority = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationSoloKeywords = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationDistKeywords = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationODKeywords = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationCleanKeywords = new System.Windows.Forms.TextBox();
+            this.textBox_QCAutomationModKeywords = new System.Windows.Forms.TextBox();
+            this.nUpDown_QCAutomationSoloPriority = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_QCAutomationDistPriority = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_QCAutomationODPriority = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_QCAutomationCleanPriority = new System.Windows.Forms.NumericUpDown();
+            this.nUpDown_QCAutomationModPriority = new System.Windows.Forms.NumericUpDown();
+            this.groupBox_QCAutomationTools = new System.Windows.Forms.GroupBox();
+            this.tabControl_QCAutomationTools = new System.Windows.Forms.TabControl();
+            this.tabPage_QCAutomationClassifierPreview = new System.Windows.Forms.TabPage();
+            this.tabPage_QCAutomationSongPreview = new System.Windows.Forms.TabPage();
+            this.label_QCAutomationPreviewHelp = new System.Windows.Forms.Label();
+            this.label_QCAutomationPreviewInput = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationPreviewInput = new System.Windows.Forms.TextBox();
+            this.label_QCAutomationPreviewResult = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationPreviewResult = new System.Windows.Forms.TextBox();
+            this.label_QCAutomationSongPreviewFile = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationSongPreviewFilePath = new System.Windows.Forms.TextBox();
+            this.button_QCAutomationSongPreviewBrowse = new System.Windows.Forms.Button();
+            this.label_QCAutomationSongPreviewArrangement = new System.Windows.Forms.Label();
+            this.comboBox_QCAutomationSongPreviewArrangement = new System.Windows.Forms.ComboBox();
+            this.label_QCAutomationSongPreviewStatus = new System.Windows.Forms.Label();
+            this.textBox_QCAutomationSongPreviewDetails = new System.Windows.Forms.TextBox();
+            this.dataGridView_QCAutomationSongPreview = new System.Windows.Forms.DataGridView();
+            this.column_QCAutomationSongPreviewTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewToneName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewSource = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewBucket = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewKeyword = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewTarget = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.column_QCAutomationSongPreviewNotes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+
+            this.tab_QCAutomation.SuspendLayout();
+            this.groupBox_QCAutomationGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationMidiChannel)).BeginInit();
+            this.groupBox_QCAutomationTargets.SuspendLayout();
+            this.groupBox_QCAutomationClassifier.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationSoloPriority)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationDistPriority)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationODPriority)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationCleanPriority)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationModPriority)).BeginInit();
+            this.groupBox_QCAutomationTools.SuspendLayout();
+            this.tabControl_QCAutomationTools.SuspendLayout();
+            this.tabPage_QCAutomationClassifierPreview.SuspendLayout();
+            this.tabPage_QCAutomationSongPreview.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_QCAutomationSongPreview)).BeginInit();
+
+            //
+            // tab_QCAutomation
+            //
+            this.tab_QCAutomation.BackColor = System.Drawing.Color.Azure;
+            this.tab_QCAutomation.Controls.Add(this.groupBox_QCAutomationGeneral);
+            this.tab_QCAutomation.Controls.Add(this.groupBox_QCAutomationTargets);
+            this.tab_QCAutomation.Controls.Add(this.groupBox_QCAutomationClassifier);
+            this.tab_QCAutomation.Controls.Add(this.groupBox_QCAutomationTools);
+            this.tab_QCAutomation.AutoScroll = true;
+            this.tab_QCAutomation.Location = new System.Drawing.Point(4, 22);
+            this.tab_QCAutomation.Name = "tab_QCAutomation";
+            this.tab_QCAutomation.Size = new System.Drawing.Size(1150, 513);
+            this.tab_QCAutomation.TabIndex = 11;
+            this.tab_QCAutomation.Text = "QC Automation";
+
+            //
+            // groupBox_QCAutomationGeneral
+            //
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.checkBox_QCAutomationEnabled);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.label_QCAutomationMidiOutDevice);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.comboBox_QCAutomationMidiOutDevice);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.label_QCAutomationMidiChannel);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.nUpDown_QCAutomationMidiChannel);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.checkBox_QCAutomationIgnoreBass);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.checkBox_QCAutomationTransposeEnabled);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.label_QCAutomationIdleScene);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.comboBox_QCAutomationIdleScene);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.label_QCAutomationTransposeOutOfRange);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.comboBox_QCAutomationTransposeOutOfRange);
+            this.groupBox_QCAutomationGeneral.Controls.Add(this.label_QCAutomationSceneMapHelp);
+            this.groupBox_QCAutomationGeneral.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox_QCAutomationGeneral.Location = new System.Drawing.Point(12, 12);
+            this.groupBox_QCAutomationGeneral.Name = "groupBox_QCAutomationGeneral";
+            this.groupBox_QCAutomationGeneral.Size = new System.Drawing.Size(550, 188);
+            this.groupBox_QCAutomationGeneral.TabIndex = 0;
+            this.groupBox_QCAutomationGeneral.TabStop = false;
+            this.groupBox_QCAutomationGeneral.Text = "General";
+
+            this.checkBox_QCAutomationEnabled.AutoSize = true;
+            this.checkBox_QCAutomationEnabled.Location = new System.Drawing.Point(13, 23);
+            this.checkBox_QCAutomationEnabled.Name = "checkBox_QCAutomationEnabled";
+            this.checkBox_QCAutomationEnabled.Size = new System.Drawing.Size(140, 17);
+            this.checkBox_QCAutomationEnabled.TabIndex = 0;
+            this.checkBox_QCAutomationEnabled.Text = "Enable QC Automation";
+            this.checkBox_QCAutomationEnabled.UseVisualStyleBackColor = true;
+            this.checkBox_QCAutomationEnabled.CheckedChanged += new System.EventHandler(this.Save_QCAutomationEnabled);
+
+            this.label_QCAutomationMidiOutDevice.AutoSize = true;
+            this.label_QCAutomationMidiOutDevice.Location = new System.Drawing.Point(10, 52);
+            this.label_QCAutomationMidiOutDevice.Name = "label_QCAutomationMidiOutDevice";
+            this.label_QCAutomationMidiOutDevice.Size = new System.Drawing.Size(84, 13);
+            this.label_QCAutomationMidiOutDevice.TabIndex = 1;
+            this.label_QCAutomationMidiOutDevice.Text = "MIDI Out Device";
+
+            this.comboBox_QCAutomationMidiOutDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_QCAutomationMidiOutDevice.FormattingEnabled = true;
+            this.comboBox_QCAutomationMidiOutDevice.Location = new System.Drawing.Point(13, 69);
+            this.comboBox_QCAutomationMidiOutDevice.Name = "comboBox_QCAutomationMidiOutDevice";
+            this.comboBox_QCAutomationMidiOutDevice.Size = new System.Drawing.Size(525, 21);
+            this.comboBox_QCAutomationMidiOutDevice.TabIndex = 2;
+            this.comboBox_QCAutomationMidiOutDevice.SelectedIndexChanged += new System.EventHandler(this.Save_QCAutomationMidiOutDevice);
+
+            this.label_QCAutomationMidiChannel.AutoSize = true;
+            this.label_QCAutomationMidiChannel.Location = new System.Drawing.Point(10, 103);
+            this.label_QCAutomationMidiChannel.Name = "label_QCAutomationMidiChannel";
+            this.label_QCAutomationMidiChannel.Size = new System.Drawing.Size(102, 13);
+            this.label_QCAutomationMidiChannel.TabIndex = 3;
+            this.label_QCAutomationMidiChannel.Text = "MIDI Channel (1-16)";
+
+            this.nUpDown_QCAutomationMidiChannel.Location = new System.Drawing.Point(121, 101);
+            this.nUpDown_QCAutomationMidiChannel.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationMidiChannel.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationMidiChannel.Name = "nUpDown_QCAutomationMidiChannel";
+            this.nUpDown_QCAutomationMidiChannel.Size = new System.Drawing.Size(58, 20);
+            this.nUpDown_QCAutomationMidiChannel.TabIndex = 4;
+            this.nUpDown_QCAutomationMidiChannel.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationMidiChannel.ValueChanged += new System.EventHandler(this.Save_QCAutomationMidiChannel);
+
+            this.checkBox_QCAutomationIgnoreBass.AutoSize = true;
+            this.checkBox_QCAutomationIgnoreBass.Location = new System.Drawing.Point(190, 103);
+            this.checkBox_QCAutomationIgnoreBass.Name = "checkBox_QCAutomationIgnoreBass";
+            this.checkBox_QCAutomationIgnoreBass.Size = new System.Drawing.Size(133, 17);
+            this.checkBox_QCAutomationIgnoreBass.TabIndex = 5;
+            this.checkBox_QCAutomationIgnoreBass.Text = "Ignore Bass Arrangements";
+            this.checkBox_QCAutomationIgnoreBass.UseVisualStyleBackColor = true;
+            this.checkBox_QCAutomationIgnoreBass.CheckedChanged += new System.EventHandler(this.Save_QCAutomationIgnoreBass);
+
+            this.checkBox_QCAutomationTransposeEnabled.AutoSize = true;
+            this.checkBox_QCAutomationTransposeEnabled.Location = new System.Drawing.Point(13, 126);
+            this.checkBox_QCAutomationTransposeEnabled.Name = "checkBox_QCAutomationTransposeEnabled";
+            this.checkBox_QCAutomationTransposeEnabled.Size = new System.Drawing.Size(161, 17);
+            this.checkBox_QCAutomationTransposeEnabled.TabIndex = 6;
+            this.checkBox_QCAutomationTransposeEnabled.Text = "Enable Transpose Automation";
+            this.checkBox_QCAutomationTransposeEnabled.UseVisualStyleBackColor = true;
+            this.checkBox_QCAutomationTransposeEnabled.CheckedChanged += new System.EventHandler(this.Save_QCAutomationTransposeEnabled);
+
+            this.label_QCAutomationIdleScene.AutoSize = true;
+            this.label_QCAutomationIdleScene.Location = new System.Drawing.Point(246, 128);
+            this.label_QCAutomationIdleScene.Name = "label_QCAutomationIdleScene";
+            this.label_QCAutomationIdleScene.Size = new System.Drawing.Size(58, 13);
+            this.label_QCAutomationIdleScene.TabIndex = 7;
+            this.label_QCAutomationIdleScene.Text = "Idle Scene";
+
+            this.comboBox_QCAutomationIdleScene.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_QCAutomationIdleScene.FormattingEnabled = true;
+            this.comboBox_QCAutomationIdleScene.Items.AddRange(new object[] {
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H"});
+            this.comboBox_QCAutomationIdleScene.Location = new System.Drawing.Point(312, 124);
+            this.comboBox_QCAutomationIdleScene.Name = "comboBox_QCAutomationIdleScene";
+            this.comboBox_QCAutomationIdleScene.Size = new System.Drawing.Size(74, 21);
+            this.comboBox_QCAutomationIdleScene.TabIndex = 8;
+            this.comboBox_QCAutomationIdleScene.SelectedIndexChanged += new System.EventHandler(this.Save_QCAutomationIdleScene);
+
+            this.label_QCAutomationTransposeOutOfRange.AutoSize = true;
+            this.label_QCAutomationTransposeOutOfRange.Location = new System.Drawing.Point(10, 166);
+            this.label_QCAutomationTransposeOutOfRange.Name = "label_QCAutomationTransposeOutOfRange";
+            this.label_QCAutomationTransposeOutOfRange.Size = new System.Drawing.Size(113, 13);
+            this.label_QCAutomationTransposeOutOfRange.TabIndex = 9;
+            this.label_QCAutomationTransposeOutOfRange.Text = "Out-of-range behavior";
+
+            this.comboBox_QCAutomationTransposeOutOfRange.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_QCAutomationTransposeOutOfRange.FormattingEnabled = true;
+            this.comboBox_QCAutomationTransposeOutOfRange.Items.AddRange(new object[] {
+            "Clamp to nearest supported scene",
+            "Skip transpose scene change"});
+            this.comboBox_QCAutomationTransposeOutOfRange.Location = new System.Drawing.Point(129, 162);
+            this.comboBox_QCAutomationTransposeOutOfRange.Name = "comboBox_QCAutomationTransposeOutOfRange";
+            this.comboBox_QCAutomationTransposeOutOfRange.Size = new System.Drawing.Size(258, 21);
+            this.comboBox_QCAutomationTransposeOutOfRange.TabIndex = 10;
+            this.comboBox_QCAutomationTransposeOutOfRange.SelectedIndexChanged += new System.EventHandler(this.Save_QCAutomationTransposeOutOfRange);
+
+            this.label_QCAutomationSceneMapHelp.AutoSize = true;
+            this.label_QCAutomationSceneMapHelp.Location = new System.Drawing.Point(10, 146);
+            this.label_QCAutomationSceneMapHelp.Name = "label_QCAutomationSceneMapHelp";
+            this.label_QCAutomationSceneMapHelp.Size = new System.Drawing.Size(435, 13);
+            this.label_QCAutomationSceneMapHelp.TabIndex = 11;
+            this.label_QCAutomationSceneMapHelp.Text = "Scene map: A=0, B=-1, C=-2, D=-3, E=-4, F=-5, G=-6, H=-7 semitones";
+
+            //
+            // groupBox_QCAutomationTargets
+            //
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationTargetFormatHelp);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationAutoCleanTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationAutoODTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationAutoDistTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationAutoModTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationAutoSoloTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationManual2Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationManual3Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationManual4Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.label_QCAutomationIdleTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationAutoCleanTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationAutoODTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationAutoDistTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationAutoModTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationAutoSoloTarget);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationManual2Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationManual3Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationManual4Target);
+            this.groupBox_QCAutomationTargets.Controls.Add(this.textBox_QCAutomationIdleTarget);
+            this.groupBox_QCAutomationTargets.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox_QCAutomationTargets.Location = new System.Drawing.Point(12, 206);
+            this.groupBox_QCAutomationTargets.Name = "groupBox_QCAutomationTargets";
+            this.groupBox_QCAutomationTargets.Size = new System.Drawing.Size(550, 304);
+            this.groupBox_QCAutomationTargets.TabIndex = 1;
+            this.groupBox_QCAutomationTargets.TabStop = false;
+            this.groupBox_QCAutomationTargets.Text = "QC Target Mapping";
+
+            this.label_QCAutomationTargetFormatHelp.AutoSize = true;
+            this.label_QCAutomationTargetFormatHelp.Location = new System.Drawing.Point(10, 14);
+            this.label_QCAutomationTargetFormatHelp.Name = "label_QCAutomationTargetFormatHelp";
+            this.label_QCAutomationTargetFormatHelp.Size = new System.Drawing.Size(271, 13);
+            this.label_QCAutomationTargetFormatHelp.TabIndex = 0;
+            this.label_QCAutomationTargetFormatHelp.Text = "Format: MyPresets:32A = My Presets -> Bank 32 -> Slot A";
+
+            this.label_QCAutomationAutoCleanTarget.AutoSize = true;
+            this.label_QCAutomationAutoCleanTarget.Location = new System.Drawing.Point(10, 30);
+            this.label_QCAutomationAutoCleanTarget.Name = "label_QCAutomationAutoCleanTarget";
+            this.label_QCAutomationAutoCleanTarget.Size = new System.Drawing.Size(91, 13);
+            this.label_QCAutomationAutoCleanTarget.TabIndex = 1;
+            this.label_QCAutomationAutoCleanTarget.Text = "Auto Clean Target";
+
+            this.label_QCAutomationAutoODTarget.AutoSize = true;
+            this.label_QCAutomationAutoODTarget.Location = new System.Drawing.Point(10, 62);
+            this.label_QCAutomationAutoODTarget.Name = "label_QCAutomationAutoODTarget";
+            this.label_QCAutomationAutoODTarget.Size = new System.Drawing.Size(79, 13);
+            this.label_QCAutomationAutoODTarget.TabIndex = 1;
+            this.label_QCAutomationAutoODTarget.Text = "Auto OD Target";
+
+            this.label_QCAutomationAutoDistTarget.AutoSize = true;
+            this.label_QCAutomationAutoDistTarget.Location = new System.Drawing.Point(10, 94);
+            this.label_QCAutomationAutoDistTarget.Name = "label_QCAutomationAutoDistTarget";
+            this.label_QCAutomationAutoDistTarget.Size = new System.Drawing.Size(84, 13);
+            this.label_QCAutomationAutoDistTarget.TabIndex = 2;
+            this.label_QCAutomationAutoDistTarget.Text = "Auto Dist Target";
+
+            this.label_QCAutomationAutoModTarget.AutoSize = true;
+            this.label_QCAutomationAutoModTarget.Location = new System.Drawing.Point(10, 126);
+            this.label_QCAutomationAutoModTarget.Name = "label_QCAutomationAutoModTarget";
+            this.label_QCAutomationAutoModTarget.Size = new System.Drawing.Size(87, 13);
+            this.label_QCAutomationAutoModTarget.TabIndex = 3;
+            this.label_QCAutomationAutoModTarget.Text = "Auto Mod Target";
+
+            this.label_QCAutomationAutoSoloTarget.AutoSize = true;
+            this.label_QCAutomationAutoSoloTarget.Location = new System.Drawing.Point(10, 158);
+            this.label_QCAutomationAutoSoloTarget.Name = "label_QCAutomationAutoSoloTarget";
+            this.label_QCAutomationAutoSoloTarget.Size = new System.Drawing.Size(88, 13);
+            this.label_QCAutomationAutoSoloTarget.TabIndex = 4;
+            this.label_QCAutomationAutoSoloTarget.Text = "Auto Solo Target";
+
+            this.label_QCAutomationManual2Target.AutoSize = true;
+            this.label_QCAutomationManual2Target.Location = new System.Drawing.Point(10, 190);
+            this.label_QCAutomationManual2Target.Name = "label_QCAutomationManual2Target";
+            this.label_QCAutomationManual2Target.Size = new System.Drawing.Size(95, 13);
+            this.label_QCAutomationManual2Target.TabIndex = 5;
+            this.label_QCAutomationManual2Target.Text = "Manual Slot 2 Target";
+
+            this.label_QCAutomationManual3Target.AutoSize = true;
+            this.label_QCAutomationManual3Target.Location = new System.Drawing.Point(10, 222);
+            this.label_QCAutomationManual3Target.Name = "label_QCAutomationManual3Target";
+            this.label_QCAutomationManual3Target.Size = new System.Drawing.Size(95, 13);
+            this.label_QCAutomationManual3Target.TabIndex = 6;
+            this.label_QCAutomationManual3Target.Text = "Manual Slot 3 Target";
+
+            this.label_QCAutomationManual4Target.AutoSize = true;
+            this.label_QCAutomationManual4Target.Location = new System.Drawing.Point(10, 254);
+            this.label_QCAutomationManual4Target.Name = "label_QCAutomationManual4Target";
+            this.label_QCAutomationManual4Target.Size = new System.Drawing.Size(95, 13);
+            this.label_QCAutomationManual4Target.TabIndex = 7;
+            this.label_QCAutomationManual4Target.Text = "Manual Slot 4 Target";
+
+            this.label_QCAutomationIdleTarget.AutoSize = true;
+            this.label_QCAutomationIdleTarget.Location = new System.Drawing.Point(10, 286);
+            this.label_QCAutomationIdleTarget.Name = "label_QCAutomationIdleTarget";
+            this.label_QCAutomationIdleTarget.Size = new System.Drawing.Size(58, 13);
+            this.label_QCAutomationIdleTarget.TabIndex = 8;
+            this.label_QCAutomationIdleTarget.Text = "Idle Target";
+
+            this.textBox_QCAutomationAutoCleanTarget.Location = new System.Drawing.Point(177, 27);
+            this.textBox_QCAutomationAutoCleanTarget.Name = "textBox_QCAutomationAutoCleanTarget";
+            this.textBox_QCAutomationAutoCleanTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationAutoCleanTarget.TabIndex = 9;
+            this.textBox_QCAutomationAutoCleanTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationAutoCleanTarget);
+
+            this.textBox_QCAutomationAutoODTarget.Location = new System.Drawing.Point(177, 59);
+            this.textBox_QCAutomationAutoODTarget.Name = "textBox_QCAutomationAutoODTarget";
+            this.textBox_QCAutomationAutoODTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationAutoODTarget.TabIndex = 10;
+            this.textBox_QCAutomationAutoODTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationAutoODTarget);
+
+            this.textBox_QCAutomationAutoDistTarget.Location = new System.Drawing.Point(177, 91);
+            this.textBox_QCAutomationAutoDistTarget.Name = "textBox_QCAutomationAutoDistTarget";
+            this.textBox_QCAutomationAutoDistTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationAutoDistTarget.TabIndex = 11;
+            this.textBox_QCAutomationAutoDistTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationAutoDistTarget);
+
+            this.textBox_QCAutomationAutoModTarget.Location = new System.Drawing.Point(177, 123);
+            this.textBox_QCAutomationAutoModTarget.Name = "textBox_QCAutomationAutoModTarget";
+            this.textBox_QCAutomationAutoModTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationAutoModTarget.TabIndex = 12;
+            this.textBox_QCAutomationAutoModTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationAutoModTarget);
+
+            this.textBox_QCAutomationAutoSoloTarget.Location = new System.Drawing.Point(177, 155);
+            this.textBox_QCAutomationAutoSoloTarget.Name = "textBox_QCAutomationAutoSoloTarget";
+            this.textBox_QCAutomationAutoSoloTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationAutoSoloTarget.TabIndex = 13;
+            this.textBox_QCAutomationAutoSoloTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationAutoSoloTarget);
+
+            this.textBox_QCAutomationManual2Target.Location = new System.Drawing.Point(177, 187);
+            this.textBox_QCAutomationManual2Target.Name = "textBox_QCAutomationManual2Target";
+            this.textBox_QCAutomationManual2Target.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationManual2Target.TabIndex = 14;
+            this.textBox_QCAutomationManual2Target.TextChanged += new System.EventHandler(this.Save_QCAutomationManual2Target);
+
+            this.textBox_QCAutomationManual3Target.Location = new System.Drawing.Point(177, 219);
+            this.textBox_QCAutomationManual3Target.Name = "textBox_QCAutomationManual3Target";
+            this.textBox_QCAutomationManual3Target.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationManual3Target.TabIndex = 15;
+            this.textBox_QCAutomationManual3Target.TextChanged += new System.EventHandler(this.Save_QCAutomationManual3Target);
+
+            this.textBox_QCAutomationManual4Target.Location = new System.Drawing.Point(177, 251);
+            this.textBox_QCAutomationManual4Target.Name = "textBox_QCAutomationManual4Target";
+            this.textBox_QCAutomationManual4Target.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationManual4Target.TabIndex = 16;
+            this.textBox_QCAutomationManual4Target.TextChanged += new System.EventHandler(this.Save_QCAutomationManual4Target);
+
+            this.textBox_QCAutomationIdleTarget.Location = new System.Drawing.Point(177, 283);
+            this.textBox_QCAutomationIdleTarget.Name = "textBox_QCAutomationIdleTarget";
+            this.textBox_QCAutomationIdleTarget.Size = new System.Drawing.Size(361, 20);
+            this.textBox_QCAutomationIdleTarget.TabIndex = 17;
+            this.textBox_QCAutomationIdleTarget.TextChanged += new System.EventHandler(this.Save_QCAutomationIdleTarget);
+
+            //
+            // groupBox_QCAutomationClassifier
+            //
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationClassifierPrecedence);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationSoloKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationDistKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationODKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationCleanKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationModKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.label_QCAutomationPriority);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.textBox_QCAutomationSoloKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.textBox_QCAutomationDistKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.textBox_QCAutomationODKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.textBox_QCAutomationCleanKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.textBox_QCAutomationModKeywords);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.nUpDown_QCAutomationSoloPriority);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.nUpDown_QCAutomationDistPriority);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.nUpDown_QCAutomationODPriority);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.nUpDown_QCAutomationCleanPriority);
+            this.groupBox_QCAutomationClassifier.Controls.Add(this.nUpDown_QCAutomationModPriority);
+            this.groupBox_QCAutomationClassifier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox_QCAutomationClassifier.Location = new System.Drawing.Point(570, 12);
+            this.groupBox_QCAutomationClassifier.Name = "groupBox_QCAutomationClassifier";
+            this.groupBox_QCAutomationClassifier.Size = new System.Drawing.Size(565, 230);
+            this.groupBox_QCAutomationClassifier.TabIndex = 2;
+            this.groupBox_QCAutomationClassifier.TabStop = false;
+            this.groupBox_QCAutomationClassifier.Text = "Auto Classifier Filters";
+
+            this.label_QCAutomationClassifierPrecedence.AutoSize = true;
+            this.label_QCAutomationClassifierPrecedence.Location = new System.Drawing.Point(13, 24);
+            this.label_QCAutomationClassifierPrecedence.Name = "label_QCAutomationClassifierPrecedence";
+            this.label_QCAutomationClassifierPrecedence.Size = new System.Drawing.Size(428, 13);
+            this.label_QCAutomationClassifierPrecedence.TabIndex = 0;
+            this.label_QCAutomationClassifierPrecedence.Text = "Priority order (1=highest): OD(1) > DIST(2) > CLEAN(3) > MOD(4) > SOLO(5)";
+
+            this.label_QCAutomationPriority.AutoSize = true;
+            this.label_QCAutomationPriority.Location = new System.Drawing.Point(103, 40);
+            this.label_QCAutomationPriority.Name = "label_QCAutomationPriority";
+            this.label_QCAutomationPriority.Size = new System.Drawing.Size(24, 13);
+            this.label_QCAutomationPriority.TabIndex = 1;
+            this.label_QCAutomationPriority.Text = "Prio";
+
+            this.label_QCAutomationSoloKeywords.AutoSize = true;
+            this.label_QCAutomationSoloKeywords.Location = new System.Drawing.Point(13, 212);
+            this.label_QCAutomationSoloKeywords.Name = "label_QCAutomationSoloKeywords";
+            this.label_QCAutomationSoloKeywords.Size = new System.Drawing.Size(76, 13);
+            this.label_QCAutomationSoloKeywords.TabIndex = 2;
+            this.label_QCAutomationSoloKeywords.Text = "Solo Keywords";
+
+            this.label_QCAutomationDistKeywords.AutoSize = true;
+            this.label_QCAutomationDistKeywords.Location = new System.Drawing.Point(13, 98);
+            this.label_QCAutomationDistKeywords.Name = "label_QCAutomationDistKeywords";
+            this.label_QCAutomationDistKeywords.Size = new System.Drawing.Size(74, 13);
+            this.label_QCAutomationDistKeywords.TabIndex = 3;
+            this.label_QCAutomationDistKeywords.Text = "Dist Keywords";
+
+            this.label_QCAutomationODKeywords.AutoSize = true;
+            this.label_QCAutomationODKeywords.Location = new System.Drawing.Point(13, 60);
+            this.label_QCAutomationODKeywords.Name = "label_QCAutomationODKeywords";
+            this.label_QCAutomationODKeywords.Size = new System.Drawing.Size(70, 13);
+            this.label_QCAutomationODKeywords.TabIndex = 4;
+            this.label_QCAutomationODKeywords.Text = "OD Keywords";
+
+            this.label_QCAutomationCleanKeywords.AutoSize = true;
+            this.label_QCAutomationCleanKeywords.Location = new System.Drawing.Point(13, 136);
+            this.label_QCAutomationCleanKeywords.Name = "label_QCAutomationCleanKeywords";
+            this.label_QCAutomationCleanKeywords.Size = new System.Drawing.Size(84, 13);
+            this.label_QCAutomationCleanKeywords.TabIndex = 5;
+            this.label_QCAutomationCleanKeywords.Text = "Clean Keywords";
+
+            this.label_QCAutomationModKeywords.AutoSize = true;
+            this.label_QCAutomationModKeywords.Location = new System.Drawing.Point(13, 174);
+            this.label_QCAutomationModKeywords.Name = "label_QCAutomationModKeywords";
+            this.label_QCAutomationModKeywords.Size = new System.Drawing.Size(76, 13);
+            this.label_QCAutomationModKeywords.TabIndex = 6;
+            this.label_QCAutomationModKeywords.Text = "Mod Keywords";
+
+            this.textBox_QCAutomationSoloKeywords.Location = new System.Drawing.Point(160, 209);
+            this.textBox_QCAutomationSoloKeywords.Name = "textBox_QCAutomationSoloKeywords";
+            this.textBox_QCAutomationSoloKeywords.Size = new System.Drawing.Size(390, 20);
+            this.textBox_QCAutomationSoloKeywords.TabIndex = 12;
+            this.textBox_QCAutomationSoloKeywords.TextChanged += new System.EventHandler(this.Save_QCAutomationSoloKeywords);
+
+            this.textBox_QCAutomationDistKeywords.Location = new System.Drawing.Point(160, 95);
+            this.textBox_QCAutomationDistKeywords.Name = "textBox_QCAutomationDistKeywords";
+            this.textBox_QCAutomationDistKeywords.Size = new System.Drawing.Size(390, 20);
+            this.textBox_QCAutomationDistKeywords.TabIndex = 13;
+            this.textBox_QCAutomationDistKeywords.TextChanged += new System.EventHandler(this.Save_QCAutomationDistKeywords);
+
+            this.textBox_QCAutomationODKeywords.Location = new System.Drawing.Point(160, 57);
+            this.textBox_QCAutomationODKeywords.Name = "textBox_QCAutomationODKeywords";
+            this.textBox_QCAutomationODKeywords.Size = new System.Drawing.Size(390, 20);
+            this.textBox_QCAutomationODKeywords.TabIndex = 14;
+            this.textBox_QCAutomationODKeywords.TextChanged += new System.EventHandler(this.Save_QCAutomationODKeywords);
+
+            this.textBox_QCAutomationCleanKeywords.Location = new System.Drawing.Point(160, 133);
+            this.textBox_QCAutomationCleanKeywords.Name = "textBox_QCAutomationCleanKeywords";
+            this.textBox_QCAutomationCleanKeywords.Size = new System.Drawing.Size(390, 20);
+            this.textBox_QCAutomationCleanKeywords.TabIndex = 15;
+            this.textBox_QCAutomationCleanKeywords.TextChanged += new System.EventHandler(this.Save_QCAutomationCleanKeywords);
+
+            this.textBox_QCAutomationModKeywords.Location = new System.Drawing.Point(160, 171);
+            this.textBox_QCAutomationModKeywords.Name = "textBox_QCAutomationModKeywords";
+            this.textBox_QCAutomationModKeywords.Size = new System.Drawing.Size(390, 20);
+            this.textBox_QCAutomationModKeywords.TabIndex = 16;
+            this.textBox_QCAutomationModKeywords.TextChanged += new System.EventHandler(this.Save_QCAutomationModKeywords);
+
+            this.nUpDown_QCAutomationSoloPriority.Location = new System.Drawing.Point(106, 209);
+            this.nUpDown_QCAutomationSoloPriority.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationSoloPriority.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationSoloPriority.Name = "nUpDown_QCAutomationSoloPriority";
+            this.nUpDown_QCAutomationSoloPriority.Size = new System.Drawing.Size(44, 20);
+            this.nUpDown_QCAutomationSoloPriority.TabIndex = 7;
+            this.nUpDown_QCAutomationSoloPriority.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationSoloPriority.ValueChanged += new System.EventHandler(this.Save_QCAutomationSoloPriority);
+
+            this.nUpDown_QCAutomationDistPriority.Location = new System.Drawing.Point(106, 95);
+            this.nUpDown_QCAutomationDistPriority.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationDistPriority.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationDistPriority.Name = "nUpDown_QCAutomationDistPriority";
+            this.nUpDown_QCAutomationDistPriority.Size = new System.Drawing.Size(44, 20);
+            this.nUpDown_QCAutomationDistPriority.TabIndex = 8;
+            this.nUpDown_QCAutomationDistPriority.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationDistPriority.ValueChanged += new System.EventHandler(this.Save_QCAutomationDistPriority);
+
+            this.nUpDown_QCAutomationODPriority.Location = new System.Drawing.Point(106, 57);
+            this.nUpDown_QCAutomationODPriority.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationODPriority.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationODPriority.Name = "nUpDown_QCAutomationODPriority";
+            this.nUpDown_QCAutomationODPriority.Size = new System.Drawing.Size(44, 20);
+            this.nUpDown_QCAutomationODPriority.TabIndex = 9;
+            this.nUpDown_QCAutomationODPriority.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationODPriority.ValueChanged += new System.EventHandler(this.Save_QCAutomationODPriority);
+
+            this.nUpDown_QCAutomationCleanPriority.Location = new System.Drawing.Point(106, 133);
+            this.nUpDown_QCAutomationCleanPriority.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationCleanPriority.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationCleanPriority.Name = "nUpDown_QCAutomationCleanPriority";
+            this.nUpDown_QCAutomationCleanPriority.Size = new System.Drawing.Size(44, 20);
+            this.nUpDown_QCAutomationCleanPriority.TabIndex = 10;
+            this.nUpDown_QCAutomationCleanPriority.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationCleanPriority.ValueChanged += new System.EventHandler(this.Save_QCAutomationCleanPriority);
+
+            this.nUpDown_QCAutomationModPriority.Location = new System.Drawing.Point(106, 171);
+            this.nUpDown_QCAutomationModPriority.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationModPriority.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationModPriority.Name = "nUpDown_QCAutomationModPriority";
+            this.nUpDown_QCAutomationModPriority.Size = new System.Drawing.Size(44, 20);
+            this.nUpDown_QCAutomationModPriority.TabIndex = 11;
+            this.nUpDown_QCAutomationModPriority.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.nUpDown_QCAutomationModPriority.ValueChanged += new System.EventHandler(this.Save_QCAutomationModPriority);
+
+            //
+            // groupBox_QCAutomationTools
+            //
+            this.groupBox_QCAutomationTools.Controls.Add(this.tabControl_QCAutomationTools);
+            this.groupBox_QCAutomationTools.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox_QCAutomationTools.Location = new System.Drawing.Point(570, 248);
+            this.groupBox_QCAutomationTools.Name = "groupBox_QCAutomationTools";
+            this.groupBox_QCAutomationTools.Size = new System.Drawing.Size(565, 262);
+            this.groupBox_QCAutomationTools.TabIndex = 3;
+            this.groupBox_QCAutomationTools.TabStop = false;
+            this.groupBox_QCAutomationTools.Text = "Tools / Debug";
+
+            //
+            // tabControl_QCAutomationTools
+            //
+            this.tabControl_QCAutomationTools.Controls.Add(this.tabPage_QCAutomationClassifierPreview);
+            this.tabControl_QCAutomationTools.Controls.Add(this.tabPage_QCAutomationSongPreview);
+            this.tabControl_QCAutomationTools.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl_QCAutomationTools.Location = new System.Drawing.Point(10, 20);
+            this.tabControl_QCAutomationTools.Name = "tabControl_QCAutomationTools";
+            this.tabControl_QCAutomationTools.SelectedIndex = 0;
+            this.tabControl_QCAutomationTools.Size = new System.Drawing.Size(548, 236);
+            this.tabControl_QCAutomationTools.TabIndex = 0;
+
+            //
+            // tabPage_QCAutomationClassifierPreview
+            //
+            this.tabPage_QCAutomationClassifierPreview.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_QCAutomationClassifierPreview.Controls.Add(this.label_QCAutomationPreviewHelp);
+            this.tabPage_QCAutomationClassifierPreview.Controls.Add(this.label_QCAutomationPreviewInput);
+            this.tabPage_QCAutomationClassifierPreview.Controls.Add(this.textBox_QCAutomationPreviewInput);
+            this.tabPage_QCAutomationClassifierPreview.Controls.Add(this.label_QCAutomationPreviewResult);
+            this.tabPage_QCAutomationClassifierPreview.Controls.Add(this.textBox_QCAutomationPreviewResult);
+            this.tabPage_QCAutomationClassifierPreview.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_QCAutomationClassifierPreview.Name = "tabPage_QCAutomationClassifierPreview";
+            this.tabPage_QCAutomationClassifierPreview.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_QCAutomationClassifierPreview.Size = new System.Drawing.Size(540, 210);
+            this.tabPage_QCAutomationClassifierPreview.TabIndex = 0;
+            this.tabPage_QCAutomationClassifierPreview.Text = "Classifier Preview";
+
+            this.label_QCAutomationPreviewHelp.AutoSize = false;
+            this.label_QCAutomationPreviewHelp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_QCAutomationPreviewHelp.Location = new System.Drawing.Point(16, 12);
+            this.label_QCAutomationPreviewHelp.Name = "label_QCAutomationPreviewHelp";
+            this.label_QCAutomationPreviewHelp.Size = new System.Drawing.Size(512, 28);
+            this.label_QCAutomationPreviewHelp.TabIndex = 0;
+            this.label_QCAutomationPreviewHelp.Text = "Type a tone name to test current classifier filters. Result shows bucket, matched keyword, and mapped QC target.";
+
+            this.label_QCAutomationPreviewInput.AutoSize = true;
+            this.label_QCAutomationPreviewInput.Location = new System.Drawing.Point(13, 48);
+            this.label_QCAutomationPreviewInput.Name = "label_QCAutomationPreviewInput";
+            this.label_QCAutomationPreviewInput.Size = new System.Drawing.Size(112, 13);
+            this.label_QCAutomationPreviewInput.TabIndex = 1;
+            this.label_QCAutomationPreviewInput.Text = "Preview Tone Name";
+
+            this.textBox_QCAutomationPreviewInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_QCAutomationPreviewInput.Location = new System.Drawing.Point(16, 64);
+            this.textBox_QCAutomationPreviewInput.Name = "textBox_QCAutomationPreviewInput";
+            this.textBox_QCAutomationPreviewInput.Size = new System.Drawing.Size(512, 20);
+            this.textBox_QCAutomationPreviewInput.TabIndex = 2;
+            this.textBox_QCAutomationPreviewInput.TextChanged += new System.EventHandler(this.QCAutomation_UpdatePreview);
+
+            this.label_QCAutomationPreviewResult.AutoSize = true;
+            this.label_QCAutomationPreviewResult.Location = new System.Drawing.Point(13, 96);
+            this.label_QCAutomationPreviewResult.Name = "label_QCAutomationPreviewResult";
+            this.label_QCAutomationPreviewResult.Size = new System.Drawing.Size(75, 13);
+            this.label_QCAutomationPreviewResult.TabIndex = 3;
+            this.label_QCAutomationPreviewResult.Text = "Preview Result";
+
+            this.textBox_QCAutomationPreviewResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_QCAutomationPreviewResult.Location = new System.Drawing.Point(16, 112);
+            this.textBox_QCAutomationPreviewResult.Name = "textBox_QCAutomationPreviewResult";
+            this.textBox_QCAutomationPreviewResult.ReadOnly = true;
+            this.textBox_QCAutomationPreviewResult.Size = new System.Drawing.Size(512, 20);
+            this.textBox_QCAutomationPreviewResult.TabIndex = 4;
+
+            //
+            // tabPage_QCAutomationSongPreview
+            //
+            this.tabPage_QCAutomationSongPreview.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.label_QCAutomationSongPreviewFile);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.textBox_QCAutomationSongPreviewFilePath);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.button_QCAutomationSongPreviewBrowse);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.label_QCAutomationSongPreviewArrangement);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.comboBox_QCAutomationSongPreviewArrangement);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.label_QCAutomationSongPreviewStatus);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.textBox_QCAutomationSongPreviewDetails);
+            this.tabPage_QCAutomationSongPreview.Controls.Add(this.dataGridView_QCAutomationSongPreview);
+            this.tabPage_QCAutomationSongPreview.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_QCAutomationSongPreview.Name = "tabPage_QCAutomationSongPreview";
+            this.tabPage_QCAutomationSongPreview.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_QCAutomationSongPreview.Size = new System.Drawing.Size(540, 210);
+            this.tabPage_QCAutomationSongPreview.TabIndex = 1;
+            this.tabPage_QCAutomationSongPreview.Text = "Song Preview";
+
+            this.label_QCAutomationSongPreviewFile.AutoSize = true;
+            this.label_QCAutomationSongPreviewFile.Location = new System.Drawing.Point(8, 10);
+            this.label_QCAutomationSongPreviewFile.Name = "label_QCAutomationSongPreviewFile";
+            this.label_QCAutomationSongPreviewFile.Size = new System.Drawing.Size(84, 13);
+            this.label_QCAutomationSongPreviewFile.TabIndex = 0;
+            this.label_QCAutomationSongPreviewFile.Text = "Rocksmith .psarc";
+
+            this.textBox_QCAutomationSongPreviewFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_QCAutomationSongPreviewFilePath.Location = new System.Drawing.Point(8, 26);
+            this.textBox_QCAutomationSongPreviewFilePath.Name = "textBox_QCAutomationSongPreviewFilePath";
+            this.textBox_QCAutomationSongPreviewFilePath.ReadOnly = true;
+            this.textBox_QCAutomationSongPreviewFilePath.Size = new System.Drawing.Size(430, 20);
+            this.textBox_QCAutomationSongPreviewFilePath.TabIndex = 1;
+
+            this.button_QCAutomationSongPreviewBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_QCAutomationSongPreviewBrowse.Location = new System.Drawing.Point(444, 24);
+            this.button_QCAutomationSongPreviewBrowse.Name = "button_QCAutomationSongPreviewBrowse";
+            this.button_QCAutomationSongPreviewBrowse.Size = new System.Drawing.Size(88, 23);
+            this.button_QCAutomationSongPreviewBrowse.TabIndex = 2;
+            this.button_QCAutomationSongPreviewBrowse.Text = "Browse...";
+            this.button_QCAutomationSongPreviewBrowse.UseVisualStyleBackColor = true;
+            this.button_QCAutomationSongPreviewBrowse.Click += new System.EventHandler(this.QCAutomation_BrowseSongPreviewFile);
+
+            this.label_QCAutomationSongPreviewArrangement.AutoSize = true;
+            this.label_QCAutomationSongPreviewArrangement.Location = new System.Drawing.Point(8, 58);
+            this.label_QCAutomationSongPreviewArrangement.Name = "label_QCAutomationSongPreviewArrangement";
+            this.label_QCAutomationSongPreviewArrangement.Size = new System.Drawing.Size(63, 13);
+            this.label_QCAutomationSongPreviewArrangement.TabIndex = 3;
+            this.label_QCAutomationSongPreviewArrangement.Text = "Arrangement";
+
+            this.comboBox_QCAutomationSongPreviewArrangement.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox_QCAutomationSongPreviewArrangement.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_QCAutomationSongPreviewArrangement.FormattingEnabled = true;
+            this.comboBox_QCAutomationSongPreviewArrangement.Location = new System.Drawing.Point(95, 55);
+            this.comboBox_QCAutomationSongPreviewArrangement.Name = "comboBox_QCAutomationSongPreviewArrangement";
+            this.comboBox_QCAutomationSongPreviewArrangement.Size = new System.Drawing.Size(437, 21);
+            this.comboBox_QCAutomationSongPreviewArrangement.TabIndex = 4;
+            this.comboBox_QCAutomationSongPreviewArrangement.SelectedIndexChanged += new System.EventHandler(this.QCAutomation_SelectSongPreviewArrangement);
+
+            this.label_QCAutomationSongPreviewStatus.AutoEllipsis = true;
+            this.label_QCAutomationSongPreviewStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_QCAutomationSongPreviewStatus.Location = new System.Drawing.Point(8, 80);
+            this.label_QCAutomationSongPreviewStatus.Name = "label_QCAutomationSongPreviewStatus";
+            this.label_QCAutomationSongPreviewStatus.Size = new System.Drawing.Size(524, 14);
+            this.label_QCAutomationSongPreviewStatus.TabIndex = 5;
+            this.label_QCAutomationSongPreviewStatus.Text = "Select a .psarc file to preview arrangement tones.";
+
+            this.textBox_QCAutomationSongPreviewDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_QCAutomationSongPreviewDetails.Location = new System.Drawing.Point(8, 97);
+            this.textBox_QCAutomationSongPreviewDetails.Multiline = true;
+            this.textBox_QCAutomationSongPreviewDetails.Name = "textBox_QCAutomationSongPreviewDetails";
+            this.textBox_QCAutomationSongPreviewDetails.ReadOnly = true;
+            this.textBox_QCAutomationSongPreviewDetails.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox_QCAutomationSongPreviewDetails.Size = new System.Drawing.Size(524, 44);
+            this.textBox_QCAutomationSongPreviewDetails.TabIndex = 6;
+
+            this.dataGridView_QCAutomationSongPreview.AllowUserToAddRows = false;
+            this.dataGridView_QCAutomationSongPreview.AllowUserToDeleteRows = false;
+            this.dataGridView_QCAutomationSongPreview.AllowUserToResizeRows = false;
+            this.dataGridView_QCAutomationSongPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_QCAutomationSongPreview.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView_QCAutomationSongPreview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_QCAutomationSongPreview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.column_QCAutomationSongPreviewTime,
+            this.column_QCAutomationSongPreviewToneName,
+            this.column_QCAutomationSongPreviewSource,
+            this.column_QCAutomationSongPreviewBucket,
+            this.column_QCAutomationSongPreviewKeyword,
+            this.column_QCAutomationSongPreviewTarget,
+            this.column_QCAutomationSongPreviewNotes});
+            this.dataGridView_QCAutomationSongPreview.Location = new System.Drawing.Point(8, 147);
+            this.dataGridView_QCAutomationSongPreview.MultiSelect = false;
+            this.dataGridView_QCAutomationSongPreview.Name = "dataGridView_QCAutomationSongPreview";
+            this.dataGridView_QCAutomationSongPreview.ReadOnly = true;
+            this.dataGridView_QCAutomationSongPreview.RowHeadersVisible = false;
+            this.dataGridView_QCAutomationSongPreview.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_QCAutomationSongPreview.Size = new System.Drawing.Size(524, 57);
+            this.dataGridView_QCAutomationSongPreview.TabIndex = 7;
+
+            this.column_QCAutomationSongPreviewTime.HeaderText = "Time";
+            this.column_QCAutomationSongPreviewTime.Name = "column_QCAutomationSongPreviewTime";
+            this.column_QCAutomationSongPreviewTime.ReadOnly = true;
+            this.column_QCAutomationSongPreviewTime.FillWeight = 55F;
+
+            this.column_QCAutomationSongPreviewToneName.HeaderText = "Tone Name";
+            this.column_QCAutomationSongPreviewToneName.Name = "column_QCAutomationSongPreviewToneName";
+            this.column_QCAutomationSongPreviewToneName.ReadOnly = true;
+            this.column_QCAutomationSongPreviewToneName.FillWeight = 120F;
+
+            this.column_QCAutomationSongPreviewSource.HeaderText = "Source";
+            this.column_QCAutomationSongPreviewSource.Name = "column_QCAutomationSongPreviewSource";
+            this.column_QCAutomationSongPreviewSource.ReadOnly = true;
+            this.column_QCAutomationSongPreviewSource.FillWeight = 70F;
+
+            this.column_QCAutomationSongPreviewBucket.HeaderText = "Classified Bucket";
+            this.column_QCAutomationSongPreviewBucket.Name = "column_QCAutomationSongPreviewBucket";
+            this.column_QCAutomationSongPreviewBucket.ReadOnly = true;
+            this.column_QCAutomationSongPreviewBucket.FillWeight = 95F;
+
+            this.column_QCAutomationSongPreviewKeyword.HeaderText = "Matched Keyword";
+            this.column_QCAutomationSongPreviewKeyword.Name = "column_QCAutomationSongPreviewKeyword";
+            this.column_QCAutomationSongPreviewKeyword.ReadOnly = true;
+            this.column_QCAutomationSongPreviewKeyword.FillWeight = 95F;
+
+            this.column_QCAutomationSongPreviewTarget.HeaderText = "QC Target";
+            this.column_QCAutomationSongPreviewTarget.Name = "column_QCAutomationSongPreviewTarget";
+            this.column_QCAutomationSongPreviewTarget.ReadOnly = true;
+            this.column_QCAutomationSongPreviewTarget.FillWeight = 95F;
+
+            this.column_QCAutomationSongPreviewNotes.HeaderText = "Notes";
+            this.column_QCAutomationSongPreviewNotes.Name = "column_QCAutomationSongPreviewNotes";
+            this.column_QCAutomationSongPreviewNotes.ReadOnly = true;
+            this.column_QCAutomationSongPreviewNotes.FillWeight = 120F;
+
+            this.tab_QCAutomation.ResumeLayout(false);
+            this.groupBox_QCAutomationGeneral.ResumeLayout(false);
+            this.groupBox_QCAutomationGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationMidiChannel)).EndInit();
+            this.groupBox_QCAutomationTargets.ResumeLayout(false);
+            this.groupBox_QCAutomationTargets.PerformLayout();
+            this.groupBox_QCAutomationClassifier.ResumeLayout(false);
+            this.groupBox_QCAutomationClassifier.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationSoloPriority)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationDistPriority)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationODPriority)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationCleanPriority)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUpDown_QCAutomationModPriority)).EndInit();
+            this.groupBox_QCAutomationTools.ResumeLayout(false);
+            this.tabControl_QCAutomationTools.ResumeLayout(false);
+            this.tabPage_QCAutomationClassifierPreview.ResumeLayout(false);
+            this.tabPage_QCAutomationClassifierPreview.PerformLayout();
+            this.tabPage_QCAutomationSongPreview.ResumeLayout(false);
+            this.tabPage_QCAutomationSongPreview.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_QCAutomationSongPreview)).EndInit();
+
+            this.TabController.Controls.Add(this.tab_QCAutomation);
         }
 
         #endregion
@@ -7612,5 +8478,81 @@
         private System.Windows.Forms.CheckBox checkBox_PreventMidSongPause;
         private System.Windows.Forms.GroupBox groupBox_ToggleFingerprints;
         private System.Windows.Forms.CheckBox checkBox_RemoveFingerprints;
+        private System.Windows.Forms.TabPage tab_QCAutomation;
+        private System.Windows.Forms.GroupBox groupBox_QCAutomationGeneral;
+        private System.Windows.Forms.CheckBox checkBox_QCAutomationEnabled;
+        private System.Windows.Forms.Label label_QCAutomationMidiOutDevice;
+        private System.Windows.Forms.ComboBox comboBox_QCAutomationMidiOutDevice;
+        private System.Windows.Forms.Label label_QCAutomationMidiChannel;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationMidiChannel;
+        private System.Windows.Forms.CheckBox checkBox_QCAutomationIgnoreBass;
+        private System.Windows.Forms.CheckBox checkBox_QCAutomationTransposeEnabled;
+        private System.Windows.Forms.Label label_QCAutomationIdleScene;
+        private System.Windows.Forms.ComboBox comboBox_QCAutomationIdleScene;
+        private System.Windows.Forms.Label label_QCAutomationTransposeOutOfRange;
+        private System.Windows.Forms.ComboBox comboBox_QCAutomationTransposeOutOfRange;
+        private System.Windows.Forms.Label label_QCAutomationSceneMapHelp;
+        private System.Windows.Forms.GroupBox groupBox_QCAutomationTargets;
+        private System.Windows.Forms.Label label_QCAutomationTargetFormatHelp;
+        private System.Windows.Forms.Label label_QCAutomationAutoCleanTarget;
+        private System.Windows.Forms.Label label_QCAutomationAutoODTarget;
+        private System.Windows.Forms.Label label_QCAutomationAutoDistTarget;
+        private System.Windows.Forms.Label label_QCAutomationAutoModTarget;
+        private System.Windows.Forms.Label label_QCAutomationAutoSoloTarget;
+        private System.Windows.Forms.Label label_QCAutomationManual2Target;
+        private System.Windows.Forms.Label label_QCAutomationManual3Target;
+        private System.Windows.Forms.Label label_QCAutomationManual4Target;
+        private System.Windows.Forms.Label label_QCAutomationIdleTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationAutoCleanTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationAutoODTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationAutoDistTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationAutoModTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationAutoSoloTarget;
+        private System.Windows.Forms.TextBox textBox_QCAutomationManual2Target;
+        private System.Windows.Forms.TextBox textBox_QCAutomationManual3Target;
+        private System.Windows.Forms.TextBox textBox_QCAutomationManual4Target;
+        private System.Windows.Forms.TextBox textBox_QCAutomationIdleTarget;
+        private System.Windows.Forms.GroupBox groupBox_QCAutomationClassifier;
+        private System.Windows.Forms.Label label_QCAutomationClassifierPrecedence;
+        private System.Windows.Forms.Label label_QCAutomationSoloKeywords;
+        private System.Windows.Forms.Label label_QCAutomationDistKeywords;
+        private System.Windows.Forms.Label label_QCAutomationODKeywords;
+        private System.Windows.Forms.Label label_QCAutomationCleanKeywords;
+        private System.Windows.Forms.Label label_QCAutomationModKeywords;
+        private System.Windows.Forms.Label label_QCAutomationPriority;
+        private System.Windows.Forms.TextBox textBox_QCAutomationSoloKeywords;
+        private System.Windows.Forms.TextBox textBox_QCAutomationDistKeywords;
+        private System.Windows.Forms.TextBox textBox_QCAutomationODKeywords;
+        private System.Windows.Forms.TextBox textBox_QCAutomationCleanKeywords;
+        private System.Windows.Forms.TextBox textBox_QCAutomationModKeywords;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationSoloPriority;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationDistPriority;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationODPriority;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationCleanPriority;
+        private System.Windows.Forms.NumericUpDown nUpDown_QCAutomationModPriority;
+        private System.Windows.Forms.GroupBox groupBox_QCAutomationTools;
+        private System.Windows.Forms.TabControl tabControl_QCAutomationTools;
+        private System.Windows.Forms.TabPage tabPage_QCAutomationClassifierPreview;
+        private System.Windows.Forms.TabPage tabPage_QCAutomationSongPreview;
+        private System.Windows.Forms.Label label_QCAutomationPreviewHelp;
+        private System.Windows.Forms.Label label_QCAutomationPreviewInput;
+        private System.Windows.Forms.TextBox textBox_QCAutomationPreviewInput;
+        private System.Windows.Forms.Label label_QCAutomationPreviewResult;
+        private System.Windows.Forms.TextBox textBox_QCAutomationPreviewResult;
+        private System.Windows.Forms.Label label_QCAutomationSongPreviewFile;
+        private System.Windows.Forms.TextBox textBox_QCAutomationSongPreviewFilePath;
+        private System.Windows.Forms.Button button_QCAutomationSongPreviewBrowse;
+        private System.Windows.Forms.Label label_QCAutomationSongPreviewArrangement;
+        private System.Windows.Forms.ComboBox comboBox_QCAutomationSongPreviewArrangement;
+        private System.Windows.Forms.Label label_QCAutomationSongPreviewStatus;
+        private System.Windows.Forms.TextBox textBox_QCAutomationSongPreviewDetails;
+        private System.Windows.Forms.DataGridView dataGridView_QCAutomationSongPreview;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewToneName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewSource;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewBucket;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewKeyword;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewTarget;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column_QCAutomationSongPreviewNotes;
     }
 }

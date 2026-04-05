@@ -66,6 +66,32 @@ void Settings::Initialize()
 		{"AutoTuneForSongDevice", ""},
 		{"MidiInDevice", ""},
 		{"AutoTuneForSongWhen", "manual"},
+		{"QCAutomationEnabled", "off"},
+		{"QCAutomationTestOnSongStart", "off"},
+		{"QCAutomationDevice", ""},
+		{"QCAutomationTransposeEnabled", "off"},
+		{"QCAutomationIdleScene", "A"},
+		{"QCAutomationTransposeOutOfRange", "clamp"},
+		{"QCAutomationIgnoreBass", "on"},
+		{"QCAutomationAutoCleanTarget", "MyPresets:32A"},
+		{"QCAutomationAutoODTarget", "MyPresets:32B"},
+		{"QCAutomationAutoDistTarget", "MyPresets:32C"},
+		{"QCAutomationAutoModTarget", "MyPresets:32D"},
+		{"QCAutomationAutoSoloTarget", "MyPresets:32E"},
+		{"QCAutomationManual2Target", "MyPresets:32F"},
+		{"QCAutomationManual3Target", "MyPresets:32G"},
+		{"QCAutomationManual4Target", "MyPresets:32H"},
+		{"QCAutomationIdleTarget", "MyPresets:32B"},
+		{"QCAutomationSoloKeywords", "lead,solo"},
+		{"QCAutomationDistKeywords", "dist,distortion,fuzz,gain,higain,highgain,dis"},
+		{"QCAutomationODKeywords", "overdrive,od,drive,crunch,dirty,breakup,over"},
+		{"QCAutomationCleanKeywords", "clean,acoustic,acous,acc,twang,chime,sparkle"},
+		{"QCAutomationModKeywords", "wah,chorus,verb,reverb,delay,echo,trem,tremolo,phase,phaser,flange,flanger,filter,mod,fx,ambient,synth,8va,oct,octave,sitar"},
+		{"QCAutomationSoloPriority", "5"},
+		{"QCAutomationDistPriority", "2"},
+		{"QCAutomationODPriority", "1"},
+		{"QCAutomationCleanPriority", "3"},
+		{"QCAutomationModPriority", "4"},
 		{"AutoTuneForSoftwareSemitoneSettings", ""},
 		{"AutoTuneForSoftwareSemitoneTriggers", ""},
 		{"AutoTuneForSoftwareTrueTuningSettings", ""},
@@ -100,6 +126,9 @@ void Settings::Initialize()
 		{"RRSpeedInterval", 0},
 		{"TuningPedal", 0},
 		{"TuningOffset", 0},
+		{"QCAutomationMidiChannel", 0},
+		{"QCAutomationSceneCC", 43},
+		{"QCAutomationTestSceneValue", 0},
 		{"VolumeControlInterval", 5},
 		{"SecondaryMonitorXPosition", 0},
 		{"SecondaryMonitorYPosition", 0},
@@ -210,12 +239,22 @@ void Settings::ReadModSettings() {
 		return;
 	}
 
+	const long legacyQcMidiChannel = reader.GetLongValue("Mod Settings", "QCAutomationMidiChannel", 0);
+	const char* legacyQcEnabled = reader.GetValue("Toggle Switches", "QCAutomationEnabled", "off");
+	const char* legacyQcDevice = reader.GetValue("Toggle Switches", "QCAutomationDevice", "");
+	auto readQcValue = [&reader](const char* key, const char* fallback) {
+		return reader.GetValue("QCAutomation", key, fallback);
+	};
+
 	customSettings = {
 		{"ExtendedRangeMode", reader.GetLongValue("Mod Settings", "ExtendedRangeModeAt", -5)},
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
 		{"RRSpeedInterval", reader.GetLongValue("Mod Settings", "RRSpeedInterval", 0)},
 		{"TuningPedal", reader.GetLongValue("Mod Settings", "TuningPedal", 0)},
 		{"TuningOffset", reader.GetLongValue("Mod Settings", "TuningOffset", 0)},
+		{"QCAutomationMidiChannel", reader.GetLongValue("QCAutomation", "MidiChannel", legacyQcMidiChannel)},
+		{"QCAutomationSceneCC", reader.GetLongValue("Mod Settings", "QCAutomationSceneCC", 43)},
+		{"QCAutomationTestSceneValue", reader.GetLongValue("Mod Settings", "QCAutomationTestSceneValue", 0)},
 		{"VolumeControlInterval", reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
 		{"SecondaryMonitorXPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorXPosition", 0)},
 		{"SecondaryMonitorYPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorYPosition", 0)},
@@ -278,6 +317,32 @@ void Settings::ReadModSettings() {
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
 	modSettings["MidiInDevice"] = reader.GetValue("Toggle Switches", "MidiInDevice", "");
 	modSettings["AutoTuneForSongWhen"] = reader.GetValue("Toggle Switches", "AutoTuneForSongWhen", "manual");
+	modSettings["QCAutomationEnabled"] = readQcValue("Enabled", legacyQcEnabled);
+	modSettings["QCAutomationTestOnSongStart"] = reader.GetValue("Toggle Switches", "QCAutomationTestOnSongStart", "off");
+	modSettings["QCAutomationDevice"] = readQcValue("MidiOutDevice", legacyQcDevice);
+	modSettings["QCAutomationTransposeEnabled"] = readQcValue("TransposeEnabled", "off");
+	modSettings["QCAutomationIdleScene"] = readQcValue("IdleScene", "A");
+	modSettings["QCAutomationTransposeOutOfRange"] = readQcValue("TransposeOutOfRange", "clamp");
+	modSettings["QCAutomationIgnoreBass"] = readQcValue("IgnoreBass", "on");
+	modSettings["QCAutomationAutoCleanTarget"] = readQcValue("AutoCleanTarget", "MyPresets:32A");
+	modSettings["QCAutomationAutoODTarget"] = readQcValue("AutoODTarget", "MyPresets:32B");
+	modSettings["QCAutomationAutoDistTarget"] = readQcValue("AutoDistTarget", "MyPresets:32C");
+	modSettings["QCAutomationAutoModTarget"] = readQcValue("AutoModTarget", "MyPresets:32D");
+	modSettings["QCAutomationAutoSoloTarget"] = readQcValue("AutoSoloTarget", "MyPresets:32E");
+	modSettings["QCAutomationManual2Target"] = readQcValue("Manual2Target", "MyPresets:32F");
+	modSettings["QCAutomationManual3Target"] = readQcValue("Manual3Target", "MyPresets:32G");
+	modSettings["QCAutomationManual4Target"] = readQcValue("Manual4Target", "MyPresets:32H");
+	modSettings["QCAutomationIdleTarget"] = readQcValue("IdleTarget", "MyPresets:32B");
+	modSettings["QCAutomationSoloKeywords"] = readQcValue("SoloKeywords", "lead,solo");
+	modSettings["QCAutomationDistKeywords"] = readQcValue("DistKeywords", "dist,distortion,fuzz,gain,higain,highgain,dis");
+	modSettings["QCAutomationODKeywords"] = readQcValue("ODKeywords", "overdrive,od,drive,crunch,dirty,breakup,over");
+	modSettings["QCAutomationCleanKeywords"] = readQcValue("CleanKeywords", "clean,acoustic,acous,acc,twang,chime,sparkle");
+	modSettings["QCAutomationModKeywords"] = readQcValue("ModKeywords", "wah,chorus,verb,reverb,delay,echo,trem,tremolo,phase,phaser,flange,flanger,filter,mod,fx,ambient,synth,8va,oct,octave,sitar");
+	modSettings["QCAutomationSoloPriority"] = readQcValue("SoloPriority", "5");
+	modSettings["QCAutomationDistPriority"] = readQcValue("DistPriority", "2");
+	modSettings["QCAutomationODPriority"] = readQcValue("ODPriority", "1");
+	modSettings["QCAutomationCleanPriority"] = readQcValue("CleanPriority", "3");
+	modSettings["QCAutomationModPriority"] = readQcValue("ModPriority", "4");
 	modSettings["AutoTuneForSoftwareSemitoneSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneSettings", "");
 	modSettings["AutoTuneForSoftwareSemitoneTriggers"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareSemitoneTriggers", "");
 	modSettings["AutoTuneForSoftwareTrueTuningSettings"] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningSettings", "");
