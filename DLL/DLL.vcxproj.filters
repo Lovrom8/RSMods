@@ -192,6 +192,12 @@
     <ClCompile Include="Mods\ToneSource.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\ToneSourceTimeline.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ToneSourceAssetLoader.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Midi\RtMidi.cpp">
       <Filter>Main Headers\Midi</Filter>
     </ClCompile>
@@ -474,6 +480,12 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\ToneSource.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ToneSourceTimeline.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ToneSourceAssetLoader.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">
