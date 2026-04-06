@@ -1033,7 +1033,10 @@ namespace {
 			presetChanged &&
 			lastSentSceneValue.has_value() &&
 			*lastSentSceneValue == desiredSceneValue) {
-			LOG_INFO(kLogPrefix << "transpose unchanged for tone switch; preset only changed" << std::endl);
+			const bool reapplySendSuccess = SendSceneChangeIfNeeded(desiredSceneValue, true);
+			LOG_INFO(kLogPrefix << "transpose scene reapply reason=preset_change"
+				<< " scene='" << SceneValueToLetter(desiredSceneValue)
+				<< "' sent=" << (reapplySendSuccess ? "true" : "false") << std::endl);
 		}
 	}
 
