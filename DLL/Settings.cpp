@@ -81,7 +81,7 @@ void Settings::Initialize()
 		{"QCAutomationManual2Target", "MyPresets:32F"},
 		{"QCAutomationManual3Target", "MyPresets:32G"},
 		{"QCAutomationManual4Target", "MyPresets:32H"},
-		{"QCAutomationIdleTarget", "MyPresets:32B"},
+		{"QCAutomationIdleTarget", "MyPresets:32F"},
 		{"QCAutomationSoloKeywords", "lead,solo"},
 		{"QCAutomationDistKeywords", "dist,distortion,fuzz,gain,higain,highgain,dis"},
 		{"QCAutomationODKeywords", "overdrive,od,drive,crunch,dirty,breakup,over"},
@@ -332,7 +332,7 @@ void Settings::ReadModSettings() {
 	modSettings["QCAutomationManual2Target"] = readQcValue("Manual2Target", "MyPresets:32F");
 	modSettings["QCAutomationManual3Target"] = readQcValue("Manual3Target", "MyPresets:32G");
 	modSettings["QCAutomationManual4Target"] = readQcValue("Manual4Target", "MyPresets:32H");
-	modSettings["QCAutomationIdleTarget"] = readQcValue("IdleTarget", "MyPresets:32B");
+	modSettings["QCAutomationIdleTarget"] = readQcValue("IdleTarget", "MyPresets:32F");
 	modSettings["QCAutomationSoloKeywords"] = readQcValue("SoloKeywords", "lead,solo");
 	modSettings["QCAutomationDistKeywords"] = readQcValue("DistKeywords", "dist,distortion,fuzz,gain,higain,highgain,dis");
 	modSettings["QCAutomationODKeywords"] = readQcValue("ODKeywords", "overdrive,od,drive,crunch,dirty,breakup,over");

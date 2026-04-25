@@ -829,13 +829,10 @@ namespace RSMods
         {
             int parsed = GenUtil.StrToIntDef(rawValue, 0);
 
-            // Backward-compatible parse:
-            // - legacy RSMods values are zero-based (0..15)
-            // - tolerate one-based values (1..16) if user edited INI manually
-            if (parsed >= 0 && parsed <= 15)
-                return parsed;
-            if (parsed >= 1 && parsed <= 16)
-                return parsed - 1;
+            // Stored value is expected to be zero-based (0..15).
+            // Accept 16 as a one-based edge case and map it to channel 15.
+            if (parsed == 16)
+                return 15;
 
             return QCAutomation_ClampMidiChannel(parsed);
         }
@@ -1104,7 +1101,7 @@ namespace RSMods
             textBox_QCAutomationManual2Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual2TargetIdentifier, "MyPresets:32F");
             textBox_QCAutomationManual3Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual3TargetIdentifier, "MyPresets:32G");
             textBox_QCAutomationManual4Target.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionManual4TargetIdentifier, "MyPresets:32H");
-            textBox_QCAutomationIdleTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32B");
+            textBox_QCAutomationIdleTarget.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32F");
 
             textBox_QCAutomationSoloKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, "lead,solo");
             textBox_QCAutomationDistKeywords.Text = QCAutomation_GetOrDefault(ReadSettings.QCAutomationSectionDistKeywordsIdentifier, "dist,distortion,fuzz,gain,higain,highgain,dis");

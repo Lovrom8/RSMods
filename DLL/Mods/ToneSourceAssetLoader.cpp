@@ -421,7 +421,19 @@ namespace {
 			if (data.size() < 2) {
 				return false;
 			}
-			return data[0] == 0x78;
+
+			const uint8_t cmf = data[0];
+			const uint8_t flg = data[1];
+
+			// RFC1950 zlib header check:
+			// - compression method must be DEFLATE (CM=8)
+			// - CMF/FLG pair must satisfy checksum (mod 31)
+			if ((cmf & 0x0F) != 8) {
+				return false;
+			}
+
+			const uint16_t header = (static_cast<uint16_t>(cmf) << 8) | static_cast<uint16_t>(flg);
+			return (header % 31) == 0;
 		}
 
 		static bool InflateZlibBlock(const std::vector<uint8_t>& compressed, uint32_t blockSize, std::vector<uint8_t>& outData, std::string& error) {
@@ -1228,42 +1240,60 @@ namespace {
 			return true;
 		}
 
-		if (decryptedPayload.size() < 4) {
-			error = "compressed SNG payload too small";
-			return false;
+		auto tryDecodeCompressedPayload = [&](const std::vector<uint8_t>& payload, std::string& decodeError) -> bool {
+			if (payload.size() < 4) {
+				decodeError = "compressed SNG payload too small";
+				return false;
+			}
+
+			const uint32_t uncompressedSize = static_cast<uint32_t>(payload[0]) |
+				(static_cast<uint32_t>(payload[1]) << 8) |
+				(static_cast<uint32_t>(payload[2]) << 16) |
+				(static_cast<uint32_t>(payload[3]) << 24);
+			if (uncompressedSize == 0) {
+				decodeError = "compressed SNG reported zero output size";
+				return false;
+			}
+			if (uncompressedSize > kMaxSngUncompressedSize) {
+				std::ostringstream oversize;
+				oversize << "compressed SNG reported oversized output (" << uncompressedSize
+					<< " bytes, max supported " << kMaxSngUncompressedSize << ")";
+				decodeError = oversize.str();
+				return false;
+			}
+
+			std::vector<uint8_t> compressedData(payload.begin() + 4, payload.end());
+			outDecodedSng.assign(uncompressedSize, 0);
+			const std::size_t written = tinfl_decompress_mem_to_mem(
+				outDecodedSng.data(),
+				outDecodedSng.size(),
+				compressedData.data(),
+				compressedData.size(),
+				TINFL_FLAG_PARSE_ZLIB_HEADER);
+			if (written == TINFL_DECOMPRESS_MEM_TO_MEM_FAILED) {
+				decodeError = "tinfl_decompress_mem_to_mem(SNG) failed";
+				return false;
+			}
+
+			outDecodedSng.resize(written);
+			return true;
+		};
+
+		std::string primaryDecodeError;
+		if (tryDecodeCompressedPayload(decryptedPayload, primaryDecodeError)) {
+			return true;
 		}
 
-		const uint32_t uncompressedSize = static_cast<uint32_t>(decryptedPayload[0]) |
-			(static_cast<uint32_t>(decryptedPayload[1]) << 8) |
-			(static_cast<uint32_t>(decryptedPayload[2]) << 16) |
-			(static_cast<uint32_t>(decryptedPayload[3]) << 24);
-		if (uncompressedSize == 0) {
-			error = "compressed SNG reported zero output size";
-			return false;
-		}
-		if (uncompressedSize > kMaxSngUncompressedSize) {
-			std::ostringstream oversize;
-			oversize << "compressed SNG reported oversized output (" << uncompressedSize
-				<< " bytes, max supported " << kMaxSngUncompressedSize << ")";
-			error = oversize.str();
-			return false;
+		// Fallback for assets whose compressed payload is plain after the SNG header.
+		// This is only attempted after the primary decrypt+decode path fails.
+		std::string fallbackDecodeError;
+		if (tryDecodeCompressedPayload(encryptedPayload, fallbackDecodeError)) {
+			return true;
 		}
 
-		std::vector<uint8_t> compressedData(decryptedPayload.begin() + 4, decryptedPayload.end());
-		outDecodedSng.assign(uncompressedSize, 0);
-		const std::size_t written = tinfl_decompress_mem_to_mem(
-			outDecodedSng.data(),
-			outDecodedSng.size(),
-			compressedData.data(),
-			compressedData.size(),
-			TINFL_FLAG_PARSE_ZLIB_HEADER);
-		if (written == TINFL_DECOMPRESS_MEM_TO_MEM_FAILED) {
-			error = "tinfl_decompress_mem_to_mem(SNG) failed";
-			return false;
-		}
-
-		outDecodedSng.resize(written);
-		return true;
+		error = "compressed SNG decode failed after decrypt and raw fallback: decrypt='" +
+			primaryDecodeError + "' raw='" + fallbackDecodeError + "'";
+		return false;
 	}
 
 	std::string BuildDescriptorKey(const ManifestArrangementDescriptor& descriptor) {

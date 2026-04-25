@@ -94,7 +94,7 @@ namespace {
 		QcTargetInfo{ QcTarget::Manual2, "MANUAL_2", "QCAutomationManual2Target", "MyPresets:32F" },
 		QcTargetInfo{ QcTarget::Manual3, "MANUAL_3", "QCAutomationManual3Target", "MyPresets:32G" },
 		QcTargetInfo{ QcTarget::Manual4, "MANUAL_4", "QCAutomationManual4Target", "MyPresets:32H" },
-		QcTargetInfo{ QcTarget::Idle, "IDLE", "QCAutomationIdleTarget", "MyPresets:32B" }
+		QcTargetInfo{ QcTarget::Idle, "IDLE", "QCAutomationIdleTarget", "MyPresets:32F" }
 	};
 
 	bool loggedMissingMidiDevice = false;
@@ -649,7 +649,23 @@ namespace {
 	SongTransposeDecision BuildSongTransposeDecision() {
 		SongTransposeDecision decision;
 
-		const std::array<int, 2> highestLowest = SongTuning::GetHighestLowestString();
+		const std::array<byte, 6> tuningSnapshot = SongTuning::GetCurrentTuning();
+		if (tuningSnapshot == std::array<byte, 6>{}) {
+			decision.result = SongTransposeResult::Retry;
+			decision.detail = "tuning not available yet";
+			return decision;
+		}
+
+		const Tuning tuning(
+			tuningSnapshot[0],
+			tuningSnapshot[1],
+			tuningSnapshot[2],
+			tuningSnapshot[3],
+			tuningSnapshot[4],
+			tuningSnapshot[5]
+		);
+
+		const std::array<int, 2> highestLowest = SongTuning::GetHighestLowestString(tuning);
 		const int highestTuning = highestLowest[0];
 		const int lowestTuning = highestLowest[1];
 		if (highestTuning == 666 && lowestTuning == 666) {
@@ -658,9 +674,26 @@ namespace {
 			return decision;
 		}
 
-		// v1 transpose automation only supports one global semitone offset.
-		// Mixed/drop/open tunings are deferred to a later strategy.
+		// v1 transpose automation supports one global semitone offset.
+		// For non-uniform drop tunings, assume player baseline is Drop D and
+		// resolve from the non-low-string semitone (highestTuning).
+		// Some charts are effectively drop-style without matching a strict string-by-string
+		// pattern at runtime, so allow a drop-like 2-semitone spread as fallback.
 		if (highestTuning != lowestTuning) {
+			const bool isStrictDrop = SongTuning::IsSongInDrop(tuning);
+			const bool isDropLikeSpread =
+				highestTuning <= 0 &&
+				lowestTuning <= 0 &&
+				(highestTuning - lowestTuning) == 2;
+			if (isStrictDrop || isDropLikeSpread) {
+				decision.result = SongTransposeResult::Resolved;
+				decision.semitones = highestTuning;
+				if (isDropLikeSpread && !isStrictDrop) {
+					decision.detail = "drop-like fallback (2-semitone spread)";
+				}
+				return decision;
+			}
+
 			std::ostringstream unsupported;
 			unsupported << "non-uniform tuning (highest=" << highestTuning
 				<< ", lowest=" << lowestTuning << ")";
@@ -738,6 +771,9 @@ namespace {
 		retrySongSceneSendAttempted = false;
 		queuedSongSceneReason = transposeResolveReason;
 
+		if (!decision.detail.empty()) {
+			LOG_INFO(kLogPrefix << "transpose resolved via fallback detail='" << decision.detail << "'" << std::endl);
+		}
 		LOG_INFO(kLogPrefix << "transpose computed source=" << transposeResolveReason
 			<< " semitones=" << semitones
 			<< " scene='" << SceneValueToLetter(sceneValue) << "'" << std::endl);

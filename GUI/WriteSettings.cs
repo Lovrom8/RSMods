@@ -228,7 +228,7 @@ namespace RSMods
                     { ReadSettings.QCAutomationSectionManual2TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual2TargetIdentifier, "MyPresets:32F") },
                     { ReadSettings.QCAutomationSectionManual3TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual3TargetIdentifier, "MyPresets:32G") },
                     { ReadSettings.QCAutomationSectionManual4TargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionManual4TargetIdentifier, "MyPresets:32H") },
-                    { ReadSettings.QCAutomationSectionIdleTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32B") },
+                    { ReadSettings.QCAutomationSectionIdleTargetIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionIdleTargetIdentifier, "MyPresets:32F") },
                     { ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionSoloKeywordsIdentifier, "lead,solo") },
                     { ReadSettings.QCAutomationSectionDistKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionDistKeywordsIdentifier, "dist,distortion,fuzz,gain,higain,highgain,dis") },
                     { ReadSettings.QCAutomationSectionODKeywordsIdentifier, CreateDefaultOnOldINI(ReadSettings.QCAutomationSectionODKeywordsIdentifier, "overdrive,od,drive,crunch,dirty,breakup,over") },
