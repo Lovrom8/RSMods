@@ -238,6 +238,8 @@ namespace ModManager {
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
+		RtpcProbe::Poll();
+
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {
 			D3DHooks::RemoveHeadstockInThisMenu = true;

@@ -1,95 +1,259 @@
 #include "../stdafx.h"
 #include "RtpcProbe.hpp"
 
-// Spy hooks on the game's Wwise setter functions, using the vendored Detours 1.5
-// API: DetourFunction(target, detour) patches the target and returns a trampoline
-// that runs the original. Every spy logs its arguments and calls the original, so
-// this is pure observation. Code patching only, no sound engine calls, so it is
-// safe to install at startup and catches every call the game makes.
-
-// Trampolines returned by DetourFunction. Calling these runs the real function.
-static tSetRTPCValue_Char originalSetRtpcValueChar = nullptr;
-static tSetRTPCValue_RTPCID originalSetRtpcValueId = nullptr;
-static tSetBusEffect_Char originalSetBusEffectChar = nullptr;
-static tSetBusEffect_UniqueID originalSetBusEffectId = nullptr;
-static tSetActorMixerEffect originalSetActorMixerEffect = nullptr;
-
-// SetEffectParam's real signature is an unverified RE guess (AkUInt32, AkUInt16,
-// void*). To survive the guess being short, the spy over-declares as six DWORDs
-// and forwards all of them - harmless for __cdecl since the caller cleans the
-// stack, but it means the real function gets every argument it actually expects.
-typedef AKRESULT(__cdecl* tSetEffectParamRaw)(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e, uint32_t f);
-static tSetEffectParamRaw originalSetEffectParam = nullptr;
-
-static AKRESULT __cdecl SpySetRtpcValueChar(const char* rtpcName, AkRtpcValue value, AkGameObjectID gameObjectId, AkTimeMs valueChangeDuration, AkCurveInterpolation fadeCurve)
+namespace
 {
-	LOG_INFO("SPY SetRTPCValue(char) name=" << (rtpcName ? rtpcName : "<null>") << " value=" << value << " obj=" << gameObjectId << std::endl);
-	return originalSetRtpcValueChar(rtpcName, value, gameObjectId, valueChangeDuration, fadeCurve);
-}
+	constexpr int FRAMES_BEFORE_INSPECT = 30;
+	constexpr int FLOATS_TO_DUMP = 24;
+	constexpr int VTABLE_ENTRIES_TO_DUMP = 8;
+	constexpr LONG MAX_PENDING_OBJECTS = 256;
 
-static AKRESULT __cdecl SpySetRtpcValueId(AkRtpcID rtpcId, AkRtpcValue value, AkGameObjectID gameObjectId, AkTimeMs valueChangeDuration, AkCurveInterpolation fadeCurve)
-{
-	LOG_INFO("SPY SetRTPCValue(id) id=" << rtpcId << " value=" << value << " obj=" << gameObjectId << std::endl);
-	return originalSetRtpcValueId(rtpcId, value, gameObjectId, valueChangeDuration, fadeCurve);
-}
+	constexpr AkUInt32 HARMONIZER_PLUGIN_ID = 138;
 
-static AKRESULT __cdecl SpySetBusEffectChar(const char* busName, AkUInt32 fxIndex, AkUniqueID shareSetId)
-{
-	LOG_INFO("SPY SetBusEffect(char) bus=" << (busName ? busName : "<null>") << " fxIndex=" << fxIndex << " shareSet=" << shareSetId << std::endl);
-	return originalSetBusEffectChar(busName, fxIndex, shareSetId);
-}
+	// Each Harmonizer voice stores its pitch as a frequency ratio, 2^(cents / 1200),
+	// so 0.5 is an octave down and 2.0 an octave up.
+	constexpr int VOICE_ONE_RATIO_INDEX = 6;
+	constexpr int VOICE_TWO_RATIO_INDEX = 13;
 
-static AKRESULT __cdecl SpySetBusEffectId(AkUniqueID audioNodeId, AkUInt32 fxIndex, AkUniqueID shareSetId)
-{
-	LOG_INFO("SPY SetBusEffect(id) node=" << audioNodeId << " fxIndex=" << fxIndex << " shareSet=" << shareSetId << std::endl);
-	return originalSetBusEffectId(audioNodeId, fxIndex, shareSetId);
-}
+	constexpr float OCTAVE_DOWN_RATIO = 0.5f;
+	constexpr float RATIO_TOLERANCE = 0.0005f;
+	constexpr float CENTS_PER_KEYPRESS = 100.0f;
+	constexpr float MIN_TEST_CENTS = -2400.0f;
+	constexpr float MAX_TEST_CENTS = 2400.0f;
 
-static AKRESULT __cdecl SpySetActorMixerEffect(AkUniqueID audioNodeId, AkUInt32 fxIndex, AkUniqueID shareSetId)
-{
-	LOG_INFO("SPY SetActorMixerEffect node=" << audioNodeId << " fxIndex=" << fxIndex << " shareSet=" << shareSetId << std::endl);
-	return originalSetActorMixerEffect(audioNodeId, fxIndex, shareSetId);
-}
+	typedef void* (__cdecl* tCreateParamRaw)(void* allocator);
 
-static AKRESULT __cdecl SpySetEffectParam(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e, uint32_t f)
-{
-	LOG_INFO("SPY SetEffectParam a=0x" << std::hex << a << " b=0x" << b << " c=0x" << c << std::dec << std::endl);
-
-	// The third argument is believed to be a param-block pointer. If it reads as
-	// valid memory, dump the first floats - a value like 1200.0 or -1200.0 here
-	// would be the pitch cents we are hunting.
-	if (c != 0 && !MemUtil::IsBadReadPtr((void*)c))
+	struct PendingInspection
 	{
-		const float* floats = (const float*)c;
-		LOG_INFO("SPY SetEffectParam floats: " << floats[0] << ", " << floats[1] << ", " << floats[2] << ", " << floats[3] << std::endl);
+		void* paramObject;
+		int framesRemaining;
+	};
+
+	// A Harmonizer voice found at the emulated bass octave, and so a candidate for
+	// retuning. The ratio is tracked rather than the object because one param object
+	// holds two voices.
+	struct RetunableVoice
+	{
+		float* ratio;
+	};
+
+	tCreateParamRaw originalCreateParam = nullptr;
+	tRegisterPlugin originalRegisterPlugin = nullptr;
+
+	bool wasVtableLogged = false;
+
+	// Param objects are created on the bank and audio threads, so the hooks must not
+	// log or take a lock: an earlier build deadlocked against Poll by doing both.
+	// They only publish a pointer here, and Poll drains it.
+	void* newParamObjects[MAX_PENDING_OBJECTS] = {};
+	volatile LONG newParamObjectCount = 0;
+
+	std::vector<PendingInspection> pendingInspections;
+	std::vector<RetunableVoice> retunableVoices;
+	std::mutex trackingMutex;
+
+	float testCents = -1200.0f;
+	bool wasLowerKeyDown = false;
+	bool wasRaiseKeyDown = false;
+
+	float CentsToRatio(float cents)
+	{
+		return powf(2.0f, cents / 1200.0f);
 	}
 
-	return originalSetEffectParam(a, b, c, d, e, f);
-}
-
-static bool HookOne(const char* name, uintptr_t target, PBYTE spyFunction, PBYTE* outOriginal)
-{
-	*outOriginal = DetourFunction((PBYTE)target, spyFunction);
-
-	if (*outOriginal == nullptr)
+	void PublishParamObject(void* paramObject)
 	{
-		LOG_ERROR("SPY failed to hook " << name << " at 0x" << std::hex << target << std::dec << std::endl);
-		return false;
+		if (paramObject == nullptr)
+		{
+			return;
+		}
+
+		const LONG index = InterlockedIncrement(&newParamObjectCount) - 1;
+		if (index < MAX_PENDING_OBJECTS)
+		{
+			newParamObjects[index] = paramObject;
+		}
 	}
 
-	return true;
+	void* __cdecl SpyCreateParam(void* allocator)
+	{
+		void* paramObject = originalCreateParam(allocator);
+		PublishParamObject(paramObject);
+		return paramObject;
+	}
+
+	void LogVtableOnce(uintptr_t* vtable)
+	{
+		if (wasVtableLogged)
+		{
+			return;
+		}
+
+		std::ostringstream entries;
+		for (int i = 0; i < VTABLE_ENTRIES_TO_DUMP; i++)
+		{
+			entries << " [" << i << "]=0x" << std::hex << vtable[i] << std::dec;
+		}
+
+		LOG_INFO("SPY Harmonizer param vtable at 0x" << std::hex << (uintptr_t)vtable << std::dec << entries.str() << std::endl);
+		wasVtableLogged = true;
+	}
+
+	void TrackOctaveDownVoices(float* floats)
+	{
+		const int voiceIndices[] = { VOICE_ONE_RATIO_INDEX, VOICE_TWO_RATIO_INDEX };
+
+		for (const int voiceIndex : voiceIndices)
+		{
+			if (fabsf(floats[voiceIndex] - OCTAVE_DOWN_RATIO) > RATIO_TOLERANCE)
+			{
+				continue;
+			}
+
+			retunableVoices.push_back({ &floats[voiceIndex] });
+
+			LOG_INFO("SPY tracking octave-down voice at 0x" << std::hex << (uintptr_t)&floats[voiceIndex] << std::dec
+				<< " (index " << voiceIndex << "), now tracking " << retunableVoices.size() << std::endl);
+		}
+	}
+
+	void InspectParamObject(void* paramObject)
+	{
+		if (MemUtil::IsBadReadPtr(paramObject))
+		{
+			LOG_WARNING("SPY param object 0x" << std::hex << (uintptr_t)paramObject << std::dec << " is no longer readable" << std::endl);
+			return;
+		}
+
+		// Index 0 is the vtable pointer, so the parameter fields start at index 1.
+		float* floats = (float*)paramObject;
+
+		std::ostringstream values;
+		for (int i = 1; i < FLOATS_TO_DUMP; i++)
+		{
+			values << " [" << i << "]=" << floats[i];
+		}
+		LOG_INFO("SPY params" << values.str() << std::endl);
+
+		LogVtableOnce(*(uintptr_t**)paramObject);
+		TrackOctaveDownVoices(floats);
+	}
+
+	void DrainNewParamObjects()
+	{
+		const LONG count = InterlockedExchange(&newParamObjectCount, 0);
+		const LONG usable = count < MAX_PENDING_OBJECTS ? count : MAX_PENDING_OBJECTS;
+
+		for (LONG i = 0; i < usable; i++)
+		{
+			pendingInspections.push_back({ newParamObjects[i], FRAMES_BEFORE_INSPECT });
+			newParamObjects[i] = nullptr;
+		}
+	}
+
+	/// <summary>
+	/// Hold every tracked voice at the requested pitch. Re-applied every frame rather
+	/// than written once, so the tone system re-applying its own parameters cannot
+	/// quietly undo it.
+	/// </summary>
+	void EnforceTestCents()
+	{
+		const float ratio = CentsToRatio(testCents);
+
+		for (const RetunableVoice& voice : retunableVoices)
+		{
+			if (MemUtil::IsBadReadPtr(voice.ratio))
+			{
+				continue;
+			}
+
+			*voice.ratio = ratio;
+		}
+	}
+
+	void HandleRetuneHotkeys()
+	{
+		const bool isLowerKeyDown = (GetAsyncKeyState(VK_F9) & 0x8000) != 0;
+		const bool isRaiseKeyDown = (GetAsyncKeyState(VK_F10) & 0x8000) != 0;
+
+		bool didChange = false;
+
+		if (isLowerKeyDown && !wasLowerKeyDown && testCents > MIN_TEST_CENTS)
+		{
+			testCents -= CENTS_PER_KEYPRESS;
+			didChange = true;
+		}
+
+		if (isRaiseKeyDown && !wasRaiseKeyDown && testCents < MAX_TEST_CENTS)
+		{
+			testCents += CENTS_PER_KEYPRESS;
+			didChange = true;
+		}
+
+		if (didChange)
+		{
+			LOG_INFO("SPY holding " << retunableVoices.size() << " voices at " << testCents << " cents (ratio " << CentsToRatio(testCents) << ")" << std::endl);
+		}
+
+		wasLowerKeyDown = isLowerKeyDown;
+		wasRaiseKeyDown = isRaiseKeyDown;
+	}
+
+	AKRESULT __cdecl SpyRegisterPlugin(AkPluginType type, AkUInt32 companyId, AkUInt32 pluginId, AkCreatePluginCallback createFunc, AkCreateParamCallback createParamFunc)
+	{
+		if (companyId == 0 && pluginId == HARMONIZER_PLUGIN_ID)
+		{
+			const PBYTE trampoline = DetourFunction((PBYTE)createParamFunc, (PBYTE)SpyCreateParam);
+			if (trampoline == nullptr)
+			{
+				LOG_ERROR("SPY failed to hook the Harmonizer create-param callback" << std::endl);
+			}
+			else
+			{
+				originalCreateParam = (tCreateParamRaw)trampoline;
+				LOG_INFO("SPY Harmonizer create-param hooked at 0x" << std::hex << (uintptr_t)createParamFunc << std::dec << std::endl);
+			}
+		}
+
+		return originalRegisterPlugin(type, companyId, pluginId, createFunc, createParamFunc);
+	}
 }
 
 void RtpcProbe::InstallHooks()
 {
-	int installed = 0;
+	const uintptr_t target = Wwise::Exports::func_Wwise_Sound_RegisterPlugin.Get();
+	originalRegisterPlugin = (tRegisterPlugin)DetourFunction((PBYTE)target, (PBYTE)SpyRegisterPlugin);
 
-	installed += HookOne("SetRTPCValue(char)", Wwise::Exports::func_Wwise_Sound_SetRTPCValue_Char.Get(), (PBYTE)SpySetRtpcValueChar, (PBYTE*)&originalSetRtpcValueChar);
-	installed += HookOne("SetRTPCValue(id)", Wwise::Exports::func_Wwise_Sound_SetRTPCValue_RTPCID.Get(), (PBYTE)SpySetRtpcValueId, (PBYTE*)&originalSetRtpcValueId);
-	installed += HookOne("SetBusEffect(char)", Wwise::Exports::func_Wwise_Sound_SetBusEffect_Char.Get(), (PBYTE)SpySetBusEffectChar, (PBYTE*)&originalSetBusEffectChar);
-	installed += HookOne("SetBusEffect(id)", Wwise::Exports::func_Wwise_Sound_SetBusEffect_UniqueID.Get(), (PBYTE)SpySetBusEffectId, (PBYTE*)&originalSetBusEffectId);
-	installed += HookOne("SetActorMixerEffect", Wwise::Exports::func_Wwise_Sound_SetActorMixerEffect.Get(), (PBYTE)SpySetActorMixerEffect, (PBYTE*)&originalSetActorMixerEffect);
-	installed += HookOne("SetEffectParam", Wwise::Exports::func_Wwise_Sound_SetEffectParam.Get(), (PBYTE)SpySetEffectParam, (PBYTE*)&originalSetEffectParam);
+	if (originalRegisterPlugin == nullptr)
+	{
+		LOG_ERROR("SPY failed to hook RegisterPlugin at 0x" << std::hex << target << std::dec << std::endl);
+		return;
+	}
 
-	LOG_INFO("=== Wwise spy: " << installed << "/6 hooks installed ===" << std::endl);
+	LOG_INFO("=== Drop pedal probe build 5, F9 lowers and F10 raises by 100 cents ===" << std::endl);
+}
+
+void RtpcProbe::Poll()
+{
+	std::lock_guard<std::mutex> lock(trackingMutex);
+
+	DrainNewParamObjects();
+
+	for (size_t i = 0; i < pendingInspections.size(); )
+	{
+		PendingInspection& inspection = pendingInspections[i];
+		inspection.framesRemaining--;
+
+		if (inspection.framesRemaining > 0)
+		{
+			i++;
+			continue;
+		}
+
+		InspectParamObject(inspection.paramObject);
+		pendingInspections.erase(pendingInspections.begin() + i);
+	}
+
+	HandleRetuneHotkeys();
+	EnforceTestCents();
 }
