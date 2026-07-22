@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug with Wwise Logging|Win32">
@@ -291,12 +291,6 @@
     <ClInclude Include="Mods\TrueTuning.hpp" />
     <ClInclude Include="Mods\VoiceOverControl.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
-    <ClInclude Include="Mods\RtpcProbe.hpp" />
-    <ClCompile Include="Mods\RtpcProbe.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />

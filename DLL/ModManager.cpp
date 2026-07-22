@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
+#include "Mods/RtpcProbe.hpp"
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -150,6 +151,8 @@ namespace ModManager {
 		if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on") {
 			VolumeControl::AllowAltTabbingWithAudio();
 		}
+
+		RtpcProbe::InstallHooks();
 	}
 
 	/// <summary>
@@ -234,6 +237,7 @@ namespace ModManager {
 	/// Handles mods that run regardless of game state.
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
+
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {
 			D3DHooks::RemoveHeadstockInThisMenu = true;
