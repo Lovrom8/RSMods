@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
-#include "Mods/RtpcProbe.hpp"
+#include "Mods/DropPedal.hpp"
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -152,7 +152,7 @@ namespace ModManager {
 			VolumeControl::AllowAltTabbingWithAudio();
 		}
 
-		RtpcProbe::InstallHooks();
+		DropPedal::InstallHooks();
 	}
 
 	/// <summary>
@@ -238,7 +238,7 @@ namespace ModManager {
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
-		RtpcProbe::Poll();
+		DropPedal::Poll();
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "D3DOverlay.hpp"
+#include "Mods/DropPedal.hpp"
 
 /// <returns>Size of Rocksmith Window</returns>
 Resolution GameOverlay::GetWindowSize() {
@@ -160,6 +161,37 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 			{ NULL, NULL },
 			DT_CENTER | DT_NOCLIP);
 	}
+}
+
+void GameOverlay::DisplayDropPedalTuning()
+{
+	// Hidden only while notes are actually coming down the highway. Every other
+	// screen - song select, tuner, pause, menus - shows it, so the mod does not
+	// care which mode the player uses.
+	static const std::vector<std::string> activePlayModes = {
+		"LearnASong_Game",
+		"NonStopPlay_Game",
+		"ScoreAttack_Game",
+	};
+
+	if (Settings::GetKeyBind("DropPedalToggleKey") == NULL)
+		return;
+
+	if (Contains(GameState::GetCurrentMenu(), activePlayModes))
+		return;
+
+	const std::string state = DropPedal::IsEnabled() ? DropPedal::GetTuningName() : "off";
+
+	DX9DrawText(
+		"Drop Pedal: " + state,
+		DropPedal::IsEnabled() ? whiteText : greyText,
+		static_cast<int>(WindowSize.width - WindowSize.width / 3.2f),	// 600 pixels wide, ending at the right edge in 1920x1080
+		static_cast<int>(WindowSize.height / 3.0f),						// 360 pixels from the top, below the game's corner icons
+		static_cast<int>(WindowSize.width - WindowSize.width / 64.0f),	// 30 pixels in from the right edge
+		static_cast<int>(WindowSize.height / 2.2f),						// 490 pixels from the top
+		pDevice,
+		{ NULL, NULL },
+		DT_RIGHT | DT_NOCLIP);
 }
 
 void GameOverlay::DisplayCurrentTuningForAutoTune()
@@ -339,6 +371,7 @@ void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
 		DisplayRiffRepeaterOverHundredPercentSpeed();
 		DisplayCurrentNote();
 		DisplayCurrentTuningForAutoTune();
+		DisplayDropPedalTuning();
 		DisplaySongAccuracy();
 
 		HandleLooping();

@@ -19,6 +19,7 @@ namespace GameOverlay {
 	inline int fontWidth = NULL, fontHeight = NULL;
 
 	const int whiteText = 0xFFFFFFFF;
+	const int greyText = 0xFF9A9A9A;
 
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
@@ -28,6 +29,7 @@ namespace GameOverlay {
 	void DisplayCurrentNote();
 	void DisplayRiffRepeaterOverHundredPercentSpeed();
 	void DisplayCurrentTuningForAutoTune();
+	void DisplayDropPedalTuning();
 	void DisplayLoopStartEndTimes(float loopStart, float loopEnd);
 	void DisplaySongAccuracy();
 	void CheckCurrentFont();
