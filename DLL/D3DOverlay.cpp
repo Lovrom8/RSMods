@@ -60,6 +60,74 @@ void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, i
 	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
 }
 
+/// <summary>
+/// Draw a filled, alpha blended rectangle, for use as a backing plate behind text
+/// that would otherwise be unreadable over the game's artwork.
+/// </summary>
+void GameOverlay::DX9DrawFilledRectangle(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, D3DCOLOR color, LPDIRECT3DDEVICE9 pDevice)
+{
+	struct Vertex
+	{
+		float x, y, z, rhw;
+		D3DCOLOR color;
+	};
+
+	const float left = (float)topLeftX;
+	const float top = (float)topLeftY;
+	const float right = (float)bottomRightX;
+	const float bottom = (float)bottomRightY;
+
+	Vertex quad[4] =
+	{
+		{ left,  bottom, 0.0f, 1.0f, color },
+		{ left,  top,    0.0f, 1.0f, color },
+		{ right, bottom, 0.0f, 1.0f, color },
+		{ right, top,    0.0f, 1.0f, color },
+	};
+
+	DWORD previousFvf = 0;
+	DWORD previousAlphaBlend = 0;
+	DWORD previousSourceBlend = 0;
+	DWORD previousDestBlend = 0;
+	DWORD previousTexture = 0;
+
+	pDevice->GetFVF(&previousFvf);
+	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &previousAlphaBlend);
+	pDevice->GetRenderState(D3DRS_SRCBLEND, &previousSourceBlend);
+	pDevice->GetRenderState(D3DRS_DESTBLEND, &previousDestBlend);
+	pDevice->GetTextureStageState(0, D3DTSS_COLOROP, &previousTexture);
+
+	pDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+	pDevice->SetTexture(0, nullptr);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(Vertex));
+
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, previousTexture);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, previousDestBlend);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, previousSourceBlend);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, previousAlphaBlend);
+	pDevice->SetFVF(previousFvf);
+}
+
+/// <summary>
+/// Measure the pixel width of a string in the default overlay font, without drawing.
+/// Returns 0 if the font is not ready, which the caller treats as "do not draw".
+/// </summary>
+int GameOverlay::MeasureTextWidth(const std::string& textToDraw, LPDIRECT3DDEVICE9 pDevice)
+{
+	if (!cachedFont)
+	{
+		return 0;
+	}
+
+	RECT measured{ 0, 0, 0, 0 };
+	cachedFont->DrawTextA(nullptr, textToDraw.c_str(), -1, &measured, DT_CALCRECT | DT_NOCLIP, whiteText);
+	return measured.right - measured.left;
+}
+
 void GameOverlay::DisplayMixer() {
 	// Display the whole mixer if displayMixer is true
 	if (Settings::ReturnSettingValue("VolumeControlEnabled") == "on" && displayMixer) {
@@ -165,33 +233,52 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 
 void GameOverlay::DisplayDropPedalTuning()
 {
-	// Hidden only while notes are actually coming down the highway. Every other
-	// screen - song select, tuner, pause, menus - shows it, so the mod does not
-	// care which mode the player uses.
-	static const std::vector<std::string> activePlayModes = {
-		"LearnASong_Game",
-		"NonStopPlay_Game",
-		"ScoreAttack_Game",
-	};
-
 	if (Settings::GetKeyBind("DropPedalToggleKey") == NULL)
 		return;
 
-	if (Contains(GameState::GetCurrentMenu(), activePlayModes))
-		return;
+	const std::string state = DropPedal::IsEnabled()
+		? DropPedal::GetTuningName()
+		: "off";
 
-	const std::string state = DropPedal::IsEnabled() ? DropPedal::GetTuningName() : "off";
+	const std::string line = "Drop Pedal: " + state;
+
+	// Measuring also serves as the readiness gate: if the font is not cached the width
+	// is 0, and we skip drawing the plate too. This keeps the box and the text in step,
+	// which is what stops the plate flickering on its own during menu transitions.
+	const int textWidth = MeasureTextWidth(line, pDevice);
+	if (textWidth == 0)
+	{
+		return;
+	}
+
+	int textColor = greyText;
+	if (DropPedal::IsEnabled())
+	{
+		const int direction = DropPedal::GetShiftDirection();
+		textColor = direction < 0 ? dropPedalDownText : (direction > 0 ? dropPedalUpText : whiteText);
+	}
+
+	// Top left, clear of the game's own corner furniture. The plate is sized to the
+	// text rather than a fixed width, so short tunings do not leave a long empty box.
+	const int left = static_cast<int>(WindowSize.width / 96.0f);			// 20 pixels in at 1920x1080
+	const int top = static_cast<int>(WindowSize.height / 54.0f);			// 20 pixels down
+	const int padding = static_cast<int>(WindowSize.width / 192.0f);		// 10 pixels
+
+	const int right = left + textWidth;
+	const int bottom = top + static_cast<int>(WindowSize.height / 27.0f);	// 40 pixels tall
+
+	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(150, 0, 0, 0), pDevice);
 
 	DX9DrawText(
-		"Drop Pedal: " + state,
-		DropPedal::IsEnabled() ? whiteText : greyText,
-		static_cast<int>(WindowSize.width - WindowSize.width / 3.2f),	// 600 pixels wide, ending at the right edge in 1920x1080
-		static_cast<int>(WindowSize.height / 3.0f),						// 360 pixels from the top, below the game's corner icons
-		static_cast<int>(WindowSize.width - WindowSize.width / 64.0f),	// 30 pixels in from the right edge
-		static_cast<int>(WindowSize.height / 2.2f),						// 490 pixels from the top
+		line,
+		textColor,
+		left,
+		top,
+		right + padding,
+		bottom,
 		pDevice,
 		{ NULL, NULL },
-		DT_RIGHT | DT_NOCLIP);
+		DT_LEFT | DT_NOCLIP);
 }
 
 void GameOverlay::DisplayCurrentTuningForAutoTune()

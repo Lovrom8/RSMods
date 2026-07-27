@@ -365,6 +365,136 @@ namespace RSMods
             DecryptedProfile["Prizes"] = prizes;
         }
         #endregion
+        #region Drop Pedal
+        // The engine only builds a pitch shifter when a tone's data names one, so the drop
+        // pedal mod cannot affect a tone that has no MultiPitch. Adding one at zero semitones
+        // makes the shifter exist without changing how the tone sounds; the mod supplies the
+        // pitch at runtime through SetParam.
+
+        private const string MULTI_PITCH_KEY = "Pedal_MultiPitch";
+        private const int PRE_PEDAL_SLOT_COUNT = 4;
+
+        /// <summary>
+        /// Build a MultiPitch pedal set to zero semitones, matching the structure the game
+        /// writes for a hand-placed pedal.
+        /// </summary>
+        private static JObject BuildNeutralMultiPitchPedal()
+        {
+            return new JObject
+            {
+                ["Type"] = "Pedals",
+                ["KnobValues"] = new JObject
+                {
+                    // Reproduced verbatim from a working tone. This unnamed knob is undocumented,
+                    // so it is copied rather than omitted.
+                    ["0"] = 50.0,
+                    ["Pedal_MultiPitch_Tone"] = 50.0,
+                    ["Pedal_MultiPitch_Pitch1"] = 0.0,
+                    ["Pedal_MultiPitch_Mix"] = 100.0
+                },
+                ["Key"] = MULTI_PITCH_KEY,
+                ["Category"] = "30791"
+            };
+        }
+
+        private static bool ToneHasMultiPitch(JObject gearList)
+        {
+            foreach (JProperty slot in gearList.Properties())
+            {
+                if (slot.Value is JObject gear && (string)gear["Key"] == MULTI_PITCH_KEY)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Add a neutral MultiPitch pedal to every custom tone in the given list that does not
+        /// already have one. Returns the number of tones changed.
+        /// </summary>
+        private static int AddDropPedalToToneList(JArray tones, List<string> skipped)
+        {
+            int changed = 0;
+
+            foreach (JToken toneToken in tones)
+            {
+                // Profile tone lists are fixed length and use nulls for unused entries.
+                if (!(toneToken is JObject tone))
+                {
+                    continue;
+                }
+
+                string toneName = (string)tone["Name"] ?? "(unnamed)";
+
+                // Non-custom tones are game defaults living in the profile; the game may
+                // rewrite or validate them, so they are left alone.
+                if (tone["IsCustom"] == null || !(bool)tone["IsCustom"])
+                {
+                    continue;
+                }
+
+                if (!(tone["GearList"] is JObject gearList))
+                {
+                    skipped.Add($"{toneName} (no GearList)");
+                    continue;
+                }
+
+                if (ToneHasMultiPitch(gearList))
+                {
+                    continue;
+                }
+
+                // An absent slot property is a free slot; the game removes the property
+                // entirely when a pedal is deleted rather than leaving a null behind.
+                string freeSlot = null;
+                for (int slot = 1; slot <= PRE_PEDAL_SLOT_COUNT; slot++)
+                {
+                    string slotName = $"PrePedal{slot}";
+                    if (gearList[slotName] == null || gearList[slotName].Type == JTokenType.Null)
+                    {
+                        freeSlot = slotName;
+                        break;
+                    }
+                }
+
+                if (freeSlot == null)
+                {
+                    skipped.Add($"{toneName} (all {PRE_PEDAL_SLOT_COUNT} pre-pedal slots in use)");
+                    continue;
+                }
+
+                gearList[freeSlot] = BuildNeutralMultiPitchPedal();
+                changed++;
+            }
+
+            return changed;
+        }
+
+        /// <summary>
+        /// Add a neutral MultiPitch pedal to the custom guitar and bass tones of the decrypted
+        /// profile. The caller is responsible for encrypting the result.
+        /// </summary>
+        public static int AddDropPedalToCustomTones(out List<string> skipped)
+        {
+            if (DecryptedProfile == null) throw new InvalidOperationException("No profile has been decrypted.");
+
+            skipped = new List<string>();
+
+            int changed = 0;
+
+            foreach (string listName in new[] { "CustomTones", "BassTones" })
+            {
+                if (DecryptedProfile[listName] is JArray tones)
+                {
+                    changed += AddDropPedalToToneList(tones, skipped);
+                }
+            }
+
+            return changed;
+        }
+        #endregion
     }
 
 

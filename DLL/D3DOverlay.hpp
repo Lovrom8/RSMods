@@ -21,6 +21,14 @@ namespace GameOverlay {
 	const int whiteText = 0xFFFFFFFF;
 	const int greyText = 0xFF9A9A9A;
 
+	// Drop pedal state colours: green shifting down, amber shifting up, white at the
+	// player's own tuning, grey when off.
+	const int dropPedalDownText = 0xFF6BE06B;
+	const int dropPedalUpText = 0xFFFFC24D;
+
+	void DX9DrawFilledRectangle(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, D3DCOLOR color, LPDIRECT3DDEVICE9 pDevice);
+	int MeasureTextWidth(const std::string& textToDraw, LPDIRECT3DDEVICE9 pDevice);
+
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
 	void SetPDevice(IDirect3DDevice9* pDevice, Resolution windowSize);

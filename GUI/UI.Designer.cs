@@ -499,6 +499,7 @@
             this.groupBox_ImportJsonTones = new System.Windows.Forms.GroupBox();
             this.checkBox_ImportTonesBulk = new System.Windows.Forms.CheckBox();
             this.button_ImportTone2014 = new System.Windows.Forms.Button();
+            this.button_Profiles_AddDropPedalToTones = new System.Windows.Forms.Button();
             this.button_ImportToneManifest = new System.Windows.Forms.Button();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -6380,6 +6381,7 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
+            this.tab_Profiles.Controls.Add(this.button_Profiles_AddDropPedalToTones);
             this.tab_Profiles.Controls.Add(this.groupBox_ImportJsonTones);
             this.tab_Profiles.Controls.Add(this.dgv_Profiles_Songlists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profile_MoreSongLists);
@@ -6428,6 +6430,17 @@
             this.button_ImportTone2014.Text = "Import XML";
             this.button_ImportTone2014.UseVisualStyleBackColor = true;
             this.button_ImportTone2014.Click += new System.EventHandler(this.Profiles_ImportTone2014);
+            // 
+            // button_Profiles_AddDropPedalToTones
+            // 
+            this.button_Profiles_AddDropPedalToTones.Location = new System.Drawing.Point(360, 470);
+            this.button_Profiles_AddDropPedalToTones.Name = "button_Profiles_AddDropPedalToTones";
+            this.button_Profiles_AddDropPedalToTones.Size = new System.Drawing.Size(332, 23);
+            this.button_Profiles_AddDropPedalToTones.TabIndex = 14;
+            this.button_Profiles_AddDropPedalToTones.Text = "Add drop pedal to all custom tones";
+            this.button_Profiles_AddDropPedalToTones.UseVisualStyleBackColor = true;
+            this.button_Profiles_AddDropPedalToTones.Visible = false;
+            this.button_Profiles_AddDropPedalToTones.Click += new System.EventHandler(this.Profiles_AddDropPedalToTones);
             // 
             // button_ImportToneManifest
             // 
@@ -7585,6 +7598,7 @@
         private System.Windows.Forms.GroupBox groupBox_ImportJsonTones;
         private System.Windows.Forms.Button button_ImportToneManifest;
         private System.Windows.Forms.Button button_ImportTone2014;
+        private System.Windows.Forms.Button button_Profiles_AddDropPedalToTones;
         private System.Windows.Forms.CheckBox checkBox_ImportTonesBulk;
         private System.Windows.Forms.CheckBox checkBox_FixBrokenTones;
         private System.Windows.Forms.CheckBox checkBox_CustomNSPTimer;

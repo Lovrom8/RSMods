@@ -379,6 +379,8 @@ namespace ModManager {
 			Midi::alreadyAttemptedTuningInTuner = false;
 			Midi::userWantsToUseAutoTuning = false;
 		}
+
+		DropPedal::ResetSongState();
 	}
 
 	/// <summary>
@@ -584,6 +586,7 @@ namespace ModManager {
 		EnableRiffRepeaterFeatures();
 		HandleInSongVisualMods(state);
 		HandleMidiAutoTuningInSong();
+		DropPedal::HandleTuningInSong();
 		HandleSongTimerDisplay(state);
 		HandleExtendedRangeInSong(state);
 	}

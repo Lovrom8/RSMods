@@ -18,7 +18,17 @@ namespace DropPedal
 	void InstallHooks();
 	void Poll();
 
+	// The pitch shifter is downstream of note detection, so detection has to be told
+	// what the player's guitar is actually tuned to or every note reads wrong.
+	void HandleTuningInSong();
+	void ResetSongState();
+
 	bool IsEnabled();
 	int GetTargetSemitones();
 	std::string GetTuningName();
+
+	// The tuning the guitar is physically in, and which way the shift is going, so the
+	// overlay can name and colour the state without duplicating the arithmetic.
+	std::string GetBaseTuningName();
+	int GetShiftDirection();
 }
