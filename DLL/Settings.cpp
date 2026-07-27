@@ -22,11 +22,6 @@ void Settings::Initialize()
 		{"LoopStartKey", "Y"},
 		{"LoopEndKey", "U"},
 		{"RewindKey", "Z"},
-		{"DropPedalDownKey", "VK_OEM_COMMA"},
-		{"DropPedalUpKey", "VK_OEM_PERIOD"},
-		{"DropPedalToggleKey", "VK_F8"},
-		{"DropPedalBaseTuningDownKey", "VK_F9"},
-		{"DropPedalBaseTuningUpKey", "VK_F10"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -68,7 +63,6 @@ void Settings::Initialize()
 		{"ScreenShotScores", "off"},
 		{"RRSpeedAboveOneHundred", "off"},
 		{"AutoTuneForSong", "off"},
-		{"DropPedalEnabled", "on"},
 		{"AutoTuneForSongDevice", ""},
 		{"MidiInDevice", ""},
 		{"AutoTuneForSongWhen", "manual"},
@@ -105,9 +99,6 @@ void Settings::Initialize()
 		{"CheckForNewSongsInterval", 5000},
 		{"RRSpeedInterval", 0},
 		{"TuningPedal", 0},
-		{"DropPedalSemitones", 0},
-		{"DropPedalBaseTuning", 0},
-		{"DropPedalToneSlot", 0},
 		{"TuningOffset", 0},
 		{"VolumeControlInterval", 5},
 		{"SecondaryMonitorXPosition", 0},
@@ -195,11 +186,6 @@ void Settings::ReadKeyBinds() {
 		{ "LoopStartKey", reader.GetValue("Keybinds", "LoopStartKey", "Y")},
 		{ "LoopEndKey", reader.GetValue("Keybinds", "LoopEndKey", "U")},
 		{ "RewindKey", reader.GetValue("Keybinds", "RewindKey", "Z")},
-		{ "DropPedalDownKey", reader.GetValue("Keybinds", "DropPedalDownKey", "VK_OEM_COMMA")},
-		{ "DropPedalUpKey", reader.GetValue("Keybinds", "DropPedalUpKey", "VK_OEM_PERIOD")},
-		{ "DropPedalToggleKey", reader.GetValue("Keybinds", "DropPedalToggleKey", "VK_F8")},
-		{ "DropPedalBaseTuningDownKey", reader.GetValue("Keybinds", "DropPedalBaseTuningDownKey", "VK_F9")},
-		{ "DropPedalBaseTuningUpKey", reader.GetValue("Keybinds", "DropPedalBaseTuningUpKey", "VK_F10")},
 
 		{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 		{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
@@ -229,9 +215,6 @@ void Settings::ReadModSettings() {
 		{"CheckForNewSongsInterval", reader.GetLongValue("Mod Settings", "CheckForNewSongsInterval", 5000)},
 		{"RRSpeedInterval", reader.GetLongValue("Mod Settings", "RRSpeedInterval", 0)},
 		{"TuningPedal", reader.GetLongValue("Mod Settings", "TuningPedal", 0)},
-		{"DropPedalSemitones", reader.GetLongValue("Mod Settings", "DropPedalSemitones", 0)},
-		{"DropPedalBaseTuning", reader.GetLongValue("Mod Settings", "DropPedalBaseTuning", 0)},
-		{"DropPedalToneSlot", reader.GetLongValue("Mod Settings", "DropPedalToneSlot", 0)},
 		{"TuningOffset", reader.GetLongValue("Mod Settings", "TuningOffset", 0)},
 		{"VolumeControlInterval", reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
 		{"SecondaryMonitorXPosition", reader.GetLongValue("Mod Settings", "SecondaryMonitorXPosition", 0)},
@@ -292,7 +275,6 @@ void Settings::ReadModSettings() {
 	modSettings["ScreenShotScores"] = reader.GetValue("Toggle Switches", "ScreenShotScores", "off");
 	modSettings["RRSpeedAboveOneHundred"] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 	modSettings["AutoTuneForSong"] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
-	modSettings["DropPedalEnabled"] = reader.GetValue("Toggle Switches", "DropPedalEnabled", "off");
 	modSettings["AutoTuneForSongDevice"] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
 	modSettings["MidiInDevice"] = reader.GetValue("Toggle Switches", "MidiInDevice", "");
 	modSettings["AutoTuneForSongWhen"] = reader.GetValue("Toggle Switches", "AutoTuneForSongWhen", "manual");

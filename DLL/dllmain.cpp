@@ -14,7 +14,7 @@ bool wwiseLogging = false;
 #endif
 
 #ifndef _RSMODS_VERSION
-#define _RSMODS_VERSION "RSMODS Version: 1.2.8.2 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#define _RSMODS_VERSION "RSModsPlus 1.0.0 (based on RSMods 1.2.8.2). DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
 
 /// <summary>

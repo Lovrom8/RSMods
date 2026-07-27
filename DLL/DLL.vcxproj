@@ -658,10 +658,16 @@ if exist "$(OutDir)$(TargetName).map" copy /Y "$(OutDir)$(TargetName).map" "$(Bu
       <AdditionalLibraryDirectories>SDK Path\Lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalDependencies>winmm.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
     </Link>
     <PostBuildEvent>
       <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
-      <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014"</Command>
+      <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014"
+if not exist "$(BuildArchiveDir)" mkdir "$(BuildArchiveDir)"
+copy /Y "$(OutDir)$(TargetName).dll" "$(BuildArchiveDir)\"
+copy /Y "$(OutDir)$(TargetName).pdb" "$(BuildArchiveDir)\"
+if exist "$(OutDir)$(TargetName).map" copy /Y "$(OutDir)$(TargetName).map" "$(BuildArchiveDir)\"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to solution directory...</Message>
@@ -692,10 +698,16 @@ if exist "$(OutDir)$(TargetName).map" copy /Y "$(OutDir)$(TargetName).map" "$(Bu
       <AdditionalLibraryDirectories>SDK Path\Lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalDependencies>winmm.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
     </Link>
     <PostBuildEvent>
       <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014\D3DX9_42.dll"</Command>
-      <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014"</Command>
+      <Command>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014"
+if not exist "$(BuildArchiveDir)" mkdir "$(BuildArchiveDir)"
+copy /Y "$(OutDir)$(TargetName).dll" "$(BuildArchiveDir)\"
+copy /Y "$(OutDir)$(TargetName).pdb" "$(BuildArchiveDir)\"
+if exist "$(OutDir)$(TargetName).map" copy /Y "$(OutDir)$(TargetName).map" "$(BuildArchiveDir)\"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copying to solution directory...</Message>

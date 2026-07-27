@@ -33,28 +33,24 @@ namespace
 	constexpr int MAX_BASE_TUNING_SEMITONES = 11;
 	constexpr int SEMITONES_PER_OCTAVE = 12;
 
+	// V1 does not support rebinding. The settings app rebuilds RSMods.ini from its own
+	// table of known keys and truncates the file first, so a hand-added binding is
+	// discarded the next time the player saves anything from it — silently, and back to
+	// the default rather than to nothing, which is the worse of the two failures. Fixed
+	// bindings are the only ones that cannot quietly change under the player. Move these
+	// into [Keybinds] once the settings app carries them.
+	constexpr int PITCH_DOWN_KEY = VK_OEM_COMMA;
+	constexpr int PITCH_UP_KEY = VK_OEM_PERIOD;
+	constexpr int TOGGLE_KEY = VK_F8;
+	constexpr int BASE_TUNING_DOWN_KEY = VK_F9;
+	constexpr int BASE_TUNING_UP_KEY = VK_F10;
+
 	// Holding a hotkey can step through tunings faster than the engine can absorb
 	// parameter writes: pushing on every press floods the audio path from the game
 	// thread and briefly locks the game. The displayed tuning still moves on every
 	// press; only the write to the shifters waits for the player to settle.
 	constexpr ULONGLONG PITCH_PUSH_DELAY_MILLISECONDS = 150;
 
-	// Saving to the ini and writing a log line are both disk work, and a player
-	// holding a hotkey can step through tunings faster than that can keep up. The
-	// displayed value moves immediately; the disk only sees the value they settled
-	// on, once they have stopped for this long.
-	constexpr ULONGLONG PERSIST_DELAY_MILLISECONDS = 400;
-
-	// Rocksmith exposes four tone slots, selected with the number keys. The player
-	// puts their drop pedal tone in one of them and tells the mod which. There is no
-	// sensible default: picking one for them would press a key that lands on whatever
-	// tone happens to be there.
-	constexpr int MIN_TONE_SLOT = 1;
-	constexpr int MAX_TONE_SLOT = 4;
-
-	// The slots are not ready the instant the song state begins; the tuning mods wait
-	// a similar amount before reading tuning for the same reason.
-	constexpr ULONGLONG TONE_SLOT_SELECT_DELAY_MILLISECONDS = 1500;
 	constexpr uintptr_t FX_WALKER_ADDRESS = 0xEF5750;
 	constexpr size_t FX_RECORD_SIZE = 0x1C;
 	constexpr LONG MAX_FX_SNAPSHOTS = 64;
@@ -194,11 +190,9 @@ namespace
 	void* firstParamObject = nullptr;
 	volatile LONG hasParamObject = 0;
 
-	// Every pitch shifter the engine builds passes through SpyCreateParam. Keeping
-	// the objects lets a pitch change be written straight into the live effects
-	// mid-song, without waiting for a tone load to deliver it.
+	// Bounds the tracked shifter arrays, and numbers each shifter as it is built so a
+	// create-param event can say which one it came from.
 	constexpr LONG MAX_PARAM_OBJECTS = 16;
-	void* paramObjects[MAX_PARAM_OBJECTS] = {};
 	volatile LONG paramObjectCount = 0;
 
 	// Semitones the guitar has to move. Written by the game loop and read by
@@ -221,9 +215,9 @@ namespace
 	// The tuning the player's guitar is physically in, as semitones from E standard.
 	// Everything the mod shows is relative to this, so a player who lives in Eb sees
 	// tunings named from Eb rather than being told to do the arithmetic themselves.
+	// Session state like the shift itself: a player in Eb sets it once per launch.
 	int baseTuningSemitones = 0;
 
-	bool isPersistPending = false;
 	bool isPitchPushPending = false;
 
 	bool hasCapturedSongTuning = false;
@@ -353,10 +347,6 @@ namespace
 		if (paramObject != nullptr)
 		{
 			const LONG index = InterlockedIncrement(&paramObjectCount) - 1;
-			if (index < MAX_PARAM_OBJECTS)
-			{
-				paramObjects[index] = paramObject;
-			}
 
 			if (InterlockedCompareExchange(&hasParamObject, 1, 0) == 0)
 			{
@@ -555,7 +545,7 @@ namespace
 
 	/// <summary>
 	/// Move the target immediately, so the on-screen tuning tracks the player's key
-	/// presses without lag. The shifters and the ini are both updated once they stop.
+	/// presses without lag. The shifters are updated once they stop.
 	/// Does nothing while the mod is off, so the pitch keys are inert until toggled on.
 	/// </summary>
 	void AdjustTarget(int semitoneDelta)
@@ -573,7 +563,6 @@ namespace
 
 		targetCents = adjusted * CENTS_PER_SEMITONE;
 		isPitchPushPending = true;
-		isPersistPending = true;
 		lastTargetChangeTime = GetTickCount64();
 	}
 
@@ -586,20 +575,6 @@ namespace
 
 		isPitchPushPending = false;
 		PushPitchToLiveShifters();
-	}
-
-	/// <summary>
-	/// Write the settled target to the ini.
-	/// </summary>
-	void PersistTargetWhenSettled()
-	{
-		if (!isPersistPending || GetTickCount64() - lastTargetChangeTime < PERSIST_DELAY_MILLISECONDS)
-		{
-			return;
-		}
-
-		isPersistPending = false;
-		Settings::UpdateCustomSetting("DropPedalSemitones", DropPedal::GetTargetSemitones());
 
 		LOG_INFO("Drop pedal target now " << DropPedal::GetTuningName() << std::endl);
 	}
@@ -607,7 +582,6 @@ namespace
 	void ToggleEnabled()
 	{
 		isEnabledSession = !isEnabledSession;
-		Settings::UpdateModSetting("DropPedalEnabled", isEnabledSession ? "on" : "off");
 
 		if (isEnabledSession)
 		{
@@ -630,15 +604,13 @@ namespace
 		}
 
 		baseTuningSemitones = adjusted;
-		Settings::UpdateCustomSetting("DropPedalBaseTuning", baseTuningSemitones);
 
 		LOG_INFO("Drop pedal base tuning now " << DropPedal::GetBaseTuningName() << std::endl);
 	}
 
 	void HandleHotkeys()
 	{
-		const unsigned int toggleKey = Settings::GetKeyBind("DropPedalToggleKey");
-		const bool isToggleKeyDown = toggleKey != 0 && (GetAsyncKeyState(toggleKey) & 0x8000) != 0;
+		const bool isToggleKeyDown = (GetAsyncKeyState(TOGGLE_KEY) & 0x8000) != 0;
 
 		if (isToggleKeyDown && !wasToggleKeyDown)
 		{
@@ -647,11 +619,8 @@ namespace
 
 		wasToggleKeyDown = isToggleKeyDown;
 
-		const unsigned int baseDownKey = Settings::GetKeyBind("DropPedalBaseTuningDownKey");
-		const unsigned int baseUpKey = Settings::GetKeyBind("DropPedalBaseTuningUpKey");
-
-		const bool isBaseDownKeyDown = baseDownKey != 0 && (GetAsyncKeyState(baseDownKey) & 0x8000) != 0;
-		const bool isBaseUpKeyDown = baseUpKey != 0 && (GetAsyncKeyState(baseUpKey) & 0x8000) != 0;
+		const bool isBaseDownKeyDown = (GetAsyncKeyState(BASE_TUNING_DOWN_KEY) & 0x8000) != 0;
+		const bool isBaseUpKeyDown = (GetAsyncKeyState(BASE_TUNING_UP_KEY) & 0x8000) != 0;
 
 		if (isBaseDownKeyDown && !wasBaseDownKeyDown)
 		{
@@ -666,11 +635,8 @@ namespace
 		wasBaseDownKeyDown = isBaseDownKeyDown;
 		wasBaseUpKeyDown = isBaseUpKeyDown;
 
-		const unsigned int lowerKey = Settings::GetKeyBind("DropPedalDownKey");
-		const unsigned int raiseKey = Settings::GetKeyBind("DropPedalUpKey");
-
-		const bool isLowerKeyDown = lowerKey != 0 && (GetAsyncKeyState(lowerKey) & 0x8000) != 0;
-		const bool isRaiseKeyDown = raiseKey != 0 && (GetAsyncKeyState(raiseKey) & 0x8000) != 0;
+		const bool isLowerKeyDown = (GetAsyncKeyState(PITCH_DOWN_KEY) & 0x8000) != 0;
+		const bool isRaiseKeyDown = (GetAsyncKeyState(PITCH_UP_KEY) & 0x8000) != 0;
 
 		if (isLowerKeyDown && !wasLowerKeyDown)
 		{
@@ -1165,18 +1131,6 @@ int DropPedal::GetShiftDirection()
 
 void DropPedal::InstallHooks()
 {
-	Settings::UpdateModSetting("DropPedalEnabled", "on");
-	targetCents = (float)Settings::GetModSetting("DropPedalSemitones") * CENTS_PER_SEMITONE;
-	baseTuningSemitones = Settings::GetModSetting("DropPedalBaseTuning");
-
-	if (baseTuningSemitones < MIN_BASE_TUNING_SEMITONES || baseTuningSemitones > MAX_BASE_TUNING_SEMITONES)
-	{
-		LOG_ERROR("Drop pedal base tuning " << baseTuningSemitones << " is outside "
-			<< MIN_BASE_TUNING_SEMITONES << " to " << MAX_BASE_TUNING_SEMITONES
-			<< ", treating the guitar as E standard" << std::endl);
-		baseTuningSemitones = 0;
-	}
-
 	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
 	// it. The game derives expected pitch from a reference frequency instead, which is
 	// the same value CDLC charters set as an arrangement's tuning pitch. Redirecting it
@@ -1246,7 +1200,6 @@ void DropPedal::Poll()
 	TrueTuning::SetReferenceSemitones(isEnabledSession ? -DropPedal::GetTargetSemitones() : 0);
 
 	PushPitchWhenSettled();
-	PersistTargetWhenSettled();
 	LogPendingOverrides();
 	LogCreateParamEvents();
 	LogFxWalkerSnapshots();
