@@ -35,10 +35,24 @@ for the full `RSMods.ini` reference.
 
 ## Installing
 
-Download `xinput1_3.dll` from the
+This is built from RSMods 1.2.8.2 and uses the same filename, so it replaces
+RSMods' own `xinput1_3.dll` rather than sitting beside it. Only one of the two
+can be loaded at a time.
+
+**If you already have RSMods installed, back up the existing `xinput1_3.dll`
+first.** Copy it somewhere outside the game folder, or rename it. That copy is
+how you get back to plain RSMods later.
+
+Then download `xinput1_3.dll` from the
 [latest release](https://github.com/Cheesewizard/RSModsPlus/releases) and put it
-in your Rocksmith 2014 folder, next to `Rocksmith2014.exe`. Delete it to
-uninstall.
+in your Rocksmith 2014 folder, next to `Rocksmith2014.exe`, overwriting the file
+that is already there.
+
+Your `RSMods` folder, the settings app and `RSMods.ini` are untouched and carry
+on working, since this is the same 1.2.8.2 codebase with the drop pedal added.
+
+To uninstall, put your backup back. If you had no RSMods before this, deleting
+the file is enough.
 
 Requirements are upstream's: Steam Rocksmith 2014 Remastered on Windows, and the
 MS Visual C++ 2015-2019 redistributable.
