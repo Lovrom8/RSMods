@@ -2,9 +2,9 @@
 
 Shifts your guitar's pitch inside Rocksmith 2014, and moves the pitch the game
 expects by the same amount so note detection still agrees with what you're
-playing. Range is −24 to +24 semitones.
+playing. Range is -24 to +24 semitones.
 
-To play an Eb song on a guitar in E standard, set the pedal to −1: the audio
+To play an Eb song on a guitar in E standard, set the pedal to -1: the audio
 drops a semitone and the game expects the notes a semitone lower, so E-standard
 fingering registers.
 
@@ -32,7 +32,7 @@ Two things worth knowing before you build it:
 - **MultiPitch can only occupy the pre-pedal slot, and there is exactly one.**
   Adding it *deletes* whatever pre-effect the tone already had.
 - **A tone copied from an octave-down one still plays an octave down at 0
-  semitones.** The tell is that shifting *up* by that amount sounds correct — the
+  semitones.** The tell is that shifting *up* by that amount sounds correct. The
   copy brought a non-zero Pitch 1 with it.
 
 ### 1.2 Assign it to a tone slot
@@ -41,8 +41,8 @@ Two things worth knowing before you build it:
 
 Emulated bass has its **own** tone slots, but slot *numbers* are shared between
 instruments. Put the guitar and bass drop pedal tones on **different slot
-numbers** — as above, guitar on 2 and bass on 4 — or you will be reassigning them
-in the Tone Designer every time you switch instrument.
+numbers**, as above with guitar on 2 and bass on 4, or you will be reassigning
+them in the Tone Designer every time you switch instrument.
 
 Rocksmith has no persistent tone selection: tones belong to the arrangement and
 reset with every song, so you press the slot key each time.
@@ -59,26 +59,26 @@ reset with every song, so you press the slot key each time.
 
 These are fixed in V1 and cannot be reassigned. The settings app rebuilds
 `RSMods.ini` from scratch every time you save, writing only the settings it knows
-about — so a binding added to the file by hand would work until the next save and
+about, so a binding added to the file by hand would work until the next save and
 then vanish without warning, silently reverting to the key above. Rebinding
 arrives when the settings app carries these keys.
 
 The overlay in the top left always shows the current state.
 
-**Off** — pitch keys are inert, nothing is shifted:
+**Off.** Pitch keys are inert, nothing is shifted:
 
 ![Overlay showing the pedal disabled](images/overlay-off.png)
 
-**On, at your base tuning** — no shift applied yet:
+**On, at your base tuning.** No shift applied yet:
 
 ![Overlay showing E standard](images/overlay-e-standard.png)
 
-**On, shifted** — the readout turns green whenever the pedal is away from your
+**On, shifted.** The readout turns green whenever the pedal is away from your
 base tuning:
 
 ![Overlay showing Eb standard, minus one semitone](images/overlay-eb-standard.png)
 
-Range is −24 to +24 semitones. Nothing is saved between sessions: the pedal
+Range is -24 to +24 semitones. Nothing is saved between sessions: the pedal
 starts at no shift, in E standard, every launch.
 
 ### Base tuning
@@ -94,7 +94,7 @@ at the start of each session and the pedal offsets from there.
 **Set the pedal before you enter the tuner.**
 
 The game reads the expected tuning once, when the tuner comes up, and holds it
-for the whole song. Changing the pedal mid-song moves *only* the audio — the game
+for the whole song. Changing the pedal mid-song moves *only* the audio. The game
 carries on scoring against what it latched, so what you hear and what you're
 graded on drift apart.
 
@@ -116,7 +116,7 @@ correct.
 
 ## 5. Emulated bass
 
-Bass works the same way guitar does — the audio shifts, the tuner follows, and
+Bass works the same way guitar does. The audio shifts, the tuner follows, and
 in-game note detection scores against the tuning you picked.
 
 Setting it up has one extra step. Put the octave in the **tone**, not the pedal:
@@ -124,12 +124,12 @@ Setting it up has one extra step. Put the octave in the **tone**, not the pedal:
 - **Tone:** `Pitch 1 = -12`. Adding a MultiPitch deletes the `Pedal_BassEmulator`
   that gives the tone its low end, so the tone sits in guitar register without
   this.
-- **Pedal:** the song offset only — `−1` for an Eb song, not `−13`.
+- **Pedal:** the song offset only, `-1` for an Eb song, not `-13`.
 
 Both give identical audio, since it's the same shifter summing to the same total.
 They are not interchangeable to the game: only the pedal value feeds the tuning
 correction, so folding the octave into the pedal sends the expected pitch an
-octave off — the audio sounds right and nothing you play registers.
+octave off. The audio sounds right and nothing you play registers.
 
 ---
 
@@ -137,13 +137,13 @@ octave off — the audio sounds right and nothing you play registers.
 
 | Symptom | Cause |
 |---|---|
-| Pedal changes nothing at all | Current tone has no MultiPitch — press your slot key |
+| Pedal changes nothing at all | Current tone has no MultiPitch, press your slot key |
 | Audio shifts but sounds thin or silent | MultiPitch **Mix** isn't at 100 |
 | Everything sounds an octave down at 0 semitones | Tone's **Pitch 1** isn't 0 |
-| Notes don't register in-game | Pedal was changed after the tuner — back out and re-enter |
+| Notes don't register in-game | Pedal was changed after the tuner, back out and re-enter |
 | Bass: audio right, nothing registers | Octave is in the pedal instead of the tone's Pitch 1 |
 | Pitch keys do nothing | Pedal is toggled off (`F8`) |
 
-The debug log is `RSMods_debug.txt`, next to `Rocksmith2014.exe` — not in the
+The debug log is `RSMods_debug.txt`, next to `Rocksmith2014.exe`, not in the
 `RSMods` subfolder. It is overwritten on every launch and locked while the game
 runs, so quit before reading it.
