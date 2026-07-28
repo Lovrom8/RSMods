@@ -309,6 +309,9 @@
     <ClCompile Include="Audio\AudioCaptureHook.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\AsioHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -643,6 +646,9 @@
     </ClInclude>
     <ClInclude Include="Audio\AudioCaptureHook.hpp">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\AsioHook.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
