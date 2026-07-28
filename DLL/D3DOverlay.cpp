@@ -233,9 +233,6 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 
 void GameOverlay::DisplayDropPedalTuning()
 {
-	if (Settings::GetKeyBind("DropPedalToggleKey") == NULL)
-		return;
-
 	const std::string state = DropPedal::IsEnabled()
 		? DropPedal::GetTuningName()
 		: "off";
