@@ -2,9 +2,12 @@
 #define NOMINMAX
 
 // STL
+#include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <codecvt>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -13,6 +16,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <mutex>
 #include <random>
 #include <regex>
 #include <sstream>
@@ -25,10 +29,12 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
+#include <audioclient.h>
 #include <endpointvolume.h>
 #include <ImageHlp.h>
 #include <intrin.h>
 #include <mmdeviceapi.h>
+#include <mmreg.h>
 #include <process.h>
 #include <psapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
