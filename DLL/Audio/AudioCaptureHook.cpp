@@ -11,6 +11,7 @@ namespace Audio
 		switch (format.sampleFormat)
 		{
 			case SampleFormat::Float32: description << "float32"; break;
+			case SampleFormat::Int32: description << "int32"; break;
 			case SampleFormat::Int16: description << "int16"; break;
 			default: description << "unsupported"; break;
 		}
@@ -74,6 +75,122 @@ namespace Audio::CaptureHook
 		int requestedCaptureClientIndex = -1;
 		CaptureFormat activeFormat;
 
+		// ASIO tops out at a 2048 frame buffer, so this covers any packet the game can ask for.
+		constexpr uint32_t MAX_CONVERSION_FRAMES = 4096;
+		constexpr float INT32_TO_FLOAT = 1.0f / 2147483648.0f;
+		constexpr float FLOAT_TO_INT32 = 2147483647.0f;
+
+		// The audio thread reads these rather than activeFormat, which is only safe to touch
+		// while holding discoveryMutex.
+		std::atomic<SampleFormat> processingSampleFormat{ SampleFormat::Unsupported };
+		std::atomic<uint32_t> processingChannelCount{ 0 };
+		std::vector<float> conversionBuffer;
+
+		struct RegisteredAsioDriver
+		{
+			GUID classId{};
+			std::string name;
+		};
+
+		std::vector<RegisteredAsioDriver> registeredAsioDrivers;
+		std::vector<std::string> loggedCreations;
+
+		std::string GuidToString(const GUID& guid)
+		{
+			wchar_t wideText[64] = {};
+			if (StringFromGUID2(guid, wideText, ARRAYSIZE(wideText)) == 0) return "{?}";
+
+			char text[64] = {};
+			WideCharToMultiByte(CP_UTF8, 0, wideText, -1, text, sizeof(text), nullptr, nullptr);
+			return text;
+		}
+
+		// ASIO drivers register themselves under HKLM\SOFTWARE\ASIO, one subkey per driver,
+		// each holding the CLSID that RS_ASIO will pass to CoCreateInstance. Reading it up
+		// front turns an anonymous CLSID in the log into a driver name. This is a 32-bit
+		// process, so the open redirects to WOW6432Node, which is the view RS_ASIO uses too.
+		void ReadRegisteredAsioDrivers()
+		{
+			HKEY asioKey = nullptr;
+			if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO", 0, KEY_READ, &asioKey) != ERROR_SUCCESS)
+			{
+				LOG_WARNING("[CaptureHook] No ASIO drivers registered under HKLM\\SOFTWARE\\ASIO." << std::endl);
+				return;
+			}
+
+			for (DWORD index = 0;; ++index)
+			{
+				char subKeyName[256] = {};
+				DWORD nameLength = ARRAYSIZE(subKeyName);
+
+				if (RegEnumKeyExA(asioKey, index, subKeyName, &nameLength, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
+					break;
+
+				HKEY driverKey = nullptr;
+				if (RegOpenKeyExA(asioKey, subKeyName, 0, KEY_READ, &driverKey) != ERROR_SUCCESS) continue;
+
+				char clsidText[64] = {};
+				DWORD clsidSize = sizeof(clsidText);
+				DWORD valueType = 0;
+
+				if (RegQueryValueExA(driverKey, "CLSID", nullptr, &valueType, (LPBYTE)clsidText, &clsidSize) == ERROR_SUCCESS && valueType == REG_SZ)
+				{
+					wchar_t wideClsid[64] = {};
+					MultiByteToWideChar(CP_ACP, 0, clsidText, -1, wideClsid, ARRAYSIZE(wideClsid));
+
+					GUID classId{};
+					if (SUCCEEDED(CLSIDFromString(wideClsid, &classId)))
+					{
+						registeredAsioDrivers.push_back({ classId, subKeyName });
+						LOG_INFO("[CaptureHook] ASIO driver registered: " << subKeyName << " " << clsidText << std::endl);
+					}
+				}
+
+				RegCloseKey(driverKey);
+			}
+
+			RegCloseKey(asioKey);
+		}
+
+		std::string FindAsioDriverName(const GUID& classId)
+		{
+			for (const RegisteredAsioDriver& driver : registeredAsioDrivers)
+			{
+				if (IsEqualCLSID(driver.classId, classId)) return driver.name;
+			}
+
+			return {};
+		}
+
+		// One line per unique class/interface pair. CoCreateInstance is called throughout the
+		// game's life and repeats heavily, so logging every call buries the one we care about.
+		void LogCreation(const GUID& classId, const GUID& interfaceId, HRESULT result)
+		{
+			const std::string classText = GuidToString(classId);
+			const std::string interfaceText = GuidToString(interfaceId);
+
+			{
+				std::lock_guard<std::mutex> lock(discoveryMutex);
+
+				const std::string key = classText + interfaceText;
+				if (std::find(loggedCreations.begin(), loggedCreations.end(), key) != loggedCreations.end()) return;
+
+				loggedCreations.push_back(key);
+			}
+
+			const std::string driverName = FindAsioDriverName(classId);
+
+			if (!driverName.empty())
+			{
+				LOG_INFO("[CaptureHook] ASIO driver instantiated: " << driverName << " clsid=" << classText
+					<< " iid=" << interfaceText << " hr=0x" << std::hex << result << std::dec << std::endl);
+				return;
+			}
+
+			LOG_INFO("[CaptureHook] CoCreateInstance clsid=" << classText << " iid=" << interfaceText
+				<< " hr=0x" << std::hex << result << std::dec << std::endl);
+		}
+
 		void HookCaptureClient(IAudioCaptureClient* captureClient);
 		void HookAudioClient(IAudioClient* audioClient);
 		void HookDevice(IMMDevice* device);
@@ -102,6 +219,8 @@ namespace Audio::CaptureHook
 
 			if (formatTag == WAVE_FORMAT_IEEE_FLOAT && waveFormat->wBitsPerSample == 32)
 				format.sampleFormat = SampleFormat::Float32;
+			else if (formatTag == WAVE_FORMAT_PCM && waveFormat->wBitsPerSample == 32)
+				format.sampleFormat = SampleFormat::Int32;
 			else if (formatTag == WAVE_FORMAT_PCM && waveFormat->wBitsPerSample == 16)
 				format.sampleFormat = SampleFormat::Int16;
 
@@ -110,18 +229,31 @@ namespace Audio::CaptureHook
 
 		// Recomputes which capture client the audio thread should process. Called under
 		// discoveryMutex whenever the discovered set or the requested index changes.
+		//
+		// Any change stops processing, and the caller re-enables it once happy with what was
+		// selected. That is also what makes the buffer resize below safe: the audio thread
+		// cannot be inside Process while processing is disabled.
 		void RefreshSelection()
 		{
+			processingEnabled.store(false, std::memory_order_release);
+
 			if (requestedCaptureClientIndex < 0 || requestedCaptureClientIndex >= (int)discoveredCaptureClients.size())
 			{
 				selectedCaptureClient.store(nullptr, std::memory_order_relaxed);
-				processingEnabled.store(false, std::memory_order_release);
+				processingSampleFormat.store(SampleFormat::Unsupported, std::memory_order_relaxed);
+				processingChannelCount.store(0, std::memory_order_relaxed);
 				return;
 			}
 
 			const DiscoveredCaptureClient& selected = discoveredCaptureClients[requestedCaptureClientIndex];
 			activeFormat = selected.format;
-			selectedCaptureClient.store(selected.client, std::memory_order_relaxed);
+
+			if (selected.format.channelCount > 0)
+				conversionBuffer.assign((size_t)MAX_CONVERSION_FRAMES * selected.format.channelCount, 0.0f);
+
+			processingSampleFormat.store(selected.format.sampleFormat, std::memory_order_relaxed);
+			processingChannelCount.store(selected.format.channelCount, std::memory_order_relaxed);
+			selectedCaptureClient.store(selected.client, std::memory_order_release);
 		}
 
 		HRESULT STDMETHODCALLTYPE Hook_CaptureGetBuffer(IAudioCaptureClient* self, BYTE** data, UINT32* frameCount, DWORD* flags, UINT64* devicePosition, UINT64* qpcPosition)
@@ -137,7 +269,43 @@ namespace Audio::CaptureHook
 			IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
 			if (!processor) return result;
 
-			processor->Process(reinterpret_cast<float*>(*data), *frameCount);
+			const uint32_t channels = processingChannelCount.load(std::memory_order_relaxed);
+			const uint32_t frames = *frameCount;
+			if (channels == 0 || frames > MAX_CONVERSION_FRAMES) return result;
+
+			const size_t sampleCount = (size_t)frames * channels;
+
+			switch (processingSampleFormat.load(std::memory_order_relaxed))
+			{
+				case SampleFormat::Float32:
+					processor->Process(reinterpret_cast<float*>(*data), frames);
+					break;
+
+				// RS_ASIO negotiates 32 bit PCM because the M-Track reports ASIOSTInt32LSB and
+				// it rejects float outright, so this is the path that actually runs. Converting
+				// here keeps sample format out of the processors entirely.
+				case SampleFormat::Int32:
+				{
+					int32_t* samples = reinterpret_cast<int32_t*>(*data);
+
+					for (size_t i = 0; i < sampleCount; ++i)
+						conversionBuffer[i] = (float)samples[i] * INT32_TO_FLOAT;
+
+					processor->Process(conversionBuffer.data(), frames);
+
+					for (size_t i = 0; i < sampleCount; ++i)
+					{
+						const float value = conversionBuffer[i];
+						const float clamped = value < -1.0f ? -1.0f : (value > 1.0f ? 1.0f : value);
+						samples[i] = (int32_t)(clamped * FLOAT_TO_INT32);
+					}
+					break;
+				}
+
+				default:
+					break;
+			}
+
 			return result;
 		}
 
@@ -228,6 +396,9 @@ namespace Audio::CaptureHook
 		HRESULT WINAPI Hook_CoCreateInstance(REFCLSID classId, LPUNKNOWN outer, DWORD classContext, REFIID riid, LPVOID* created)
 		{
 			const HRESULT result = original_CoCreateInstance(classId, outer, classContext, riid, created);
+
+			LogCreation(classId, riid, result);
+
 			if (FAILED(result) || !created || !*created) return result;
 
 			if (IsEqualIID(riid, __uuidof(IMMDeviceEnumerator)))
@@ -335,6 +506,8 @@ namespace Audio::CaptureHook
 			LOG_WARNING("[CaptureHook] RS_ASIO is loaded. It replaces the game's enumerator at the call site,"
 				" so the CoCreateInstance detour will not see it. Expect no chain below to be reported." << std::endl);
 		}
+
+		ReadRegisteredAsioDrivers();
 
 		original_CoCreateInstance = (CoCreateInstance_t)DetourFunction((byte*)CoCreateInstance, (byte*)Hook_CoCreateInstance);
 

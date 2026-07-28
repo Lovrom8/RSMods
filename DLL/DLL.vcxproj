@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\AsioHook.cpp" />
     <ClCompile Include="Audio\AudioCaptureHook.cpp" />
     <ClCompile Include="CC\CCEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -221,6 +222,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClInclude Include="Audio\AsioHook.hpp" />
     <ClInclude Include="Audio\AudioCaptureHook.hpp" />
     <ClInclude Include="Audio\CaptureFormat.h" />
     <ClInclude Include="CC\CCEffectList.hpp" />

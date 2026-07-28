@@ -128,6 +128,7 @@ namespace ModManager {
 		// Must run before anything creates an IMMDeviceEnumerator, our own microphone setup
 		// included, or the game builds its audio chain before we can see it.
 		Audio::CaptureHook::Install();
+		Audio::AsioHook::Install();
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();

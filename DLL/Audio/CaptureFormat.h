@@ -6,6 +6,7 @@ namespace Audio
 	{
 		Unsupported,
 		Float32,
+		Int32,
 		Int16
 	};
 

@@ -4,6 +4,7 @@
 #include "Mods/VolumeControl.hpp"
 #include "Mods/AudioDevices.hpp"
 #include "Audio/AudioCaptureHook.hpp"
+#include "Audio/AsioHook.hpp"
 #include "Mods/BugPrevention.hpp"
 #include "Mods/LaunchOnExternalMonitor.hpp"
 #include "Keyboard.hpp"
