@@ -1,6 +1,14 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
 #include "Mods/DropPedal.hpp"
+#include "Audio/PassthroughProcessor.hpp"
+
+namespace
+{
+	// Inert stand-in until a real pitch shifter exists. Keeping it wired proves the
+	// int32<->float round trip on the ASIO buffers is transparent before any DSP runs.
+	Audio::PassthroughProcessor passthroughProcessor;
+}
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -129,6 +137,7 @@ namespace ModManager {
 		// included, or the game builds its audio chain before we can see it.
 		Audio::CaptureHook::Install();
 		Audio::AsioHook::Install();
+		Audio::AsioHook::SetProcessor(&passthroughProcessor);
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
@@ -244,6 +253,7 @@ namespace ModManager {
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
 		DropPedal::Poll();
+		Audio::AsioHook::Poll();
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {

@@ -27,6 +27,11 @@ namespace Audio::AsioHook
 {
 	void Install();
 
+	// Called from the game loop. Enables processing once the driver has built its buffers
+	// and a processor plus input channel are in place; createBuffers happens ~40s after
+	// Install, so readiness can only be observed by polling.
+	void Poll();
+
 	// Ownership stays with the caller, which must keep the processor alive for as long as
 	// the ASIO stream runs.
 	void SetProcessor(IInputProcessor* inputProcessor);

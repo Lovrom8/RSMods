@@ -81,21 +81,33 @@ namespace Audio::AsioHook
 		std::atomic<IInputProcessor*> activeProcessor{ nullptr };
 		std::atomic<int> selectedInputChannel{ -1 };
 		std::atomic<bool> processingEnabled{ false };
+		bool autoEnabledOnce = false;
 
 		std::string ReadDriverNameFromRsAsioIni()
 		{
 			CSimpleIniA reader;
 			if (reader.LoadFile("RS_ASIO.ini") < 0) return {};
 
-			// Input0 is the guitar RS_ASIO feeds the game. Falling back to the output driver
+			// Input.0 is the guitar RS_ASIO feeds the game. Falling back to the output driver
 			// covers configs that only name it once, since one interface usually serves both.
-			const char* input = reader.GetValue("Asio.Input0", "Driver", "");
+			const char* input = reader.GetValue("Asio.Input.0", "Driver", "");
 			if (input && *input) return input;
 
 			const char* output = reader.GetValue("Asio.Output", "Driver", "");
 			if (output && *output) return output;
 
 			return {};
+		}
+
+		// RS_ASIO's Channel setting is the ASIO channel number the guitar arrives on, which
+		// is also the order channels appear in createBuffers, so it maps directly onto our
+		// discovered-input index.
+		int ReadInputChannelFromRsAsioIni()
+		{
+			CSimpleIniA reader;
+			if (reader.LoadFile("RS_ASIO.ini") < 0) return 0;
+
+			return (int)reader.GetLongValue("Asio.Input.0", "Channel", 0);
 		}
 
 		bool ReadDriverClassId(const std::string& name, GUID& classId)
@@ -360,6 +372,20 @@ namespace Audio::AsioHook
 		}
 
 		LOG_INFO("[AsioHook] Watching \"" << driverName << "\" for instantiation." << std::endl);
+
+		selectedInputChannel.store(ReadInputChannelFromRsAsioIni(), std::memory_order_relaxed);
+	}
+
+	void Poll()
+	{
+		// One-shot: enables when the driver comes up, but never fights a manual disable.
+		if (autoEnabledOnce) return;
+		if (processingEnabled.load(std::memory_order_relaxed)) return;
+		if (discoveredInputChannels == 0) return;
+		if (!activeProcessor.load(std::memory_order_relaxed)) return;
+
+		autoEnabledOnce = true;
+		SetProcessingEnabled(true);
 	}
 
 	void SetProcessor(IInputProcessor* inputProcessor)
