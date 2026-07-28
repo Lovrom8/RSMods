@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Audio\AsioHook.cpp" />
     <ClCompile Include="Audio\AudioCaptureHook.cpp" />
+    <ClCompile Include="Audio\FixedBlockShifter.cpp" />
     <ClCompile Include="CC\CCEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -225,6 +226,7 @@
     <ClInclude Include="Audio\AsioHook.hpp" />
     <ClInclude Include="Audio\AudioCaptureHook.hpp" />
     <ClInclude Include="Audio\CaptureFormat.h" />
+    <ClInclude Include="Audio\FixedBlockShifter.hpp" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />

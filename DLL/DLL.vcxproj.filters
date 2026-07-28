@@ -312,6 +312,9 @@
     <ClCompile Include="Audio\AsioHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\FixedBlockShifter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -648,6 +651,9 @@
       <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="Audio\AsioHook.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\FixedBlockShifter.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>

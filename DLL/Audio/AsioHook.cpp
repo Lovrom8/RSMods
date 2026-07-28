@@ -382,9 +382,18 @@ namespace Audio::AsioHook
 		if (autoEnabledOnce) return;
 		if (processingEnabled.load(std::memory_order_relaxed)) return;
 		if (discoveredInputChannels == 0) return;
-		if (!activeProcessor.load(std::memory_order_relaxed)) return;
+		if (format.sampleFormat != SampleFormat::Int32) return;
+
+		IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
+		if (!processor) return;
 
 		autoEnabledOnce = true;
+
+		// Runs on the game thread while processing is still disabled, so the processor is
+		// free to allocate here before the audio thread ever calls Process.
+		processor->Prepare(format);
+		LOG_INFO("[AsioHook] Processor latency " << processor->GetLatencyFrames() << " frames" << std::endl);
+
 		SetProcessingEnabled(true);
 	}
 

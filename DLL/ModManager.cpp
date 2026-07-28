@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
 #include "Mods/DropPedal.hpp"
-#include "Audio/PassthroughProcessor.hpp"
+#include "Audio/FixedBlockShifter.hpp"
 
 namespace
 {
-	// Inert stand-in until a real pitch shifter exists. Keeping it wired proves the
-	// int32<->float round trip on the ASIO buffers is transparent before any DSP runs.
-	Audio::PassthroughProcessor passthroughProcessor;
+	// Pure delay, no pitch change: measures whether a shifter with this much algorithmic
+	// latency would be playable. 1024 frames is ~21ms at 48kHz, the ballpark of a
+	// mid-quality phase vocoder configuration.
+	Audio::DelayProbeProcessor delayProbeProcessor{ 1024 };
 }
 
 namespace ModManager {
@@ -137,7 +138,7 @@ namespace ModManager {
 		// included, or the game builds its audio chain before we can see it.
 		Audio::CaptureHook::Install();
 		Audio::AsioHook::Install();
-		Audio::AsioHook::SetProcessor(&passthroughProcessor);
+		Audio::AsioHook::SetProcessor(&delayProbeProcessor);
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
