@@ -18,6 +18,10 @@ namespace DropPedal
 	void InstallHooks();
 	void Poll();
 
+	// Key sampling, split from Poll so a fast thread can drive it. Poll runs on the mod's
+	// 250ms loop, and a key tap is shorter than that gap, so sampling there drops presses.
+	void PollHotkeys();
+
 	// The pitch shifter is downstream of note detection, so detection has to be told
 	// what the player's guitar is actually tuned to or every note reads wrong.
 	void HandleTuningInSong();

@@ -591,7 +591,11 @@ namespace
 		if (isEnabledSession)
 		{
 			LOG_INFO("Drop pedal enabled, target " << DropPedal::GetTuningName() << std::endl);
-			PushPitchToLiveShifters();
+
+			if (!inputShifterActive)
+			{
+				PushPitchToLiveShifters();
+			}
 		}
 		else
 		{
@@ -630,15 +634,20 @@ namespace
 
 		wasToggleKeyDown = isToggleKeyDown;
 
+		// Disabled means disabled: the game ignores the pedal's output, so no key besides
+		// the toggle may change its state either. The latches still update below so a key
+		// held across re-enabling does not fire on the first enabled poll.
+		const bool acceptAdjustments = DropPedal::IsEnabled();
+
 		const bool isBaseDownKeyDown = (GetAsyncKeyState(BASE_TUNING_DOWN_KEY) & 0x8000) != 0;
 		const bool isBaseUpKeyDown = (GetAsyncKeyState(BASE_TUNING_UP_KEY) & 0x8000) != 0;
 
-		if (isBaseDownKeyDown && !wasBaseDownKeyDown)
+		if (acceptAdjustments && isBaseDownKeyDown && !wasBaseDownKeyDown)
 		{
 			AdjustBaseTuning(-1);
 		}
 
-		if (isBaseUpKeyDown && !wasBaseUpKeyDown)
+		if (acceptAdjustments && isBaseUpKeyDown && !wasBaseUpKeyDown)
 		{
 			AdjustBaseTuning(1);
 		}
@@ -649,12 +658,12 @@ namespace
 		const bool isLowerKeyDown = (GetAsyncKeyState(PITCH_DOWN_KEY) & 0x8000) != 0;
 		const bool isRaiseKeyDown = (GetAsyncKeyState(PITCH_UP_KEY) & 0x8000) != 0;
 
-		if (isLowerKeyDown && !wasLowerKeyDown)
+		if (acceptAdjustments && isLowerKeyDown && !wasLowerKeyDown)
 		{
 			AdjustTarget(-1);
 		}
 
-		if (isRaiseKeyDown && !wasRaiseKeyDown)
+		if (acceptAdjustments && isRaiseKeyDown && !wasRaiseKeyDown)
 		{
 			AdjustTarget(1);
 		}
@@ -1108,14 +1117,6 @@ std::string DropPedal::GetTuningName()
 		name << " (" << (semitones > 0 ? "+" : "") << semitones << ")";
 	}
 
-	// Base is the player's claim about their guitar's physical tuning and changes only
-	// how states are named, so whenever it is set the overlay must say so: a wrong base
-	// makes every name above a lie, and an invisible wrong base is unrecoverable.
-	if (baseTuningSemitones != 0)
-	{
-		name << " [guitar " << GetBaseTuningName() << "]";
-	}
-
 	return name.str();
 }
 
@@ -1221,10 +1222,14 @@ bool DropPedal::IsInputShifterActive()
 	return inputShifterActive;
 }
 
+void DropPedal::PollHotkeys()
+{
+	HandleHotkeys();
+}
+
 void DropPedal::Poll()
 {
 	HookSetParamOnce();
-	HandleHotkeys();
 
 	// Kept in step every tick rather than only when the pitch changes, so the value
 	// is already correct when a song loads. Detection appears to take its reference

@@ -224,6 +224,17 @@ namespace ModManager {
 	/// <summary>
 	/// Handles rainbow string and note effects.
 	/// </summary>
+	void PollDropPedalHotkeys()
+	{
+		DropPedal::PollHotkeys();
+
+		if (Audio::AsioHook::IsProcessingEnabled())
+		{
+			// Atomic store inside; safe from this thread.
+			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
+		}
+	}
+
 	void HandleRainbowEffects() {
 		if (ERMode::IsRainbowEnabled() || ERMode::IsRainbowNotesEnabled()) {
 			ERMode::DoRainbow();
@@ -256,15 +267,10 @@ namespace ModManager {
 		Audio::AsioHook::Poll();
 
 		// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
-		// shifter is processing, it owns pitch and the drop pedal's hotkey state drives
-		// it; the game-side MultiPitch path stays suppressed for the session.
-		const bool asioShifterActive = Audio::AsioHook::IsProcessingEnabled();
-		DropPedal::SetInputShifterActive(asioShifterActive);
-
-		if (asioShifterActive)
-		{
-			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
-		}
+		// shifter is processing, it owns pitch; the game-side MultiPitch path stays
+		// suppressed for the session. The hotkey thread keeps the shifter's semitones in
+		// step, since key changes land there.
+		DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {
