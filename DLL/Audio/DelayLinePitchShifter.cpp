@@ -69,6 +69,12 @@ namespace Audio
 
 	float DelayLinePitchShifter::ReadTap(double delay) const
 	{
+		// Clamped, not asserted: extreme pitch ratios can walk a fading tap past either
+		// edge, and reading the nearest valid sample for a few fade-tail samples is
+		// inaudible where an out-of-range index is a crash.
+		if (delay < 0.0) delay = 0.0;
+		if (delay > RING_SAMPLES - 2.0) delay = RING_SAMPLES - 2.0;
+
 		double readPosition = (double)writePosition - delay;
 		if (readPosition < 0.0) readPosition += RING_SAMPLES;
 
@@ -284,6 +290,16 @@ namespace Audio
 				{
 					fadeFromDelay = readDelay;
 					readDelay += jump;
+
+					// Up-shifts drain the outgoing tap toward zero delay during the fade,
+					// and at extreme ratios a full-length fade would walk it negative.
+					// Shorten the fade to the headroom the tap actually has.
+					if (drift < 0.0)
+					{
+						const int headroom = (int)(fadeFromDelay / -drift) - 1;
+						if (headroom < nextFade) nextFade = headroom < 8 ? 8 : headroom;
+					}
+
 					fadeLength = nextFade;
 					fadeRemaining = nextFade;
 				}
