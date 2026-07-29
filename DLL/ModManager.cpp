@@ -1,6 +1,14 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
 #include "Mods/DropPedal.hpp"
+#include "Audio/DelayLinePitchShifter.hpp"
+
+namespace
+{
+	// Time-domain period-synchronous shifter on the ASIO input path. Starts at unity;
+	// the drop pedal hotkeys drive it once the hook is live.
+	Audio::DelayLinePitchShifter pitchShifter{ 0 };
+}
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -125,6 +133,12 @@ namespace ModManager {
 	/// </summary>
 	void ApplyStartupMods() 
 	{
+		// Must run before anything creates an IMMDeviceEnumerator, our own microphone setup
+		// included, or the game builds its audio chain before we can see it.
+		Audio::CaptureHook::Install();
+		Audio::AsioHook::Install();
+		Audio::AsioHook::SetProcessor(&pitchShifter);
+
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
 		ApplyAudioDeviceConfiguration();
@@ -210,6 +224,17 @@ namespace ModManager {
 	/// <summary>
 	/// Handles rainbow string and note effects.
 	/// </summary>
+	void PollDropPedalHotkeys()
+	{
+		DropPedal::PollHotkeys();
+
+		if (Audio::AsioHook::IsProcessingEnabled())
+		{
+			// Atomic store inside; safe from this thread.
+			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
+		}
+	}
+
 	void HandleRainbowEffects() {
 		if (ERMode::IsRainbowEnabled() || ERMode::IsRainbowNotesEnabled()) {
 			ERMode::DoRainbow();
@@ -239,6 +264,13 @@ namespace ModManager {
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
 		DropPedal::Poll();
+		Audio::AsioHook::Poll();
+
+		// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
+		// shifter is processing, it owns pitch; the game-side MultiPitch path stays
+		// suppressed for the session. The hotkey thread keeps the shifter's semitones in
+		// step, since key changes land there.
+		DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {

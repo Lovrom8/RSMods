@@ -3,6 +3,8 @@
 #include "QualityOfLife.hpp"
 #include "Mods/VolumeControl.hpp"
 #include "Mods/AudioDevices.hpp"
+#include "Audio/AudioCaptureHook.hpp"
+#include "Audio/AsioHook.hpp"
 #include "Mods/BugPrevention.hpp"
 #include "Mods/LaunchOnExternalMonitor.hpp"
 #include "Keyboard.hpp"
@@ -42,6 +44,10 @@ namespace ModManager {
     void HandleAutoLoadProfile(GameLoopState& state);
     void HandleSpecificProfileLoad(GameLoopState& state);
     void HandleAlwaysOnMods(GameLoopState& state);
+
+    // Runs on the fast hotkey thread. Samples the drop pedal keys and keeps the input
+    // shifter's semitones in step, since the 250ms main loop is too slow to catch a tap.
+    void PollDropPedalHotkeys();
     void HandleInMenuState(GameLoopState& state);
     void HandleInSongState(GameLoopState& state);
     void HandleTwoRTCBypassToggle();

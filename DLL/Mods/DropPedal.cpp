@@ -206,6 +206,12 @@ namespace
 	// session. Read by SetParam on other threads.
 	volatile bool isEnabledSession = true;
 
+	// When the ASIO input shifter owns pitch, all game-side application is suppressed:
+	// the input signal is already retuned, so detection hears the shifted notes and the
+	// tuner reference must stay at 440.
+	bool inputShifterActive = false;
+	unsigned long long engineNoticeTick = 0;
+
 	bool wasLowerKeyDown = false;
 	bool wasRaiseKeyDown = false;
 	bool wasToggleKeyDown = false;
@@ -405,7 +411,7 @@ namespace
 			}
 		}
 
-		if (!DropPedal::IsEnabled())
+		if (!DropPedal::IsEnabled() || inputShifterActive)
 		{
 			return originalSetParam(self, unused, paramId, value, size);
 		}
@@ -586,7 +592,11 @@ namespace
 		if (isEnabledSession)
 		{
 			LOG_INFO("Drop pedal enabled, target " << DropPedal::GetTuningName() << std::endl);
-			PushPitchToLiveShifters();
+
+			if (!inputShifterActive)
+			{
+				PushPitchToLiveShifters();
+			}
 		}
 		else
 		{
@@ -610,6 +620,12 @@ namespace
 
 	void HandleHotkeys()
 	{
+		// GetAsyncKeyState reads global keyboard state, so without this guard the pedal
+		// retunes while the player is typing in another window.
+		DWORD foregroundProcessId = 0;
+		GetWindowThreadProcessId(GetForegroundWindow(), &foregroundProcessId);
+		if (foregroundProcessId != GetCurrentProcessId()) return;
+
 		const bool isToggleKeyDown = (GetAsyncKeyState(TOGGLE_KEY) & 0x8000) != 0;
 
 		if (isToggleKeyDown && !wasToggleKeyDown)
@@ -619,15 +635,20 @@ namespace
 
 		wasToggleKeyDown = isToggleKeyDown;
 
+		// Disabled means disabled: the game ignores the pedal's output, so no key besides
+		// the toggle may change its state either. The latches still update below so a key
+		// held across re-enabling does not fire on the first enabled poll.
+		const bool acceptAdjustments = DropPedal::IsEnabled();
+
 		const bool isBaseDownKeyDown = (GetAsyncKeyState(BASE_TUNING_DOWN_KEY) & 0x8000) != 0;
 		const bool isBaseUpKeyDown = (GetAsyncKeyState(BASE_TUNING_UP_KEY) & 0x8000) != 0;
 
-		if (isBaseDownKeyDown && !wasBaseDownKeyDown)
+		if (acceptAdjustments && isBaseDownKeyDown && !wasBaseDownKeyDown)
 		{
 			AdjustBaseTuning(-1);
 		}
 
-		if (isBaseUpKeyDown && !wasBaseUpKeyDown)
+		if (acceptAdjustments && isBaseUpKeyDown && !wasBaseUpKeyDown)
 		{
 			AdjustBaseTuning(1);
 		}
@@ -638,12 +659,12 @@ namespace
 		const bool isLowerKeyDown = (GetAsyncKeyState(PITCH_DOWN_KEY) & 0x8000) != 0;
 		const bool isRaiseKeyDown = (GetAsyncKeyState(PITCH_UP_KEY) & 0x8000) != 0;
 
-		if (isLowerKeyDown && !wasLowerKeyDown)
+		if (acceptAdjustments && isLowerKeyDown && !wasLowerKeyDown)
 		{
 			AdjustTarget(-1);
 		}
 
-		if (isRaiseKeyDown && !wasRaiseKeyDown)
+		if (acceptAdjustments && isRaiseKeyDown && !wasRaiseKeyDown)
 		{
 			AdjustTarget(1);
 		}
@@ -1131,6 +1152,10 @@ int DropPedal::GetShiftDirection()
 
 void DropPedal::InstallHooks()
 {
+	// The engine notice starts counting here: game-side until the ASIO chain proves
+	// itself, at which point SetInputShifterActive restarts it.
+	engineNoticeTick = GetTickCount64();
+
 	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
 	// it. The game derives expected pitch from a reference frequency instead, which is
 	// the same value CDLC charters set as an arrangement's tuning pitch. Redirecting it
@@ -1189,19 +1214,49 @@ void DropPedal::InstallHooks()
 	}
 }
 
+void DropPedal::SetInputShifterActive(bool active)
+{
+	if (inputShifterActive == active) return;
+
+	inputShifterActive = active;
+	engineNoticeTick = GetTickCount64();
+	LOG_INFO("Drop pedal engine: " << (active ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
+}
+
+bool DropPedal::IsInputShifterActive()
+{
+	return inputShifterActive;
+}
+
+unsigned long long DropPedal::GetEngineNoticeTick()
+{
+	return engineNoticeTick;
+}
+
+void DropPedal::PollHotkeys()
+{
+	HandleHotkeys();
+}
+
 void DropPedal::Poll()
 {
 	HookSetParamOnce();
-	HandleHotkeys();
 
 	// Kept in step every tick rather than only when the pitch changes, so the value
 	// is already correct when a song loads. Detection appears to take its reference
 	// at load time, which is why setting it mid-song has no effect.
-	TrueTuning::SetReferenceSemitones(isEnabledSession ? -DropPedal::GetTargetSemitones() : 0);
+	TrueTuning::SetReferenceSemitones((isEnabledSession && !inputShifterActive) ? -DropPedal::GetTargetSemitones() : 0);
 
-	PushPitchWhenSettled();
-	LogPendingOverrides();
-	LogCreateParamEvents();
-	LogFxWalkerSnapshots();
-	LogNodeSnapshots();
+	if (!inputShifterActive)
+	{
+		PushPitchWhenSettled();
+
+		// Diagnostics for the game-side MultiPitch machinery, which is suppressed while
+		// the input shifter owns pitch, so their output would only describe a dormant
+		// subsystem.
+		LogPendingOverrides();
+		LogCreateParamEvents();
+		LogFxWalkerSnapshots();
+		LogNodeSnapshots();
+	}
 }

@@ -85,31 +85,45 @@ void GameOverlay::DX9DrawFilledRectangle(int topLeftX, int topLeftY, int bottomR
 		{ right, top,    0.0f, 1.0f, color },
 	};
 
-	DWORD previousFvf = 0;
-	DWORD previousAlphaBlend = 0;
-	DWORD previousSourceBlend = 0;
-	DWORD previousDestBlend = 0;
-	DWORD previousTexture = 0;
+	// Capture the whole pipeline and force every state this quad depends on. Piecemeal
+	// save/restore kept losing to transition frames: the first frame of the game's
+	// audio-reactive UI binds extra state (z, stencil, scissor, alpha test) that a
+	// hand-picked list misses, and the plate blinked out for exactly that frame.
+	// ID3DXFont never had the problem because its internal sprite sets its full
+	// required state on every draw, which is what this now mirrors.
+	IDirect3DStateBlock9* previousState = nullptr;
+	if (FAILED(pDevice->CreateStateBlock(D3DSBT_ALL, &previousState)) || !previousState)
+	{
+		return;
+	}
 
-	pDevice->GetFVF(&previousFvf);
-	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &previousAlphaBlend);
-	pDevice->GetRenderState(D3DRS_SRCBLEND, &previousSourceBlend);
-	pDevice->GetRenderState(D3DRS_DESTBLEND, &previousDestBlend);
-	pDevice->GetTextureStageState(0, D3DTSS_COLOROP, &previousTexture);
-
+	pDevice->SetVertexShader(nullptr);
+	pDevice->SetPixelShader(nullptr);
 	pDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
 	pDevice->SetTexture(0, nullptr);
+
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_COLORWRITEENABLE,
+		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
+
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
 
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(Vertex));
 
-	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, previousTexture);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, previousDestBlend);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, previousSourceBlend);
-	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, previousAlphaBlend);
-	pDevice->SetFVF(previousFvf);
+	previousState->Apply();
+	previousState->Release();
 }
 
 /// <summary>
@@ -231,6 +245,11 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 	}
 }
 
+// Right edge of the pedal readout's plate, in pixels, refreshed each time it draws. The
+// engine notice sits on the same row to its right, so it can never overlap the game's
+// menu text below.
+static int dropPedalPlateRight = 0;
+
 void GameOverlay::DisplayDropPedalTuning()
 {
 	const std::string state = DropPedal::IsEnabled()
@@ -264,11 +283,94 @@ void GameOverlay::DisplayDropPedalTuning()
 	const int right = left + textWidth;
 	const int bottom = top + static_cast<int>(WindowSize.height / 27.0f);	// 40 pixels tall
 
+	dropPedalPlateRight = right + padding;
+
 	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(150, 0, 0, 0), pDevice);
 
 	DX9DrawText(
 		line,
 		textColor,
+		left,
+		top,
+		right + padding,
+		bottom,
+		pDevice,
+		{ NULL, NULL },
+		DT_LEFT | DT_NOCLIP);
+}
+
+void GameOverlay::DisplayDropPedalEngine()
+{
+	// Release users have no console and the debug log flushes at exit, so the active
+	// engine is announced on screen instead. It shows when the engine is decided and
+	// re-shows on the one transition that exists: the one-way promotion to the ASIO
+	// engine once its chain comes up shortly after launch. Engines cannot swap after
+	// that without relaunching, since the hooks bind the driver for the session.
+	constexpr unsigned long long SHOW_MILLISECONDS = 6000;
+	constexpr unsigned long long FADE_MILLISECONDS = 1500;
+
+	const unsigned long long noticeTick = DropPedal::GetEngineNoticeTick();
+	if (noticeTick == 0)
+	{
+		return;
+	}
+
+	// The engine is decided long before the overlay can draw (the font is not ready
+	// until the menus are up), so the display window anchors to the first frame this
+	// notice can actually render, not to the decision itself. Without this, a decision
+	// made at ~2s has expired before ~50s when drawing first becomes possible, and the
+	// notice is never seen at all.
+	static unsigned long long lastSeenNoticeTick = 0;
+	static unsigned long long displayStartTick = 0;
+
+	if (noticeTick != lastSeenNoticeTick)
+	{
+		lastSeenNoticeTick = noticeTick;
+		displayStartTick = 0;
+	}
+
+	const std::string line = DropPedal::IsInputShifterActive()
+		? "Engine: ASIO Drop Pedal"
+		: "Engine: Cable Drop Pedal";
+
+	const int textWidth = MeasureTextWidth(line, pDevice);
+	if (textWidth == 0)
+	{
+		return;
+	}
+
+	if (displayStartTick == 0)
+	{
+		displayStartTick = GetTickCount64();
+	}
+
+	const unsigned long long elapsed = GetTickCount64() - displayStartTick;
+	if (elapsed >= SHOW_MILLISECONDS + FADE_MILLISECONDS)
+	{
+		return;
+	}
+
+	const float fade = elapsed < SHOW_MILLISECONDS
+		? 1.0f
+		: 1.0f - (float)(elapsed - SHOW_MILLISECONDS) / FADE_MILLISECONDS;
+
+	// Same row as the pedal readout, to its right, so nothing below is ever covered.
+	const int padding = static_cast<int>(WindowSize.width / 192.0f);
+	const int left = dropPedalPlateRight + padding * 3;
+	const int top = static_cast<int>(WindowSize.height / 54.0f);
+	const int rowHeight = static_cast<int>(WindowSize.height / 27.0f);
+
+	const int right = left + textWidth;
+	const int bottom = top + rowHeight;
+
+	const int plateAlpha = (int)(150 * fade);
+	const int textAlpha = (int)(255 * fade);
+
+	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(plateAlpha, 0, 0, 0), pDevice);
+
+	DX9DrawText(
+		line,
+		D3DCOLOR_ARGB(textAlpha, 255, 255, 255),
 		left,
 		top,
 		right + padding,
@@ -456,6 +558,7 @@ void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
 		DisplayCurrentNote();
 		DisplayCurrentTuningForAutoTune();
 		DisplayDropPedalTuning();
+		DisplayDropPedalEngine();
 		DisplaySongAccuracy();
 
 		HandleLooping();
