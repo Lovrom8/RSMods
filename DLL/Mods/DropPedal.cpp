@@ -210,6 +210,7 @@ namespace
 	// the input signal is already retuned, so detection hears the shifted notes and the
 	// tuner reference must stay at 440.
 	bool inputShifterActive = false;
+	unsigned long long engineNoticeTick = 0;
 
 	bool wasLowerKeyDown = false;
 	bool wasRaiseKeyDown = false;
@@ -1151,6 +1152,10 @@ int DropPedal::GetShiftDirection()
 
 void DropPedal::InstallHooks()
 {
+	// The engine notice starts counting here: game-side until the ASIO chain proves
+	// itself, at which point SetInputShifterActive restarts it.
+	engineNoticeTick = GetTickCount64();
+
 	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
 	// it. The game derives expected pitch from a reference frequency instead, which is
 	// the same value CDLC charters set as an arrangement's tuning pitch. Redirecting it
@@ -1214,12 +1219,18 @@ void DropPedal::SetInputShifterActive(bool active)
 	if (inputShifterActive == active) return;
 
 	inputShifterActive = active;
-	LOG_INFO("Drop pedal engine: " << (active ? "ASIO input shifter" : "game-side MultiPitch") << std::endl);
+	engineNoticeTick = GetTickCount64();
+	LOG_INFO("Drop pedal engine: " << (active ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 }
 
 bool DropPedal::IsInputShifterActive()
 {
 	return inputShifterActive;
+}
+
+unsigned long long DropPedal::GetEngineNoticeTick()
+{
+	return engineNoticeTick;
 }
 
 void DropPedal::PollHotkeys()

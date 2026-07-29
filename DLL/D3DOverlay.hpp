@@ -38,6 +38,7 @@ namespace GameOverlay {
 	void DisplayRiffRepeaterOverHundredPercentSpeed();
 	void DisplayCurrentTuningForAutoTune();
 	void DisplayDropPedalTuning();
+	void DisplayDropPedalEngine();
 	void DisplayLoopStartEndTimes(float loopStart, float loopEnd);
 	void DisplaySongAccuracy();
 	void CheckCurrentFont();

@@ -38,6 +38,10 @@ namespace DropPedal
 	void SetInputShifterActive(bool active);
 	bool IsInputShifterActive();
 
+	// Tick of the last engine decision or change, for the on-screen engine notice.
+	// Zero until hooks are installed.
+	unsigned long long GetEngineNoticeTick();
+
 	// The tuning the guitar is physically in, and which way the shift is going, so the
 	// overlay can name and colour the state without duplicating the arithmetic.
 	std::string GetBaseTuningName();

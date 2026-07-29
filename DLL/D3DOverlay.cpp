@@ -245,6 +245,11 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 	}
 }
 
+// Right edge of the pedal readout's plate, in pixels, refreshed each time it draws. The
+// engine notice sits on the same row to its right, so it can never overlap the game's
+// menu text below.
+static int dropPedalPlateRight = 0;
+
 void GameOverlay::DisplayDropPedalTuning()
 {
 	const std::string state = DropPedal::IsEnabled()
@@ -278,11 +283,94 @@ void GameOverlay::DisplayDropPedalTuning()
 	const int right = left + textWidth;
 	const int bottom = top + static_cast<int>(WindowSize.height / 27.0f);	// 40 pixels tall
 
+	dropPedalPlateRight = right + padding;
+
 	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(150, 0, 0, 0), pDevice);
 
 	DX9DrawText(
 		line,
 		textColor,
+		left,
+		top,
+		right + padding,
+		bottom,
+		pDevice,
+		{ NULL, NULL },
+		DT_LEFT | DT_NOCLIP);
+}
+
+void GameOverlay::DisplayDropPedalEngine()
+{
+	// Release users have no console and the debug log flushes at exit, so the active
+	// engine is announced on screen instead. It shows when the engine is decided and
+	// re-shows on the one transition that exists: the one-way promotion to the ASIO
+	// engine once its chain comes up shortly after launch. Engines cannot swap after
+	// that without relaunching, since the hooks bind the driver for the session.
+	constexpr unsigned long long SHOW_MILLISECONDS = 6000;
+	constexpr unsigned long long FADE_MILLISECONDS = 1500;
+
+	const unsigned long long noticeTick = DropPedal::GetEngineNoticeTick();
+	if (noticeTick == 0)
+	{
+		return;
+	}
+
+	// The engine is decided long before the overlay can draw (the font is not ready
+	// until the menus are up), so the display window anchors to the first frame this
+	// notice can actually render, not to the decision itself. Without this, a decision
+	// made at ~2s has expired before ~50s when drawing first becomes possible, and the
+	// notice is never seen at all.
+	static unsigned long long lastSeenNoticeTick = 0;
+	static unsigned long long displayStartTick = 0;
+
+	if (noticeTick != lastSeenNoticeTick)
+	{
+		lastSeenNoticeTick = noticeTick;
+		displayStartTick = 0;
+	}
+
+	const std::string line = DropPedal::IsInputShifterActive()
+		? "Engine: ASIO Drop Pedal"
+		: "Engine: Cable Drop Pedal";
+
+	const int textWidth = MeasureTextWidth(line, pDevice);
+	if (textWidth == 0)
+	{
+		return;
+	}
+
+	if (displayStartTick == 0)
+	{
+		displayStartTick = GetTickCount64();
+	}
+
+	const unsigned long long elapsed = GetTickCount64() - displayStartTick;
+	if (elapsed >= SHOW_MILLISECONDS + FADE_MILLISECONDS)
+	{
+		return;
+	}
+
+	const float fade = elapsed < SHOW_MILLISECONDS
+		? 1.0f
+		: 1.0f - (float)(elapsed - SHOW_MILLISECONDS) / FADE_MILLISECONDS;
+
+	// Same row as the pedal readout, to its right, so nothing below is ever covered.
+	const int padding = static_cast<int>(WindowSize.width / 192.0f);
+	const int left = dropPedalPlateRight + padding * 3;
+	const int top = static_cast<int>(WindowSize.height / 54.0f);
+	const int rowHeight = static_cast<int>(WindowSize.height / 27.0f);
+
+	const int right = left + textWidth;
+	const int bottom = top + rowHeight;
+
+	const int plateAlpha = (int)(150 * fade);
+	const int textAlpha = (int)(255 * fade);
+
+	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(plateAlpha, 0, 0, 0), pDevice);
+
+	DX9DrawText(
+		line,
+		D3DCOLOR_ARGB(textAlpha, 255, 255, 255),
 		left,
 		top,
 		right + padding,
@@ -470,6 +558,7 @@ void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
 		DisplayCurrentNote();
 		DisplayCurrentTuningForAutoTune();
 		DisplayDropPedalTuning();
+		DisplayDropPedalEngine();
 		DisplaySongAccuracy();
 
 		HandleLooping();
