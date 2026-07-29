@@ -27,6 +27,13 @@ namespace DropPedal
 	int GetTargetSemitones();
 	std::string GetTuningName();
 
+	// Selects which engine realises the pitch. With the ASIO input shifter active, the
+	// game-side MultiPitch driving and tuner reference changes are suppressed: the input
+	// itself is retuned, so detection hears shifted notes against a 440 reference. The
+	// hotkeys and overlay stay live either way; only the output stage switches.
+	void SetInputShifterActive(bool active);
+	bool IsInputShifterActive();
+
 	// The tuning the guitar is physically in, and which way the shift is going, so the
 	// overlay can name and colour the state without duplicating the arithmetic.
 	std::string GetBaseTuningName();

@@ -312,7 +312,7 @@
     <ClCompile Include="Audio\AsioHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Audio\FixedBlockShifter.cpp">
+    <ClCompile Include="Audio\DelayLinePitchShifter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -644,16 +644,22 @@
     <ClInclude Include="Audio\IInputProcessor.hpp">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Audio\PassthroughProcessor.hpp">
-      <Filter>Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Audio\AudioCaptureHook.hpp">
       <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="Audio\AsioHook.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Audio\FixedBlockShifter.hpp">
+    <ClInclude Include="Audio\DelayLinePitchShifter.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\signalsmith\fft.h">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\signalsmith\linear.h">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\signalsmith\stft.h">
       <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>

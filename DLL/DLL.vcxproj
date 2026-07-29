@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Audio\AsioHook.cpp" />
     <ClCompile Include="Audio\AudioCaptureHook.cpp" />
-    <ClCompile Include="Audio\FixedBlockShifter.cpp" />
+    <ClCompile Include="Audio\DelayLinePitchShifter.cpp" />
     <ClCompile Include="CC\CCEffect.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -226,7 +226,10 @@
     <ClInclude Include="Audio\AsioHook.hpp" />
     <ClInclude Include="Audio\AudioCaptureHook.hpp" />
     <ClInclude Include="Audio\CaptureFormat.h" />
-    <ClInclude Include="Audio\FixedBlockShifter.hpp" />
+    <ClInclude Include="Audio\DelayLinePitchShifter.hpp" />
+    <ClInclude Include="Audio\signalsmith\fft.h" />
+    <ClInclude Include="Audio\signalsmith\linear.h" />
+    <ClInclude Include="Audio\signalsmith\stft.h" />
     <ClInclude Include="CC\CCEffectList.hpp" />
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp" />
     <ClInclude Include="CC\CCEffect.hpp" />
@@ -310,7 +313,6 @@
     <ClInclude Include="ObjectUtil.hpp" />
     <ClInclude Include="CC\Effects\ShuffleTonesEffect.hpp" />
     <ClInclude Include="CC\Effects\SmallNoteheadEffect.hpp" />
-    <ClInclude Include="Audio\PassthroughProcessor.hpp" />
     <ClInclude Include="QualityOfLife.hpp" />
     <ClInclude Include="Resolution.h" />
     <ClInclude Include="RSColor.h" />

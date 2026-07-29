@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
 #include "Mods/DropPedal.hpp"
-#include "Audio/FixedBlockShifter.hpp"
+#include "Audio/DelayLinePitchShifter.hpp"
 
 namespace
 {
-	// Pure delay, no pitch change: measures whether a shifter with this much algorithmic
-	// latency would be playable. 1024 frames is ~21ms at 48kHz, the ballpark of a
-	// mid-quality phase vocoder configuration.
-	Audio::DelayProbeProcessor delayProbeProcessor{ 1024 };
+	// Time-domain period-synchronous shifter on the ASIO input path. Starts at unity;
+	// the drop pedal hotkeys drive it once the hook is live.
+	Audio::DelayLinePitchShifter pitchShifter{ 0 };
 }
 
 namespace ModManager {
@@ -138,7 +137,7 @@ namespace ModManager {
 		// included, or the game builds its audio chain before we can see it.
 		Audio::CaptureHook::Install();
 		Audio::AsioHook::Install();
-		Audio::AsioHook::SetProcessor(&delayProbeProcessor);
+		Audio::AsioHook::SetProcessor(&pitchShifter);
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
@@ -255,6 +254,17 @@ namespace ModManager {
 
 		DropPedal::Poll();
 		Audio::AsioHook::Poll();
+
+		// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
+		// shifter is processing, it owns pitch and the drop pedal's hotkey state drives
+		// it; the game-side MultiPitch path stays suppressed for the session.
+		const bool asioShifterActive = Audio::AsioHook::IsProcessingEnabled();
+		DropPedal::SetInputShifterActive(asioShifterActive);
+
+		if (asioShifterActive)
+		{
+			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
+		}
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {

@@ -206,6 +206,11 @@ namespace
 	// session. Read by SetParam on other threads.
 	volatile bool isEnabledSession = true;
 
+	// When the ASIO input shifter owns pitch, all game-side application is suppressed:
+	// the input signal is already retuned, so detection hears the shifted notes and the
+	// tuner reference must stay at 440.
+	bool inputShifterActive = false;
+
 	bool wasLowerKeyDown = false;
 	bool wasRaiseKeyDown = false;
 	bool wasToggleKeyDown = false;
@@ -405,7 +410,7 @@ namespace
 			}
 		}
 
-		if (!DropPedal::IsEnabled())
+		if (!DropPedal::IsEnabled() || inputShifterActive)
 		{
 			return originalSetParam(self, unused, paramId, value, size);
 		}
@@ -610,6 +615,12 @@ namespace
 
 	void HandleHotkeys()
 	{
+		// GetAsyncKeyState reads global keyboard state, so without this guard the pedal
+		// retunes while the player is typing in another window.
+		DWORD foregroundProcessId = 0;
+		GetWindowThreadProcessId(GetForegroundWindow(), &foregroundProcessId);
+		if (foregroundProcessId != GetCurrentProcessId()) return;
+
 		const bool isToggleKeyDown = (GetAsyncKeyState(TOGGLE_KEY) & 0x8000) != 0;
 
 		if (isToggleKeyDown && !wasToggleKeyDown)
@@ -1097,6 +1108,14 @@ std::string DropPedal::GetTuningName()
 		name << " (" << (semitones > 0 ? "+" : "") << semitones << ")";
 	}
 
+	// Base is the player's claim about their guitar's physical tuning and changes only
+	// how states are named, so whenever it is set the overlay must say so: a wrong base
+	// makes every name above a lie, and an invisible wrong base is unrecoverable.
+	if (baseTuningSemitones != 0)
+	{
+		name << " [guitar " << GetBaseTuningName() << "]";
+	}
+
 	return name.str();
 }
 
@@ -1189,6 +1208,19 @@ void DropPedal::InstallHooks()
 	}
 }
 
+void DropPedal::SetInputShifterActive(bool active)
+{
+	if (inputShifterActive == active) return;
+
+	inputShifterActive = active;
+	LOG_INFO("Drop pedal engine: " << (active ? "ASIO input shifter" : "game-side MultiPitch") << std::endl);
+}
+
+bool DropPedal::IsInputShifterActive()
+{
+	return inputShifterActive;
+}
+
 void DropPedal::Poll()
 {
 	HookSetParamOnce();
@@ -1197,11 +1229,18 @@ void DropPedal::Poll()
 	// Kept in step every tick rather than only when the pitch changes, so the value
 	// is already correct when a song loads. Detection appears to take its reference
 	// at load time, which is why setting it mid-song has no effect.
-	TrueTuning::SetReferenceSemitones(isEnabledSession ? -DropPedal::GetTargetSemitones() : 0);
+	TrueTuning::SetReferenceSemitones((isEnabledSession && !inputShifterActive) ? -DropPedal::GetTargetSemitones() : 0);
 
-	PushPitchWhenSettled();
-	LogPendingOverrides();
-	LogCreateParamEvents();
-	LogFxWalkerSnapshots();
-	LogNodeSnapshots();
+	if (!inputShifterActive)
+	{
+		PushPitchWhenSettled();
+
+		// Diagnostics for the game-side MultiPitch machinery, which is suppressed while
+		// the input shifter owns pitch, so their output would only describe a dormant
+		// subsystem.
+		LogPendingOverrides();
+		LogCreateParamEvents();
+		LogFxWalkerSnapshots();
+		LogNodeSnapshots();
+	}
 }

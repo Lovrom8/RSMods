@@ -45,6 +45,7 @@ namespace Audio::AsioHook
 		};
 
 		// IUnknown occupies slots 0-2; the ASIO methods follow in declaration order.
+		constexpr size_t SLOT_ASIO_GET_SAMPLE_RATE = 13;
 		constexpr size_t SLOT_ASIO_GET_CHANNEL_INFO = 18;
 		constexpr size_t SLOT_ASIO_CREATE_BUFFERS = 19;
 		constexpr size_t SLOT_CLASS_FACTORY_CREATE_INSTANCE = 3;
@@ -57,6 +58,7 @@ namespace Audio::AsioHook
 		typedef HRESULT(STDMETHODCALLTYPE* CreateInstance_t)(IClassFactory*, IUnknown*, REFIID, void**);
 		typedef ASIOError(__fastcall* CreateBuffers_t)(void* self, void* unused, ASIOBufferInfo*, long, long, ASIOCallbacks*);
 		typedef ASIOError(__fastcall* GetChannelInfo_t)(void* self, void* unused, ASIOChannelInfo*);
+		typedef ASIOError(__fastcall* GetSampleRate_t)(void* self, void* unused, ASIOSampleRate*);
 
 		DllGetClassObject_t original_DllGetClassObject = nullptr;
 		CreateInstance_t original_CreateInstance = nullptr;
@@ -261,10 +263,21 @@ namespace Audio::AsioHook
 			format.sampleFormat = activeSampleType == ASIOSTInt32LSB ? SampleFormat::Int32 : SampleFormat::Unsupported;
 			format.channelCount = 1;		// ASIO buffers are per channel, never interleaved.
 
+			ASIOSampleRate sampleRate = 0;
+			GetSampleRate_t getSampleRate = (GetSampleRate_t)ComVTable::GetVTable(self)[SLOT_ASIO_GET_SAMPLE_RATE];
+			if (getSampleRate(self, nullptr, &sampleRate) == ASE_OK && sampleRate > 0)
+			{
+				format.sampleRate = (uint32_t)sampleRate;
+			}
+			else
+			{
+				LOG_WARNING("[AsioHook] Driver did not report a sample rate; processors cannot be prepared." << std::endl);
+			}
+
 			conversionBuffer.assign((size_t)MAX_BUFFER_FRAMES, 0.0f);
 
 			LOG_INFO("[AsioHook] createBuffers: " << numChannels << " channels, " << bufferSize
-				<< " frames, " << discoveredInputChannels << " input(s) captured" << std::endl);
+				<< " frames, " << discoveredInputChannels << " input(s) captured, " << format.sampleRate << " Hz" << std::endl);
 
 			if (format.sampleFormat != SampleFormat::Int32)
 				LOG_WARNING("[AsioHook] Input sample type " << activeSampleType << " is not ASIOSTInt32LSB; processing stays off." << std::endl);
@@ -382,7 +395,7 @@ namespace Audio::AsioHook
 		if (autoEnabledOnce) return;
 		if (processingEnabled.load(std::memory_order_relaxed)) return;
 		if (discoveredInputChannels == 0) return;
-		if (format.sampleFormat != SampleFormat::Int32) return;
+		if (!format.IsUsable()) return;
 
 		IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
 		if (!processor) return;
