@@ -19,17 +19,17 @@ fades after a few seconds:
 ![Pedal readout and engine notice at launch](images/overlay-asio-drop-pedal-engine.png)
 
 The same line is written to the debug log (`Drop pedal engine: ...`). If the
-notice reads `Cable Drop Pedal` instead, the ASIO chain did not come up — see
+notice reads `Cable Drop Pedal` instead, the ASIO chain did not initialize; see
 [troubleshooting](#troubleshooting). The engine cannot change without
 relaunching, since the hooks bind the audio driver for the session.
 
 ## How it works
 
 The mod hooks the ASIO driver underneath RS_ASIO and pitch shifts the raw
-guitar signal before the game receives it, by period-synchronous splicing —
-the technique the DigiTech Drop family uses. The game then behaves natively:
-detection, the tuner and every tone process an already-retuned instrument, so
-nothing is redirected.
+guitar signal before the game receives it. The shifter uses period-synchronous
+splicing. Rocksmith receives a shifted input signal, so detection, the tuner and
+tone processing operate on the same pitch-shifted audio. No tuning-reference
+redirect is required.
 
 The shifter trails the input by up to one pitch period of the note being
 played (roughly 1-13 ms depending on the string), on top of the interface's
@@ -66,26 +66,31 @@ Leave it at E standard unless the guitar really is tuned differently.
   guitar registers as D. Set the pedal to the song's tuning and standard
   fingering registers.
 - Changing the pedal mid-song moves audio and detection together; they cannot
-  drift apart.
-- Do not press the pitch keys while the game's tuner screen is actively
-  listening. The tuner assumes a stable instrument, and a pitch that moves
-  mid-listen can strand it waiting; backing out of the screen and re-entering
-  recovers it.
+  drift apart. This includes the tuner screen, because the game only sees the
+  already-shifted input.
+
+## Emulated bass
+
+Emulated bass works normally with this engine. If Rocksmith is in emulated-bass
+mode, use the song offset only: for an Eb song, set the pedal to `-1`.
+
+For the lowest-latency guitar-to-bass setup, tell Rocksmith you are playing
+bass and let the ASIO pedal supply the octave before the game hears the signal.
+On an E-standard guitar, set the pedal to `-12` for E-standard bass, `-13` for
+Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
 ## Sound characteristics
 
-Sustained notes carry a faint cyclic character under high gain, and note
-attacks are the current polish item. Both sit below playing volume in
-practice.
+Sustained notes can carry a faint cyclic character under high gain. Transient
+handling is the main remaining audio-quality item.
 
 ## Troubleshooting
 
 | Symptom | Cause |
 |---|---|
-| Engine notice reads `Cable Drop Pedal` | The ASIO chain did not come up. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
+| Engine notice reads `Cable Drop Pedal` | The ASIO chain did not initialize. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
 | Game reports "no audio output device" on launch | Another program changed the interface's sample rate (DAWs and amp sims do this silently). Set it back to 48000 Hz in the interface's control panel and relaunch |
 | Tuner reads a different tuning than the guitar is in | The shift, working as designed |
-| Game tuner screen stuck listening | Pedal changed mid-listen — back out of the screen and re-enter |
 | Pitch keys do nothing | Pedal toggled off (`F8`), or Rocksmith is not the focused window |
 
 The debug log is `RSMods_debug.txt`, next to `Rocksmith2014.exe`, not in the

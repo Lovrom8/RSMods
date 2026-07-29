@@ -23,7 +23,7 @@ engine cannot change without relaunching.
 Detection reads the raw guitar signal upstream of the tone chain, so the shift
 happens inside the game: the mod retunes a MultiPitch pedal in the player's
 tone and redirects the reference frequency the game derives its expected pitch
-from — the same value CDLC charters set as an arrangement's tuning pitch.
+from. This is the same value CDLC charters set as an arrangement's tuning pitch.
 Shift the audio down a semitone, move the expectation up one, and the two
 agree.
 
@@ -106,18 +106,19 @@ recovers it.
 
 ## Emulated bass
 
-Bass works the same way guitar does. Setting it up has one extra step: put the
-octave in the **tone**, not the pedal.
+Emulated bass is a Cable Drop Pedal tone setup issue, not a different pedal
+value. Adding a MultiPitch removes Rocksmith's `Pedal_BassEmulator`, so a bass
+pedal tone must put the missing octave back in the tone itself.
 
-- **Tone:** `Pitch 1 = -12`. Adding a MultiPitch deletes the
-  `Pedal_BassEmulator` that gives the tone its low end, so the tone sits in
-  guitar register without this.
-- **Pedal:** the song offset only, `-1` for an Eb song, not `-13`.
+- **Bass tone:** `Pitch 1 = -12`. This replaces the octave normally supplied by
+  `Pedal_BassEmulator`.
+- **Pedal:** the song offset only. For an Eb song, set the pedal to `-1`, not
+  `-13`.
 
-Both give identical audio, since it is the same shifter summing to the same
-total. They are not interchangeable to the game: only the pedal value feeds
-the tuning correction, so folding the octave into the pedal sends the expected
-pitch an octave off. The audio sounds right and nothing played registers.
+Putting the octave in the pedal can make the audio sound right, but it sends
+the tuning correction an octave away from what Rocksmith expects. The result is
+shifted bass audio with notes that do not register. Keep separate guitar and
+bass pedal tones, then use the pedal only for the song's tuning offset.
 
 ## Troubleshooting
 
@@ -128,7 +129,7 @@ pitch an octave off. The audio sounds right and nothing played registers.
 | Everything sounds an octave down at 0 semitones | Tone's **Pitch 1** is not 0 |
 | Notes do not register in-game | Pedal changed after the tuner; back out and re-enter |
 | Bass: audio right, nothing registers | Octave is in the pedal instead of the tone's Pitch 1 |
-| Game tuner screen stuck listening | Pedal changed mid-listen — back out of the screen and re-enter |
+| Game tuner screen stuck listening | Pedal changed mid-listen; back out of the screen and re-enter |
 | Pitch keys do nothing | Pedal toggled off (`F8`), or Rocksmith is not the focused window |
 
 The debug log is `RSMods_debug.txt`, next to `Rocksmith2014.exe`, not in the
