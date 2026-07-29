@@ -119,7 +119,8 @@ Next:
 - Shifting the song's tuning instead of the guitar, so playing without
   headphones works: the guitar's acoustic sound and the game would be in the
   same tuning instead of a semitone apart in the room.
-- Improve transient handling at high gain in the period-synchronous shifter.
+- Refine period detection for very softly played notes, which can occasionally
+  add a warbled effect to the shifted signal.
 
 ---
 

@@ -81,8 +81,8 @@ Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
 ## Sound characteristics
 
-Sustained notes can carry a faint cyclic character under high gain. Transient
-handling is the main remaining audio-quality item.
+Very softly played notes can occasionally add a warbled effect to the shifted
+signal. This is the main remaining audio-quality refinement.
 
 ## Troubleshooting
 
