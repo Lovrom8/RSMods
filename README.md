@@ -134,6 +134,13 @@ Next:
 
 ---
 
+## Support
+
+RSModsPlus is free. If it helped you and you want to support the work, you can
+[buy me a coffee](https://buymeacoffee.com/cheesewizard).
+
+---
+
 ## Issues
 
 Drop pedal problems go
