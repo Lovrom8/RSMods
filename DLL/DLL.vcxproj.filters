@@ -306,6 +306,15 @@
     <ClCompile Include="Mods\DropPedal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\DropPedalHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedalInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedalState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Audio\AudioCaptureHook.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
@@ -633,6 +642,15 @@
       <Filter>Main Headers\Structs</Filter>
     </ClInclude>
     <ClInclude Include="Mods\DropPedal.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedalHooks.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedalInput.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedalState.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Audio\CaptureFormat.h">
