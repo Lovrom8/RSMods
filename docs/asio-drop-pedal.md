@@ -79,11 +79,6 @@ bass and let the ASIO pedal supply the octave before the game hears the signal.
 On an E-standard guitar, set the pedal to `-12` for E-standard bass, `-13` for
 Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
-## Sound characteristics
-
-Very softly played notes can occasionally add a warbled effect to the shifted
-signal. This is the main remaining audio-quality refinement.
-
 ## Troubleshooting
 
 | Symptom | Cause |
