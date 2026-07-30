@@ -23,6 +23,11 @@ notice reads `Cable Drop Pedal` instead, the ASIO chain did not initialize; see
 [troubleshooting](#troubleshooting). The engine cannot change without
 relaunching, since the hooks bind the audio driver for the session.
 
+To require this engine, set `[Drop Pedal] Engine = Asio` in `RSMods.ini` or the
+settings app. The default `Automatic` setting uses ASIO when the chain appears
+and otherwise uses the Cable Drop Pedal. Forced `Asio` logs an error and stays
+inactive if the ASIO chain never appears.
+
 ## How it works
 
 The mod hooks the ASIO driver underneath RS_ASIO and pitch shifts the raw
@@ -45,9 +50,10 @@ normal round trip (~15 ms at 256 frames / 48 kHz on a typical interface).
 
 - Keys register only while Rocksmith is the focused window.
 - While the pedal is toggled off, every key except `F8` is ignored.
-- Keys are fixed for now. The settings app rebuilds `RSMods.ini` from scratch
-  on every save, so a hand-added binding would silently vanish; rebinding
-  arrives when the settings app carries these keys.
+- These are defaults. Rebind them in the settings app or edit
+  `[Keybinds] DropPedalPitchDownKey`, `DropPedalPitchUpKey`,
+  `DropPedalToggleKey`, `DropPedalBaseTuningDownKey` and
+  `DropPedalBaseTuningUpKey`.
 
 The overlay shows the current state and turns green whenever a shift is
 applied. Nothing is saved between sessions: the pedal starts enabled, at no
@@ -83,7 +89,8 @@ Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
 | Symptom | Cause |
 |---|---|
-| Engine notice reads `Cable Drop Pedal` | The ASIO chain did not initialize. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
+| Engine notice reads `Cable Drop Pedal` | In `Automatic`, the ASIO chain did not initialize and the mod is using Cable. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
+| Forced `Asio` logs inactive | `[Drop Pedal] Engine = Asio` was selected, but the ASIO input chain never appeared. Check `RS_ASIO.ini` and relaunch |
 | Game reports "no audio output device" on launch | Another program changed the interface's sample rate (DAWs and amp sims do this silently). Set it back to 48000 Hz in the interface's control panel and relaunch |
 | Tuner reads a different tuning than the guitar is in | The shift, working as designed |
 | Pitch keys do nothing | Pedal toggled off (`F8`), or Rocksmith is not the focused window |

@@ -1,8 +1,8 @@
 # Wwise plugin internals (Rocksmith 2014, Wwise v91 / 2013)
 
-Reference for `DLL/Mods/DropPedal.cpp`. Records how the pitch shifter is reached,
-what the surrounding data structures actually are, and which routes have been
-ruled out. Every claim is tagged:
+Reference for the drop pedal modules under `DLL/Mods/DropPedal*`. Records how
+the pitch shifter is reached, what the surrounding data structures actually are,
+and which routes have been ruled out. Every claim is tagged:
 
 - **[proven]** — verified by disassembly or by a log line from a real run.
 - **[inferred]** — consistent with evidence but not directly demonstrated.
@@ -620,8 +620,9 @@ A song at A435 is -19.8 cents, applied directly, no table.
 
 ## 10. Probe and testing discipline
 
-- **Hotkeys are reserved.** `F8` = mod toggle (easy to hit by accident),
-  `F9`/`F10` = pitch down/up. **Never** bind probes to nearby keys.
+- **Hotkeys are configurable.** Defaults are `,` / `.` = pitch down/up,
+  `F8` = toggle, and `F9` / `F10` = base tuning down/up. **Never** bind probes
+  to these defaults or nearby keys.
 - **Two-tone test.** Enter song → press `2` (has MultiPitch), wait ~10s →
   press `4` (no MultiPitch), wait ~10s → quit. The `-1200` line timestamps the
   first switch precisely, and the 10-second gap makes the second unambiguous.

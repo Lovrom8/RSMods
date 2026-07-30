@@ -47,11 +47,6 @@ bool DropPedalState::IsConfiguredEnabled()
 	return isConfiguredEnabled;
 }
 
-bool DropPedalState::IsAutomaticEngine()
-{
-	return engineSetting == "Automatic";
-}
-
 bool DropPedalState::IsAsioEngine()
 {
 	return engineSetting == "Asio";

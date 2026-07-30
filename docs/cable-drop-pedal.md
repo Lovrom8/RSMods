@@ -7,8 +7,9 @@ bass.
 
 This guide covers the engine used without RS_ASIO, such as a Real Tone cable
 with nothing else in the chain. With RS_ASIO and an ASIO interface installed,
-the mod uses the [ASIO Drop Pedal](asio-drop-pedal.md) instead, which needs no
-setup.
+the default `Automatic` setting uses the [ASIO Drop Pedal](asio-drop-pedal.md)
+instead, which needs no setup. Set `[Drop Pedal] Engine = Cable` to force this
+engine.
 
 The engine is selected at launch and announced beside the pedal readout, then
 fades after a few seconds:
@@ -16,7 +17,8 @@ fades after a few seconds:
 ![Pedal readout and engine notice at launch](images/overlay-cable-drop-pedal-engine.png)
 
 The same line is written to the debug log (`Drop pedal engine: ...`). The
-engine cannot change without relaunching.
+engine cannot change without relaunching. Forced `Cable` skips the ASIO input
+hooks and always uses the MultiPitch path.
 
 ## How it works
 
@@ -45,9 +47,10 @@ Constraints that follow from this design:
 
 - Keys register only while Rocksmith is the focused window.
 - While the pedal is toggled off, every key except `F8` is ignored.
-- Keys are fixed for now. The settings app rebuilds `RSMods.ini` from scratch
-  on every save, so a hand-added binding would silently vanish; rebinding
-  arrives when the settings app carries these keys.
+- These are defaults. Rebind them in the settings app or edit
+  `[Keybinds] DropPedalPitchDownKey`, `DropPedalPitchUpKey`,
+  `DropPedalToggleKey`, `DropPedalBaseTuningDownKey` and
+  `DropPedalBaseTuningUpKey`.
 
 The overlay shows the current state and turns green whenever a shift is
 applied. Nothing is saved between sessions: the pedal starts enabled, at no

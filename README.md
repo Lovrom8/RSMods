@@ -70,9 +70,9 @@ MS Visual C++ 2015-2019 redistributable. The ASIO engine additionally needs
 [RS_ASIO](https://github.com/mdias/rs_asio) and an ASIO audio interface, which
 is the setup most interface players already have.
 
-With RS_ASIO there is no in-game setup at all: the pedal works on every tone.
-Without it, the Cable Drop Pedal needs a tone containing a MultiPitch pedal,
-covered in [its guide](docs/cable-drop-pedal.md).
+With RS_ASIO and the default automatic engine there is no in-game setup at all:
+the pedal works on every tone. Without it, the Cable Drop Pedal needs a tone
+containing a MultiPitch pedal, covered in [its guide](docs/cable-drop-pedal.md).
 
 ---
 
@@ -82,6 +82,20 @@ RSModsPlus selects one drop pedal engine at launch. Both engines use the same
 hotkeys and overlay readout. The active engine is shown on screen beside the
 pedal readout and written to the debug log using the format
 `Drop pedal engine: ...`.
+
+`RSMods.ini` controls the startup behavior:
+
+```ini
+[Drop Pedal]
+EnableDropPedal = on
+Engine = Automatic
+```
+
+`Automatic` uses ASIO when the RS_ASIO input chain appears and otherwise leaves
+the Cable Drop Pedal available. `Asio` requires the ASIO input chain and logs an
+error instead of falling back. `Cable` skips the ASIO input hooks and always
+uses the MultiPitch path. Set `EnableDropPedal = off` to install none of the
+drop pedal or audio-input hooks.
 
 **ASIO Drop Pedal.** With RS_ASIO installed, the mod hooks the ASIO driver below
 RS_ASIO and shifts the raw guitar input before Rocksmith receives it. The
@@ -114,15 +128,10 @@ way, are in [docs/wwise-plugin-internals.md](docs/wwise-plugin-internals.md).
 
 ## Roadmap
 
-V2 shifts the guitar input below RS_ASIO, so every tone receives the shifted
-signal without tone setup. The Cable Drop Pedal stays as the fallback for chains
-without RS_ASIO.
-
-Next:
-
-- Shifting the song's tuning instead of the guitar, so playing without
-  headphones works: the guitar's acoustic sound and the game would be in the
-  same tuning instead of a semitone apart in the room.
+The ASIO input shifter and Cable fallback are in place. The remaining drop pedal
+direction is shifting the song's tuning instead of the guitar, so playing
+without headphones works: the guitar's acoustic sound and the game would be in
+the same tuning instead of a semitone apart in the room.
 
 ---
 
