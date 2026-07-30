@@ -308,7 +308,7 @@ namespace RSMods
             if (identifierToGrab == DropPedalEnabledIdentifier)
                 return "on";
             if (identifierToGrab == DropPedalEngineIdentifier)
-                return "Automatic";
+                return "automatic";
 
             return string.Empty;
         }

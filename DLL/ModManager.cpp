@@ -170,10 +170,7 @@ namespace ModManager {
 			VolumeControl::AllowAltTabbingWithAudio();
 		}
 
-		if (DropPedal::IsConfiguredEnabled())
-		{
-			DropPedal::InstallHooks();
-		}
+		DropPedal::InstallHooks();
 	}
 
 	/// <summary>
@@ -233,8 +230,6 @@ namespace ModManager {
 	/// </summary>
 	void PollDropPedalHotkeys()
 	{
-		if (!DropPedal::IsConfiguredEnabled()) return;
-
 		DropPedal::PollHotkeys();
 
 		if (DropPedal::ShouldInstallInputHooks() && Audio::AsioHook::IsProcessingEnabled())
@@ -272,24 +267,21 @@ namespace ModManager {
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
-		if (DropPedal::IsConfiguredEnabled())
+		DropPedal::Poll();
+
+		if (DropPedal::ShouldInstallInputHooks())
 		{
-			DropPedal::Poll();
+			Audio::AsioHook::Poll();
 
-			if (DropPedal::ShouldInstallInputHooks())
+			// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
+			// shifter is processing, it owns pitch; the game-side MultiPitch path stays
+			// suppressed for the session. The hotkey thread keeps the shifter's semitones in
+			// step, since key changes land there.
+			DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
+
+			if (DropPedal::RequiresInputShifter() && !Audio::AsioHook::IsProcessingEnabled())
 			{
-				Audio::AsioHook::Poll();
-
-				// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
-				// shifter is processing, it owns pitch; the game-side MultiPitch path stays
-				// suppressed for the session. The hotkey thread keeps the shifter's semitones in
-				// step, since key changes land there.
-				DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
-
-				if (DropPedal::RequiresInputShifter() && !Audio::AsioHook::IsProcessingEnabled())
-				{
-					DropPedal::ReportInputShifterUnavailable();
-				}
+				DropPedal::ReportInputShifterUnavailable();
 			}
 		}
 
@@ -433,10 +425,7 @@ namespace ModManager {
 			Midi::userWantsToUseAutoTuning = false;
 		}
 
-		if (DropPedal::IsConfiguredEnabled())
-		{
-			DropPedal::ResetSongState();
-		}
+		DropPedal::ResetSongState();
 	}
 
 	/// <summary>

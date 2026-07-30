@@ -83,7 +83,7 @@ namespace RSMods
                 "[Drop Pedal]", new Dictionary<string, string>
                 {
                     { ReadSettings.DropPedalEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalEnabledIdentifier, "on") },
-                    { ReadSettings.DropPedalEngineIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalEngineIdentifier, "Automatic") }
+                    { ReadSettings.DropPedalEngineIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalEngineIdentifier, "automatic") }
                 }
             );
             saveSettingsOrDefaults.Add(

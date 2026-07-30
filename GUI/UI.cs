@@ -60,9 +60,6 @@ namespace RSMods
         string github_UpdateResponse;
 
         bool AllowSaving = false;
-        CheckBox checkBox_DropPedal;
-        ComboBox comboBox_DropPedalEngine;
-        readonly List<Label> dropPedalKeyLabels = new List<Label>();
 
         public MainForm()
         {
@@ -182,91 +179,7 @@ namespace RSMods
         private void Startup_InitWinForms()
         {
             InitializeComponent();
-            Startup_CreateDropPedalControls();
             Text = $"{Text}-{Assembly.GetExecutingAssembly().GetName().Version}"; // Show version number in the title of the application.
-        }
-
-        private void Startup_CreateDropPedalControls()
-        {
-            Startup_CreateDropPedalKeyLabels();
-            Startup_CreateDropPedalSettingsGroup();
-        }
-
-        private void Startup_CreateDropPedalKeyLabels()
-        {
-            dropPedalKeyLabels.Clear();
-
-            for (int i = 0; i < 5; i++)
-            {
-                Label label = new Label
-                {
-                    AutoSize = true,
-                    Location = new Point(222, 160 + (i * 14)),
-                    Name = $"label_DropPedalKey{i}",
-                    Size = new Size(90, 13),
-                    TabIndex = 100100 + i,
-                    Text = "Drop Pedal:"
-                };
-
-                dropPedalKeyLabels.Add(label);
-                groupBox_Keybindings_MODS.Controls.Add(label);
-            }
-        }
-
-        private void Startup_CreateDropPedalSettingsGroup()
-        {
-            GroupBox groupBoxDropPedal = new GroupBox
-            {
-                Location = new Point(480, 247),
-                Name = "groupBox_DropPedal",
-                Size = new Size(279, 79),
-                TabIndex = 100014,
-                TabStop = false,
-                Text = "Drop Pedal"
-            };
-
-            checkBox_DropPedal = new CheckBox
-            {
-                AutoSize = true,
-                Location = new Point(11, 22),
-                Name = "checkBox_DropPedal",
-                Size = new Size(116, 17),
-                TabIndex = 0,
-                Text = "Enable Drop Pedal",
-                UseVisualStyleBackColor = true
-            };
-            checkBox_DropPedal.CheckedChanged += new EventHandler(Save_DropPedalEnabled);
-            checkBox_DropPedal.MouseHover += new EventHandler(ToolTips_Show);
-            checkBox_DropPedal.MouseLeave += new EventHandler(ToolTips_Hide);
-
-            Label labelDropPedalEngine = new Label
-            {
-                AutoSize = true,
-                Location = new Point(11, 51),
-                Name = "label_DropPedalEngine",
-                Size = new Size(43, 13),
-                TabIndex = 1,
-                Text = "Engine:"
-            };
-
-            comboBox_DropPedalEngine = new ComboBox
-            {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                FormattingEnabled = true,
-                Location = new Point(68, 48),
-                Name = "comboBox_DropPedalEngine",
-                Size = new Size(121, 21),
-                TabIndex = 2
-            };
-            comboBox_DropPedalEngine.Items.AddRange(new object[] { "Automatic", "Asio", "Cable" });
-            comboBox_DropPedalEngine.SelectedIndexChanged += new EventHandler(Save_DropPedalEngine);
-            comboBox_DropPedalEngine.MouseHover += new EventHandler(ToolTips_Show);
-            comboBox_DropPedalEngine.MouseLeave += new EventHandler(ToolTips_Hide);
-
-            groupBoxDropPedal.Controls.Add(checkBox_DropPedal);
-            groupBoxDropPedal.Controls.Add(labelDropPedalEngine);
-            groupBoxDropPedal.Controls.Add(comboBox_DropPedalEngine);
-            tabPage_ModSettings_Misc.Controls.Add(groupBoxDropPedal);
         }
 
         private void Startup_FixLegacySonglistBug()
@@ -409,13 +322,11 @@ namespace RSMods
 
         private void Startup_ShowCurrentDropPedalKeybindingValues()
         {
-            if (dropPedalKeyLabels.Count != 5) return;
-
-            dropPedalKeyLabels[0].Text = "Pedal Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchDownKeyIdentifier));
-            dropPedalKeyLabels[1].Text = "Pedal Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchUpKeyIdentifier));
-            dropPedalKeyLabels[2].Text = "Pedal Toggle: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalToggleKeyIdentifier));
-            dropPedalKeyLabels[3].Text = "Base Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningDownKeyIdentifier));
-            dropPedalKeyLabels[4].Text = "Base Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningUpKeyIdentifier));
+            label_DropPedalPitchDownKey.Text = "Pedal Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchDownKeyIdentifier));
+            label_DropPedalPitchUpKey.Text = "Pedal Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchUpKeyIdentifier));
+            label_DropPedalToggleKey.Text = "Pedal Toggle: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalToggleKeyIdentifier));
+            label_DropPedalBaseTuningDownKey.Text = "Base Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningDownKeyIdentifier));
+            label_DropPedalBaseTuningUpKey.Text = "Base Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningUpKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()
@@ -791,8 +702,14 @@ namespace RSMods
 
             checkBox_DropPedal.Checked = ReadSettings.ProcessSettings(ReadSettings.DropPedalEnabledIdentifier) == "on";
             string dropPedalEngine = ReadSettings.ProcessSettings(ReadSettings.DropPedalEngineIdentifier);
-            if (comboBox_DropPedalEngine.Items.Contains(dropPedalEngine))
-                comboBox_DropPedalEngine.SelectedItem = dropPedalEngine;
+            foreach (object engineItem in comboBox_DropPedalEngine.Items)
+            {
+                if (engineItem.ToString().ToLower() == dropPedalEngine)
+                {
+                    comboBox_DropPedalEngine.SelectedItem = engineItem;
+                    break;
+                }
+            }
 
             checkBox_EnableLooping.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on";
             groupBox_LoopingLeadUp.Visible = checkBox_EnableLooping.Checked;
@@ -2156,7 +2073,7 @@ namespace RSMods
         {
             if (comboBox_DropPedalEngine.SelectedItem == null) return;
 
-            SaveSettings_Save(ReadSettings.DropPedalEngineIdentifier, comboBox_DropPedalEngine.SelectedItem.ToString());
+            SaveSettings_Save(ReadSettings.DropPedalEngineIdentifier, comboBox_DropPedalEngine.SelectedItem.ToString().ToLower());
         }
 
         private void Save_ExtendedRange(object sender, EventArgs e)

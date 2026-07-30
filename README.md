@@ -88,12 +88,12 @@ pedal readout and written to the debug log using the format
 ```ini
 [Drop Pedal]
 EnableDropPedal = on
-Engine = Automatic
+Engine = automatic
 ```
 
-`Automatic` uses ASIO when the RS_ASIO input chain appears and otherwise leaves
-the Cable Drop Pedal available. `Asio` requires the ASIO input chain and logs an
-error instead of falling back. `Cable` skips the ASIO input hooks and always
+`automatic` uses ASIO when the RS_ASIO input chain appears and otherwise leaves
+the Cable Drop Pedal available. `asio` requires the ASIO input chain and logs an
+error instead of falling back. `cable` skips the ASIO input hooks and always
 uses the MultiPitch path. Set `EnableDropPedal = off` to install none of the
 drop pedal or audio-input hooks.
 
@@ -128,10 +128,19 @@ way, are in [docs/wwise-plugin-internals.md](docs/wwise-plugin-internals.md).
 
 ## Roadmap
 
-The ASIO input shifter and Cable fallback are in place. The remaining drop pedal
-direction is shifting the song's tuning instead of the guitar, so playing
-without headphones works: the guitar's acoustic sound and the game would be in
-the same tuning instead of a semitone apart in the room.
+The ASIO input shifter and Cable fallback are in place. Planned directions:
+
+- **Automatic tuning.** When a song is selected, read its tuning and set the
+  pedal to the closest uniform tuning automatically, so no keys are pressed for
+  the common case. Non-uniform tunings such as drop D or drop Db get the uniform
+  part of the shift (Db standard for drop Db), with the odd string left to tune
+  by hand as it is today.
+- **Merging into RSMods.** The drop pedal is being tidied for a pull request
+  into [upstream RSMods](https://github.com/Lovrom8/RSMods), so it can ship
+  through the installer and settings app everyone already uses.
+- **Shifting the song instead of the guitar,** so playing without headphones
+  works: the guitar's acoustic sound and the game would be in the same tuning
+  instead of a semitone apart in the room.
 
 ---
 

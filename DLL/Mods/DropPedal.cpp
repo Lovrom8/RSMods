@@ -9,6 +9,8 @@ void DropPedal::LoadSettings()
 	DropPedalState::Configure(
 		Settings::ReturnSettingValue("EnableDropPedal"),
 		Settings::ReturnSettingValue("DropPedalEngine"));
+
+	DropPedalInput::LoadKeybinds();
 }
 
 bool DropPedal::IsConfiguredEnabled()
@@ -74,7 +76,6 @@ void DropPedal::InstallHooks()
 {
 	if (!DropPedalState::IsConfiguredEnabled()) return;
 
-	DropPedalInput::LoadKeybinds();
 	DropPedalHooks::Install();
 }
 

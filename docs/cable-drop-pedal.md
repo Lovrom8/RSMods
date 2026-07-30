@@ -7,8 +7,8 @@ bass.
 
 This guide covers the engine used without RS_ASIO, such as a Real Tone cable
 with nothing else in the chain. With RS_ASIO and an ASIO interface installed,
-the default `Automatic` setting uses the [ASIO Drop Pedal](asio-drop-pedal.md)
-instead, which needs no setup. Set `[Drop Pedal] Engine = Cable` to force this
+the default `automatic` setting uses the [ASIO Drop Pedal](asio-drop-pedal.md)
+instead, which needs no setup. Set `[Drop Pedal] Engine = cable` to force this
 engine.
 
 The engine is selected at launch and announced beside the pedal readout, then
@@ -17,7 +17,7 @@ fades after a few seconds:
 ![Pedal readout and engine notice at launch](images/overlay-cable-drop-pedal-engine.png)
 
 The same line is written to the debug log (`Drop pedal engine: ...`). The
-engine cannot change without relaunching. Forced `Cable` skips the ASIO input
+engine cannot change without relaunching. Forced `cable` skips the ASIO input
 hooks and always uses the MultiPitch path.
 
 ## How it works

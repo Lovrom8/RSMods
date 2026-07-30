@@ -7,6 +7,7 @@ namespace
 {
 	constexpr ULONGLONG PITCH_PUSH_DELAY_MILLISECONDS = 150;
 
+	// Defaults, replaced from [Keybinds] in RSMods.ini by LoadKeybinds.
 	int pitchDownKey = VK_OEM_COMMA;
 	int pitchUpKey = VK_OEM_PERIOD;
 	int toggleKey = VK_F8;
@@ -74,6 +75,8 @@ void DropPedalInput::LoadKeybinds()
 
 void DropPedalInput::PollHotkeys()
 {
+	// GetAsyncKeyState reads global keyboard state, so without this guard the pedal
+	// retunes while the player is typing in another window.
 	DWORD foregroundProcessId = 0;
 	GetWindowThreadProcessId(GetForegroundWindow(), &foregroundProcessId);
 	if (foregroundProcessId != GetCurrentProcessId()) return;
@@ -87,6 +90,9 @@ void DropPedalInput::PollHotkeys()
 
 	wasToggleKeyDown = isToggleKeyDown;
 
+	// Disabled means disabled: the game ignores the pedal's output, so no key besides
+	// the toggle may change its state either. The latches still update below so a key
+	// held across re-enabling does not fire on the first enabled poll.
 	const bool acceptAdjustments = DropPedalState::IsEnabled();
 
 	const bool isBaseDownKeyDown = (GetAsyncKeyState(baseTuningDownKey) & 0x8000) != 0;

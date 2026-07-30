@@ -6,13 +6,30 @@
 namespace
 {
 	constexpr LONG MAX_PENDING_EVENTS = 64;
+
+	// Vtable slot indices, confirmed by disassembly rather than declaration order.
+	// Slot 1 takes three arguments and null-checks the second, which is SetParam.
 	constexpr int SET_PARAM_VTABLE_INDEX = 1;
+
+	// IAkPluginParam: 0 destructor, 1 SetParam, 2 Clone, 3 Init, 4 Term. Term is the
+	// only notification we get that a param object is going away, and without it the
+	// tracked pointers go stale on a tone switch and a live push writes into freed
+	// memory. IsBadReadPtr does not catch that: freed memory usually stays mapped.
 	constexpr int TERM_VTABLE_INDEX = 4;
+
 	constexpr AkUInt32 PITCH_SHIFTER_PLUGIN_ID = 136;
+
+	// The pitch shifter receives its knob values through SetParam, sent while the
+	// effect is being built and again on every tone load and tone switch. Param 6
+	// is the pitch, in cents: a MultiPitch pedal at -12 semitones arrives as -1200.
 	constexpr AkUInt32 PITCH_PARAM_ID = 6;
+
 	constexpr LONG MAX_PARAM_OBJECTS = 16;
 
 	typedef void* (__cdecl* tCreateParamRaw)(void* allocator);
+
+	// Virtual member functions are __thiscall on x86, which passes this in ECX.
+	// __fastcall matches that once the unused EDX argument is declared explicitly.
 	typedef AKRESULT(__fastcall* tSetParamRaw)(void* self, void* unused, AkUInt32 paramId, const void* value, AkUInt32 size);
 	typedef void(__fastcall* tTermRaw)(void* self, void* unused, void* allocator);
 
@@ -28,11 +45,19 @@ namespace
 	tRegisterPlugin originalRegisterPlugin = nullptr;
 
 	bool isSetParamHooked = false;
+
+	// When the ASIO input shifter owns pitch, all game-side application is suppressed:
+	// the input signal is already retuned, so detection hears the shifted notes and the
+	// tuner reference must stay at 440.
 	bool inputShifterActive = false;
 	bool hasReportedInputShifterUnavailable = false;
 	bool hasCapturedSongTuning = false;
 	unsigned long long engineNoticeTick = 0;
 
+	// SetParam runs on bank and audio threads, so it must not log or take a lock:
+	// an earlier build deadlocked against the game loop by doing both, and another
+	// stalled the game by draining hundreds of verbose lines in a single frame.
+	// It records a small event here, and Poll logs it.
 	PitchOverrideEvent overrideEvents[MAX_PENDING_EVENTS] = {};
 	volatile LONG overrideEventCount = 0;
 
@@ -40,6 +65,10 @@ namespace
 	volatile LONG hasParamObject = 0;
 	volatile LONG paramObjectCount = 0;
 
+	// Objects the engine itself delivers pitch to. The create-param callback's return
+	// value is not necessarily what a running effect reads: IAkPluginParam has Clone at
+	// vtable slot 2, and writing to the original moved nothing. These are the objects
+	// the engine drives, so they are the ones worth writing to.
 	void* deliveredParamObjects[MAX_PARAM_OBJECTS] = {};
 	float deliveredAuthoredCents[MAX_PARAM_OBJECTS] = {};
 	volatile LONG deliveredParamObjectCount = 0;
@@ -61,6 +90,11 @@ namespace
 		return paramObject;
 	}
 
+	/// <summary>
+	/// Replace the pitch the game delivers to a pitch shifter. The value is passed
+	/// through a local, so the caller's own buffer is never written. Runs on bank and
+	/// audio threads, so no logging and no locks.
+	/// </summary>
 	AKRESULT __fastcall SpySetParam(void* self, void* unused, AkUInt32 paramId, const void* value, AkUInt32 size)
 	{
 		if (paramId != PITCH_PARAM_ID || size != sizeof(float) || value == nullptr)
@@ -68,6 +102,7 @@ namespace
 			return originalSetParam(self, unused, paramId, value, size);
 		}
 
+		// Record the object the engine delivered to, so live pushes can target it.
 		const float authoredCents = *(const float*)value;
 
 		const LONG deliveredKnown = deliveredParamObjectCount;
@@ -76,12 +111,19 @@ namespace
 		{
 			if (deliveredParamObjects[i] == self)
 			{
+				// Objects are reused across tone loads, so the baseline has to follow
+				// the tone currently loaded into this one rather than the first tone
+				// ever seen through it.
 				deliveredAuthoredCents[i] = authoredCents;
 				isAlreadyTracked = true;
 				break;
 			}
 		}
 
+		// The tone's own pitch is the baseline the player's shift moves from, so a tone
+		// authored as an octave-down emulated bass stays a bass when it is dropped a
+		// semitone. Tones authored at 0, which the setup instructions ask for, are
+		// unaffected: their baseline is 0 and the shift is the whole value.
 		if (!isAlreadyTracked)
 		{
 			const LONG slot = InterlockedIncrement(&deliveredParamObjectCount) - 1;
@@ -108,6 +150,11 @@ namespace
 		return originalSetParam(self, unused, paramId, &appliedCents, size);
 	}
 
+	/// <summary>
+	/// Forget a param object as the engine tears it down, so a later live push cannot
+	/// write into freed memory. Runs on whichever thread destroys it, so no logging
+	/// and no locks.
+	/// </summary>
 	void __fastcall SpyTerm(void* self, void* unused, void* allocator)
 	{
 		const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
@@ -191,12 +238,19 @@ namespace
 
 void DropPedalHooks::Install()
 {
+	// The engine notice starts counting here. Automatic starts game-side until the
+	// ASIO chain proves itself; a forced asio engine claims pitch immediately so the
+	// game-side MultiPitch path never runs, even if the chain later fails to appear.
 	engineNoticeTick = GetTickCount64();
 	inputShifterActive = DropPedalState::IsAsioEngine();
 
 	LOG_INFO("Drop pedal engine: "
 		<< (inputShifterActive ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 
+	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
+	// it. The game derives expected pitch from a reference frequency instead, which is
+	// the same value CDLC charters set as an arrangement's tuning pitch. Redirecting it
+	// is what keeps scoring in agreement with the strings the player is holding.
 	TrueTuning::DisableTrueTuning();
 	TrueTuning::SetReferenceSemitones(-DropPedalState::GetTargetSemitones());
 
@@ -213,6 +267,9 @@ void DropPedalHooks::Poll()
 {
 	HookSetParamOnce();
 
+	// Kept in step every tick rather than only when the pitch changes, so the value
+	// is already correct when a song loads. Detection appears to take its reference
+	// at load time, which is why setting it mid-song has no effect.
 	TrueTuning::SetReferenceSemitones((DropPedalState::IsEnabled() && !inputShifterActive)
 		? -DropPedalState::GetTargetSemitones()
 		: 0);
@@ -230,8 +287,16 @@ void DropPedalHooks::LogPendingOverrides()
 	}
 }
 
+/// <summary>
+/// Write the current pitch straight into every live pitch shifter, the same way
+/// the engine delivers it when one is built. Objects the engine has torn down
+/// cannot be tracked, so each is sanity-checked before the call; a switch of
+/// tone can still leave a brief window where one is gone, which is accepted.
+/// </summary>
 void DropPedalHooks::PushPitchToLiveShifters()
 {
+	// Without the Term hook there is no way to know an object has been freed, and
+	// a push after a tone switch would write into released memory.
 	if (originalSetParam == nullptr || originalTerm == nullptr)
 	{
 		return;
@@ -255,6 +320,8 @@ void DropPedalHooks::PushPitchToLiveShifters()
 			continue;
 		}
 
+		// Each shifter moves from its own tone's authored pitch, the same baseline
+		// the engine's own delivery is given.
 		const float cents = deliveredAuthoredCents[i] + DropPedalState::GetTargetCents();
 
 		originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float));
@@ -263,6 +330,8 @@ void DropPedalHooks::PushPitchToLiveShifters()
 
 void DropPedalHooks::SetInputShifterActive(bool active)
 {
+	// A forced engine wins over runtime arbitration: cable never hands pitch to the
+	// input shifter, asio never hands it back to the game-side path.
 	if (DropPedalState::IsCableEngine())
 	{
 		active = false;
@@ -289,7 +358,7 @@ void DropPedalHooks::ReportInputShifterUnavailable()
 	if (hasReportedInputShifterUnavailable) return;
 
 	hasReportedInputShifterUnavailable = true;
-	LOG_ERROR("Drop pedal Engine=Asio but ASIO processing is not active. "
+	LOG_ERROR("Drop pedal Engine=asio but ASIO processing is not active. "
 		"The drop pedal remains inactive until the ASIO input chain appears." << std::endl);
 }
 
@@ -298,6 +367,13 @@ unsigned long long DropPedalHooks::GetEngineNoticeTick()
 	return engineNoticeTick;
 }
 
+/// <summary>
+/// Log the song's own tuning once per song, for diagnosing detection problems.
+///
+/// Writing this array was tried as a way to make detection expect the player's
+/// tuning and had no effect, so it is left read only. The reference frequency in
+/// TrueTuning is the mechanism that actually drives detection.
+/// </summary>
 void DropPedalHooks::HandleTuningInSong()
 {
 	if (hasCapturedSongTuning)

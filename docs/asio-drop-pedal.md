@@ -23,9 +23,9 @@ notice reads `Cable Drop Pedal` instead, the ASIO chain did not initialize; see
 [troubleshooting](#troubleshooting). The engine cannot change without
 relaunching, since the hooks bind the audio driver for the session.
 
-To require this engine, set `[Drop Pedal] Engine = Asio` in `RSMods.ini` or the
-settings app. The default `Automatic` setting uses ASIO when the chain appears
-and otherwise uses the Cable Drop Pedal. Forced `Asio` logs an error and stays
+To require this engine, set `[Drop Pedal] Engine = asio` in `RSMods.ini` or the
+settings app. The default `automatic` setting uses ASIO when the chain appears
+and otherwise uses the Cable Drop Pedal. Forced `asio` logs an error and stays
 inactive if the ASIO chain never appears.
 
 ## How it works
@@ -89,8 +89,8 @@ Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
 | Symptom | Cause |
 |---|---|
-| Engine notice reads `Cable Drop Pedal` | In `Automatic`, the ASIO chain did not initialize and the mod is using Cable. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
-| Forced `Asio` logs inactive | `[Drop Pedal] Engine = Asio` was selected, but the ASIO input chain never appeared. Check `RS_ASIO.ini` and relaunch |
+| Engine notice reads `Cable Drop Pedal` | In `automatic`, the ASIO chain did not initialize and the mod is using Cable. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
+| Forced `asio` logs inactive | `[Drop Pedal] Engine = asio` was selected, but the ASIO input chain never appeared. Check `RS_ASIO.ini` and relaunch |
 | Game reports "no audio output device" on launch | Another program changed the interface's sample rate (DAWs and amp sims do this silently). Set it back to 48000 Hz in the interface's control panel and relaunch |
 | Tuner reads a different tuning than the guitar is in | The shift, working as designed |
 | Pitch keys do nothing | Pedal toggled off (`F8`), or Rocksmith is not the focused window |

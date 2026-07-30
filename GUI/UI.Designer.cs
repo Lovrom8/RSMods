@@ -271,6 +271,15 @@
             this.button_AutoLoadProfile_ClearSelection = new System.Windows.Forms.Button();
             this.listBox_AutoLoadProfiles = new System.Windows.Forms.ListBox();
             this.tabPage_ModSettings_AutoTuning = new System.Windows.Forms.TabPage();
+            this.groupBox_DropPedal = new System.Windows.Forms.GroupBox();
+            this.checkBox_DropPedal = new System.Windows.Forms.CheckBox();
+            this.label_DropPedalEngine = new System.Windows.Forms.Label();
+            this.comboBox_DropPedalEngine = new System.Windows.Forms.ComboBox();
+            this.label_DropPedalPitchDownKey = new System.Windows.Forms.Label();
+            this.label_DropPedalPitchUpKey = new System.Windows.Forms.Label();
+            this.label_DropPedalToggleKey = new System.Windows.Forms.Label();
+            this.label_DropPedalBaseTuningDownKey = new System.Windows.Forms.Label();
+            this.label_DropPedalBaseTuningUpKey = new System.Windows.Forms.Label();
             this.groupBox_MidiInDevice = new System.Windows.Forms.GroupBox();
             this.checkBox_EnabledMidiIn = new System.Windows.Forms.CheckBox();
             this.label_CurrentMidiIn = new System.Windows.Forms.Label();
@@ -598,6 +607,7 @@
             this.groupBox_SampleRateOutput.SuspendLayout();
             this.groupBox_AutoLoadProfiles.SuspendLayout();
             this.tabPage_ModSettings_AutoTuning.SuspendLayout();
+            this.groupBox_DropPedal.SuspendLayout();
             this.groupBox_MidiInDevice.SuspendLayout();
             this.groupBox_MidiAutoTuningWhen.SuspendLayout();
             this.groupBox_MidiAutoTuningOffset.SuspendLayout();
@@ -1519,6 +1529,11 @@
             // 
             // groupBox_Keybindings_MODS
             // 
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalBaseTuningUpKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalBaseTuningDownKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalToggleKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalPitchUpKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalPitchDownKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_RewindKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_LoopEndKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_LoopStartKey);
@@ -1537,12 +1552,57 @@
             this.groupBox_Keybindings_MODS.Controls.Add(this.listBox_Modlist_MODS);
             this.groupBox_Keybindings_MODS.Location = new System.Drawing.Point(15, 17);
             this.groupBox_Keybindings_MODS.Name = "groupBox_Keybindings_MODS";
-            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(701, 230);
+            this.groupBox_Keybindings_MODS.Size = new System.Drawing.Size(750, 230);
             this.groupBox_Keybindings_MODS.TabIndex = 52;
             this.groupBox_Keybindings_MODS.TabStop = false;
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_DropPedalPitchDownKey
+            // 
+            this.label_DropPedalPitchDownKey.AutoSize = true;
+            this.label_DropPedalPitchDownKey.Location = new System.Drawing.Point(600, 10);
+            this.label_DropPedalPitchDownKey.Name = "label_DropPedalPitchDownKey";
+            this.label_DropPedalPitchDownKey.Size = new System.Drawing.Size(70, 13);
+            this.label_DropPedalPitchDownKey.TabIndex = 60;
+            this.label_DropPedalPitchDownKey.Text = "Pedal Down: ";
+            // 
+            // label_DropPedalPitchUpKey
+            // 
+            this.label_DropPedalPitchUpKey.AutoSize = true;
+            this.label_DropPedalPitchUpKey.Location = new System.Drawing.Point(600, 27);
+            this.label_DropPedalPitchUpKey.Name = "label_DropPedalPitchUpKey";
+            this.label_DropPedalPitchUpKey.Size = new System.Drawing.Size(56, 13);
+            this.label_DropPedalPitchUpKey.TabIndex = 61;
+            this.label_DropPedalPitchUpKey.Text = "Pedal Up: ";
+            // 
+            // label_DropPedalToggleKey
+            // 
+            this.label_DropPedalToggleKey.AutoSize = true;
+            this.label_DropPedalToggleKey.Location = new System.Drawing.Point(600, 44);
+            this.label_DropPedalToggleKey.Name = "label_DropPedalToggleKey";
+            this.label_DropPedalToggleKey.Size = new System.Drawing.Size(74, 13);
+            this.label_DropPedalToggleKey.TabIndex = 62;
+            this.label_DropPedalToggleKey.Text = "Pedal Toggle: ";
+            // 
+            // label_DropPedalBaseTuningDownKey
+            // 
+            this.label_DropPedalBaseTuningDownKey.AutoSize = true;
+            this.label_DropPedalBaseTuningDownKey.Location = new System.Drawing.Point(600, 61);
+            this.label_DropPedalBaseTuningDownKey.Name = "label_DropPedalBaseTuningDownKey";
+            this.label_DropPedalBaseTuningDownKey.Size = new System.Drawing.Size(66, 13);
+            this.label_DropPedalBaseTuningDownKey.TabIndex = 63;
+            this.label_DropPedalBaseTuningDownKey.Text = "Base Down: ";
+            // 
+            // label_DropPedalBaseTuningUpKey
+            // 
+            this.label_DropPedalBaseTuningUpKey.AutoSize = true;
+            this.label_DropPedalBaseTuningUpKey.Location = new System.Drawing.Point(600, 78);
+            this.label_DropPedalBaseTuningUpKey.Name = "label_DropPedalBaseTuningUpKey";
+            this.label_DropPedalBaseTuningUpKey.Size = new System.Drawing.Size(52, 13);
+            this.label_DropPedalBaseTuningUpKey.TabIndex = 64;
+            this.label_DropPedalBaseTuningUpKey.Text = "Base Up: ";
             // 
             // label_RewindKey
             // 
@@ -3634,6 +3694,7 @@
             // tabPage_ModSettings_AutoTuning
             // 
             this.tabPage_ModSettings_AutoTuning.BackColor = System.Drawing.Color.Azure;
+            this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_DropPedal);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiInDevice);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningWhen);
             this.tabPage_ModSettings_AutoTuning.Controls.Add(this.groupBox_MidiAutoTuningOffset);
@@ -3642,7 +3703,57 @@
             this.tabPage_ModSettings_AutoTuning.Name = "tabPage_ModSettings_AutoTuning";
             this.tabPage_ModSettings_AutoTuning.Size = new System.Drawing.Size(777, 443);
             this.tabPage_ModSettings_AutoTuning.TabIndex = 4;
-            this.tabPage_ModSettings_AutoTuning.Text = "Auto Tuning";
+            this.tabPage_ModSettings_AutoTuning.Text = "Tuning";
+            // 
+            // groupBox_DropPedal
+            // 
+            this.groupBox_DropPedal.Controls.Add(this.checkBox_DropPedal);
+            this.groupBox_DropPedal.Controls.Add(this.label_DropPedalEngine);
+            this.groupBox_DropPedal.Controls.Add(this.comboBox_DropPedalEngine);
+            this.groupBox_DropPedal.Location = new System.Drawing.Point(480, 16);
+            this.groupBox_DropPedal.Name = "groupBox_DropPedal";
+            this.groupBox_DropPedal.Size = new System.Drawing.Size(279, 79);
+            this.groupBox_DropPedal.TabIndex = 5;
+            this.groupBox_DropPedal.TabStop = false;
+            this.groupBox_DropPedal.Text = "Drop Pedal";
+            // 
+            // checkBox_DropPedal
+            // 
+            this.checkBox_DropPedal.AutoSize = true;
+            this.checkBox_DropPedal.Location = new System.Drawing.Point(11, 22);
+            this.checkBox_DropPedal.Name = "checkBox_DropPedal";
+            this.checkBox_DropPedal.Size = new System.Drawing.Size(116, 17);
+            this.checkBox_DropPedal.TabIndex = 0;
+            this.checkBox_DropPedal.Text = "Enable Drop Pedal";
+            this.checkBox_DropPedal.UseVisualStyleBackColor = true;
+            this.checkBox_DropPedal.CheckedChanged += new System.EventHandler(this.Save_DropPedalEnabled);
+            this.checkBox_DropPedal.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.checkBox_DropPedal.MouseHover += new System.EventHandler(this.ToolTips_Show);
+            // 
+            // label_DropPedalEngine
+            // 
+            this.label_DropPedalEngine.AutoSize = true;
+            this.label_DropPedalEngine.Location = new System.Drawing.Point(11, 51);
+            this.label_DropPedalEngine.Name = "label_DropPedalEngine";
+            this.label_DropPedalEngine.Size = new System.Drawing.Size(43, 13);
+            this.label_DropPedalEngine.TabIndex = 1;
+            this.label_DropPedalEngine.Text = "Engine:";
+            // 
+            // comboBox_DropPedalEngine
+            // 
+            this.comboBox_DropPedalEngine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_DropPedalEngine.FormattingEnabled = true;
+            this.comboBox_DropPedalEngine.Items.AddRange(new object[] {
+            "Automatic",
+            "Asio",
+            "Cable"});
+            this.comboBox_DropPedalEngine.Location = new System.Drawing.Point(68, 48);
+            this.comboBox_DropPedalEngine.Name = "comboBox_DropPedalEngine";
+            this.comboBox_DropPedalEngine.Size = new System.Drawing.Size(121, 21);
+            this.comboBox_DropPedalEngine.TabIndex = 2;
+            this.comboBox_DropPedalEngine.SelectedIndexChanged += new System.EventHandler(this.Save_DropPedalEngine);
+            this.comboBox_DropPedalEngine.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
+            this.comboBox_DropPedalEngine.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_MidiInDevice
             // 
@@ -7000,6 +7111,8 @@
             this.groupBox_SampleRateOutput.ResumeLayout(false);
             this.groupBox_AutoLoadProfiles.ResumeLayout(false);
             this.tabPage_ModSettings_AutoTuning.ResumeLayout(false);
+            this.groupBox_DropPedal.ResumeLayout(false);
+            this.groupBox_DropPedal.PerformLayout();
             this.groupBox_MidiInDevice.ResumeLayout(false);
             this.groupBox_MidiInDevice.PerformLayout();
             this.groupBox_MidiAutoTuningWhen.ResumeLayout(false);
@@ -7463,6 +7576,15 @@
         private System.Windows.Forms.CheckBox checkBox_ModsLog;
         private System.IO.FileSystemWatcher fileSystemWatcher1;
         private System.Windows.Forms.TabPage tabPage_ModSettings_AutoTuning;
+        private System.Windows.Forms.GroupBox groupBox_DropPedal;
+        private System.Windows.Forms.CheckBox checkBox_DropPedal;
+        private System.Windows.Forms.Label label_DropPedalEngine;
+        private System.Windows.Forms.ComboBox comboBox_DropPedalEngine;
+        private System.Windows.Forms.Label label_DropPedalPitchDownKey;
+        private System.Windows.Forms.Label label_DropPedalPitchUpKey;
+        private System.Windows.Forms.Label label_DropPedalToggleKey;
+        private System.Windows.Forms.Label label_DropPedalBaseTuningDownKey;
+        private System.Windows.Forms.Label label_DropPedalBaseTuningUpKey;
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningOffset;
         private System.Windows.Forms.ListBox listBox_MidiAutoTuningOffset;
         private System.Windows.Forms.Button button_UpdateRSMods;
