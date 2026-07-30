@@ -1,6 +1,5 @@
 # Project-specific files
 xinput1_3.dll
-Tests/ShifterHarness/*.wav
 
 # Per-build symbol archive (DLL/PDB/MAP), written by the post-build event.
 # Kept locally so a crash offset can be symbolised against the exact build.
