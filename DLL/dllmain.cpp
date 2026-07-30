@@ -14,7 +14,7 @@ bool wwiseLogging = false;
 #endif
 
 #ifndef _RSMODS_VERSION
-#define _RSMODS_VERSION "RSModsPlus 1.0.0 (based on RSMods 1.2.8.2). DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#define _RSMODS_VERSION "RSModsPlus 2.1 (based on RSMods 1.2.8.2). DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
 
 /// <summary>
@@ -280,11 +280,8 @@ void Initialize() {
 }
 
 void SetupLogging() {
-	bool debugLogPresent = std::ifstream("RSMods_debug.txt").good();
-	auto clearDebugLog = std::ofstream("RSMods_debug.txt");
-
-	FILE* streamRead;
-	FILE* streamConsole;
+	FILE* streamRead = nullptr;
+	FILE* streamConsole = nullptr;
 
 	if (debug) {
 		AllocConsole();
@@ -296,13 +293,9 @@ void SetupLogging() {
 
 	// Create log file to both help with debugging release builds,
 	// and allow the user to examine their debug logs after a crash.
-	if (debugLogPresent) {
-		// Clear log so it isn't full of junk from the last launch
-		clearDebugLog.open("RSMods_debug.txt", std::ofstream::out | std::ofstream::trunc);
-		clearDebugLog.close();
-
-		FILE* debugLog;
-		freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr);
+	FILE* debugLog = nullptr;
+	if (freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr) == 0 && debugLog != nullptr) {
+		setvbuf(stderr, nullptr, _IONBF, 0);
 	}
 }
 
