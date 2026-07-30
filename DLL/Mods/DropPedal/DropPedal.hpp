@@ -12,7 +12,6 @@
 // A pitch shifter moves the whole signal, so this covers uniform tunings such as
 // Eb or D standard. It cannot produce drop tunings, where only one string differs.
 //
-// See docs/wwise-plugin-internals.md for how this was found and what was ruled out.
 namespace DropPedal
 {
 	void LoadSettings();
