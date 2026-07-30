@@ -15,6 +15,12 @@
 // See docs/wwise-plugin-internals.md for how this was found and what was ruled out.
 namespace DropPedal
 {
+	void LoadSettings();
+	bool IsConfiguredEnabled();
+	bool ShouldInstallInputHooks();
+	bool RequiresInputShifter();
+	void ReportInputShifterUnavailable();
+
 	void InstallHooks();
 	void Poll();
 

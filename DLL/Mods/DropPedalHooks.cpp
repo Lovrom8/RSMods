@@ -29,6 +29,7 @@ namespace
 
 	bool isSetParamHooked = false;
 	bool inputShifterActive = false;
+	bool hasReportedInputShifterUnavailable = false;
 	bool hasCapturedSongTuning = false;
 	unsigned long long engineNoticeTick = 0;
 
@@ -191,7 +192,10 @@ namespace
 void DropPedalHooks::Install()
 {
 	engineNoticeTick = GetTickCount64();
-	LOG_INFO("Drop pedal engine: Cable Drop Pedal" << std::endl);
+	inputShifterActive = DropPedalState::IsAsioEngine();
+
+	LOG_INFO("Drop pedal engine: "
+		<< (inputShifterActive ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 
 	TrueTuning::DisableTrueTuning();
 	TrueTuning::SetReferenceSemitones(-DropPedalState::GetTargetSemitones());
@@ -259,6 +263,15 @@ void DropPedalHooks::PushPitchToLiveShifters()
 
 void DropPedalHooks::SetInputShifterActive(bool active)
 {
+	if (DropPedalState::IsCableEngine())
+	{
+		active = false;
+	}
+	else if (DropPedalState::IsAsioEngine())
+	{
+		active = true;
+	}
+
 	if (inputShifterActive == active) return;
 
 	inputShifterActive = active;
@@ -269,6 +282,15 @@ void DropPedalHooks::SetInputShifterActive(bool active)
 bool DropPedalHooks::IsInputShifterActive()
 {
 	return inputShifterActive;
+}
+
+void DropPedalHooks::ReportInputShifterUnavailable()
+{
+	if (hasReportedInputShifterUnavailable) return;
+
+	hasReportedInputShifterUnavailable = true;
+	LOG_ERROR("Drop pedal Engine=Asio but ASIO processing is not active. "
+		"The drop pedal remains inactive until the ASIO input chain appears." << std::endl);
 }
 
 unsigned long long DropPedalHooks::GetEngineNoticeTick()

@@ -5,12 +5,13 @@
 
 namespace
 {
-	constexpr int PITCH_DOWN_KEY = VK_OEM_COMMA;
-	constexpr int PITCH_UP_KEY = VK_OEM_PERIOD;
-	constexpr int TOGGLE_KEY = VK_F8;
-	constexpr int BASE_TUNING_DOWN_KEY = VK_F9;
-	constexpr int BASE_TUNING_UP_KEY = VK_F10;
 	constexpr ULONGLONG PITCH_PUSH_DELAY_MILLISECONDS = 150;
+
+	int pitchDownKey = VK_OEM_COMMA;
+	int pitchUpKey = VK_OEM_PERIOD;
+	int toggleKey = VK_F8;
+	int baseTuningDownKey = VK_F9;
+	int baseTuningUpKey = VK_F10;
 
 	bool wasLowerKeyDown = false;
 	bool wasRaiseKeyDown = false;
@@ -62,13 +63,22 @@ namespace
 	}
 }
 
+void DropPedalInput::LoadKeybinds()
+{
+	pitchDownKey = Settings::GetKeyBind("DropPedalPitchDownKey");
+	pitchUpKey = Settings::GetKeyBind("DropPedalPitchUpKey");
+	toggleKey = Settings::GetKeyBind("DropPedalToggleKey");
+	baseTuningDownKey = Settings::GetKeyBind("DropPedalBaseTuningDownKey");
+	baseTuningUpKey = Settings::GetKeyBind("DropPedalBaseTuningUpKey");
+}
+
 void DropPedalInput::PollHotkeys()
 {
 	DWORD foregroundProcessId = 0;
 	GetWindowThreadProcessId(GetForegroundWindow(), &foregroundProcessId);
 	if (foregroundProcessId != GetCurrentProcessId()) return;
 
-	const bool isToggleKeyDown = (GetAsyncKeyState(TOGGLE_KEY) & 0x8000) != 0;
+	const bool isToggleKeyDown = (GetAsyncKeyState(toggleKey) & 0x8000) != 0;
 
 	if (isToggleKeyDown && !wasToggleKeyDown)
 	{
@@ -79,8 +89,8 @@ void DropPedalInput::PollHotkeys()
 
 	const bool acceptAdjustments = DropPedalState::IsEnabled();
 
-	const bool isBaseDownKeyDown = (GetAsyncKeyState(BASE_TUNING_DOWN_KEY) & 0x8000) != 0;
-	const bool isBaseUpKeyDown = (GetAsyncKeyState(BASE_TUNING_UP_KEY) & 0x8000) != 0;
+	const bool isBaseDownKeyDown = (GetAsyncKeyState(baseTuningDownKey) & 0x8000) != 0;
+	const bool isBaseUpKeyDown = (GetAsyncKeyState(baseTuningUpKey) & 0x8000) != 0;
 
 	if (acceptAdjustments && isBaseDownKeyDown && !wasBaseDownKeyDown)
 	{
@@ -95,8 +105,8 @@ void DropPedalInput::PollHotkeys()
 	wasBaseDownKeyDown = isBaseDownKeyDown;
 	wasBaseUpKeyDown = isBaseUpKeyDown;
 
-	const bool isLowerKeyDown = (GetAsyncKeyState(PITCH_DOWN_KEY) & 0x8000) != 0;
-	const bool isRaiseKeyDown = (GetAsyncKeyState(PITCH_UP_KEY) & 0x8000) != 0;
+	const bool isLowerKeyDown = (GetAsyncKeyState(pitchDownKey) & 0x8000) != 0;
+	const bool isRaiseKeyDown = (GetAsyncKeyState(pitchUpKey) & 0x8000) != 0;
 
 	if (acceptAdjustments && isLowerKeyDown && !wasLowerKeyDown)
 	{

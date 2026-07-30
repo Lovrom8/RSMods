@@ -8,6 +8,7 @@ namespace DropPedalHooks
 	void PushPitchToLiveShifters();
 	void SetInputShifterActive(bool active);
 	bool IsInputShifterActive();
+	void ReportInputShifterUnavailable();
 	unsigned long long GetEngineNoticeTick();
 	void HandleTuningInSong();
 	void ResetSongState();

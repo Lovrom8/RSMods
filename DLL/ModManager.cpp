@@ -104,6 +104,7 @@ namespace ModManager {
 	/// </summary>
 	void UpdateSettings() {
 		Settings::UpdateSettings();
+		DropPedal::LoadSettings();
 		Sleep(500);
 		CustomSongTitles::LoadSettings();
 		Sleep(500);
@@ -135,9 +136,12 @@ namespace ModManager {
 	{
 		// Must run before anything creates an IMMDeviceEnumerator, our own microphone setup
 		// included, or the game builds its audio chain before we can see it.
-		Audio::CaptureHook::Install();
-		Audio::AsioHook::Install();
-		Audio::AsioHook::SetProcessor(&pitchShifter);
+		if (DropPedal::ShouldInstallInputHooks())
+		{
+			Audio::CaptureHook::Install();
+			Audio::AsioHook::Install();
+			Audio::AsioHook::SetProcessor(&pitchShifter);
+		}
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
@@ -166,7 +170,10 @@ namespace ModManager {
 			VolumeControl::AllowAltTabbingWithAudio();
 		}
 
-		DropPedal::InstallHooks();
+		if (DropPedal::IsConfiguredEnabled())
+		{
+			DropPedal::InstallHooks();
+		}
 	}
 
 	/// <summary>
@@ -226,9 +233,11 @@ namespace ModManager {
 	/// </summary>
 	void PollDropPedalHotkeys()
 	{
+		if (!DropPedal::IsConfiguredEnabled()) return;
+
 		DropPedal::PollHotkeys();
 
-		if (Audio::AsioHook::IsProcessingEnabled())
+		if (DropPedal::ShouldInstallInputHooks() && Audio::AsioHook::IsProcessingEnabled())
 		{
 			// Atomic store inside; safe from this thread.
 			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
@@ -263,14 +272,26 @@ namespace ModManager {
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
 
-		DropPedal::Poll();
-		Audio::AsioHook::Poll();
+		if (DropPedal::IsConfiguredEnabled())
+		{
+			DropPedal::Poll();
 
-		// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
-		// shifter is processing, it owns pitch; the game-side MultiPitch path stays
-		// suppressed for the session. The hotkey thread keeps the shifter's semitones in
-		// step, since key changes land there.
-		DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
+			if (DropPedal::ShouldInstallInputHooks())
+			{
+				Audio::AsioHook::Poll();
+
+				// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
+				// shifter is processing, it owns pitch; the game-side MultiPitch path stays
+				// suppressed for the session. The hotkey thread keeps the shifter's semitones in
+				// step, since key changes land there.
+				DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
+
+				if (DropPedal::RequiresInputShifter() && !Audio::AsioHook::IsProcessingEnabled())
+				{
+					DropPedal::ReportInputShifterUnavailable();
+				}
+			}
+		}
 
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {
@@ -412,7 +433,10 @@ namespace ModManager {
 			Midi::userWantsToUseAutoTuning = false;
 		}
 
-		DropPedal::ResetSongState();
+		if (DropPedal::IsConfiguredEnabled())
+		{
+			DropPedal::ResetSongState();
+		}
 	}
 
 	/// <summary>

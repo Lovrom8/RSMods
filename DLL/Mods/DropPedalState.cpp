@@ -11,6 +11,8 @@ namespace
 	constexpr int SEMITONES_PER_OCTAVE = 12;
 
 	volatile float targetCents = 0.0f;
+	bool isConfiguredEnabled = true;
+	std::string engineSetting = "Automatic";
 	volatile bool isEnabledSession = true;
 	int baseTuningSemitones = 0;
 
@@ -22,6 +24,42 @@ namespace
 
 		return tuningNames[index];
 	}
+}
+
+void DropPedalState::Configure(const std::string& enabledSetting, const std::string& selectedEngine)
+{
+	isConfiguredEnabled = enabledSetting == "on";
+
+	if (selectedEngine == "Automatic" || selectedEngine == "Asio" || selectedEngine == "Cable")
+	{
+		engineSetting = selectedEngine;
+		return;
+	}
+
+	engineSetting.clear();
+	isConfiguredEnabled = false;
+	LOG_ERROR("Drop pedal disabled because [Drop Pedal] Engine is invalid: "
+		<< selectedEngine << ". Expected Automatic, Asio or Cable." << std::endl);
+}
+
+bool DropPedalState::IsConfiguredEnabled()
+{
+	return isConfiguredEnabled;
+}
+
+bool DropPedalState::IsAutomaticEngine()
+{
+	return engineSetting == "Automatic";
+}
+
+bool DropPedalState::IsAsioEngine()
+{
+	return engineSetting == "Asio";
+}
+
+bool DropPedalState::IsCableEngine()
+{
+	return engineSetting == "Cable";
 }
 
 bool DropPedalState::IsEnabled()
