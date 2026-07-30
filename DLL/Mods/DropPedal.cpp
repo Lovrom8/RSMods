@@ -1155,6 +1155,7 @@ void DropPedal::InstallHooks()
 	// The engine notice starts counting here: game-side until the ASIO chain proves
 	// itself, at which point SetInputShifterActive restarts it.
 	engineNoticeTick = GetTickCount64();
+	LOG_INFO("Drop pedal engine: Cable Drop Pedal" << std::endl);
 
 	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
 	// it. The game derives expected pitch from a reference frequency instead, which is
