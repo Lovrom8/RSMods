@@ -2,8 +2,6 @@
 #include "DropPedal.hpp"
 #include "TrueTuning.hpp"
 
-extern "C" void* _ReturnAddress(void);
-#pragma intrinsic(_ReturnAddress)
 
 namespace
 {
@@ -51,61 +49,7 @@ namespace
 	// press; only the write to the shifters waits for the player to settle.
 	constexpr ULONGLONG PITCH_PUSH_DELAY_MILLISECONDS = 150;
 
-	constexpr uintptr_t FX_WALKER_ADDRESS = 0xEF5750;
-	constexpr size_t FX_RECORD_SIZE = 0x1C;
-	constexpr LONG MAX_FX_SNAPSHOTS = 64;
-	constexpr LONG MAX_FX_RECORDS_PER_SNAPSHOT = 128;
-	// Word indices into a 28-byte FX record. +00 repeats within a single chain
-	// while +08 never does, so +00 reads as a parent/bus id and +08 as the effect
-	// id. Diffs must be done on +08: removing one effect from a tone changed every
-	// +00 in that chain, so +00 is position-dependent and useless for identity.
-	// +04 was zero in every record captured, so it is the high half of a 64-bit +00.
-	constexpr int FX_BUS_WORD = 0;
-	constexpr int FX_EFFECT_WORD = 2;
-	constexpr int FX_KIND_WORD = 5;
-
-	// Effect ids from the Emulated Bass chain, captured while the shifter was sent
-	// -1200 cents. Whichever of these is absent once the MultiPitch is removed is
-	// the pitch node.
-	constexpr AkUInt32 WATCHED_FX_EFFECTS[] = { 0x2DE350C2, 0x0FA365D3, 0x0891E5AF, 0x0DEC9B6F };
-
-	// The node deserializer reads a plugin id straight out of bank data and builds
-	// the effect unless the id is the "no plugin" sentinel. It is the only gate on
-	// instantiation, so what a stock tone puts in that field decides everything.
-	//
-	// Wwise packs the id as (pluginId << 16) | (companyId << 4) | pluginType, with
-	// type 3 meaning effect. The shifter is plugin 136 from company 0, so bank data
-	// carries 0x880003 rather than the bare 136 that RegisterPlugin reports.
-	constexpr uintptr_t NODE_DESERIALIZE_ADDRESS = 0xEF5B10;
-	constexpr AkUInt32 PITCH_SHIFTER_ENCODED_PLUGIN_ID = 0x880003;
-	constexpr AkUInt32 NODE_NO_PLUGIN_ID = 0xFFFFFFFF;
-	constexpr size_t NODE_PLUGIN_ID_OFFSET = 4;
-	constexpr size_t NODE_BLOB_SIZE_OFFSET = 8;
-	constexpr size_t NODE_BLOB_OFFSET = 0xC;
-	constexpr LONG MAX_NODE_SNAPSHOTS = 128;
-
-	// Only the pitch shifter's parameter block is worth keeping: it is the template
-	// a synthetic shifter would have to supply to Init.
-	constexpr AkUInt32 MAX_CAPTURED_BLOB_BYTES = 64;
-
-	const unsigned char NODE_DESERIALIZE_PROLOGUE[] = { 0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x0C, 0x53, 0x56 };
-
-	// The executable is packed, so game code exists only in the running process.
-	// This span covers the two SetParam delivery sites (0xEC87D5, 0xEC94B7) and the
-	// plugin dispatch at 0xECA520, dumped together so cross-references resolve.
-	constexpr uintptr_t TEXT_DUMP_BASE = 0xEC0000;
-	constexpr size_t TEXT_DUMP_SIZE = 0x1C000;
-	constexpr size_t TEXT_DUMP_PAGE_SIZE = 0x1000;
-	const char TEXT_DUMP_FILE_NAME[] = "RSMods_text_dump.bin";
-
-	const unsigned char FX_WALKER_PROLOGUE[] = { 0x55, 0x8B, 0xEC, 0x56, 0x57 };
-
 	typedef void* (__cdecl* tCreateParamRaw)(void* allocator);
-	typedef uintptr_t(__thiscall* tFxWalkerRaw)(void* self);
-
-	// 0xEF5B10 is __thiscall with two stack arguments: derived from ret 8 at
-	// 0xEF5BEF and mov edi, ecx at 0xEF5B22, not assumed.
-	typedef AKRESULT(__fastcall* tNodeDeserializeRaw)(void* self, void* unused, const void* record, AkUInt32 context);
 
 	// Virtual member functions are __thiscall on x86, which passes this in ECX.
 	// __fastcall matches that once the unused EDX argument is declared explicitly.
@@ -118,45 +62,7 @@ namespace
 		float appliedCents;
 	};
 
-	struct NodeSnapshot
-	{
-		volatile LONG state;
-		AkUInt32 pluginId;
-		AkUInt32 blobSize;
-		AkUInt32 capturedBlobBytes;
-		unsigned char blob[MAX_CAPTURED_BLOB_BYTES];
-	};
-
-	enum FxSnapshotStatus
-	{
-		FX_SNAPSHOT_VALID,
-		FX_SNAPSHOT_INVALID_OWNER,
-		FX_SNAPSHOT_INVALID_BOUNDS,
-		FX_SNAPSHOT_INVALID_RECORD
-	};
-
-	struct FxRecordSnapshot
-	{
-		AkUInt32 words[FX_RECORD_SIZE / sizeof(AkUInt32)];
-	};
-
-	struct FxWalkerSnapshot
-	{
-		volatile LONG state;
-		FxSnapshotStatus status;
-		uintptr_t owner;
-		uintptr_t begin;
-		uintptr_t end;
-		LONG recordCount;
-		LONG capturedCount;
-		LONG pitchCallsBefore;
-		bool hasWatchedKey;
-		FxRecordSnapshot records[MAX_FX_RECORDS_PER_SNAPSHOT];
-	};
-
 	tCreateParamRaw originalCreateParam = nullptr;
-	tFxWalkerRaw originalFxWalker = nullptr;
-	tNodeDeserializeRaw originalNodeDeserialize = nullptr;
 	tSetParamRaw originalSetParam = nullptr;
 	tTermRaw originalTerm = nullptr;
 	tRegisterPlugin originalRegisterPlugin = nullptr;
@@ -169,23 +75,6 @@ namespace
 	// It records a small event here, and Poll logs it.
 	PitchOverrideEvent overrideEvents[MAX_PENDING_EVENTS] = {};
 	volatile LONG overrideEventCount = 0;
-
-	FxWalkerSnapshot fxSnapshots[MAX_FX_SNAPSHOTS] = {};
-	volatile LONG nextFxSnapshot = -1;
-	volatile LONG droppedFxSnapshots = 0;
-
-	NodeSnapshot nodeSnapshots[MAX_NODE_SNAPSHOTS] = {};
-	volatile LONG droppedNodeSnapshots = 0;
-
-	// A bank load walks well over a thousand nodes. Only shifters and empty slots
-	// are worth a line each; the rest are counted so the volume is still visible.
-	volatile LONG otherNodeCount = 0;
-	volatile LONG unreadableNodeCount = 0;
-
-	// Counts every pitch parameter the engine delivers, so a snapshot can say how
-	// many had arrived when it was taken. The Emulated Bass group followed the
-	// -1200 immediately; that ordering is what identifies the chain.
-	volatile LONG pitchParamCallCount = 0;
 
 	void* firstParamObject = nullptr;
 	volatile LONG hasParamObject = 0;
@@ -237,129 +126,18 @@ namespace
 	volatile LONG deliveredParamObjectCount = 0;
 	ULONGLONG lastTargetChangeTime = 0;
 
-	// Records who asked for a pitch shifter. SpyCreateParam is a detour of the
-	// plugin's own create-param callback, so its return address is the engine code
-	// that decided to build one. Comparing that between a tone that has a
-	// MultiPitch and one that does not is the shortest route to the decision point
-	// the mod needs to reach for stock tones.
-	constexpr LONG MAX_CREATE_PARAM_EVENTS = 32;
-	constexpr LONG MAX_CREATE_PARAM_CALLERS = 8;
-	constexpr LONG CREATE_PARAM_STACK_SCAN_WORDS = 192;
-
-	// The executable is a little over 16 MB at a standard base, so anything in this
-	// window is plausibly a return address and anything outside it certainly is not.
-	constexpr uintptr_t CODE_RANGE_LOW = 0x00400000;
-	constexpr uintptr_t CODE_RANGE_HIGH = 0x01500000;
-
-	struct CreateParamEvent
-	{
-		volatile LONG state;
-		LONG shifterIndex;
-		uintptr_t returnAddress;
-		LONG callerCount;
-		uintptr_t callers[MAX_CREATE_PARAM_CALLERS];
-	};
-
-	CreateParamEvent createParamEvents[MAX_CREATE_PARAM_EVENTS] = {};
-	volatile LONG droppedCreateParamEvents = 0;
-
-	void CaptureCreateParamCallers(LONG shifterIndex, uintptr_t returnAddress, const uintptr_t* stackCursor)
-	{
-		CreateParamEvent* event = nullptr;
-		for (LONG index = 0; index < MAX_CREATE_PARAM_EVENTS; index++)
-		{
-			if (InterlockedCompareExchange(&createParamEvents[index].state, 1, 0) == 0)
-			{
-				event = &createParamEvents[index];
-				break;
-			}
-		}
-
-		if (event == nullptr)
-		{
-			InterlockedIncrement(&droppedCreateParamEvents);
-			return;
-		}
-
-		event->shifterIndex = shifterIndex;
-		event->returnAddress = returnAddress;
-		event->callerCount = 0;
-
-		// Walking the frame pointers would need the engine to keep them, which an
-		// optimised build does not. Scanning a bounded window of the stack for
-		// values that fall inside the image gives a usable trace without that
-		// assumption, at the cost of occasional false positives.
-		for (LONG word = 0; word < CREATE_PARAM_STACK_SCAN_WORDS; word++)
-		{
-			if (event->callerCount >= MAX_CREATE_PARAM_CALLERS)
-			{
-				break;
-			}
-
-			const uintptr_t* slot = stackCursor + word;
-			if (MemUtil::IsBadReadPtr((void*)slot))
-			{
-				break;
-			}
-
-			const uintptr_t value = *slot;
-			if (value >= CODE_RANGE_LOW && value < CODE_RANGE_HIGH)
-			{
-				event->callers[event->callerCount] = value;
-				event->callerCount++;
-			}
-		}
-
-		InterlockedExchange(&event->state, 2);
-	}
-
-	void LogCreateParamEvents()
-	{
-		for (LONG index = 0; index < MAX_CREATE_PARAM_EVENTS; index++)
-		{
-			CreateParamEvent* event = &createParamEvents[index];
-			if (InterlockedCompareExchange(&event->state, 3, 2) != 2)
-			{
-				continue;
-			}
-
-			std::ostringstream callers;
-			for (LONG callerIndex = 0; callerIndex < event->callerCount; callerIndex++)
-			{
-				callers << " 0x" << std::hex << event->callers[callerIndex] << std::dec;
-			}
-
-			LOG_INFO("Drop pedal shifter built index=" << event->shifterIndex
-				<< " calledFrom=0x" << std::hex << event->returnAddress << std::dec
-				<< " stack" << callers.str() << std::endl);
-
-			InterlockedExchange(&event->state, 0);
-		}
-
-		const LONG dropped = InterlockedExchange(&droppedCreateParamEvents, 0);
-		if (dropped > 0)
-		{
-			LOG_ERROR("Drop pedal dropped " << dropped << " create-param event(s)" << std::endl);
-		}
-	}
-
 	void* __cdecl SpyCreateParam(void* allocator)
 	{
-		const uintptr_t returnAddress = (uintptr_t)_ReturnAddress();
-		uintptr_t stackAnchor = 0;
-
 		void* paramObject = originalCreateParam(allocator);
 
 		if (paramObject != nullptr)
 		{
-			const LONG index = InterlockedIncrement(&paramObjectCount) - 1;
+			InterlockedIncrement(&paramObjectCount);
 
 			if (InterlockedCompareExchange(&hasParamObject, 1, 0) == 0)
 			{
 				firstParamObject = paramObject;
 			}
-
-			CaptureCreateParamCallers(index, returnAddress, (const uintptr_t*)&stackAnchor);
 		}
 
 		return paramObject;
@@ -376,7 +154,6 @@ namespace
 			return originalSetParam(self, unused, paramId, value, size);
 		}
 
-		InterlockedIncrement(&pitchParamCallCount);
 
 		// Record the object the engine delivered to, so live pushes can target it.
 		// Runs on the audio thread, so no logging and no locks.
@@ -673,360 +450,6 @@ namespace
 		wasRaiseKeyDown = isRaiseKeyDown;
 	}
 
-	FxWalkerSnapshot* ReserveFxSnapshot()
-	{
-		const LONG firstIndex = InterlockedIncrement(&nextFxSnapshot);
-		for (LONG offset = 0; offset < MAX_FX_SNAPSHOTS; offset++)
-		{
-			const ULONG index = ((ULONG)firstIndex + (ULONG)offset) & (MAX_FX_SNAPSHOTS - 1);
-			FxWalkerSnapshot* snapshot = &fxSnapshots[index];
-			if (InterlockedCompareExchange(&snapshot->state, 1, 0) == 0)
-			{
-				return snapshot;
-			}
-		}
-
-		InterlockedIncrement(&droppedFxSnapshots);
-		return nullptr;
-	}
-
-	void CaptureFxWalkerSnapshot(void* owner)
-	{
-		FxWalkerSnapshot* snapshot = ReserveFxSnapshot();
-		if (snapshot == nullptr)
-		{
-			return;
-		}
-
-		snapshot->status = FX_SNAPSHOT_VALID;
-		snapshot->owner = (uintptr_t)owner;
-		snapshot->begin = 0;
-		snapshot->end = 0;
-		snapshot->recordCount = 0;
-		snapshot->capturedCount = 0;
-		snapshot->pitchCallsBefore = pitchParamCallCount;
-		snapshot->hasWatchedKey = false;
-
-		if (owner == nullptr || MemUtil::IsBadReadPtr(owner)
-			|| MemUtil::IsBadReadPtr((unsigned char*)owner + 0x28 + sizeof(uintptr_t) - 1))
-		{
-			snapshot->status = FX_SNAPSHOT_INVALID_OWNER;
-			InterlockedExchange(&snapshot->state, 2);
-			return;
-		}
-
-		snapshot->begin = *(uintptr_t*)((unsigned char*)owner + 0x24);
-		snapshot->end = *(uintptr_t*)((unsigned char*)owner + 0x28);
-		if (snapshot->end < snapshot->begin
-			|| (snapshot->end - snapshot->begin) % FX_RECORD_SIZE != 0)
-		{
-			snapshot->status = FX_SNAPSHOT_INVALID_BOUNDS;
-			InterlockedExchange(&snapshot->state, 2);
-			return;
-		}
-
-		const uintptr_t recordCount = (snapshot->end - snapshot->begin) / FX_RECORD_SIZE;
-		if (recordCount > LONG_MAX)
-		{
-			snapshot->status = FX_SNAPSHOT_INVALID_BOUNDS;
-			InterlockedExchange(&snapshot->state, 2);
-			return;
-		}
-
-		snapshot->recordCount = (LONG)recordCount;
-		snapshot->capturedCount = snapshot->recordCount < MAX_FX_RECORDS_PER_SNAPSHOT
-			? snapshot->recordCount
-			: MAX_FX_RECORDS_PER_SNAPSHOT;
-
-		for (LONG index = 0; index < snapshot->capturedCount; index++)
-		{
-			const uintptr_t recordAddress = snapshot->begin + index * FX_RECORD_SIZE;
-			if (MemUtil::IsBadReadPtr((void*)recordAddress)
-				|| MemUtil::IsBadReadPtr((void*)(recordAddress + FX_RECORD_SIZE - 1)))
-			{
-				snapshot->status = FX_SNAPSHOT_INVALID_RECORD;
-				snapshot->capturedCount = index;
-				break;
-			}
-
-			memcpy(snapshot->records[index].words, (void*)recordAddress, FX_RECORD_SIZE);
-
-			const AkUInt32 effect = snapshot->records[index].words[FX_EFFECT_WORD];
-			for (size_t watchIndex = 0; watchIndex < _countof(WATCHED_FX_EFFECTS); watchIndex++)
-			{
-				if (effect == WATCHED_FX_EFFECTS[watchIndex])
-				{
-					snapshot->hasWatchedKey = true;
-					break;
-				}
-			}
-		}
-
-		InterlockedExchange(&snapshot->state, 2);
-	}
-
-	uintptr_t __fastcall SpyFxWalker(void* self, void* unused)
-	{
-		CaptureFxWalkerSnapshot(self);
-		return originalFxWalker(self);
-	}
-
-	const char* GetFxSnapshotStatusName(FxSnapshotStatus status)
-	{
-		switch (status)
-		{
-		case FX_SNAPSHOT_VALID:
-			return "valid";
-		case FX_SNAPSHOT_INVALID_OWNER:
-			return "invalid-owner";
-		case FX_SNAPSHOT_INVALID_BOUNDS:
-			return "invalid-bounds";
-		case FX_SNAPSHOT_INVALID_RECORD:
-			return "invalid-record";
-		default:
-			return "unknown";
-		}
-	}
-
-	void LogFxWalkerSnapshots()
-	{
-		for (LONG snapshotIndex = 0; snapshotIndex < MAX_FX_SNAPSHOTS; snapshotIndex++)
-		{
-			FxWalkerSnapshot* snapshot = &fxSnapshots[snapshotIndex];
-			if (InterlockedCompareExchange(&snapshot->state, 3, 2) != 2)
-			{
-				continue;
-			}
-
-			if (snapshot->recordCount == 0)
-			{
-				InterlockedExchange(&snapshot->state, 0);
-				continue;
-			}
-
-			std::ostringstream keys;
-			for (LONG recordIndex = 0; recordIndex < snapshot->capturedCount; recordIndex++)
-			{
-				const AkUInt32* words = snapshot->records[recordIndex].words;
-				keys << " " << std::hex << words[FX_BUS_WORD] << "/" << words[FX_EFFECT_WORD]
-					<< ":" << words[FX_KIND_WORD] << std::dec;
-			}
-
-			LOG_INFO("Drop pedal FX probe owner=0x" << std::hex << snapshot->owner << std::dec
-				<< " records=" << snapshot->recordCount
-				<< " captured=" << snapshot->capturedCount
-				<< " pitchCalls=" << snapshot->pitchCallsBefore
-				<< " status=" << GetFxSnapshotStatusName(snapshot->status)
-				<< (snapshot->hasWatchedKey ? " WATCHED" : "")
-				<< " keys" << keys.str() << std::endl);
-
-			if (snapshot->hasWatchedKey)
-			{
-				for (LONG recordIndex = 0; recordIndex < snapshot->capturedCount; recordIndex++)
-				{
-					const AkUInt32* words = snapshot->records[recordIndex].words;
-					LOG_INFO("Drop pedal FX probe record[" << recordIndex << "]"
-						<< " +00=0x" << std::hex << words[0]
-						<< " +04=0x" << words[1]
-						<< " +08=0x" << words[2]
-						<< " +0c=0x" << words[3]
-						<< " +10=0x" << words[4]
-						<< " +14=0x" << words[5]
-						<< " +18=0x" << words[6] << std::dec << std::endl);
-				}
-			}
-
-			if (snapshot->capturedCount < snapshot->recordCount)
-			{
-				LOG_INFO("Drop pedal FX probe omitted "
-					<< snapshot->recordCount - snapshot->capturedCount << " record(s)" << std::endl);
-			}
-
-			InterlockedExchange(&snapshot->state, 0);
-		}
-
-		const LONG dropped = InterlockedExchange(&droppedFxSnapshots, 0);
-		if (dropped > 0)
-		{
-			LOG_ERROR("Drop pedal FX probe dropped " << dropped << " walker snapshot(s)" << std::endl);
-		}
-	}
-
-	NodeSnapshot* ReserveNodeSnapshot()
-	{
-		for (LONG index = 0; index < MAX_NODE_SNAPSHOTS; index++)
-		{
-			NodeSnapshot* snapshot = &nodeSnapshots[index];
-			if (InterlockedCompareExchange(&snapshot->state, 1, 0) == 0)
-			{
-				return snapshot;
-			}
-		}
-
-		InterlockedIncrement(&droppedNodeSnapshots);
-		return nullptr;
-	}
-
-	void CaptureNodeSnapshot(const void* record)
-	{
-		const unsigned char* bytes = (const unsigned char*)record;
-		if (record == nullptr || MemUtil::IsBadReadPtr((void*)record)
-			|| MemUtil::IsBadReadPtr((void*)(bytes + NODE_BLOB_OFFSET - 1)))
-		{
-			InterlockedIncrement(&unreadableNodeCount);
-			return;
-		}
-
-		const AkUInt32 pluginId = *(const AkUInt32*)(bytes + NODE_PLUGIN_ID_OFFSET);
-		const AkUInt32 blobSize = *(const AkUInt32*)(bytes + NODE_BLOB_SIZE_OFFSET);
-
-		if (pluginId != PITCH_SHIFTER_ENCODED_PLUGIN_ID && pluginId != NODE_NO_PLUGIN_ID)
-		{
-			InterlockedIncrement(&otherNodeCount);
-			return;
-		}
-
-		NodeSnapshot* snapshot = ReserveNodeSnapshot();
-		if (snapshot == nullptr)
-		{
-			return;
-		}
-
-		snapshot->pluginId = pluginId;
-		snapshot->blobSize = blobSize;
-		snapshot->capturedBlobBytes = 0;
-
-		if (pluginId == PITCH_SHIFTER_ENCODED_PLUGIN_ID && blobSize > 0)
-		{
-			const AkUInt32 wanted = blobSize < MAX_CAPTURED_BLOB_BYTES
-				? blobSize
-				: MAX_CAPTURED_BLOB_BYTES;
-
-			if (!MemUtil::IsBadReadPtr((void*)(bytes + NODE_BLOB_OFFSET))
-				&& !MemUtil::IsBadReadPtr((void*)(bytes + NODE_BLOB_OFFSET + wanted - 1)))
-			{
-				memcpy(snapshot->blob, bytes + NODE_BLOB_OFFSET, wanted);
-				snapshot->capturedBlobBytes = wanted;
-			}
-		}
-
-		InterlockedExchange(&snapshot->state, 2);
-	}
-
-	AKRESULT __fastcall SpyNodeDeserialize(void* self, void* unused, const void* record, AkUInt32 context)
-	{
-		CaptureNodeSnapshot(record);
-		return originalNodeDeserialize(self, unused, record, context);
-	}
-
-	void LogNodeSnapshots()
-	{
-		for (LONG index = 0; index < MAX_NODE_SNAPSHOTS; index++)
-		{
-			NodeSnapshot* snapshot = &nodeSnapshots[index];
-			if (InterlockedCompareExchange(&snapshot->state, 3, 2) != 2)
-			{
-				continue;
-			}
-
-			const bool isEmptySlot = snapshot->pluginId == NODE_NO_PLUGIN_ID;
-			LOG_INFO("Drop pedal node pluginId=0x" << std::hex << snapshot->pluginId << std::dec
-				<< " blobSize=" << snapshot->blobSize
-				<< (isEmptySlot ? " EMPTY" : " SHIFTER") << std::endl);
-
-			if (snapshot->capturedBlobBytes > 0)
-			{
-				std::ostringstream blob;
-				for (AkUInt32 byteIndex = 0; byteIndex < snapshot->capturedBlobBytes; byteIndex++)
-				{
-					static const char HEX_DIGITS[] = "0123456789abcdef";
-					const unsigned char value = snapshot->blob[byteIndex];
-					blob << " " << HEX_DIGITS[value >> 4] << HEX_DIGITS[value & 0xF];
-				}
-
-				LOG_INFO("Drop pedal node shifter blob" << blob.str() << std::endl);
-			}
-
-			InterlockedExchange(&snapshot->state, 0);
-		}
-
-		const LONG dropped = InterlockedExchange(&droppedNodeSnapshots, 0);
-		if (dropped > 0)
-		{
-			LOG_ERROR("Drop pedal node probe dropped " << dropped << " node(s)" << std::endl);
-		}
-
-		const LONG others = InterlockedExchange(&otherNodeCount, 0);
-		if (others > 0)
-		{
-			LOG_INFO("Drop pedal node probe saw " << others << " node(s) with other plugin ids" << std::endl);
-		}
-
-		const LONG unreadable = InterlockedExchange(&unreadableNodeCount, 0);
-		if (unreadable > 0)
-		{
-			LOG_ERROR("Drop pedal node probe could not read " << unreadable << " node record(s)" << std::endl);
-		}
-	}
-
-	/// <summary>
-	/// Write the unpacked code region around the SetParam delivery sites to a file
-	/// beside the game executable, for offline disassembly.
-	/// </summary>
-	void WriteTextRegionDump()
-	{
-		char executablePath[MAX_PATH] = {};
-		if (GetModuleFileNameA(nullptr, executablePath, MAX_PATH) == 0)
-		{
-			LOG_ERROR("Drop pedal could not resolve the game executable path for the text dump, error "
-				<< GetLastError() << std::endl);
-			return;
-		}
-
-		std::string dumpPath(executablePath);
-		const size_t lastSeparator = dumpPath.find_last_of('\\');
-		if (lastSeparator == std::string::npos)
-		{
-			LOG_ERROR("Drop pedal could not derive a dump directory from " << executablePath << std::endl);
-			return;
-		}
-
-		dumpPath.erase(lastSeparator + 1);
-		dumpPath += TEXT_DUMP_FILE_NAME;
-
-		for (size_t offset = 0; offset < TEXT_DUMP_SIZE; offset += TEXT_DUMP_PAGE_SIZE)
-		{
-			if (MemUtil::IsBadReadPtr((void*)(TEXT_DUMP_BASE + offset)))
-			{
-				LOG_ERROR("Drop pedal skipped the text dump because 0x" << std::hex
-					<< TEXT_DUMP_BASE + offset << " is unreadable" << std::dec << std::endl);
-				return;
-			}
-		}
-
-		const HANDLE dumpFile = CreateFileA(dumpPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (dumpFile == INVALID_HANDLE_VALUE)
-		{
-			LOG_ERROR("Drop pedal could not create " << dumpPath << ", error " << GetLastError() << std::endl);
-			return;
-		}
-
-		DWORD bytesWritten = 0;
-		const BOOL didWrite = WriteFile(dumpFile, (const void*)TEXT_DUMP_BASE, (DWORD)TEXT_DUMP_SIZE, &bytesWritten, nullptr);
-		const DWORD writeError = GetLastError();
-		CloseHandle(dumpFile);
-
-		if (didWrite == FALSE || bytesWritten != TEXT_DUMP_SIZE)
-		{
-			LOG_ERROR("Drop pedal wrote " << bytesWritten << " of " << TEXT_DUMP_SIZE
-				<< " bytes to " << dumpPath << ", error " << writeError << std::endl);
-			return;
-		}
-
-		LOG_INFO("Drop pedal dumped text region base=0x" << std::hex << TEXT_DUMP_BASE
-			<< " length=0x" << TEXT_DUMP_SIZE << std::dec << " to " << dumpPath << std::endl);
-	}
-
 	AKRESULT __cdecl SpyRegisterPlugin(AkPluginType type, AkUInt32 companyId, AkUInt32 pluginId, AkCreatePluginCallback createFunc, AkCreateParamCallback createParamFunc)
 	{
 		if (companyId == 0 && pluginId == PITCH_SHIFTER_PLUGIN_ID)
@@ -1171,48 +594,6 @@ void DropPedal::InstallHooks()
 	{
 		LOG_ERROR("Drop pedal failed to hook RegisterPlugin at 0x" << std::hex << target << std::dec << std::endl);
 	}
-
-	if (MemUtil::IsBadReadPtr((void*)FX_WALKER_ADDRESS)
-		|| MemUtil::IsBadReadPtr((void*)(FX_WALKER_ADDRESS + sizeof(FX_WALKER_PROLOGUE) - 1))
-		|| memcmp((void*)FX_WALKER_ADDRESS, FX_WALKER_PROLOGUE, sizeof(FX_WALKER_PROLOGUE)) != 0)
-	{
-		LOG_ERROR("Drop pedal did not hook the FX walker because the prologue at 0x" << std::hex
-			<< FX_WALKER_ADDRESS << " does not match this Rocksmith build" << std::dec << std::endl);
-		return;
-	}
-
-	originalFxWalker = (tFxWalkerRaw)DetourFunction((PBYTE)FX_WALKER_ADDRESS, (PBYTE)SpyFxWalker);
-	if (originalFxWalker == nullptr)
-	{
-		LOG_ERROR("Drop pedal failed to hook the FX walker at 0x" << std::hex
-			<< FX_WALKER_ADDRESS << std::dec << std::endl);
-	}
-	else
-	{
-		LOG_INFO("Drop pedal hooked the FX walker at 0x" << std::hex
-			<< FX_WALKER_ADDRESS << std::dec << std::endl);
-	}
-
-	if (MemUtil::IsBadReadPtr((void*)NODE_DESERIALIZE_ADDRESS)
-		|| MemUtil::IsBadReadPtr((void*)(NODE_DESERIALIZE_ADDRESS + sizeof(NODE_DESERIALIZE_PROLOGUE) - 1))
-		|| memcmp((void*)NODE_DESERIALIZE_ADDRESS, NODE_DESERIALIZE_PROLOGUE, sizeof(NODE_DESERIALIZE_PROLOGUE)) != 0)
-	{
-		LOG_ERROR("Drop pedal did not hook the node deserializer because the prologue at 0x" << std::hex
-			<< NODE_DESERIALIZE_ADDRESS << " does not match this Rocksmith build" << std::dec << std::endl);
-		return;
-	}
-
-	originalNodeDeserialize = (tNodeDeserializeRaw)DetourFunction((PBYTE)NODE_DESERIALIZE_ADDRESS, (PBYTE)SpyNodeDeserialize);
-	if (originalNodeDeserialize == nullptr)
-	{
-		LOG_ERROR("Drop pedal failed to hook the node deserializer at 0x" << std::hex
-			<< NODE_DESERIALIZE_ADDRESS << std::dec << std::endl);
-	}
-	else
-	{
-		LOG_INFO("Drop pedal hooked the node deserializer at 0x" << std::hex
-			<< NODE_DESERIALIZE_ADDRESS << std::dec << std::endl);
-	}
 }
 
 void DropPedal::SetInputShifterActive(bool active)
@@ -1252,12 +633,6 @@ void DropPedal::Poll()
 	{
 		PushPitchWhenSettled();
 
-		// Diagnostics for the game-side MultiPitch machinery, which is suppressed while
-		// the input shifter owns pitch, so their output would only describe a dormant
-		// subsystem.
 		LogPendingOverrides();
-		LogCreateParamEvents();
-		LogFxWalkerSnapshots();
-		LogNodeSnapshots();
 	}
 }
