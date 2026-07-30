@@ -3567,58 +3567,6 @@ namespace RSMods
             }
         }
 
-        private void Profiles_AddDropPedalToTones(object sender, EventArgs e)
-        {
-            if (listBox_Profiles_AvailableProfiles.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a profile!");
-                return;
-            }
-
-            DialogResult confirmation = MessageBox.Show(
-                "This adds a MultiPitch pedal set to 0 semitones to every custom tone that does not already have one, so the drop pedal can retune them in game.\n\nYour profile will be backed up first. Continue?",
-                "Add drop pedal to tones",
-                MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Question);
-
-            if (confirmation != DialogResult.OK)
-            {
-                return;
-            }
-
-            Profiles.SaveProfile();
-
-            int changed;
-            List<string> skipped;
-
-            try
-            {
-                changed = Profiles.AddDropPedalToCustomTones(out skipped);
-            }
-            catch (InvalidOperationException ioex)
-            {
-                MessageBox.Show(ioex.Message, "Error");
-                return;
-            }
-
-            if (changed == 0 && skipped.Count == 0)
-            {
-                MessageBox.Show("Every custom tone already has a pitch pedal. Nothing to change.", "Add drop pedal to tones");
-                return;
-            }
-
-            Profiles_ENCRYPT();
-
-            string message = $"Added a drop pedal to {changed} tone(s).";
-
-            if (skipped.Count > 0)
-            {
-                message += $"\n\nSkipped {skipped.Count}:\n{string.Join("\n", skipped)}";
-            }
-
-            MessageBox.Show(message, "Add drop pedal to tones");
-        }
-
         private void Profiles_ChangeSelectedProfile(object sender, EventArgs e)
         {
             if (listBox_Profiles_AvailableProfiles.SelectedItem == null) return;
@@ -3627,7 +3575,6 @@ namespace RSMods
             groupBox_Profiles_Rewards.Visible = true;
             groupBox_Profile_MoreSongLists.Visible = true;
             groupBox_ImportJsonTones.Visible = true;
-            button_Profiles_AddDropPedalToTones.Visible = true;
 
             Profiles_UnpackProfile();
 

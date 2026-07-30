@@ -1,7 +1,7 @@
-#include "../stdafx.h"
+#include "../../stdafx.h"
 #include "DropPedalHooks.hpp"
 #include "DropPedalState.hpp"
-#include "TrueTuning.hpp"
+#include "../TrueTuning.hpp"
 
 namespace
 {

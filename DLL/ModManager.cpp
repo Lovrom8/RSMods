@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
-#include "Mods/DropPedal.hpp"
+#include "Mods/DropPedal/DropPedal.hpp"
 #include "Audio/DelayLinePitchShifter.hpp"
 
 namespace

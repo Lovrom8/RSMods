@@ -508,7 +508,6 @@
             this.groupBox_ImportJsonTones = new System.Windows.Forms.GroupBox();
             this.checkBox_ImportTonesBulk = new System.Windows.Forms.CheckBox();
             this.button_ImportTone2014 = new System.Windows.Forms.Button();
-            this.button_Profiles_AddDropPedalToTones = new System.Windows.Forms.Button();
             this.button_ImportToneManifest = new System.Windows.Forms.Button();
             this.dgv_Profiles_Songlists = new System.Windows.Forms.DataGridView();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -1558,45 +1557,45 @@
             this.groupBox_Keybindings_MODS.Text = "Mod Key Bindings";
             this.groupBox_Keybindings_MODS.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.groupBox_Keybindings_MODS.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
+            //
             // label_DropPedalPitchDownKey
-            // 
+            //
             this.label_DropPedalPitchDownKey.AutoSize = true;
             this.label_DropPedalPitchDownKey.Location = new System.Drawing.Point(600, 10);
             this.label_DropPedalPitchDownKey.Name = "label_DropPedalPitchDownKey";
             this.label_DropPedalPitchDownKey.Size = new System.Drawing.Size(70, 13);
             this.label_DropPedalPitchDownKey.TabIndex = 60;
             this.label_DropPedalPitchDownKey.Text = "Pedal Down: ";
-            // 
+            //
             // label_DropPedalPitchUpKey
-            // 
+            //
             this.label_DropPedalPitchUpKey.AutoSize = true;
             this.label_DropPedalPitchUpKey.Location = new System.Drawing.Point(600, 27);
             this.label_DropPedalPitchUpKey.Name = "label_DropPedalPitchUpKey";
             this.label_DropPedalPitchUpKey.Size = new System.Drawing.Size(56, 13);
             this.label_DropPedalPitchUpKey.TabIndex = 61;
             this.label_DropPedalPitchUpKey.Text = "Pedal Up: ";
-            // 
+            //
             // label_DropPedalToggleKey
-            // 
+            //
             this.label_DropPedalToggleKey.AutoSize = true;
             this.label_DropPedalToggleKey.Location = new System.Drawing.Point(600, 44);
             this.label_DropPedalToggleKey.Name = "label_DropPedalToggleKey";
             this.label_DropPedalToggleKey.Size = new System.Drawing.Size(74, 13);
             this.label_DropPedalToggleKey.TabIndex = 62;
             this.label_DropPedalToggleKey.Text = "Pedal Toggle: ";
-            // 
+            //
             // label_DropPedalBaseTuningDownKey
-            // 
+            //
             this.label_DropPedalBaseTuningDownKey.AutoSize = true;
             this.label_DropPedalBaseTuningDownKey.Location = new System.Drawing.Point(600, 61);
             this.label_DropPedalBaseTuningDownKey.Name = "label_DropPedalBaseTuningDownKey";
             this.label_DropPedalBaseTuningDownKey.Size = new System.Drawing.Size(66, 13);
             this.label_DropPedalBaseTuningDownKey.TabIndex = 63;
             this.label_DropPedalBaseTuningDownKey.Text = "Base Down: ";
-            // 
+            //
             // label_DropPedalBaseTuningUpKey
-            // 
+            //
             this.label_DropPedalBaseTuningUpKey.AutoSize = true;
             this.label_DropPedalBaseTuningUpKey.Location = new System.Drawing.Point(600, 78);
             this.label_DropPedalBaseTuningUpKey.Name = "label_DropPedalBaseTuningUpKey";
@@ -3704,9 +3703,9 @@
             this.tabPage_ModSettings_AutoTuning.Size = new System.Drawing.Size(777, 443);
             this.tabPage_ModSettings_AutoTuning.TabIndex = 4;
             this.tabPage_ModSettings_AutoTuning.Text = "Tuning";
-            // 
+            //
             // groupBox_DropPedal
-            // 
+            //
             this.groupBox_DropPedal.Controls.Add(this.checkBox_DropPedal);
             this.groupBox_DropPedal.Controls.Add(this.label_DropPedalEngine);
             this.groupBox_DropPedal.Controls.Add(this.comboBox_DropPedalEngine);
@@ -3716,9 +3715,9 @@
             this.groupBox_DropPedal.TabIndex = 5;
             this.groupBox_DropPedal.TabStop = false;
             this.groupBox_DropPedal.Text = "Drop Pedal";
-            // 
+            //
             // checkBox_DropPedal
-            // 
+            //
             this.checkBox_DropPedal.AutoSize = true;
             this.checkBox_DropPedal.Location = new System.Drawing.Point(11, 22);
             this.checkBox_DropPedal.Name = "checkBox_DropPedal";
@@ -3729,18 +3728,18 @@
             this.checkBox_DropPedal.CheckedChanged += new System.EventHandler(this.Save_DropPedalEnabled);
             this.checkBox_DropPedal.MouseLeave += new System.EventHandler(this.ToolTips_Hide);
             this.checkBox_DropPedal.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
+            //
             // label_DropPedalEngine
-            // 
+            //
             this.label_DropPedalEngine.AutoSize = true;
             this.label_DropPedalEngine.Location = new System.Drawing.Point(11, 51);
             this.label_DropPedalEngine.Name = "label_DropPedalEngine";
             this.label_DropPedalEngine.Size = new System.Drawing.Size(43, 13);
             this.label_DropPedalEngine.TabIndex = 1;
             this.label_DropPedalEngine.Text = "Engine:";
-            // 
+            //
             // comboBox_DropPedalEngine
-            // 
+            //
             this.comboBox_DropPedalEngine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_DropPedalEngine.FormattingEnabled = true;
             this.comboBox_DropPedalEngine.Items.AddRange(new object[] {
@@ -6492,7 +6491,6 @@
             // tab_Profiles
             // 
             this.tab_Profiles.BackColor = System.Drawing.Color.Azure;
-            this.tab_Profiles.Controls.Add(this.button_Profiles_AddDropPedalToTones);
             this.tab_Profiles.Controls.Add(this.groupBox_ImportJsonTones);
             this.tab_Profiles.Controls.Add(this.dgv_Profiles_Songlists);
             this.tab_Profiles.Controls.Add(this.groupBox_Profile_MoreSongLists);
@@ -6541,17 +6539,6 @@
             this.button_ImportTone2014.Text = "Import XML";
             this.button_ImportTone2014.UseVisualStyleBackColor = true;
             this.button_ImportTone2014.Click += new System.EventHandler(this.Profiles_ImportTone2014);
-            // 
-            // button_Profiles_AddDropPedalToTones
-            // 
-            this.button_Profiles_AddDropPedalToTones.Location = new System.Drawing.Point(360, 470);
-            this.button_Profiles_AddDropPedalToTones.Name = "button_Profiles_AddDropPedalToTones";
-            this.button_Profiles_AddDropPedalToTones.Size = new System.Drawing.Size(332, 23);
-            this.button_Profiles_AddDropPedalToTones.TabIndex = 14;
-            this.button_Profiles_AddDropPedalToTones.Text = "Add drop pedal to all custom tones";
-            this.button_Profiles_AddDropPedalToTones.UseVisualStyleBackColor = true;
-            this.button_Profiles_AddDropPedalToTones.Visible = false;
-            this.button_Profiles_AddDropPedalToTones.Click += new System.EventHandler(this.Profiles_AddDropPedalToTones);
             // 
             // button_ImportToneManifest
             // 
@@ -7720,7 +7707,6 @@
         private System.Windows.Forms.GroupBox groupBox_ImportJsonTones;
         private System.Windows.Forms.Button button_ImportToneManifest;
         private System.Windows.Forms.Button button_ImportTone2014;
-        private System.Windows.Forms.Button button_Profiles_AddDropPedalToTones;
         private System.Windows.Forms.CheckBox checkBox_ImportTonesBulk;
         private System.Windows.Forms.CheckBox checkBox_FixBrokenTones;
         private System.Windows.Forms.CheckBox checkBox_CustomNSPTimer;
