@@ -1,6 +1,8 @@
 # RSModsPlus
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-support-yellow?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/cheesewizard)
+<a href="https://buymeacoffee.com/cheesewizard">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="180">
+</a>
 
 A fork of [RSMods](https://github.com/Lovrom8/RSMods) that adds a drop pedal to
 Rocksmith 2014.
@@ -141,7 +143,9 @@ Next:
 RSModsPlus is free. If it helped you and you want to support the work, you can
 [buy me a coffee](https://buymeacoffee.com/cheesewizard):
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-support-yellow?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/cheesewizard)
+<a href="https://buymeacoffee.com/cheesewizard">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" width="180">
+</a>
 
 ---
 
