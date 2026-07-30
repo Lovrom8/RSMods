@@ -71,7 +71,19 @@ namespace RSMods
                     { ReadSettings.ToggleExtendedRangeKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.ToggleExtendedRangeKeyIdentifier, "") }, // Toggle ER Mode on / off
                     { ReadSettings.LoopStartKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopStartKeyIdentifier, "") }, // Start loop
                     { ReadSettings.LoopEndKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.LoopEndKeyIdentifier, "")}, // End loop
-                    { ReadSettings.RewindKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindKeyIdentifier, "") } // Rewind song by X seconds (defined by user with other settings).
+                    { ReadSettings.RewindKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.RewindKeyIdentifier, "") }, // Rewind song by X seconds (defined by user with other settings).
+                    { ReadSettings.DropPedalPitchDownKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalPitchDownKeyIdentifier, "VK_OEM_COMMA") },
+                    { ReadSettings.DropPedalPitchUpKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalPitchUpKeyIdentifier, "VK_OEM_PERIOD") },
+                    { ReadSettings.DropPedalToggleKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalToggleKeyIdentifier, "VK_F8") },
+                    { ReadSettings.DropPedalBaseTuningDownKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalBaseTuningDownKeyIdentifier, "VK_F9") },
+                    { ReadSettings.DropPedalBaseTuningUpKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalBaseTuningUpKeyIdentifier, "VK_F10") }
+                }
+            );
+            saveSettingsOrDefaults.Add(
+                "[Drop Pedal]", new Dictionary<string, string>
+                {
+                    { ReadSettings.DropPedalEnabledIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalEnabledIdentifier, "on") },
+                    { ReadSettings.DropPedalEngineIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalEngineIdentifier, "Automatic") }
                 }
             );
             saveSettingsOrDefaults.Add(
