@@ -94,7 +94,7 @@ Feel free to try the 1.2.8.0 version if you are on the Learn & Play version.
   * If you own a Digitech Whammy DT and have a device capable of sending MIDI program controls, such as a simple USB-to-MIDI cable or a MIDI output port on an interface, you may find this useful - automatically change the tuning of your guitar to the tuning of the current song without touching the pedal (works even with odd tunings like A443 or similar). Connect your MIDI cable to the MIDI IN port on the Whammy DT, select the MIDI device name in the GUI settings and when on the Pre-Song tuning screen, press the DELETE key to skip tuning and auto activate the drop tuning of the Whammy DT. This assumes your guitar is in E Standard or Drop D when setting the amount of steps the pedal needs to shift, be that pitching up or down. You'll see the lights on the Whammy DT turn on when the mod is activated and it will auto de-activate when on the post song results screen.
 
 * **Drop Pedal**
-  * Adds an in-game drop pedal from -24 to +24 semitones. With RS_ASIO, the ASIO engine shifts the raw input before Rocksmith receives it. Without RS_ASIO, the Cable engine can drive a MultiPitch pedal in the player's tone and adjust note detection to match. Setup guides are maintained in the [RSModsPlus drop pedal documentation](https://github.com/Cheesewizard/RSModsPlus#documentation).
+  * Adds an in-game drop pedal from -24 to +24 semitones. With RS_ASIO, the ASIO engine shifts the raw input before Rocksmith receives it. Without RS_ASIO, the Cable engine drives a MultiPitch pedal in the player's tone and adjusts note detection to match. Enable it with `[Drop Pedal] EnableDropPedal = on` in RSMods.ini or the settings app (Tuning tab). Setup guides: [ASIO Drop Pedal](docs/asio-drop-pedal.md) and [Cable Drop Pedal](docs/cable-drop-pedal.md). Contributed by [@Cheesewizard](https://github.com/Cheesewizard).
  
 * **Allow Riff Repeater Speed Above 100** 
   * For whatever reason TTFAF is not fast enough for you, you can now play it in Riff Repeater with speeds over 100%. :)
@@ -191,7 +191,7 @@ Section        | Entry             | Possible values | Info   |
 &nbsp; | DropPedalBaseTuningDownKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format. | Lowers the base tuning used by the drop pedal readout. |
 &nbsp; | DropPedalBaseTuningUpKey | Function keys (F1, F10) / Media Keys (Play/Pause, Stop, NextTrack, PreviousTrack) in Virtual Key format. | Raises the base tuning used by the drop pedal readout. |
 **Drop Pedal** | &nbsp; | &nbsp; | &nbsp; |
-&nbsp; | EnableDropPedal | on/off | Enables the in-game drop pedal. |
+&nbsp; | EnableDropPedal | on/off | Enables the in-game drop pedal. Off by default. |
 &nbsp; | Engine | automatic/asio/cable | Selects the drop pedal engine. Automatic uses ASIO input shifting when available and Cable otherwise. Asio requires RS_ASIO and does not fall back. Cable always uses the in-game MultiPitch path. |
 **Toggle Switches** | &nbsp; | &nbsp;
 &nbsp; | ToggleLoft | on/off | Turns off the background of the game. This will make the background black. |

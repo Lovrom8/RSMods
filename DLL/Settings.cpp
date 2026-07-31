@@ -97,7 +97,7 @@ void Settings::Initialize()
 		{"DisplayCurrentAccuracy", "off"},
 		{"PreventMidSongPause", "off"},
 		{"RemoveFingerprints", "off"},
-		{"EnableDropPedal", "on"},
+		{"EnableDropPedal", "off"},
 		{"DropPedalEngine", "automatic"},
 	};
 
@@ -317,7 +317,7 @@ void Settings::ReadModSettings() {
 	modSettings["DisplayCurrentAccuracy"] = reader.GetValue("Toggle Switches", "DisplayCurrentAccuracy", "off");
 	modSettings["PreventMidSongPause"] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
 	modSettings["RemoveFingerprints"] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
-	modSettings["EnableDropPedal"] = reader.GetValue("Drop Pedal", "EnableDropPedal", "on");
+	modSettings["EnableDropPedal"] = reader.GetValue("Drop Pedal", "EnableDropPedal", "off");
 	modSettings["DropPedalEngine"] = reader.GetValue("Drop Pedal", "Engine", "automatic");
 }
 

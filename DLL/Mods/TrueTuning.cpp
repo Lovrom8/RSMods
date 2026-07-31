@@ -32,6 +32,13 @@ void TrueTuning::SetReferenceSemitones(int semitones)
 		<< semitones << " semitone(s)" << std::endl);
 }
 
+// Upstream additionally gated this hook behind CanDisableTrueTuning(), a check on
+// GameState::currentMenu. That call was removed deliberately, not lost in the rework:
+// it read a std::string the mod thread rewrites, from the game's tuning thread - a
+// data race - and calling it from naked asm meant saving EAX/ECX/EDX around a __cdecl
+// call whose bool return sets no flags, which produced a real branch-on-stale-flags
+// bug in testing. No issue was reproducible without the menu check; the one concrete
+// protection in this area, the CentOffset == -1200 bass case, is preserved below.
 void __declspec(naked) disableTrueTuning()
 {
 	__asm

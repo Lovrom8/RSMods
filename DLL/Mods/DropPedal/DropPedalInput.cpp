@@ -37,19 +37,21 @@ namespace
 	{
 		const bool isEnabled = DropPedalState::ToggleEnabled();
 
+		// Both directions push immediately: enabling applies the shift, disabling
+		// restores each shifter's authored pitch, keeping audio and note detection
+		// in agreement without waiting for a tone load.
+		if (!DropPedalHooks::IsInputShifterActive())
+		{
+			DropPedalHooks::PushPitchToLiveShifters();
+		}
+
 		if (isEnabled)
 		{
 			LOG_INFO("Drop pedal enabled, target " << DropPedalState::GetTuningName() << std::endl);
-
-			if (!DropPedalHooks::IsInputShifterActive())
-			{
-				DropPedalHooks::PushPitchToLiveShifters();
-			}
 		}
 		else
 		{
-			LOG_INFO("Drop pedal disabled, tones return to how the player configured them"
-				<< " on the next tone load or tone switch" << std::endl);
+			LOG_INFO("Drop pedal disabled, tones restored to their authored pitch" << std::endl);
 		}
 	}
 

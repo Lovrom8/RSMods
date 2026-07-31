@@ -50,7 +50,7 @@ namespace Audio
 		// (pick attack in the window, or a chord with no common period in range), so the
 		// splice waits for better content while ring headroom lasts. Above EXTEND_QUALITY
 		// the splice commits with a longer crossfade so residual misalignment smears into
-		// softness instead of a pop. Tuned against the harness in Tests/ShifterHarness.
+		// softness instead of a pop. Tuned against a synthetic-signal measurement harness.
 		constexpr float DEFER_QUALITY = 0.5f;
 		constexpr float EXTEND_QUALITY = 0.25f;
 		constexpr int HOLDOFF_SAMPLES = 64;

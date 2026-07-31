@@ -280,8 +280,11 @@ void Initialize() {
 }
 
 void SetupLogging() {
-	FILE* streamRead = nullptr;
-	FILE* streamConsole = nullptr;
+	bool debugLogPresent = std::ifstream("RSMods_debug.txt").good();
+	auto clearDebugLog = std::ofstream("RSMods_debug.txt");
+
+	FILE* streamRead;
+	FILE* streamConsole;
 
 	if (debug) {
 		AllocConsole();
@@ -293,9 +296,13 @@ void SetupLogging() {
 
 	// Create log file to both help with debugging release builds,
 	// and allow the user to examine their debug logs after a crash.
-	FILE* debugLog = nullptr;
-	if (freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr) == 0 && debugLog != nullptr) {
-		setvbuf(stderr, nullptr, _IONBF, 0);
+	if (debugLogPresent) {
+		// Clear log so it isn't full of junk from the last launch
+		clearDebugLog.open("RSMods_debug.txt", std::ofstream::out | std::ofstream::trunc);
+		clearDebugLog.close();
+
+		FILE* debugLog;
+		freopen_s(&debugLog, "RSMods_debug.txt", "w", stderr);
 	}
 }
 

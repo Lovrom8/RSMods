@@ -306,7 +306,7 @@ namespace RSMods
             if (identifierToGrab == DropPedalBaseTuningUpKeyIdentifier)
                 return "VK_F10";
             if (identifierToGrab == DropPedalEnabledIdentifier)
-                return "on";
+                return "off";
             if (identifierToGrab == DropPedalEngineIdentifier)
                 return "automatic";
 

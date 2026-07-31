@@ -126,11 +126,34 @@ namespace
 		// unaffected: their baseline is 0 and the shift is the whole value.
 		if (!isAlreadyTracked)
 		{
-			const LONG slot = InterlockedIncrement(&deliveredParamObjectCount) - 1;
-			if (slot < MAX_PARAM_OBJECTS)
+			bool isStored = false;
+
+			// Slots freed by Term are reclaimed first, so the table tracks the objects
+			// currently alive rather than the first MAX_PARAM_OBJECTS ever created.
+			for (LONG i = 0; i < deliveredKnown && i < MAX_PARAM_OBJECTS; i++)
 			{
-				deliveredParamObjects[slot] = self;
-				deliveredAuthoredCents[slot] = authoredCents;
+				if (InterlockedCompareExchangePointer(&deliveredParamObjects[i], self, nullptr) == nullptr)
+				{
+					deliveredAuthoredCents[i] = authoredCents;
+					isStored = true;
+					break;
+				}
+			}
+
+			if (!isStored)
+			{
+				const LONG slot = InterlockedIncrement(&deliveredParamObjectCount) - 1;
+				if (slot < MAX_PARAM_OBJECTS)
+				{
+					deliveredParamObjects[slot] = self;
+					deliveredAuthoredCents[slot] = authoredCents;
+				}
+				else
+				{
+					// Keep the counter at the table size so reclaim keeps working
+					// instead of the counter drifting past every future null slot.
+					InterlockedDecrement(&deliveredParamObjectCount);
+				}
 			}
 		}
 
@@ -306,6 +329,10 @@ void DropPedalHooks::PushPitchToLiveShifters()
 		? deliveredParamObjectCount
 		: MAX_PARAM_OBJECTS;
 
+	// Disabled pushes the authored pitch itself, which is what disengages the pedal
+	// immediately instead of waiting for the next tone load to re-deliver it.
+	const float shiftCents = DropPedalState::IsEnabled() ? DropPedalState::GetTargetCents() : 0.0f;
+
 	for (LONG i = 0; i < known; i++)
 	{
 		void* paramObject = deliveredParamObjects[i];
@@ -322,7 +349,7 @@ void DropPedalHooks::PushPitchToLiveShifters()
 
 		// Each shifter moves from its own tone's authored pitch, the same baseline
 		// the engine's own delivery is given.
-		const float cents = deliveredAuthoredCents[i] + DropPedalState::GetTargetCents();
+		const float cents = deliveredAuthoredCents[i] + shiftCents;
 
 		originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float));
 	}

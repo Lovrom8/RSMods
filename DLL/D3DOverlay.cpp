@@ -252,6 +252,11 @@ static int dropPedalPlateRight = 0;
 
 void GameOverlay::DisplayDropPedalTuning()
 {
+	if (!DropPedal::IsConfiguredEnabled())
+	{
+		return;
+	}
+
 	const std::string state = DropPedal::IsEnabled()
 		? DropPedal::GetTuningName()
 		: "off";

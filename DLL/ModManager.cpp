@@ -138,7 +138,6 @@ namespace ModManager {
 		// included, or the game builds its audio chain before we can see it.
 		if (DropPedal::ShouldInstallInputHooks())
 		{
-			Audio::CaptureHook::Install();
 			Audio::AsioHook::Install();
 			Audio::AsioHook::SetProcessor(&pitchShifter);
 		}

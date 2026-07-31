@@ -17,7 +17,7 @@ namespace
 
 	// From [Drop Pedal] in RSMods.ini, read once at startup. Values follow the ini's
 	// lowercase convention (on / off / automatic).
-	bool isConfiguredEnabled = true;
+	bool isConfiguredEnabled = false;
 	std::string engineSetting = "automatic";
 
 	// Enabled state lives in the session rather than in the settings map, because

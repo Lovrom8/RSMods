@@ -51,6 +51,7 @@ namespace Audio::AsioHook
 		constexpr size_t SLOT_CLASS_FACTORY_CREATE_INSTANCE = 3;
 
 		constexpr long MAX_BUFFER_FRAMES = 4096;
+		constexpr int MAX_INPUT_CHANNELS = 16;
 		constexpr float INT32_TO_FLOAT = 1.0f / 2147483648.0f;
 		constexpr float FLOAT_TO_INT32 = 2147483647.0f;
 
@@ -68,8 +69,8 @@ namespace Audio::AsioHook
 		std::string driverName;
 
 		// Written once during createBuffers, read on the ASIO callback thread afterwards.
-		void* inputBuffers[2][2] = {};		// [channelIndex][doubleBufferIndex]
-		long inputChannelNumbers[2] = { -1, -1 };
+		void* inputBuffers[MAX_INPUT_CHANNELS][2] = {};		// [inputIndex][doubleBufferIndex]
+		long inputChannelNumbers[MAX_INPUT_CHANNELS] = {};
 		int discoveredInputChannels = 0;
 		long activeBufferFrames = 0;
 		long activeSampleType = -1;
@@ -101,9 +102,9 @@ namespace Audio::AsioHook
 			return {};
 		}
 
-		// RS_ASIO's Channel setting is the ASIO channel number the guitar arrives on, which
-		// is also the order channels appear in createBuffers, so it maps directly onto our
-		// discovered-input index.
+		// RS_ASIO's Channel setting is the ASIO channel number the guitar arrives on. It is
+		// matched against the channelNum of the buffers the driver hands out, since RS_ASIO
+		// creates buffers for every available input and accepts any nonnegative channel.
 		int ReadInputChannelFromRsAsioIni()
 		{
 			CSimpleIniA reader;
@@ -162,10 +163,20 @@ namespace Audio::AsioHook
 			return path;
 		}
 
+		int FindInputIndexForChannel(int channelNumber)
+		{
+			for (int i = 0; i < discoveredInputChannels; ++i)
+			{
+				if (inputChannelNumbers[i] == channelNumber) return i;
+			}
+
+			return -1;
+		}
+
 		void ProcessInputBuffer(long doubleBufferIndex)
 		{
-			const int channel = selectedInputChannel.load(std::memory_order_relaxed);
-			if (channel < 0 || channel >= discoveredInputChannels) return;
+			const int channel = FindInputIndexForChannel(selectedInputChannel.load(std::memory_order_relaxed));
+			if (channel < 0) return;
 
 			IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
 			if (!processor) return;
@@ -238,7 +249,7 @@ namespace Audio::AsioHook
 			activeBufferFrames = bufferSize;
 			discoveredInputChannels = 0;
 
-			for (long i = 0; i < numChannels && discoveredInputChannels < 2; ++i)
+			for (long i = 0; i < numChannels && discoveredInputChannels < MAX_INPUT_CHANNELS; ++i)
 			{
 				if (!bufferInfos[i].isInput) continue;
 
@@ -437,9 +448,10 @@ namespace Audio::AsioHook
 
 		const int channel = selectedInputChannel.load(std::memory_order_relaxed);
 
-		if (enabled && (channel < 0 || channel >= discoveredInputChannels))
+		if (enabled && FindInputIndexForChannel(channel) < 0)
 		{
-			LOG_ERROR("[AsioHook] Refusing to enable processing without a valid input channel." << std::endl);
+			LOG_ERROR("[AsioHook] Refusing to enable processing: no discovered input has channel "
+				<< channel << "." << std::endl);
 			return;
 		}
 
