@@ -28,6 +28,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_RemoveLyrics, "Disables the display of song lyrics while in Learn-A-Song mode.");
             TooltipDictionary.Add(checkBox_RainbowStrings, "Experimental.\nHow Pro are you? This makes the players guitar strings constantly cycling through colors.");
             TooltipDictionary.Add(checkBox_RainbowNotes, "Experimental.\nHow Pro are you? This makes all the notes constantly cycle through colors.");
+            TooltipDictionary.Add(checkBox_DropPedal, "Enables the in-game drop pedal. Changes require restarting Rocksmith.");
             TooltipDictionary.Add(checkBox_CustomColors, "Lets you define the string / note colors you want.\nSaves a normal set and a Colorblind mode set.");
             TooltipDictionary.Add(checkBox_RemoveLaneMarkers, "Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.");
             TooltipDictionary.Add(checkBox_ScreenShotScores, "We will automatically take a steam screenshot whenever you finish a song");
@@ -75,6 +76,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_OverrideInputVolume, "Enable this to allow you to turn your guitar or bass up to 11!\nRocksmith sets what volume it wants to listen to your cable at.\nThis mod allows you to bypass that restriction by changing it to whatever you set.");
             TooltipDictionary.Add(listBox_AvailableInputDevices, "This is a list of your available microphones.\nPlease select the one you use in Rocksmith so you can override the maximum volume.");
             TooltipDictionary.Add(nUpDown_OverrideInputVolume, "Set this value from 0-100 to change how loud your guitar is in Rocksmith.\nDefault value in Rocksmith is 17.\nIt is recommended to keep this value below 50.\n0 does not mean no audio, as Rocksmith will bypass the volume if you set it to 0.");
+            TooltipDictionary.Add(comboBox_DropPedalEngine, "Automatic uses ASIO input shifting when available and Cable otherwise. Asio requires RS_ASIO and will not fall back. Cable never installs the ASIO input shifter. Changes require restarting Rocksmith.");
 
             // Misc
             TooltipDictionary.Add(groupBox_Songlist, "Custom names for the 6 \"SONG LISTS\" shown in game.");
@@ -348,7 +350,12 @@ namespace RSMods
             ReadSettings.ToggleExtendedRangeKeyIdentifier,
             ReadSettings.LoopStartKeyIdentifier,
             ReadSettings.LoopEndKeyIdentifier,
-            ReadSettings.RewindKeyIdentifier
+            ReadSettings.RewindKeyIdentifier,
+            ReadSettings.DropPedalPitchDownKeyIdentifier,
+            ReadSettings.DropPedalPitchUpKeyIdentifier,
+            ReadSettings.DropPedalToggleKeyIdentifier,
+            ReadSettings.DropPedalBaseTuningDownKeyIdentifier,
+            ReadSettings.DropPedalBaseTuningUpKeyIdentifier
         };
 
         public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
@@ -461,7 +468,12 @@ namespace RSMods
             "Toggle Extended Range",
             "Start Loop",
             "End Loop",
-            "Rewind Song"
+            "Rewind Song",
+            "Drop Pedal Pitch Down",
+            "Drop Pedal Pitch Up",
+            "Toggle Drop Pedal",
+            "Drop Pedal Base Tuning Down",
+            "Drop Pedal Base Tuning Up"
         };
 
         public static List<string> currentAudioKeypressList = new List<string>()

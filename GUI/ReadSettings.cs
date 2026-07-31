@@ -19,7 +19,8 @@ namespace RSMods
                              // Mod Key Bindings
                              ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey,
                              RemoveLyricsKey, RRSpeedKey, TuningOffsetKey, ToggleExtendedRangeKey, LoopStartKey, LoopEndKey,
-                             RewindKey,
+                             RewindKey, DropPedalPitchDownKey, DropPedalPitchUpKey, DropPedalToggleKey,
+                             DropPedalBaseTuningDownKey, DropPedalBaseTuningUpKey,
 
                              // Audio Key Bindings
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, DisplayMixerKey, MutePlayer1Key, MutePlayer2Key,
@@ -32,6 +33,7 @@ namespace RSMods
                              MidiAutoTuning, MidiAutoTuningDevice, MidiInDevice, MidiAutoTuningWhen, MidiSoftwareSemitoneTriggers, MidiSoftwareSemitoneSettings, MidiSoftwareTrueTuningTriggers, MidiSoftwareTrueTuningSettings, ChordsMode,
                              RiffRepeaterAboveHundred, ShowCurrentNoteOnScreen, OnScreenFont, OnScreenFontSize, ProfileToLoad, ShowSongTimerWhen, ShowSelectedVolumeWhen, SecondaryMonitor, RemoveSongPreviews, OverrideInputVolumeEnabled, OverrideInputVolumeDevice,
                              AllowAudioInBackground, BypassTwoRTCMessageBox, LinearRiffRepeater, UseAlternativeOutputSampleRate, AllowLooping, AllowRewind, FixOculusCrash, FixBrokenTones, UseCustomNSPTimer, DisplayCurrentAccuracy, PreventMidSongPause, RemoveFingerprints,
+                             DropPedalEnabled, DropPedalEngine,
 
 
                              // String Colors
@@ -95,6 +97,11 @@ namespace RSMods
             LoopStartKeyIdentifier              = "LoopStartKey = ",
             LoopEndKeyIdentifier                = "LoopEndKey = ",
             RewindKeyIdentifier                 = "RewindKey = ",
+            DropPedalPitchDownKeyIdentifier     = "DropPedalPitchDownKey = ",
+            DropPedalPitchUpKeyIdentifier       = "DropPedalPitchUpKey = ",
+            DropPedalToggleKeyIdentifier        = "DropPedalToggleKey = ",
+            DropPedalBaseTuningDownKeyIdentifier = "DropPedalBaseTuningDownKey = ",
+            DropPedalBaseTuningUpKeyIdentifier  = "DropPedalBaseTuningUpKey = ",
 
             // Audio Keybindings
             MasterVolumeKeyIdentifier           = "MasterVolumeKey = ",
@@ -167,6 +174,8 @@ namespace RSMods
             UseCustomNSPTimerIdentifier                 = "UseCustomNSPTimer = ",
             DisplayCurrentAccuracyIdentifier            = "DisplayCurrentAccuracy = ",
             PreventMidSongPauseIdentifier               = "PreventMidSongPause = ",
+            DropPedalEnabledIdentifier                   = "EnableDropPedal = ",
+            DropPedalEngineIdentifier                    = "Engine = ",
 
                 // String Colors (Normal {N} & Colorblind {CB})
                 // Normal String Colors
@@ -284,6 +293,26 @@ namespace RSMods
 
         private static bool IdentifierIsFound(string currentLine, string settingToFind, string identifierToGrab) => currentLine.Contains(settingToFind) && settingToFind == identifierToGrab;
 
+        private static string DefaultSettingValue(string identifierToGrab)
+        {
+            if (identifierToGrab == DropPedalPitchDownKeyIdentifier)
+                return "VK_OEM_COMMA";
+            if (identifierToGrab == DropPedalPitchUpKeyIdentifier)
+                return "VK_OEM_PERIOD";
+            if (identifierToGrab == DropPedalToggleKeyIdentifier)
+                return "VK_F8";
+            if (identifierToGrab == DropPedalBaseTuningDownKeyIdentifier)
+                return "VK_F9";
+            if (identifierToGrab == DropPedalBaseTuningUpKeyIdentifier)
+                return "VK_F10";
+            if (identifierToGrab == DropPedalEnabledIdentifier)
+                return "off";
+            if (identifierToGrab == DropPedalEngineIdentifier)
+                return "automatic";
+
+            return string.Empty;
+        }
+
         private static void VerifySettingsINI()
         {
             if (!DoesSettingsINIExist())
@@ -370,6 +399,16 @@ namespace RSMods
                     return FillSettingVariable(LoopEndKeyIdentifier, SettingType.VKEY, currentLine, out LoopEndKey);
                 if (IdentifierIsFound(currentLine, RewindKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(RewindKeyIdentifier, SettingType.VKEY, currentLine, out RewindKey);
+                if (IdentifierIsFound(currentLine, DropPedalPitchDownKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalPitchDownKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalPitchDownKey);
+                if (IdentifierIsFound(currentLine, DropPedalPitchUpKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalPitchUpKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalPitchUpKey);
+                if (IdentifierIsFound(currentLine, DropPedalToggleKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalToggleKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalToggleKey);
+                if (IdentifierIsFound(currentLine, DropPedalBaseTuningDownKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalBaseTuningDownKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalBaseTuningDownKey);
+                if (IdentifierIsFound(currentLine, DropPedalBaseTuningUpKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalBaseTuningUpKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalBaseTuningUpKey);
                 #endregion
                 #region Audio Keybindings
                 // Audio Keybindings
@@ -515,6 +554,10 @@ namespace RSMods
                     return FillSettingVariable(PreventMidSongPauseIdentifier, SettingType.ON_OFF, currentLine, out PreventMidSongPause);
                 if (IdentifierIsFound(currentLine, RemoveFingerprintsIdentifier, identifierToGrab))
                     return FillSettingVariable(RemoveFingerprintsIdentifier, SettingType.ON_OFF, currentLine, out RemoveFingerprints);
+                if (IdentifierIsFound(currentLine, DropPedalEnabledIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalEnabledIdentifier, SettingType.ON_OFF, currentLine, out DropPedalEnabled);
+                if (IdentifierIsFound(currentLine, DropPedalEngineIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalEngineIdentifier, SettingType.STRING, currentLine, out DropPedalEngine);
 
                 #endregion
                 #region String Colors
@@ -684,7 +727,7 @@ namespace RSMods
                 
                 #endregion
             }
-            return string.Empty; // Yeah, we don't know what you're looking for...
+            return DefaultSettingValue(identifierToGrab); // Yeah, we don't know what you're looking for...
         }
     }
 }

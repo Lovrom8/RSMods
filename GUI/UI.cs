@@ -321,6 +321,16 @@ namespace RSMods
             label_LoopStartKey.Text = "Start Loop: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopStartKeyIdentifier));
             label_LoopEndKey.Text = "End Loop: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.LoopEndKeyIdentifier));
             label_RewindKey.Text = "Rewind Song: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.RewindKeyIdentifier));
+            Startup_ShowCurrentDropPedalKeybindingValues();
+        }
+
+        private void Startup_ShowCurrentDropPedalKeybindingValues()
+        {
+            label_DropPedalPitchDownKey.Text = "Pedal Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchDownKeyIdentifier));
+            label_DropPedalPitchUpKey.Text = "Pedal Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchUpKeyIdentifier));
+            label_DropPedalToggleKey.Text = "Pedal Toggle: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalToggleKeyIdentifier));
+            label_DropPedalBaseTuningDownKey.Text = "Base Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningDownKeyIdentifier));
+            label_DropPedalBaseTuningUpKey.Text = "Base Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningUpKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()
@@ -758,6 +768,17 @@ namespace RSMods
             {
                 checkBox_OverrideInputVolume.Checked = true;
                 groupBox_OverrideInputVolume.Visible = true;
+            }
+
+            checkBox_DropPedal.Checked = ReadSettings.ProcessSettings(ReadSettings.DropPedalEnabledIdentifier) == "on";
+            string dropPedalEngine = ReadSettings.ProcessSettings(ReadSettings.DropPedalEngineIdentifier);
+            foreach (object engineItem in comboBox_DropPedalEngine.Items)
+            {
+                if (engineItem.ToString().ToLower() == dropPedalEngine)
+                {
+                    comboBox_DropPedalEngine.SelectedItem = engineItem;
+                    break;
+                }
             }
 
             checkBox_EnableLooping.Checked = ReadSettings.ProcessSettings(ReadSettings.AllowLoopingIdentifier) == "on";
@@ -2353,6 +2374,15 @@ namespace RSMods
         private void Save_RainbowStrings(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RainbowStringsEnabledIdentifier, checkBox_RainbowStrings.Checked.ToString().ToLower());
 
         private void Save_RainbowNotes(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.RainbowNotesEnabledIdentifier, checkBox_RainbowNotes.Checked.ToString().ToLower());
+
+        private void Save_DropPedalEnabled(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.DropPedalEnabledIdentifier, checkBox_DropPedal.Checked.ToString().ToLower());
+
+        private void Save_DropPedalEngine(object sender, EventArgs e)
+        {
+            if (comboBox_DropPedalEngine.SelectedItem == null) return;
+
+            SaveSettings_Save(ReadSettings.DropPedalEngineIdentifier, comboBox_DropPedalEngine.SelectedItem.ToString().ToLower());
+        }
 
         private void Save_ExtendedRange(object sender, EventArgs e)
         {
