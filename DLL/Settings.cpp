@@ -22,6 +22,11 @@ void Settings::Initialize()
 		{"LoopStartKey", "Y"},
 		{"LoopEndKey", "U"},
 		{"RewindKey", "Z"},
+		{"DropPedalPitchDownKey", "VK_OEM_COMMA"},
+		{"DropPedalPitchUpKey", "VK_OEM_PERIOD"},
+		{"DropPedalToggleKey", "VK_F8"},
+		{"DropPedalBaseTuningDownKey", "VK_F9"},
+		{"DropPedalBaseTuningUpKey", "VK_F10"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -91,6 +96,8 @@ void Settings::Initialize()
 		{"DisplayCurrentAccuracy", "off"},
 		{"PreventMidSongPause", "off"},
 		{"RemoveFingerprints", "off"},
+		{"EnableDropPedal", "off"},
+		{"DropPedalEngine", "automatic"},
 	};
 
 	customSettings = {
@@ -185,6 +192,11 @@ void Settings::ReadKeyBinds() {
 		{ "LoopStartKey", reader.GetValue("Keybinds", "LoopStartKey", "Y")},
 		{ "LoopEndKey", reader.GetValue("Keybinds", "LoopEndKey", "U")},
 		{ "RewindKey", reader.GetValue("Keybinds", "RewindKey", "Z")},
+		{ "DropPedalPitchDownKey", reader.GetValue("Keybinds", "DropPedalPitchDownKey", "VK_OEM_COMMA")},
+		{ "DropPedalPitchUpKey", reader.GetValue("Keybinds", "DropPedalPitchUpKey", "VK_OEM_PERIOD")},
+		{ "DropPedalToggleKey", reader.GetValue("Keybinds", "DropPedalToggleKey", "VK_F8")},
+		{ "DropPedalBaseTuningDownKey", reader.GetValue("Keybinds", "DropPedalBaseTuningDownKey", "VK_F9")},
+		{ "DropPedalBaseTuningUpKey", reader.GetValue("Keybinds", "DropPedalBaseTuningUpKey", "VK_F10")},
 
 		{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 		{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },
@@ -303,6 +315,8 @@ void Settings::ReadModSettings() {
 	modSettings["DisplayCurrentAccuracy"] = reader.GetValue("Toggle Switches", "DisplayCurrentAccuracy", "off");
 	modSettings["PreventMidSongPause"] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
 	modSettings["RemoveFingerprints"] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
+	modSettings["EnableDropPedal"] = reader.GetValue("Drop Pedal", "EnableDropPedal", "off");
+	modSettings["DropPedalEngine"] = reader.GetValue("Drop Pedal", "Engine", "automatic");
 }
 
 /// <summary>

@@ -222,6 +222,18 @@ unsigned WINAPI HandleEffectQueueThread() {
 }
 
 /// <summary>
+/// Samples the drop pedal hotkeys. Separate from MainThread because its 250ms loop is
+/// longer than a key tap, so presses landed between polls and were lost.
+/// </summary>
+unsigned WINAPI DropPedalHotkeyThread() {
+	while (!GameState::GameClosing) {
+		ModManager::PollDropPedalHotkeys();
+		Sleep(15);
+	}
+	return 0;
+}
+
+/// <summary>
 /// Main Thread where we trigger the mods to startup.
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
@@ -257,7 +269,13 @@ void Initialize() {
 
 	Wwise::Exports::Initialize();
 
+	// Read before any thread is spawned. Every mod thread reads these maps, so
+	// rebuilding them later frees the strings a reader is still holding.
+	Settings::ReadKeyBinds();
+	Settings::ReadModSettings();
+
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
+	std::thread(DropPedalHotkeyThread).detach(); // Drop pedal keys, faster than MainThread's loop
 	std::thread(EnumerationThread).detach(); // Force Enumeration
 	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects
 	std::thread(MidiThread).detach(); // MIDI Auto Tuning / True Tuning
