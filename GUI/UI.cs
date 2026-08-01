@@ -4296,7 +4296,7 @@ namespace RSMods
                         MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
                     }
                     else
-                        MessageBox.Show("An error occured when converting your file.\nPlease contact the RSMods devs.");
+                        MessageBox.Show("An error occurred when converting your file.\nPlease contact the RSMods devs.");
 
                 }
             }
