@@ -16,7 +16,6 @@
 #include "Mods/RiffRepeater.hpp"
 #include "Mods/AudioDevices.hpp"
 #include "Mods/BugPrevention.hpp"
-#include "Mods/TrueTuning.hpp"
 #include "Mods/Loft.hpp"
 #include "Menu.hpp"
 #include "Keyboard.hpp"

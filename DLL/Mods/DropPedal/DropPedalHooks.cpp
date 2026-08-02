@@ -1,11 +1,12 @@
 #include "../../stdafx.h"
 #include "DropPedalHooks.hpp"
 #include "DropPedalState.hpp"
-#include "../TrueTuning.hpp"
 
 namespace
 {
 	constexpr LONG MAX_PENDING_EVENTS = 64;
+	constexpr float SEMITONES_PER_OCTAVE = 12.0f;
+	constexpr float TRUE_TUNING_COMPARISON_EPSILON = 0.0001f;
 
 	// Vtable slot indices, confirmed by disassembly rather than declaration order.
 	// Slot 1 takes three arguments and null-checks the second, which is SetParam.
@@ -31,7 +32,7 @@ namespace
 	// Virtual member functions are __thiscall on x86, which passes this in ECX.
 	// __fastcall matches that once the unused EDX argument is declared explicitly.
 	typedef AKRESULT(__fastcall* tSetParamRaw)(void* self, void* unused, AkUInt32 paramId, const void* value, AkUInt32 size);
-	typedef void(__fastcall* tTermRaw)(void* self, void* unused, void* allocator);
+	typedef AKRESULT(__fastcall* tTermRaw)(void* self, void* unused, void* allocator);
 
 	struct PitchOverrideEvent
 	{
@@ -47,12 +48,34 @@ namespace
 	bool isSetParamHooked = false;
 
 	// When the ASIO input shifter owns pitch, all game-side application is suppressed:
-	// the input signal is already retuned, so detection hears the shifted notes and the
-	// tuner reference must stay at 440.
-	bool inputShifterActive = false;
+	// the input signal is already retuned, so a MultiPitch override would shift it twice.
+	std::atomic<bool> inputShifterActive{ false };
 	bool hasReportedInputShifterUnavailable = false;
-	bool hasCapturedSongTuning = false;
-	unsigned long long engineNoticeTick = 0;
+	bool hasLoggedSongTuning = false;
+	std::atomic<unsigned long long> engineNoticeTick{ 0 };
+
+	// The reference builder converts an arrangement's cent offset into the frequency
+	// note detection expects, 440 * 2^(cents / 1200), and stamps it into the
+	// detection object at song load. It is detoured so every consumer sees the
+	// shifted reference, including the pre-song tuner, which snapshots its expected
+	// pitches from that stamp immediately after it lands: writing the stamped value
+	// afterwards always lost that race, because the game re-stamps on load an
+	// instant before the tuner reads it.
+	void* referenceBuilderTrampoline = nullptr;
+
+	// Written by the game loop, read by the naked detour on the game's loading
+	// thread. Aligned 32-bit loads and stores are atomic on x86.
+	volatile LONG referenceCentsAdjustment = 0;
+	volatile LONG authoredReferenceCents = 0;
+	volatile LONG hasAuthoredReferenceCents = 0;
+
+	std::mutex trueTuningMutex;
+	uintptr_t trueTuningAddress = 0;
+	float authoredTrueTuning = 0.0f;
+	float appliedTrueTuning = 0.0f;
+	bool hasCapturedTrueTuning = false;
+	bool hasAppliedTrueTuning = false;
+	bool hasReportedTrueTuningUnavailable = false;
 
 	// SetParam runs on bank and audio threads, so it must not log or take a lock:
 	// an earlier build deadlocked against the game loop by doing both, and another
@@ -72,6 +95,58 @@ namespace
 	void* deliveredParamObjects[MAX_PARAM_OBJECTS] = {};
 	float deliveredAuthoredCents[MAX_PARAM_OBJECTS] = {};
 	volatile LONG deliveredParamObjectCount = 0;
+
+	// The builder takes its cent offset as a single stack argument. Adjusting the
+	// argument in place and running the original means the game computes the
+	// shifted frequency with its own math: non-A440 offsets and the -1200
+	// emulated-bass case compose naturally instead of needing special handling.
+	// Runs on the game's loading thread, so no logging and no locks.
+	__declspec(naked) void SpyReferenceBuilder()
+	{
+		__asm
+		{
+			push eax
+			mov eax, dword ptr [esp + 8]
+			mov authoredReferenceCents, eax
+			mov hasAuthoredReferenceCents, 1
+			add eax, referenceCentsAdjustment
+			mov dword ptr [esp + 8], eax
+			pop eax
+			jmp referenceBuilderTrampoline
+		}
+	}
+
+	/// <summary>
+	/// Keep the cents adjustment in step with the pedal. Raising the reference makes
+	/// detection expect the player's physical pitch: at a -2 target, 0 cents becomes
+	/// +200 and A440 becomes ~A494. When the ASIO input shifter owns pitch the input
+	/// itself is already retuned, so the reference stays authored.
+	/// </summary>
+	void UpdateReferenceCentsAdjustment()
+	{
+		const bool cableOwnsPitch = !inputShifterActive.load(std::memory_order_relaxed);
+		const int targetSemitones = cableOwnsPitch && DropPedalState::IsEnabled()
+			? DropPedalState::GetTargetSemitones()
+			: 0;
+
+		InterlockedExchange(&referenceCentsAdjustment, (LONG)(-targetSemitones * 100));
+	}
+
+	/// <summary>
+	/// The authored reference for the current arrangement. With the builder hooked,
+	/// the stamped value already carries the shift, so authored is reconstructed
+	/// from the cents the builder was given rather than read back transposed.
+	/// </summary>
+	float DeriveAuthoredTrueTuning(float currentTrueTuning)
+	{
+		if (referenceBuilderTrampoline != nullptr
+			&& InterlockedCompareExchange(&hasAuthoredReferenceCents, 1, 1) == 1)
+		{
+			return 440.0f * powf(2.0f, (float)authoredReferenceCents / 1200.0f);
+		}
+
+		return currentTrueTuning;
+	}
 
 	void* __cdecl SpyCreateParam(void* allocator)
 	{
@@ -157,7 +232,7 @@ namespace
 			}
 		}
 
-		if (!DropPedalState::IsEnabled() || inputShifterActive)
+		if (!DropPedalState::IsEnabled() || inputShifterActive.load(std::memory_order_relaxed))
 		{
 			return originalSetParam(self, unused, paramId, value, size);
 		}
@@ -178,7 +253,7 @@ namespace
 	/// write into freed memory. Runs on whichever thread destroys it, so no logging
 	/// and no locks.
 	/// </summary>
-	void __fastcall SpyTerm(void* self, void* unused, void* allocator)
+	AKRESULT __fastcall SpyTerm(void* self, void* unused, void* allocator)
 	{
 		const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
 			? deliveredParamObjectCount
@@ -194,7 +269,7 @@ namespace
 			}
 		}
 
-		originalTerm(self, unused, allocator);
+		return originalTerm(self, unused, allocator);
 	}
 
 	void HookSetParamOnce()
@@ -257,6 +332,185 @@ namespace
 
 		return originalRegisterPlugin(type, companyId, pluginId, createFunc, createParamFunc);
 	}
+
+	void PushPitchToLiveShiftersWithShift(float shiftCents)
+	{
+		// Without the Term hook there is no way to know an object has been freed, and
+		// a push after a tone switch would write into released memory.
+		if (originalSetParam == nullptr || originalTerm == nullptr)
+		{
+			return;
+		}
+
+		const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
+			? deliveredParamObjectCount
+			: MAX_PARAM_OBJECTS;
+
+		for (LONG i = 0; i < known; i++)
+		{
+			void* paramObject = deliveredParamObjects[i];
+			if (paramObject == nullptr || MemUtil::IsBadReadPtr(paramObject))
+			{
+				continue;
+			}
+
+			uintptr_t* vtable = *(uintptr_t**)paramObject;
+			if (MemUtil::IsBadReadPtr(vtable))
+			{
+				continue;
+			}
+
+			const float cents = deliveredAuthoredCents[i] + shiftCents;
+
+			originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float));
+		}
+	}
+
+	bool AreTrueTuningValuesEqual(float first, float second)
+	{
+		return fabsf(first - second) <= TRUE_TUNING_COMPARISON_EPSILON;
+	}
+
+	bool WriteTrueTuningLocked(float value)
+	{
+		if (!MemUtil::PatchAdr(
+			reinterpret_cast<LPVOID>(trueTuningAddress),
+			reinterpret_cast<LPVOID>(&value),
+			sizeof(value)))
+		{
+			LOG_ERROR("Drop pedal failed to write true tuning at 0x"
+				<< std::hex << trueTuningAddress << std::dec << std::endl);
+			return false;
+		}
+
+		return true;
+	}
+
+	bool CaptureOrRefreshTrueTuningLocked(float& currentTrueTuning)
+	{
+		uintptr_t currentAddress = 0;
+		if (!SongTuning::TryGetTrueTuning(currentTrueTuning, currentAddress))
+		{
+			if (!hasReportedTrueTuningUnavailable)
+			{
+				hasReportedTrueTuningUnavailable = true;
+				LOG_ERROR("Drop pedal could not resolve the arrangement true-tuning value" << std::endl);
+			}
+
+			return false;
+		}
+
+		hasReportedTrueTuningUnavailable = false;
+
+		if (!hasCapturedTrueTuning || currentAddress != trueTuningAddress)
+		{
+			trueTuningAddress = currentAddress;
+			authoredTrueTuning = DeriveAuthoredTrueTuning(currentTrueTuning);
+			appliedTrueTuning = currentTrueTuning;
+			hasCapturedTrueTuning = true;
+			hasAppliedTrueTuning = !AreTrueTuningValuesEqual(appliedTrueTuning, authoredTrueTuning);
+
+			LOG_INFO("Drop pedal captured authored true tuning " << authoredTrueTuning
+				<< " Hz at 0x" << std::hex << trueTuningAddress << std::dec << std::endl);
+			return true;
+		}
+
+		// Rocksmith rewrites this location when an arrangement loads. A value other
+		// than the one the drop pedal applied is therefore a new stamp from the
+		// reference builder, not a result to compound on the next pedal update.
+		if (hasAppliedTrueTuning && !AreTrueTuningValuesEqual(currentTrueTuning, appliedTrueTuning))
+		{
+			authoredTrueTuning = DeriveAuthoredTrueTuning(currentTrueTuning);
+			appliedTrueTuning = currentTrueTuning;
+			hasAppliedTrueTuning = !AreTrueTuningValuesEqual(appliedTrueTuning, authoredTrueTuning);
+			LOG_INFO("Drop pedal observed a new authored true tuning "
+				<< authoredTrueTuning << " Hz" << std::endl);
+		}
+		else if (!hasAppliedTrueTuning && !AreTrueTuningValuesEqual(currentTrueTuning, authoredTrueTuning))
+		{
+			authoredTrueTuning = DeriveAuthoredTrueTuning(currentTrueTuning);
+			appliedTrueTuning = currentTrueTuning;
+			hasAppliedTrueTuning = !AreTrueTuningValuesEqual(appliedTrueTuning, authoredTrueTuning);
+			LOG_INFO("Drop pedal observed a new authored true tuning "
+				<< authoredTrueTuning << " Hz" << std::endl);
+		}
+
+		return true;
+	}
+
+	void ApplyTrueTuningLocked()
+	{
+		float currentTrueTuning = 0.0f;
+		if (!CaptureOrRefreshTrueTuningLocked(currentTrueTuning))
+		{
+			return;
+		}
+
+		const bool cableOwnsPitch = !inputShifterActive.load(std::memory_order_relaxed);
+		const bool shouldTransposeDetection = cableOwnsPitch && DropPedalState::IsEnabled();
+		const int targetSemitones = shouldTransposeDetection
+			? DropPedalState::GetTargetSemitones()
+			: 0;
+		const float targetTrueTuning = authoredTrueTuning
+			* powf(2.0f, -(float)targetSemitones / SEMITONES_PER_OCTAVE);
+		const bool targetChanged = !AreTrueTuningValuesEqual(appliedTrueTuning, targetTrueTuning);
+		bool wroteValue = false;
+
+		if (!AreTrueTuningValuesEqual(currentTrueTuning, targetTrueTuning))
+		{
+			if (!WriteTrueTuningLocked(targetTrueTuning))
+			{
+				return;
+			}
+
+			wroteValue = true;
+		}
+
+		appliedTrueTuning = targetTrueTuning;
+		hasAppliedTrueTuning = !AreTrueTuningValuesEqual(targetTrueTuning, authoredTrueTuning);
+
+		if (targetChanged || wroteValue)
+		{
+			LOG_INFO("Drop pedal true tuning: authored " << authoredTrueTuning
+				<< " Hz, applied " << targetTrueTuning << " Hz, target "
+				<< targetSemitones << " semitone(s)" << std::endl);
+		}
+	}
+
+	void ApplyCapturedTrueTuning()
+	{
+		std::lock_guard<std::mutex> lock(trueTuningMutex);
+		if (!hasCapturedTrueTuning)
+		{
+			return;
+		}
+
+		ApplyTrueTuningLocked();
+	}
+
+	void RestoreTrueTuningLocked()
+	{
+		if (!hasCapturedTrueTuning)
+		{
+			return;
+		}
+
+		float currentTrueTuning = 0.0f;
+		uintptr_t currentAddress = 0;
+		if (SongTuning::TryGetTrueTuning(currentTrueTuning, currentAddress)
+			&& currentAddress == trueTuningAddress
+			&& !AreTrueTuningValuesEqual(currentTrueTuning, authoredTrueTuning))
+		{
+			if (WriteTrueTuningLocked(authoredTrueTuning))
+			{
+				LOG_INFO("Drop pedal restored authored true tuning "
+					<< authoredTrueTuning << " Hz" << std::endl);
+			}
+		}
+
+		appliedTrueTuning = authoredTrueTuning;
+		hasAppliedTrueTuning = false;
+	}
 }
 
 void DropPedalHooks::Install()
@@ -264,18 +518,11 @@ void DropPedalHooks::Install()
 	// The engine notice starts counting here. Automatic starts game-side until the
 	// ASIO chain proves itself; a forced asio engine claims pitch immediately so the
 	// game-side MultiPitch path never runs, even if the chain later fails to appear.
-	engineNoticeTick = GetTickCount64();
-	inputShifterActive = DropPedalState::IsAsioEngine();
+	engineNoticeTick.store(GetTickCount64(), std::memory_order_relaxed);
+	inputShifterActive.store(DropPedalState::IsAsioEngine(), std::memory_order_relaxed);
 
 	LOG_INFO("Drop pedal engine: "
-		<< (inputShifterActive ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
-
-	// Note detection reads the raw guitar signal, so the pitch shifter is invisible to
-	// it. The game derives expected pitch from a reference frequency instead, which is
-	// the same value CDLC charters set as an arrangement's tuning pitch. Redirecting it
-	// is what keeps scoring in agreement with the strings the player is holding.
-	TrueTuning::DisableTrueTuning();
-	TrueTuning::SetReferenceSemitones(-DropPedalState::GetTargetSemitones());
+		<< (inputShifterActive.load(std::memory_order_relaxed) ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 
 	const uintptr_t target = Wwise::Exports::func_Wwise_Sound_RegisterPlugin.Get();
 	originalRegisterPlugin = (tRegisterPlugin)DetourFunction((PBYTE)target, (PBYTE)SpyRegisterPlugin);
@@ -284,18 +531,36 @@ void DropPedalHooks::Install()
 	{
 		LOG_ERROR("Drop pedal failed to hook RegisterPlugin at 0x" << std::hex << target << std::dec << std::endl);
 	}
+
+	const uintptr_t referenceBuilder = Offsets::func_tuningReferenceBuilder.GetValue();
+	if (referenceBuilder != 0)
+	{
+		const PBYTE trampoline = DetourFunction((PBYTE)referenceBuilder, (PBYTE)SpyReferenceBuilder);
+		if (trampoline == nullptr)
+		{
+			LOG_ERROR("Drop pedal failed to hook the tuning reference builder at 0x"
+				<< std::hex << referenceBuilder << std::dec << std::endl);
+		}
+		else
+		{
+			referenceBuilderTrampoline = trampoline;
+		}
+	}
+	else
+	{
+		// Without the builder hook the live true-tuning writes still keep in-song
+		// detection correct; only the tuner's load-time snapshot stays authored.
+		LOG_INFO("Drop pedal has no reference builder address for this game version; "
+			"the pre-song tuner will not follow the shift" << std::endl);
+	}
+
+	UpdateReferenceCentsAdjustment();
 }
 
 void DropPedalHooks::Poll()
 {
 	HookSetParamOnce();
-
-	// Kept in step every tick rather than only when the pitch changes, so the value
-	// is already correct when a song loads. Detection appears to take its reference
-	// at load time, which is why setting it mid-song has no effect.
-	TrueTuning::SetReferenceSemitones((DropPedalState::IsEnabled() && !inputShifterActive)
-		? -DropPedalState::GetTargetSemitones()
-		: 0);
+	UpdateReferenceCentsAdjustment();
 }
 
 void DropPedalHooks::LogPendingOverrides()
@@ -318,41 +583,11 @@ void DropPedalHooks::LogPendingOverrides()
 /// </summary>
 void DropPedalHooks::PushPitchToLiveShifters()
 {
-	// Without the Term hook there is no way to know an object has been freed, and
-	// a push after a tone switch would write into released memory.
-	if (originalSetParam == nullptr || originalTerm == nullptr)
-	{
-		return;
-	}
-
-	const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
-		? deliveredParamObjectCount
-		: MAX_PARAM_OBJECTS;
-
 	// Disabled pushes the authored pitch itself, which is what disengages the pedal
 	// immediately instead of waiting for the next tone load to re-deliver it.
 	const float shiftCents = DropPedalState::IsEnabled() ? DropPedalState::GetTargetCents() : 0.0f;
-
-	for (LONG i = 0; i < known; i++)
-	{
-		void* paramObject = deliveredParamObjects[i];
-		if (paramObject == nullptr || MemUtil::IsBadReadPtr(paramObject))
-		{
-			continue;
-		}
-
-		uintptr_t* vtable = *(uintptr_t**)paramObject;
-		if (MemUtil::IsBadReadPtr(vtable))
-		{
-			continue;
-		}
-
-		// Each shifter moves from its own tone's authored pitch, the same baseline
-		// the engine's own delivery is given.
-		const float cents = deliveredAuthoredCents[i] + shiftCents;
-
-		originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float));
-	}
+	PushPitchToLiveShiftersWithShift(shiftCents);
+	ApplyCapturedTrueTuning();
 }
 
 void DropPedalHooks::SetInputShifterActive(bool active)
@@ -368,16 +603,33 @@ void DropPedalHooks::SetInputShifterActive(bool active)
 		active = true;
 	}
 
-	if (inputShifterActive == active) return;
+	if (inputShifterActive.load(std::memory_order_relaxed) == active) return;
 
-	inputShifterActive = active;
-	engineNoticeTick = GetTickCount64();
+	if (active)
+	{
+		// Remove the Cable shift before ASIO takes ownership, so the two engines
+		// cannot apply the same target at once during automatic promotion.
+		PushPitchToLiveShiftersWithShift(0.0f);
+		inputShifterActive.store(true, std::memory_order_relaxed);
+		ApplyCapturedTrueTuning();
+	}
+	else
+	{
+		// Publish Cable ownership before reapplying its target. Any concurrent
+		// SetParam delivery will therefore apply the same shift rather than bypass it.
+		inputShifterActive.store(false, std::memory_order_relaxed);
+		const float shiftCents = DropPedalState::IsEnabled() ? DropPedalState::GetTargetCents() : 0.0f;
+		PushPitchToLiveShiftersWithShift(shiftCents);
+		ApplyCapturedTrueTuning();
+	}
+
+	engineNoticeTick.store(GetTickCount64(), std::memory_order_relaxed);
 	LOG_INFO("Drop pedal engine: " << (active ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 }
 
 bool DropPedalHooks::IsInputShifterActive()
 {
-	return inputShifterActive;
+	return inputShifterActive.load(std::memory_order_relaxed);
 }
 
 void DropPedalHooks::ReportInputShifterUnavailable()
@@ -391,40 +643,50 @@ void DropPedalHooks::ReportInputShifterUnavailable()
 
 unsigned long long DropPedalHooks::GetEngineNoticeTick()
 {
-	return engineNoticeTick;
+	return engineNoticeTick.load(std::memory_order_relaxed);
 }
 
 /// <summary>
 /// Log the song's own tuning once per song, for diagnosing detection problems.
 ///
 /// Writing this array was tried as a way to make detection expect the player's
-/// tuning and had no effect, so it is left read only. The reference frequency in
-/// TrueTuning is the mechanism that actually drives detection.
+/// tuning and had no effect, so it is left read only.
 /// </summary>
-void DropPedalHooks::HandleTuningInSong()
+void DropPedalHooks::HandleArrangementTuning()
 {
-	if (hasCapturedSongTuning)
+	if (!hasLoggedSongTuning)
 	{
-		return;
+		const uintptr_t addrTuning = MemUtil::FindDMAAddy(
+			Offsets::baseHandle + Offsets::ptr_tuning,
+			Offsets::ptr_tuningOffsets,
+			true);
+		if (addrTuning != 0)
+		{
+			const Tuning* tuning = reinterpret_cast<const Tuning*>(addrTuning);
+			hasLoggedSongTuning = true;
+
+			LOG_INFO("Drop pedal song tuning is "
+				<< (int)(char)tuning->lowE << " " << (int)(char)tuning->strA << " "
+				<< (int)(char)tuning->strD << " " << (int)(char)tuning->strG << " "
+				<< (int)(char)tuning->strB << " " << (int)(char)tuning->highE
+				<< ", drop pedal at " << DropPedalState::GetTargetSemitones() << std::endl);
+		}
 	}
 
-	const uintptr_t addrTuning = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_tuning, Offsets::ptr_tuningOffsets, true);
-	if (addrTuning == 0)
-	{
-		return;
-	}
-
-	const Tuning* tuning = reinterpret_cast<const Tuning*>(addrTuning);
-	hasCapturedSongTuning = true;
-
-	LOG_INFO("Drop pedal song tuning is "
-		<< (int)(char)tuning->lowE << " " << (int)(char)tuning->strA << " "
-		<< (int)(char)tuning->strD << " " << (int)(char)tuning->strG << " "
-		<< (int)(char)tuning->strB << " " << (int)(char)tuning->highE
-		<< ", drop pedal at " << DropPedalState::GetTargetSemitones() << std::endl);
+	std::lock_guard<std::mutex> lock(trueTuningMutex);
+	ApplyTrueTuningLocked();
 }
 
 void DropPedalHooks::ResetSongState()
 {
-	hasCapturedSongTuning = false;
+	std::lock_guard<std::mutex> lock(trueTuningMutex);
+	RestoreTrueTuningLocked();
+
+	trueTuningAddress = 0;
+	authoredTrueTuning = 0.0f;
+	appliedTrueTuning = 0.0f;
+	hasCapturedTrueTuning = false;
+	hasAppliedTrueTuning = false;
+	hasReportedTrueTuningUnavailable = false;
+	hasLoggedSongTuning = false;
 }

@@ -252,9 +252,6 @@
     <ClCompile Include="D3D/D3DHooks.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\TrueTuning.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="CC\Effects\WavyNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
@@ -565,9 +562,6 @@
     </ClInclude>
     <ClInclude Include="Lib\Ini\SimpleIni.h">
       <Filter>Main Headers\Ini</Filter>
-    </ClInclude>
-    <ClInclude Include="Mods\TrueTuning.hpp">
-      <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\WavyNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>

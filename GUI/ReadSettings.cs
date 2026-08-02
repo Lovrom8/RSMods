@@ -300,7 +300,7 @@ namespace RSMods
             if (identifierToGrab == DropPedalPitchUpKeyIdentifier)
                 return "VK_OEM_PERIOD";
             if (identifierToGrab == DropPedalToggleKeyIdentifier)
-                return "VK_F8";
+                return "VK_F7";
             if (identifierToGrab == DropPedalBaseTuningDownKeyIdentifier)
                 return "VK_F9";
             if (identifierToGrab == DropPedalBaseTuningUpKeyIdentifier)

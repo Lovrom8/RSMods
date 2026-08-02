@@ -356,15 +356,38 @@ bool SongTuning::IsSongInStandard(Tuning tuning) {
 	return tuning.strA == COMMON_TUNING && tuning.strD == COMMON_TUNING && tuning.strG == COMMON_TUNING && tuning.strB == COMMON_TUNING && tuning.highE == COMMON_TUNING;
 }
 
-/// <returns>True Tuning. ex: A440, A432</returns>
-int SongTuning::GetTrueTuning() {
-	uintptr_t trueTunePointer = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_trueTuning, Offsets::ptr_trueTuningOffsets);
+bool SongTuning::TryGetTrueTuning(float& trueTuning, uintptr_t& address)
+{
+	address = MemUtil::FindDMAAddy(
+		Offsets::baseHandle + Offsets::ptr_trueTuning,
+		Offsets::ptr_trueTuningOffsets,
+		true);
 
-	if (!trueTunePointer) {
+	if (address == 0)
+	{
+		return false;
+	}
+
+	const float value = *reinterpret_cast<const float*>(address);
+	if (!std::isfinite(value) || value <= 0.0f)
+	{
+		address = 0;
+		return false;
+	}
+
+	trueTuning = value;
+	return true;
+}
+
+/// <returns>True Tuning. ex: A440, A432</returns>
+int SongTuning::GetTrueTuning()
+{
+	float rawTuningValue = 0.0f;
+	uintptr_t address = 0;
+	if (!TryGetTrueTuning(rawTuningValue, address))
+	{
 		return 440;
 	}
 
-	float rawTuningValue = *(float*)trueTunePointer;
-	auto trueTuning = static_cast<int>(floor(rawTuningValue));
-	return trueTuning;
+	return static_cast<int>(floor(rawTuningValue));
 }

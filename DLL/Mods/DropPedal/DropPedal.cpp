@@ -26,10 +26,7 @@ void DropPedal::LoadSettings()
 	// RS_ASIO's standard template fills in [Asio.Input.1] even for single-player
 	// setups, so its presence is not evidence of multiplayer and must not disable
 	// anything. The warning states the actual limitation: the pedal shifts only the
-	// [Asio.Input.0] channel, so a second player plays unshifted. The cable engine's
-	// tuning-reference redirect is additionally global; that hazard is documented in
-	// the setup guide rather than guessed at here, since which mode the player will
-	// enter cannot be known at settings time.
+	// [Asio.Input.0] channel, so a second player plays unshifted.
 	if (DropPedalState::IsConfiguredEnabled() && HasSecondInputConfigured())
 	{
 		LOG_WARNING("RS_ASIO.ini configures a second input under [Asio.Input.1]. The drop "
@@ -65,11 +62,11 @@ bool DropPedal::IsEnabled()
 	return DropPedalState::IsConfiguredEnabled() && DropPedalState::IsEnabled();
 }
 
-void DropPedal::HandleTuningInSong()
+void DropPedal::HandleArrangementTuning()
 {
 	if (!DropPedalState::IsConfiguredEnabled()) return;
 
-	DropPedalHooks::HandleTuningInSong();
+	DropPedalHooks::HandleArrangementTuning();
 }
 
 void DropPedal::ResetSongState()

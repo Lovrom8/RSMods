@@ -456,7 +456,14 @@ namespace ModManager {
 			Midi::userWantsToUseAutoTuning = false;
 		}
 
-		DropPedal::ResetSongState();
+		if (GameState::Menus::IsInPreSongTuner())
+		{
+			DropPedal::HandleArrangementTuning();
+		}
+		else
+		{
+			DropPedal::ResetSongState();
+		}
 	}
 
 	/// <summary>
@@ -657,7 +664,7 @@ namespace ModManager {
 		EnableRiffRepeaterFeatures();
 		HandleInSongVisualMods(state);
 		HandleMidiAutoTuningInSong();
-		DropPedal::HandleTuningInSong();
+		DropPedal::HandleArrangementTuning();
 		HandleSongTimerDisplay(state);
 		HandleExtendedRangeInSong(state);
 	}

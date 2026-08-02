@@ -10,10 +10,9 @@ namespace
 	constexpr int MAX_BASE_TUNING_SEMITONES = 11;
 	constexpr int SEMITONES_PER_OCTAVE = 12;
 
-	// Semitones the guitar has to move, in cents. Written by the game loop and read
-	// by SetParam on other threads: a torn read of a float is impossible on x86, and
-	// a briefly stale value is harmless.
-	volatile float targetCents = 0.0f;
+	// Session state is written by the hotkey thread and read by Wwise, rendering and
+	// game-loop threads.
+	std::atomic<int> targetSemitones{ 0 };
 
 	// From [Drop Pedal] in RSMods.ini, read once at startup. Values follow the ini's
 	// lowercase convention (on / off / automatic).
@@ -24,13 +23,13 @@ namespace
 	// the settings reload during boot and would wipe it. Starts on, so a session
 	// never silently begins with the pedal off; the toggle key still turns it off
 	// for the session. Read by SetParam on other threads.
-	volatile bool isEnabledSession = true;
+	std::atomic<bool> isEnabledSession{ true };
 
 	// The tuning the player's guitar is physically in, as semitones from E standard.
 	// Everything the mod shows is relative to this, so a player who lives in Eb sees
 	// tunings named from Eb rather than being told to do the arithmetic themselves.
 	// Session state like the shift itself: a player in Eb sets it once per launch.
-	int baseTuningSemitones = 0;
+	std::atomic<int> baseTuningSemitones{ 0 };
 
 	const char* GetTuningNameAtIndex(int index)
 	{
@@ -76,13 +75,15 @@ bool DropPedalState::IsCableEngine()
 
 bool DropPedalState::IsEnabled()
 {
-	return isEnabledSession;
+	return isEnabledSession.load(std::memory_order_relaxed);
 }
 
 bool DropPedalState::ToggleEnabled()
 {
-	isEnabledSession = !isEnabledSession;
-	return isEnabledSession;
+	// Only the hotkey thread writes this, so a plain load-flip-store is race-free.
+	const bool next = !isEnabledSession.load(std::memory_order_relaxed);
+	isEnabledSession.store(next, std::memory_order_relaxed);
+	return next;
 }
 
 /// <summary>
@@ -92,7 +93,7 @@ bool DropPedalState::ToggleEnabled()
 /// </summary>
 bool DropPedalState::AdjustTarget(int semitoneDelta)
 {
-	if (!isEnabledSession)
+	if (!IsEnabled())
 	{
 		return false;
 	}
@@ -103,30 +104,30 @@ bool DropPedalState::AdjustTarget(int semitoneDelta)
 		return false;
 	}
 
-	targetCents = adjusted * CENTS_PER_SEMITONE;
+	targetSemitones.store(adjusted, std::memory_order_relaxed);
 	return true;
 }
 
 bool DropPedalState::AdjustBaseTuning(int semitoneDelta)
 {
-	const int adjusted = baseTuningSemitones + semitoneDelta;
+	const int adjusted = baseTuningSemitones.load(std::memory_order_relaxed) + semitoneDelta;
 	if (adjusted < MIN_BASE_TUNING_SEMITONES || adjusted > MAX_BASE_TUNING_SEMITONES)
 	{
 		return false;
 	}
 
-	baseTuningSemitones = adjusted;
+	baseTuningSemitones.store(adjusted, std::memory_order_relaxed);
 	return true;
 }
 
 int DropPedalState::GetTargetSemitones()
 {
-	return (int)(targetCents / CENTS_PER_SEMITONE);
+	return targetSemitones.load(std::memory_order_relaxed);
 }
 
 float DropPedalState::GetTargetCents()
 {
-	return targetCents;
+	return (float)GetTargetSemitones() * CENTS_PER_SEMITONE;
 }
 
 /// <summary>
@@ -137,7 +138,8 @@ std::string DropPedalState::GetTuningName()
 {
 	const int semitones = GetTargetSemitones();
 
-	int stepsBelowE = (-(baseTuningSemitones + semitones)) % SEMITONES_PER_OCTAVE;
+	const int baseSemitones = baseTuningSemitones.load(std::memory_order_relaxed);
+	int stepsBelowE = (-(baseSemitones + semitones)) % SEMITONES_PER_OCTAVE;
 	if (stepsBelowE < 0)
 	{
 		stepsBelowE += SEMITONES_PER_OCTAVE;
@@ -159,7 +161,8 @@ std::string DropPedalState::GetTuningName()
 /// </summary>
 std::string DropPedalState::GetBaseTuningName()
 {
-	int stepsBelowE = (-baseTuningSemitones) % SEMITONES_PER_OCTAVE;
+	const int baseSemitones = baseTuningSemitones.load(std::memory_order_relaxed);
+	int stepsBelowE = (-baseSemitones) % SEMITONES_PER_OCTAVE;
 	if (stepsBelowE < 0)
 	{
 		stepsBelowE += SEMITONES_PER_OCTAVE;

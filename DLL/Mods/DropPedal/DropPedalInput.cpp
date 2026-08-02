@@ -10,7 +10,7 @@ namespace
 	// Defaults, replaced from [Keybinds] in RSMods.ini by LoadKeybinds.
 	int pitchDownKey = VK_OEM_COMMA;
 	int pitchUpKey = VK_OEM_PERIOD;
-	int toggleKey = VK_F8;
+	int toggleKey = VK_F7;
 	int baseTuningDownKey = VK_F9;
 	int baseTuningUpKey = VK_F10;
 
