@@ -19,8 +19,7 @@ namespace
 	bool wasToggleKeyDown = false;
 	bool wasBaseDownKeyDown = false;
 	bool wasBaseUpKeyDown = false;
-	bool isPitchPushPending = false;
-	ULONGLONG lastTargetChangeTime = 0;
+	std::atomic<ULONGLONG> pushDeadlineTick{ 0 };
 
 	void AdjustTarget(int semitoneDelta)
 	{
@@ -29,8 +28,9 @@ namespace
 			return;
 		}
 
-		isPitchPushPending = true;
-		lastTargetChangeTime = GetTickCount64();
+		pushDeadlineTick.store(
+			GetTickCount64() + PITCH_PUSH_DELAY_MILLISECONDS,
+			std::memory_order_release);
 	}
 
 	void ToggleEnabled()
@@ -132,12 +132,18 @@ void DropPedalInput::PollHotkeys()
 
 void DropPedalInput::PollPendingPitchPush()
 {
-	if (!isPitchPushPending || GetTickCount64() - lastTargetChangeTime < PITCH_PUSH_DELAY_MILLISECONDS)
+	ULONGLONG deadline = pushDeadlineTick.load(std::memory_order_acquire);
+	if (deadline == 0 || GetTickCount64() < deadline)
 	{
 		return;
 	}
 
-	isPitchPushPending = false;
+	if (!pushDeadlineTick.compare_exchange_strong(
+		deadline,
+		0,
+		std::memory_order_acq_rel,
+		std::memory_order_acquire)) return;
+
 	DropPedalHooks::PushPitchToLiveShifters();
 
 	LOG_INFO("Drop pedal target now " << DropPedalState::GetTuningName() << std::endl);

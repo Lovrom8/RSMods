@@ -34,6 +34,7 @@ namespace DropPedal
 	bool IsEnabled();
 	int GetTargetSemitones();
 	std::string GetTuningName();
+	bool TryGetAuthoredTrueTuning(float& trueTuning);
 
 	// Selects which engine realises the pitch. With the ASIO input shifter active, the
 	// game-side MultiPitch driving is suppressed: the input itself is retuned, so audio
@@ -41,6 +42,7 @@ namespace DropPedal
 	// authored tuning reference. The hotkeys and overlay stay live either way.
 	void SetInputShifterActive(bool active);
 	bool IsInputShifterActive();
+	bool ConsumeInputShifterTransitionFailure();
 
 	// Tick of the last engine decision or change, for the on-screen engine notice.
 	// Zero until hooks are installed.

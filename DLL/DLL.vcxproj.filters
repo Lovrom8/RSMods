@@ -189,6 +189,9 @@
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\TrueTuning.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Midi\RtMidi.cpp">
       <Filter>Main Headers\Midi</Filter>
     </ClCompile>
@@ -477,6 +480,9 @@
       <Filter>CrowdControl\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\Midi.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\TrueTuning.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">

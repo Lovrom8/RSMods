@@ -40,6 +40,8 @@ before applying the semitone shift.
 The shifter trails the input by up to one pitch period of the note being
 played (roughly 1-13 ms depending on the string), on top of the interface's
 normal round trip (~15 ms at 256 frames / 48 kHz on a typical interface).
+At a zero-semitone target or while disabled, it bypasses detection and splicing
+and leaves the input samples unchanged, adding no pitch-shifter latency.
 
 ## Controls
 
@@ -90,7 +92,7 @@ Eb bass, and so on. This avoids Rocksmith's emulated-bass post-processing path.
 
 | Symptom | Cause |
 |---|---|
-| Engine notice reads `Cable Drop Pedal` | The ASIO chain did not initialize. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]`, and see the next row |
+| Engine notice reads `Cable Drop Pedal` | The ASIO chain did not initialize. Check `RS_ASIO.ini` names the interface under `[Asio.Input.0]` |
 | Game reports "no audio output device" on launch | Another program changed the interface's sample rate (DAWs and amp sims do this silently). Set it back to 48000 Hz in the interface's control panel and relaunch |
 | Tuner reads a different tuning than the guitar is in | The shift, working as designed |
 | Pitch keys do nothing | Pedal toggled off (`F7`), or Rocksmith is not the focused window |

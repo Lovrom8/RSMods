@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SongTuning.hpp"
+#include "Mods/DropPedal/DropPedal.hpp"
 
 /// <summary>
 /// Get Tuning of all 6 strings (even on bass)
@@ -383,6 +384,11 @@ bool SongTuning::TryGetTrueTuning(float& trueTuning, uintptr_t& address)
 int SongTuning::GetTrueTuning()
 {
 	float rawTuningValue = 0.0f;
+	if (DropPedal::TryGetAuthoredTrueTuning(rawTuningValue))
+	{
+		return static_cast<int>(floor(rawTuningValue));
+	}
+
 	uintptr_t address = 0;
 	if (!TryGetTrueTuning(rawTuningValue, address))
 	{

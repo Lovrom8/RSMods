@@ -19,6 +19,10 @@ namespace Offsets {
 	// True Tuning
 	inline VersioningStruct<uintptr_t> ptr_trueTuning;
 	extern std::vector<unsigned int> ptr_trueTuningOffsets;
+	inline VersioningStruct<uintptr_t> ptr_disableTrueTuning;
+	inline VersioningStruct<uintptr_t> ptr_disableTrueTuning_jmpBck;
+	inline VersioningStruct<uintptr_t> ptr_disableTrueTuning_forceTT;
+	inline VersioningStruct<uintptr_t> ptr_disableTrueTuningGate;
 
 	// Tuning Reference Builder (Drop Pedal)
 	inline VersioningStruct<uintptr_t> func_tuningReferenceBuilder;

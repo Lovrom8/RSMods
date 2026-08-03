@@ -86,6 +86,13 @@ std::string DropPedal::GetTuningName()
 	return DropPedalState::GetTuningName();
 }
 
+bool DropPedal::TryGetAuthoredTrueTuning(float& trueTuning)
+{
+	if (!DropPedalState::IsConfiguredEnabled()) return false;
+
+	return DropPedalHooks::TryGetAuthoredTrueTuning(trueTuning);
+}
+
 std::string DropPedal::GetBaseTuningName()
 {
 	return DropPedalState::GetBaseTuningName();
@@ -113,6 +120,12 @@ void DropPedal::SetInputShifterActive(bool active)
 bool DropPedal::IsInputShifterActive()
 {
 	return DropPedalState::IsConfiguredEnabled() && DropPedalHooks::IsInputShifterActive();
+}
+
+bool DropPedal::ConsumeInputShifterTransitionFailure()
+{
+	return DropPedalState::IsConfiguredEnabled()
+		&& DropPedalHooks::ConsumeInputShifterTransitionFailure();
 }
 
 unsigned long long DropPedal::GetEngineNoticeTick()

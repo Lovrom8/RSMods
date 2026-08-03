@@ -26,6 +26,14 @@ namespace
 	constexpr AkUInt32 PITCH_PARAM_ID = 6;
 
 	constexpr LONG MAX_PARAM_OBJECTS = 16;
+	void* const RESERVED_PARAM_OBJECT = reinterpret_cast<void*>(1);
+
+	enum class PitchOwner
+	{
+		Cable,
+		Transitioning,
+		Asio
+	};
 
 	typedef void* (__cdecl* tCreateParamRaw)(void* allocator);
 
@@ -47,9 +55,13 @@ namespace
 
 	bool isSetParamHooked = false;
 
-	// When the ASIO input shifter owns pitch, all game-side application is suppressed:
-	// the input signal is already retuned, so a MultiPitch override would shift it twice.
-	std::atomic<bool> inputShifterActive{ false };
+	// Transitioning suppresses Cable SetParam overrides while the audio-thread callback
+	// restores every live MultiPitch object. ASIO ownership is published only afterwards.
+	std::atomic<PitchOwner> pitchOwner{ PitchOwner::Cable };
+	std::atomic<float> pendingPitchShiftCents{ 0.0f };
+	std::atomic<bool> pitchPushPending{ false };
+	std::atomic<bool> isGlobalCallbackRegistered{ false };
+	std::atomic<bool> inputShifterTransitionFailed{ false };
 	bool hasReportedInputShifterUnavailable = false;
 	bool hasLoggedSongTuning = false;
 	std::atomic<unsigned long long> engineNoticeTick{ 0 };
@@ -92,9 +104,36 @@ namespace
 	// value is not necessarily what a running effect reads: IAkPluginParam has Clone at
 	// vtable slot 2, and writing to the original moved nothing. These are the objects
 	// the engine drives, so they are the ones worth writing to.
-	void* deliveredParamObjects[MAX_PARAM_OBJECTS] = {};
-	float deliveredAuthoredCents[MAX_PARAM_OBJECTS] = {};
+	PVOID volatile deliveredParamObjects[MAX_PARAM_OBJECTS] = {};
+	std::atomic<float> deliveredAuthoredCents[MAX_PARAM_OBJECTS] = {};
 	volatile LONG deliveredParamObjectCount = 0;
+
+	void HandleGlobalAudioCallback(bool isLastCall);
+
+	bool CableOwnsPitch()
+	{
+		return pitchOwner.load(std::memory_order_acquire) == PitchOwner::Cable;
+	}
+
+	void* LoadDeliveredParamObject(LONG index)
+	{
+		return InterlockedCompareExchangePointer(
+			&deliveredParamObjects[index],
+			nullptr,
+			nullptr);
+	}
+
+	LONG LoadDeliveredParamObjectCount()
+	{
+		const LONG count = InterlockedCompareExchange(&deliveredParamObjectCount, 0, 0);
+		return count < MAX_PARAM_OBJECTS ? count : MAX_PARAM_OBJECTS;
+	}
+
+	void QueuePitchPush(float shiftCents)
+	{
+		pendingPitchShiftCents.store(shiftCents, std::memory_order_relaxed);
+		pitchPushPending.store(true, std::memory_order_release);
+	}
 
 	// The builder takes its cent offset as a single stack argument. Adjusting the
 	// argument in place and running the original means the game computes the
@@ -124,7 +163,7 @@ namespace
 	/// </summary>
 	void UpdateReferenceCentsAdjustment()
 	{
-		const bool cableOwnsPitch = !inputShifterActive.load(std::memory_order_relaxed);
+		const bool cableOwnsPitch = CableOwnsPitch();
 		const int targetSemitones = cableOwnsPitch && DropPedalState::IsEnabled()
 			? DropPedalState::GetTargetSemitones()
 			: 0;
@@ -180,16 +219,16 @@ namespace
 		// Record the object the engine delivered to, so live pushes can target it.
 		const float authoredCents = *(const float*)value;
 
-		const LONG deliveredKnown = deliveredParamObjectCount;
+		const LONG deliveredKnown = LoadDeliveredParamObjectCount();
 		bool isAlreadyTracked = false;
 		for (LONG i = 0; i < deliveredKnown && i < MAX_PARAM_OBJECTS; i++)
 		{
-			if (deliveredParamObjects[i] == self)
+			if (LoadDeliveredParamObject(i) == self)
 			{
 				// Objects are reused across tone loads, so the baseline has to follow
 				// the tone currently loaded into this one rather than the first tone
 				// ever seen through it.
-				deliveredAuthoredCents[i] = authoredCents;
+				deliveredAuthoredCents[i].store(authoredCents, std::memory_order_relaxed);
 				isAlreadyTracked = true;
 				break;
 			}
@@ -207,9 +246,16 @@ namespace
 			// currently alive rather than the first MAX_PARAM_OBJECTS ever created.
 			for (LONG i = 0; i < deliveredKnown && i < MAX_PARAM_OBJECTS; i++)
 			{
-				if (InterlockedCompareExchangePointer(&deliveredParamObjects[i], self, nullptr) == nullptr)
+				if (InterlockedCompareExchangePointer(
+					&deliveredParamObjects[i],
+					RESERVED_PARAM_OBJECT,
+					nullptr) == nullptr)
 				{
-					deliveredAuthoredCents[i] = authoredCents;
+					deliveredAuthoredCents[i].store(authoredCents, std::memory_order_relaxed);
+					InterlockedCompareExchangePointer(
+						&deliveredParamObjects[i],
+						self,
+						RESERVED_PARAM_OBJECT);
 					isStored = true;
 					break;
 				}
@@ -220,8 +266,11 @@ namespace
 				const LONG slot = InterlockedIncrement(&deliveredParamObjectCount) - 1;
 				if (slot < MAX_PARAM_OBJECTS)
 				{
-					deliveredParamObjects[slot] = self;
-					deliveredAuthoredCents[slot] = authoredCents;
+					deliveredAuthoredCents[slot].store(authoredCents, std::memory_order_relaxed);
+					InterlockedCompareExchangePointer(
+						&deliveredParamObjects[slot],
+						self,
+						nullptr);
 				}
 				else
 				{
@@ -232,7 +281,7 @@ namespace
 			}
 		}
 
-		if (!DropPedalState::IsEnabled() || inputShifterActive.load(std::memory_order_relaxed))
+		if (!DropPedalState::IsEnabled() || !CableOwnsPitch())
 		{
 			return originalSetParam(self, unused, paramId, value, size);
 		}
@@ -255,16 +304,17 @@ namespace
 	/// </summary>
 	AKRESULT __fastcall SpyTerm(void* self, void* unused, void* allocator)
 	{
-		const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
-			? deliveredParamObjectCount
-			: MAX_PARAM_OBJECTS;
+		const LONG known = LoadDeliveredParamObjectCount();
 
 		for (LONG i = 0; i < known; i++)
 		{
-			if (deliveredParamObjects[i] == self)
+			if (LoadDeliveredParamObject(i) == self)
 			{
-				deliveredParamObjects[i] = nullptr;
-				deliveredAuthoredCents[i] = 0.0f;
+				InterlockedCompareExchangePointer(
+					&deliveredParamObjects[i],
+					nullptr,
+					self);
+				deliveredAuthoredCents[i].store(0.0f, std::memory_order_relaxed);
 				break;
 			}
 		}
@@ -317,7 +367,8 @@ namespace
 
 	AKRESULT __cdecl SpyRegisterPlugin(AkPluginType type, AkUInt32 companyId, AkUInt32 pluginId, AkCreatePluginCallback createFunc, AkCreateParamCallback createParamFunc)
 	{
-		if (companyId == 0 && pluginId == PITCH_SHIFTER_PLUGIN_ID)
+		const bool isPitchShifter = companyId == 0 && pluginId == PITCH_SHIFTER_PLUGIN_ID;
+		if (isPitchShifter)
 		{
 			const PBYTE paramTrampoline = DetourFunction((PBYTE)createParamFunc, (PBYTE)SpyCreateParam);
 			if (paramTrampoline == nullptr)
@@ -330,40 +381,93 @@ namespace
 			}
 		}
 
-		return originalRegisterPlugin(type, companyId, pluginId, createFunc, createParamFunc);
-	}
+		const AKRESULT pluginResult = originalRegisterPlugin(type, companyId, pluginId, createFunc, createParamFunc);
+		if (!isPitchShifter || pluginResult != AK_Success
+			|| isGlobalCallbackRegistered.load(std::memory_order_acquire)) return pluginResult;
 
-	void PushPitchToLiveShiftersWithShift(float shiftCents)
-	{
-		// Without the Term hook there is no way to know an object has been freed, and
-		// a push after a tone switch would write into released memory.
-		if (originalSetParam == nullptr || originalTerm == nullptr)
+		const AKRESULT callbackResult = Wwise::SoundEngine::RegisterGlobalCallback(HandleGlobalAudioCallback);
+		if (callbackResult != AK_Success)
 		{
-			return;
+			LOG_ERROR("Drop pedal failed to register the Wwise audio-thread callback, result "
+				<< callbackResult << ". Live pitch pushes and automatic ASIO ownership are "
+				"unavailable; hotkey changes take effect on the next tone load." << std::endl);
+			return pluginResult;
 		}
 
-		const LONG known = deliveredParamObjectCount < MAX_PARAM_OBJECTS
-			? deliveredParamObjectCount
-			: MAX_PARAM_OBJECTS;
+		isGlobalCallbackRegistered.store(true, std::memory_order_release);
+		return pluginResult;
+	}
+
+	bool PushPitchToLiveShiftersOnAudioThread(float shiftCents)
+	{
+		const LONG known = LoadDeliveredParamObjectCount();
+		if (known == 0) return true;
+
+		if (originalSetParam == nullptr || originalTerm == nullptr)
+		{
+			for (LONG i = 0; i < known; i++)
+			{
+				void* paramObject = LoadDeliveredParamObject(i);
+				if (paramObject != nullptr && paramObject != RESERVED_PARAM_OBJECT) return false;
+			}
+
+			return true;
+		}
+
+		bool allPitchesApplied = true;
 
 		for (LONG i = 0; i < known; i++)
 		{
-			void* paramObject = deliveredParamObjects[i];
-			if (paramObject == nullptr || MemUtil::IsBadReadPtr(paramObject))
+			void* paramObject = LoadDeliveredParamObject(i);
+			if (paramObject == nullptr || paramObject == RESERVED_PARAM_OBJECT)
 			{
 				continue;
 			}
 
-			uintptr_t* vtable = *(uintptr_t**)paramObject;
-			if (MemUtil::IsBadReadPtr(vtable))
+			const float cents = deliveredAuthoredCents[i].load(std::memory_order_relaxed) + shiftCents;
+
+			if (originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float)) != AK_Success)
 			{
-				continue;
+				allPitchesApplied = false;
 			}
-
-			const float cents = deliveredAuthoredCents[i] + shiftCents;
-
-			originalSetParam(paramObject, nullptr, PITCH_PARAM_ID, &cents, sizeof(float));
 		}
+
+		return allPitchesApplied;
+	}
+
+	void HandleGlobalAudioCallback(bool isLastCall)
+	{
+		if (isLastCall)
+		{
+			isGlobalCallbackRegistered.store(false, std::memory_order_release);
+			pitchPushPending.store(false, std::memory_order_release);
+			return;
+		}
+
+		if (!pitchPushPending.exchange(false, std::memory_order_acq_rel)) return;
+
+		// The pending slot holds one value, so a hotkey push that lands mid-transition
+		// would overwrite the restore. During Transitioning the only correct push is
+		// the authored pitch, so the owner decides the shift, not the queued value.
+		const float shiftCents = pitchOwner.load(std::memory_order_acquire) == PitchOwner::Transitioning
+			? 0.0f
+			: pendingPitchShiftCents.load(std::memory_order_relaxed);
+		if (!PushPitchToLiveShiftersOnAudioThread(shiftCents))
+		{
+			if (pitchOwner.load(std::memory_order_acquire) == PitchOwner::Transitioning)
+			{
+				inputShifterTransitionFailed.store(true, std::memory_order_release);
+			}
+
+			return;
+		}
+
+		PitchOwner expectedOwner = PitchOwner::Transitioning;
+		pitchOwner.compare_exchange_strong(
+			expectedOwner,
+			PitchOwner::Asio,
+			std::memory_order_release,
+			std::memory_order_relaxed);
 	}
 
 	bool AreTrueTuningValuesEqual(float first, float second)
@@ -446,7 +550,7 @@ namespace
 			return;
 		}
 
-		const bool cableOwnsPitch = !inputShifterActive.load(std::memory_order_relaxed);
+		const bool cableOwnsPitch = CableOwnsPitch();
 		const bool shouldTransposeDetection = cableOwnsPitch && DropPedalState::IsEnabled();
 		const int targetSemitones = shouldTransposeDetection
 			? DropPedalState::GetTargetSemitones()
@@ -519,10 +623,12 @@ void DropPedalHooks::Install()
 	// ASIO chain proves itself; a forced asio engine claims pitch immediately so the
 	// game-side MultiPitch path never runs, even if the chain later fails to appear.
 	engineNoticeTick.store(GetTickCount64(), std::memory_order_relaxed);
-	inputShifterActive.store(DropPedalState::IsAsioEngine(), std::memory_order_relaxed);
+	pitchOwner.store(
+		DropPedalState::IsAsioEngine() ? PitchOwner::Asio : PitchOwner::Cable,
+		std::memory_order_release);
 
 	LOG_INFO("Drop pedal engine: "
-		<< (inputShifterActive.load(std::memory_order_relaxed) ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
+		<< (DropPedalHooks::IsInputShifterActive() ? "ASIO Drop Pedal" : "Cable Drop Pedal") << std::endl);
 
 	const uintptr_t target = Wwise::Exports::func_Wwise_Sound_RegisterPlugin.Get();
 	originalRegisterPlugin = (tRegisterPlugin)DetourFunction((PBYTE)target, (PBYTE)SpyRegisterPlugin);
@@ -575,18 +681,10 @@ void DropPedalHooks::LogPendingOverrides()
 	}
 }
 
-/// <summary>
-/// Write the current pitch straight into every live pitch shifter, the same way
-/// the engine delivers it when one is built. Objects the engine has torn down
-/// cannot be tracked, so each is sanity-checked before the call; a switch of
-/// tone can still leave a brief window where one is gone, which is accepted.
-/// </summary>
 void DropPedalHooks::PushPitchToLiveShifters()
 {
-	// Disabled pushes the authored pitch itself, which is what disengages the pedal
-	// immediately instead of waiting for the next tone load to re-deliver it.
 	const float shiftCents = DropPedalState::IsEnabled() ? DropPedalState::GetTargetCents() : 0.0f;
-	PushPitchToLiveShiftersWithShift(shiftCents);
+	QueuePitchPush(shiftCents);
 	ApplyCapturedTrueTuning();
 }
 
@@ -603,23 +701,29 @@ void DropPedalHooks::SetInputShifterActive(bool active)
 		active = true;
 	}
 
-	if (inputShifterActive.load(std::memory_order_relaxed) == active) return;
+	const PitchOwner currentOwner = pitchOwner.load(std::memory_order_acquire);
+	if (active && currentOwner != PitchOwner::Cable) return;
+	if (!active && currentOwner == PitchOwner::Cable) return;
 
 	if (active)
 	{
-		// Remove the Cable shift before ASIO takes ownership, so the two engines
-		// cannot apply the same target at once during automatic promotion.
-		PushPitchToLiveShiftersWithShift(0.0f);
-		inputShifterActive.store(true, std::memory_order_relaxed);
+		if (!isGlobalCallbackRegistered.load(std::memory_order_acquire))
+		{
+			inputShifterTransitionFailed.store(true, std::memory_order_release);
+			return;
+		}
+
+		pitchOwner.store(PitchOwner::Transitioning, std::memory_order_release);
+		UpdateReferenceCentsAdjustment();
 		ApplyCapturedTrueTuning();
+		QueuePitchPush(0.0f);
 	}
 	else
 	{
-		// Publish Cable ownership before reapplying its target. Any concurrent
-		// SetParam delivery will therefore apply the same shift rather than bypass it.
-		inputShifterActive.store(false, std::memory_order_relaxed);
+		pitchOwner.store(PitchOwner::Cable, std::memory_order_release);
+		UpdateReferenceCentsAdjustment();
 		const float shiftCents = DropPedalState::IsEnabled() ? DropPedalState::GetTargetCents() : 0.0f;
-		PushPitchToLiveShiftersWithShift(shiftCents);
+		QueuePitchPush(shiftCents);
 		ApplyCapturedTrueTuning();
 	}
 
@@ -629,7 +733,30 @@ void DropPedalHooks::SetInputShifterActive(bool active)
 
 bool DropPedalHooks::IsInputShifterActive()
 {
-	return inputShifterActive.load(std::memory_order_relaxed);
+	return pitchOwner.load(std::memory_order_acquire) != PitchOwner::Cable;
+}
+
+bool DropPedalHooks::ConsumeInputShifterTransitionFailure()
+{
+	return inputShifterTransitionFailed.exchange(false, std::memory_order_acq_rel);
+}
+
+bool DropPedalHooks::TryGetAuthoredTrueTuning(float& trueTuning)
+{
+	std::lock_guard<std::mutex> lock(trueTuningMutex);
+	if (hasCapturedTrueTuning && hasAppliedTrueTuning)
+	{
+		trueTuning = authoredTrueTuning;
+		return true;
+	}
+
+	if (!CableOwnsPitch()
+		|| !DropPedalState::IsEnabled()
+		|| referenceBuilderTrampoline == nullptr
+		|| InterlockedCompareExchange(&hasAuthoredReferenceCents, 1, 1) != 1) return false;
+
+	trueTuning = 440.0f * powf(2.0f, (float)authoredReferenceCents / 1200.0f);
+	return true;
 }
 
 void DropPedalHooks::ReportInputShifterUnavailable()
@@ -689,4 +816,6 @@ void DropPedalHooks::ResetSongState()
 	hasAppliedTrueTuning = false;
 	hasReportedTrueTuningUnavailable = false;
 	hasLoggedSongTuning = false;
+	InterlockedExchange(&authoredReferenceCents, 0);
+	InterlockedExchange(&hasAuthoredReferenceCents, 0);
 }

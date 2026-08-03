@@ -416,6 +416,15 @@ namespace Audio::AsioHook
 			format.sampleFormat = GetSampleFormat(selectedSampleType);
 			format.channelCount = 1;		// ASIO buffers are per channel, never interleaved.
 
+			if (bufferSize <= 0 || bufferSize > MAX_BUFFER_FRAMES)
+			{
+				processingEnabled.store(false, std::memory_order_release);
+				format.sampleFormat = SampleFormat::Unsupported;
+				LOG_WARNING("[AsioHook] Driver negotiated " << bufferSize
+					<< " frames; supported range is 1-" << MAX_BUFFER_FRAMES
+					<< ". Processing stays off." << std::endl);
+			}
+
 			ASIOSampleRate sampleRate = 0;
 			GetSampleRate_t getSampleRate = (GetSampleRate_t)ComVTable::GetVTable(self)[SLOT_ASIO_GET_SAMPLE_RATE];
 			if (getSampleRate(self, nullptr, &sampleRate) == ASE_OK && sampleRate > 0)

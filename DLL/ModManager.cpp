@@ -309,6 +309,13 @@ namespace ModManager {
 			// suppressed for the session. The hotkey thread keeps the shifter's semitones in
 			// step, since key changes land there.
 			DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
+			if (DropPedal::ConsumeInputShifterTransitionFailure())
+			{
+				Audio::AsioHook::SetProcessingEnabled(false);
+				DropPedal::SetInputShifterActive(false);
+				LOG_ERROR("Drop pedal could not restore the live Cable pitch safely. "
+					"ASIO processing was disabled and Cable retained pitch ownership." << std::endl);
+			}
 
 			if (DropPedal::RequiresInputShifter() && !Audio::AsioHook::IsProcessingEnabled())
 			{

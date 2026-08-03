@@ -39,11 +39,11 @@ stamped value. Because the adjustment is applied to the authored cents rather
 than replacing them, non-A440 arrangements and the `-1200` emulated-bass offset
 compose correctly.
 
-The old `DisableTrueTuning` code hook and its offsets remain removed:
-disassembly identified its LP-version patch site as RMS/onset calculation. The
-reference-builder address is currently known for Remastered September 2022
-only; on LP December 2024 the live writes still keep in-song detection correct,
-but the pre-song tuner does not follow the shift — skip it with `DELETE`.
+The pre-existing `DisableTrueTuning` mod remains available unchanged and is
+independent of the Drop Pedal. The Drop Pedal does not call or modify it; it
+uses its own reference-builder hook and live reference writes. Builder
+addresses are defined for Remastered September 2022 and Learn & Play December
+2024.
 
 Constraints that follow from this design:
 
@@ -122,13 +122,11 @@ the guitar to be true-tuned to A428.71. Applying a pedal shift scales that
 authored reference instead of replacing it with A440.
 
 The pre-song tuner captures its expected pitches from the reference stamped at
-song load. With the reference builder hooked (Remastered September 2022), that
-stamp already carries the shift, so the tuner accepts the physically tuned
-guitar as the shifted tuning. On versions without a builder address (LP
-December 2024) the stamp stays authored and the tuner judges strings against
-the untransposed tuning; skip it with `DELETE` there. Do not follow the
-tuner's needle when it disagrees with your physical tuning — that would retune
-the guitar and then double the shift once the pedal engages.
+song load. The hooked reference builder stamps the shifted value before the
+tuner reads it, so the tuner accepts the physically tuned guitar as the shifted
+tuning on both supported game versions. Do not follow the tuner's needle when
+it disagrees with your physical tuning — that would retune the guitar and then
+double the shift once the pedal engages.
 
 ## Emulated bass
 
@@ -152,7 +150,7 @@ the tone's authored octave remains an audio effect.
 | Pedal changes nothing at all | Current tone has no MultiPitch; press the slot key |
 | Audio shifts but sounds thin or silent | MultiPitch **Mix** is not at 100 |
 | Everything sounds an octave down at 0 semitones | Tone's **Pitch 1** is not 0 |
-| Pre-song tuner rejects strings that register fine in-song | Target was set after the song started loading (back out and relaunch the song), or the game version has no reference-builder address (LP December 2024) — skip the tuner with `DELETE` |
+| Pre-song tuner rejects strings that register fine in-song | Target was set after the song started loading; back out and relaunch the song |
 | Shifted notes do not register in-game | Target changed mid-song; the reference reapplies within a moment, or back out and re-enter the song |
 | Non-A440 song reads sharp or flat at target 0 | The authored reference is intentionally preserved; true-tune the guitar as Rocksmith requests |
 | Bass: audio is in the wrong octave | The bass tone's Pitch 1 is not `-12`, or the pedal target incorrectly includes the octave |

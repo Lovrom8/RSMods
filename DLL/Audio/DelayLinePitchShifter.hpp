@@ -66,6 +66,7 @@ namespace Audio
 		double candidatePeriod = 0.0;
 		int candidateVotes = 0;
 
+		void StoreInputSample(float sample);
 		float ReadTap(double delay) const;
 		void DetectPeriod();
 		double RefineAtFullRate(int coarsePeriod) const;
