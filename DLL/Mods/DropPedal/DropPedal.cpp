@@ -98,6 +98,11 @@ std::string DropPedal::GetBaseTuningName()
 	return DropPedalState::GetBaseTuningName();
 }
 
+int DropPedal::GetBaseTuningSemitones()
+{
+	return DropPedalState::GetBaseTuningSemitones();
+}
+
 int DropPedal::GetShiftDirection()
 {
 	return DropPedalState::GetShiftDirection();

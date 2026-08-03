@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "D3DOverlay.hpp"
-#include "Mods/DropPedal/DropPedal.hpp"
+#include "Mods/DropPedal/DropPedalOverlay.hpp"
 
 /// <returns>Size of Rocksmith Window</returns>
 Resolution GameOverlay::GetWindowSize() {
@@ -58,31 +58,6 @@ void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, i
 	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
 	font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
 	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
-}
-
-namespace
-{
-	void DrawShadowedOverlayText(
-		const std::string& text,
-		int textColor,
-		int topLeftX,
-		int topLeftY,
-		int bottomRightX,
-		int bottomRightY)
-	{
-		CComPtr<ID3DXFont> font = GameOverlay::cachedFont;
-		if (!font) return;
-
-		RECT textRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY };
-		RECT shadowRectangle = textRectangle;
-		int shadowOffset = static_cast<int>(GameOverlay::WindowSize.height / 540);
-		if (shadowOffset < 1) shadowOffset = 1;
-		OffsetRect(&shadowRectangle, shadowOffset, shadowOffset);
-
-		font->PreloadTextA(text.c_str(), static_cast<int>(text.length()));
-		font->DrawTextA(nullptr, text.c_str(), -1, &shadowRectangle, DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(230, 0, 0, 0));
-		font->DrawTextA(nullptr, text.c_str(), -1, &textRectangle, DT_LEFT | DT_NOCLIP, textColor);
-	}
 }
 
 void GameOverlay::DisplayMixer() {
@@ -186,100 +161,6 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 			{ NULL, NULL },
 			DT_CENTER | DT_NOCLIP);
 	}
-}
-
-void GameOverlay::DisplayDropPedalTuning()
-{
-	if (!DropPedal::IsConfiguredEnabled())
-	{
-		return;
-	}
-
-	const std::string state = DropPedal::IsEnabled()
-		? DropPedal::GetTuningName()
-		: "off";
-
-	const std::string line = "Drop Pedal: " + state;
-
-	int textColor = dropPedalDisabledText;
-	if (DropPedal::IsEnabled())
-	{
-		const int direction = DropPedal::GetShiftDirection();
-		textColor = direction < 0 ? dropPedalDownText : (direction > 0 ? dropPedalUpText : whiteText);
-	}
-
-	DrawShadowedOverlayText(
-		line,
-		textColor,
-		static_cast<int>(WindowSize.width / 96.0f),
-		static_cast<int>(WindowSize.height / 54.0f),
-		static_cast<int>(WindowSize.width / 3.0f),
-		static_cast<int>(WindowSize.height / 18.0f));
-}
-
-void GameOverlay::DisplayDropPedalEngine()
-{
-	// Release users have no console and the debug log flushes at exit, so the active
-	// engine is announced on screen instead. It shows when the engine is decided and
-	// re-shows on the one transition that exists: the one-way promotion to the ASIO
-	// engine once its chain comes up shortly after launch. Engines cannot swap after
-	// that without relaunching, since the hooks bind the driver for the session.
-	constexpr unsigned long long SHOW_MILLISECONDS = 6000;
-	constexpr unsigned long long FADE_MILLISECONDS = 1500;
-
-	const unsigned long long noticeTick = DropPedal::GetEngineNoticeTick();
-	if (noticeTick == 0)
-	{
-		return;
-	}
-
-	// The engine is decided long before the overlay can draw (the font is not ready
-	// until the menus are up), so the display window anchors to the first frame this
-	// notice can actually render, not to the decision itself. Without this, a decision
-	// made at ~2s has expired before ~50s when drawing first becomes possible, and the
-	// notice is never seen at all.
-	static unsigned long long lastSeenNoticeTick = 0;
-	static unsigned long long displayStartTick = 0;
-
-	if (noticeTick != lastSeenNoticeTick)
-	{
-		lastSeenNoticeTick = noticeTick;
-		displayStartTick = 0;
-	}
-
-	if (!cachedFont)
-	{
-		return;
-	}
-
-	if (displayStartTick == 0)
-	{
-		displayStartTick = GetTickCount64();
-	}
-
-	const unsigned long long elapsed = GetTickCount64() - displayStartTick;
-	if (elapsed >= SHOW_MILLISECONDS + FADE_MILLISECONDS)
-	{
-		return;
-	}
-
-	const std::string line = DropPedal::IsInputShifterActive()
-		? "Engine: ASIO Drop Pedal"
-		: "Engine: Cable Drop Pedal";
-
-	const float fade = elapsed < SHOW_MILLISECONDS
-		? 1.0f
-		: 1.0f - (float)(elapsed - SHOW_MILLISECONDS) / FADE_MILLISECONDS;
-
-	const int textAlpha = (int)(255 * fade);
-
-	DrawShadowedOverlayText(
-		line,
-		D3DCOLOR_ARGB(textAlpha, 255, 255, 255),
-		static_cast<int>(WindowSize.width / 96.0f),
-		static_cast<int>(WindowSize.height / 18.0f),
-		static_cast<int>(WindowSize.width / 3.0f),
-		static_cast<int>(WindowSize.height / 10.8f));
 }
 
 void GameOverlay::DisplayCurrentTuningForAutoTune()
@@ -459,8 +340,8 @@ void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
 		DisplayRiffRepeaterOverHundredPercentSpeed();
 		DisplayCurrentNote();
 		DisplayCurrentTuningForAutoTune();
-		DisplayDropPedalTuning();
-		DisplayDropPedalEngine();
+		static DropPedal::Overlay dropPedalOverlay;
+		dropPedalOverlay.Render(cachedFont, WindowSize);
 		DisplaySongAccuracy();
 
 		HandleLooping();

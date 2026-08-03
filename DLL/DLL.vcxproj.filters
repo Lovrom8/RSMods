@@ -312,6 +312,9 @@
     <ClCompile Include="Mods\DropPedal\DropPedalInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedalOverlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\DropPedal\DropPedalState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -645,6 +648,9 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\DropPedal\DropPedalInput.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalOverlay.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\DropPedal\DropPedalState.hpp">

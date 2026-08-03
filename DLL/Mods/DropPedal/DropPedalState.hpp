@@ -13,6 +13,7 @@ namespace DropPedalState
 	bool AdjustTarget(int semitoneDelta);
 	bool AdjustBaseTuning(int semitoneDelta);
 	int GetTargetSemitones();
+	int GetBaseTuningSemitones();
 	float GetTargetCents();
 	std::string GetTuningName();
 	std::string GetBaseTuningName();

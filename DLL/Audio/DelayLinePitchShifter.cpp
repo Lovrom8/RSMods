@@ -308,7 +308,8 @@ namespace Audio
 	{
 		// AMDF: for each candidate lag, average |x[n] - x[n-lag]| over the window. The
 		// true period gives the deepest valley. Runs on the audio thread, so it is fixed
-		// work over preallocated buffers, roughly 29k adds per call.
+		// work over preallocated buffers: 329 lags by 256 samples, or roughly 84k
+		// absolute-difference accumulations per call.
 		float best[MAX_LAG + 1];
 
 		const uint32_t newest = decimatedPosition;	// one past the last written sample

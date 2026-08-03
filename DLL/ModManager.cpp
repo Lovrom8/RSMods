@@ -265,8 +265,16 @@ namespace ModManager {
 
 		if (DropPedal::ShouldInstallInputHooks() && Audio::AsioHook::IsProcessingEnabled())
 		{
-			// Atomic store inside; safe from this thread.
-			pitchShifter.SetSemitones(DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0);
+			const int targetSemitones = DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0;
+			static bool hasAppliedSemitones = false;
+			static int appliedSemitones = 0;
+
+			if (!hasAppliedSemitones || targetSemitones != appliedSemitones)
+			{
+				pitchShifter.SetSemitones(targetSemitones);
+				appliedSemitones = targetSemitones;
+				hasAppliedSemitones = true;
+			}
 		}
 	}
 

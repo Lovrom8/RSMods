@@ -41,7 +41,9 @@ The shifter trails the input by up to one pitch period of the note being
 played (roughly 1-13 ms depending on the string), on top of the interface's
 normal round trip (~15 ms at 256 frames / 48 kHz on a typical interface).
 At a zero-semitone target or while disabled, it bypasses detection and splicing
-and leaves the input samples unchanged, adding no pitch-shifter latency.
+and returns the input unshifted, adding no pitch-shifter delay. The lightweight
+format conversion and history update still run so engaging the pedal starts from
+live input instead of an empty delay line.
 
 ## Controls
 

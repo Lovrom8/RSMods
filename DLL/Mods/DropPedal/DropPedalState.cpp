@@ -125,6 +125,11 @@ int DropPedalState::GetTargetSemitones()
 	return targetSemitones.load(std::memory_order_relaxed);
 }
 
+int DropPedalState::GetBaseTuningSemitones()
+{
+	return baseTuningSemitones.load(std::memory_order_relaxed);
+}
+
 float DropPedalState::GetTargetCents()
 {
 	return (float)GetTargetSemitones() * CENTS_PER_SEMITONE;
@@ -138,7 +143,7 @@ std::string DropPedalState::GetTuningName()
 {
 	const int semitones = GetTargetSemitones();
 
-	const int baseSemitones = baseTuningSemitones.load(std::memory_order_relaxed);
+	const int baseSemitones = GetBaseTuningSemitones();
 	int stepsBelowE = (-(baseSemitones + semitones)) % SEMITONES_PER_OCTAVE;
 	if (stepsBelowE < 0)
 	{
@@ -161,7 +166,7 @@ std::string DropPedalState::GetTuningName()
 /// </summary>
 std::string DropPedalState::GetBaseTuningName()
 {
-	const int baseSemitones = baseTuningSemitones.load(std::memory_order_relaxed);
+	const int baseSemitones = GetBaseTuningSemitones();
 	int stepsBelowE = (-baseSemitones) % SEMITONES_PER_OCTAVE;
 	if (stepsBelowE < 0)
 	{

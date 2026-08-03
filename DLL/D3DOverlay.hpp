@@ -21,12 +21,6 @@ namespace GameOverlay {
 	const int whiteText = 0xFFFFFFFF;
 	const int greyText = 0xFF9A9A9A;
 
-	// Drop pedal state colours: green shifting down, amber shifting up, white at the
-	// player's own tuning, grey when off.
-	const int dropPedalDownText = 0xFF6BE06B;
-	const int dropPedalUpText = 0xFFFFC24D;
-	const int dropPedalDisabledText = 0xFFC8C8C8;
-
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
 	void SetPDevice(IDirect3DDevice9* pDevice, Resolution windowSize);
@@ -35,8 +29,6 @@ namespace GameOverlay {
 	void DisplayCurrentNote();
 	void DisplayRiffRepeaterOverHundredPercentSpeed();
 	void DisplayCurrentTuningForAutoTune();
-	void DisplayDropPedalTuning();
-	void DisplayDropPedalEngine();
 	void DisplayLoopStartEndTimes(float loopStart, float loopEnd);
 	void DisplaySongAccuracy();
 	void CheckCurrentFont();

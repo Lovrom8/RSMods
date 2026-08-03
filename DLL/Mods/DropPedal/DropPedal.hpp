@@ -50,6 +50,7 @@ namespace DropPedal
 
 	// The tuning the guitar is physically in, and which way the shift is going, so the
 	// overlay can name and colour the state without duplicating the arithmetic.
+	int GetBaseTuningSemitones();
 	std::string GetBaseTuningName();
 	int GetShiftDirection();
 }
