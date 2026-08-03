@@ -60,86 +60,29 @@ void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, i
 	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
 }
 
-/// <summary>
-/// Draw a filled, alpha blended rectangle, for use as a backing plate behind text
-/// that would otherwise be unreadable over the game's artwork.
-/// </summary>
-void GameOverlay::DX9DrawFilledRectangle(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, D3DCOLOR color, LPDIRECT3DDEVICE9 pDevice)
+namespace
 {
-	struct Vertex
+	void DrawShadowedOverlayText(
+		const std::string& text,
+		int textColor,
+		int topLeftX,
+		int topLeftY,
+		int bottomRightX,
+		int bottomRightY)
 	{
-		float x, y, z, rhw;
-		D3DCOLOR color;
-	};
+		CComPtr<ID3DXFont> font = GameOverlay::cachedFont;
+		if (!font) return;
 
-	const float left = (float)topLeftX;
-	const float top = (float)topLeftY;
-	const float right = (float)bottomRightX;
-	const float bottom = (float)bottomRightY;
+		RECT textRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY };
+		RECT shadowRectangle = textRectangle;
+		int shadowOffset = static_cast<int>(GameOverlay::WindowSize.height / 540);
+		if (shadowOffset < 1) shadowOffset = 1;
+		OffsetRect(&shadowRectangle, shadowOffset, shadowOffset);
 
-	Vertex quad[4] =
-	{
-		{ left,  bottom, 0.0f, 1.0f, color },
-		{ left,  top,    0.0f, 1.0f, color },
-		{ right, bottom, 0.0f, 1.0f, color },
-		{ right, top,    0.0f, 1.0f, color },
-	};
-
-	// Capture the whole pipeline and force every state this quad depends on. Piecemeal
-	// save/restore kept losing to transition frames: the first frame of the game's
-	// audio-reactive UI binds extra state (z, stencil, scissor, alpha test) that a
-	// hand-picked list misses, and the plate blinked out for exactly that frame.
-	// ID3DXFont never had the problem because its internal sprite sets its full
-	// required state on every draw, which is what this now mirrors.
-	IDirect3DStateBlock9* previousState = nullptr;
-	if (FAILED(pDevice->CreateStateBlock(D3DSBT_ALL, &previousState)) || !previousState)
-	{
-		return;
+		font->PreloadTextA(text.c_str(), static_cast<int>(text.length()));
+		font->DrawTextA(nullptr, text.c_str(), -1, &shadowRectangle, DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(230, 0, 0, 0));
+		font->DrawTextA(nullptr, text.c_str(), -1, &textRectangle, DT_LEFT | DT_NOCLIP, textColor);
 	}
-
-	pDevice->SetVertexShader(nullptr);
-	pDevice->SetPixelShader(nullptr);
-	pDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
-	pDevice->SetTexture(0, nullptr);
-
-	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	pDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_COLORWRITEENABLE,
-		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
-
-	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-
-	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(Vertex));
-
-	previousState->Apply();
-	previousState->Release();
-}
-
-/// <summary>
-/// Measure the pixel width of a string in the default overlay font, without drawing.
-/// Returns 0 if the font is not ready, which the caller treats as "do not draw".
-/// </summary>
-int GameOverlay::MeasureTextWidth(const std::string& textToDraw, LPDIRECT3DDEVICE9 pDevice)
-{
-	if (!cachedFont)
-	{
-		return 0;
-	}
-
-	RECT measured{ 0, 0, 0, 0 };
-	cachedFont->DrawTextA(nullptr, textToDraw.c_str(), -1, &measured, DT_CALCRECT | DT_NOCLIP, whiteText);
-	return measured.right - measured.left;
 }
 
 void GameOverlay::DisplayMixer() {
@@ -245,11 +188,6 @@ void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
 	}
 }
 
-// Right edge of the pedal readout's plate, in pixels, refreshed each time it draws. The
-// engine notice sits on the same row to its right, so it can never overlap the game's
-// menu text below.
-static int dropPedalPlateRight = 0;
-
 void GameOverlay::DisplayDropPedalTuning()
 {
 	if (!DropPedal::IsConfiguredEnabled())
@@ -263,45 +201,20 @@ void GameOverlay::DisplayDropPedalTuning()
 
 	const std::string line = "Drop Pedal: " + state;
 
-	// Measuring also serves as the readiness gate: if the font is not cached the width
-	// is 0, and we skip drawing the plate too. This keeps the box and the text in step,
-	// which is what stops the plate flickering on its own during menu transitions.
-	const int textWidth = MeasureTextWidth(line, pDevice);
-	if (textWidth == 0)
-	{
-		return;
-	}
-
-	int textColor = greyText;
+	int textColor = dropPedalDisabledText;
 	if (DropPedal::IsEnabled())
 	{
 		const int direction = DropPedal::GetShiftDirection();
 		textColor = direction < 0 ? dropPedalDownText : (direction > 0 ? dropPedalUpText : whiteText);
 	}
 
-	// Top left, clear of the game's own corner furniture. The plate is sized to the
-	// text rather than a fixed width, so short tunings do not leave a long empty box.
-	const int left = static_cast<int>(WindowSize.width / 96.0f);			// 20 pixels in at 1920x1080
-	const int top = static_cast<int>(WindowSize.height / 54.0f);			// 20 pixels down
-	const int padding = static_cast<int>(WindowSize.width / 192.0f);		// 10 pixels
-
-	const int right = left + textWidth;
-	const int bottom = top + static_cast<int>(WindowSize.height / 27.0f);	// 40 pixels tall
-
-	dropPedalPlateRight = right + padding;
-
-	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(150, 0, 0, 0), pDevice);
-
-	DX9DrawText(
+	DrawShadowedOverlayText(
 		line,
 		textColor,
-		left,
-		top,
-		right + padding,
-		bottom,
-		pDevice,
-		{ NULL, NULL },
-		DT_LEFT | DT_NOCLIP);
+		static_cast<int>(WindowSize.width / 96.0f),
+		static_cast<int>(WindowSize.height / 54.0f),
+		static_cast<int>(WindowSize.width / 3.0f),
+		static_cast<int>(WindowSize.height / 18.0f));
 }
 
 void GameOverlay::DisplayDropPedalEngine()
@@ -334,12 +247,7 @@ void GameOverlay::DisplayDropPedalEngine()
 		displayStartTick = 0;
 	}
 
-	const std::string line = DropPedal::IsInputShifterActive()
-		? "Engine: ASIO Drop Pedal"
-		: "Engine: Cable Drop Pedal";
-
-	const int textWidth = MeasureTextWidth(line, pDevice);
-	if (textWidth == 0)
+	if (!cachedFont)
 	{
 		return;
 	}
@@ -355,34 +263,23 @@ void GameOverlay::DisplayDropPedalEngine()
 		return;
 	}
 
+	const std::string line = DropPedal::IsInputShifterActive()
+		? "Engine: ASIO Drop Pedal"
+		: "Engine: Cable Drop Pedal";
+
 	const float fade = elapsed < SHOW_MILLISECONDS
 		? 1.0f
 		: 1.0f - (float)(elapsed - SHOW_MILLISECONDS) / FADE_MILLISECONDS;
 
-	// Same row as the pedal readout, to its right, so nothing below is ever covered.
-	const int padding = static_cast<int>(WindowSize.width / 192.0f);
-	const int left = dropPedalPlateRight + padding * 3;
-	const int top = static_cast<int>(WindowSize.height / 54.0f);
-	const int rowHeight = static_cast<int>(WindowSize.height / 27.0f);
-
-	const int right = left + textWidth;
-	const int bottom = top + rowHeight;
-
-	const int plateAlpha = (int)(150 * fade);
 	const int textAlpha = (int)(255 * fade);
 
-	DX9DrawFilledRectangle(left - padding, top - padding / 2, right + padding, bottom, D3DCOLOR_ARGB(plateAlpha, 0, 0, 0), pDevice);
-
-	DX9DrawText(
+	DrawShadowedOverlayText(
 		line,
 		D3DCOLOR_ARGB(textAlpha, 255, 255, 255),
-		left,
-		top,
-		right + padding,
-		bottom,
-		pDevice,
-		{ NULL, NULL },
-		DT_LEFT | DT_NOCLIP);
+		static_cast<int>(WindowSize.width / 96.0f),
+		static_cast<int>(WindowSize.height / 18.0f),
+		static_cast<int>(WindowSize.width / 3.0f),
+		static_cast<int>(WindowSize.height / 10.8f));
 }
 
 void GameOverlay::DisplayCurrentTuningForAutoTune()

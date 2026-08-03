@@ -25,9 +25,7 @@ namespace GameOverlay {
 	// player's own tuning, grey when off.
 	const int dropPedalDownText = 0xFF6BE06B;
 	const int dropPedalUpText = 0xFFFFC24D;
-
-	void DX9DrawFilledRectangle(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, D3DCOLOR color, LPDIRECT3DDEVICE9 pDevice);
-	int MeasureTextWidth(const std::string& textToDraw, LPDIRECT3DDEVICE9 pDevice);
+	const int dropPedalDisabledText = 0xFFC8C8C8;
 
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
