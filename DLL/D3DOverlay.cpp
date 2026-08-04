@@ -103,18 +103,21 @@ void GameOverlay::DisplayMixer() {
 
 void GameOverlay::DisplaySongTimer()
 {
-	if (D3DHooks::showSongTimerOnScreen && SongTimer::SongTimer() != 0.f) {
-		DX9DrawText(
-			D3DHooks::ConvertFloatTimeToStringTime(SongTimer::SongTimer()),
-			whiteText,
-			static_cast<int>(WindowSize.width - WindowSize.width / 16.0f), // 120 pixels left from right edge in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f),                   // 20 pixels from top
-			static_cast<int>(WindowSize.width - WindowSize.width / 96.0f), // 20 left from right edge
-			static_cast<int>(WindowSize.height / 16.0f),                   // 120 pixels from top
-			pDevice,
-			{ NULL, NULL },
-			DT_RIGHT | DT_NOCLIP);
-	}
+	if (!D3DHooks::showSongTimerOnScreen) return;
+
+	const float songTime = SongTimer::SongTimer();
+	if (songTime == 0.f) return;
+
+	DX9DrawText(
+		D3DHooks::ConvertFloatTimeToStringTime(songTime),
+		whiteText,
+		static_cast<int>(WindowSize.width - WindowSize.width / 16.0f), // 120 pixels left from right edge in 1920x1080 resolution
+		static_cast<int>(WindowSize.height / 54.0f),                   // 20 pixels from top
+		static_cast<int>(WindowSize.width - WindowSize.width / 96.0f), // 20 left from right edge
+		static_cast<int>(WindowSize.height / 16.0f),                   // 120 pixels from top
+		pDevice,
+		{ NULL, NULL },
+		DT_RIGHT | DT_NOCLIP);
 }
 
 void GameOverlay::DisplayCurrentNote()

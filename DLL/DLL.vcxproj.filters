@@ -653,6 +653,9 @@
     <ClInclude Include="Mods\DropPedal\DropPedalOverlay.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalPlayer.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\DropPedal\DropPedalState.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>

@@ -2,6 +2,11 @@
 #include "AsioHook.hpp"
 #include "ComVTable.hpp"
 
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <type_traits>
+
 namespace Audio::AsioHook
 {
 	namespace
@@ -59,6 +64,14 @@ namespace Audio::AsioHook
 		constexpr float INT24_TO_FLOAT = 1.0f / 8388608.0f;
 		constexpr float INT32_TO_FLOAT = 1.0f / 2147483648.0f;
 
+		struct RsAsioConfiguration
+		{
+			std::string driverName;
+			std::array<std::string, INPUT_ROUTE_COUNT> inputDriverNames;
+			std::array<int, INPUT_ROUTE_COUNT> inputChannels{ 0, -1 };
+			std::array<bool, INPUT_ROUTE_COUNT> inputConfigured{ true, false };
+		};
+
 		typedef HRESULT(STDMETHODCALLTYPE* DllGetClassObject_t)(REFCLSID, REFIID, LPVOID*);
 		typedef HRESULT(STDMETHODCALLTYPE* CreateInstance_t)(IClassFactory*, IUnknown*, REFIID, void**);
 		typedef ASIOError(__fastcall* CreateBuffers_t)(void* self, void* unused, ASIOBufferInfo*, long, long, ASIOCallbacks*);
@@ -82,13 +95,17 @@ namespace Audio::AsioHook
 		ASIOCallbacks originalCallbacks{};
 		ASIOCallbacks hookedCallbacks{};
 
-		CaptureFormat format;
-		std::vector<float> conversionBuffer;
+		std::array<CaptureFormat, INPUT_ROUTE_COUNT> routeFormats;
+		std::array<std::vector<float>, INPUT_ROUTE_COUNT> conversionBuffers;
 
-		std::atomic<IInputProcessor*> activeProcessor{ nullptr };
-		std::atomic<int> selectedInputChannel{ -1 };
+		std::atomic<IInputProcessor*> activeProcessors[INPUT_ROUTE_COUNT] = {};
+		std::array<int, INPUT_ROUTE_COUNT> selectedInputChannels{ -1, -1 };
+		std::array<int, INPUT_ROUTE_COUNT> resolvedInputIndices{ -1, -1 };
+		std::array<bool, INPUT_ROUTE_COUNT> configuredInputs{ false, false };
+		std::atomic<bool> inputReady[INPUT_ROUTE_COUNT] = {};
+		std::atomic<bool> bufferLayoutReady{ false };
 		std::atomic<bool> processingEnabled{ false };
-		bool autoEnabledOnce = false;
+		std::atomic<bool> autoEnabledOnce{ false };
 
 		SampleFormat GetSampleFormat(long sampleType)
 		{
@@ -110,33 +127,21 @@ namespace Audio::AsioHook
 		float ClampSample(float value)
 		{
 			if (!std::isfinite(value)) return 0.0f;
-			if (value < -1.0f) return -1.0f;
-			if (value > 1.0f) return 1.0f;
-			return value;
+			return std::clamp(value, -1.0f, 1.0f);
 		}
 
-		int16_t FloatToInt16(float value)
+		template<typename SampleType, int BIT_DEPTH>
+		SampleType FloatToSignedInteger(float value)
 		{
-			const float clamped = ClampSample(value);
-			if (clamped <= -1.0f) return -32768;
-			if (clamped >= 1.0f) return 32767;
-			return (int16_t)(clamped * 32768.0f);
-		}
+			static_assert(std::is_signed<SampleType>::value, "SampleType must be signed");
+			static_assert(BIT_DEPTH > 1 && BIT_DEPTH <= 32, "BIT_DEPTH must fit a signed 32-bit sample");
+			static_assert(sizeof(SampleType) * 8 >= BIT_DEPTH, "SampleType is too small for BIT_DEPTH");
 
-		int32_t FloatToInt24(float value)
-		{
+			constexpr int64_t magnitude = int64_t{ 1 } << (BIT_DEPTH - 1);
 			const float clamped = ClampSample(value);
-			if (clamped <= -1.0f) return -8388608;
-			if (clamped >= 1.0f) return 8388607;
-			return (int32_t)(clamped * 8388608.0f);
-		}
-
-		int32_t FloatToInt32(float value)
-		{
-			const float clamped = ClampSample(value);
-			if (clamped <= -1.0f) return (-2147483647 - 1);
-			if (clamped >= 1.0f) return 2147483647;
-			return (int32_t)(clamped * 2147483648.0f);
+			if (clamped <= -1.0f) return static_cast<SampleType>(-magnitude);
+			if (clamped >= 1.0f) return static_cast<SampleType>(magnitude - 1);
+			return static_cast<SampleType>(clamped * static_cast<float>(magnitude));
 		}
 
 		int32_t ReadInt24(const uint8_t* sample)
@@ -158,7 +163,7 @@ namespace Audio::AsioHook
 			sample[2] = (uint8_t)(packed >> 16);
 		}
 
-		bool ConvertInputToFloat(void* input, long sampleType, size_t count)
+		bool ConvertInputToFloat(void* input, long sampleType, size_t count, float* output)
 		{
 			switch (sampleType)
 			{
@@ -166,28 +171,28 @@ namespace Audio::AsioHook
 			{
 				const float* samples = reinterpret_cast<const float*>(input);
 				for (size_t i = 0; i < count; ++i)
-					conversionBuffer[i] = samples[i];
+					output[i] = samples[i];
 				return true;
 			}
 			case ASIOSTInt32LSB:
 			{
 				const int32_t* samples = reinterpret_cast<const int32_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					conversionBuffer[i] = (float)samples[i] * INT32_TO_FLOAT;
+					output[i] = (float)samples[i] * INT32_TO_FLOAT;
 				return true;
 			}
 			case ASIOSTInt24LSB:
 			{
 				const uint8_t* samples = reinterpret_cast<const uint8_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					conversionBuffer[i] = (float)ReadInt24(samples + i * 3) * INT24_TO_FLOAT;
+					output[i] = (float)ReadInt24(samples + i * 3) * INT24_TO_FLOAT;
 				return true;
 			}
 			case ASIOSTInt16LSB:
 			{
 				const int16_t* samples = reinterpret_cast<const int16_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					conversionBuffer[i] = (float)samples[i] * INT16_TO_FLOAT;
+					output[i] = (float)samples[i] * INT16_TO_FLOAT;
 				return true;
 			}
 			default:
@@ -195,7 +200,7 @@ namespace Audio::AsioHook
 			}
 		}
 
-		void ConvertFloatToInput(void* input, long sampleType, size_t count)
+		void ConvertFloatToInput(void* input, long sampleType, size_t count, const float* converted)
 		{
 			switch (sampleType)
 			{
@@ -203,58 +208,71 @@ namespace Audio::AsioHook
 			{
 				float* samples = reinterpret_cast<float*>(input);
 				for (size_t i = 0; i < count; ++i)
-					samples[i] = ClampSample(conversionBuffer[i]);
+					samples[i] = ClampSample(converted[i]);
 				break;
 			}
 			case ASIOSTInt32LSB:
 			{
 				int32_t* samples = reinterpret_cast<int32_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					samples[i] = FloatToInt32(conversionBuffer[i]);
+					samples[i] = FloatToSignedInteger<int32_t, 32>(converted[i]);
 				break;
 			}
 			case ASIOSTInt24LSB:
 			{
 				uint8_t* samples = reinterpret_cast<uint8_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					WriteInt24(FloatToInt24(conversionBuffer[i]), samples + i * 3);
+					WriteInt24(FloatToSignedInteger<int32_t, 24>(converted[i]), samples + i * 3);
 				break;
 			}
 			case ASIOSTInt16LSB:
 			{
 				int16_t* samples = reinterpret_cast<int16_t*>(input);
 				for (size_t i = 0; i < count; ++i)
-					samples[i] = FloatToInt16(conversionBuffer[i]);
+					samples[i] = FloatToSignedInteger<int16_t, 16>(converted[i]);
 				break;
 			}
 			}
 		}
 
-		std::string ReadDriverNameFromRsAsioIni()
+		RsAsioConfiguration ReadRsAsioConfiguration()
 		{
 			CSimpleIniA reader;
 			if (reader.LoadFile("RS_ASIO.ini") < 0) return {};
 
-			// Input.0 is the guitar RS_ASIO feeds the game. Falling back to the output driver
-			// covers configs that only name it once, since one interface usually serves both.
-			const char* input = reader.GetValue("Asio.Input.0", "Driver", "");
-			if (input && *input) return input;
+			RsAsioConfiguration configuration;
 
-			const char* output = reader.GetValue("Asio.Output", "Driver", "");
-			if (output && *output) return output;
+			const char* playerOneDriver = reader.GetValue("Asio.Input.0", "Driver", "");
+			if (playerOneDriver && *playerOneDriver)
+			{
+				configuration.driverName = playerOneDriver;
+				configuration.inputDriverNames[0] = playerOneDriver;
+			}
+			else
+			{
+				// Falling back to the output driver covers configurations that name one
+				// interface only once. Player 1 still defaults to ASIO channel zero.
+				const char* output = reader.GetValue("Asio.Output", "Driver", "");
+				if (output && *output)
+				{
+					configuration.driverName = output;
+					configuration.inputDriverNames[0] = output;
+				}
+			}
 
-			return {};
-		}
+			configuration.inputChannels[0] = static_cast<int>(
+				reader.GetLongValue("Asio.Input.0", "Channel", 0));
 
-		// RS_ASIO's Channel setting is the ASIO channel number the guitar arrives on. It is
-		// matched against the channelNum of the buffers the driver hands out, since RS_ASIO
-		// creates buffers for every available input and accepts any nonnegative channel.
-		int ReadInputChannelFromRsAsioIni()
-		{
-			CSimpleIniA reader;
-			if (reader.LoadFile("RS_ASIO.ini") < 0) return 0;
+			const char* playerTwoDriver = reader.GetValue("Asio.Input.1", "Driver", "");
+			if (playerTwoDriver && *playerTwoDriver)
+			{
+				configuration.inputConfigured[1] = true;
+				configuration.inputDriverNames[1] = playerTwoDriver;
+				configuration.inputChannels[1] = static_cast<int>(
+					reader.GetLongValue("Asio.Input.1", "Channel", -1));
+			}
 
-			return (int)reader.GetLongValue("Asio.Input.0", "Channel", 0);
+			return configuration;
 		}
 
 		bool ReadDriverClassId(const std::string& name, GUID& classId)
@@ -317,25 +335,36 @@ namespace Audio::AsioHook
 			return -1;
 		}
 
-		void ProcessInputBuffer(long doubleBufferIndex)
+		void ProcessInputBuffers(long doubleBufferIndex)
 		{
-			const int channel = FindInputIndexForChannel(selectedInputChannel.load(std::memory_order_relaxed));
-			if (channel < 0) return;
-
-			IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
-			if (!processor) return;
-
 			if (activeBufferFrames <= 0 || activeBufferFrames > MAX_BUFFER_FRAMES) return;
 
-			void* samples = inputBuffers[channel][doubleBufferIndex];
-			if (!samples) return;
+			const size_t count = static_cast<size_t>(activeBufferFrames);
 
-			const size_t count = (size_t)activeBufferFrames;
-			const long sampleType = inputSampleTypes[channel];
-			if (!ConvertInputToFloat(samples, sampleType, count)) return;
+			for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+			{
+				if (!configuredInputs[routeIndex]) continue;
 
-			processor->Process(conversionBuffer.data(), (uint32_t)activeBufferFrames);
-			ConvertFloatToInput(samples, sampleType, count);
+				const int inputIndex = resolvedInputIndices[routeIndex];
+				if (inputIndex < 0) continue;
+
+				IInputProcessor* processor = activeProcessors[routeIndex].load(std::memory_order_relaxed);
+				if (!processor) continue;
+
+				void* samples = inputBuffers[inputIndex][doubleBufferIndex];
+				if (!samples) continue;
+
+				float* converted = conversionBuffers[routeIndex].data();
+				const long sampleType = inputSampleTypes[inputIndex];
+
+				if (!ConvertInputToFloat(samples, sampleType, count, converted))
+				{
+					continue;
+				}
+
+				processor->Process(converted, static_cast<uint32_t>(activeBufferFrames));
+				ConvertFloatToInput(samples, sampleType, count, converted);
+			}
 		}
 
 		// The driver fills the input buffers before calling this, and RS_ASIO copies them out
@@ -343,7 +372,7 @@ namespace Audio::AsioHook
 		void Hook_BufferSwitch(long doubleBufferIndex, ASIOBool directProcess)
 		{
 			if (processingEnabled.load(std::memory_order_acquire))
-				ProcessInputBuffer(doubleBufferIndex);
+				ProcessInputBuffers(doubleBufferIndex);
 
 			if (originalCallbacks.bufferSwitch)
 				originalCallbacks.bufferSwitch(doubleBufferIndex, directProcess);
@@ -352,7 +381,7 @@ namespace Audio::AsioHook
 		ASIOTime* Hook_BufferSwitchTimeInfo(ASIOTime* params, long doubleBufferIndex, ASIOBool directProcess)
 		{
 			if (processingEnabled.load(std::memory_order_acquire))
-				ProcessInputBuffer(doubleBufferIndex);
+				ProcessInputBuffers(doubleBufferIndex);
 
 			if (originalCallbacks.bufferSwitchTimeInfo)
 				return originalCallbacks.bufferSwitchTimeInfo(params, doubleBufferIndex, directProcess);
@@ -362,6 +391,16 @@ namespace Audio::AsioHook
 
 		ASIOError __fastcall Hook_CreateBuffers(void* self, void* unused, ASIOBufferInfo* bufferInfos, long numChannels, long bufferSize, ASIOCallbacks* callbacks)
 		{
+			processingEnabled.store(false, std::memory_order_release);
+			bufferLayoutReady.store(false, std::memory_order_release);
+			autoEnabledOnce.store(false, std::memory_order_relaxed);
+			for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+			{
+				inputReady[routeIndex].store(false, std::memory_order_relaxed);
+				resolvedInputIndices[routeIndex] = -1;
+				routeFormats[routeIndex] = {};
+			}
+
 			// Swap in our own callback struct before the driver stores it. The driver keeps the
 			// pointer, so ours has to outlive the call, hence the file scope copy.
 			if (callbacks)
@@ -411,38 +450,59 @@ namespace Audio::AsioHook
 				}
 			}
 
-			const int selectedIndex = FindInputIndexForChannel(selectedInputChannel.load(std::memory_order_relaxed));
-			const long selectedSampleType = selectedIndex >= 0 ? inputSampleTypes[selectedIndex] : -1;
-			format.sampleFormat = GetSampleFormat(selectedSampleType);
-			format.channelCount = 1;		// ASIO buffers are per channel, never interleaved.
-
-			if (bufferSize <= 0 || bufferSize > MAX_BUFFER_FRAMES)
-			{
-				processingEnabled.store(false, std::memory_order_release);
-				format.sampleFormat = SampleFormat::Unsupported;
-				LOG_WARNING("[AsioHook] Driver negotiated " << bufferSize
-					<< " frames; supported range is 1-" << MAX_BUFFER_FRAMES
-					<< ". Processing stays off." << std::endl);
-			}
-
 			ASIOSampleRate sampleRate = 0;
 			GetSampleRate_t getSampleRate = (GetSampleRate_t)ComVTable::GetVTable(self)[SLOT_ASIO_GET_SAMPLE_RATE];
-			if (getSampleRate(self, nullptr, &sampleRate) == ASE_OK && sampleRate > 0)
-			{
-				format.sampleRate = (uint32_t)sampleRate;
-			}
-			else
+			if (getSampleRate(self, nullptr, &sampleRate) != ASE_OK || sampleRate <= 0)
 			{
 				LOG_WARNING("[AsioHook] Driver did not report a sample rate; processors cannot be prepared." << std::endl);
 			}
 
-			conversionBuffer.assign((size_t)MAX_BUFFER_FRAMES, 0.0f);
+			const bool isBufferSizeUsable = bufferSize > 0 && bufferSize <= MAX_BUFFER_FRAMES;
+			if (!isBufferSizeUsable)
+			{
+				LOG_WARNING("[AsioHook] Driver negotiated " << bufferSize
+					<< " frames; the defensive processing limit is " << MAX_BUFFER_FRAMES
+					<< ". Processing stays off." << std::endl);
+			}
+
+			for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+			{
+				if (!configuredInputs[routeIndex]) continue;
+
+				const int inputIndex = FindInputIndexForChannel(selectedInputChannels[routeIndex]);
+				resolvedInputIndices[routeIndex] = inputIndex;
+
+				const long sampleType = inputIndex >= 0 ? inputSampleTypes[inputIndex] : -1;
+				CaptureFormat& routeFormat = routeFormats[routeIndex];
+				routeFormat.sampleFormat = isBufferSizeUsable
+					? GetSampleFormat(sampleType)
+					: SampleFormat::Unsupported;
+				routeFormat.channelCount = 1;
+				routeFormat.sampleRate = sampleRate > 0 ? static_cast<uint32_t>(sampleRate) : 0;
+
+				if (inputIndex < 0)
+				{
+					LOG_ERROR("[AsioHook] Player " << routeIndex + 1
+						<< " is configured for ASIO channel " << selectedInputChannels[routeIndex]
+						<< ", but the driver did not create that input buffer." << std::endl);
+				}
+				else if (routeFormat.sampleFormat == SampleFormat::Unsupported)
+				{
+					LOG_ERROR("[AsioHook] Player " << routeIndex + 1 << " input sample type "
+						<< sampleType << " is unsupported." << std::endl);
+				}
+			}
+
+			for (std::vector<float>& buffer : conversionBuffers)
+			{
+				buffer.assign(static_cast<size_t>(MAX_BUFFER_FRAMES), 0.0f);
+			}
 
 			LOG_INFO("[AsioHook] createBuffers: " << numChannels << " channels, " << bufferSize
-				<< " frames, " << discoveredInputChannels << " input(s) captured, " << format.sampleRate << " Hz" << std::endl);
+				<< " frames, " << discoveredInputChannels << " input(s) captured, "
+				<< static_cast<uint32_t>(sampleRate) << " Hz" << std::endl);
 
-			if (format.sampleFormat == SampleFormat::Unsupported)
-				LOG_WARNING("[AsioHook] Selected input sample type " << selectedSampleType << " is unsupported; processing stays off." << std::endl);
+			bufferLayoutReady.store(true, std::memory_order_release);
 
 			return result;
 		}
@@ -498,12 +558,41 @@ namespace Audio::AsioHook
 		if (installed) return;
 		installed = true;
 
-		driverName = ReadDriverNameFromRsAsioIni();
+		const RsAsioConfiguration configuration = ReadRsAsioConfiguration();
+		driverName = configuration.driverName;
 
 		if (driverName.empty())
 		{
 			LOG_INFO("[AsioHook] No ASIO driver named in RS_ASIO.ini; nothing to hook." << std::endl);
 			return;
+		}
+
+		for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+		{
+			configuredInputs[routeIndex] = configuration.inputConfigured[routeIndex];
+			selectedInputChannels[routeIndex] = configuration.inputChannels[routeIndex];
+
+			if (!configuredInputs[routeIndex]) continue;
+
+			if (selectedInputChannels[routeIndex] < 0)
+			{
+				LOG_ERROR("[AsioHook] Player " << routeIndex + 1
+					<< " has no valid Channel in RS_ASIO.ini; ASIO Drop Pedal will not start."
+					<< std::endl);
+				return;
+			}
+
+			if (configuration.inputDriverNames[routeIndex] != driverName)
+			{
+				LOG_ERROR("[AsioHook] Player " << routeIndex + 1 << " uses ASIO driver \""
+					<< configuration.inputDriverNames[routeIndex] << "\" while Player 1 uses \""
+					<< driverName << "\". Multiplayer Drop Pedal currently requires both inputs "
+						"on the same driver." << std::endl);
+				return;
+			}
+
+			LOG_INFO("[AsioHook] Player " << routeIndex + 1 << " uses ASIO channel "
+				<< selectedInputChannels[routeIndex] << "." << std::endl);
 		}
 
 		if (!ReadDriverClassId(driverName, driverClassId))
@@ -547,63 +636,75 @@ namespace Audio::AsioHook
 		}
 
 		LOG_INFO("[AsioHook] Watching \"" << driverName << "\" for instantiation." << std::endl);
-
-		selectedInputChannel.store(ReadInputChannelFromRsAsioIni(), std::memory_order_relaxed);
 	}
 
 	void Poll()
 	{
 		// One-shot: enables when the driver comes up, but never fights a manual disable.
-		if (autoEnabledOnce) return;
+		if (autoEnabledOnce.load(std::memory_order_relaxed)) return;
 		if (processingEnabled.load(std::memory_order_relaxed)) return;
-		if (discoveredInputChannels == 0) return;
-		if (!format.IsUsable()) return;
+		if (!bufferLayoutReady.load(std::memory_order_acquire)) return;
 
-		IInputProcessor* processor = activeProcessor.load(std::memory_order_relaxed);
-		if (!processor) return;
+		for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+		{
+			if (!configuredInputs[routeIndex]) continue;
+			if (!routeFormats[routeIndex].IsUsable()) return;
+			if (!activeProcessors[routeIndex].load(std::memory_order_relaxed)) return;
+		}
 
-		autoEnabledOnce = true;
+		autoEnabledOnce.store(true, std::memory_order_relaxed);
 
 		// Runs on the game thread while processing is still disabled, so the processor is
 		// free to allocate here before the audio thread ever calls Process.
-		processor->Prepare(format);
-		LOG_INFO("[AsioHook] Processor latency " << processor->GetLatencyFrames() << " frames" << std::endl);
+		for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+		{
+			if (!configuredInputs[routeIndex]) continue;
+
+			IInputProcessor* processor = activeProcessors[routeIndex].load(std::memory_order_relaxed);
+			processor->Prepare(routeFormats[routeIndex]);
+			inputReady[routeIndex].store(true, std::memory_order_release);
+			LOG_INFO("[AsioHook] Player " << routeIndex + 1 << " processor latency "
+				<< processor->GetLatencyFrames() << " frames" << std::endl);
+		}
 
 		SetProcessingEnabled(true);
 	}
 
-	void SetProcessor(IInputProcessor* inputProcessor)
+	void SetProcessor(size_t routeIndex, IInputProcessor* inputProcessor)
 	{
-		activeProcessor.store(inputProcessor, std::memory_order_relaxed);
-	}
+		if (routeIndex >= INPUT_ROUTE_COUNT)
+		{
+			LOG_ERROR("[AsioHook] Refusing to set processor for invalid route " << routeIndex << "." << std::endl);
+			return;
+		}
 
-	void SetInputChannel(int channelIndex)
-	{
-		processingEnabled.store(false, std::memory_order_release);
-		selectedInputChannel.store(channelIndex, std::memory_order_relaxed);
+		activeProcessors[routeIndex].store(inputProcessor, std::memory_order_relaxed);
 	}
 
 	void SetProcessingEnabled(bool enabled)
 	{
-		if (enabled && !activeProcessor.load(std::memory_order_relaxed))
+		if (enabled && !bufferLayoutReady.load(std::memory_order_acquire))
 		{
-			LOG_ERROR("[AsioHook] Refusing to enable processing with no processor set." << std::endl);
+			LOG_ERROR("[AsioHook] Refusing to enable processing before ASIO buffers are ready." << std::endl);
 			return;
 		}
 
-		if (enabled && !format.IsUsable())
+		if (enabled)
 		{
-			LOG_ERROR("[AsioHook] Refusing to enable processing before a supported input format is known." << std::endl);
-			return;
-		}
+			for (size_t routeIndex = 0; routeIndex < INPUT_ROUTE_COUNT; ++routeIndex)
+			{
+				if (!configuredInputs[routeIndex]) continue;
 
-		const int channel = selectedInputChannel.load(std::memory_order_relaxed);
-
-		if (enabled && FindInputIndexForChannel(channel) < 0)
-		{
-			LOG_ERROR("[AsioHook] Refusing to enable processing: no discovered input has channel "
-				<< channel << "." << std::endl);
-			return;
+				if (!activeProcessors[routeIndex].load(std::memory_order_relaxed)
+					|| !routeFormats[routeIndex].IsUsable()
+					|| resolvedInputIndices[routeIndex] < 0
+					|| !inputReady[routeIndex].load(std::memory_order_acquire))
+				{
+					LOG_ERROR("[AsioHook] Refusing to enable processing because Player "
+						<< routeIndex + 1 << " is not ready." << std::endl);
+					return;
+				}
+			}
 		}
 
 		processingEnabled.store(enabled, std::memory_order_release);
@@ -615,18 +716,15 @@ namespace Audio::AsioHook
 		return processingEnabled.load(std::memory_order_acquire);
 	}
 
-	int GetInputChannelCount()
+	bool IsInputConfigured(size_t routeIndex)
 	{
-		return discoveredInputChannels;
+		return routeIndex < INPUT_ROUTE_COUNT && configuredInputs[routeIndex];
 	}
 
-	long GetBufferSizeFrames()
+	bool IsInputReady(size_t routeIndex)
 	{
-		return activeBufferFrames;
+		return routeIndex < INPUT_ROUTE_COUNT
+			&& inputReady[routeIndex].load(std::memory_order_acquire);
 	}
 
-	const CaptureFormat& GetFormat()
-	{
-		return format;
-	}
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DropPedalPlayer.hpp"
+
 // Retunes a pitch shifter pedal in the player's tone chain, so a guitar in
 // standard tuning can be heard in the tuning a song was written for.
 //
@@ -19,21 +21,19 @@ namespace DropPedal
 	bool ShouldInstallInputHooks();
 	bool RequiresInputShifter();
 	void ReportInputShifterUnavailable();
+	void InstallInputHooks();
+	void UpdateInputShifterPitch(Player player);
 
 	void InstallHooks();
 	void Poll();
-
-	// Key sampling, split from Poll so a fast thread can drive it. Poll runs on the mod's
-	// 250ms loop, and a key tap is shorter than that gap, so sampling there drops presses.
-	void PollHotkeys();
 
 	// Tracks the active arrangement's authored tuning reference through tuner and song.
 	void HandleArrangementTuning();
 	void ResetSongState();
 
 	bool IsEnabled();
-	int GetTargetSemitones();
-	std::string GetTuningName();
+	int GetTargetSemitones(Player player);
+	std::string GetTuningName(Player player);
 	bool TryGetAuthoredTrueTuning(float& trueTuning);
 
 	// Selects which engine realises the pitch. With the ASIO input shifter active, the
@@ -42,6 +42,9 @@ namespace DropPedal
 	// authored tuning reference. The hotkeys and overlay stay live either way.
 	void SetInputShifterActive(bool active);
 	bool IsInputShifterActive();
+	bool IsPlayerShiftAvailable(Player player);
+	// Whether the player's loaded tone contains a pitch shifter; Cable only.
+	bool HasLivePedalTone(Player player);
 	bool ConsumeInputShifterTransitionFailure();
 
 	// Tick of the last engine decision or change, for the on-screen engine notice.
@@ -50,7 +53,7 @@ namespace DropPedal
 
 	// The tuning the guitar is physically in, and which way the shift is going, so the
 	// overlay can name and colour the state without duplicating the arithmetic.
-	int GetBaseTuningSemitones();
-	std::string GetBaseTuningName();
-	int GetShiftDirection();
+	int GetBaseTuningSemitones(Player player);
+	std::string GetBaseTuningName(Player player);
+	int GetShiftDirection(Player player);
 }

@@ -1,4 +1,6 @@
 #include "../../stdafx.h"
+#include "../../Audio/AsioHook.hpp"
+#include "../../Audio/DelayLinePitchShifter.hpp"
 #include "DropPedal.hpp"
 #include "DropPedalHooks.hpp"
 #include "DropPedalInput.hpp"
@@ -6,14 +8,14 @@
 
 namespace
 {
-	// RS_ASIO maps the game's second multiplayer input through [Asio.Input.1].
-	bool HasSecondInputConfigured()
-	{
-		CSimpleIniA reader;
-		if (reader.LoadFile("RS_ASIO.ini") < 0) return false;
+	Audio::DelayLinePitchShifter playerOneInputPitchShifter{ 0 };
+	Audio::DelayLinePitchShifter playerTwoInputPitchShifter{ 0 };
 
-		const char* secondInputDriver = reader.GetValue("Asio.Input.1", "Driver", "");
-		return secondInputDriver != nullptr && *secondInputDriver != '\0';
+	Audio::DelayLinePitchShifter& GetInputPitchShifter(DropPedal::Player player)
+	{
+		return player == DropPedal::Player::One
+			? playerOneInputPitchShifter
+			: playerTwoInputPitchShifter;
 	}
 }
 
@@ -22,19 +24,6 @@ void DropPedal::LoadSettings()
 	DropPedalState::Configure(
 		Settings::ReturnSettingValue("EnableDropPedal"),
 		Settings::ReturnSettingValue("DropPedalEngine"));
-
-	// RS_ASIO's standard template fills in [Asio.Input.1] even for single-player
-	// setups, so its presence is not evidence of multiplayer and must not disable
-	// anything. The warning states the actual limitation: the pedal shifts only the
-	// [Asio.Input.0] channel, so a second player plays unshifted.
-	if (DropPedalState::IsConfiguredEnabled() && HasSecondInputConfigured())
-	{
-		LOG_WARNING("RS_ASIO.ini configures a second input under [Asio.Input.1]. The drop "
-			"pedal shifts only the [Asio.Input.0] channel; in multiplayer the second "
-			"player is not shifted." << std::endl);
-	}
-
-	DropPedalInput::LoadKeybinds();
 }
 
 bool DropPedal::IsConfiguredEnabled()
@@ -57,6 +46,25 @@ void DropPedal::ReportInputShifterUnavailable()
 	DropPedalHooks::ReportInputShifterUnavailable();
 }
 
+void DropPedal::InstallInputHooks()
+{
+	if (!ShouldInstallInputHooks()) return;
+
+	Audio::AsioHook::Install();
+	Audio::AsioHook::SetProcessor(GetPlayerIndex(Player::One), &playerOneInputPitchShifter);
+	Audio::AsioHook::SetProcessor(GetPlayerIndex(Player::Two), &playerTwoInputPitchShifter);
+	UpdateInputShifterPitch(Player::One);
+	UpdateInputShifterPitch(Player::Two);
+}
+
+void DropPedal::UpdateInputShifterPitch(Player player)
+{
+	if (!ShouldInstallInputHooks()) return;
+
+	const int targetSemitones = IsEnabled() ? GetTargetSemitones(player) : 0;
+	GetInputPitchShifter(player).SetSemitones(targetSemitones);
+}
+
 bool DropPedal::IsEnabled()
 {
 	return DropPedalState::IsConfiguredEnabled() && DropPedalState::IsEnabled();
@@ -76,14 +84,14 @@ void DropPedal::ResetSongState()
 	DropPedalHooks::ResetSongState();
 }
 
-int DropPedal::GetTargetSemitones()
+int DropPedal::GetTargetSemitones(Player player)
 {
-	return DropPedalState::GetTargetSemitones();
+	return DropPedalState::GetTargetSemitones(player);
 }
 
-std::string DropPedal::GetTuningName()
+std::string DropPedal::GetTuningName(Player player)
 {
-	return DropPedalState::GetTuningName();
+	return DropPedalState::GetTuningName(player);
 }
 
 bool DropPedal::TryGetAuthoredTrueTuning(float& trueTuning)
@@ -93,19 +101,19 @@ bool DropPedal::TryGetAuthoredTrueTuning(float& trueTuning)
 	return DropPedalHooks::TryGetAuthoredTrueTuning(trueTuning);
 }
 
-std::string DropPedal::GetBaseTuningName()
+std::string DropPedal::GetBaseTuningName(Player player)
 {
-	return DropPedalState::GetBaseTuningName();
+	return DropPedalState::GetBaseTuningName(player);
 }
 
-int DropPedal::GetBaseTuningSemitones()
+int DropPedal::GetBaseTuningSemitones(Player player)
 {
-	return DropPedalState::GetBaseTuningSemitones();
+	return DropPedalState::GetBaseTuningSemitones(player);
 }
 
-int DropPedal::GetShiftDirection()
+int DropPedal::GetShiftDirection(Player player)
 {
-	return DropPedalState::GetShiftDirection();
+	return DropPedalState::GetShiftDirection(player);
 }
 
 void DropPedal::InstallHooks()
@@ -127,6 +135,27 @@ bool DropPedal::IsInputShifterActive()
 	return DropPedalState::IsConfiguredEnabled() && DropPedalHooks::IsInputShifterActive();
 }
 
+bool DropPedal::IsPlayerShiftAvailable(Player player)
+{
+	if (player == Player::One) return true;
+
+	if (!IsInputShifterActive())
+	{
+		return DropPedalState::IsConfiguredEnabled()
+			&& DropPedalHooks::IsCableAttributionActive();
+	}
+
+	const size_t routeIndex = GetPlayerIndex(player);
+	return Audio::AsioHook::IsInputConfigured(routeIndex)
+		&& Audio::AsioHook::IsInputReady(routeIndex);
+}
+
+bool DropPedal::HasLivePedalTone(Player player)
+{
+	return DropPedalState::IsConfiguredEnabled()
+		&& DropPedalHooks::HasLivePlayerPedalTone(player);
+}
+
 bool DropPedal::ConsumeInputShifterTransitionFailure()
 {
 	return DropPedalState::IsConfiguredEnabled()
@@ -136,13 +165,6 @@ bool DropPedal::ConsumeInputShifterTransitionFailure()
 unsigned long long DropPedal::GetEngineNoticeTick()
 {
 	return DropPedalState::IsConfiguredEnabled() ? DropPedalHooks::GetEngineNoticeTick() : 0;
-}
-
-void DropPedal::PollHotkeys()
-{
-	if (!DropPedalState::IsConfiguredEnabled()) return;
-
-	DropPedalInput::PollHotkeys();
 }
 
 void DropPedal::Poll()

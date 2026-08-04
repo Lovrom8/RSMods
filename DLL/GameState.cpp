@@ -18,7 +18,12 @@ bool GameState::IsInSong() {
 /// </summary>
 /// <returns>Is the user in multiplayer</returns>
 bool GameState::IsMultiplayer() {
-	return *(int*)MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_multiplayer, Offsets::ptr_multiplayerOffsets); // No need to null check because if it's null, then we assume it's singleplayer (which is zero).
+	const uintptr_t address = MemUtil::FindDMAAddy(
+		Offsets::baseHandle + Offsets::ptr_multiplayer,
+		Offsets::ptr_multiplayerOffsets);
+	if (address == 0 || MemUtil::IsBadReadPtr(reinterpret_cast<void*>(address))) return false;
+
+	return *reinterpret_cast<int*>(address) != 0;
 }
 
 /// <summary>

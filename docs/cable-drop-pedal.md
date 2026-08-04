@@ -19,6 +19,22 @@ The same line is written to the debug log (`Drop pedal engine: ...`). In
 automatic mode Cable owns the pitch until a working ASIO input chain becomes
 available.
 
+In multiplayer each player has an independent target and base tuning, exactly
+like the ASIO engine: every tone's pitch shifter and every player's detection
+reference follow the player owning it, so a song with different arrangement
+tunings stays playable for both. Player 2 uses `Control` plus the Player 1
+keys. The overlay always shows each player's own pedal state, like hardware.
+
+Multiplayer tone setup:
+
+- Tones live on the player profile, so **each profile needs its own drop pedal
+  tone** built per the setup below; one profile's tones are not visible to the
+  other player.
+- In multiplayer the keyboard maps both players' tone slots: keys `1`-`4` load
+  Player 1's tone slots and keys `5`-`8` load Player 2's tone slots `1`-`4`.
+
+![Independent targets on a song with different arrangement tunings](images/overlay-multiplayer-tunings.png)
+
 ## How it works
 
 Detection reads the raw guitar signal upstream of the tone chain, so the mod
@@ -51,15 +67,23 @@ Constraints that follow from this design:
 - Uniform tunings only.
 - Tones reset per song, so the tone slot key is pressed each time.
 - Set the target before launching the song, so the load-time stamp already
-  carries the shift when the tuner reads it.
+  carries the shift when the tuner reads it. This includes Non-Stop Play: the
+  target applies per song at load, so set it before starting the playlist, or
+  during the between-song countdown when songs need different offsets. A change
+  that lands after a song has loaded corrects in-song detection within a
+  moment, but that song's tuner snapshot stays stale.
+- The full pedal range of -24 to +24 semitones renders (verified in game on a
+  Pitch 1 = 0 tone). The tone's authored Pitch 1 adds to the pedal target in
+  the one MultiPitch instance, so an octave-down bass tone shifts its audible
+  result by that authored offset on top of the pedal value.
 
 ## Controls
 
-| Action | Key |
-|---|---|
-| Pitch down / up | `,` / `.` |
-| Toggle on / off | `F7` |
-| Base tuning down / up | `F9` / `F10` |
+| Action | Player 1 | Player 2 |
+|---|---|---|
+| Pitch down / up | `,` / `.` | `Control+,` / `Control+.` |
+| Toggle on / off (both players) | `F7` | `F7` |
+| Base tuning down / up | `F9` / `F10` | `Control+F9` / `Control+F10` |
 
 - Keys register only while Rocksmith is the focused window.
 - While the pedal is toggled off, every key except `F7` is ignored.
@@ -68,15 +92,32 @@ Constraints that follow from this design:
   `DropPedalToggleKey`, `DropPedalBaseTuningDownKey`,
   `DropPedalBaseTuningUpKey`). The table above shows the defaults.
 
-The overlay shows the current state and turns green whenever a shift is
-applied. Nothing is saved between sessions: the pedal starts enabled, at no
-shift, base E standard, every launch.
+The overlay shows the current state: green for a downward shift, amber for an
+upward one.
+
+![Downward shift applied](images/overlay-drop-tuning-down.png)
+
+![Upward shift applied](images/overlay-drop-tuning-up.png)
+
+`F7` toggles the pedal for the session, and the row reports it:
+
+![Pedal toggled off](images/overlay-pitch-off.png)
+
+When the loaded tone has no MultiPitch the pedal cannot act, so the row says so
+instead of showing a target that is not being applied — the game reloads tones
+every song, so this is the first thing to check when nothing shifts. The target
+itself is kept and reapplies the moment a pedal tone loads:
+
+![Loaded tone has no MultiPitch](images/overlay-no-pedal-in-tone.png)
+
+Nothing is saved between sessions: the pedal starts enabled, at no shift, base
+E standard, every launch.
 
 ### Base tuning
 
 `F9` / `F10` tell the mod what the guitar is physically tuned to. It changes
 how tunings are named, nothing else: names are computed relative to the base,
-so with a base of D standard, one semitone down reads `Db standard (-1)`.
+so with a base of D standard, one semitone down reads `D -> Db (-1)`.
 Leave it at E standard unless the guitar really is tuned differently.
 
 ## Setup: build the tone

@@ -44,9 +44,6 @@ namespace ModManager {
     void HandleSpecificProfileLoad(GameLoopState& state);
     void HandleAlwaysOnMods(GameLoopState& state);
 
-    // Runs on the fast hotkey thread. Samples the drop pedal keys and keeps the input
-    // shifter's semitones in step, since the 250ms main loop is too slow to catch a tap.
-    void PollDropPedalHotkeys();
     void HandleInMenuState(GameLoopState& state);
     void HandleInSongState(GameLoopState& state);
     void HandleTwoRTCBypassToggle();

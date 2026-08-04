@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DropPedalPlayer.hpp"
+
 #include <string>
 
 namespace DropPedalState
@@ -10,12 +12,12 @@ namespace DropPedalState
 	bool IsCableEngine();
 	bool IsEnabled();
 	bool ToggleEnabled();
-	bool AdjustTarget(int semitoneDelta);
-	bool AdjustBaseTuning(int semitoneDelta);
-	int GetTargetSemitones();
-	int GetBaseTuningSemitones();
-	float GetTargetCents();
-	std::string GetTuningName();
-	std::string GetBaseTuningName();
-	int GetShiftDirection();
+	bool AdjustTarget(DropPedal::Player player, int semitoneDelta);
+	bool AdjustBaseTuning(DropPedal::Player player, int semitoneDelta);
+	int GetTargetSemitones(DropPedal::Player player);
+	int GetBaseTuningSemitones(DropPedal::Player player);
+	float GetTargetCents(DropPedal::Player player);
+	std::string GetTuningName(DropPedal::Player player);
+	std::string GetBaseTuningName(DropPedal::Player player);
+	int GetShiftDirection(DropPedal::Player player);
 }

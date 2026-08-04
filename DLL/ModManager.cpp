@@ -1,14 +1,6 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
 #include "Mods/DropPedal/DropPedal.hpp"
-#include "Audio/DelayLinePitchShifter.hpp"
-
-namespace
-{
-	// Time-domain period-synchronous shifter on the ASIO input path. Starts at unity;
-	// the drop pedal hotkeys drive it once the hook is live.
-	Audio::DelayLinePitchShifter pitchShifter{ 0 };
-}
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -168,11 +160,7 @@ namespace ModManager {
 	{
 		// Runs before the game instantiates its ASIO driver, so the detour is in place
 		// when RS_ASIO loads the same module.
-		if (DropPedal::ShouldInstallInputHooks())
-		{
-			Audio::AsioHook::Install();
-			Audio::AsioHook::SetProcessor(&pitchShifter);
-		}
+		DropPedal::InstallInputHooks();
 
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
@@ -256,28 +244,6 @@ namespace ModManager {
 		}
 	}
 
-	/// <summary>
-	/// Handles rainbow string and note effects.
-	/// </summary>
-	void PollDropPedalHotkeys()
-	{
-		DropPedal::PollHotkeys();
-
-		if (DropPedal::ShouldInstallInputHooks() && Audio::AsioHook::IsProcessingEnabled())
-		{
-			const int targetSemitones = DropPedal::IsEnabled() ? DropPedal::GetTargetSemitones() : 0;
-			static bool hasAppliedSemitones = false;
-			static int appliedSemitones = 0;
-
-			if (!hasAppliedSemitones || targetSemitones != appliedSemitones)
-			{
-				pitchShifter.SetSemitones(targetSemitones);
-				appliedSemitones = targetSemitones;
-				hasAppliedSemitones = true;
-			}
-		}
-	}
-
 	void HandleRainbowEffects() {
 		if (ERMode::IsRainbowEnabled() || ERMode::IsRainbowNotesEnabled()) {
 			ERMode::DoRainbow();
@@ -314,8 +280,8 @@ namespace ModManager {
 
 			// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
 			// shifter is processing, it owns pitch; the game-side MultiPitch path stays
-			// suppressed for the session. The hotkey thread keeps the shifter's semitones in
-			// step, since key changes land there.
+			// suppressed for the session. WndProc key commands update the input shifter as
+			// soon as each control is released.
 			DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
 			if (DropPedal::ConsumeInputShifterTransitionFailure())
 			{

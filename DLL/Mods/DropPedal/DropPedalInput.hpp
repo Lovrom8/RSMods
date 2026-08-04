@@ -2,7 +2,8 @@
 
 namespace DropPedalInput
 {
-	void LoadKeybinds();
-	void PollHotkeys();
+	void AdjustTarget(int semitoneDelta);
+	void ToggleEnabled();
+	void AdjustBaseTuning(int semitoneDelta);
 	void PollPendingPitchPush();
 }

@@ -3,6 +3,8 @@
 #include "CaptureFormat.h"
 #include "IInputProcessor.hpp"
 
+#include <cstddef>
+
 // Intercepts the guitar signal underneath RS_ASIO, on the ASIO driver's own buffers.
 //
 // RS_ASIO does not create the driver through COM. It reads InprocServer32 for the driver's
@@ -23,8 +25,10 @@
 // __stdcall, and the hooks are declared __fastcall with a dummy EDX argument. And its
 // buffers are per channel and non-interleaved, so a processor here sees one mono channel
 // rather than an interleaved block.
-namespace Audio::AsioHook
+	namespace Audio::AsioHook
 {
+	constexpr size_t INPUT_ROUTE_COUNT = 2;
+
 	void Install();
 
 	// Called from the game loop. Enables processing once the driver has built its buffers
@@ -32,18 +36,12 @@ namespace Audio::AsioHook
 	// Install, so readiness can only be observed by polling.
 	void Poll();
 
-	// Ownership stays with the caller, which must keep the processor alive for as long as
-	// the ASIO stream runs.
-	void SetProcessor(IInputProcessor* inputProcessor);
-
-	// Which ASIO input channel carries the guitar. The M-Track exposes In 1 and In 2; which
-	// one is in use depends on the Input0 Channel setting in RS_ASIO.ini. Negative disables.
-	void SetInputChannel(int channelIndex);
+	// Ownership stays with the caller, which must keep both processors alive for as long as
+	// the ASIO stream runs. Route 0 is [Asio.Input.0], route 1 is [Asio.Input.1].
+	void SetProcessor(size_t routeIndex, IInputProcessor* inputProcessor);
 
 	void SetProcessingEnabled(bool enabled);
 	bool IsProcessingEnabled();
-
-	int GetInputChannelCount();
-	long GetBufferSizeFrames();
-	const CaptureFormat& GetFormat();
+	bool IsInputConfigured(size_t routeIndex);
+	bool IsInputReady(size_t routeIndex);
 }

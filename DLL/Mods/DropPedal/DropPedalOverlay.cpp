@@ -1,6 +1,7 @@
 #include "../../stdafx.h"
 #include "DropPedalOverlay.hpp"
 
+#include "../../GameState.hpp"
 #include "../../Resolution.h"
 #include "DropPedal.hpp"
 
@@ -12,32 +13,49 @@ namespace
 	constexpr unsigned int DROP_PEDAL_DISABLED_TEXT = 0xFFC8C8C8;
 	constexpr unsigned long long ENGINE_SHOW_MILLISECONDS = 6000;
 	constexpr unsigned long long ENGINE_FADE_MILLISECONDS = 1500;
+
 }
 
 void DropPedal::Overlay::Render(ID3DXFont* font, const Resolution& windowSize)
 {
 	if (!DropPedal::IsConfiguredEnabled() || !font) return;
 
-	RenderTuning(font, windowSize);
-	RenderEngine(font, windowSize);
+	const bool isMultiplayer = GameState::IsMultiplayer();
+	RenderTuning(font, windowSize, Player::One, 0);
+	if (isMultiplayer)
+	{
+		RenderTuning(font, windowSize, Player::Two, 1);
+	}
+
+	RenderEngine(font, windowSize, isMultiplayer);
 }
 
-void DropPedal::Overlay::RenderTuning(ID3DXFont* font, const Resolution& windowSize)
+void DropPedal::Overlay::RenderTuning(
+	ID3DXFont* font,
+	const Resolution& windowSize,
+	Player player,
+	int row)
 {
-	UpdateTuningCache(font);
+	UpdateTuningCache(font, player);
+	const size_t playerIndex = GetPlayerIndex(player);
+	const int top = static_cast<int>(windowSize.height / 54.0f)
+		+ row * static_cast<int>(windowSize.height / 36.0f);
 
 	DrawShadowedText(
 		font,
 		windowSize,
-		tuningLine,
-		tuningTextColor,
+		tuningLines[playerIndex],
+		tuningTextColors[playerIndex],
 		static_cast<int>(windowSize.width / 96.0f),
-		static_cast<int>(windowSize.height / 54.0f),
+		top,
 		static_cast<int>(windowSize.width / 3.0f),
-		static_cast<int>(windowSize.height / 18.0f));
+		top + static_cast<int>(windowSize.height / 27.0f));
 }
 
-void DropPedal::Overlay::RenderEngine(ID3DXFont* font, const Resolution& windowSize)
+void DropPedal::Overlay::RenderEngine(
+	ID3DXFont* font,
+	const Resolution& windowSize,
+	bool isMultiplayer)
 {
 	const unsigned long long noticeTick = DropPedal::GetEngineNoticeTick();
 	if (noticeTick == 0) return;
@@ -64,48 +82,75 @@ void DropPedal::Overlay::RenderEngine(ID3DXFont* font, const Resolution& windowS
 		? 1.0f
 		: 1.0f - (float)(elapsed - ENGINE_SHOW_MILLISECONDS) / ENGINE_FADE_MILLISECONDS;
 
+	const int left = static_cast<int>(windowSize.width / 96.0f);
+	const int top = static_cast<int>(windowSize.height / (isMultiplayer ? 10.8f : 18.0f));
+
 	DrawShadowedText(
 		font,
 		windowSize,
 		engineLine,
 		D3DCOLOR_ARGB(static_cast<int>(255 * fade), 255, 255, 255),
-		static_cast<int>(windowSize.width / 96.0f),
-		static_cast<int>(windowSize.height / 18.0f),
-		static_cast<int>(windowSize.width / 3.0f),
-		static_cast<int>(windowSize.height / 10.8f));
+		left,
+		top,
+		left + static_cast<int>(windowSize.width / 3.0f),
+		top + static_cast<int>(windowSize.height / 27.0f));
 }
 
-void DropPedal::Overlay::UpdateTuningCache(ID3DXFont* font)
+void DropPedal::Overlay::UpdateTuningCache(ID3DXFont* font, Player player)
 {
+	const size_t playerIndex = GetPlayerIndex(player);
 	const bool isEnabled = DropPedal::IsEnabled();
-	const int targetSemitones = DropPedal::GetTargetSemitones();
-	const int baseTuningSemitones = DropPedal::GetBaseTuningSemitones();
+	const bool isCableOwned = !DropPedal::IsInputShifterActive();
+	const int targetSemitones = DropPedal::GetTargetSemitones(player);
+	const int baseTuningSemitones = DropPedal::GetBaseTuningSemitones(player);
 
-	if (hasCachedTuningState
-		&& isEnabled == cachedEnabled
-		&& targetSemitones == cachedTargetSemitones
-		&& baseTuningSemitones == cachedBaseTuningSemitones
-		&& font == cachedTuningFont)
+	// Each row shows its own player's configured state, like hardware. The one
+	// exception is Cable's tone dependency: the game reloads tones every song,
+	// so the row flags a tone the pedal cannot act on.
+	const bool isMissingPedalTone = isCableOwned
+		&& isEnabled
+		&& !DropPedal::HasLivePedalTone(player);
+
+	if (hasCachedTuningState[playerIndex]
+		&& isEnabled == cachedEnabled[playerIndex]
+		&& isMissingPedalTone == cachedMissingPedalTone[playerIndex]
+		&& targetSemitones == cachedTargetSemitones[playerIndex]
+		&& baseTuningSemitones == cachedBaseTuningSemitones[playerIndex]
+		&& font == cachedTuningFonts[playerIndex])
 	{
 		return;
 	}
 
-	tuningLine = isEnabled ? "Drop Pedal: " + DropPedal::GetTuningName() : "Drop Pedal: off";
+	std::string& tuningLine = tuningLines[playerIndex];
+	unsigned int& tuningTextColor = tuningTextColors[playerIndex];
+	if (!isEnabled)
+	{
+		tuningLine = "Pitch: Off";
+	}
+	else if (isMissingPedalTone)
+	{
+		tuningLine = "Drop: No pedal in tone";
+	}
+	else
+	{
+		tuningLine = "Drop: " + DropPedal::GetTuningName(player);
+	}
 	tuningTextColor = DROP_PEDAL_DISABLED_TEXT;
 
-	if (isEnabled)
+	if (isEnabled && !isMissingPedalTone)
 	{
-		const int direction = DropPedal::GetShiftDirection();
+		const int direction = DropPedal::GetShiftDirection(player);
 		tuningTextColor = direction < 0
 			? DROP_PEDAL_DOWN_TEXT
 			: (direction > 0 ? DROP_PEDAL_UP_TEXT : WHITE_TEXT);
 	}
 
-	cachedEnabled = isEnabled;
-	cachedTargetSemitones = targetSemitones;
-	cachedBaseTuningSemitones = baseTuningSemitones;
-	cachedTuningFont = font;
-	hasCachedTuningState = true;
+	cachedEnabled[playerIndex] = isEnabled;
+	cachedMissingPedalTone[playerIndex] = isMissingPedalTone;
+	cachedTargetSemitones[playerIndex] = targetSemitones;
+	cachedBaseTuningSemitones[playerIndex] = baseTuningSemitones;
+	cachedTuningFonts[playerIndex] = font;
+	hasCachedTuningState[playerIndex] = true;
 	font->PreloadTextA(tuningLine.c_str(), static_cast<int>(tuningLine.length()));
 }
 
