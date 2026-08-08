@@ -13,7 +13,7 @@ namespace DropPedalState
 	bool IsEnabled();
 	bool ToggleEnabled();
 	bool AdjustTarget(DropPedal::Player player, int semitoneDelta);
-	bool AdjustBaseTuning(DropPedal::Player player, int semitoneDelta);
+	bool CycleBaseTuning(DropPedal::Player player);
 	int GetTargetSemitones(DropPedal::Player player);
 	int GetBaseTuningSemitones(DropPedal::Player player);
 	float GetTargetCents(DropPedal::Player player);

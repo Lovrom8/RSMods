@@ -68,8 +68,8 @@ namespace Audio::AsioHook
 		{
 			std::string driverName;
 			std::array<std::string, INPUT_ROUTE_COUNT> inputDriverNames;
-			std::array<int, INPUT_ROUTE_COUNT> inputChannels{ 0, -1 };
-			std::array<bool, INPUT_ROUTE_COUNT> inputConfigured{ true, false };
+			std::array<int, INPUT_ROUTE_COUNT> inputChannels{ -1, -1 };
+			std::array<bool, INPUT_ROUTE_COUNT> inputConfigured{ false, false };
 		};
 
 		typedef HRESULT(STDMETHODCALLTYPE* DllGetClassObject_t)(REFCLSID, REFIID, LPVOID*);
@@ -242,32 +242,25 @@ namespace Audio::AsioHook
 
 			RsAsioConfiguration configuration;
 
-			const char* playerOneDriver = reader.GetValue("Asio.Input.0", "Driver", "");
-			if (playerOneDriver && *playerOneDriver)
-			{
-				configuration.driverName = playerOneDriver;
-				configuration.inputDriverNames[0] = playerOneDriver;
-			}
-			else
-			{
-				// Falling back to the output driver covers configurations that name one
-				// interface only once. Player 1 still defaults to ASIO channel zero.
-				const char* output = reader.GetValue("Asio.Output", "Driver", "");
-				if (output && *output)
-				{
-					configuration.driverName = output;
-					configuration.inputDriverNames[0] = output;
-				}
-			}
+			const char* inputZeroDriver = reader.GetValue("Asio.Input.0", "Driver", "");
+			const char* inputOneDriver = reader.GetValue("Asio.Input.1", "Driver", "");
+			const bool inputZeroNamesDriver = inputZeroDriver && *inputZeroDriver;
+			const bool inputOneNamesDriver = inputOneDriver && *inputOneDriver;
+			if (!inputZeroNamesDriver && !inputOneNamesDriver) return configuration;
 
+			const char* playerOneSection = inputZeroNamesDriver ? "Asio.Input.0" : "Asio.Input.1";
+			const char* playerOneDriver = inputZeroNamesDriver ? inputZeroDriver : inputOneDriver;
+
+			configuration.driverName = playerOneDriver;
+			configuration.inputConfigured[0] = true;
+			configuration.inputDriverNames[0] = playerOneDriver;
 			configuration.inputChannels[0] = static_cast<int>(
-				reader.GetLongValue("Asio.Input.0", "Channel", 0));
+				reader.GetLongValue(playerOneSection, "Channel", -1));
 
-			const char* playerTwoDriver = reader.GetValue("Asio.Input.1", "Driver", "");
-			if (playerTwoDriver && *playerTwoDriver)
+			if (inputZeroNamesDriver && inputOneNamesDriver)
 			{
 				configuration.inputConfigured[1] = true;
-				configuration.inputDriverNames[1] = playerTwoDriver;
+				configuration.inputDriverNames[1] = inputOneDriver;
 				configuration.inputChannels[1] = static_cast<int>(
 					reader.GetLongValue("Asio.Input.1", "Channel", -1));
 			}

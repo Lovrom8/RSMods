@@ -278,8 +278,7 @@ namespace RSMods
             this.label_DropPedalPitchDownKey = new System.Windows.Forms.Label();
             this.label_DropPedalPitchUpKey = new System.Windows.Forms.Label();
             this.label_DropPedalToggleKey = new System.Windows.Forms.Label();
-            this.label_DropPedalBaseTuningDownKey = new System.Windows.Forms.Label();
-            this.label_DropPedalBaseTuningUpKey = new System.Windows.Forms.Label();
+            this.label_DropPedalBaseTuningKey = new System.Windows.Forms.Label();
             this.groupBox_MidiInDevice = new System.Windows.Forms.GroupBox();
             this.checkBox_EnabledMidiIn = new System.Windows.Forms.CheckBox();
             this.label_CurrentMidiIn = new System.Windows.Forms.Label();
@@ -1528,8 +1527,7 @@ namespace RSMods
             // 
             // groupBox_Keybindings_MODS
             // 
-            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalBaseTuningUpKey);
-            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalBaseTuningDownKey);
+            this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalBaseTuningKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalToggleKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalPitchUpKey);
             this.groupBox_Keybindings_MODS.Controls.Add(this.label_DropPedalPitchDownKey);
@@ -1585,23 +1583,14 @@ namespace RSMods
             this.label_DropPedalToggleKey.TabIndex = 62;
             this.label_DropPedalToggleKey.Text = "Pedal Toggle: ";
             //
-            // label_DropPedalBaseTuningDownKey
+            // label_DropPedalBaseTuningKey
             //
-            this.label_DropPedalBaseTuningDownKey.AutoSize = true;
-            this.label_DropPedalBaseTuningDownKey.Location = new System.Drawing.Point(600, 61);
-            this.label_DropPedalBaseTuningDownKey.Name = "label_DropPedalBaseTuningDownKey";
-            this.label_DropPedalBaseTuningDownKey.Size = new System.Drawing.Size(66, 13);
-            this.label_DropPedalBaseTuningDownKey.TabIndex = 63;
-            this.label_DropPedalBaseTuningDownKey.Text = "Base Down: ";
-            //
-            // label_DropPedalBaseTuningUpKey
-            //
-            this.label_DropPedalBaseTuningUpKey.AutoSize = true;
-            this.label_DropPedalBaseTuningUpKey.Location = new System.Drawing.Point(600, 78);
-            this.label_DropPedalBaseTuningUpKey.Name = "label_DropPedalBaseTuningUpKey";
-            this.label_DropPedalBaseTuningUpKey.Size = new System.Drawing.Size(52, 13);
-            this.label_DropPedalBaseTuningUpKey.TabIndex = 64;
-            this.label_DropPedalBaseTuningUpKey.Text = "Base Up: ";
+            this.label_DropPedalBaseTuningKey.AutoSize = true;
+            this.label_DropPedalBaseTuningKey.Location = new System.Drawing.Point(600, 61);
+            this.label_DropPedalBaseTuningKey.Name = "label_DropPedalBaseTuningKey";
+            this.label_DropPedalBaseTuningKey.Size = new System.Drawing.Size(72, 13);
+            this.label_DropPedalBaseTuningKey.TabIndex = 63;
+            this.label_DropPedalBaseTuningKey.Text = "Base Tuning: ";
             // 
             // label_RewindKey
             // 
@@ -7571,8 +7560,7 @@ namespace RSMods
         private System.Windows.Forms.Label label_DropPedalPitchDownKey;
         private System.Windows.Forms.Label label_DropPedalPitchUpKey;
         private System.Windows.Forms.Label label_DropPedalToggleKey;
-        private System.Windows.Forms.Label label_DropPedalBaseTuningDownKey;
-        private System.Windows.Forms.Label label_DropPedalBaseTuningUpKey;
+        private System.Windows.Forms.Label label_DropPedalBaseTuningKey;
         private System.Windows.Forms.GroupBox groupBox_MidiAutoTuningOffset;
         private System.Windows.Forms.ListBox listBox_MidiAutoTuningOffset;
         private System.Windows.Forms.Button button_UpdateRSMods;

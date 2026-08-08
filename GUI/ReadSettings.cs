@@ -20,7 +20,7 @@ namespace RSMods
                              ToggleLoftKey, ShowSongTimerKey, ForceReEnumerationKey, RainbowStringsKey, RainbowNotesKey,
                              RemoveLyricsKey, RRSpeedKey, TuningOffsetKey, ToggleExtendedRangeKey, LoopStartKey, LoopEndKey,
                              RewindKey, DropPedalPitchDownKey, DropPedalPitchUpKey, DropPedalToggleKey,
-                             DropPedalBaseTuningDownKey, DropPedalBaseTuningUpKey,
+                             DropPedalBaseTuningKey,
 
                              // Audio Key Bindings
                              MasterVolumeKey, SongVolumeKey, Player1VolumeKey, Player2VolumeKey, MicrophoneVolumeKey, VoiceOverVolumeKey, SFXVolumeKey, DisplayMixerKey, MutePlayer1Key, MutePlayer2Key,
@@ -100,8 +100,7 @@ namespace RSMods
             DropPedalPitchDownKeyIdentifier     = "DropPedalPitchDownKey = ",
             DropPedalPitchUpKeyIdentifier       = "DropPedalPitchUpKey = ",
             DropPedalToggleKeyIdentifier        = "DropPedalToggleKey = ",
-            DropPedalBaseTuningDownKeyIdentifier = "DropPedalBaseTuningDownKey = ",
-            DropPedalBaseTuningUpKeyIdentifier  = "DropPedalBaseTuningUpKey = ",
+            DropPedalBaseTuningKeyIdentifier    = "DropPedalBaseTuningKey = ",
 
             // Audio Keybindings
             MasterVolumeKeyIdentifier           = "MasterVolumeKey = ",
@@ -301,10 +300,8 @@ namespace RSMods
                 return "VK_OEM_PERIOD";
             if (identifierToGrab == DropPedalToggleKeyIdentifier)
                 return "VK_F7";
-            if (identifierToGrab == DropPedalBaseTuningDownKeyIdentifier)
+            if (identifierToGrab == DropPedalBaseTuningKeyIdentifier)
                 return "VK_F9";
-            if (identifierToGrab == DropPedalBaseTuningUpKeyIdentifier)
-                return "VK_F10";
             if (identifierToGrab == DropPedalEnabledIdentifier)
                 return "off";
             if (identifierToGrab == DropPedalEngineIdentifier)
@@ -405,10 +402,8 @@ namespace RSMods
                     return FillSettingVariable(DropPedalPitchUpKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalPitchUpKey);
                 if (IdentifierIsFound(currentLine, DropPedalToggleKeyIdentifier, identifierToGrab))
                     return FillSettingVariable(DropPedalToggleKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalToggleKey);
-                if (IdentifierIsFound(currentLine, DropPedalBaseTuningDownKeyIdentifier, identifierToGrab))
-                    return FillSettingVariable(DropPedalBaseTuningDownKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalBaseTuningDownKey);
-                if (IdentifierIsFound(currentLine, DropPedalBaseTuningUpKeyIdentifier, identifierToGrab))
-                    return FillSettingVariable(DropPedalBaseTuningUpKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalBaseTuningUpKey);
+                if (IdentifierIsFound(currentLine, DropPedalBaseTuningKeyIdentifier, identifierToGrab))
+                    return FillSettingVariable(DropPedalBaseTuningKeyIdentifier, SettingType.VKEY, currentLine, out DropPedalBaseTuningKey);
                 #endregion
                 #region Audio Keybindings
                 // Audio Keybindings

@@ -324,16 +324,10 @@ namespace Keybindings {
 			DropPedalInput::ToggleEnabled,
 			""
 		};
-		keyUpCommands["DropPedalBaseTuningDownKey"] =
+		keyUpCommands["DropPedalBaseTuningKey"] =
 		{
 			[] { return true; },
-			[] { DropPedalInput::AdjustBaseTuning(-1); },
-			""
-		};
-		keyUpCommands["DropPedalBaseTuningUpKey"] =
-		{
-			[] { return true; },
-			[] { DropPedalInput::AdjustBaseTuning(1); },
+			[] { DropPedalInput::CycleBaseTuning(); },
 			""
 		};
 		keyUpCommands["MutePlayer1Key"] =

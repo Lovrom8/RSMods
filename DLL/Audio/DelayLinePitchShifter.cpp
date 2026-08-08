@@ -46,15 +46,13 @@ namespace Audio
 		constexpr float TRACK_CONFIDENCE = 0.6f;
 
 		// Splice quality gates, in AlignJump's normalized units (0 identical segments,
-		// ~1 uncorrelated). Above DEFER_QUALITY no acceptable alignment exists right now
-		// (pick attack in the window, or a chord with no common period in range), so the
-		// splice waits for better content while ring headroom lasts. Above EXTEND_QUALITY
-		// the splice commits with a longer crossfade so residual misalignment smears into
-		// softness instead of a pop. Tuned against a synthetic-signal measurement harness.
+		// ~1 uncorrelated). An up-shift may wait briefly above DEFER_QUALITY because its
+		// tap is approaching the write head. A down-shift commits immediately so a poor
+		// match cannot become additional player-visible delay. Above EXTEND_QUALITY the
+		// splice uses a longer crossfade so residual misalignment smears into softness
+		// instead of a pop. Tuned against a synthetic-signal measurement harness.
 		constexpr float DEFER_QUALITY = 0.5f;
 		constexpr float EXTEND_QUALITY = 0.25f;
-		constexpr int HOLDOFF_SAMPLES = 64;
-		constexpr double DEFER_MARGIN = 512.0;
 
 		float SemitonesToRatio(int semitones)
 		{
@@ -491,9 +489,8 @@ namespace Audio
 				// Down-shifts drift behind; up-shifts catch the write head. A down-shift
 				// jump is capped so the widened search can never carry the tap past the
 				// write head and pin it on the ReadTap clamp. Splices with no acceptable
-				// alignment are deferred (holdoff throttles the re-check so the search
-				// does not run every sample) until content improves or headroom runs out,
-				// then commit with a longer fade so the tear smears instead of popping.
+				// alignment commit with a longer fade instead of waiting, because every
+				// deferred down-shift sample becomes additional player-visible latency.
 				if (spliceHoldoff > 0)
 				{
 					--spliceHoldoff;
@@ -501,26 +498,18 @@ namespace Audio
 				else if (readDelay > upperBound)
 				{
 					const AlignedJump aligned = AlignJump(readDelay - nominalJump, nominalJump, readDelay - 8.0);
-					const bool canDefer = readDelay < RING_SAMPLES - DEFER_MARGIN;
 
-					if (canDefer && aligned.quality > DEFER_QUALITY)
+					if (aligned.quality > EXTEND_QUALITY)
 					{
-						spliceHoldoff = HOLDOFF_SAMPLES;
+						nextFade *= 3;
+						if (nextFade > MAX_FADE_SAMPLES) nextFade = MAX_FADE_SAMPLES;
 					}
-					else
-					{
-						if (aligned.quality > EXTEND_QUALITY)
-						{
-							nextFade *= 3;
-							if (nextFade > MAX_FADE_SAMPLES) nextFade = MAX_FADE_SAMPLES;
-						}
 
-						fadeFromDelay = readDelay;
-						readDelay -= aligned.jump;
-						fadeLength = nextFade;
-						fadeRemaining = nextFade;
-						spliced = true;
-					}
+					fadeFromDelay = readDelay;
+					readDelay -= aligned.jump;
+					fadeLength = nextFade;
+					fadeRemaining = nextFade;
+					spliced = true;
 				}
 				else if (readDelay < nextFade + 2.0)
 				{

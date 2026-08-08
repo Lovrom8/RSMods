@@ -25,8 +25,7 @@ void Settings::Initialize()
 		{"DropPedalPitchDownKey", "VK_OEM_COMMA"},
 		{"DropPedalPitchUpKey", "VK_OEM_PERIOD"},
 		{"DropPedalToggleKey", "VK_F7"},
-		{"DropPedalBaseTuningDownKey", "VK_F9"},
-		{"DropPedalBaseTuningUpKey", "VK_F10"},
+		{"DropPedalBaseTuningKey", "VK_F9"},
 
 		{"MasterVolumeKey", "5"},
 		{"SongVolumeKey", "6"},
@@ -195,8 +194,7 @@ void Settings::ReadKeyBinds() {
 		{ "DropPedalPitchDownKey", reader.GetValue("Keybinds", "DropPedalPitchDownKey", "VK_OEM_COMMA")},
 		{ "DropPedalPitchUpKey", reader.GetValue("Keybinds", "DropPedalPitchUpKey", "VK_OEM_PERIOD")},
 		{ "DropPedalToggleKey", reader.GetValue("Keybinds", "DropPedalToggleKey", "VK_F7")},
-		{ "DropPedalBaseTuningDownKey", reader.GetValue("Keybinds", "DropPedalBaseTuningDownKey", "VK_F9")},
-		{ "DropPedalBaseTuningUpKey", reader.GetValue("Keybinds", "DropPedalBaseTuningUpKey", "VK_F10")},
+		{ "DropPedalBaseTuningKey", reader.GetValue("Keybinds", "DropPedalBaseTuningKey", "VK_F9")},
 
 		{ "MasterVolumeKey", reader.GetValue("Audio Keybindings", "MasterVolumeKey", "5") },
 		{ "SongVolumeKey", reader.GetValue("Audio Keybindings", "SongVolumeKey", "6") },

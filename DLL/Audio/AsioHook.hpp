@@ -37,7 +37,9 @@
 	void Poll();
 
 	// Ownership stays with the caller, which must keep both processors alive for as long as
-	// the ASIO stream runs. Route 0 is [Asio.Input.0], route 1 is [Asio.Input.1].
+	// the ASIO stream runs. Route 0 is [Asio.Input.0], route 1 is [Asio.Input.1]. When only
+	// [Asio.Input.1] names a driver, route 0 follows that section instead, because RS_ASIO
+	// serves the single active player from it.
 	void SetProcessor(size_t routeIndex, IInputProcessor* inputProcessor);
 
 	void SetProcessingEnabled(bool enabled);

@@ -125,8 +125,8 @@ namespace
 	// IDs it saw so they can be added.
 	constexpr uintptr_t CONTEXT_PIPELINE_NODE_OFFSET = 0x18;
 	constexpr uintptr_t PIPELINE_NODE_ID_OFFSET = 0xC;
-	VersioningStruct<uintptr_t> versionedPlayerOnePipelineNodeId{ { 0x5e22c1ab, 0 } };
-	VersioningStruct<uintptr_t> versionedPlayerTwoPipelineNodeId{ { 0x5e22c1a8, 0 } };
+	VersioningStruct<uintptr_t> versionedPlayerOnePipelineNodeId{ { 0x5e22c1ab, 0x5e22c1ab } };
+	VersioningStruct<uintptr_t> versionedPlayerTwoPipelineNodeId{ { 0x5e22c1a8, 0x5e22c1a8 } };
 
 	// Resolved once at Install so the bank-thread lookups read plain values.
 	uintptr_t playerOnePipelineNodeId = 0;

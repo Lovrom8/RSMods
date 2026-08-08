@@ -1,24 +1,25 @@
 # ASIO Drop Pedal
 
-Shifts the guitar's pitch before the game receives it, so songs in any tuning
-can be played without touching a tuning peg. Range is -24 to +24 semitones. To
-play an Eb song on an E-standard instrument, set that player to -1. It supports
-guitar, emulated bass, physical bass and two-player arrangements.
+Shifts the guitar's pitch before the game receives it, so songs in another
+tuning can be played without touching a tuning peg. For example, to play an Eb
+song with a guitar in E standard, enable Drop Pedal and press `,` once. The
+readout becomes `Drop: E -> Eb (-1)`.
+
+It supports guitar, emulated bass, physical bass and two-player arrangements.
 
 This guide covers the ASIO engine. For setups without RS_ASIO, see the
 [Cable Drop Pedal guide](cable-drop-pedal.md).
 
-## Requirements
+## Before you start
 
-- [RS_ASIO](https://github.com/mdias/rs_asio) with an ASIO audio interface.
-- Input formats `ASIOSTFloat32LSB`, `ASIOSTInt32LSB`, `ASIOSTInt24LSB` and
-  `ASIOSTInt16LSB` are supported.
-- No in-game tone setup. The pedal operates on every tone, stock or custom.
-- `[Asio.Input.0]` is Player 1 and `[Asio.Input.1]` is Player 2. Both inputs
-  must use the same ASIO driver; they may use different channels.
-- A silent second hardware jack is still ready. Availability is determined by
-  the configured ASIO route, buffer and format, not by whether a guitar is
-  producing a signal.
+- Set up [RS_ASIO](https://github.com/mdias/rs_asio) first and confirm that the
+  unshifted guitar works in Rocksmith.
+- Enable Drop Pedal on the settings app's Tuning tab. There is no special
+  in-game tone to install; the pedal works with stock and custom tones.
+- Input selection is automatic. A single-player setup needs no extra channel
+  settings in `RSMods.ini`.
+- For two players, configure both Rocksmith inputs in `RS_ASIO.ini` as normal.
+  Both inputs must use the same audio interface.
 
 The engine is selected at launch and announced beside the pedal readout, then
 fades after a few seconds:
@@ -42,32 +43,42 @@ modify Rocksmith's tuning reference. Arrangements authored for A != 440 retain
 that reference, so each instrument must be true-tuned as Rocksmith normally
 requires before applying the semitone shift.
 
-The shifter trails the input by up to one pitch period of the note being
-played (roughly 1-13 ms depending on the string), on top of the interface's
-normal round trip (~15 ms at 256 frames / 48 kHz on a typical interface).
+At 48 kHz with 128-frame callbacks, the production-shifter harness measures
+roughly 6-20 ms of observable content delay depending on the note and shift.
+This is added to the interface's normal round trip, which also depends on its
+driver and buffer configuration.
+
+For context, DigiTech's published Drop pedal specifications list its 44.1 kHz
+sample rate but do not give a latency figure. Independent waveform measurements
+report approximately
+[12-17 ms](https://www.thefretboard.co.uk/discussion/107282/digitech-drop-tune/p2),
+and a separate documented burst test measured roughly
+[16 ms](https://www.reddit.com/r/audioengineering/comments/r3mecr/analyzing_the_digitech_drop_pedal/). Those tests are not method-for-method
+identical to this project's envelope-transition harness, but they show that
+the mod's 6-20 ms result is in the same broad range as a respected dedicated
+drop-tuning pedal. End-to-end feel also depends on the interface's round trip,
+so use the lowest stable ASIO buffer size for the most responsive setup.
+
 At a zero-semitone target or while disabled, a shifter bypasses detection and
 splicing and returns that input unshifted, adding no pitch-shifter delay. The
 lightweight format conversion and history update still run so engaging the
 pedal starts from live input instead of an empty delay line. Two players with
-non-zero targets run two complete shifter workloads: two 96-frame routes
-measure 0.046 ms per callback at -2/-2 and 0.063 ms at -12/-12 in an x86
-Release build, against a 2 ms callback budget.
+non-zero targets run two complete shifter workloads.
 
 ## Controls
 
 | Action | Player 1 | Player 2 |
 |---|---|---|
 | Pitch down / up | `,` / `.` | `Control+,` / `Control+.` |
-| Base tuning down / up | `F9` / `F10` | `Control+F9` / `Control+F10` |
+| Base tuning (cycles E, Eb, D, ...) | `F9` | `Control+F9` |
 | Toggle both players on / off | `F7` | `F7` |
 
 - Keys register only while Rocksmith is the focused window.
 - While the pedal is toggled off, every key except `F7` is ignored.
 - Keys are rebindable in the settings app (Tuning tab), or under `[Keybinds]`
   in `RSMods.ini` (`DropPedalPitchDownKey`, `DropPedalPitchUpKey`,
-  `DropPedalToggleKey`, `DropPedalBaseTuningDownKey`,
-  `DropPedalBaseTuningUpKey`). The table above shows the defaults. The same
-  modifier rule applies after rebinding.
+  `DropPedalToggleKey`, `DropPedalBaseTuningKey`). The table above shows the
+  defaults. The same modifier rule applies after rebinding.
 
 The overlay shows one line in single player. When Rocksmith activates
 multiplayer, Player 2 appears directly below Player 1; the rows are intentionally
@@ -80,16 +91,18 @@ Drop: E
 
 Each shifted row turns green. Every row shows its own player's configured
 state, like a physical pedal: routes and signal levels do not change what is
-displayed. Nothing is saved between sessions: both players start enabled, at
-no shift, base E standard, every launch.
+displayed. Nothing is saved between sessions: the pedal starts enabled, at no
+shift, base E standard, every launch.
 
 ### Base tuning
 
-`F9` / `F10` tell the mod what Player 1's instrument is physically tuned to;
-hold Control for Player 2. This changes how tunings are named, nothing else.
-Names are computed relative to that player's base, so with a base of D
-standard, one semitone down reads `D -> Db (-1)`. Leave it at E standard unless
-that physical instrument is tuned differently.
+`F9` cycles what Player 1's instrument is physically tuned to, one name per
+press: `E -> Eb -> D -> ... -> F -> E`. Hold Control for Player 2. This changes
+how tunings are named, nothing else. Names are computed relative to that
+player's base, so with a base of D standard, one semitone down reads
+`D -> Db (-1)`. A guitar physically tuned to C# standard reaches E with a
+`+3` shift and reads `C# -> E (+3)`. Leave the base at E standard unless that
+physical instrument is tuned differently.
 
 ## Playing
 
@@ -119,10 +132,17 @@ Changing Player 1 from Lead to Emulated Bass or Physical Bass keeps using
 | Symptom | Cause |
 |---|---|
 | Engine notice reads `Cable Drop Pedal` | A configured ASIO route did not initialize. Check the driver and channel under both `[Asio.Input.0]` and `[Asio.Input.1]` |
+| Pedal engages but the guitar's pitch never changes | The automatic route may have selected another input, such as a microphone. Follow [Wrong ASIO input selected](#wrong-asio-input-selected) below |
 | Game reports "no audio output device" on launch | Another program changed the interface's sample rate (DAWs and amp sims do this silently). Set it back to 48000 Hz in the interface's control panel and relaunch |
 | Tuner reads a different tuning than the guitar is in | The shift, working as designed |
 | Pitch keys do nothing | Pedal toggled off (`F7`), or Rocksmith is not the focused window |
 | Player 2 controls report that Input 1 is unavailable | `[Asio.Input.1]` is not configured; signal level is not part of this check |
+
+### Wrong ASIO input selected
+
+Check the `uses ASIO channel` line in `RSMods_debug.txt`. If it does not match
+the guitar's `Channel =` value in `RS_ASIO.ini`, correct that player's channel
+on the GUI's **RS_ASIO Settings** tab, then restart the game.
 
 Logging is opt-in: enable it from the settings app before reproducing the
 issue, or the log will not exist. The log is `RSMods_debug.txt`, next to

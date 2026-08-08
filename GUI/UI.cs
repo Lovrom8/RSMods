@@ -329,8 +329,7 @@ namespace RSMods
             label_DropPedalPitchDownKey.Text = "Pedal Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchDownKeyIdentifier));
             label_DropPedalPitchUpKey.Text = "Pedal Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalPitchUpKeyIdentifier));
             label_DropPedalToggleKey.Text = "Pedal Toggle: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalToggleKeyIdentifier));
-            label_DropPedalBaseTuningDownKey.Text = "Base Down: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningDownKeyIdentifier));
-            label_DropPedalBaseTuningUpKey.Text = "Base Up: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningUpKeyIdentifier));
+            label_DropPedalBaseTuningKey.Text = "Base Tuning: " + KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(ReadSettings.DropPedalBaseTuningKeyIdentifier));
         }
 
         private void Startup_ShowCurrentAudioKeybindingValues()

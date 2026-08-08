@@ -354,8 +354,7 @@ namespace RSMods
             ReadSettings.DropPedalPitchDownKeyIdentifier,
             ReadSettings.DropPedalPitchUpKeyIdentifier,
             ReadSettings.DropPedalToggleKeyIdentifier,
-            ReadSettings.DropPedalBaseTuningDownKeyIdentifier,
-            ReadSettings.DropPedalBaseTuningUpKeyIdentifier
+            ReadSettings.DropPedalBaseTuningKeyIdentifier
         };
 
         public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
@@ -472,8 +471,7 @@ namespace RSMods
             "Drop Pedal Pitch Down",
             "Drop Pedal Pitch Up",
             "Toggle Drop Pedal",
-            "Drop Pedal Base Tuning Down",
-            "Drop Pedal Base Tuning Up"
+            "Drop Pedal Base Tuning"
         };
 
         public static List<string> currentAudioKeypressList = new List<string>()

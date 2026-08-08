@@ -75,8 +75,7 @@ namespace RSMods
                     { ReadSettings.DropPedalPitchDownKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalPitchDownKeyIdentifier, "VK_OEM_COMMA") },
                     { ReadSettings.DropPedalPitchUpKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalPitchUpKeyIdentifier, "VK_OEM_PERIOD") },
                     { ReadSettings.DropPedalToggleKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalToggleKeyIdentifier, "VK_F7") },
-                    { ReadSettings.DropPedalBaseTuningDownKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalBaseTuningDownKeyIdentifier, "VK_F9") },
-                    { ReadSettings.DropPedalBaseTuningUpKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalBaseTuningUpKeyIdentifier, "VK_F10") }
+                    { ReadSettings.DropPedalBaseTuningKeyIdentifier, CreateDefaultOnOldINI(ReadSettings.DropPedalBaseTuningKeyIdentifier, "VK_F9") }
                 }
             );
             saveSettingsOrDefaults.Add(
