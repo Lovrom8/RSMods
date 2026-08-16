@@ -64,6 +64,9 @@
     <Filter Include="Main Headers\Structs">
       <UniqueIdentifier>{c933318d-bc01-4c38-adc2-0ccdeb45535d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{e37e455d-2b9b-42b4-82a0-593b38e4fe23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -186,6 +189,9 @@
     <ClCompile Include="Mods\Midi.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\TrueTuning.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Lib\Midi\RtMidi.cpp">
       <Filter>Main Headers\Midi</Filter>
     </ClCompile>
@@ -249,9 +255,6 @@
     <ClCompile Include="D3D/D3DHooks.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
-    <ClCompile Include="Mods\TrueTuning.cpp">
-      <Filter>Mods</Filter>
-    </ClCompile>
     <ClCompile Include="CC\Effects\WavyNotesEffect.cpp">
       <Filter>CrowdControl\Effects</Filter>
     </ClCompile>
@@ -298,6 +301,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedalHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedalInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedalOverlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\DropPedal\DropPedalState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\AsioHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\DelayLinePitchShifter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -461,6 +485,9 @@
     <ClInclude Include="Mods\Midi.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\TrueTuning.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\Midi\RtMidi.h">
       <Filter>Main Headers\Midi</Filter>
     </ClInclude>
@@ -545,9 +572,6 @@
     <ClInclude Include="Lib\Ini\SimpleIni.h">
       <Filter>Main Headers\Ini</Filter>
     </ClInclude>
-    <ClInclude Include="Mods\TrueTuning.hpp">
-      <Filter>Mods\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="CC\Effects\WavyNotesEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
     </ClInclude>
@@ -616,6 +640,39 @@
     </ClInclude>
     <ClInclude Include="NoteData.h">
       <Filter>Main Headers\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedal.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalHooks.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalInput.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalOverlay.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalPlayer.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\DropPedal\DropPedalState.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\CaptureFormat.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ComVTable.hpp">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\IInputProcessor.hpp">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\AsioHook.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\DelayLinePitchShifter.hpp">
+      <Filter>Main Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

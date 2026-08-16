@@ -9,6 +9,7 @@ namespace SongTuning {
 	std::array<int, 2> GetHighestLowestString(Tuning tuningOverride);
 	bool IsSongInDrop(Tuning tuning);
 	bool IsSongInStandard(Tuning tuning);
+	bool TryGetTrueTuning(float& trueTuning, uintptr_t& address);
 	int GetTrueTuning();
 	Tuning GetTuningAtTuner();
 	bool IsExtendedRangeTuner();

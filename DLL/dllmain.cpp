@@ -262,6 +262,11 @@ void Initialize() {
 
 	Wwise::Exports::Initialize();
 
+	// Read before any thread is spawned. Every mod thread reads these maps, so
+	// rebuilding them later frees the strings a reader is still holding.
+	Settings::ReadKeyBinds();
+	Settings::ReadModSettings();
+
 	std::thread(MainThread).detach(); // Mod Toggle based on menus
 	std::thread(EnumerationThread).detach(); // Force Enumeration
 	std::thread(HandleEffectQueueThread).detach(); // Twitch Effects

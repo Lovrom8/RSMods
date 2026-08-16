@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Keybindings.hpp"
+#include "Mods/DropPedal/DropPedalInput.hpp"
 
 namespace Keybindings {
 	std::map<std::string, ModCommand, std::less<>> keyUpCommands;
@@ -304,6 +305,30 @@ namespace Keybindings {
 			[] { return true; },
 			[] { ERMode::UseERExclusivelyInThisSong = !ERMode::UseERExclusivelyInThisSong; GameState::ToggleCB(ERMode::UseERExclusivelyInThisSong); },
 			"Toggle Extended Range"
+		};
+		keyUpCommands["DropPedalPitchDownKey"] =
+		{
+			[] { return true; },
+			[] { DropPedalInput::AdjustTarget(-1); },
+			""
+		};
+		keyUpCommands["DropPedalPitchUpKey"] =
+		{
+			[] { return true; },
+			[] { DropPedalInput::AdjustTarget(1); },
+			""
+		};
+		keyUpCommands["DropPedalToggleKey"] =
+		{
+			[] { return true; },
+			DropPedalInput::ToggleEnabled,
+			""
+		};
+		keyUpCommands["DropPedalBaseTuningKey"] =
+		{
+			[] { return true; },
+			[] { DropPedalInput::CycleBaseTuning(); },
+			""
 		};
 		keyUpCommands["MutePlayer1Key"] =
 		{

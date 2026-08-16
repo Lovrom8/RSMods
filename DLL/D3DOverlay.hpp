@@ -19,6 +19,7 @@ namespace GameOverlay {
 	inline int fontWidth = NULL, fontHeight = NULL;
 
 	const int whiteText = 0xFFFFFFFF;
+	const int greyText = 0xFF9A9A9A;
 
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;

@@ -24,6 +24,9 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_disableTrueTuning_forceTT;
 	inline VersioningStruct<uintptr_t> ptr_disableTrueTuningGate;
 
+	// Tuning Reference Builder (Drop Pedal)
+	inline VersioningStruct<uintptr_t> func_tuningReferenceBuilder;
+
 	// Tuning - Textual Form
 	inline VersioningStruct<uintptr_t> ptr_tuningText;
 	extern std::vector<unsigned int> ptr_tuningTextOffsets;

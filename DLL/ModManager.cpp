@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ModManager.hpp"
+#include "Mods/DropPedal/DropPedal.hpp"
 
 namespace ModManager {
 	void InitializeConfiguration() {
@@ -96,6 +97,7 @@ namespace ModManager {
 	/// </summary>
 	void UpdateSettings() {
 		Settings::UpdateSettings();
+		DropPedal::LoadSettings();
 		Sleep(500);
 		CustomSongTitles::LoadSettings();
 		Sleep(500);
@@ -157,6 +159,10 @@ namespace ModManager {
 	/// </summary>
 	void ApplyStartupMods()
 	{
+		// Runs before the game instantiates its ASIO driver, so the detour is in place
+		// when RS_ASIO loads the same module.
+		DropPedal::InstallInputHooks();
+
 		AudioDevices::SetupMicrophones();
 		ApplyBugPrevention();
 		ApplyAudioDeviceConfiguration();
@@ -183,6 +189,8 @@ namespace ModManager {
 		if (Settings::ReturnSettingValue("AllowAudioInBackground") == "on") {
 			VolumeControl::AllowAltTabbingWithAudio();
 		}
+
+		DropPedal::InstallHooks();
 	}
 
 	/// <summary>
@@ -237,9 +245,6 @@ namespace ModManager {
 		}
 	}
 
-	/// <summary>
-	/// Handles rainbow string and note effects.
-	/// </summary>
 	void HandleRainbowEffects() {
 		if (ERMode::IsRainbowEnabled() || ERMode::IsRainbowNotesEnabled()) {
 			ERMode::DoRainbow();
@@ -267,6 +272,32 @@ namespace ModManager {
 	/// Handles mods that run regardless of game state.
 	/// </summary>
 	void HandleAlwaysOnMods(GameLoopState& state) {
+
+		DropPedal::Poll();
+
+		if (DropPedal::ShouldInstallInputHooks())
+		{
+			Audio::AsioHook::Poll();
+
+			// Engine arbitration: exactly one pitch system may be live. Once the ASIO input
+			// shifter is processing, it owns pitch; the game-side MultiPitch path stays
+			// suppressed for the session. WndProc key commands update the input shifter as
+			// soon as each control is released.
+			DropPedal::SetInputShifterActive(Audio::AsioHook::IsProcessingEnabled());
+			if (DropPedal::ConsumeInputShifterTransitionFailure())
+			{
+				Audio::AsioHook::SetProcessingEnabled(false);
+				DropPedal::SetInputShifterActive(false);
+				LOG_ERROR("Drop pedal could not restore the live Cable pitch safely. "
+					"ASIO processing was disabled and Cable retained pitch ownership." << std::endl);
+			}
+
+			if (DropPedal::RequiresInputShifter() && !Audio::AsioHook::IsProcessingEnabled())
+			{
+				DropPedal::ReportInputShifterUnavailable();
+			}
+		}
+
 		if (Settings::ReturnSettingValue("RemoveHeadstockEnabled") == "on" &&
 			Settings::ReturnSettingValue("RemoveHeadstockWhen") == "startup") {
 			D3DHooks::RemoveHeadstockInThisMenu = true;
@@ -405,6 +436,15 @@ namespace ModManager {
 			Midi::RevertAutomatedTuning();
 			Midi::alreadyAttemptedTuningInTuner = false;
 			Midi::userWantsToUseAutoTuning = false;
+		}
+
+		if (GameState::Menus::IsInPreSongTuner())
+		{
+			DropPedal::HandleArrangementTuning();
+		}
+		else
+		{
+			DropPedal::ResetSongState();
 		}
 	}
 
@@ -606,6 +646,7 @@ namespace ModManager {
 		EnableRiffRepeaterFeatures();
 		HandleInSongVisualMods(state);
 		HandleMidiAutoTuningInSong();
+		DropPedal::HandleArrangementTuning();
 		HandleSongTimerDisplay(state);
 		HandleExtendedRangeInSong(state);
 	}

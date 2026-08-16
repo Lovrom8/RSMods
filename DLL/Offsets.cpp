@@ -12,6 +12,7 @@ void Offsets::Initialize() {
 	ptr_disableTrueTuning_jmpBck = { {0x004DCCF8, baseHandle + 0x00DD978 } };			// Code | Bytes 33 c0 after the mask below (roughly 0x37 bytes away)
 	ptr_disableTrueTuning_forceTT = { {0x004DCCC1, baseHandle + 0x00DD941 } };			// Code | 83 7d 08 00 53 57 74 ? db 45 08 (db is the byte we want)
 	ptr_disableTrueTuningGate = { {0x004DCCBF, baseHandle + 0x00DD93F } };				// Code | 83 7d 08 00 53 57 74 ? db 45 08 (74 is the byte we want)
+	func_tuningReferenceBuilder = { {0x004DCCB0, baseHandle + 0x002AD930} };			// Code | Converts an arrangement cent offset to the note-detection reference, 440 * 2^(cents / 1200), and stamps it at [detection + 0x135C].
 	ptr_tuningText = { {0x00F5F62C, 0x00F6062C} };										// Memory | Copied from loft
 	ptr_guitarSpeak = { {0x00F5F57C, 0x00F6057C} };										// Memory | Copied from timer
 	func_ForceEnumeration = { {0x008c9cb0, baseHandle + 0x004C9310 } };					// Code | c6 86 dc 00 00 00 01 38 5e 05 (we want addresss of the start of the function)

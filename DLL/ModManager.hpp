@@ -3,6 +3,7 @@
 #include "QualityOfLife.hpp"
 #include "Mods/VolumeControl.hpp"
 #include "Mods/AudioDevices.hpp"
+#include "Audio/AsioHook.hpp"
 #include "Mods/BugPrevention.hpp"
 #include "Mods/LaunchOnExternalMonitor.hpp"
 #include "Keyboard.hpp"
@@ -42,6 +43,7 @@ namespace ModManager {
     void HandleAutoLoadProfile(GameLoopState& state);
     void HandleSpecificProfileLoad(GameLoopState& state);
     void HandleAlwaysOnMods(GameLoopState& state);
+
     void HandleInMenuState(GameLoopState& state);
     void HandleInSongState(GameLoopState& state);
     void HandleTwoRTCBypassToggle();
