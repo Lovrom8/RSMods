@@ -25,15 +25,12 @@ namespace CrowdControl::Effects {
 	/// New volume is set using Wwise_Sound_Query_SetRTPCValue_Char, the game calls it with both AK_INVALID_GAME_OBJECT and 0x1234 as object IDs 
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
-	Enums::EffectStatus KillMusicVolumeEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus KillMusicVolumeEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("KillMusicVolumeEffect::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-
 		RTPCValue_type type = RTPCValue_GameObject; // Save old volume
-		
+
 		Wwise::SoundEngine::Query::GetRTPCValue(Setting::Channel::Music, AK_INVALID_GAME_OBJECT, &oldVolume, &type);
 
 		Wwise::SoundEngine::SetRTPCValue(Setting::Channel::Music, 0.0f, AK_INVALID_GAME_OBJECT, 2000, AkCurveInterpolation_Linear);
@@ -70,7 +67,7 @@ namespace CrowdControl::Effects {
 	/// Restore the volume back to its original values
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus KillMusicVolumeEffect::Stop()
+	Enums::EffectStatus KillMusicVolumeEffect::OnStop()
 	{
 		LOG_INFO("KillMusicVolumeEffect::Stop()" << std::endl);
 

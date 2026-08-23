@@ -21,18 +21,15 @@ namespace CrowdControl::Effects {
 	/// Start the mod by making noteheads 2.5x the size.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus BigNoteheadEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus BigNoteheadEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("BigNoteheadEffect::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-
 		SetNoteHeadScale(2.5);
-	
+
 		SetDuration(request);
 		running = true;
-		
+
 		return Enums::EffectStatus::Success;
 	}
 
@@ -40,7 +37,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus BigNoteheadEffect::Stop()
+	Enums::EffectStatus BigNoteheadEffect::OnStop()
 	{
 		LOG_INFO("BigNoteheadEffect::Stop()" << std::endl);
 

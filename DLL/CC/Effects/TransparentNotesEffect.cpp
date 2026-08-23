@@ -28,17 +28,14 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus TransparentNotesEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus TransparentNotesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("TransparentNotesEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		Framework::Registry().EnqueueSettingsUpdate([] {
 			Settings::UpdateTwitchSetting(Setting::Twitch::TransparentNotes, "on");
 		});
-		
+
 		SetDuration(request);
 		running = true;
 
@@ -49,7 +46,7 @@ namespace CrowdControl::Effects { // Changes textures for noteheads to a nonexis
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus TransparentNotesEffect::Stop()
+	Enums::EffectStatus TransparentNotesEffect::OnStop()
 	{
 		LOG_INFO("TransparentNotesEffect::Stop()" << std::endl);
 

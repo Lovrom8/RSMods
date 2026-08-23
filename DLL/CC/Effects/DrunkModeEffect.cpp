@@ -28,12 +28,9 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	/// Loft needs to be enabled for it to have the full effect, so we also call ToggleDrunkMode
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus DrunkModeEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus DrunkModeEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("DrunkModeEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		Framework::Registry().EnqueueSettingsUpdate([] {
 			Settings::UpdateTwitchSetting(Setting::Twitch::DrunkMode, "on");
@@ -50,7 +47,7 @@ namespace CrowdControl::Effects { // Makes some of game's object very woobly (ly
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus DrunkModeEffect::Stop()
+	Enums::EffectStatus DrunkModeEffect::OnStop()
 	{
 		LOG_INFO("DrunkModeEffect::Stop()" << std::endl);
 

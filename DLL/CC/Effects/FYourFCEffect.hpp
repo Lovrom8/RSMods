@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	class FYourFCEffect : public CCEffect
@@ -7,7 +7,9 @@ namespace CrowdControl::Effects {
 		FYourFCEffect() = default;
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

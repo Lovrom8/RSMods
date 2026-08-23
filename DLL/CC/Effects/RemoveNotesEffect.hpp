@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	// Prevents the game from drawing note head meshes
@@ -7,13 +7,18 @@ namespace CrowdControl::Effects {
 	public:
 		explicit RemoveNotesEffect(unsigned int durationMilliseconds) {
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "transparentnotes", "bignoteheads", "smallnoteheads", "wavynotes"};
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "note-visuals" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 
 	private:
 		static void ScaleNotes(float scale);

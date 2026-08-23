@@ -15,13 +15,10 @@ namespace CrowdControl::Effects {
 	}
 
 
-	Enums::EffectStatus WavyNotesEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus WavyNotesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("WavyNotesEffect::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-		
 		SetDuration(request);
 		running = true;
 		wavyNotesEnabled = true;
@@ -29,7 +26,7 @@ namespace CrowdControl::Effects {
 		return Enums::EffectStatus::Success;
 	}
 
-	Enums::EffectStatus WavyNotesEffect::Stop()
+	Enums::EffectStatus WavyNotesEffect::OnStop()
 	{
 		LOG_INFO("WavyNotesEffect::Stop()" << std::endl);
 

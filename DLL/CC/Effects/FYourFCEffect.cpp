@@ -22,12 +22,9 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// Kills the player's current note streak for a certain duration
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus FYourFCEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus FYourFCEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("FYourFC::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		uintptr_t currentNoteStreak = 0;
 
@@ -48,7 +45,7 @@ namespace CrowdControl::Effects { // Kills user's current note streak
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus FYourFCEffect::Stop()
+	Enums::EffectStatus FYourFCEffect::OnStop()
 	{
 		LOG_INFO("FYourFC::Stop()" << std::endl);
 

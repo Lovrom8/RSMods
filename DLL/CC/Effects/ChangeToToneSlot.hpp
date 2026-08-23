@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	class ChangeToToneSlot : public CCEffect
@@ -6,12 +6,17 @@ namespace CrowdControl::Effects {
 	public:
 		int slot;
 
-		explicit ChangeToToneSlot(int _slot) : slot(_slot){
-			incompatibleEffects = { "shuffletones" };
+		explicit ChangeToToneSlot(int _slot) : slot(_slot) {}
+
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "tone-slot" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

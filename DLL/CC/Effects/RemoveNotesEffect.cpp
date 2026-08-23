@@ -22,12 +22,9 @@ namespace CrowdControl::Effects {
 	/// Sets the scale of each object related to note heads to 0, hence making it temporarily invisible 
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
-	Enums::EffectStatus RemoveNotesEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus RemoveNotesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("RemoveNotesEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		ScaleNotes(0);
 
@@ -41,7 +38,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus RemoveNotesEffect::Stop()
+	Enums::EffectStatus RemoveNotesEffect::OnStop()
 	{
 		LOG_INFO("RemoveNotesEffect::Stop()" << std::endl);
 

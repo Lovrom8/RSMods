@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	struct Vec3 {
@@ -75,13 +75,18 @@ namespace CrowdControl::Effects {
 		{
 			duration_ms = durationMilliseconds;
 
-			incompatibleEffects = { "removenotes" };
-
 			MemUtil::PlaceHook(Offsets::ptr_wavyNotesHook, NotePositionHook, 41);
 		}
 
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "note-visuals" };
+		}
+
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

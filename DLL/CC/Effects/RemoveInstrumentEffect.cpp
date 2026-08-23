@@ -22,12 +22,9 @@ namespace CrowdControl::Effects {
 	/// Sets the scale of each instrument related object (headstock, inlays, fretbars, ...) to 0, hence making it temporarily invisible 
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
-	Enums::EffectStatus RemoveInstrumentEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus RemoveInstrumentEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("RemoveInstrumentEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		SetInstrumentScale(0);
 
@@ -41,7 +38,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus RemoveInstrumentEffect::Stop()
+	Enums::EffectStatus RemoveInstrumentEffect::OnStop()
 	{
 		LOG_INFO("RemoveInstrumentEffect::Stop()" << std::endl);
 

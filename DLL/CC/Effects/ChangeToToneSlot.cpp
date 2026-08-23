@@ -25,15 +25,12 @@ namespace CrowdControl::Effects {
 	/// Sends a keystroke to the game for the current tone slot (presses number 1 for first tone slot, number 2 for second, etc.)
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus ChangeToToneSlot::Start(const Structs::Request& request)
+	Enums::EffectStatus ChangeToToneSlot::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("ChangeToToneSlot::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-
 		Keyboard::SendKey(Settings::GetVKCodeForString(std::to_string(slot)));
-	
+
 		LOG_INFO("Changing tone to slot " << slot << std::endl);
 
 		return Enums::EffectStatus::Success;
@@ -43,5 +40,5 @@ namespace CrowdControl::Effects {
 	/// Mod cannot be stopped, since it has an instant effect.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus ChangeToToneSlot::Stop() { return Enums::EffectStatus::Success; }
+	Enums::EffectStatus ChangeToToneSlot::OnStop() { return Enums::EffectStatus::Success; }
 }

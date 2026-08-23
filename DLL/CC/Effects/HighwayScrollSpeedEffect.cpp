@@ -24,13 +24,10 @@ namespace CrowdControl::Effects {
 	/// Change scroll speed multiplier to let the user have more, or less, time to react to the notes appearing on screen.
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or incompatible effects are running, or Enums::EffectStatus::Success if we are</returns>
-	Enums::EffectStatus HighwayScrollSpeedEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus HighwayScrollSpeedEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("HighwayScrollSpeedEffect::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-		
 		WriteScrollSpeedMultiplier(multiplier);
 
 		SetDuration(request);
@@ -43,7 +40,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus HighwayScrollSpeedEffect::Stop()
+	Enums::EffectStatus HighwayScrollSpeedEffect::OnStop()
 	{
 		LOG_INFO("HighwayScrollSpeedEffect::Stop()" << std::endl);
 

@@ -72,17 +72,4 @@ namespace CrowdControl::EffectList {
 		return false;
 	}
 
-	/// <summary>
-	/// Check if there's any running effects that are in the list of effects that aren't compatible with the effect you are trying to enable
-	/// </summary>
-	/// <param name="incompatibleEffects"> - List of incompatible effects for the current effect</param>
-	/// <returns>True if any of the effects that are mutually incompatible with this effects are currently running</returns>
-	bool AreIncompatibleEffectsEnabled(const std::vector<std::string>& incompatibleEffects) {
-		const auto& allEffects = CrowdControl::EffectList::GetAllEffects();
-		return std::ranges::any_of(incompatibleEffects,
-			[&allEffects](const std::string& effectName) {
-				auto it = allEffects.find(effectName);
-				return it != allEffects.end() && it->second->running;
-			});
-	}
 }

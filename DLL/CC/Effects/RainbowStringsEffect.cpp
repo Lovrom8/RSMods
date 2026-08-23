@@ -24,12 +24,9 @@ namespace CrowdControl::Effects {
 	/// Does not affect the note heads!
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
-	Enums::EffectStatus RainbowStringsEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus RainbowStringsEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("RainbowStringsEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		ERMode::RainbowEnabled = true;
 
@@ -43,7 +40,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus RainbowStringsEffect::Stop()
+	Enums::EffectStatus RainbowStringsEffect::OnStop()
 	{
 		LOG_INFO("RainbowStringsEffect::Stop()" << std::endl);
 

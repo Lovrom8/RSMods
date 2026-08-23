@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../../Mods/RiffRepeater.hpp"
 
 namespace CrowdControl::Effects {
@@ -9,8 +9,15 @@ namespace CrowdControl::Effects {
 			duration_ms = durationMilliseconds;
 		}
 
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "song-speed" };
+		}
+
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

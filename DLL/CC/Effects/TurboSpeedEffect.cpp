@@ -25,13 +25,10 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus TurboSpeedEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus TurboSpeedEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("TurboSpeedEffect::Start()" << std::endl);
 
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
-		
 		RiffRepeater::SetSpeed(200.f, true);
 		RiffRepeater::EnableTimeStretch();
 
@@ -45,7 +42,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus TurboSpeedEffect::Stop()
+	Enums::EffectStatus TurboSpeedEffect::OnStop()
 	{
 		LOG_INFO("TurboSpeedEffect::Stop()" << std::endl);
 

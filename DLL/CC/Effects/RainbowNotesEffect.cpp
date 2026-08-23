@@ -23,12 +23,9 @@ namespace CrowdControl::Effects {
 	/// Does not affect the strings!
 	/// </summary>
 	/// <returns> Enums::EffectStatus::Retry if we aren't currently in a song or the same effect is running already, or Enums::EffectStatus::Success if we are in a song</returns>
-	Enums::EffectStatus RainbowNotesEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus RainbowNotesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("RainbowNotesEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		ERMode::ToggleRainbowNotes();
 
@@ -42,7 +39,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus RainbowNotesEffect::Stop()
+	Enums::EffectStatus RainbowNotesEffect::OnStop()
 	{
 		LOG_INFO("RainbowNotesEffect::Stop()" << std::endl);
 

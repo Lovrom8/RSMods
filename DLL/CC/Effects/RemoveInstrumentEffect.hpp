@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	class RemoveInstrumentEffect : public CCEffect
@@ -6,13 +6,20 @@ namespace CrowdControl::Effects {
 	public:
 		explicit RemoveInstrumentEffect(int64_t durationMilliseconds) {
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "invertedstrings", "rainbowstrings" };
+		// Claims both instrument and string-colors: hiding the instrument conflicts with
+		// effects that recolour strings (invertedstrings, rainbowstrings).
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "instrument", "string-colors" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 
 	private:
 		static void SetInstrumentScale(float scale);

@@ -1,6 +1,8 @@
 #include "../stdafx.h"
 #include "CCEffect.hpp"
 
+#include "../Framework/ResourceLedger.hpp"
+
 namespace CrowdControl::Effects {
 	void CCEffect::Run() {
 		if (running) {
@@ -31,15 +33,30 @@ namespace CrowdControl::Effects {
 	}
 
 	bool CCEffect::CanStart() {
-		return GameState::IsInSong() && !AreIncompatibleEffectsRunning() && !running;
+		return GameState::IsInSong() && !running;
 	}
 
-	bool CCEffect::AreIncompatibleEffectsRunning() const {
-		const auto& allEffects = CrowdControl::EffectList::GetAllEffects();
-		return std::ranges::any_of(incompatibleEffects,
-			[&allEffects](const std::string& effectName) {
-				auto it = allEffects.find(effectName);
-				return it != allEffects.end() && it->second->running;
-			});
+	Enums::EffectStatus CCEffect::Start(const Structs::Request& request) {
+		if (!CanStart())
+			return Enums::EffectStatus::Retry;
+
+		const auto resources = ClaimsExclusive();
+		if (!resources.empty() && !Framework::Ledger().TryClaim(this, resources))
+			return Enums::EffectStatus::Retry;
+
+		const auto result = OnStart(request);
+
+		// Release if OnStart failed, or if it succeeded without entering the running state: an
+		// instantaneous effect (e.g. ChangeToToneSlot) holds nothing ongoing, so it must not keep
+		// the resource. Ongoing effects set running=true in OnStart and hold their claim until Stop.
+		if (result != Enums::EffectStatus::Success || !running)
+			Framework::Ledger().Release(this);
+		return result;
+	}
+
+	Enums::EffectStatus CCEffect::Stop() {
+		const auto result = OnStop();
+		Framework::Ledger().Release(this);
+		return result;
 	}
 }

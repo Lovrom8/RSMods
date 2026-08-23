@@ -24,12 +24,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus ShuffleTonesEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus ShuffleTonesEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("ShuffleTonesEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		SetDuration(request);
 		running = true;
@@ -76,7 +73,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// Stops the mod by setting the tone back to the tone of the song.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus ShuffleTonesEffect::Stop()
+	Enums::EffectStatus ShuffleTonesEffect::OnStop()
 	{
 		LOG_INFO("ShuffleTonesEffect::Stop()" << std::endl);
 

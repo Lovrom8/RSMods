@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	class TransparentNotesEffect : public CCEffect
@@ -6,12 +6,17 @@ namespace CrowdControl::Effects {
 	public:
 		explicit TransparentNotesEffect(int64_t durationMilliseconds) {
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "solidcustom", "solidrandom", "solidcustomrgb", "bignoteheads", "smallnoteheads", "removenotes" };
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "note-visuals" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

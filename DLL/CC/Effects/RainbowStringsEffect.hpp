@@ -1,28 +1,28 @@
-﻿#pragma once
+#pragma once
 #include "../../Mods/ExtendedRangeMode.hpp"
 
 namespace CrowdControl::Effects {
 	class RainbowStringsEffect : public CCEffect
 	{
 	public:
-		RainbowStringsEffect(int64_t durationMilliseconds) {
+		explicit RainbowStringsEffect(int64_t durationMilliseconds) {
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "removeinstrument" };
+		bool CanStart() override
+		{
+			return !ERMode::IsRainbowEnabled() && CCEffect::CanStart();
+		}
+
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "string-colors" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
 
-		/**
-		 * \brief Can this effect start? By default checks that a song is being played, no incompatible effects are running, and this effect is not running
-		 * \return True when this effect can start, false otherwise
-		 */
-		bool CanStart() override
-		{
-			return !ERMode::IsRainbowEnabled() && GameState::IsInSong() && !AreIncompatibleEffectsRunning() && !running;
-		}
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
-
 }

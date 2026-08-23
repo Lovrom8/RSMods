@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../../Mods/Loft.hpp"
 
 namespace CrowdControl::Effects {
@@ -10,7 +10,9 @@ namespace CrowdControl::Effects {
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	class ZoomEffect : public CCEffect
@@ -9,12 +9,17 @@ namespace CrowdControl::Effects {
 		explicit ZoomEffect(int64_t durationMilliseconds, float zoomFactor) : factor(zoomFactor)
 		{
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "zoomin", "zoomout" };
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "zoom" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 	};
 }

@@ -17,33 +17,24 @@ namespace CrowdControl::Effects {
 		virtual ~CCEffect() = default;
 
 		virtual Enums::EffectStatus Test(const Structs::Request& request) = 0;
-		virtual Enums::EffectStatus Start(const Structs::Request& request) = 0;
-		virtual Enums::EffectStatus Stop() = 0;
 
-		/**
-		 * \brief Run/Update this effect, checks duration, and stops timed effect when duration has expired. Called approximately every 10ms
-		 */
+		// Non-virtual wrappers: CanStart + TryClaim(ClaimsExclusive()) before dispatching to
+		// OnStart; Release(this) always runs after OnStop so no effect can forget to release.
+		Enums::EffectStatus Start(const Structs::Request& request);
+		Enums::EffectStatus Stop();
+
 		virtual void Run();
 
-		/// <summary>
-		/// Sets duration for the current effect, and calculates endTime
-		/// Manually loops through the JSON members of the struct and sets the value of the member called "duration"
-		/// </summary>
 		void SetDuration(const Structs::Request& req);
 
-		/**
-		 * \brief Can this effect start? By default checks that a song is being played, no incompatible effects are running, and this effect is not running
-		 * \return True when this effect can start, false otherwise
-		 */
 		virtual bool CanStart();
 
-		bool AreIncompatibleEffectsRunning() const;
+		// Returns the resource names this effect holds exclusively while running. Override in
+		// each effect; the base returns an empty list (no exclusive claim).
+		virtual std::vector<std::string> ClaimsExclusive() const { return {}; }
 
 	protected:
-		/**
-		 * \brief List of incompatible effect codes
-		 */
-		std::vector<std::string> incompatibleEffects = { };
+		virtual Enums::EffectStatus OnStart(const Structs::Request& request) = 0;
+		virtual Enums::EffectStatus OnStop() = 0;
 	};
 }
-

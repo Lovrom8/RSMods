@@ -85,12 +85,9 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"></param>
 	/// <returns>Enums::EffectStatus::Success if completed successfully, or Enums::EffectStatus::Retry if we can't run it.</returns>
-	Enums::EffectStatus InvertedStringsEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus InvertedStringsEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("InvertedStringsEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		SaveInitialStringPos();
 		InvertStringPositions();
@@ -105,7 +102,7 @@ namespace CrowdControl::Effects {
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus InvertedStringsEffect::Stop()
+	Enums::EffectStatus InvertedStringsEffect::OnStop()
 	{
 		LOG_INFO("InvertedStringsEffect::Stop()" << std::endl);
 

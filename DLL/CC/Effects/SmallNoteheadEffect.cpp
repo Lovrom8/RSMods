@@ -23,12 +23,9 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus SmallNoteheadEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus SmallNoteheadEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("SmallNoteheadEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		SetNoteHeadScale(0.5);
 
@@ -42,7 +39,7 @@ namespace CrowdControl::Effects { // Scales notes in a song to unusually small s
 	/// Stops the mod.
 	/// </summary>
 	/// <returns>Enums::EffectStatus::Success</returns>
-	Enums::EffectStatus SmallNoteheadEffect::Stop()
+	Enums::EffectStatus SmallNoteheadEffect::OnStop()
 	{
 		LOG_INFO("SmallNoteheadEffect::Stop()" << std::endl);
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace CrowdControl::Effects {
 	// Scales notes in a song to unusually big size
@@ -7,13 +7,18 @@ namespace CrowdControl::Effects {
 	public:
 		explicit BigNoteheadEffect(int64_t durationMilliseconds) {
 			duration_ms = durationMilliseconds;
+		}
 
-			incompatibleEffects = { "transparentnotes", "smallnoteheads", "removenotes" };
+		std::vector<std::string> ClaimsExclusive() const override
+		{
+			return { "note-visuals" };
 		}
 
 		Enums::EffectStatus Test(const Structs::Request& request) override;
-		Enums::EffectStatus Start(const Structs::Request& request) override;
-		Enums::EffectStatus Stop() override;
+
+	protected:
+		Enums::EffectStatus OnStart(const Structs::Request& request) override;
+		Enums::EffectStatus OnStop() override;
 
 	private:
 		static void SetNoteHeadScale(float scale);

@@ -15,12 +15,9 @@ namespace CrowdControl::Effects {
 	}
 
 
-	Enums::EffectStatus ZoomEffect::Start(const Structs::Request& request)
+	Enums::EffectStatus ZoomEffect::OnStart(const Structs::Request& request)
 	{
 		LOG_INFO("ZoomEffect::Start()" << std::endl);
-
-		if (!CanStart())
-			return Enums::EffectStatus::Retry;
 
 		auto rootObject = ObjectUtil::GetRootObject();
 
@@ -29,14 +26,13 @@ namespace CrowdControl::Effects {
 			rootObject->scale = factor;
 		}
 
-		
 		SetDuration(request);
 		running = true;
 
 		return Enums::EffectStatus::Success;
 	}
 
-	Enums::EffectStatus ZoomEffect::Stop()
+	Enums::EffectStatus ZoomEffect::OnStop()
 	{
 		LOG_INFO("ZoomEffect::Stop()" << std::endl);
 
