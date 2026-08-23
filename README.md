@@ -252,7 +252,7 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `AllowAudioInBackground` | `off` | on/off | Keep audio when alt-tabbed. |
 | `BypassTwoRTCMessageBox` | `off` | on/off | Allow two RTCs in singleplayer without popup. |
 | `LinearRiffRepeater` | `off` | on/off | Linear RR speed (68% UI = 68% real). |
-| `AltOutputSampleRate` | `off` | on/off | Use non-48 kHz output sample rate. |
+| `AltOutputSampleRate` | `off` | on/off | Use non-48 kHz sample rate for output *and* input (RTC/mic capture) - both follow the same value, since your interface only has one native rate. |
 | `AllowLooping` | `off` | on/off | Custom loop markers (LoopStart/End keys). |
 | `AllowRewind` | `off` | on/off | Rewind key. |
 | `FixOculusCrash` | `off` | on/off | Mitigate crash with Oculus/Meta headsets. |
@@ -290,7 +290,7 @@ Numeric values used by the DLL (`customSettings`). Times are **milliseconds** un
 | `SecondaryMonitorYPosition` | `0` | int | Virtual desktop Y of secondary monitor top-left. |
 | `SeparateNoteColorsMode` | `0` | `0` / `1` / `2` | `0` = same as strings, `1` = stock note colors, `2` = custom note colors. |
 | `OverrideInputVolume` | `17` | `0`–`100` | Input volume override (Rocksmith’s stock “default” is 17). |
-| `AlternativeOutputSampleRate` | `48000` | e.g. `44100`, `48000` | Used when `AltOutputSampleRate = on`. |
+| `AlternativeOutputSampleRate` | `48000` | e.g. `44100`, `48000` | Used when `AltOutputSampleRate = on`. Applies to both output and input. |
 | `LoopingLeadUp` | `0` | ms | Lead-in before custom loops. |
 | `RewindBy` | `5000` | ms | How far rewind jumps. |
 | `RewindLeadup` | `2000` | ms | Grey note / lead-up adjust after rewind. |
