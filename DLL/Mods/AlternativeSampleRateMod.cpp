@@ -21,6 +21,12 @@ void AlternativeSampleRateMod::OnInitialize(ModContext& c) {
 
 	AudioDevices::output_SampleRate = sampleRate;
 	AudioDevices::ChangeOutputSampleRate();
+
+	// Input follows output - RS-ASIO requires the engine's input and output rate to both match the
+	// interface's single native rate, so there's no legitimate case where a user would want them to
+	// differ. No separate input toggle/value is exposed.
+	AudioDevices::input_SampleRate = sampleRate;
+	AudioDevices::ChangeInputSampleRate();
 }
 
 // Patch the markers only during the loading phase, before the engine finishes coming up. The buffer

@@ -192,6 +192,15 @@ namespace Offsets {
 	inline VersioningStruct<uintptr_t> ptr_sampleRateSize;
 	inline VersioningStruct<uintptr_t> ptr_sampleRateBuffer;
 
+	// Adjust sample rate requirements (audio input / RTC / mic capture device open path)
+	// RVAs sourced from L0FKA's RS_ASIO fork (build ebf44968-dirty, 2026-08-20), which patches
+	// these same constants when its own GameSampleRate ini setting is enabled - confirmed live via
+	// that fork's RS_ASIO-log.txt against the currently-installed game build. Only verified for
+	// RemasteredSeptember2022; LPDecember2024 equivalents are unknown and left 0, so
+	// AudioDevices::ChangeInputSampleRate() no-ops on that build until they're found.
+	extern std::vector<VersioningStruct<uintptr_t>> ptr_sampleRateRequirementAudioInputSites;
+	inline VersioningStruct<uintptr_t> ptr_sampleRateRequirementAudioInputDouble;
+
 	// Misc Mods
 	inline VersioningStruct<uintptr_t> ptr_stringColor;
 	inline VersioningStruct<uintptr_t> ptr_drunkShit; //search for float 0.333333, seems like it's static

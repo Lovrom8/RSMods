@@ -299,3 +299,27 @@ void AudioDevices::ChangeOutputSampleRate() {
 	MemUtil::PlaceHook(Offsets::ptr_sampleRateRequirementAudioOutput, hook_changeSampleRate, 5);
 	MemUtil::PlaceHook(Offsets::ptr_sampleRateDivZeroCrash, hook_sampleRate_FixDivZeroCrash, 5);
 }
+
+/// <summary>
+/// Reads the sample rate from input_SampleRate and writes it over the six hardcoded 48000
+/// constants the audio input/capture path checks against, plus the matching double-precision
+/// constant. Unlike output, there's no single call site to hook with a dynamic register write -
+/// these are static constants baked into the code/data, so this patches them directly and must
+/// run on boot, before the audio engine reads them. Has no effect when run afterwards.
+/// </summary>
+void AudioDevices::ChangeInputSampleRate() {
+	if (Offsets::ptr_sampleRateRequirementAudioInputSites.empty() ||
+		Offsets::ptr_sampleRateRequirementAudioInputSites[0].GetValue() == 0) {
+		LOG_WARNING("[!] Alternative input sample rate requested, but the input sample rate offsets are not known for this game build. Skipping." << std::endl);
+		return;
+	}
+
+	for (VersioningStruct<uintptr_t>& site : Offsets::ptr_sampleRateRequirementAudioInputSites) {
+		MemUtil::PatchAdr(site, &AudioDevices::input_SampleRate, 4);
+	}
+
+	if (Offsets::ptr_sampleRateRequirementAudioInputDouble.GetValue() != 0) {
+		double inputSampleRateDouble = (double)AudioDevices::input_SampleRate;
+		MemUtil::PatchAdr(Offsets::ptr_sampleRateRequirementAudioInputDouble, &inputSampleRateDouble, 8);
+	}
+}

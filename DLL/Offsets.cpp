@@ -86,6 +86,10 @@ void Offsets::Initialize() {
 	ptr_sampleRateSize = { {0x135198C, baseHandle + 0x00F5298C } };								// Static Memory | 00 40 1c 46 02 00 00 00 00 00 00 00 (second variable)
 	ptr_sampleRateBuffer = { {0x1251A9C, baseHandle + 0x00E52A9C } };							// Static Memory | 80 bb 00 00 80 00 00 00 (second variable)
 
+	// Sample rate mod (input / RTC / mic capture device open path)
+	// RVAs from L0FKA's RS_ASIO fork build ebf44968-dirty (2026-08-20); only verified for RemasteredSeptember2022.
+	ptr_sampleRateRequirementAudioInputDouble = { {0x01224A40, 0} };		// Static Memory | 00 00 00 00 00 70 e7 40 (double 48000.0)
+
 	ptr_stringColor = { {0x135F58C, baseHandle + 0x00F6058C } };								// Static Memory | 56 e8 ? ? ? ? 83 c4 04 89 46 14 (look at variable set at end of function)
 	ptr_drunkShit = { {0x12F7C20, baseHandle + 0x00EF8C20 } };									// Static Memory | ab aa aa 3e (first variable)
 
@@ -214,6 +218,18 @@ namespace Offsets { // Addresses for pre-2021 patch are in the comments
 
 	std::vector<unsigned int> ptr_noteDataOffsets{ 0xB0, 0x18, 0x4, 0x84, 0x0 };
 	std::vector<unsigned int> ptr_scoreAttackNoteDataOffsets{ 0xB0, 0x18, 0x4, 0x4C, 0x0 };
+
+	// Sample rate mod (input / RTC / mic capture device open path) - six separate constants,
+	// unlike output's single site. RVAs from L0FKA's RS_ASIO fork build ebf44968-dirty
+	// (2026-08-20); only verified for RemasteredSeptember2022, LPDecember2024 unknown (left 0).
+	std::vector<VersioningStruct<uintptr_t>> ptr_sampleRateRequirementAudioInputSites{
+		VersioningStruct<uintptr_t>({ 0x00C45D3C, 0 }),
+		VersioningStruct<uintptr_t>({ 0x00C4607C, 0 }),
+		VersioningStruct<uintptr_t>({ 0x00C46221, 0 }),
+		VersioningStruct<uintptr_t>({ 0x00C465BE, 0 }),
+		VersioningStruct<uintptr_t>({ 0x00C46838, 0 }),
+		VersioningStruct<uintptr_t>({ 0x00C47069, 0 }),
+	};
 }
 
 
