@@ -12,6 +12,8 @@ class ExtendedRangeMod : public Framework::IMod {
 public:
 	MOD_ID(ExtendedRangeMod)
 
+	std::vector<std::string_view> ClaimsExclusive() const override { return { "string-colors" }; }
+
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnShutdown(Framework::ModContext& c) override;
 	void OnSongEnter(Framework::ModContext& c) override;

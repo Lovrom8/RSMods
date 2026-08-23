@@ -12,6 +12,8 @@ class RiffRepeaterMod : public Framework::IMod {
 public:
 	MOD_ID(RiffRepeaterMod)
 
+	std::vector<std::string_view> ClaimsExclusive() const override { return { "song-speed" }; }
+
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnTick(Framework::ModContext& c) override;     // Linear-speed patch sync (all phases, incl. startup/loading).
 	void OnMenuTick(Framework::ModContext& c) override; // Drop >100% time stretch outside the score menus.
