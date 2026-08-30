@@ -6,7 +6,7 @@ namespace RSMods.Data
     public static class Constants
     {
         // The executable's own directory (replaces Application.StartupPath / Application.ExecutablePath).
-        private static string BaseDirectory => AppServices.Environment.BaseDirectory;
+        private static string BaseDirectory => System.AppContext.BaseDirectory;
 
         public static string RSFolder { get; set; }
         public static string SavePath { get; set; }

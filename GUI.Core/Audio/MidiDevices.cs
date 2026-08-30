@@ -10,8 +10,7 @@ namespace RSMods.Audio
     /// </summary>
     /// <remarks>
     /// This intentionally covers only device enumeration for the auto-tune/tuning-pedal settings screen.
-    /// The live MIDI-in listening path (opening a port and receiving events) still lives in the WinForms
-    /// GUI as a diagnostic tool and is not part of the shared core.
+    /// The former live MIDI-in listener was a debug-only diagnostic and is intentionally retired.
     /// </remarks>
     public static class MidiDevices
     {

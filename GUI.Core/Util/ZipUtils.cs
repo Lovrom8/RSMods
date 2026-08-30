@@ -245,7 +245,7 @@ namespace RSMods.Util
             // use "7z64.dll" to support many archive formats.
             // Resolve against the application's base directory (not the CWD) so this works from Avalonia too,
             // matching how Soundpacks locates the same native library.
-            var libraryPath = Path.Combine(AppServices.Environment.BaseDirectory, "7z64.dll");
+            var libraryPath = Path.Combine(AppContext.BaseDirectory, "7z64.dll");
 
             SevenZipBase.SetLibraryPath(libraryPath);
 

@@ -270,13 +270,8 @@ namespace RSMods
 
         public static class GUISettings
         {
-            public static bool CustomTheme { get => _guiSettings.GetBool(); set => _guiSettings.SetBool(value); }
-            public static string ThemeBackgroundColor { get => _guiSettings.GetString("F0FFFF"); set => _guiSettings.SetString(value); }
-            public static string ThemeTextColor { get => _guiSettings.GetString("000000"); set => _guiSettings.SetString(value); }
-            public static string ThemeButtonColor { get => _guiSettings.GetString("E3E3E3"); set => _guiSettings.SetString(value); }
-            // Avalonia frontend theme. Kept separate from the WinForms tri-colour theme above so both
-            // frontends round-trip their own appearance settings. Variant is "System" | "Light" | "Dark";
-            // accent is a 6-digit hex ("" = FluentTheme's default accent).
+            // Variant is "System" | "Light" | "Dark"; accent is a 6-digit hex
+            // (empty means FluentTheme's default accent).
             public static string AppThemeVariant { get => _guiSettings.GetString("System"); set => _guiSettings.SetString(value); }
             public static string AppAccentColor { get => _guiSettings.GetString(""); set => _guiSettings.SetString(value); }
             public static bool BackupProfile { get => _guiSettings.GetBool(true); set => _guiSettings.SetBool(value); } // Default is "on"

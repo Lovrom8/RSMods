@@ -294,7 +294,7 @@ namespace RSMods.Util
                 var steamRootPath = GetSteamDirectory();
 
                 // Before anything else, check whether we are sitting inside a RS install folder.
-                string startupParent = Directory.GetParent(AppServices.Environment.BaseDirectory)?.FullName;
+                string startupParent = Directory.GetParent(AppContext.BaseDirectory)?.FullName;
                 if (!string.IsNullOrEmpty(startupParent) && startupParent.IsRSFolder())
                     return startupParent;
 

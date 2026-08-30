@@ -51,7 +51,10 @@ dlldata.c
 # DNX
 project.lock.json
 project.fragment.lock.json
-artifacts/
+
+# Generated configurator publish/payload output (Build/Publish-Configurator.ps1 and
+# Build/New-ConfiguratorPayload.ps1). The Build/ scripts themselves stay tracked.
+Build/Artifacts/
 
 *_i.c
 *_p.c
@@ -157,6 +160,9 @@ publish/
 # TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
+# The configurator's win-x64 publish profile is a checked-in release contract (no secrets), not a
+# machine-local web-deploy setting - keep it tracked. See docs/winforms-retirement-plan.md, Slice 2.
+!GUI.Avalonia/Properties/PublishProfiles/win-x64.pubxml
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to

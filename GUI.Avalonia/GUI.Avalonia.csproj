@@ -8,7 +8,12 @@
     <PlatformTarget>x64</PlatformTarget>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <RootNamespace>RSMods</RootNamespace>
-    <AssemblyName>RSMods.Avalonia</AssemblyName>
+    <!-- Ships as RSMods.exe: preserves the installed <Rocksmith>/RSMods/RSMods.exe path and existing
+         shortcuts as the Avalonia app replaces the WinForms configurator. -->
+    <AssemblyName>RSMods</AssemblyName>
+    <!-- Win32 executable icon for the published RSMods.exe. Owned here now that the icon
+         no longer lives under GUI/Assets. -->
+    <ApplicationIcon>Assets\LogoX256.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,19 +31,34 @@
 
   <!--
     The shared Core's SoundPack (and later psarc) work calls native tools by path relative to the app base:
-    SevenZipSharp's 7z64.dll and RocksmithToolkitLib's Wwise/ogg toolchain under tools\. The WinForms GUI
-    ships these by xcopying its whole Lib\ tree into the output root as a post-build step; mirror that here
-    so the Avalonia app finds the same natives in the same relative locations.
+    SevenZipSharp's 7z64.dll and RocksmithToolkitLib's Wwise/ogg toolchain under tools\. Ship the whole
+    RuntimeAssets/ tree beside the executable, preserving its relative layout (ddc\, tools\) via Link, so
+    the app finds the same natives in the same relative locations. Both build output and publish output
+    are covered, which is what the win-x64 publish pipeline relies on.
+  -->
+  <!--
+    Managed assemblies that GUI.Core already owns (its RocksmithToolkitLib/SevenZipSharp/etc. references
+    and their resolved dependencies) arrive beside RSMods.exe through the project reference. Excluding
+    them here keeps a single owner per file; otherwise publish rejects the duplicate relative paths
+    (NETSDK1152). Everything else in RuntimeAssets - the 7z natives, the ddc/ and tools/ toolchains, the
+    Wwise archives, and the remaining legacy libs - is owned and shipped from here.
   -->
   <ItemGroup>
-    <RSModsNative Include="..\GUI\Lib\**\*.*" />
+    <Content Include="..\RuntimeAssets\**\*.*"
+             Exclude="..\RuntimeAssets\BouncyCastle.Crypto.dll;
+                      ..\RuntimeAssets\ICSharpCode.SharpZipLib.dll;
+                      ..\RuntimeAssets\MiscUtil.dll;
+                      ..\RuntimeAssets\Newtonsoft.Json.dll;
+                      ..\RuntimeAssets\Pfim.dll;
+                      ..\RuntimeAssets\Rocksmith2014PsarcLib.dll;
+                      ..\RuntimeAssets\RocksmithToolkitLib.dll;
+                      ..\RuntimeAssets\SevenZipSharp.dll;
+                      ..\RuntimeAssets\X360.dll;
+                      ..\RuntimeAssets\zlib.net.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
-  <Target Name="CopyRSModsNatives" AfterTargets="Build">
-    <Copy
-      SourceFiles="@(RSModsNative)"
-      DestinationFiles="@(RSModsNative->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true"
-      OverwriteReadOnlyFiles="true" />
-  </Target>
 
 </Project>

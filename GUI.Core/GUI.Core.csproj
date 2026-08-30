@@ -1,17 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    The UI-agnostic core of the RSMods configurator: the abstractions (IDialogService, IAppEnvironment,
-    AppServices) plus the portable model (INI backend, settings, path detection), shared by the current
-    WinForms GUI and the future Avalonia GUI. Not the core of RSMods the mod (that is the DLL) — this is
-    the shared core of its GUI frontends. Multi-targeted net48;net8.0: net48 is what the existing GUI
-    consumes today, net8.0 proves the decoupled layer is Avalonia-ready.
+    UI-agnostic configurator logic consumed by the Avalonia frontend and its tests.
   -->
   <PropertyGroup>
-    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <LangVersion>12.0</LangVersion>
-    <!-- No project-wide nullable context: the codebase predates NRT. IDialogService opts itself in
-         via its own '#nullable enable' pragma (as do the WinForms-side implementers). -->
+    <!-- No project-wide nullable context: the codebase predates NRT. New boundaries opt in locally. -->
     <ImplicitUsings>disable</ImplicitUsings>
     <!-- Rocksmith2014PsarcLib is an AMD64 assembly and Rocksmith 2014 itself is 64-bit. -->
     <PlatformTarget>x64</PlatformTarget>
@@ -21,67 +16,58 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- GenUtil's Steam/Rocksmith path detection reads the Windows registry. On net48 these types are
-         in-framework; on net8.0 they come from this OOB package (Windows-only at runtime). -->
+    <!-- GenUtil's Steam/Rocksmith path detection reads the Windows registry. -->
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <!-- Frontend-neutral capture-device enumeration (RSMods.Audio.InputDevices) uses the WASAPI
          core-audio API. Only the WASAPI sub-package is referenced (not the NAudio meta-package, which
-         pulls in WinForms and would force a -windows TFM); this keeps GUI.Core UI-framework-free.
-         Same 2.0.0 the WinForms GUI already consumes. Windows-only at runtime. -->
+         pulls in UI dependencies); this keeps GUI.Core UI-framework-free. Windows-only at runtime. -->
     <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
     <!-- SoundPacks MP3 decoding (Soundpacks.ConvertMP3ToWav) uses NAudio's ACM Mp3FileReader, which lives
          in NAudio.WinMM; WaveFileWriter comes from the transitive NAudio.Core. Like NAudio.Wasapi this is
-         a sub-package (not the meta-package), so it does not drag in WinForms or force a -windows TFM. -->
+         a sub-package rather than the UI-oriented meta-package. -->
     <PackageReference Include="NAudio.WinMM" Version="2.0.0" />
-    <!-- Set-and-Forget drive detection uses WMI. net48 supplies System.Management in-framework; the
-         net8.0 target needs the out-of-band package. Windows-only at runtime. -->
-    <PackageReference Include="System.Management" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <!-- Set-and-Forget drive detection uses WMI. Windows-only at runtime. -->
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <!-- The bundled Newtonsoft.Json 12 assembly targets .NET Framework 4.5. When it runs under .NET 8,
          its legacy CAS compatibility path loads System.Security.Permissions. A raw assembly reference
          cannot declare that transitive dependency, so include it explicitly for the Avalonia target. -->
-    <PackageReference Include="System.Security.Permissions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
     <!-- Twitch OAuth material is encrypted with Windows DPAPI. -->
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
-    <!-- IAsyncDisposable is built into net8.0 and supplied to the legacy target by this package. -->
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Management" Condition="'$(TargetFramework)' == 'net48'" />
-    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net48'" />
-    <!-- Shared song/profile services consume the existing Rocksmith archive model. The assembly is
-         supplied by the legacy GUI project until that dependency is replaced with a modern package. -->
+    <!-- Shared song/profile services consume the bundled Rocksmith archive model. -->
     <Reference Include="Rocksmith2014PsarcLib">
-      <HintPath>..\GUI\Lib\Rocksmith2014PsarcLib.dll</HintPath>
+      <HintPath>..\RuntimeAssets\Rocksmith2014PsarcLib.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="MiscUtil">
-      <HintPath>..\GUI\Lib\MiscUtil.dll</HintPath>
+      <HintPath>..\RuntimeAssets\MiscUtil.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\GUI\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\RuntimeAssets\Newtonsoft.Json.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="RocksmithToolkitLib">
-      <HintPath>..\GUI\Lib\RocksmithToolkitLib.dll</HintPath>
+      <HintPath>..\RuntimeAssets\RocksmithToolkitLib.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <Reference Include="zlib.net">
-      <HintPath>..\GUI\Lib\zlib.net.dll</HintPath>
+      <HintPath>..\RuntimeAssets\zlib.net.dll</HintPath>
       <Private>true</Private>
     </Reference>
     <!-- SoundPack import/export archives a .rs_soundpack (zip) via SevenZipSharp. The managed wrapper is
-         referenced here; its native 7z64.dll is copied to each frontend's output (see the GUIs' projects). -->
+         referenced here; its native 7z64.dll is copied to the Avalonia output. -->
     <Reference Include="SevenZipSharp">
-      <HintPath>..\GUI\Lib\SevenZipSharp.dll</HintPath>
+      <HintPath>..\RuntimeAssets\SevenZipSharp.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The stock voice-line pack restored by Soundpacks.Reset(). Embedded here (rather than in the WinForms
-         GUI as before) so the shared Core owns it and both frontends can restore the defaults. -->
+    <!-- The stock voice-line pack restored by Soundpacks.Reset(). Core owns the packaged defaults. -->
     <EmbeddedResource Include="Resources\original.rs_soundpack" />
     <EmbeddedResource Include="Resources\init.bnk" />
     <EmbeddedResource Include="Resources\introsequence_max.gfx" />

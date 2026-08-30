@@ -153,8 +153,8 @@ WINEDLLOVERRIDES="xinput1_3=n,b" %command%
 
 ## Requirements:
 * Latest Steam version of Rocksmith 2014 Remastered on Windows, https://store.steampowered.com/app/221680/Rocksmith_2014_Edition__Remastered/
-* MS Visual C++ 2015-2022 Redistributable for the DLL, .NET framework 4.7.2 for GUI/One-Click-Installer
-* Sorry Mac users, RS on Mac is its own beast altogether, so we only support the Windows version
+* MS Visual C++ 2015-2022 Redistributable for the DLL. The configurator and installer are self-contained; no separate .NET runtime is required.
+* Windows x64. Sorry Mac users, RS on Mac is its own beast altogether, so we only support the Windows version.
   
 ## Dependencies:
 * DirectX 9 SDK, ImGUI, GDI+, Detours, RtMidi - all of which are included in the project folder and should require no additional installations to compile and use the project

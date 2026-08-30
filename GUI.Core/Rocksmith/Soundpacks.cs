@@ -14,10 +14,8 @@ namespace RSMods.Rocksmith
     /// user-supplied audio file to WEM and dropping it into the unpacked <c>audio.psarc</c>, plus
     /// import/export of a <c>.rs_soundpack</c> archive and a reset to the stock voice lines.
     ///
-    /// Moved out of the WinForms GUI into <c>GUI.Core</c> so both the WinForms and Avalonia frontends
-    /// share one source. The class is UI-framework-free: <see cref="Reset"/> extracts the embedded stock
-    /// pack from this assembly and uses <see cref="AppServices"/> for the base directory instead of
-    /// <c>System.Windows.Forms.Application.StartupPath</c>.
+    /// The class is UI-framework-free: <see cref="Reset"/> extracts the embedded stock pack from this
+    /// assembly and resolves its files from <see cref="AppContext.BaseDirectory"/>.
     /// </summary>
     public static class Soundpacks
     {
@@ -48,8 +46,7 @@ namespace RSMods.Rocksmith
 
         // The 7z native library and the stock pack resolve against the application's base directory, not the
         // current working directory. This matters for Avalonia, whose CWD is not the RSMods folder.
-        private static string SevenZipLibraryPath =>
-            Path.Combine(AppServices.Environment.BaseDirectory, "7z64.dll");
+        private static string SevenZipLibraryPath => Path.Combine(AppContext.BaseDirectory, "7z64.dll");
 
         private static void SafeDelete(string path)
         {
@@ -60,9 +57,6 @@ namespace RSMods.Rocksmith
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
 
-            // NAudio's convenience Mp3FileReader lives in the meta-package (which drags in WinForms and would
-            // force a -windows TFM). Use the netstandard Mp3FileReaderBase with the same ACM decompressor its
-            // default constructor would have used, keeping GUI.Core UI-framework-free.
             using (var mp3FileReader = new Mp3FileReaderBase(mp3File, waveFormat => new AcmMp3FrameDecompressor(waveFormat)))
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
@@ -205,10 +199,10 @@ namespace RSMods.Rocksmith
 
         public static void Reset()
         {
-            string archive = Path.Combine(AppServices.Environment.BaseDirectory, "original.rs_soundpack");
+            string archive = Path.Combine(AppContext.BaseDirectory, "original.rs_soundpack");
 
             GenUtil.ExtractEmbeddedResource(
-                AppServices.Environment.BaseDirectory,
+                AppContext.BaseDirectory,
                 typeof(Soundpacks).Assembly,
                 "RSMods.Core.Resources",
                 ["original.rs_soundpack"]);

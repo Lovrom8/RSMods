@@ -1,0 +1,63 @@
+<Window
+    x:Class="RS2014_Mod_Installer.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RS2014_Mod_Installer.ViewModels"
+    x:DataType="vm:InstallerViewModel"
+    Title="RSMods Installer"
+    Width="700"
+    Height="500"
+    MinWidth="620"
+    MinHeight="450"
+    WindowStartupLocation="CenterScreen"
+    Icon="/Assets/LogoX256.ico">
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Padding="30,24" Background="#20242B">
+            <StackPanel Spacing="4">
+                <TextBlock FontSize="28" FontWeight="SemiBold" Foreground="White" Text="RSMods" />
+                <TextBlock FontSize="15" Foreground="#C8CDD5" Text="One-click installer for Rocksmith 2014" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Margin="28" Padding="24" CornerRadius="10"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="16">
+                <StackPanel Spacing="6">
+                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="Rocksmith installation" />
+                    <TextBlock Opacity="0.75" TextWrapping="Wrap"
+                               Text="Select the folder that contains Rocksmith2014.exe and cache.psarc." />
+                </StackPanel>
+
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <TextBox VerticalContentAlignment="Center"
+                             Text="{Binding RocksmithFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Watermark="C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" />
+                    <Button Grid.Column="1" MinWidth="92" Command="{Binding BrowseCommand}" Content="Browse…" />
+                </Grid>
+
+                <StackPanel Grid.Row="2" Spacing="8">
+                    <CheckBox IsChecked="{Binding CreateDesktopShortcut}" Content="Create an RSMods desktop shortcut" />
+                    <CheckBox IsChecked="{Binding LaunchConfigurator}" Content="Open the configurator after installation" />
+                </StackPanel>
+
+                <Border Grid.Row="3" Padding="12" CornerRadius="6" Background="#5A1818"
+                        IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Foreground="#FFD8D8" TextWrapping="Wrap" Text="{Binding ErrorMessage}" />
+                </Border>
+
+                <StackPanel Grid.Row="4" VerticalAlignment="Bottom" Spacing="8">
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+                </StackPanel>
+
+                <Grid Grid.Row="5" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <TextBlock VerticalAlignment="Center" Foreground="#2E9D57" FontWeight="SemiBold"
+                               IsVisible="{Binding InstallationComplete}" Text="Installation complete" />
+                    <Button Grid.Column="1" MinWidth="150" Padding="18,10"
+                            Command="{Binding InstallCommand}" Content="Install RSMods" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

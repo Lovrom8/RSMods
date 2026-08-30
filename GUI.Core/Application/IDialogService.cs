@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 namespace RSMods.Core
 {
     /// <summary>
-    /// UI-agnostic dialog surface. Implemented by a WinForms adapter today and an Avalonia
-    /// adapter after the migration, so logic never depends on a specific UI framework.
-    /// Async throughout: Avalonia dialogs are inherently awaitable, and several callers use the
-    /// result to drive control flow (so a sync interface would force the Avalonia adapter to
-    /// block the UI thread).
+    /// UI-agnostic dialog surface implemented by the Avalonia frontend. It remains asynchronous because
+    /// several callers use the result to drive control flow without blocking the UI thread.
     /// </summary>
     public interface IDialogService
     {

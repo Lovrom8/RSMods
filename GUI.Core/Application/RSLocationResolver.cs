@@ -48,7 +48,7 @@ namespace RSMods
 
         /// <summary>
         /// Resolves the Rocksmith save folder. Auto-detects first; if that fails, asks the user. Unlike the
-        /// install folder, the save folder is optional — cancelling records the decline (Profile Edits stays
+        /// install folder, the save folder is optional: cancelling records the decline (Profile Edits stays
         /// disabled) instead of shutting down. Pass <paramref name="forcePrompt"/> to prompt even when the
         /// user previously declined (the "Set Save Path" button).
         /// </summary>

@@ -6,30 +6,54 @@
   image: Visual Studio 2022
   configuration: Release
   before_build:
-    - ps: >-
-        nuget restore
+    - ps: |
+        $ErrorActionPreference = 'Stop'
+        $root = $env:APPVEYOR_BUILD_FOLDER
+        dotnet restore "$root\GUI.Core.Tests\GUI.Core.Tests.csproj" --nologo
+        dotnet restore "$root\Installer.Core.Tests\Installer.Core.Tests.csproj" --nologo
+        dotnet restore "$root\GUI.Avalonia\GUI.Avalonia.csproj" --nologo
+        dotnet restore "$root\Installer\Installer.csproj" --nologo
 
-        $assemblyFile = "$env:APPVEYOR_BUILD_FOLDER\Installer\Properties\AssemblyInfo.cs"
+        [xml] $installerProject = Get-Content "$root\Installer\Installer.csproj"
+        $env:releaseVersion = $installerProject.Project.PropertyGroup.Version
+  # Explicit release build order (docs/winforms-retirement-plan.md, Slice 5). We do NOT let AppVeyor's
+  # implicit solution build pick a configurator through legacy solution mappings. Each release input is
+  # produced by name, and any missing publish/payload step fails the build.
+  build_script:
+    - ps: |
+        $ErrorActionPreference = 'Stop'
+        $root = $env:APPVEYOR_BUILD_FOLDER
 
-        $regex = new-object System.Text.RegularExpressions.Regex ('(AssemblyVersion(Attribute)?\s*\(\s*\")(.*)(\"\s*\))', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
-
-        $content = [IO.File]::ReadAllText($assemblyFile)
-
-        $version = $null
-        
-        $match = $regex.Match($content)
-        
-        if($match.Success) {
-            $version = $match.groups[3].value
+        function Invoke-Step([string] $name, [scriptblock] $action) {
+            Write-Host "=== $name ==="
+            & $action
+            if ($LASTEXITCODE -ne 0) { throw "$name failed (exit $LASTEXITCODE)." }
         }
-        
-        $env:releaseVersion=$version
-  build:
-      parallel: true
-      verbosity: quiet
+
+        # Build and test both UI-free cores in Release.
+        Invoke-Step 'Test GUI.Core' { dotnet test "$root\GUI.Core.Tests\GUI.Core.Tests.csproj" -c Release --nologo }
+
+        # 3. Publish the Avalonia configurator (win-x64, self-contained).
+        Invoke-Step 'Publish configurator' { & "$root\Build\Publish-Configurator.ps1" }
+
+        # 4. Create and validate the single installer payload (the script self-verifies every hash).
+        Invoke-Step 'Create payload' { & "$root\Build\New-ConfiguratorPayload.ps1" }
+
+        Invoke-Step 'Test Installer.Core' { dotnet test "$root\Installer.Core.Tests\Installer.Core.Tests.csproj" -c Release --nologo }
+
+        # 5. Build the native mod DLL (Win32). Its output is written into Installer\Resources\, so it must
+        #    run before the installer. SolutionDir is required when building the project standalone.
+        Invoke-Step 'Build native DLL' { msbuild "$root\DLL\DLL.vcxproj" /t:Build /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir="$root\" /v:minimal /nologo }
+
+        # Publish the Avalonia installer as the self-contained, single-file release artifact.
+        Invoke-Step 'Publish installer' { & "$root\Build\Publish-Installer.ps1" }
+  # 7. Publish artifacts: the installer executable is the user-facing release; the payload manifest is a
+  #    diagnostic artifact (its file list + hashes describe exactly what shipped).
   artifacts:
-  - path: 'Installer/bin/Release/RS2014-Mod-Installer.exe'
+  - path: 'Build/Artifacts/installer-publish/win-x64/RS2014-Mod-Installer.exe'
     name: Installer
+  - path: 'Build/Artifacts/installer/RSModsGUI.manifest.json'
+    name: PayloadManifest
   deploy:
   - provider: GitHub
     tag: RSModsInstaller-v$(releaseVersion)_OnCommit
