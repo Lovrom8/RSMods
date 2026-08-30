@@ -6,35 +6,27 @@ using System.Linq;
 
 namespace RSMods.ASIO
 {
-    public class Devices
+    public static class Devices
     {
         private const string AsioX86RegistryPath = "Software\\WOW6432Node\\ASIO";
         private const string AsioX64RegistryPath = "Software\\ASIO";
 
         public static List<DriverInfo> FindDevices()
         {
-            List<DriverInfo> availableDevices = new List<DriverInfo>();
+            var availableDevices = new List<DriverInfo>();
+            var registryPaths = new[] { AsioX86RegistryPath, AsioX64RegistryPath };
 
             try
             {
-                // x86 drivers
-                RegistryKey registry_ASIO_x86 = Registry.LocalMachine.OpenSubKey(AsioX86RegistryPath);
-
-                if (registry_ASIO_x86 != null)
+                foreach (var path in registryPaths)
                 {
-                    List<DriverInfo> AsioDevices_x86 = ScanDevices(AsioX86RegistryPath, registry_ASIO_x86.GetSubKeyNames().ToList());
-                    AsioDevices_x86.ForEach(device => availableDevices.Add(device));
-                    registry_ASIO_x86.Close();
-                }
-
-                // x64 drivers
-                RegistryKey registry_ASIO_x64 = Registry.LocalMachine.OpenSubKey(AsioX64RegistryPath);
-
-                if (registry_ASIO_x64 != null)
-                {
-                    List<DriverInfo> AsioDevices_x64 = ScanDevices(AsioX64RegistryPath, registry_ASIO_x64.GetSubKeyNames().ToList());
-                    AsioDevices_x64.ForEach(device => availableDevices.Add(device));
-                    registry_ASIO_x64.Close();
+                    using RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(path);
+                    if (registryKey != null)
+                    {
+                        var subKeyNames = registryKey.GetSubKeyNames().ToList();
+                        var devices = ScanDevices(path, subKeyNames);
+                        availableDevices.AddRange(devices);
+                    }
                 }
             }
             catch (NullReferenceException ex)
@@ -50,14 +42,12 @@ namespace RSMods.ASIO
 
         private static List<DriverInfo> ScanDevices(string rootRegistryDir, List<string> subKeys)
         {
-            List<DriverInfo> availableDevices = new List<DriverInfo>();
+            List<DriverInfo> availableDevices = [];
             foreach (string asioDevice in subKeys)
             {
-                // Setup variables
-                DriverInfo deviceInfo = new DriverInfo();
+                DriverInfo deviceInfo = new();
                 RegistryKey registry_device = Registry.LocalMachine.OpenSubKey($"{rootRegistryDir}\\{asioDevice}");
 
-                // Set device information from rootRegistryDir
                 deviceInfo.clsID = (string)registry_device.GetValue("CLSID");
                 deviceInfo.deviceDescription = (string)registry_device.GetValue("Description");
                 deviceInfo.deviceName = asioDevice;
@@ -68,7 +58,6 @@ namespace RSMods.ASIO
                 if (deviceInfo.clsID == null || deviceInfo.deviceDescription == null || deviceInfo.deviceName == null)
                     continue;
 
-                // Put device into list
                 availableDevices.Add(deviceInfo);
             }
 
@@ -81,22 +70,16 @@ namespace RSMods.ASIO
             public string deviceName;
             public string deviceDescription;
 
-            public override bool Equals(object obj)
+            public override readonly bool Equals(object obj)
             {
                 if (obj == null)
                     return false;
 
                 DriverInfo driverInfo = (DriverInfo)obj;
-                if (deviceName == driverInfo.deviceName)
-                    return true;
-
-                return false;
+                return deviceName == driverInfo.deviceName;
             }
 
-            public override int GetHashCode()
-            {
-                return deviceName.GetHashCode();
-            }
+            public override readonly int GetHashCode() => deviceName.GetHashCode();
         }
     }
 }

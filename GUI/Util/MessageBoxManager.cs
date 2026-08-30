@@ -9,7 +9,7 @@ using System.Security.Permissions;
 namespace System.Windows.Forms
 {
 
-    public class MessageBoxManager
+    public static class MessageBoxManager
     {
         private delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
         private delegate bool EnumChildProc(IntPtr hWnd, IntPtr lParam);
@@ -77,8 +77,8 @@ namespace System.Windows.Forms
             public IntPtr hwnd;
         };
 
-        private static HookProc hookProc;
-        private static EnumChildProc enumProc;
+        private static readonly HookProc hookProc;
+        private static readonly EnumChildProc enumProc;
         [ThreadStatic]
         private static IntPtr hHook;
         [ThreadStatic]
@@ -95,15 +95,15 @@ namespace System.Windows.Forms
         /// <summary>
         /// Abort text
         /// </summary>
-        public static string Abort = "&Abort";
+        public static readonly string Abort = "&Abort";
         /// <summary>
         /// Retry text
         /// </summary>
-        public static string Retry = "&Retry";
+        public static readonly string Retry = "&Retry";
         /// <summary>
         /// Ignore text
         /// </summary>
-        public static string Ignore = "&Ignore";
+        public static readonly string Ignore = "&Ignore";
         /// <summary>
         /// Yes text
         /// </summary>
@@ -180,12 +180,11 @@ namespace System.Windows.Forms
 
         private static bool MessageBoxEnumProc(IntPtr hWnd, IntPtr lParam)
         {
-            StringBuilder className = new StringBuilder(10);
+            StringBuilder className = new(10);
             GetClassName(hWnd, className, className.Capacity);
             if (className.ToString() == "Button")
             {
-                int ctlId = GetDlgCtrlID(hWnd);
-                switch (ctlId)
+                switch (GetDlgCtrlID(hWnd))
                 {
                     case MBOK:
                         SetWindowText(hWnd, OK);
@@ -215,7 +214,5 @@ namespace System.Windows.Forms
 
             return true;
         }
-
-
     }
 }

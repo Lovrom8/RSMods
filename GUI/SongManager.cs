@@ -36,12 +36,10 @@ namespace RSMods
                     using (PsarcFile psarc = new PsarcFile(file))
                     {
 
-                        List<int> arrangementTypes = new List<int>();
-                        List<SongArrangement.ArrangementAttributes.ArrangementTuning> tunings = new List<SongArrangement.ArrangementAttributes.ArrangementTuning>();
+                        List<int> arrangementTypes = [];
+                        List<SongArrangement.ArrangementAttributes.ArrangementTuning> tunings = [];
 
-                        List<SongArrangement> ExtractedArrangementManifests = psarc.ExtractArrangementManifests();
-
-                        foreach (SongArrangement arrangement in ExtractedArrangementManifests)
+                        foreach (SongArrangement arrangement in psarc.ExtractArrangementManifests())
                         {
                             SongData song = new SongData()
                             {
@@ -54,9 +52,9 @@ namespace RSMods
                                 CommonName = $"{arrangement.Attributes.ArtistName} - {arrangement.Attributes.SongName}"
                             };
 
-                            if (song.CommonName == String.Empty || song.CommonName == " - ") // Some songs have a glitched arrangment, so we skip it.
+                            if (song.CommonName?.Length == 0 || song.CommonName == " - ") // Some songs have a glitched arrangment, so we skip it.
                                 continue;
-                            
+
                             arrangementTypes.Add(arrangement.Attributes.ArrangementType);
                             tunings.Add(arrangement.Attributes.Tuning);
 
@@ -64,7 +62,7 @@ namespace RSMods
                             if (psarc.ExtractToolkitInfo().PackageAuthor == "Ubisoft")
                             {
                                 song.ODLC = true;
-                                if (song.Arrangement.Attributes.SKU == "RS1" && song.Arrangement.Attributes.DLCRS1Key != null) 
+                                if (song.Arrangement.Attributes.SKU == "RS1" && song.Arrangement.Attributes.DLCRS1Key != null)
                                     song.RS1AppID = song.Arrangement.Attributes.DLCRS1Key[0].WIN32;
                             }
 
@@ -87,10 +85,10 @@ namespace RSMods
                                 {
                                     song.ArrangementTypes = arrangementTypes;
                                     song.Tunings = tunings;
-                                    song.Arrangements = new List<SongArrangement>
-                                    {
+                                    song.Arrangements =
+                                    [
                                         song.Arrangement
-                                    };
+                                    ];
                                     Songs.Add(song);
                                 }
                             }
@@ -100,10 +98,10 @@ namespace RSMods
                             {
                                 song.ArrangementTypes = arrangementTypes;
                                 song.Tunings = tunings;
-                                song.Arrangements = new List<SongArrangement>
-                                {
+                                song.Arrangements =
+                                [
                                     song.Arrangement
-                                };
+                                ];
                                 Songs.Add(song);
                             }
                         }
@@ -112,7 +110,7 @@ namespace RSMods
                 catch
                 {
                 }
-                    
+
             });
 
             // Make sure we remove duplicate instances of the songs.
@@ -134,25 +132,11 @@ namespace RSMods
         {
             if (x == null)
             {
-                if (y == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
+                return y == null ? 0 : -1;
             }
             else
             {
-                if (y == null)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return x.CommonName.CompareTo(y.CommonName);
-                }
+                return y == null ? 1 : x.CommonName.CompareTo(y.CommonName);
             }
         }
     }
@@ -182,10 +166,7 @@ namespace RSMods
             if (x == null || y == null)
                 return false;
 
-            if (x.DLCKey == y.DLCKey)
-                return true;
-            else
-                return false;
+            return x.DLCKey == y.DLCKey;
         }
 
         public int GetHashCode(SongData obj)
@@ -193,6 +174,4 @@ namespace RSMods
             return obj.DLCKey.GetHashCode();
         }
     }
-
-    
 }

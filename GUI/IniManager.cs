@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace RSMods
@@ -10,74 +11,139 @@ namespace RSMods
 
         private readonly Dictionary<string, Dictionary<string, string>> _data = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Dictionary<string, string>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string[]> _sectionComments = new(StringComparer.OrdinalIgnoreCase);
 
         public void Load()
         {
             _data.Clear();
             _commentedData.Clear();
-            if (!File.Exists(filePath)) return;
 
-            string currentSection = "";
-            foreach (var line in File.ReadLines(filePath))
+            try
             {
-                var trimmed = line.Trim();
-                if (string.IsNullOrWhiteSpace(trimmed)) continue;
+                if (!File.Exists(filePath)) return;
 
-                // Capture commented key=value lines (e.g. ";Driver=MyDevice") separately
-                if (trimmed.StartsWith(";"))
+                string currentSection = string.Empty;
+
+                foreach (var line in File.ReadLines(filePath))
                 {
-                    var commentBody = trimmed.Substring(1).Trim();
-                    var commentSplit = commentBody.IndexOf('=');
-                    if (commentSplit > 0 && !string.IsNullOrEmpty(currentSection))
+                    var trimmed = line.Trim();
+                    if (string.IsNullOrWhiteSpace(trimmed)) continue;
+
+                    if (TryParseSection(trimmed, out string newSection))
                     {
-                        var key = commentBody.Substring(0, commentSplit).Trim();
-                        var val = commentBody.Substring(commentSplit + 1).Trim();
-                        if (!_commentedData.ContainsKey(currentSection))
-                            _commentedData[currentSection] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                        _commentedData[currentSection][key] = val;
+                        currentSection = newSection;
                     }
-                    continue;
+                    else if (trimmed.StartsWith(";"))
+                    {
+                        ParseKeyValuePair(trimmed.Substring(1), currentSection, _commentedData);
+                    }
+                    else
+                    {
+                        ParseKeyValuePair(trimmed, currentSection, _data);
+                    }
                 }
-
-                if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
-                {
-                    currentSection = trimmed;
-                    if (!_data.ContainsKey(currentSection))
-                        _data[currentSection] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                    continue;
-                }
-
-                var splitIndex = trimmed.IndexOf('=');
-                if (splitIndex > 0)
-                {
-                    var key = trimmed.Substring(0, splitIndex).Trim();
-                    var val = trimmed.Substring(splitIndex + 1).Trim();
-
-                    if (!_data.ContainsKey(currentSection))
-                        _data[currentSection] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-                    _data[currentSection][key] = val;
-                }
+            }
+            catch (IOException ex)
+            {
+                Debug.WriteLine($"Failed to load INI file: {ex.Message}");
             }
         }
 
         public void Save()
         {
-            using (var sw = new StreamWriter(filePath))
+            try
             {
-                foreach (var section in _data)
+                using var sw = new StreamWriter(filePath);
+
+                // _data ordering first, then any section that exists only as commented lines.
+                var sectionNames = new List<string>(_data.Keys);
+                foreach (var section in _commentedData.Keys)
+                    if (!_data.ContainsKey(section))
+                        sectionNames.Add(section);
+
+                foreach (var sectionName in sectionNames)
                 {
-                    sw.WriteLine(section.Key);
-                    foreach (var kvp in section.Value)
+                    if (_sectionComments.TryGetValue(sectionName, out var headers))
                     {
-                        if (_commentedData.TryGetValue(section.Key, out var commented) && commented.ContainsKey(kvp.Key))
-                            sw.WriteLine($";{kvp.Key}={commented[kvp.Key]}");
-                        else
-                            sw.WriteLine($"{kvp.Key}={kvp.Value}");
+                        foreach (var header in headers)
+                            sw.WriteLine(header);
                     }
+
+                    sw.WriteLine(sectionName);
+
+                    _data.TryGetValue(sectionName, out var dataSection);
+                    _commentedData.TryGetValue(sectionName, out var commentedSection);
+
+                    if (dataSection != null)
+                    {
+                        foreach (var kvp in dataSection)
+                            WriteKeyValuePair(sw, sectionName, kvp.Key, kvp.Value);
+                    }
+
+                    // Preserve commented-only entries that were never mirrored into _data,
+                    // so a load/save round-trip doesn't silently drop them.
+                    if (commentedSection != null)
+                    {
+                        foreach (var kvp in commentedSection)
+                            if (dataSection == null || !dataSection.ContainsKey(kvp.Key))
+                                sw.WriteLine($";{kvp.Key}={kvp.Value}");
+                    }
+
                     sw.WriteLine(); // Blank line for readability
                 }
             }
+            catch (IOException ex)
+            {
+                Debug.WriteLine($"Failed to save INI file: {ex.Message}");
+            }
+        }
+
+        private bool TryParseSection(string line, out string section)
+        {
+            if (line.StartsWith("[") && line.EndsWith("]"))
+            {
+                section = line;
+                return true;
+            }
+            section = string.Empty;
+            return false;
+        }
+
+        private void ParseKeyValuePair(string body, string currentSection, Dictionary<string, Dictionary<string, string>> targetDict)
+        {
+            if (string.IsNullOrEmpty(currentSection)) return;
+
+            int splitIndex = body.IndexOf('=');
+            if (splitIndex > 0)
+            {
+                var key = body.Substring(0, splitIndex).Trim();
+                var val = body.Substring(splitIndex + 1).Trim();
+
+                var sectionDict = GetOrCreateSection(targetDict, currentSection);
+                sectionDict[key] = val;
+            }
+        }
+
+        private void WriteKeyValuePair(StreamWriter sw, string sectionName, string key, string value)
+        {
+            if (_commentedData.TryGetValue(sectionName, out var commentedSection) && commentedSection.TryGetValue(key, out var commentedValue))
+            {
+                sw.WriteLine($";{key}={commentedValue}");
+            }
+            else
+            {
+                sw.WriteLine($"{key}={value}");
+            }
+        }
+
+        private Dictionary<string, string> GetOrCreateSection(Dictionary<string, Dictionary<string, string>> target, string section)
+        {
+            if (!target.TryGetValue(section, out var sectionDict))
+            {
+                sectionDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                target[section] = sectionDict;
+            }
+            return sectionDict;
         }
 
         public string GetString(string section, string key, string defaultValue = "")
@@ -93,11 +159,10 @@ namespace RSMods
 
         public void SetString(string section, string key, string value)
         {
-            if (!_data.ContainsKey(section))
-                _data[section] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var sectionDict = GetOrCreateSection(_data, section);
 
-            bool changed = !_data[section].TryGetValue(key, out var oldVal) || oldVal != value;
-            _data[section][key] = value;
+            bool changed = !sectionDict.TryGetValue(key, out var oldVal) || oldVal != value;
+            sectionDict[key] = value;
 
             if (changed)
                 SettingChanged?.Invoke();
@@ -107,7 +172,10 @@ namespace RSMods
         {
             string def = forceNumeric ? (defaultValue ? "1" : "0") : (defaultValue ? "on" : "off");
             var str = GetString(section, key, def);
-            return str.Equals("on", StringComparison.OrdinalIgnoreCase) || str == "1";
+
+            return str.Equals("on", StringComparison.OrdinalIgnoreCase) ||
+                   str.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                   str == "1";
         }
 
         public void SetBool(string section, string key, bool value, bool forceNumeric = false)
@@ -120,9 +188,7 @@ namespace RSMods
         }
 
         public void SetInt(string section, string key, int value)
-        {
-            SetString(section, key, value.ToString());
-        }
+            => SetString(section, key, value.ToString());
 
         public string GetCommentedString(string section, string key, string defaultValue = "")
         {
@@ -135,23 +201,24 @@ namespace RSMods
         {
             if (commented)
             {
-                if (!_commentedData.ContainsKey(section))
-                    _commentedData[section] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                _commentedData[section][key] = value;
-
-                if (!_data.ContainsKey(section))
-                    _data[section] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                _data[section][key] = value;
+                GetOrCreateSection(_commentedData, section)[key] = value;
+                GetOrCreateSection(_data, section)[key] = value;
             }
             else
             {
                 if (_commentedData.TryGetValue(section, out var sec))
                     sec.Remove(key);
+
                 SetString(section, key, value);
             }
         }
 
         public bool IsCommented(string section, string key)
             => _commentedData.TryGetValue(section, out var sec) && sec.ContainsKey(key);
+
+        public void SetSectionComments(string section, string[] comments)
+        {
+            _sectionComments[section] = comments;
+        }
     }
 }

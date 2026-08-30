@@ -124,7 +124,7 @@ namespace RSMods
             TooltipDictionary.Add(button_RestoreCacheBackup, "Restores the original cache.psarc file\nUndoes all \"Set-and-forget\" mods.");
             TooltipDictionary.Add(button_CleanUpUnpackedCache, "Removes temporary files and un-packs cache.psarc as it is being used now, again.");
             TooltipDictionary.Add(button_ResetToDefaultCachePsarc, "Woah, hang on there!\nHave you tried pressing the \"Restore Cache Backup\" button?\nThis should be a last resort.\nWe call home to Steam to redownload all modified files.\nThis will only break the mods in this section, nothing else.");
-            TooltipDictionary.Add(button_UpdateRSMods, "Update RSMods to the newest version.\nPatch Notes: " + CheckForUpdates_GetPatchNotes());
+            TooltipDictionary.Add(button_UpdateRSMods, "Update RSMods to the newest version.\nPatch Notes: " + GithubUpdater.GetPatchNotes());
             TooltipDictionary.Add(checkBox_TurnOffAllMods, "Press this button to turn off all mods but keep your settings saved for later.\nThis can be used if you need to test if RSMods in causing an issue.\nWhen you want to use your mods again, just uncheck this box.");
 
             // Twitch Bot
@@ -257,7 +257,7 @@ namespace RSMods
 
     static class Dictionaries
     {
-        public static List<KeybindItem> ModKeybinds =
+        public static readonly List<KeybindItem> ModKeybinds =
         [
             new("Toggle Loft",          k => Keybinds.ToggleLoftKey = k, () => Keybinds.ToggleLoftKey),
             new("Show Song Timer",      k => Keybinds.ShowSongTimerKey = k, () => Keybinds.ShowSongTimerKey),
@@ -273,7 +273,7 @@ namespace RSMods
             new("Rewind Song",        k => Keybinds.RewindKey = k, () => Keybinds.RewindKey)
         ];
 
-        public static List<KeybindItem> AudioKeybinds =
+        public static readonly List<KeybindItem> AudioKeybinds =
         [
             new("Master Volume", k => AudioKeybindings.MasterVolumeKey = k, () => AudioKeybindings.MasterVolumeKey),
             new("Song Volume", k => AudioKeybindings.SongVolumeKey = k, () => AudioKeybindings.SongVolumeKey),
@@ -288,7 +288,7 @@ namespace RSMods
         ];
 
         #region Guitar Speak
-        public static List<KeybindItem> GuitarSpeakKeybinds =
+        public static readonly List<KeybindItem> GuitarSpeakKeybinds =
         [
             new("Delete", v => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen),
             new("Space", v => RsModsSettings.GuitarSpeak.GuitarSpeakSpaceWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakSpaceWhen),
@@ -314,7 +314,7 @@ namespace RSMods
         #endregion
         #region VoiceOver
 
-        public static Dictionary<string, string> ResultVoiceOverDictionary = new()
+        public static readonly Dictionary<string, string> ResultVoiceOverDictionary = new()
         {
             { "Bad Performance", "play_VO_RESULTSSCREEN2_001_15NARRATOR_DRY_26312" },
             { "Disappointing Performance", "play_VO_RESULTSSCREEN2_001_13NARRATOR_DRY_26310" },
@@ -339,7 +339,7 @@ namespace RSMods
         #endregion
         #region Colors
 
-        public static List<ColorItem> NotewayColors =
+        public static readonly List<ColorItem> NotewayColors =
         [
             new("Change Numbered Frets",   v => HighwayColors.CustomHighwayNumbered = v, () => HighwayColors.CustomHighwayNumbered),
             new("Change UnNumbered Frets", v => HighwayColors.CustomHighwayUnNumbered = v, () => HighwayColors.CustomHighwayUnNumbered),

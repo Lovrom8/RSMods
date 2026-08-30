@@ -29,14 +29,14 @@ namespace RSMods
                     UnpackCachePsarc();
 
                 if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
-                    GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "sltsv1_aggregategraph.nt" }); //NOTE: when adding resources, change Build Action to Embeded Resource  
+                    GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["sltsv1_aggregategraph.nt"]); //NOTE: when adding resources, change Build Action to Embeded Resource  
 
                 Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
                 MessageBox.Show("cache.psarc repackaged successfully", "Success");
             }
             catch (IOException ex)
             {
-                MessageBox.Show("Unable to repack cache.psarc" + Environment.NewLine + "Error: " + ex.Message.ToString(), "Repacking error", MessageBoxButtons.OK);
+                MessageBox.Show("Unable to repack cache.psarc" + Environment.NewLine + "Error: " + ex.Message, "Repacking error", MessageBoxButtons.OK);
             }
         }
 
@@ -53,7 +53,7 @@ namespace RSMods
 
         public static bool RestoreDefaults()
         {
-            if (MessageBox.Show(@"Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            if (MessageBox.Show("Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                 return false;
 
             try
@@ -63,11 +63,12 @@ namespace RSMods
                     File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
                     MessageBox.Show("Cache backup was restored!", "Backup restored", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
                 else
+                {
                     MessageBox.Show("No cache backup found!", "Error");
+                }
 
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["tuning.database.json"]);
                 //TODO: extract the rest
 
                 return true;
@@ -108,42 +109,42 @@ namespace RSMods
         public static void LoadDefaultFiles()
         {
             if (!File.Exists(Path.Combine(Constants.TuningJSON_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "tuning.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["tuning.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.IntroGFX_MidPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_mid.gfx" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["introsequence_mid.gfx"]);
 
             if (!File.Exists(Path.Combine(Constants.IntroGFX_MaxPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "introsequence_max.gfx" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["introsequence_max.gfx"]);
 
             if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "maingame.csv" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["maingame.csv"]);
 
             if (!File.Exists(Path.Combine(Constants.ExtendedMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_mission.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_mission.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_main.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_main.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.DirectConnectStartupJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "ui_menu_pillar_startup.database.json" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_startup.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.WwiseInitBnk_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "init.bnk" });
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["init.bnk"]);
         }
         #endregion
         #region Custom Tunings
         // Custom Tunings Mod
 
-        public static TuningDefinitionList TuningsCollection;
+        private static TuningDefinitionList tuningsCollection;
 
-        public static TuningDefinitionList LoadTuningsCollection()
+        public static void LoadTuningsCollection()
         {
             string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
             var tuningsJson = JObject.Parse(tuningsFileContent);
             var tuningsList = tuningsJson["Static"]["TuningDefinitions"];
 
-            return JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
+            tuningsCollection = JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
         }
 
         public static void AddCustomTunings()
@@ -163,16 +164,18 @@ namespace RSMods
         {
             string index, name = uiName;
 
-            Regex rxIndexExists = new Regex(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
-            Regex rxGetIndex = new Regex(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
-            Regex rxGrabAfterBracket = new Regex(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
+            Regex rxIndexExists = new(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
+            Regex rxGetIndex = new(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
+            Regex rxGrabAfterBracket = new(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
             if (rxIndexExists.IsMatch(uiName))
             {
                 index = rxGetIndex.Matches(uiName)[0].Groups[1].Value;
                 name = rxGrabAfterBracket.Matches(uiName)[0].Groups[1].Value;
             }
             else
+            {
                 index = "0";
+            }
 
             return new Tuple<string, string>(index, name);
         }
@@ -184,42 +187,41 @@ namespace RSMods
                 string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
                 int newIndex = 37500;
 
-                using (StreamWriter sw = new StreamWriter(Constants.LocalizationCSV_CustomPath, true))
+                using StreamWriter sw = new(Constants.LocalizationCSV_CustomPath, true);
+
+                foreach (var tuningDefinition in TuningsCollection)
                 {
-                    foreach (var tuningDefinition in TuningsCollection)
+                    currentUIName = tuningDefinition.Value.UIName;
+                    var tuning = SplitTuningUIName(currentUIName);
+                    string index = tuning.Item1;
+                    string onlyName = tuning.Item2;
+
+                    if (index == "0") // I.e. if it does not contain an index, give it one
                     {
-                        currentUIName = tuningDefinition.Value.UIName;
-                        var tuning = SplitTuningUIName(currentUIName);
-                        string index = tuning.Item1;
-                        string onlyName = tuning.Item2;
+                        while (csvContents.Contains(newIndex.ToString())) // Efficient ? Nope, but does the job
+                            newIndex++;
 
-                        if (index == "0") // I.e. if it does not contain an index, give it one
+                        tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", newIndex, onlyName); // Append its index in front
+                        index = newIndex.ToString();
+                    }
+
+                    if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
+                    {
+                        sw.Write(sw.NewLine);
+                        sw.Write(index);
+                        for (int i = 0; i < 7; i++)
                         {
-                            while (csvContents.Contains(newIndex.ToString())) // Efficient ? Nope, but does the job
-                                newIndex++;
-
-                            tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", newIndex, onlyName); // Append its index in front
-                            index = newIndex.ToString();
+                            sw.Write(',');
+                            sw.Write(tuning.Item2);
                         }
 
-                        if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
-                        {
-                            sw.Write(sw.NewLine);
-                            sw.Write(index);
-                            for (int i = 0; i < 7; i++)
-                            {
-                                sw.Write(',');
-                                sw.Write(tuning.Item2);
-                            }
-
-                            csvContents += index;
-                        }
+                        csvContents += index;
                     }
                 }
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Error: " + ioex.Message.ToString(), "Error");
+                MessageBox.Show($"Error: {ioex.Message}", "Error");
             }
 
             SaveTuningsJSON();
@@ -237,7 +239,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Error: " + ioex.ToString(), "Error");
+                MessageBox.Show($"Error: {ioex}", "Error");
             }
         }
         #endregion
@@ -268,9 +270,11 @@ namespace RSMods
         #region Default Tones
         // Custom Default Tones Mod
 
-        public static Dictionary<string, Tone2014> tonesFromAllProfiles = new Dictionary<string, Tone2014>();
+        public static Dictionary<string, Tone2014> tonesFromAllProfiles = [];
 
-        public static void SetDefaultTones(string selectedToneName, int selectedToneType, bool alreadyTried = false)
+        public static TuningDefinitionList TuningsCollection { get => tuningsCollection; }
+
+        public static void SetDefaultTones(string selectedToneName, int selectedToneType)
         {
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
 
@@ -319,8 +323,6 @@ namespace RSMods
             var selectedTone = tonesFromAllProfiles[selectedToneName];
 
             selectedToneType += 8; // GuitarArcade tones start at the 8th element of Tone list
-
-            var x = tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType];
 
             tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
 
@@ -376,13 +378,13 @@ namespace RSMods
                 {
                     uint driveNumber = 0;
 
-                    ManagementScope scope = new ManagementScope(@"\\.\root\microsoft\windows\storage");
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
+                    ManagementScope scope = new(@"\\.\root\microsoft\windows\storage");
+                    using (ManagementObjectSearcher searcher = new("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
                     {
                         scope.Connect();
                         searcher.Scope = scope;
 
-                        foreach (ManagementObject queryObj in searcher.Get())
+                        foreach (ManagementObject queryObj in searcher.Get().Cast<ManagementObject>())
                         {
                             char letter = (char)queryObj["DriveLetter"];
 
@@ -394,43 +396,28 @@ namespace RSMods
                         }
                     }
 
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM MSFT_PhysicalDisk"))
+                    using (ManagementObjectSearcher searcher = new("SELECT * FROM MSFT_PhysicalDisk"))
                     {
                         string type = "";
                         bool isNVMe = false;
                         scope.Connect();
                         searcher.Scope = scope;
 
-                        foreach (ManagementObject queryObj in searcher.Get())
+                        foreach (ManagementObject queryObj in searcher.Get().Cast<ManagementObject>())
                         {
                             string devID = queryObj["DeviceId"].ToString();
 
                             if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
                                 continue;
 
-                            switch (Convert.ToInt16(queryObj["MediaType"]))
+                            type = Convert.ToInt16(queryObj["MediaType"]) switch
                             {
-                                case 1:
-                                    type = "Unspecified";
-                                    break;
-
-                                case 3:
-                                    type = "HDD";
-                                    break;
-
-                                case 4:
-                                    type = "SSD";
-                                    break;
-
-                                case 5:
-                                    type = "SCM";
-                                    break;
-
-                                default:
-                                    type = "Unspecified";
-                                    break;
-                            }
-
+                                1 => "Unspecified",
+                                3 => "HDD",
+                                4 => "SSD",
+                                5 => "SCM",
+                                _ => "Unspecified",
+                            };
                             if (Convert.ToInt16(queryObj["BusType"]) == 17)
                                 isNVMe = true;
 
@@ -480,7 +467,9 @@ namespace RSMods
                             AddFastLoadModFile(false);
                     }
                     else
+                    {
                         AddFastLoadModFile(false);
+                    }
                 }
                 else
                 {

@@ -35,9 +35,6 @@ namespace RSMods.Twitch
                     WindowStyle = startMinimized ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal
                 };
 
-                //if (!browser.Contains("edge")) // Edge is procotol activated, not a regular exe
-                //   startInfo.Arguments = url;
-
                 Process.Start(startInfo);
 
                 return "OK";
@@ -47,14 +44,12 @@ namespace RSMods.Twitch
                 return url;
             }
 
-
             // WebBrowser control is unreliable, so we will use a regular browser to handle auth stuff for us
         }
 
-        public async void RunServer()
+        public async Task RunServer()
         {
-            var ttask = Task.Run(() => DoWork());
-            await ttask;
+            await Task.Run(DoWork);
         }
 
         public void DoWork()

@@ -51,31 +51,29 @@ namespace RSMods.Twitch.EffectServer
             retrySpan = TimeSpan.FromSeconds(retryInterval);
             HandleRemainingEffects(cts.Token);
 
-            usedRewards = new Dictionary<int, TwitchReward>();
+            usedRewards = [];
             remainingRewards = new ConcurrentQueue<TwitchReward>();
-            // remainingRewards = new ConcurrentQueue<Tuple<int, TwitchReward>>();
-            //remainingRewards = new ConcurrentDictionary<int, TwitchReward>();
 
             TwitchSettings.Get.AddToLog("Started the effect server");
         }
-
-        /*private void ListenForIncomingResponse()
-        {
-        }*/
 
         private void HandleRemainingEffects(CancellationToken ct)
         {
             Task.Run(async () =>
             {
-                while (!ct.IsCancellationRequested)
+                try
                 {
-                    TwitchReward currentReward;
-                    if (remainingRewards.TryDequeue(out currentReward))
-                        SendEffectToTheGame(currentReward, true);
+                    while (!ct.IsCancellationRequested)
+                    {
+                        if (remainingRewards.TryDequeue(out TwitchReward currentReward))
+                            SendEffectToTheGame(currentReward, true);
 
-                    //TwitchSettings.Get.AddToLog("Trying...");
-
-                    await Task.Delay(retrySpan, ct);
+                        await Task.Delay(retrySpan, ct);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    Debug.Write("Effect handler loop canceled gracefully.");
                 }
             }, ct);
         }
@@ -84,19 +82,29 @@ namespace RSMods.Twitch.EffectServer
         {
             try
             {
-                if (tcpListener != null)
-                    tcpListener.Stop();
+                tcpListener?.Stop();
+
+                if (cts != null)
+                {
+                    if (!cts.IsCancellationRequested)
+                    {
+                        cts.Cancel();
+                    }
+                    cts.Dispose();
+                    cts = null;
+                }
             }
-            catch (SocketException) //Likely the error due to it being stopped from another thread
+            catch (SocketException) // Likely the error due to it being stopped from another thread
             {
             }
         }
+
 
         private void GetConnectionToTheGame()
         {
             try
             {
-                if (tcpListener != null && tcpListener.Server.IsBound) //No need to reconnect if we have already connected to the socket
+                if (tcpListener?.Server.IsBound == true) //No need to reconnect if we have already connected to the socket
                     return;
 
                 tcpListener = new TcpListener(IPAddress.Parse(ipAdr), port);
@@ -114,7 +122,7 @@ namespace RSMods.Twitch.EffectServer
             }
         }
 
-        private async void SendMessageToGame(string message, TwitchReward currentReward)
+        private async Task SendMessageToGame(string message, TwitchReward currentReward)
         {
             if (connectedTcpClient == null)
             {
@@ -156,7 +164,7 @@ namespace RSMods.Twitch.EffectServer
                          Array.Copy(bytes, 0, incomingData, 0, length);
 
                          string clientMessage = Encoding.ASCII.GetString(incomingData);
-                         Debug.Write($"Recieved a message from the game: {clientMessage}");
+                         Debug.Write($"Received a message from the game: {clientMessage}");
 
                          if (clientMessage != "\0")
                          {
@@ -201,19 +209,21 @@ namespace RSMods.Twitch.EffectServer
 
         public void SendEffectToTheGame(TwitchReward reward, bool newEffect = true)
         {
-            Request request = new Request()
+            Request request = new Request
             {
                 id = 1,
                 code = reward.InternalMsgEnable.ToLower().Replace("enable", "").Trim(),
                 type = 1,
-                viewer = "rsmods"
+                viewer = "rsmods",
+                parameters = []
             };
-            request.parameters = new List<object>();
 
             if (reward.AdditionalMsg != null && reward.InternalMsgEnable.ToLower().Contains("solidnote")) // If it's a solid color effect
             {
                 if (reward.AdditionalMsg == "Random")
+                {
                     request.code = "solidrandom";
+                }
                 else if (reward.AdditionalMsg.Length == 6)
                 {
                     request.parameters.Add(Convert.ToInt32(reward.AdditionalMsg.Substring(0, 2), 16));

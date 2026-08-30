@@ -103,14 +103,10 @@ namespace RSMods.Util
         [DllImport("user32")]
         private static extern IntPtr GetDesktopWindow();
 
-#pragma warning disable IDE1006 // Naming Styles
         private const int ERROR_CANCELLED = unchecked((int)0x800704C7);
-#pragma warning restore IDE1006 // Naming Styles
 
         [ComImport, Guid("DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7")] // CLSID_FileOpenDialog
-        private class FileOpenDialog
-        {
-        }
+        private class FileOpenDialog;
 
         [ComImport, Guid("42f85136-db7e-439c-85f1-e4075d135fc8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IFileOpenDialog
@@ -153,23 +149,23 @@ namespace RSMods.Util
             [PreserveSig] int Compare();  // not fully defined
         }
 
-#pragma warning disable CA1712 // Do not prefix enum values with type name
         private enum SIGDN : uint
         {
-            SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
-            SIGDN_DESKTOPABSOLUTEPARSING = 0x80028000,
-            SIGDN_FILESYSPATH = 0x80058000,
             SIGDN_NORMALDISPLAY = 0,
-            SIGDN_PARENTRELATIVE = 0x80080001,
-            SIGDN_PARENTRELATIVEEDITING = 0x80031001,
-            SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
             SIGDN_PARENTRELATIVEPARSING = 0x80018001,
-            SIGDN_URL = 0x80068000
+            SIGDN_DESKTOPABSOLUTEPARSING = 0x80028000,
+            SIGDN_PARENTRELATIVEEDITING = 0x80031001,
+            SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
+            SIGDN_FILESYSPATH = 0x80058000,
+            SIGDN_URL = 0x80068000,
+            SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+            SIGDN_PARENTRELATIVE = 0x80080001
         }
 
         [Flags]
         private enum FOS
         {
+            None = 0,
             FOS_OVERWRITEPROMPT = 0x2,
             FOS_STRICTFILETYPES = 0x4,
             FOS_NOCHANGEDIR = 0x8,
@@ -194,6 +190,5 @@ namespace RSMods.Util
             FOS_FORCEPREVIEWPANEON = 0x40000000,
             FOS_SUPPORTSTREAMABLEITEMS = unchecked((int)0x80000000)
         }
-#pragma warning restore CA1712 // Do not prefix enum values with type name
     }
 }

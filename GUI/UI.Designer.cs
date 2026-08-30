@@ -3386,7 +3386,7 @@
             this.btnSaveFontSize.TabIndex = 4;
             this.btnSaveFontSize.Text = "Save";
             this.btnSaveFontSize.UseVisualStyleBackColor = true;
-            this.btnSaveFontSize.Click += new System.EventHandler(this.btnSaveFontSize_Click);
+            this.btnSaveFontSize.Click += new System.EventHandler(this.BtnSaveFontSize_Click);
             // 
             // lblCurrentFontSize
             // 
@@ -3424,7 +3424,7 @@
             this.trackBar_FontSize.SmallChange = 2;
             this.trackBar_FontSize.TabIndex = 0;
             this.trackBar_FontSize.Value = 8;
-            this.trackBar_FontSize.Scroll += new System.EventHandler(this.trackBar_FontSize_Scroll);
+            this.trackBar_FontSize.Scroll += new System.EventHandler(this.TrackBar_FontSize_Scroll);
             // 
             // groupBox_OnScreenFont
             // 
@@ -3666,7 +3666,7 @@
             this.checkBox_EnabledMidiIn.TabIndex = 3;
             this.checkBox_EnabledMidiIn.Text = "Enabled";
             this.checkBox_EnabledMidiIn.UseVisualStyleBackColor = true;
-            this.checkBox_EnabledMidiIn.CheckedChanged += new System.EventHandler(this.checkBox_EnabledMidiIn_CheckedChanged);
+            this.checkBox_EnabledMidiIn.CheckedChanged += new System.EventHandler(this.CheckBox_EnabledMidiIn_CheckedChanged);
             // 
             // label_CurrentMidiIn
             // 

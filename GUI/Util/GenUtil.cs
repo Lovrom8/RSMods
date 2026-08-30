@@ -25,20 +25,17 @@ namespace RSMods.Util
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-            string[] names = resourceAssembly.GetManifestResourceNames();
-
-            string resourcePath = string.Empty;
             foreach (string file in files)
             {
-                resourcePath = Path.Combine(outputDir, file);
+                string resourcePath = Path.Combine(outputDir, file);
 
                 Stream stream = resourceAssembly.GetManifestResourceStream(String.Format("{0}.{1}", resourceLocation, file));
 
                 if (stream == null)
                     return;
 
-                using (FileStream fileStream = new FileStream(resourcePath, FileMode.Create))
-                    stream.CopyTo(fileStream);
+                using FileStream fileStream = new FileStream(resourcePath, FileMode.Create);
+                stream.CopyTo(fileStream);
             }
         }
 
@@ -47,29 +44,28 @@ namespace RSMods.Util
             string browserName = "iexplore.exe";
             try
             {
-                using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"))
-                {
-                    if (userChoiceKey != null)
-                    {
-                        object progIdValue = userChoiceKey.GetValue("Progid");
-                        if (progIdValue != null)
-                        {
-                            /*if (progIdValue.ToString().ToLower().Contains("chrome"))
-                                browserName = "chrome.exe";
-                            else if (progIdValue.ToString().ToLower().Contains("firefox"))
-                                browserName = "firefox.exe";
-                            else if (progIdValue.ToString().ToLower().Contains("safari"))
-                                browserName = "safari.exe";
-                            else if (progIdValue.ToString().ToLower().Contains("opera"))
-                                browserName = "opera.exe";
-                            else if (progIdValue.ToString().ToLower().Contains("brave"))
-                                browserName = "brave.exe";*/
+                using RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice");
 
-                            if (progIdValue.ToString().ToLower().Contains("edge"))
-                                return $"microsoft-edge:{url}";
-                            else
-                                return url;
-                        }
+                if (userChoiceKey != null)
+                {
+                    object progIdValue = userChoiceKey.GetValue("Progid");
+                    if (progIdValue != null)
+                    {
+                        /*if (progIdValue.ToString().ToLower().Contains("chrome"))
+                            browserName = "chrome.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("firefox"))
+                            browserName = "firefox.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("safari"))
+                            browserName = "safari.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("opera"))
+                            browserName = "opera.exe";
+                        else if (progIdValue.ToString().ToLower().Contains("brave"))
+                            browserName = "brave.exe";*/
+
+                        if (progIdValue.ToString().IndexOf("edge", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                            return $"microsoft-edge:{url}";
+                        else
+                            return url;
                     }
                 }
             }
@@ -83,7 +79,7 @@ namespace RSMods.Util
         {
             var tprops = target.GetType().GetProperties();
 
-            tprops.Where(x => x.CanWrite == true).ToList().ForEach(prop =>
+            tprops.Where(x => x.CanWrite).ToList().ForEach(prop =>
             {
                 var sp = source.GetType().GetProperty(prop.Name);
                 if (sp != null)
@@ -106,10 +102,7 @@ namespace RSMods.Util
             //if (IsDirectoryEmpty(dlcFolderPath))
             //    return false;
 
-            if (!File.Exists(cachePsarcPath))
-                return false;
-
-            return true;
+            return File.Exists(cachePsarcPath);
         }
 
         public static bool IsSavePath(this string savePath)
@@ -119,10 +112,7 @@ namespace RSMods.Util
 
             string localProfiles = Path.Combine(savePath, "LocalProfiles.json");
 
-            if (!File.Exists(localProfiles))
-                return false;
-
-            return true;
+            return File.Exists(localProfiles);
         }
 
         private static string GetStringValueFromRegistry(string keyName, string valueName)
@@ -130,7 +120,7 @@ namespace RSMods.Util
             try
             {
                 var retValue = (string)Registry.GetValue(keyName, valueName, "");
-                return retValue == null ? string.Empty : retValue;
+                return retValue ?? string.Empty;
             }
             catch (Exception)
             {
@@ -140,14 +130,14 @@ namespace RSMods.Util
 
         private static List<string> GetCustomSteamappsFolders(string mainSteamPath)
         {
-            string libRegex = "(^\\t\"[1-9]\").*(\".*\")";
+            const string libRegex = "(^\\t\"[1-9]\").*(\".*\")";
             var libDirs = new List<string>();
 
             string steamappsFolder = Path.Combine(mainSteamPath, "steamapps");
             string libVdf = Path.Combine(steamappsFolder, "libraryfolders.vdf");
 
             if (!File.Exists(libVdf))
-                return new List<string>();
+                return [];
 
             foreach (string l in File.ReadAllLines(libVdf))
             {
@@ -166,7 +156,7 @@ namespace RSMods.Util
             }
 
             if (libDirs.Count == 0)
-                return new List<string>();
+                return [];
 
             return libDirs;
         }
@@ -206,17 +196,17 @@ namespace RSMods.Util
             return GetStringValueFromRegistry(steamRegPath, "SteamPath").Replace('/', '\\');
         }
 
-        public static List<Tuple<string, string>> InstallRegKeys { get; set; } = new List<Tuple<string, string>>()
-        {
-            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Ubisoft\Rocksmith2014", "installdir"),
-            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation"),
-            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Ubisoft\Rocksmith2014", "InstallLocation"),
-            new Tuple<string, string>(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
-        };
+        public static List<Tuple<string, string>> InstallRegKeys { get; set; } =
+        [
+            new(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Ubisoft\Rocksmith2014", "installdir"),
+            new(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation"),
+            new(@"HKEY_LOCAL_MACHINE\SOFTWARE\Ubisoft\Rocksmith2014", "InstallLocation"),
+            new(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
+        ];
 
         public static List<string> GetSettingsLines()
         {
-            return File.Exists(Constants.SettingsPath) ? File.ReadAllLines(Constants.SettingsPath).ToList() : new List<string>();
+            return File.Exists(Constants.SettingsPath) ? File.ReadAllLines(Constants.SettingsPath).ToList() : [];
         }
 
         private static Dictionary<string, string> settingsDict = null;
@@ -258,12 +248,12 @@ namespace RSMods.Util
                 if (File.Exists(Constants.SettingsPath))
                 {
                     Constants.SavePath = GetSettingsEntry("SavePath");
-                    Constants.BypassSavePrompt = GetSettingsEntry("BypassSavePrompt");
+                    Constants.SavePathDeclined = bool.TryParse(GetSettingsEntry("BypassSavePrompt"), out bool declined) && declined;
                     if (Constants.SavePath != string.Empty)
                     {
                         return Constants.SavePath;
                     }
-                    else if (Constants.BypassSavePrompt == "true" && !overrideSkipPrompt)
+                    else if (Constants.SavePathDeclined && !overrideSkipPrompt)
                     {
                         return string.Empty;
                     }
@@ -280,7 +270,7 @@ namespace RSMods.Util
                 {
                     if (MessageBox.Show("The save folder we found does not appear to be correct.\nPlease select your save folder.\nIt should follow the format: <Where Steam Is Installed>/userdata/#####/221680/remote\nPressing \"Cancel\" will prevent the usage of the \"Profile Edits\" tab", "Warning: Invalid Save Path", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
                     {
-                        Constants.BypassSavePrompt = "true";
+                        Constants.SavePathDeclined = true;
                         return string.Empty;
                     }
 

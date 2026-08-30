@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using RSMods.Util;
 
@@ -7,11 +8,28 @@ namespace RSMods.ASIO
     {
         private static readonly IniManager _ini = new(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini"));
 
-        static AsioSettings() => _ini.Load();
+        static AsioSettings()
+        {
+            _ini.Load();
+
+            _ini.SetSectionComments("[Asio]",
+            [
+                "; available buffer size modes:",
+                ";    driver - respect buffer size setting set in the driver",
+                ";    host   - use a buffer size as close as possible to that requested by the host application",
+                ";    custom - use the buffer size specified in CustomBufferSize field"
+            ]);
+        }
 
         public static bool SettingsExist => File.Exists(Path.Combine(GenUtil.GetRSDirectory(), "RS_ASIO.ini"));
 
         public static void Save() => _ini.Save();
+
+        public static event Action SettingChanged
+        {
+            add => _ini.SettingChanged += value;
+            remove => _ini.SettingChanged -= value;
+        }
 
         public static class Config
         {

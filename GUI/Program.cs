@@ -20,7 +20,7 @@ namespace RSMods
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message +  " " + ex.ToString(), "Error");
+                MessageBox.Show($"{ex.Message} {ex}", "Error");
             }
         }
     }

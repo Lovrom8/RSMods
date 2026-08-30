@@ -1,5 +1,6 @@
-using RSMods.Util;
+using System;
 using System.IO;
+using RSMods.Util;
 
 namespace RSMods.Rocksmith
 {
@@ -8,6 +9,12 @@ namespace RSMods.Rocksmith
         private static readonly IniManager _ini = new(Path.Combine(GenUtil.GetRSDirectory(), "Rocksmith.ini"));
 
         static RocksmithSettings() => _ini.Load();
+
+        public static event Action SettingChanged
+        {
+            add => _ini.SettingChanged += value;
+            remove => _ini.SettingChanged -= value;
+        }
 
         public static class Audio
         {

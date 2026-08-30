@@ -16,16 +16,15 @@ namespace RSMods
 {
     class Profiles
     {
-
         #region General
 
-        private static byte[] PCSaveKey = new byte[32]
-        {
+        private static readonly byte[] PCSaveKey =
+        [
             0x72, 0x8B, 0x36, 0x9E, 0x24, 0xED, 0x01, 0x34,
             0x76, 0x85, 0x11, 0x02, 0x18, 0x12, 0xAF, 0xC0,
             0xA3, 0xC2, 0x5D, 0x02, 0x06, 0x5F, 0x16, 0x6B,
             0x4B, 0xCC, 0x58, 0xCD, 0x26, 0x44, 0xF2, 0x9E
-        };
+        ];
 
         private static void InitRijndael(Rijndael rij, byte[] key, CipherMode cipher)
         {
@@ -40,20 +39,38 @@ namespace RSMods
         {
             var buffer = new byte[512];
             int pad = buffer.Length - (int)(len % buffer.Length);
+
             var coder = new CryptoStream(output, transform, CryptoStreamMode.Write);
-            while (input.Position < len)
+
+            long totalRead = 0;
+
+            while (totalRead < len)
             {
-                int size = (int)Math.Min(len - input.Position, buffer.Length);
-                input.Read(buffer, 0, size);
-                coder.Write(buffer, 0, size);
+                int size = (int)Math.Min(len - totalRead, buffer.Length);
+
+                int bytesRead = input.Read(buffer, 0, size);
+
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                coder.Write(buffer, 0, bytesRead);
+                totalRead += bytesRead;
             }
 
-            if (pad > 0)
+            if (pad > 0 && pad < buffer.Length)
+            {
                 coder.Write(new byte[pad], 0, pad);
+            }
 
-            coder.Flush();
-            output.Seek(0, SeekOrigin.Begin);
+            coder.FlushFinalBlock();
             output.Flush();
+
+            if (output.CanSeek)
+            {
+                output.Seek(0, SeekOrigin.Begin);
+            }
         }
 
         private static void Unzip(Stream str, Stream outStream, bool rewind = true)
@@ -80,18 +97,33 @@ namespace RSMods
             var buffer = new byte[65536];
             var zOutputStream = new ZOutputStream(outStream, 9);
 
-            while (str.Position < plainLen)
+            long totalRead = 0;
+
+            while (totalRead < plainLen)
             {
-                var size = (int)Math.Min(plainLen - str.Position, buffer.Length);
-                str.Read(buffer, 0, size);
-                zOutputStream.Write(buffer, 0, size);
+                var size = (int)Math.Min(plainLen - totalRead, buffer.Length);
+
+                int bytesRead = str.Read(buffer, 0, size);
+
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                zOutputStream.Write(buffer, 0, bytesRead);
+
+                totalRead += bytesRead;
             }
 
-            zOutputStream.finish(); buffer = null;
+            zOutputStream.finish();
+
             if (rewind)
             {
-                outStream.Position = 0;
                 outStream.Flush();
+                if (outStream.CanSeek)
+                {
+                    outStream.Position = 0;
+                }
             }
 
             return zOutputStream.TotalOut;
@@ -101,12 +133,12 @@ namespace RSMods
 
         public static Dictionary<string, string> AvailableProfiles()
         {
-            Dictionary<string, string> profiles = new Dictionary<string, string>();
+            Dictionary<string, string> profiles = [];
 
-            if (Profiles.GetSaveDirectory() == String.Empty)
-                return new Dictionary<string, string>();
+            if (string.IsNullOrEmpty(Profiles.GetSaveDirectory()))
+                return [];
 
-            DirectoryInfo directory = new DirectoryInfo(Profiles.GetSaveDirectory());
+            DirectoryInfo directory = new(Profiles.GetSaveDirectory());
             try
             {
                 JToken token = JObject.Parse(DecryptProfiles(Path.Combine(directory.FullName, "LocalProfiles.json")));
@@ -127,7 +159,7 @@ namespace RSMods
 
             try
             {
-                if (fullProfileFolder == string.Empty)
+                if (string.IsNullOrEmpty(fullProfileFolder))
                 {
                     RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
 
@@ -171,13 +203,12 @@ namespace RSMods
         }
 
         #endregion
-        #region Backup Profile
 
         public static void SaveProfile()
         {
             string profileFolder = GetSaveDirectory();
 
-            if (profileFolder == String.Empty)
+            if (profileFolder.Length == 0)
                 return;
 
             string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
@@ -199,12 +230,11 @@ namespace RSMods
             }
         }
 
-        #endregion
 
         #region Decrypt Profile
 
         public static JObject DecryptedProfile = null;
-        
+
         private static void DecryptFile(Stream input, Stream output, byte[] key)
         {
             using (var rij = new RijndaelManaged())
@@ -245,22 +275,19 @@ namespace RSMods
         {
             try
             {
-                using (var input = File.OpenRead(path))
-                using (var outMS = new MemoryStream())
-                using (var br = new StreamReader(outMS))
+                using var input = File.OpenRead(path);
+                using var outMS = new MemoryStream();
+                using var br = new StreamReader(outMS);
+
+                DecryptProfile(input, outMS);
+
+                if (dumpToFile)
                 {
-                    DecryptProfile(input, outMS);
-
-                    if (dumpToFile)
-                    {
-                        using (StreamWriter sw = File.CreateText(dumpFile))
-                        {
-                            sw.WriteLine(br.ReadToEnd());
-                        }
-                    }
-
-                    return br.ReadToEnd();
+                    using StreamWriter sw = File.CreateText(dumpFile);
+                    sw.WriteLine(br.ReadToEnd());
                 }
+
+                return br.ReadToEnd();
             }
             catch
             {
@@ -271,50 +298,49 @@ namespace RSMods
         #endregion
         #region Encrypt Profile
 
-        private static byte[] SaveHeader = new byte[8]
-        {
+        private readonly static byte[] SaveHeader =
+        [
             0x45, 0x56, 0x41, 0x53,
             0x01, 0x00, 0x00, 0x00
-        };
+        ];
 
         private static byte[] UserId = new byte[4];
-        private static byte[] EndOfSaveHeader = new byte[4]
-        {
+        private readonly static byte[] EndOfSaveHeader =
+        [
             0x00, 0x00, 0x10, 0x01
-        };
+        ];
 
 
         public static void EncryptProfile(string ProfileJson, string FileName)
         {
-            using (MemoryStream decryptedProfileStream = new MemoryStream())
+            using MemoryStream decryptedProfileStream = new();
+
+            if (ProfileJson.EndsWith("\r\n"))
             {
-                if(ProfileJson.EndsWith("\r\n"))
+                ProfileJson = ProfileJson.Remove(ProfileJson.LastIndexOf("\r\n"));
+            }
+
+            byte[] decryptedProfileArray = Encoding.UTF8.GetBytes(ProfileJson.ToArray());
+
+            using (var encrypted = new MemoryStream())
+            using (var compressed = new MemoryStream())
+            using (var brEnc = new EndianBinaryWriter(EndianBitConverter.Little, encrypted))
+            {
+                brEnc.Write(SaveHeader, 0, 8);
+                brEnc.Write(UserId, 0, 4);
+                brEnc.Write(EndOfSaveHeader, 0, 4);
+                brEnc.Write((uint)decryptedProfileArray.Length);
+
+                Zip(decryptedProfileArray, compressed, decryptedProfileArray.Length);
+                EncryptFile(compressed, encrypted, PCSaveKey);
+                brEnc.Write(encrypted.ToArray());
+                brEnc.Flush();
+
+                brEnc.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                using (StreamWriter sw = new StreamWriter(FileName))
                 {
-                    ProfileJson = ProfileJson.Remove(ProfileJson.LastIndexOf("\r\n"));
-                }
-
-                byte[] decryptedProfileArray = Encoding.UTF8.GetBytes(ProfileJson.ToArray());
-
-                using (var encrypted = new MemoryStream())
-                using (var compressed = new MemoryStream())
-                using (var brEnc = new EndianBinaryWriter(EndianBitConverter.Little, encrypted))
-                {
-                    brEnc.Write(SaveHeader, 0, 8);
-                    brEnc.Write(UserId, 0, 4);
-                    brEnc.Write(EndOfSaveHeader, 0, 4);
-                    brEnc.Write((uint)decryptedProfileArray.Length);
-
-                    Zip(decryptedProfileArray, compressed, decryptedProfileArray.Length);
-                    EncryptFile(compressed, encrypted, PCSaveKey);
-                    brEnc.Write(encrypted.ToArray());
-                    brEnc.Flush();
-
-                    brEnc.BaseStream.Seek(0, SeekOrigin.Begin);
-
-                    using (StreamWriter sw = new StreamWriter(FileName))
-                    {
-                        brEnc.BaseStream.CopyTo(sw.BaseStream);
-                    }
+                    brEnc.BaseStream.CopyTo(sw.BaseStream);
                 }
             }
         }
@@ -366,6 +392,4 @@ namespace RSMods
         }
         #endregion
     }
-
-
 }

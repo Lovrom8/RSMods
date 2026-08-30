@@ -42,11 +42,8 @@ namespace RSMods
         /// <summary>
         /// Leaving this boolean in-case we need to quickly disable the Profiles tab due to a bug.
         /// </summary>
-        bool shipProfileEdits = true;
+        private readonly bool shipProfileEdits = true;
 
-        public static Color defaultBackgroundColor = Color.Azure;
-        public static Color defaultTextColor = Color.Black;
-        public static Color defaultButtonColor = SystemColors.ControlLight;
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
@@ -63,92 +60,60 @@ namespace RSMods
         TabPage ProfileEditsTab;
         int ProfileEditsTabIndex;
 
-        string github_UpdateResponse;
-
-        bool AllowSaving = false;
+        private readonly bool AllowSaving;
 
         public MainForm()
         {
-
-            // Locate Rocksmith Folder
             Startup_LocateRocksmith(GenUtil.GetRSDirectory());
 
-            // Read Ini, or create an default one.
             Startup_ReadIniOrCreateDefault();
 
-            // SettingChanged hook
             RsModsSettings.SettingChanged += OnSettingChanged;
+            RocksmithSettings.SettingChanged += OnSettingChanged;
+            AsioSettings.SettingChanged += OnSettingChanged;
 
-            // Load saved credidentials and enable PubSub
             PrepTwitch_LoadSettings();
 
-            // Initialize WinForms
             Startup_InitWinForms();
 
-            // Locate Rocksmith Saves
             Startup_LocateSaves(GenUtil.GetSaveFolder());
 
-            // Check if the GUI settings, and DLL settings already exist
-            Startup_VerifyGUIInstall();
+            ExeUtil.CheckInstallIntegrity(GenUtil.GetRSDirectory());
+            Constants.SaveBaseSettings();
 
-            // Setup bindings for Twitch events
             Twitch_Setup();
 
-            // Fix Legacy Songlist Bug
             Startup_FixLegacySonglistBug();
 
-            // Fill Mod Keybindings List (Fill list box)
             Startup_LoadKeybindingModNames();
-
-            // Fill Audio Keybinding List
             Startup_LoadAudioKeybindings();
-
-            // Load Mod Keybinding Values
             Startup_ShowCurrentKeybindingValues();
-
-            // Load Audio Keybinding Values
             Startup_ShowCurrentAudioKeybindingValues();
 
-            // Load Guitar Speak Preset Values
             GuitarSpeak_ResetPresets();
 
-            // Load Default String Colors
             StringColors_LoadDefaultStringColors();
-
-            // Load Default Note Colors
             StringColors_LoadDefaultNoteColors();
-
-            // Load Default Noteway Colors
             NotewayColors_LoadDefaultStringColors();
 
-            // Load Colors Saved as Theme Colors.
             CustomTheme_LoadCustomColors();
 
             // Load Input Devices for Override Input Device Volume mod
             Startup_LoadInputDevices();
 
-            // Load Midi Devices
             Midi_LoadDevices();
 
-            // Load RS_ASIO
             Startup_VerifyInstallOfASIO();
-
-            // Load RS_ASIO Settings
             PriorSettings_LoadASIOSettings();
 
-            // Load Rocksmith Settings
             PriorSettings_LoadRocksmithSettings();
 
-            // Load All Available Rocksmith Profiles
             Startup_LoadRocksmithProfiles();
 
-            // Unpack Cache.psarc
             Startup_UnpackCachePsarc();
 
-            // Load Set And Forget Mods
             SetForget_LoadSetAndForgetMods();
 
-            // Load All System Fonts
             Fonts_Load();
 
             // Backup Profiles Just In Case
@@ -166,13 +131,10 @@ namespace RSMods
             // Get list of all backups so we can revert to one if needed
             Startup_ListAllBackups();
 
-            // Check For Updates
-            CheckForUpdates_CallGithubAPI();
+            GithubUpdater.CallGithubAPI();
 
-            // Should we show the Update button?
             Startup_ShowUpdateButton();
 
-            // Is Audio.psarc unpacked?
             Startup_CheckStatusAudioPsarc();
 
             // Load SoundPacks Result Voice Over list
@@ -196,7 +158,7 @@ namespace RSMods
 
         private void Startup_FixLegacySonglistBug()
         {
-            if (GetSongListTitle(1)?.Length == 0)
+            if (string.IsNullOrEmpty(GetSongListTitle(1)))
             {
                 SetSongListTitle(1, "Define Song List 1 Here");
             }
@@ -204,95 +166,63 @@ namespace RSMods
 
         private void Startup_LocateRocksmith(string rocksmithFolder)
         {
-            if (rocksmithFolder.Length == 0)
+            if (!string.IsNullOrEmpty(rocksmithFolder) && !Directory.Exists(rocksmithFolder))
             {
-                string newRSFolder = GenUtil.AskUserForRSFolder();
+                MessageBox.Show("It looks like your current Rocksmith2014 install folder cannot be found. Please tell us where it is located!",
+                                "Error: Rocksmith Location Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                if (newRSFolder.Length == 0)
+                rocksmithFolder = string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(rocksmithFolder))
+            {
+                rocksmithFolder = GenUtil.AskUserForRSFolder();
+
+                if (string.IsNullOrEmpty(rocksmithFolder))
                 {
-                    MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.",
+                                    "Error: Rocksmith Location Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
                 }
-
-                Constants.RSFolder = newRSFolder;
             }
-            else
-            {
-                if (!Directory.Exists(rocksmithFolder))
-                {
-                    MessageBox.Show("It looks like your current Rocksmith2014 install folder cannot be found. Please tell us where it is located!", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    string newRSFolder = GenUtil.AskUserForRSFolder();
-                    if (newRSFolder == string.Empty)
-                    {
-                        MessageBox.Show("We cannot detect where you have Rocksmith located. Please try reinstalling your game on Steam.", "Error: RSLocation Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Environment.Exit(1);
-                    }
 
-                    Constants.RSFolder = newRSFolder;
-                }
-                else
-                    Constants.RSFolder = rocksmithFolder;
-            }
+            Constants.RSFolder = rocksmithFolder;
         }
 
-        private void Startup_LocateSaves(string SavePath)
+        private string PromptForSavePath()
         {
-            if (Constants.BypassSavePrompt == "true")
+            MessageBox.Show("It looks like your Rocksmith 2014 save folder cannot be found. Please tell us where it is located!\nThis can be found in your Steam install folder.\n<Path To Steam Install>/userdata/#/221680/remote", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            string path = GenUtil.AskUserForSavePath();
+
+            if (string.IsNullOrEmpty(path))
+            {
+                MessageBox.Show("We cannot detect where your Rocksmith 2014 saves are located.", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
+
+            return path;
+        }
+
+        private void Startup_LocateSaves(string savePath)
+        {
+            if (Constants.SavePathDeclined)
             {
                 button_SetSavePath.Visible = true;
                 return;
             }
 
-            if (SavePath == string.Empty)
+            if (string.IsNullOrEmpty(savePath))
             {
-                MessageBox.Show("It looks like your Rocksmith 2014 save folder cannot be found. Please tell us where it is located!\nThis can be found in your Steam install folder.\n<Path To Steam Install>/userdata/#/221680/remote", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                string newSavePath = GenUtil.AskUserForSavePath();
-
-                if (newSavePath == string.Empty)
-                {
-                    MessageBox.Show("We cannot detect where you have Rocksmith2014 saves are located.", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Environment.Exit(1);
-                }
-
-                Constants.SavePath = newSavePath;
-                Constants.BypassSavePrompt = "false";
+                savePath = PromptForSavePath();
             }
-            else
+            else if (!Directory.Exists(savePath))
             {
-                if (!Directory.Exists(SavePath))
-                {
-                    string newSavePath = Profiles.GetSaveDirectory(true);
-
-                    if (newSavePath == string.Empty)
-                    {
-                        MessageBox.Show("It looks like your Rocksmith 2014 save folder cannot be found. Please tell us where it is located!\nThis can be found in your Steam install folder.\n<Path To Steam Install>/userdata/#/221680/remote", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        newSavePath = GenUtil.AskUserForSavePath();
-
-                        if (newSavePath == string.Empty)
-                        {
-                            MessageBox.Show("We cannot detect where you have Rocksmith2014 saves are located.", "Error: SavePath Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Environment.Exit(1);
-                        }
-                    }
-
-                    Constants.SavePath = newSavePath;
-                    Constants.BypassSavePrompt = "false";
-                }
-                else
-                {
-                    Constants.SavePath = SavePath;
-                    Constants.BypassSavePrompt = "false";
-                }
+                string fromRegistry = Profiles.GetSaveDirectory(true);
+                savePath = string.IsNullOrEmpty(fromRegistry) ? PromptForSavePath() : fromRegistry;
             }
-        }
 
-        private void Startup_VerifyGUIInstall()
-        {
-            ExeUtil.VerifyIsVoid(GenUtil.GetRSDirectory());
-
-            List<string> settings = [$"RSPath = {Constants.RSFolder}", $"SavePath = {Constants.SavePath}", $"BypassSavePrompt = {Constants.BypassSavePrompt}"];
-
-            File.WriteAllLines(Constants.SettingsPath, settings);
+            Constants.SavePath = savePath;
+            Constants.SavePathDeclined = false;
         }
 
         private void Startup_LoadSonglists()
@@ -345,10 +275,9 @@ namespace RSMods
 
         private void Startup_LoadInputDevices()
         {
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+            MMDeviceEnumerator enumerator = new();
 
-            foreach (MMDevice device in devices)
+            foreach (MMDevice device in enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
             {
                 listBox_AvailableInputDevices.Items.Add(device.FriendlyName);
             }
@@ -426,7 +355,7 @@ namespace RSMods
             if (!Directory.Exists(backupFolder))
                 return;
 
-            DirectoryInfo[] backups = new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime).ToArray();
+            DirectoryInfo[] backups = [.. new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime)];
 
             int foldersLeftToRemove = backups.Length - maxAmountOfBackups;
 
@@ -473,7 +402,7 @@ namespace RSMods
         {
             try
             {
-                List<string> backups = new List<string>();
+                List<string> backups = [];
                 foreach (string backup in Directory.GetDirectories(Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups")))
                 {
                     string folderName = Path.GetFileNameWithoutExtension(backup);
@@ -496,7 +425,9 @@ namespace RSMods
             }
         }
 
-        private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = CheckForUpdates_IsUpdateAvailable();
+        private void Startup_ShowUpdateButton() => button_UpdateRSMods.Visible = GithubUpdater.IsUpdateAvailable();
+    
+        private void CheckForUpdates_UpdateRSMods(object sender, EventArgs e) => GithubUpdater.DownloadAndRunInstaller();
 
         private void Startup_CheckStatusAudioPsarc() => SoundPacks_ChangeUIForUnpackedFolder(Directory.Exists("audio_psarc"));
 
@@ -862,7 +793,7 @@ namespace RSMods
         #region Custom Themes
 
         // Not taken from here :O https://stackoverflow.com/a/3419209
-        private List<Control> ControlList = new List<Control>(); // Don't make this readonly
+        private readonly List<Control> ControlList = []; // Don't make this readonly
         private void GetAllControls(Control container)
         {
             foreach (Control c in container.Controls)
@@ -917,7 +848,7 @@ namespace RSMods
 
         private void CustomTheme_LoadCustomColors()
         {
-            Color backColor = defaultBackgroundColor, foreColor = defaultTextColor, buttonColor = defaultButtonColor;
+            Color backColor = Constants.DefaultBackgroundColor, foreColor = Constants.DefaultTextColor, buttonColor = Constants.DefaultButtonColor;
 
             if (GUISettings.CustomTheme)
             {
@@ -944,16 +875,16 @@ namespace RSMods
             groupBox_ChangeTheme.Visible = checkBox_ChangeTheme.Checked;
 
             if (!checkBox_ChangeTheme.Checked) // Turning off custom themes
-                CustomTheme_ChangeTheme(defaultBackgroundColor, defaultTextColor, defaultButtonColor);
+                CustomTheme_ChangeTheme(Constants.DefaultBackgroundColor, Constants.DefaultTextColor, Constants.DefaultButtonColor);
         }
 
         private void CustomTheme_ChangeBackgroundColor(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog
+            ColorDialog colorDialog = new()
             {
                 AllowFullOpen = true,
                 ShowHelp = false,
-                Color = defaultBackgroundColor
+                Color = Constants.DefaultBackgroundColor
             };
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -965,11 +896,11 @@ namespace RSMods
 
         private void CustomTheme_ChangeTextColor(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog
+            ColorDialog colorDialog = new()
             {
                 AllowFullOpen = true,
                 ShowHelp = false,
-                Color = defaultTextColor
+                Color = Constants.DefaultTextColor
             };
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -981,11 +912,11 @@ namespace RSMods
 
         private void CustomTheme_ChangeButtonColor(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog
+            ColorDialog colorDialog = new()
             {
                 AllowFullOpen = true,
                 ShowHelp = false,
-                Color = defaultButtonColor
+                Color = Constants.DefaultButtonColor
             };
 
             if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -999,55 +930,58 @@ namespace RSMods
 
         private void CustomTheme_Reset(object sender, EventArgs e)
         {
-            CustomTheme_ChangeTheme(defaultBackgroundColor, defaultTextColor, defaultButtonColor);
+            CustomTheme_ChangeTheme(Constants.DefaultBackgroundColor, Constants.DefaultTextColor, Constants.DefaultButtonColor);
 
-            GUISettings.ThemeBackgroundColor = (defaultBackgroundColor.ToArgb() & 0x00ffffff).ToString("X6");
-            GUISettings.ThemeTextColor = (defaultTextColor.ToArgb() & 0x00ffffff).ToString("X6");
-            GUISettings.ThemeButtonColor = (defaultButtonColor.ToArgb() & 0x00ffffff).ToString("X6");
+            GUISettings.ThemeBackgroundColor = (Constants.DefaultBackgroundColor.ToArgb() & 0x00ffffff).ToString("X6");
+            GUISettings.ThemeTextColor = (Constants.DefaultTextColor.ToArgb() & 0x00ffffff).ToString("X6");
+            GUISettings.ThemeButtonColor = (Constants.DefaultButtonColor.ToArgb() & 0x00ffffff).ToString("X6");
 
-            textBox_ChangeBackgroundColor.BackColor = defaultBackgroundColor;
-            textBox_ChangeTextColor.BackColor = defaultTextColor;
-            textBox_ChangeButtonColor.BackColor = defaultButtonColor;
+            textBox_ChangeBackgroundColor.BackColor = Constants.DefaultBackgroundColor;
+            textBox_ChangeTextColor.BackColor = Constants.DefaultTextColor;
+            textBox_ChangeButtonColor.BackColor = Constants.DefaultButtonColor;
         }
 
         #endregion
         #region Check For Keypresses (Keybindings)
         private void Keypress_CheckDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) // If enter is pressed
+            if (e.KeyCode == Keys.Enter)
             {
-                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
+                e.SuppressKeyPress = true;
                 Save_Songlists_Keybindings(sender, e);
+                return;
             }
 
-            else if (((TextBox)sender) == textBox_NewKeyAssignment_MODS)
+            if (sender is TextBox textBox &&
+               (textBox == textBox_NewKeyAssignment_MODS || textBox == textBox_NewKeyAssignment_AUDIO))
             {
-                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
+                HandleKeyAssignment(textBox, e);
+            }
+        }
 
-                if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
-                    textBox_NewKeyAssignment_MODS.Text = e.KeyCode.ToString();
+        private void HandleKeyAssignment(TextBox textBox, KeyEventArgs e)
+        {
+            e.SuppressKeyPress = true;
 
-                else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91)) // Number or Letter was pressed (Will be overrided by text input)
+            if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
+            {
+                textBox.Text = e.KeyCode.ToString();
+            }
+            else if (KeyConversion.IsRocksmithReservedKey(e.KeyCode))
+            {
+                var result = MessageBox.Show(
+                    "The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?",
+                    "Keybinding Warning!",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Warning);
+
+                if (result == DialogResult.OK)
                 {
-                    if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-                        return;
-                    else
-                        textBox_NewKeyAssignment_MODS.Text = "";
+                    textBox.Text = e.KeyCode.ToString();
                 }
-            }
-            else if (((TextBox)sender) == textBox_NewKeyAssignment_AUDIO)
-            {
-                e.SuppressKeyPress = true; // Turns off the windows beep for pressing an invalid key.
-
-                if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
-                    textBox_NewKeyAssignment_AUDIO.Text = e.KeyCode.ToString();
-
-                else if ((e.KeyValue > 47 && e.KeyValue < 60) || (e.KeyValue > 64 && e.KeyValue < 91)) // Number or Letter was pressed (Will be overrided by text input)
+                else
                 {
-                    if (MessageBox.Show("The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?", "Keybinding Warning!", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
-                        return;
-                    else
-                        textBox_NewKeyAssignment_AUDIO.Text = "";
+                    textBox.Text = string.Empty;
                 }
             }
         }
@@ -1100,7 +1034,9 @@ namespace RSMods
                 Reset_RefreshForm();
             }
             else
+            {
                 MessageBox.Show("All your settings have been saved, and nothing was reset");
+            }
         }
 
         private void Reset_RefreshForm()
@@ -1112,19 +1048,6 @@ namespace RSMods
         }
         #endregion
         #region Save Settings
-        private void SaveConfiguration()
-        {
-            if (!AllowSaving)
-                return;
-
-            RsModsSettings.Save();
-
-            Debug.WriteLine(new StackFrame(1, true).GetMethod().Name);
-
-            SaveSettings_ShowLabel();
-            WinMsgUtil.SendMsgToRS("update all");
-        }
-
         private void SaveSettings_ShowLabel()
         {
             label_SettingsSaved.Visible = true;
@@ -1146,7 +1069,7 @@ namespace RSMods
             // Song Lists
             if (textBox.Name == textBox_NewSonglistName.Name)
             {
-                if (textBox_NewSonglistName.Text.Trim() == "")
+                if (string.IsNullOrEmpty(textBox_NewSonglistName.Text.Trim()))
                 {
                     MessageBox.Show("You cannot save a blank song list name as the game will break", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -1162,7 +1085,7 @@ namespace RSMods
             // Mod Keybindings
             if (textBox.Name == textBox_NewKeyAssignment_MODS.Name)
             {
-                if (textBox_NewKeyAssignment_MODS.Text == "")
+                if (string.IsNullOrEmpty(textBox_NewKeyAssignment_MODS.Text))
                 {
                     MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -1177,7 +1100,7 @@ namespace RSMods
             // Audio Keybindings
             if (textBox.Name == textBox_NewKeyAssignment_AUDIO.Name)
             {
-                if (textBox_NewKeyAssignment_AUDIO.Text == "")
+                if (string.IsNullOrEmpty(textBox_NewKeyAssignment_AUDIO.Text))
                 {
                     MessageBox.Show("You cannot set a blank keybind", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -1250,7 +1173,7 @@ namespace RSMods
 
         private void StringColors_ChangeNoteColor(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog
+            ColorDialog colorDialog = new()
             {
                 AllowFullOpen = true,
                 ShowHelp = false
@@ -1283,42 +1206,44 @@ namespace RSMods
 
         private void StringColors_LoadDefaultStringColors(bool colorBlind = false)
         {
-            if (StringColors.GetStringColor(0, true) != string.Empty) // Fixes a small use case where the GUI moves faster than the writing of the INI.
+            if (string.IsNullOrEmpty(StringColors.GetNoteColor(0, true))) // Fixes a small use case where the GUI moves faster than the writing of the INI.
             {
-                var stringColorTextboxes = new[]
-                {
-                    textBox_String0Color, textBox_String1Color, textBox_String2Color, 
-                    textBox_String3Color, textBox_String4Color, textBox_String5Color
-                };
-
-                for (int i = 0; i < stringColorTextboxes.Length; i++)
-                {
-                    string hexColor = $"#{StringColors.GetStringColor(i, !colorBlind)}";
-                    stringColorTextboxes[i].BackColor = ColorTranslator.FromHtml(hexColor);
-                }
-            }
-            else
                 RsModsSettings.Save();
+                return;
+            }
+
+            var stringColorTextboxes = new[]
+            {
+                textBox_String0Color, textBox_String1Color, textBox_String2Color,
+                textBox_String3Color, textBox_String4Color, textBox_String5Color
+            };
+
+            for (int i = 0; i < stringColorTextboxes.Length; i++)
+            {
+                string hexColor = $"#{StringColors.GetStringColor(i, !colorBlind)}";
+                stringColorTextboxes[i].BackColor = ColorTranslator.FromHtml(hexColor);
+            }
         }
 
         private void StringColors_LoadDefaultNoteColors(bool colorBlind = false)
         {
-            if (StringColors.GetNoteColor(0, true) != string.Empty) // Fixes a small use case where the GUI moves faster than the writing of the INI.
+            if (string.IsNullOrEmpty(StringColors.GetNoteColor(0, true))) // Fixes a small use case where the GUI moves faster than the writing of the INI.
             {
-                var noteColorTextBoxes = new[]
-                {
+                RsModsSettings.Save();
+                return;
+            }
+
+            var noteColorTextBoxes = new[]
+            {
                     textBox_Note0Color, textBox_Note1Color, textBox_Note2Color,
                     textBox_Note3Color, textBox_Note4Color, textBox_Note5Color
                 };
 
-                for (int i = 0; i < noteColorTextBoxes.Length; i++)
-                {
-                    string hexColor = $"#{StringColors.GetNoteColor(i, !colorBlind)}";
-                    noteColorTextBoxes[i].BackColor = ColorTranslator.FromHtml(hexColor);
-                }
+            for (int i = 0; i < noteColorTextBoxes.Length; i++)
+            {
+                string hexColor = $"#{StringColors.GetNoteColor(i, !colorBlind)}";
+                noteColorTextBoxes[i].BackColor = ColorTranslator.FromHtml(hexColor);
             }
-            else
-                RsModsSettings.Save();
         }
 
         private void StringColors_DefaultStringColors(object sender, EventArgs e) => StringColors_LoadDefaultStringColors();
@@ -1353,7 +1278,7 @@ namespace RSMods
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
                     matchedColor.SetColor((colorDialog.Color.ToArgb() & 0x00ffffff).ToString("X6"));
-                    notewayButtonToColorTextbox[((Button)sender)].BackColor = colorDialog.Color;
+                    notewayButtonToColorTextbox[(Button)sender].BackColor = colorDialog.Color;
                 }
             }
         }
@@ -1377,7 +1302,7 @@ namespace RSMods
         private void SetForget_FillUI()
         {
             listBox_Tunings.Items.Clear();
-            SetAndForgetMods.TuningsCollection = SetAndForgetMods.LoadTuningsCollection();
+            SetAndForgetMods.LoadTuningsCollection();
 
             listBox_Tunings.Items.Add("<New>");
             foreach (var key in SetAndForgetMods.TuningsCollection.Keys)
@@ -1408,14 +1333,17 @@ namespace RSMods
         #region Set And Forget UI Functions
         private void SetForget_SetTunerColors(int string_num = -1, bool extendedRange = false)
         {
-            NumericUpDown[] strings = { nUpDown_String0, nUpDown_String1, nUpDown_String2, nUpDown_String3, nUpDown_String4, nUpDown_String5 };
+            NumericUpDown[] strings = [nUpDown_String0, nUpDown_String1, nUpDown_String2, nUpDown_String3, nUpDown_String4, nUpDown_String5];
             if (string_num >= 0 && string_num < strings.Length)
+            {
                 strings[string_num].BackColor = ColorTranslator.FromHtml("#" + StringColors.GetStringColor(string_num, !extendedRange));
+            }
             else
+            {
                 for (int i = 0; i < strings.Length; i++)
                     strings[i].BackColor = ColorTranslator.FromHtml("#" + StringColors.GetStringColor(i, !extendedRange));
+            }
         }
-
 
         private void SetForget_RestoreDefaults(object sender, EventArgs e)
         {
@@ -1532,7 +1460,9 @@ namespace RSMods
                     SetForget_LoadSongsToWorkOn(sender, e);
             }
             else
+            {
                 MessageBox.Show("You already have a tuning with the same internal name");
+            }
         }
 
         private void SetForget_AddCustomMenu(object sender, EventArgs e) => SetAndForgetMods.AddExitGameMenuOption();
@@ -1639,7 +1569,7 @@ namespace RSMods
             };
         }
 
-        List<ArrangementTuning> definedTunings = new List<ArrangementTuning>();
+        private readonly List<ArrangementTuning> definedTunings = [];
 
         private void SetForget_FillDefinedTunings()
         {
@@ -1675,7 +1605,7 @@ namespace RSMods
             }
 
             listBox_SetAndForget_SongsWithCustomTuning.Items.Clear();
-            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange(customTunings.Keys.ToArray());
+            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange([.. customTunings.Keys]);
         }
 
         private void SetForget_FillSongsWithSelectedTuningList()
@@ -1709,13 +1639,13 @@ namespace RSMods
             }
 
             songsWithTuning.Sort();
-            listBox_SetAndForget_SongsWithSelectedTuning.Items.AddRange(songsWithTuning.ToArray());
+            listBox_SetAndForget_SongsWithSelectedTuning.Items.AddRange([.. songsWithTuning]);
         }
 
         private void SetForget_FillSongsWithBadBassTuningsList()
         {
             listBox_SetAndForget_SongsWithBadBassTuning.Items.Clear();
-            List<string> songsBeingChanged = new List<string>();
+            List<string> songsBeingChanged = [];
 
             foreach (SongData song in Songs)
             {
@@ -1743,7 +1673,7 @@ namespace RSMods
                     }
                 }
             }
-            listBox_SetAndForget_SongsWithBadBassTuning.Items.AddRange(songsBeingChanged.ToArray());
+            listBox_SetAndForget_SongsWithBadBassTuning.Items.AddRange([.. songsBeingChanged]);
         }
 
         private bool SetForget_IsTuningStandard(object tuning, bool forceBass = false) => tuning switch
@@ -1762,7 +1692,7 @@ namespace RSMods
             _ => false
         };
 
-        SortedDictionary<string, ArrangementTuning> customTunings = new SortedDictionary<string, ArrangementTuning>();
+        private readonly SortedDictionary<string, ArrangementTuning> customTunings = [];
 
         private void SetForget_LoadCustomTuningFromSong(object sender, EventArgs e)
         {
@@ -1789,27 +1719,27 @@ namespace RSMods
             {
                 case 0:
                     int offset = 40; // E2 (Midi)
-                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String0.Value) + offset));
+                    label_CustomTuningLowEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String0.Value + offset}");
                     break;
                 case 1:
                     offset = 45; // A2 (Midi)
-                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String1.Value) + offset));
+                    label_CustomTuningAStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String1.Value + offset}");
                     break;
                 case 2:
                     offset = 50; // D3 (Midi)
-                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String2.Value) + offset));
+                    label_CustomTuningDStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String2.Value + offset}");
                     break;
                 case 3:
-                    offset = 55;// G3 (Midi)
-                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String3.Value) + offset));
+                    offset = 55; // G3 (Midi)
+                    label_CustomTuningGStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String3.Value + offset}");
                     break;
                 case 4:
                     offset = 59; // B3 (Midi)
-                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String4.Value) + offset));
+                    label_CustomTuningBStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String4.Value + offset}");
                     break;
                 case 5:
                     offset = 64; // E4 (Midi)
-                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath(Convert.ToString(Convert.ToInt32(nUpDown_String5.Value) + offset)).ToLower();
+                    label_CustomTuningHighEStringLetter.Text = GuitarSpeak.GuitarSpeakNoteOctaveMath($"{(int)nUpDown_String5.Value + offset}").ToLower();
                     break;
                 default: // Yeah we don't know wtf happened here
                     MessageBox.Show("Invalid String Number! Please report this to the GUI devs!");
@@ -2001,7 +1931,7 @@ namespace RSMods
             if (listBox_ListMidiOutDevices.SelectedItem != null)
             {
                 Toggles.AutoTuneForSongDevice = listBox_ListMidiOutDevices.SelectedItem.ToString();
-                label_SelectedMidiOutDevice.Text = "Midi Device: " + listBox_ListMidiOutDevices.SelectedItem.ToString();
+                label_SelectedMidiOutDevice.Text = "Midi Device: " + listBox_ListMidiOutDevices.SelectedItem;
             }
         }
 
@@ -2010,7 +1940,7 @@ namespace RSMods
             if (listBox_ListMidiInDevices.SelectedItem != null)
             {
                 Toggles.MidiInDevice = listBox_ListMidiInDevices.SelectedItem.ToString();
-                label_SelectedMidiInDevice.Text = "Midi Device: " + listBox_ListMidiInDevices.SelectedItem.ToString();
+                label_SelectedMidiInDevice.Text = "Midi Device: " + listBox_ListMidiInDevices.SelectedItem;
             }
         }
 
@@ -2062,7 +1992,7 @@ namespace RSMods
             {
                 Profiles.SaveProfile();
 
-                if (Profiles.GetSaveDirectory() == String.Empty)
+                if (string.IsNullOrEmpty(Profiles.GetSaveDirectory()))
                 {
                     MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
                     checkBox_BackupProfile.Checked = false;
@@ -2308,7 +2238,6 @@ namespace RSMods
 
         private void Save_RemoveFingerprints(object sender, EventArgs e) => Toggles.RemoveFingerprints = checkBox_RemoveFingerprints.Checked;
 
-
         private void Save_SetSavePath(object sender, EventArgs e)
         {
             string saveFolder = GenUtil.GetSaveFolder(true);
@@ -2323,11 +2252,9 @@ namespace RSMods
             checkBox_BackupProfile.Checked = true;
             button_SetSavePath.Visible = false;
 
-            // Save some constants
             Constants.SavePath = saveFolder;
-            Constants.BypassSavePrompt = "false";
-            List<string> settings = [$"RSPath = {Constants.RSFolder}", $"SavePath = {Constants.SavePath}", $"BypassSavePrompt = {Constants.BypassSavePrompt}"];
-            File.WriteAllLines(Constants.SettingsPath, settings);
+            Constants.SavePathDeclined = false;
+            Constants.SaveBaseSettings();
 
             // Refresh the Profile Edits UI, now that we have the information we need.
             Startup_LoadRocksmithProfiles();
@@ -2344,7 +2271,7 @@ namespace RSMods
             {
                 ToolTip.Hide(ActiveForm);
                 ToolTip.Active = false;
-            };
+            }
         }
 
         public ToolTip currentTooltip = new(); // Fixes toolTip duplication glitch.
@@ -2379,7 +2306,6 @@ namespace RSMods
 
         private void GuitarSpeak_Enable(object sender, EventArgs e)
         {
-            checkBox_GuitarSpeak.Checked = checkBox_GuitarSpeak.Checked;
             groupBox_GuitarSpeak.Visible = checkBox_GuitarSpeak.Checked;
             checkBox_GuitarSpeakWhileTuning.Visible = checkBox_GuitarSpeak.Checked;
             Toggles.GuitarSpeak = checkBox_GuitarSpeak.Checked;
@@ -2393,7 +2319,7 @@ namespace RSMods
                 int inputOctave = listBox_GuitarSpeakOctave.SelectedIndex - 3; // -1 for the offset, and -2 for octave offset in DLL.
                 int outputNoteOctave = inputNote + (inputOctave * 12);
 
-                MessageBox.Show(listBox_GuitarSpeakNote.SelectedItem.ToString() + listBox_GuitarSpeakOctave.SelectedItem.ToString() + " was saved to " + listBox_GuitarSpeakKeypress.SelectedItem.ToString(), "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{listBox_GuitarSpeakNote.SelectedItem}{listBox_GuitarSpeakOctave.SelectedItem} was saved to {listBox_GuitarSpeakKeypress.SelectedItem}", "Note Saved!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 int index = listBox_GuitarSpeakKeypress.SelectedIndex;
                 Dictionaries.GuitarSpeakKeybinds[index].SetKey(outputNoteOctave.ToString());
@@ -2404,7 +2330,9 @@ namespace RSMods
                 listBox_GuitarSpeakKeypress.ClearSelected();
             }
             else
+            {
                 MessageBox.Show("One, or more, of the Guitar Speak boxes not selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void GuitarSpeak_WhileTuning(object sender, EventArgs e) => RsModsSettings.GuitarSpeak.GuitarSpeakWhileTuning = checkBox_GuitarSpeakWhileTuning.Checked;
@@ -2446,7 +2374,7 @@ namespace RSMods
                 {
                     var selectedReward = Twitch_GetSelectedReward(row);
 
-                    if (selectedReward.AdditionalMsg != null && selectedReward.AdditionalMsg != string.Empty && selectedReward.AdditionalMsg != "Random")
+                    if (!string.IsNullOrEmpty(selectedReward.AdditionalMsg) && selectedReward.AdditionalMsg != "Random")
                         row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
 
                     Twitch_CheckForTurboSpeed(selectedReward);
@@ -2469,7 +2397,7 @@ namespace RSMods
 
             textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
 
-            Binding listeningToTwitchBinding = new Binding("Text", TwitchSettings.Get, "Authorized");
+            Binding listeningToTwitchBinding = new("Text", TwitchSettings.Get, "Authorized");
             listeningToTwitchBinding.Format += (s, e) =>
             {
                 if ((bool)e.Value && TwitchSettings.Get.Reauthorized) // If we are authorized
@@ -2505,7 +2433,7 @@ namespace RSMods
         #region Twitch
         private void Twitch_ReAuthorize(object sender, EventArgs e)
         {
-            ImplicitAuth auth = new ImplicitAuth();
+            ImplicitAuth auth = new();
 
             string authRes = auth.MakeAuthRequest();
 
@@ -2534,23 +2462,20 @@ namespace RSMods
             }
         }
 
-        private async void Twitch_SaveRewards()
+        private async Task Twitch_SaveRewards()
         {
             await Task.Run(() =>
             {
-                XmlSerializer xs = new XmlSerializer(TwitchSettings.Get.Rewards.GetType());
-                using (var sww = new StringWriter())
-                {
-                    using (XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true }))
-                    {
-                        xs.Serialize(writer, TwitchSettings.Get.Rewards);
+                XmlSerializer xs = new(TwitchSettings.Get.Rewards.GetType());
+                using var sww = new StringWriter();
+                using XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true });
 
-                        string exePath = AppDomain.CurrentDomain.BaseDirectory;
-                        string effectListPath = Path.Combine(exePath, "TwitchEnabledEffects.xml");
+                xs.Serialize(writer, TwitchSettings.Get.Rewards);
 
-                        File.WriteAllText(effectListPath, sww.ToString());
-                    }
-                }
+                string exePath = AppDomain.CurrentDomain.BaseDirectory;
+                string effectListPath = Path.Combine(exePath, "TwitchEnabledEffects.xml");
+
+                File.WriteAllText(effectListPath, sww.ToString());
             });
         }
 
@@ -2611,26 +2536,22 @@ namespace RSMods
 
         private void Twitch_AddRewardToEnabled(TwitchReward reward) // Just imagine this was a bound list :P
         {
-            if (reward is BitsReward)
-                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((BitsReward)reward).BitsAmount, "Bits", ((BitsReward)reward).BitsID);
-            else if (reward is ChannelPointsReward)
-                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, ((ChannelPointsReward)reward).PointsAmount, "Points", ((ChannelPointsReward)reward).PointsID);
-            else if (reward is SubReward)
-                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, 1, "Sub", ((SubReward)reward).SubID);
+            if (reward is BitsReward bitsReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, bitsReward.BitsAmount, "Bits", bitsReward.BitsID);
+            else if (reward is ChannelPointsReward channelPointsReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, channelPointsReward.PointsAmount, "Points", channelPointsReward.PointsID);
+            else if (reward is SubReward subReward)
+                dgv_EnabledRewards.Rows.Add(reward.Enabled, reward.Name, reward.Length, 1, "Sub", subReward.SubID);
         }
 
         private TwitchReward Twitch_GetSelectedReward(DataGridViewRow selectedRow)
         {
-            TwitchReward selectedReward;
-
             if (selectedRow.Cells["colEnabledRewardsType"].Value.ToString() == "Bits")
-                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is BitsReward && ((BitsReward)r).BitsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
+                return TwitchSettings.Get.Rewards.FirstOrDefault(r => r is BitsReward bitsReward && bitsReward.BitsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
             else if (selectedRow.Cells["colEnabledRewardsType"].Value.ToString() == "Sub")
-                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is SubReward subReward && subReward.SubID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
+                return TwitchSettings.Get.Rewards.FirstOrDefault(r => r is SubReward subReward && subReward.SubID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
             else
-                selectedReward = TwitchSettings.Get.Rewards.FirstOrDefault(r => r is ChannelPointsReward channelPointsReward && channelPointsReward.PointsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
-
-            return selectedReward;
+                return TwitchSettings.Get.Rewards.FirstOrDefault(r => r is ChannelPointsReward channelPointsReward && channelPointsReward.PointsID.ToString() == selectedRow.Cells["colEnabledRewardsID"].Value.ToString());
         }
 
         private void Twitch_EnabledRewards_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -2651,14 +2572,14 @@ namespace RSMods
                 return;
 
             selectedReward.Enabled = Convert.ToBoolean(selectedRow.Cells["colEnabledRewardsEnabled"].Value);
-            if (selectedRow.Cells["colEnabledRewardsLength"].Value == null || !(Int32.TryParse(selectedRow.Cells["colEnabledRewardsLength"].Value.ToString(), out int rewardLength)))
+            if (selectedRow.Cells["colEnabledRewardsLength"].Value == null || !Int32.TryParse(selectedRow.Cells["colEnabledRewardsLength"].Value.ToString(), out int rewardLength))
             {
                 selectedRow.Cells["colEnabledRewardsLength"].Value = 0;
                 MessageBox.Show("You need to put a number, not a text value.");
                 return;
             }
 
-            if (selectedRow.Cells["colEnabledRewardsAmount"].Value == null || !(Int32.TryParse(selectedRow.Cells["colEnabledRewardsAmount"].Value.ToString(), out int rewardAmount)))
+            if (selectedRow.Cells["colEnabledRewardsAmount"].Value == null || !Int32.TryParse(selectedRow.Cells["colEnabledRewardsAmount"].Value.ToString(), out int rewardAmount))
             {
                 selectedRow.Cells["colEnabledRewardsAmount"].Value = 0;
                 MessageBox.Show("You need to put a number, not a text value.");
@@ -2739,7 +2660,7 @@ namespace RSMods
 
         private void Twitch_SolidNoteColor_Pick(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog
+            ColorDialog colorDialog = new()
             {
                 AllowFullOpen = true,
                 ShowHelp = false
@@ -2804,7 +2725,9 @@ namespace RSMods
                 auth.MakeAuthRequest(true); // When the request finishes, it will trigger PropertyChanged & set Reauthorized, which in turn will reset PubSub
             }
             else
+            {
                 PubSub.Get.Resub();
+            }
         }
 
         private static void Twitch_SaveSettings() => TwitchSettings.Get.SaveSettings();
@@ -2837,9 +2760,8 @@ namespace RSMods
         private void Fonts_Load() // Not modified from here: https://stackoverflow.com/a/8657854 :eyes:
         {
             InstalledFontCollection fontList = new();
-            FontFamily[] fontFamilies = fontList.Families;
 
-            foreach (FontFamily font in fontFamilies)
+            foreach (FontFamily font in fontList.Families)
             {
                 listBox_AvailableFonts.Items.Add(font.Name);
             }
@@ -2850,7 +2772,7 @@ namespace RSMods
         private void Fonts_Change(object sender, EventArgs e)
         {
             string fontName = listBox_AvailableFonts.SelectedItem.ToString();
-            Font newFontSelected = new Font(fontName, 10.0f, Font.Style, Font.Unit);
+            Font newFontSelected = new(fontName, 10.0f, Font.Style, Font.Unit);
             label_FontTestCAPITALS.Font = newFontSelected;
             label_FontTestlowercase.Font = newFontSelected;
             label_FontTestNumbers.Font = newFontSelected;
@@ -3057,7 +2979,6 @@ namespace RSMods
             checkBox_Rocksmith_PostEffects.Enabled = false;
             checkBox_Rocksmith_HighResScope.Enabled = false;
 
-
             RocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Medium;
         }
         private void Rocksmith_HighQuality(object sender, EventArgs e)
@@ -3136,14 +3057,14 @@ namespace RSMods
             Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
 
             // Add RS1 owned DLC
-            List<string> ownedRS1DLC = new List<string>();
-            List<JToken> DLCTags = Profiles.DecryptedProfile["Stats"]["DLCTag"].ToList();
-            foreach (JProperty DLCTag in DLCTags)
+            List<string> ownedRS1DLC = [];
+            List<JToken> DLCTags = [.. Profiles.DecryptedProfile["Stats"]["DLCTag"]];
+            foreach (JProperty DLCTag in DLCTags.Cast<JProperty>())
             {
                 ownedRS1DLC.Add(DLCTag.Name);
             }
 
-            List<List<string>> dlcKeyArrayList = new List<List<string>>();
+            List<List<string>> dlcKeyArrayList = [];
             dlcKeyArrayList.Add(Profiles.DecryptedProfile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>());
 
             List<List<string>> SongLists = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
@@ -3152,7 +3073,7 @@ namespace RSMods
 
             foreach (SongData song in Songs.ToList())
             {
-                if ((song.RS1AppID != 0 && !ownedRS1DLC.Contains(song.RS1AppID.ToString())) || song.Artist == String.Empty || song.Title == String.Empty || !song.Shipping)
+                if ((song.RS1AppID != 0 && !ownedRS1DLC.Contains(song.RS1AppID.ToString())) || string.IsNullOrEmpty(song.Artist) || string.IsNullOrEmpty(song.Title) || !song.Shipping)
                 {
                     Songs.Remove(song);
                     continue;
@@ -3238,30 +3159,32 @@ namespace RSMods
 
         private void Profiles_UnlockAllRewards(object sender, EventArgs e)
         {
-            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex <= -1)
             {
-                if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                {
-                    Profiles.ChangeRewardStatus(true);
-                    Profiles_SaveRewardsToProfile();
-                }
-            }
-            else
                 MessageBox.Show("Make sure you have a profile selected!");
+                return;
+            }
+
+            if (MessageBox.Show("Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                Profiles.ChangeRewardStatus(true);
+                Profiles_SaveRewardsToProfile();
+            }
         }
 
         private void Profiles_LockAllRewards(object sender, EventArgs e)
         {
-            if (listBox_Profiles_AvailableProfiles.SelectedIndex > -1)
+            if (listBox_Profiles_AvailableProfiles.SelectedIndex <= -1)
             {
-                if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                {
-                    Profiles.ChangeRewardStatus(false);
-                    Profiles_SaveRewardsToProfile();
-                }
-            }
-            else
                 MessageBox.Show("Make sure you have a profile selected!");
+                return;
+            }
+
+            if (MessageBox.Show("Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                Profiles.ChangeRewardStatus(false);
+                Profiles_SaveRewardsToProfile();
+            }
         }
 
         private void Profile_AddNewSongList(object sender, EventArgs e)
@@ -3276,7 +3199,7 @@ namespace RSMods
                     return;
                 }
 
-                SongLists.Add(new List<string>());
+                SongLists.Add([]);
 
                 Profiles.DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(SongLists);
 
@@ -3294,9 +3217,10 @@ namespace RSMods
                 MessageBox.Show("Your new song list is present in game!");
             }
             else
+            {
                 MessageBox.Show("Make sure you have a profile selected!");
+            }
         }
-
 
         private void Profile_RemoveNewestSongList(object sender, EventArgs e)
         {
@@ -3328,7 +3252,9 @@ namespace RSMods
                 MessageBox.Show("The newest songlist has been removed!");
             }
             else
+            {
                 MessageBox.Show("Make sure you have a profile selected!");
+            }
         }
 
         private void Profiles_GenerateNewSonglistsLists()
@@ -3368,7 +3294,7 @@ namespace RSMods
         private void Profiles_SongToSonglist(int songlistNumber, bool add = true)
         {
             int rowIndex = dgv_Profiles_Songlists.SelectedCells[0].RowIndex;
-            string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value.ToString()} - {dgv_Profiles_Songlists[1, rowIndex].Value.ToString()}";
+            string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value} - {dgv_Profiles_Songlists[1, rowIndex].Value}";
             string DLCKey = Songs.FirstOrDefault(song => song.CommonName == commonName).DLCKey;
 
             List<string> SongList = Profiles.DecryptedProfile["SongListsRoot"]["SongLists"][songlistNumber - 1].ToObject<List<string>>();
@@ -3384,7 +3310,7 @@ namespace RSMods
         private void Profiles_SongToFavorites(bool add = true)
         {
             int rowIndex = dgv_Profiles_Songlists.SelectedCells[0].RowIndex;
-            string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value.ToString()} - {dgv_Profiles_Songlists[1, rowIndex].Value.ToString()}";
+            string commonName = $"{dgv_Profiles_Songlists[0, rowIndex].Value} - {dgv_Profiles_Songlists[1, rowIndex].Value}";
             string DLCKey = Songs.FirstOrDefault(song => song.CommonName == commonName).DLCKey;
 
             List<string> FavoritesList = Profiles.DecryptedProfile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>();
@@ -3459,9 +3385,9 @@ namespace RSMods
                 return;
             }
 
-            List<string> filenames = new List<string>();
+            List<string> filenames = [];
 
-            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            using (OpenFileDialog fileDialog = new())
             {
                 fileDialog.Filter = "JSON|*.json";
 
@@ -3472,7 +3398,7 @@ namespace RSMods
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filenames = fileDialog.FileNames.ToList();
+                    filenames = [.. fileDialog.FileNames];
                 }
             }
 
@@ -3482,8 +3408,8 @@ namespace RSMods
                 return;
             }
 
-            List<object> tonesToImport_Guitar = new List<object>();
-            List<object> tonesToImport_Bass = new List<object>();
+            List<object> tonesToImport_Guitar = [];
+            List<object> tonesToImport_Bass = [];
 
             foreach (string filename in filenames)
             {
@@ -3512,7 +3438,7 @@ namespace RSMods
                     arrId = pair.Key;
                 }
 
-                if (arrId == string.Empty)
+                if (string.IsNullOrEmpty(arrId))
                 {
                     MessageBox.Show($"Input Tone Manifest has no ArrangementId.\nFilename: {filename}");
                     continue;
@@ -3548,17 +3474,12 @@ namespace RSMods
                 }
 
                 JToken tones = attributes["Tones"];
-
-                List<object> tonesInSong = tones.ToObject<List<object>>();
-
-                foreach (object tone in tonesInSong)
+                foreach (object tone in tones.ToObject<List<object>>())
                 {
-                    // Bass
                     if (arrangementName.Contains("Bass"))
                     {
                         tonesToImport_Bass.Add(tone);
                     }
-                    // Guitar
                     else
                     {
                         tonesToImport_Guitar.Add(tone);
@@ -3588,9 +3509,9 @@ namespace RSMods
                 return;
             }
 
-            List<string> filenames = new List<string>();
+            List<string> filenames = [];
 
-            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            using (OpenFileDialog fileDialog = new())
             {
                 fileDialog.Filter = "XML|*.tone2014.xml";
 
@@ -3601,7 +3522,7 @@ namespace RSMods
 
                 if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filenames = fileDialog.FileNames.ToList();
+                    filenames = [.. fileDialog.FileNames];
                 }
             }
 
@@ -3611,8 +3532,8 @@ namespace RSMods
                 return;
             }
 
-            List<Tone2014> tonesToImport_Guitar = new List<Tone2014>();
-            List<Tone2014> tonesToImport_Bass = new List<Tone2014>();
+            List<Tone2014> tonesToImport_Guitar = [];
+            List<Tone2014> tonesToImport_Bass = [];
 
             MessageBoxManager.OK = "Guitar";
             MessageBoxManager.Cancel = "Bass";
@@ -3654,132 +3575,28 @@ namespace RSMods
         }
 
         #endregion
-        #region Check For Updates
-        private async void CheckForUpdates_CallGithubAPI()
-        {
-            try
-            {
-                // Setup HTTP Client
-                string latestRelease_API = "https://api.github.com/repos/Lovrom8/RSMods/releases/latest";
-                HttpClient client = new HttpClient();
-
-                // Github API won't let us through without a User-Agent.
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("RSMods", Application.ProductVersion));
-
-                // Read latest release from Github API.
-                HttpResponseMessage response = client.GetAsync(latestRelease_API).Result;
-
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-
-                if (jsonResponse.Contains("limit exceeded"))
-                {
-                    github_UpdateResponse = "null";
-                    return;
-                }
-
-                github_UpdateResponse = jsonResponse;
-            }
-            catch
-            {
-                github_UpdateResponse = "null"; // User doesn't have a stable internet connection.
-            }
-        }
-
-        private bool CheckForUpdates_IsUpdateAvailable()
-        {
-            string jsonResponse = github_UpdateResponse;
-
-            // Couldn't connect to Github API.
-            if (jsonResponse == "null")
-                return false;
-
-            // Get Version Number From Github API.
-            try
-            {
-                string github_versionNumber = JToken.Parse(jsonResponse).SelectToken("name").ToString().Replace("RSModsInstaller-v", "");
-
-                // Return true if an update is available, and false if it isn't.
-                return github_versionNumber != Application.ProductVersion;
-            }
-            catch // Unable to check for updates.
-            {
-                return false;
-            }
-        }
-
-        private string CheckForUpdates_GetPatchNotes()
-        {
-            string jsonResponse = github_UpdateResponse;
-
-            // Couldn't connect to Github API.
-            if (jsonResponse == "null")
-                return "";
-
-            return JToken.Parse(jsonResponse).SelectToken("body").ToString();
-        }
-
-        private void CheckForUpdates_GetInstaller()
-        {
-            string jsonResponse = github_UpdateResponse;
-
-            if (jsonResponse == "null")
-                return;
-
-            // Get Download Link For New Installer.
-            string github_newRelease = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("browser_download_url").ToString();
-            string github_installerName = JToken.Parse(jsonResponse).SelectToken("assets")[0].SelectToken("name").ToString();
-
-            // Download New Installer And Run It
-            using (WebClient webClient = new WebClient())
-            {
-                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(CheckForUpdates_RunInstaller);
-                webClient.DownloadFileAsync(new Uri(github_newRelease), github_installerName);
-            }
-        }
-
-        private void CheckForUpdates_RunInstaller(object sender, AsyncCompletedEventArgs e)
-        {
-            // Download was canceled.
-            if (e.Cancelled)
-                return;
-
-            // Run Installer and close GUI so we don't cause conflicts / errors.
-            if (e.Error == null)
-            {
-                Task.Run(() => Process.Start("RS2014-Mod-Installer.exe"));
-                Application.Exit();
-            }
-
-            // Error detected
-            else
-                MessageBox.Show(e.Error.Message + "\n" + e.Error.StackTrace);
-        }
-
-        private void CheckForUpdates_UpdateRSMods(object sender, EventArgs e) => CheckForUpdates_GetInstaller();
-        #endregion
         #region Sound Packs
 
-        static string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\";
-        static string soundPackEnglishPrefix = "english(us)\\";
-        string voiceLine_BadPerformance = "2066953778.wem";
-        string voiceLine_DisappointingPerformance = "2067218742.wem";
-        string voiceLine_SubparPerformance = "2066826048.wem";
-        string voiceLine_CouldBeBetter = "2068001585.wem";
-        string voiceLine_DecentPerformance = "2068133176.wem";
-        string voiceLine_AlrightPerformance = "2068002869.wem";
-        string voiceLine_ExcellentPerformance = "2067285052.wem";
-        string voiceLine_TopNotchPerformance = "2067281979.wem";
-        string voiceLine_SuperbPerformance = "2067350856.wem";
-        string voiceLine_DazzlingPerformance = "2068132687.wem";
-        string voiceLine_YoureGonnaBeASuperstar = "2068199486.wem";
-        string voiceLine_WonderfulPerformance = "2067154245.wem";
-        string voiceLine_ExceptionalPerformance = "2067153482.wem";
-        string voiceLine_AmazingPerformance = "2067871807.wem";
-        string voiceLine_ExemplaryPerformance = "2067022644.wem";
-        string voiceLine_MasterfulPerformance_98 = "2068137287.wem";
-        string voiceLine_MasterfulPerformance_99 = "2067870540.wem";
-        string voiceLine_FlawlessPerformance = "2068002100.wem";
-
+        private const string soundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\";
+        private const string soundPackEnglishPrefix = "english(us)\\";
+        private const string voiceLine_BadPerformance = "2066953778.wem";
+        private const string voiceLine_DisappointingPerformance = "2067218742.wem";
+        private const string voiceLine_SubparPerformance = "2066826048.wem";
+        private const string voiceLine_CouldBeBetter = "2068001585.wem";
+        private const string voiceLine_DecentPerformance = "2068133176.wem";
+        private const string voiceLine_AlrightPerformance = "2068002869.wem";
+        private const string voiceLine_ExcellentPerformance = "2067285052.wem";
+        private const string voiceLine_TopNotchPerformance = "2067281979.wem";
+        private const string voiceLine_SuperbPerformance = "2067350856.wem";
+        private const string voiceLine_DazzlingPerformance = "2068132687.wem";
+        private const string voiceLine_YoureGonnaBeASuperstar = "2068199486.wem";
+        private const string voiceLine_WonderfulPerformance = "2067154245.wem";
+        private const string voiceLine_ExceptionalPerformance = "2067153482.wem";
+        private const string voiceLine_AmazingPerformance = "2067871807.wem";
+        private const string voiceLine_ExemplaryPerformance = "2067022644.wem";
+        private const string voiceLine_MasterfulPerformance_98 = "2068137287.wem";
+        private const string voiceLine_MasterfulPerformance_99 = "2067870540.wem";
+        private const string voiceLine_FlawlessPerformance = "2068002100.wem";
 
         private void SoundPacks_UnpackAudioPsarc(object sender, EventArgs e)
         {
@@ -3860,30 +3677,29 @@ namespace RSMods
                 return;
             }
 
-            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            using OpenFileDialog fileDialog = new();
+            fileDialog.Filter = "Mp3 Files|*.mp3|Ogg Files|*.ogg|Wav Files|*.wav|Wem Files|*.wem";
+            fileDialog.RestoreDirectory = true;
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                fileDialog.Filter = "Mp3 Files|*.mp3|Ogg Files|*.ogg|Wav Files|*.wav|Wem Files|*.wem";
-                fileDialog.RestoreDirectory = true;
+                if (Path.GetExtension(fileDialog.FileName) == ".mp3")
+                    fileDialog.FileName = SoundPacks_ConvertMP3ToWav(fileDialog.FileName);
+                if (Path.GetExtension(fileDialog.FileName) == ".ogg")
+                    fileDialog.FileName = SoundPacks_ConvertOGGToWem(fileDialog.FileName);
+                if (Path.GetExtension(fileDialog.FileName) == ".wav")
+                    fileDialog.FileName = SoundPacks_ConvertWAVToWem(fileDialog.FileName);
 
-                if (fileDialog.ShowDialog() == DialogResult.OK)
+                if (fileDialog.FileName != "null")
                 {
-                    if (Path.GetExtension(fileDialog.FileName) == ".mp3")
-                        fileDialog.FileName = SoundPacks_ConvertMP3ToWav(fileDialog.FileName);
-                    if (Path.GetExtension(fileDialog.FileName) == ".ogg")
-                        fileDialog.FileName = SoundPacks_ConvertOGGToWem(fileDialog.FileName);
-                    if (Path.GetExtension(fileDialog.FileName) == ".wav")
-                        fileDialog.FileName = SoundPacks_ConvertWAVToWem(fileDialog.FileName);
-
-                    if (fileDialog.FileName != "null")
-                    {
-                        File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
-                        GC.Collect(); // Need to take out the garbage or it'll crash
-                        File.Move(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
-                        MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
-                    }
-                    else
-                        MessageBox.Show("An error occured when converting your file.\nPlease contact the RSMods devs.");
-
+                    File.Delete(Path.Combine(Application.StartupPath, soundToReplace));
+                    GC.Collect(); // Need to take out the garbage or it'll crash
+                    File.Move(fileDialog.FileName, Path.Combine(Application.StartupPath, soundToReplace));
+                    MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
+                }
+                else
+                {
+                    MessageBox.Show("An error occured when converting your file.\nPlease contact the RSMods devs.");
                 }
             }
         }
@@ -3892,7 +3708,7 @@ namespace RSMods
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
 
-            using (Mp3FileReader mp3FileReader = new Mp3FileReader(mp3File))
+            using (Mp3FileReader mp3FileReader = new(mp3File))
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
             }
@@ -3963,31 +3779,31 @@ namespace RSMods
 
         private void SoundPacks_Import_Dialog(object sender, EventArgs e)
         {
-            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            using OpenFileDialog fileDialog = new()
             {
-                fileDialog.RestoreDirectory = true;
-                fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
+                RestoreDirectory = true,
+                Filter = "RS2014 Soundpack|*.rs_soundpack"
+            };
 
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                    SoundPacks_Import_File(fileDialog.FileName);
-            }
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+                SoundPacks_Import_File(fileDialog.FileName);
         }
 
         private void SoundPacks_Import_File(string fileName)
         {
             SevenZipExtractor.SetLibraryPath("7z64.dll");
-            using (SevenZipExtractor extractor = new SevenZipExtractor(fileName))
-            {
-                extractor.ExtractArchive(soundPackLocationPrefix);
-                MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
-            }
+            using SevenZipExtractor extractor = new(fileName);
+            extractor.ExtractArchive(soundPackLocationPrefix);
+            MessageBox.Show("Don't forget to hit \"Repack Audio Psarc\" when you're done.");
         }
 
         private void SoundPacks_Export_Dialog(object sender, EventArgs e)
         {
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.Filter = "RS2014 Soundpack|*.rs_soundpack";
-            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            SaveFileDialog fileDialog = new()
+            {
+                Filter = "RS2014 Soundpack|*.rs_soundpack",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
                 SoundPacks_Export_File(fileDialog.FileName);
@@ -3997,7 +3813,7 @@ namespace RSMods
         {
             SevenZipCompressor.SetLibraryPath("7z64.dll");
 
-            SevenZipCompressor compressor = new SevenZipCompressor
+            SevenZipCompressor compressor = new()
             {
                 CompressionMethod = CompressionMethod.Deflate,
                 CompressionLevel = SevenZip.CompressionLevel.Normal,
@@ -4035,7 +3851,7 @@ namespace RSMods
 
         private void SoundPacks_Reset(object sender, EventArgs e)
         {
-            GenUtil.ExtractEmbeddedResource(Application.StartupPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", new string[] { "original.rs_soundpack" });
+            GenUtil.ExtractEmbeddedResource(Application.StartupPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["original.rs_soundpack"]);
             SoundPacks_Import_File("original.rs_soundpack");
             File.Delete("original.rs_soundpack");
         }
@@ -4086,14 +3902,14 @@ namespace RSMods
 
             for (uint deviceNumber = 0; deviceNumber < numberOfMidiOutDevices; deviceNumber++)
             {
-                Midi.MIDIOUTCAPS temp = new Midi.MIDIOUTCAPS { };
+                Midi.MIDIOUTCAPS temp = new();
                 Midi.midiOutGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIOUTCAPS)));
                 this.listBox_ListMidiOutDevices.Items.Add(temp.szPname);
             }
 
             for (uint deviceNumber = 0; deviceNumber < numberOfMidiInDevices; deviceNumber++)
             {
-                Midi.MIDIINCAPS temp = new Midi.MIDIINCAPS { };
+                Midi.MIDIINCAPS temp = new();
                 Midi.midiInGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIINCAPS)));
                 this.listBox_ListMidiInDevices.Items.Add(temp.szPname);
             }
@@ -4206,10 +4022,8 @@ namespace RSMods
             }
         }
 
-        private void checkBox_EnabledMidiIn_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_EnabledMidiIn_CheckedChanged(object sender, EventArgs e)
         {
-
-            // Enable
             if (checkBox_EnabledMidiIn.Checked)
             {
                 if (listBox_ListMidiInDevices.SelectedIndex == -1)
@@ -4221,7 +4035,7 @@ namespace RSMods
 
                 for (uint deviceNumber = 0; deviceNumber < numberOfMidiInDevices; deviceNumber++)
                 {
-                    Midi.MIDIINCAPS temp = new Midi.MIDIINCAPS { };
+                    Midi.MIDIINCAPS temp = new();
                     Midi.midiInGetDevCaps(deviceNumber, ref temp, (uint)Marshal.SizeOf(typeof(Midi.MIDIINCAPS)));
 
                     if (temp.szPname == listBox_ListMidiInDevices.SelectedItem.ToString())
@@ -4242,7 +4056,6 @@ namespace RSMods
 
                 Debug.WriteLine("Set up Midi In");
             }
-            // Disable
             else
             {
                 Midi.midiInStop(Midi.MidiInHandle);
@@ -4254,9 +4067,9 @@ namespace RSMods
             }
         }
 
-        private void trackBar_FontSize_Scroll(object sender, EventArgs e) => lblCurrentFontSize.Text = $"Current font size: {trackBar_FontSize.Value}";
+        private void TrackBar_FontSize_Scroll(object sender, EventArgs e) => lblCurrentFontSize.Text = $"Current font size: {trackBar_FontSize.Value}";
 
-        private void btnSaveFontSize_Click(object sender, EventArgs e)
+        private void BtnSaveFontSize_Click(object sender, EventArgs e)
         {
             Toggles.OnScreenFontSize = trackBar_FontSize.Value;
         }

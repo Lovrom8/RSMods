@@ -42,29 +42,23 @@ namespace RSMods.Util
                 }
             }
 
-            public string AsAnsiString
-            {
-                get { return Marshal.PtrToStringAnsi(lpData, cbData); }
-            }
-            public string AsUnicodeString
-            {
-                get { return Marshal.PtrToStringUni(lpData); }
-            }
+            public string AsAnsiString => Marshal.PtrToStringAnsi(lpData, cbData);
+            public string AsUnicodeString => Marshal.PtrToStringUni(lpData);
 
             public static CopyData CreateForString(int dwData, string value, bool Unicode = false)
             {
-                var result = new CopyData();
-                result.dwData = (IntPtr)dwData;
-                result.lpData = Unicode ? Marshal.StringToCoTaskMemUni(value) : Marshal.StringToCoTaskMemAnsi(value);
-                result.cbData = value.Length + 1;
-                return result;
+                return new CopyData
+                {
+                    dwData = (IntPtr)dwData,
+                    lpData = Unicode ? Marshal.StringToCoTaskMemUni(value) : Marshal.StringToCoTaskMemAnsi(value),
+                    cbData = value.Length + 1
+                };
             }
 
             public static UIntPtr Send(IntPtr targetHandle, int dwData, string value, uint timeoutMs = 1000, bool Unicode = false)
             {
                 var cds = CopyData.CreateForString(dwData, value, Unicode);
-                UIntPtr result;
-                SendMessageTimeout(targetHandle, WM_COPYDATA, IntPtr.Zero, ref cds, SendMessageTimeoutFlags.SMTO_NORMAL, timeoutMs, out result);
+                SendMessageTimeout(targetHandle, WM_COPYDATA, IntPtr.Zero, ref cds, SendMessageTimeoutFlags.SMTO_NORMAL, timeoutMs, out UIntPtr result);
                 cds.Dispose();
                 return result;
             }

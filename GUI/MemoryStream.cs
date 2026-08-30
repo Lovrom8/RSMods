@@ -17,34 +17,33 @@ namespace RSMods
             Position = 0;
         }
 
-        /* length is ignored because capacity has no meaning unless we implement an artifical limit */
+        /* Length is ignored because capacity has no meaning unless we implement an artificial limit */
         public MemoryStream(int length)
         {
             SetLength(length);
             Position = length;
-            byte[] d = block;   //access block to prompt the allocation of memory
+            _ = Block;   // Access block to prompt the allocation of memory
             Position = 0;
         }
 
         public override bool CanRead
         {
-            get { return true; }
+            get => true;
         }
 
         public override bool CanSeek
         {
-            get { return true; }
+            get => true;
         }
 
         public override bool CanWrite
         {
-            get { return true; }
+            get => true;
         }
-
 
         public override long Length
         {
-            get { return length; }
+            get => length;
         }
 
         public override long Position { get; set; }
@@ -53,27 +52,27 @@ namespace RSMods
 
         protected long blockSize = 65536;
 
-        protected List<byte[]> blocks = new List<byte[]>();
+        protected List<byte[]> blocks = [];
 
-        protected byte[] block
+        protected byte[] Block
         {
             get
             {
-                while (blocks.Count <= blockId)
+                while (blocks.Count <= BlockId)
                     blocks.Add(new byte[blockSize]);
 
-                return blocks[(int)blockId];
+                return blocks[(int)BlockId];
             }
         }
 
-        protected long blockId
+        protected long BlockId
         {
-            get { return Position / blockSize; }
+            get => Position / blockSize;
         }
 
-        protected long blockOffset
+        protected long BlockOffset
         {
-            get { return Position % blockSize; }
+            get => Position % blockSize;
         }
 
         public override void Flush()
@@ -86,7 +85,7 @@ namespace RSMods
 
             if (lcount < 0)
             {
-                throw new ArgumentOutOfRangeException("count", lcount, "Number of bytes to copy cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(count), lcount, "Number of bytes to copy cannot be negative.");
             }
 
             long remaining = (length - Position);
@@ -95,29 +94,26 @@ namespace RSMods
 
             if (buffer == null)
             {
-                throw new ArgumentNullException("buffer", "Buffer cannot be null.");
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null.");
             }
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset", offset, "Destination offset cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, "Destination offset cannot be negative.");
             }
 
             int read = 0;
-            long copysize = 0;
             do
             {
-                copysize = Math.Min(lcount, (blockSize - blockOffset));
-                Buffer.BlockCopy(block, (int)blockOffset, buffer, offset, (int)copysize);
-                lcount -= copysize;
-                offset += (int)copysize;
+                long copySize = Math.Min(lcount, blockSize - BlockOffset);
+                Buffer.BlockCopy(Block, (int)BlockOffset, buffer, offset, (int)copySize);
+                lcount -= copySize;
+                offset += (int)copySize;
 
-                read += (int)copysize;
-                Position += copysize;
-
+                read += (int)copySize;
+                Position += copySize;
             } while (lcount > 0);
 
             return read;
-
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -145,20 +141,19 @@ namespace RSMods
         public override void Write(byte[] buffer, int offset, int count)
         {
             long initialPosition = Position;
-            int copysize;
             try
             {
                 do
                 {
-                    copysize = Math.Min(count, (int)(blockSize - blockOffset));
+                    int copySize = Math.Min(count, (int)(blockSize - BlockOffset));
 
-                    EnsureCapacity(Position + copysize);
+                    EnsureCapacity(Position + copySize);
 
-                    Buffer.BlockCopy(buffer, (int)offset, block, (int)blockOffset, copysize);
-                    count -= copysize;
-                    offset += copysize;
+                    Buffer.BlockCopy(buffer, offset, Block, (int)BlockOffset, copySize);
+                    count -= copySize;
+                    offset += copySize;
 
-                    Position += copysize;
+                    Position += copySize;
 
                 } while (count > 0);
             }
@@ -174,7 +169,7 @@ namespace RSMods
             if (Position >= length)
                 return -1;
 
-            byte b = block[blockOffset];
+            byte b = Block[BlockOffset];
             Position++;
 
             return b;
@@ -183,7 +178,7 @@ namespace RSMods
         public override void WriteByte(byte value)
         {
             EnsureCapacity(Position + 1);
-            block[blockOffset] = value;
+            Block[BlockOffset] = value;
             Position++;
         }
 
@@ -193,20 +188,27 @@ namespace RSMods
                 length = (intended_length);
         }
 
-        /* http://msdn.microsoft.com/en-us/library/fs2xkftw.aspx */
-        protected override void Dispose(bool disposing)
-        {
-            /* We do not currently use unmanaged resources */
-            base.Dispose(disposing);
-        }
-
         public byte[] ToArray()
         {
-            long firstposition = Position;
+            long firstPosition = Position;
             Position = 0;
+
             byte[] destination = new byte[Length];
-            Read(destination, 0, (int)Length);
-            Position = firstposition;
+            int totalBytesRead = 0;
+            int bytesRead = 0;
+
+            while (totalBytesRead < destination.Length &&
+                  (bytesRead = Read(destination, totalBytesRead, destination.Length - totalBytesRead)) > 0)
+            {
+                totalBytesRead += 0;
+            }
+
+            if (totalBytesRead != destination.Length)
+            {
+                Array.Resize(ref destination, totalBytesRead);
+            }
+
+            Position = firstPosition;
             return destination;
         }
 
@@ -222,12 +224,13 @@ namespace RSMods
 
             } while (length > 0);
         }
+
         public void WriteTo(Stream destination)
         {
-            long initialpos = Position;
+            long initialPosition = Position;
             Position = 0;
             this.CopyTo(destination);
-            Position = initialpos;
+            Position = initialPosition;
         }
     }
 }

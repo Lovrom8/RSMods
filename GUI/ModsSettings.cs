@@ -185,8 +185,8 @@ namespace RSMods
 
         public static class StringColors
         {
-            private static readonly string[] _normalDefaults     = { "ff4f5a", "e2c102", "1dacf9", "ff9216", "3fcc0c", "c825ed" };
-            private static readonly string[] _colorblindDefaults = { "00c68e", "ff4f5a", "e2c102", "1dacf9", "ff9216", "3fcc0c" };
+            private static readonly string[] _normalDefaults = ["ff4f5a", "e2c102", "1dacf9", "ff9216", "3fcc0c", "c825ed"];
+            private static readonly string[] _colorblindDefaults = ["00c68e", "ff4f5a", "e2c102", "1dacf9", "ff9216", "3fcc0c"];
 
             private static string Key(string type, int index, bool normal) => $"{type}{index}_{(normal ? "N" : "CB")}";
             private static string Default(int index, bool normal) => normal ? _normalDefaults[index] : _colorblindDefaults[index];

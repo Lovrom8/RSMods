@@ -1,27 +1,30 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace RSMods.Data
 {
     public static class Constants
     {
-        private static string _rsFolder;
 
-        public static string RSFolder
+        public static Color DefaultBackgroundColor = Color.Azure;
+        public static Color DefaultTextColor = Color.Black;
+        public static Color DefaultButtonColor = SystemColors.ControlLight;
+
+        public static string RSFolder { get; set; }
+        public static string SavePath { get; set; }
+
+        public static bool SavePathDeclined { get; set; }
+
+        public static void SaveBaseSettings()
         {
-            get { return _rsFolder; }
-            set { _rsFolder = value; }
+            File.WriteAllLines(SettingsPath,
+            [
+                $"RSPath = {RSFolder}",
+                $"SavePath = {SavePath}",
+                $"BypassSavePrompt = {SavePathDeclined}"
+            ]);
         }
-
-        private static string _savePath;
-
-        public static string SavePath
-        {
-            get { return _savePath; }
-            set { _savePath = value; }
-        }
-
-        public static string BypassSavePrompt;
 
         public static string SettingsPath { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GUI_Settings.ini"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }

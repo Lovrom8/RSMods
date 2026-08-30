@@ -123,6 +123,8 @@
     <Compile Include="ASIO\AsioSettings.cs" />
     <Compile Include="ASIO\GetASIODevices.cs" />
     <Compile Include="Data\Constants.cs" />
+    <Compile Include="Data\GitHubAsset.cs" />
+    <Compile Include="Data\GitHubRelease.cs" />
     <Compile Include="Data\TuningDefinition.cs" />
     <Compile Include="Dictionaries.cs">
       <SubType>Form</SubType>
@@ -157,6 +159,7 @@
     <Compile Include="Util\ExeUtil.cs" />
     <Compile Include="Util\FolderPicker.cs" />
     <Compile Include="Util\GenUtil.cs" />
+    <Compile Include="Util\GithubUpdater.cs" />
     <Compile Include="Util\KeybindItem.cs" />
     <Compile Include="Util\ColorItem.cs" />
     <Compile Include="Twitch\RSModderBot.cs" />
@@ -177,9 +180,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="..\.editorconfig">
-      <Link>.editorconfig</Link>
-    </None>
     <None Include="Lib\ddc\ddc_default.cfg" />
     <None Include="Lib\ddc\ddc_keep_all_levels.cfg" />
     <None Include="Lib\ddc\ddc_merge_all_levels.cfg" />
