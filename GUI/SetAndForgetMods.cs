@@ -53,7 +53,7 @@ namespace RSMods
 
         public static bool RestoreDefaults()
         {
-            if (MessageBox.Show(@"Do you wish to restore your cache.psarc to its original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            if (MessageBox.Show(@"Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                 return false;
 
             try
@@ -338,7 +338,7 @@ namespace RSMods
 
             RepackCachePsarc();
 
-            MessageBox.Show("Successfully changed Guitarcade tones!", "Success");
+            MessageBox.Show("Successfully changed GuitarArcade tones!", "Success");
         }
 
         public static List<string> GetSteamProfilesTones()
@@ -474,7 +474,7 @@ namespace RSMods
                 {
                     if (driveType.Item2) // If is NVMe
                     {
-                        if (MessageBox.Show("Can you confirm Rocksmith is installed on an NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on an NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        if (MessageBox.Show("Can you confirm Rocksmith is installed on a NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on a NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             AddFastLoadModFile(true);
                         else
                             AddFastLoadModFile(false);
@@ -484,7 +484,7 @@ namespace RSMods
                 }
                 else
                 {
-                    if (MessageBox.Show(@"We were unable to detect the drive type on which Rocksmith is installed. \n Is it on an NVMe drive? (if it's not, fastest loading option is likely to crash your game!)", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (MessageBox.Show(@"We were unable to detect the drive type on which Rocksmith is installed. \n Is it on a NVMe drive? (if it's not, fastest loading option is likely to crash your game!)", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         AddFastLoadModFile(true);
                     else
                         AddFastLoadModFile(false);

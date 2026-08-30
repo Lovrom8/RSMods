@@ -31,7 +31,7 @@ enum StringState {
 	BodyNorm = 0x4b8 //= name = "NotewayBodypartsPreviewBlind" id = "338656387"
 	//BodyPrev == ?? - doesn't seem to be used while in a song*/
 
-	// GC stuff not used, because can't use GC in non E standard anyway, 
+	// GC stuff not used, becuase can't use GC in non E standard anyway, 
 	//but including theoretical values for the "replace all and self defined CB mode options.
 
 	/*

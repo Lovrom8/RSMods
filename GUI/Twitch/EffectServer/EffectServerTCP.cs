@@ -156,7 +156,7 @@ namespace RSMods.Twitch.EffectServer
                          Array.Copy(bytes, 0, incomingData, 0, length);
 
                          string clientMessage = Encoding.ASCII.GetString(incomingData);
-                         Debug.Write($"Received a message from the game: {clientMessage}");
+                         Debug.Write($"Recieved a message from the game: {clientMessage}");
 
                          if (clientMessage != "\0")
                          {
@@ -169,7 +169,7 @@ namespace RSMods.Twitch.EffectServer
                              }
 
                              // We'd already dequeued the current effect, so no need to remove it if it goes through
-                             //if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed successfully and it had been placed in the queue, remove it
+                             //if (response.status == 0 && remainingRewards.ContainsKey(response.id)) // If the effect has been executed sucessfully and it had been placed in the queue, remove it
                              //    remainingRewards.TryRemove(response.id, null);
                          }
                      }

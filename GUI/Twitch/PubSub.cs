@@ -42,7 +42,7 @@ namespace RSMods.Twitch
 
             pubSub.OnBitsReceived += OnBitsReceived;
             pubSub.OnRewardRedeemed += OnRewardRedeemed;
-            pubSub.OnChannelSubscription += OnSubscriptionReceived;
+            pubSub.OnChannelSubscription += OnSubscriptionRecieved;
             pubSub.SendTopics(TwitchSettings.Get.AccessToken);
 
             if (effectServer != null)
@@ -56,7 +56,7 @@ namespace RSMods.Twitch
             // pubSub.Disconnect(); Disconnecting/Reconnecting may cause OnPubSubServiceError loop
             // pubSub.Connect();
 
-            TwitchSettings.Get.AddToLog("------------------------" + Environment.NewLine + "Resubbing to Twitch events");
+            TwitchSettings.Get.AddToLog("------------------------" + Environment.NewLine + "Resubing to Twitch events");
             pubSub.ListenToRewards(TwitchSettings.Get.ChannelID);
             pubSub.ListenToBitsEvents(TwitchSettings.Get.ChannelID);
             pubSub.ListenToSubscriptions(TwitchSettings.Get.ChannelID);
@@ -123,26 +123,26 @@ namespace RSMods.Twitch
             }
 
             eventHashes.Add(hash);
-            HandleBitsReceived(e);
+            HandleBitsRecieved(e);
         }
 
         private void OnRewardRedeemed(object sender, OnRewardRedeemedArgs e)
         {
             TwitchSettings.Get.AddToLog($"A viewer redeemed {e.RewardCost} points");
 
-            HandleChannelPointsReceived(e);
+            HandleChannelPointsRecieved(e);
         }
 
-        private void OnSubscriptionReceived(object sender, OnChannelSubscriptionArgs e)
+        private void OnSubscriptionRecieved(object sender, OnChannelSubscriptionArgs e)
         {
             var subInfo = e.Subscription;
 
             if (subInfo.IsGift.HasValue && subInfo.IsGift.Value)
-                TwitchSettings.Get.AddToLog($"{subInfo.RecipientDisplayName} received a subgift from {subInfo.DisplayName}");
+                TwitchSettings.Get.AddToLog($"{subInfo.RecipientDisplayName} recieved a subgift from {subInfo.DisplayName}");
             else
                 TwitchSettings.Get.AddToLog($"{subInfo.DisplayName} subscribed to the channel!");
 
-            HandleSubReceived(e);
+            HandleSubRecieved(e);
         }
 
         //private static async Task WaitUntilRewardEnds(int seconds) => await Task.Delay(seconds * 1000);
@@ -154,7 +154,7 @@ namespace RSMods.Twitch
 
             effectServer.AddEffectToTheQueue(reward);
 
-            /* TCP Server instead of WM_COPYDATA, to accommodate the way CC effect server works :(
+            /* TCP Server instead of WM_COPYDATA, to accomodate the way CC effect server works :(
              * if (reward.AdditionalMsg != "")
                 WinMsgUtil.SendMsgToRS($"{reward.InternalMsgEnable} {reward.AdditionalMsg} {reward.Length}");
             else
@@ -171,7 +171,7 @@ namespace RSMods.Twitch
             TwitchSettings.Get.AddToLog($"Disabling: {reward.Name}");*/
         }
 
-        public void HandleBitsReceived(OnBitsReceivedArgs e)
+        public void HandleBitsRecieved(OnBitsReceivedArgs e)
         {
             foreach (var rew in TwitchSettings.Get.Rewards.OfType<BitsReward>())
             {
@@ -182,7 +182,7 @@ namespace RSMods.Twitch
             }
         }
 
-        public void HandleChannelPointsReceived(OnRewardRedeemedArgs e)
+        public void HandleChannelPointsRecieved(OnRewardRedeemedArgs e)
         {
             foreach (var rew in TwitchSettings.Get.Rewards.OfType<ChannelPointsReward>())
             {
@@ -193,7 +193,7 @@ namespace RSMods.Twitch
             }
         }
 
-        public void HandleSubReceived(OnChannelSubscriptionArgs e)
+        public void HandleSubRecieved(OnChannelSubscriptionArgs e)
         {
             foreach (var rew in TwitchSettings.Get.Rewards.OfType<SubReward>())
             {

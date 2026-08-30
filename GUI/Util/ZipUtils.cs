@@ -19,9 +19,9 @@ namespace RSMods.Util
         private static readonly object zlibLock = new object();
 
         /// <summary>
-        /// Flag if the SevenZipSharp library is initialized.
+        /// Flag if the SevenZipShparp library as initalized.
         /// </summary>
-        private static bool zlibInitialized = false;
+        private static bool zlibInitalized = false;
 
         /// <summary>
         /// Compresses a directory using the .zip format.
@@ -226,14 +226,14 @@ namespace RSMods.Util
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Zlib", Justification = "Zlib is a spelled correctly")]
         public static void SetupZlib()
         {
-            if (zlibInitialized)
+            if (zlibInitalized)
             {
                 return;
             }
 
             lock (zlibLock)
             {
-                if (zlibInitialized)
+                if (zlibInitalized)
                 {
                     return;
                 }
@@ -267,7 +267,7 @@ namespace RSMods.Util
 
             SevenZipBase.SetLibraryPath(libraryPath);
 
-            zlibInitialized = true;
+            zlibInitalized = true;
         }
 
         /// <summary>

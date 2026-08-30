@@ -12,28 +12,8 @@ namespace RSMods.Util
 {
     public static class GenUtil
     {
-        public static decimal StrToDecDef(string s, decimal @default)
-        {
-            decimal number;
-            if (decimal.TryParse(s, out number))
-                return number;
-            return @default;
-        }
-
-        public static int StrToIntDef(string s, int @default)
-        {
-            int number;
-            if (int.TryParse(s, out number))
-                return number;
-            return @default;
-        }
-
-        public static decimal EstablishMaxValue(decimal value, decimal max)
-        {
-            if (value > max)
-                return max;
-            return value;
-        }
+        public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
+            => value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
 
         public static bool IsDirectoryEmpty(string path)
         {

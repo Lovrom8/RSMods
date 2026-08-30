@@ -163,7 +163,7 @@ namespace RSMods {
             //IME Keys
             else if(String.Equals(Key, "Kana", CurrentCultureIgnoreCase) ^ String.Equals(Key, "IMEKana", CurrentCultureIgnoreCase)) // IME Kana Mode
                 return "VK_KANA";
-            else if(String.Equals(Key, "Hanguel", CurrentCultureIgnoreCase) ^ String.Equals(Key, "IMEHanguel", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Hangul", CurrentCultureIgnoreCase) ^ String.Equals(Key, "IMEHangul", CurrentCultureIgnoreCase)) // Hanguel & Compatibility Mode Hangul (Share same key)
+            else if(String.Equals(Key, "Hanguel", CurrentCultureIgnoreCase) ^ String.Equals(Key, "IMEHanguel", CurrentCultureIgnoreCase) ^ String.Equals(Key, "Hangul", CurrentCultureIgnoreCase) ^ String.Equals(Key, "IMEHangul", CurrentCultureIgnoreCase)) // Hanguel & Compatability Mode Hangul (Share same key)
                 return "VK_HANGUL";
             else if(String.Equals(Key, "IMEOn", CurrentCultureIgnoreCase)) // IME Enable Key
                 return "VK_IME_ON";

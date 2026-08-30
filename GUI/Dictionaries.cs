@@ -1,13 +1,15 @@
-﻿using System.Windows.Forms;
+using RSMods.Util;
+using System;
 using System.Collections.Generic;
-
+using System.Windows.Forms;
+using static RSMods.RsModsSettings;
 
 namespace RSMods
 {
     public partial class MainForm : Form
     {
         #region Tooltips
-        private Dictionary<Control, string> TooltipDictionary = new Dictionary<Control, string>() {};
+        private readonly Dictionary<Control, string> TooltipDictionary = [];
 
         private void FillToolTipDictionary()
         {
@@ -16,7 +18,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_ToggleLoft, "Disables the game background, amps and noise reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\nPlayer just sees an all black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press.");
             TooltipDictionary.Add(checkBox_SongTimer, "Experimental.\nIntent is to show a box with your timestamp position through the song.");
             TooltipDictionary.Add(checkBox_ExtendedRange, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
-            TooltipDictionary.Add(checkBox_ForceEnumeration, "Game will automatically start an Enumeration sequence when a new psarc file is detected as having been added to the dlc folder.\nNot necessary to enable if you're already using Rocksniffer to do the same thing.");
+            TooltipDictionary.Add(checkBox_ForceEnumeration, "Game will automatically start an Enumeration sequence when a new psarc file is detected as having been added to the dlc folder.\nNot necesary to enable if you're already using Rocksniffer to do the same thing.");
             TooltipDictionary.Add(checkBox_RemoveHeadstock, "Stops the Headstock of the guitar being drawn.\n“Headless” guitar mode. Just cleans up some more of the UI.");
             TooltipDictionary.Add(checkBox_RemoveSkyline, "Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press.");
             TooltipDictionary.Add(checkBox_GreenScreen, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience.\nInvalidated by \"No Loft\".");
@@ -64,7 +66,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_OnScreenFont, "If RSMods needs to show text in game, what font should we use?");
             TooltipDictionary.Add(groupBox_AutoLoadProfiles, "If you play with another person, but want to always load into your account this is the place for you.\nThis gets the same benefits of \"Autoload Last Used Profile\" but allows you to pick which profile will always load first");
             TooltipDictionary.Add(listBox_AutoLoadProfiles, "A list of all the profiles you have saved inside of Rocksmith 2014");
-            TooltipDictionary.Add(checkBox_BackupProfile, "Every time you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save every time you open this GUI.");
+            TooltipDictionary.Add(checkBox_BackupProfile, "Everytime you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save everytime you open this GUI.");
             TooltipDictionary.Add(groupBox_Backups, "If you open the RSMods GUI a lot, and are low on disk space, this is the spot for you.\nThis section allows you to set how many backups we store before we start deleting older backups.\nSet this to 0 to allow us to store as many backups as possible.");
             TooltipDictionary.Add(checkBox_UnlimitedBackups, "If you have an insane amount of disk space, and want to save all your backups, check this box.\nWith this checked, we save every backup when you open RSMods and will never delete them.");
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
@@ -131,7 +133,7 @@ namespace RSMods
             TooltipDictionary.Add(button_SolidNoteColorRandom, "This will choose a random color for you. \nThe color does not change per activation, what you see here is how it is set for good.");
             TooltipDictionary.Add(button_AddSelectedReward, "Add the configured event trigger.");
             TooltipDictionary.Add(button_RemoveReward, "Remove the selected event trigger.");
-            TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have received a donation.");
+            TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have recieved a donation.");
             TooltipDictionary.Add(dgv_DefaultRewards, "Lists the possible events you can use to set a trigger.");
             TooltipDictionary.Add(dgv_EnabledRewards, "Lists the events you have configured - how long they are activated for - and their cost.");
             TooltipDictionary.Add(textBox_TwitchLog, "Shows notifications from Twitch - and what got triggered from these tools.");
@@ -166,12 +168,7 @@ namespace RSMods
             TooltipDictionary.Add(label_ASIO_CustomBufferSize, "The lower this value goes, the lower the latency.\nWhile bringing down the latency, you have a higher chance of crackling audio.\nTry to find the sweet spot.");
             TooltipDictionary.Add(checkBox_ASIO_ASIO, "This is the main reason people use RS_ASIO.\nEnable this if you have an audio interface to potentially lower latency.");
             TooltipDictionary.Add(checkBox_ASIO_WASAPI_Input, "Enable this if you want to play with a USB cable AND your audio interface in multiplayer");
-            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Output,
-                "Use WASAPI for game audio output (tri-state - click to cycle):\n" +
-                "  Unchecked (0) - force WASAPI output OFF\n" +
-                "  Checked (1) - force WASAPI output ON\n" +
-                "  Indeterminate / square (-1) - prompt every boot (RS_ASIO special value)\n" +
-                "Enable ON if you have headphones that don't go through your audio interface.");
+            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Output, "Enable this if you have headphones that don't go through your audio interface.");
             TooltipDictionary.Add(checkBox_ASIO_Output_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
             TooltipDictionary.Add(checkBox_ASIO_Input0_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
             TooltipDictionary.Add(checkBox_ASIO_Input1_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
@@ -219,7 +216,7 @@ namespace RSMods
         }
         #endregion
         #region Fill Color Textboxes
-        public Dictionary<int, TextBox> stringNumberToColorTextBox = new Dictionary<int, TextBox>(){}; // Can't put variables into it until after we create it.
+        public Dictionary<int, TextBox> stringNumberToColorTextBox = [];
         private void StringColors_FillStringNumberToColorDictionary()
         {
             stringNumberToColorTextBox.Clear();
@@ -232,7 +229,7 @@ namespace RSMods
             stringNumberToColorTextBox.Add(5, textBox_String5Color);
         }
 
-        public Dictionary<Control, Control> notewayButtonToColorTextbox = new Dictionary<Control, Control>() {};
+        public Dictionary<Control, Control> notewayButtonToColorTextbox = [];
 
         private void NotewayColors_FillNotewayButtonToColorDictionary()
         {
@@ -258,116 +255,66 @@ namespace RSMods
         #endregion
     };
 
-    class Dictionaries
+    static class Dictionaries
     {
+        public static List<KeybindItem> ModKeybinds =
+        [
+            new("Toggle Loft",          k => Keybinds.ToggleLoftKey = k, () => Keybinds.ToggleLoftKey),
+            new("Show Song Timer",      k => Keybinds.ShowSongTimerKey = k, () => Keybinds.ShowSongTimerKey),
+            new("Force Re-Enumeration", k => Keybinds.ForceReEnumerationKey = k, () => Keybinds.ForceReEnumerationKey),
+            new("Rainbow Strings",      k => Keybinds.RainbowStringsKey = k, () => Keybinds.RainbowStringsKey),
+            new("Rainbow Notes",        k => Keybinds.RainbowNotesKey = k, () => Keybinds.RainbowNotesKey),
+            new("Remove Lyrics",        k => Keybinds.RemoveLyricsKey = k, () => Keybinds.RemoveLyricsKey),
+            new("RR Speed Change",        k => Keybinds.RRSpeedKey = k, () => Keybinds.RRSpeedKey),
+            new("Change Tuning Offset",        k => Keybinds.TuningOffsetKey = k, () => Keybinds.TuningOffsetKey),
+            new("Toggle Extended Range",        k => Keybinds.ToggleExtendedRangeKey = k, () => Keybinds.ToggleExtendedRangeKey),
+            new("Start Loop",        k => Keybinds.LoopStartKey = k, () => Keybinds.LoopStartKey),
+            new("End Loop",        k => Keybinds.LoopEndKey = k, () => Keybinds.LoopEndKey),
+            new("Rewind Song",        k => Keybinds.RewindKey = k, () => Keybinds.RewindKey)
+        ];
+
+        public static List<KeybindItem> AudioKeybinds =
+        [
+            new("Master Volume", k => AudioKeybindings.MasterVolumeKey = k, () => AudioKeybindings.MasterVolumeKey),
+            new("Song Volume", k => AudioKeybindings.SongVolumeKey = k, () => AudioKeybindings.SongVolumeKey),
+            new("Player 1 Volume", k => AudioKeybindings.Player1VolumeKey = k, () => AudioKeybindings.Player1VolumeKey),
+            new("Player 2 Volume", k => AudioKeybindings.Player2VolumeKey = k, () => AudioKeybindings.Player2VolumeKey),
+            new("Microphone Volume", k => AudioKeybindings.MicrophoneVolumeKey = k, () => AudioKeybindings.MicrophoneVolumeKey),
+            new("Voice-Over Volume", k => AudioKeybindings.VoiceOverVolumeKey = k, () => AudioKeybindings.VoiceOverVolumeKey),
+            new("SFX Volume", k => AudioKeybindings.SFXVolumeKey = k, () => AudioKeybindings.SFXVolumeKey),
+            new("Display Mixer", k => AudioKeybindings.DisplayMixerKey = k, () => AudioKeybindings.DisplayMixerKey),
+            new("Mute / Unmute Player 1", k => AudioKeybindings.MutePlayer1Key = k, () => AudioKeybindings.MutePlayer1Key),
+            new("Mute / Unmute Player 2", k => AudioKeybindings.MutePlayer2Key = k, () => AudioKeybindings.MutePlayer2Key)
+        ];
+
         #region Guitar Speak
-        public static Dictionary<string, string> GuitarSpeakKeyPressDictionary = new Dictionary<string, string>()
-        {
-            {"Delete", ReadSettings.GuitarSpeakDeleteIdentifier},
-            {"Space", ReadSettings.GuitarSpeakSpaceIdentifier},
-            {"Enter", ReadSettings.GuitarSpeakEnterIdentifier},
-            {"Tab", ReadSettings.GuitarSpeakTabIdentifier},
-            {"Page Up", ReadSettings.GuitarSpeakPGUPIdentifier},
-            {"Page Down", ReadSettings.GuitarSpeakPGDNIdentifier},
-            {"Up Arrow", ReadSettings.GuitarSpeakUPIdentifier},
-            {"Down Arrow", ReadSettings.GuitarSpeakDNIdentifier},
-            {"Escape", ReadSettings.GuitarSpeakESCIdentifier},
-            {"Open Bracket", ReadSettings.GuitarSpeakOBracketIdentifier},
-            {"Close Bracket", ReadSettings.GuitarSpeakCBracketIdentifier},
-            {"Tilde / Tilda", ReadSettings.GuitarSpeakTildeaIdentifier},
-            {"Forward Slash", ReadSettings.GuitarSpeakForSlashIdentifier},
-            {"Alt", ReadSettings.GuitarSpeakAltIdentifier},
-            {"Close Guitar Speak", ReadSettings.GuitarSpeakCloseIdentifier}
-        };
-
-        public static List<string> GuitarSpeakIndexToINISetting = new List<string>()
-        {
-            ReadSettings.GuitarSpeakDeleteIdentifier,
-            ReadSettings.GuitarSpeakSpaceIdentifier,
-            ReadSettings.GuitarSpeakEnterIdentifier,
-            ReadSettings.GuitarSpeakTabIdentifier,
-            ReadSettings.GuitarSpeakPGUPIdentifier,
-            ReadSettings.GuitarSpeakPGDNIdentifier,
-            ReadSettings.GuitarSpeakUPIdentifier,
-            ReadSettings.GuitarSpeakDNIdentifier,
-            ReadSettings.GuitarSpeakESCIdentifier,
-            ReadSettings.GuitarSpeakOBracketIdentifier,
-            ReadSettings.GuitarSpeakCBracketIdentifier,
-            ReadSettings.GuitarSpeakTildeaIdentifier,
-            ReadSettings.GuitarSpeakForSlashIdentifier,
-            ReadSettings.GuitarSpeakAltIdentifier,
-            ReadSettings.GuitarSpeakCloseIdentifier
-        };
-
-        public static Dictionary<string, string> GuitarSpeakPresetDictionary = new Dictionary<string, string>();
-
-        public static Dictionary<string, string> RefreshGuitarSpeakPresets()
-        {
-            GuitarSpeakPresetDictionary.Clear();
-
-            GuitarSpeakPresetDictionary.Add("Delete: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDeleteIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Space: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakSpaceIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Enter: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakEnterIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Tab: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTabIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Page Up: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGUPIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Page Down: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakPGDNIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Up Arrow: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakUPIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Down Arrow: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakDNIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Escape: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakESCIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Open Bracket: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakOBracketIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Close Bracket: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCBracketIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Tilde / Tilda: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakTildeaIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Forward Slash: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakForSlashIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Alt: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakAltIdentifier)));
-            GuitarSpeakPresetDictionary.Add("Close Guitar Speak: ", GuitarSpeak.GuitarSpeakNoteOctaveMath(ReadSettings.ProcessSettings(ReadSettings.GuitarSpeakCloseIdentifier)));
-            return GuitarSpeakPresetDictionary;
-        }
+        public static List<KeybindItem> GuitarSpeakKeybinds =
+        [
+            new("Delete", v => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakDeleteWhen),
+            new("Space", v => RsModsSettings.GuitarSpeak.GuitarSpeakSpaceWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakSpaceWhen),
+            new("Enter", v => RsModsSettings.GuitarSpeak.GuitarSpeakEnterWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakEnterWhen),
+            new("Tab", v => RsModsSettings.GuitarSpeak.GuitarSpeakTabWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakTabWhen),
+            new("Page Up", v => RsModsSettings.GuitarSpeak.GuitarSpeakPGUPWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakPGUPWhen),
+            new("Page Down", v => RsModsSettings.GuitarSpeak.GuitarSpeakPGDNWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakPGDNWhen),
+            new("Up Arrow", v => RsModsSettings.GuitarSpeak.GuitarSpeakUPWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakUPWhen),
+            new("Down Arrow", v => RsModsSettings.GuitarSpeak.GuitarSpeakDNWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakDNWhen),
+            new("Escape", v => RsModsSettings.GuitarSpeak.GuitarSpeakESCWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakESCWhen),
+            new("Open Bracket", v => RsModsSettings.GuitarSpeak.GuitarSpeakOBracketWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakOBracketWhen),
+            new("Close Bracket", v => RsModsSettings.GuitarSpeak.GuitarSpeakCBracketWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakCBracketWhen),
+            new("Tilde / Tilda", v => RsModsSettings.GuitarSpeak.GuitarSpeakTildeaWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakTildeaWhen),
+            new("Forward Slash", v => RsModsSettings.GuitarSpeak.GuitarSpeakForSlashWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakForSlashWhen),
+            new("Alt", v => RsModsSettings.GuitarSpeak.GuitarSpeakAltWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakAltWhen),
+            new("Close Guitar Speak", v => RsModsSettings.GuitarSpeak.GuitarSpeakCloseWhen = v, () => RsModsSettings.GuitarSpeak.GuitarSpeakCloseWhen)
+        ];
         #endregion
         #region Index To Identifier
 
-        public static List<string> SongListIndexToINISetting = new List<string>()
-        {
-            ReadSettings.Songlist1Identifier,
-            ReadSettings.Songlist2Identifier,
-            ReadSettings.Songlist3Identifier,
-            ReadSettings.Songlist4Identifier,
-            ReadSettings.Songlist5Identifier,
-            ReadSettings.Songlist6Identifier
-        };
+        public static int SonglistCount = 6;
 
-        public static List<string> KeybindingsIndexToINISetting = new List<string>()
-        {
-            ReadSettings.ToggleLoftIdentifier,
-            ReadSettings.ShowSongTimerIdentifier,
-            ReadSettings.ForceReEnumerationIdentifier,
-            ReadSettings.RainbowStringsIdentifier,
-            ReadSettings.RainbowNotesIdentifier,
-            ReadSettings.RemoveLyricsKeyIdentifier,
-            ReadSettings.RRSpeedKeyIdentifier,
-            ReadSettings.TuningOffsetKeyIdentifier,
-            ReadSettings.ToggleExtendedRangeKeyIdentifier,
-            ReadSettings.LoopStartKeyIdentifier,
-            ReadSettings.LoopEndKeyIdentifier,
-            ReadSettings.RewindKeyIdentifier
-        };
-
-        public static List<string> AudioKeybindingsIndexToINISetting = new List<string>()
-        {
-            ReadSettings.MasterVolumeKeyIdentifier,
-            ReadSettings.SongVolumeKeyIdentifier,
-            ReadSettings.Player1VolumeKeyIdentifier,
-            ReadSettings.Player2VolumeKeyIdentifier,
-            ReadSettings.MicrophoneVolumeKeyIdentifier,
-            ReadSettings.VoiceOverVolumeKeyIdentifier,
-            ReadSettings.SFXVolumeKeyIdentifier,
-            ReadSettings.DisplayMixerKeyIdentifier,
-            ReadSettings.MutePlayer1KeyIdentifier,
-            ReadSettings.MutePlayer2KeyIdentifier
-        };
         #endregion
         #region VoiceOver
 
-        public static Dictionary<string, string> ResultVoiceOverDictionary = new Dictionary<string, string>()
+        public static Dictionary<string, string> ResultVoiceOverDictionary = new()
         {
             { "Bad Performance", "play_VO_RESULTSSCREEN2_001_15NARRATOR_DRY_26312" },
             { "Disappointing Performance", "play_VO_RESULTSSCREEN2_001_13NARRATOR_DRY_26310" },
@@ -392,142 +339,27 @@ namespace RSMods
         #endregion
         #region Colors
 
-        public static Dictionary<bool, Dictionary<string, string>> stringColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
-        {
-            { true, new Dictionary<string, string> { // Normal Colors
-            
-                {"E String", ReadSettings.String0Color_N_Identifier},
-                {"A String", ReadSettings.String1Color_N_Identifier},
-                {"D String", ReadSettings.String2Color_N_Identifier},
-                {"G String", ReadSettings.String3Color_N_Identifier},
-                {"B String", ReadSettings.String4Color_N_Identifier},
-                {"e String", ReadSettings.String5Color_N_Identifier}
-            }},
-
-            { false,  new Dictionary<string, string> { // Colorblind Colors
-            
-                {"E String", ReadSettings.String0Color_CB_Identifier},
-                {"A String", ReadSettings.String1Color_CB_Identifier},
-                {"D String", ReadSettings.String2Color_CB_Identifier},
-                {"G String", ReadSettings.String3Color_CB_Identifier},
-                {"B String", ReadSettings.String4Color_CB_Identifier},
-                {"e String", ReadSettings.String5Color_CB_Identifier}
-            }}
-        };
-
-        public static Dictionary<bool, Dictionary<string, string>> noteColorButtonsToSettingIdentifiers = new Dictionary<bool, Dictionary<string, string>>()
-        {
-            { true, new Dictionary<string, string> { // Normal Colors
-            
-                {"E String", ReadSettings.Note0Color_N_Identifier},
-                {"A String", ReadSettings.Note1Color_N_Identifier},
-                {"D String", ReadSettings.Note2Color_N_Identifier},
-                {"G String", ReadSettings.Note3Color_N_Identifier},
-                {"B String", ReadSettings.Note4Color_N_Identifier},
-                {"e String", ReadSettings.Note5Color_N_Identifier}
-            }},
-
-            { false,  new Dictionary<string, string> { // Colorblind Colors
-            
-                {"E String", ReadSettings.Note0Color_CB_Identifier},
-                {"A String", ReadSettings.Note1Color_CB_Identifier},
-                {"D String", ReadSettings.Note2Color_CB_Identifier},
-                {"G String", ReadSettings.Note3Color_CB_Identifier},
-                {"B String", ReadSettings.Note4Color_CB_Identifier},
-                {"e String", ReadSettings.Note5Color_CB_Identifier}
-            }}
-        };
-
-        public static Dictionary<string, string> notewayColorButtonsToSettingIdentifier = new Dictionary<string, string>()
-        {
-            {"Change Numbered Frets", ReadSettings.CustomHighwayNumberedIdentifier },
-            {"Change UnNumbered Frets", ReadSettings.CustomHighwayUnNumberedIdentifier },
-            {"Change Noteway Sides", ReadSettings.CustomHighwayGutterIdentifier},
-            {"Change Fret Number", ReadSettings.CustomFretNubmersIdentifier },
-        };
+        public static List<ColorItem> NotewayColors =
+        [
+            new("Change Numbered Frets",   v => HighwayColors.CustomHighwayNumbered = v, () => HighwayColors.CustomHighwayNumbered),
+            new("Change UnNumbered Frets", v => HighwayColors.CustomHighwayUnNumbered = v, () => HighwayColors.CustomHighwayUnNumbered),
+            new("Change Noteway Sides",    v => HighwayColors.CustomHighwayGutter = v, () => HighwayColors.CustomHighwayGutter),
+            new("Change Fret Number",      v => HighwayColors.CustomFretNubmers = v, () => HighwayColors.CustomFretNubmers)
+        ];
 
         #endregion
-        #region Current Keybind Mod Names
-        public static List<string> currentModKeypressList = new List<string>()
-        {
-            "Toggle Loft",
-            "Show Song Timer",
-            "Force ReEnumeration",
-            "Rainbow Strings",
-            "Rainbow Notes",
-            "Remove Lyrics",
-            "RR Speed Change",
-            "Change Tuning Offset",
-            "Toggle Extended Range",
-            "Start Loop",
-            "End Loop",
-            "Rewind Song"
-        };
 
-        public static List<string> currentAudioKeypressList = new List<string>()
-        {
-            "Master Volume",
-            "Song Volume",
-            "Player 1 Volume",
-            "Player 2 Volume",
-            "Microphone Volume",
-            "Voice-Over Volume",
-            "SFX Volume",
-            "Display Mixer",
-            "Mute / Unmute Player 1",
-            "Mute / Unmute Player 2"
-        };
-        #endregion
         #region Refresh Lists
-        public static List<string> songlists = new List<string>();
-        public static List<string> savedKeysForModToggles = new List<string>();
-        public static List<string> savedKeysForVolumes = new List<string>();
+        public static List<string> songlists = [];
 
-        public static List<string> refreshKeybindingList()
-        {
-            savedKeysForModToggles.Clear();
-
-            foreach(string setting in KeybindingsIndexToINISetting)
-            {
-                savedKeysForModToggles.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(setting)));
-            }
-
-            return savedKeysForModToggles;
-        }
-
-        public static List<string> refreshSonglists()
+        public static List<string> RefreshSongLists()
         {
             songlists.Clear();
 
-            // Is this the users first time opening the GUI?
-            if (ReadSettings.ProcessSettings(ReadSettings.Songlist1Identifier) == string.Empty)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    songlists.Add($"Define Song List {i + 1} Here");
-                }
-            }
-            else
-            {
-                foreach(string setting in SongListIndexToINISetting)
-                {
-                    songlists.Add(ReadSettings.ProcessSettings(setting));
-                }
-            }
-           
+            for (int i = 1; i <= SonglistCount; i++)
+                songlists.Add(GetSongListTitle(i));
+
             return songlists;
-        }
-
-        public static List<string> refreshAudioKeybindingList()
-        {
-            savedKeysForVolumes.Clear();
-
-            foreach(string setting in AudioKeybindingsIndexToINISetting)
-            {
-                savedKeysForVolumes.Add(KeyConversion.VKeyToUI(ReadSettings.ProcessSettings(setting)));
-            }
-
-            return savedKeysForVolumes;
         }
         #endregion
     }
