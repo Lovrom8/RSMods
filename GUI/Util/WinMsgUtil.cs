@@ -3,8 +3,19 @@ using System.Runtime.InteropServices;
 
 namespace RSMods.Util
 {
+    public struct Rect
+    {
+        public int Left { get; set; }
+        public int Top { get; set; }
+        public int Right { get; set; }
+        public int Bottom { get; set; }
+    }
+
     public static class WinMsgUtil // Use WM_COPYDATA message as a means of interprocess communication between the GUI and RS 
     {
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 

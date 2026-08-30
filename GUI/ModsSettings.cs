@@ -1,5 +1,6 @@
 using RSMods.Util;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -51,6 +52,18 @@ namespace RSMods
         public static void Save()
         {
             _ini.Save();
+        }
+
+        public static List<string> SongListTitles { get; } = [];
+
+        public static List<string> RefreshSongListTitles()
+        {
+            SongListTitles.Clear();
+
+            for (int i = 1; i <= Profiles.SongListCount; i++)
+                SongListTitles.Add(GetSongListTitle(i));
+
+            return SongListTitles;
         }
 
         public static string GetSongListTitle(int index)

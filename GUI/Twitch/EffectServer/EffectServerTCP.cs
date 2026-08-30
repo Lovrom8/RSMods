@@ -23,13 +23,12 @@ namespace RSMods.Twitch.EffectServer
         private TimeSpan retrySpan;
         private NetworkStream stream;
 
-        private Dictionary<int, TwitchReward> usedRewards;
         private ConcurrentQueue<TwitchReward> remainingRewards;
-        private int retryInterval = 1; // In seconds
+        private readonly int retryInterval = 1; // In seconds
         private bool reconnect = false;
 
-        private string ipAdr = "127.0.0.1";
-        private int port = 45659;
+        private readonly string ipAdr = "127.0.0.1";
+        private readonly int port = 45659;
 
         public EffectServerTCP()
         {
@@ -51,7 +50,6 @@ namespace RSMods.Twitch.EffectServer
             retrySpan = TimeSpan.FromSeconds(retryInterval);
             HandleRemainingEffects(cts.Token);
 
-            usedRewards = [];
             remainingRewards = new ConcurrentQueue<TwitchReward>();
 
             TwitchSettings.Get.AddToLog("Started the effect server");
@@ -149,7 +147,7 @@ namespace RSMods.Twitch.EffectServer
                      serverMessageAsByteArray.AddRange(Encoding.ASCII.GetBytes(message));
                      serverMessageAsByteArray.Add((byte)0);
 
-                     stream.Write(serverMessageAsByteArray.ToArray(), 0, serverMessageAsByteArray.Count());
+                     stream.Write(serverMessageAsByteArray.ToArray(), 0, serverMessageAsByteArray.Count);
 
                      Debug.Write($"Sent a message to the game: {message}");
                      Debug.Write("Server is listening for the response");

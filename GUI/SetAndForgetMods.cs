@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
+using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using RSMods.Data;
 using RSMods.Util;
 using SevenZip;
@@ -11,8 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
+using System.Threading.Tasks;
+using RSMods.Core;
+using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 
 namespace RSMods
 {
@@ -23,21 +25,13 @@ namespace RSMods
 
         public static void RepackCachePsarc()
         {
-            try
-            {
-                if (!Directory.Exists(Constants.CachePcPath))
-                    UnpackCachePsarc();
+            if (!Directory.Exists(Constants.CachePcPath))
+                UnpackCachePsarc();
 
-                if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
-                    GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["sltsv1_aggregategraph.nt"]); //NOTE: when adding resources, change Build Action to Embeded Resource  
+            if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
+                GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["sltsv1_aggregategraph.nt"]); //NOTE: when adding resources, change Build Action to Embeded Resource
 
-                Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
-                MessageBox.Show("cache.psarc repackaged successfully", "Success");
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show("Unable to repack cache.psarc" + Environment.NewLine + "Error: " + ex.Message, "Repacking error", MessageBoxButtons.OK);
-            }
+            Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
         }
 
         public static void UnpackCachePsarc()
@@ -51,9 +45,9 @@ namespace RSMods
             Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
         }
 
-        public static bool RestoreDefaults()
+        public static async Task<bool> RestoreDefaults(IDialogService dialogs)
         {
-            if (MessageBox.Show("Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            if (!await dialogs.ShowConfirmAsync("Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?"))
                 return false;
 
             try
@@ -61,11 +55,11 @@ namespace RSMods
                 if (File.Exists(Constants.CacheBackupPath))
                 {
                     File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
-                    MessageBox.Show("Cache backup was restored!", "Backup restored", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await dialogs.ShowInfoAsync("Cache backup was restored!", "Backup restored");
                 }
                 else
                 {
-                    MessageBox.Show("No cache backup found!", "Error");
+                    await dialogs.ShowErrorAsync("No cache backup found!");
                 }
 
                 GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["tuning.database.json"]);
@@ -75,7 +69,7 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show("Problems restoring backup: " + ioex.Message, "Error");
+                await dialogs.ShowErrorAsync("Problems restoring backup: " + ioex.Message);
                 return false;
             }
         }
@@ -160,68 +154,96 @@ namespace RSMods
             RepackCachePsarc();
         }
 
-        public static Tuple<string, string> SplitTuningUIName(string uiName)
+        //Regex rxIndexExists = new(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
+        //Regex rxGetIndex = new(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
+        //Regex rxGrabAfterBracket = new(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
+
+        public static (string Index, string Name) SplitTuningUIName(string uiName)
         {
-            string index, name = uiName;
+            if (string.IsNullOrEmpty(uiName))
+                return ("0", uiName);
 
-            Regex rxIndexExists = new(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
-            Regex rxGetIndex = new(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
-            Regex rxGrabAfterBracket = new(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
-            if (rxIndexExists.IsMatch(uiName))
+            int startBracket = uiName.IndexOf('[');
+            int endBracket = uiName.IndexOf(']');
+
+            if (startBracket >= 0 && endBracket > startBracket)
             {
-                index = rxGetIndex.Matches(uiName)[0].Groups[1].Value;
-                name = rxGrabAfterBracket.Matches(uiName)[0].Groups[1].Value;
-            }
-            else
-            {
-                index = "0";
+                string indexStr = uiName.Substring(startBracket + 1, endBracket - startBracket - 1);
+
+                if (int.TryParse(indexStr, out _))
+                {
+                    string nameStr = uiName.Substring(endBracket + 1);
+                    return (indexStr, nameStr);
+                }
             }
 
-            return new Tuple<string, string>(index, name);
+            return ("0", uiName);
+        }
+
+        private static HashSet<int> LoadExistingLocalizationIndices(string filePath)
+        {
+            var indices = new HashSet<int>();
+
+            if (!File.Exists(filePath))
+                return indices;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                var parts = line.Split(',');
+                if (parts.Length > 0 && int.TryParse(parts[0], out int parsedIndex))
+                {
+                    indices.Add(parsedIndex);
+                }
+            }
+
+            return indices;
+        }
+
+        private static int GetNextAvailableLocalizationIndex(HashSet<int> existingIndices, int startingIndex)
+        {
+            int currentIndex = startingIndex;
+
+            while (existingIndices.Contains(currentIndex))
+            {
+                currentIndex++;
+            }
+
+            return currentIndex;
+        }
+
+        private static void AppendTuningToCsv(StreamWriter sw, int index, string tuningName)
+        {
+            string repeatedNames = string.Join(",", Enumerable.Repeat(tuningName, 7));
+            string csvRow = $"{Environment.NewLine}{index},{repeatedNames}";
+
+            sw.Write(csvRow);
         }
 
         public static void AddLocalizationForTuningEntries()
         {
-            try
+            HashSet<int> existingIndices = LoadExistingLocalizationIndices(Constants.LocalizationCSV_CustomPath);
+            int nextAvailableIndex = 37500;
+
+            using StreamWriter sw = new(Constants.LocalizationCSV_CustomPath, true);
+
+            foreach (var tuningDefinition in TuningsCollection)
             {
-                string currentUIName, csvContents = File.ReadAllText(Constants.LocalizationCSV_CustomPath);
-                int newIndex = 37500;
+                var (indexStr, onlyName) = SplitTuningUIName(tuningDefinition.Value.UIName);
+                int.TryParse(indexStr, out int currentIndex);
 
-                using StreamWriter sw = new(Constants.LocalizationCSV_CustomPath, true);
-
-                foreach (var tuningDefinition in TuningsCollection)
+                if (currentIndex == 0)
                 {
-                    currentUIName = tuningDefinition.Value.UIName;
-                    var tuning = SplitTuningUIName(currentUIName);
-                    string index = tuning.Item1;
-                    string onlyName = tuning.Item2;
+                    currentIndex = GetNextAvailableLocalizationIndex(existingIndices, nextAvailableIndex);
+                    nextAvailableIndex = currentIndex + 1;
 
-                    if (index == "0") // I.e. if it does not contain an index, give it one
-                    {
-                        while (csvContents.Contains(newIndex.ToString())) // Efficient ? Nope, but does the job
-                            newIndex++;
-
-                        tuningDefinition.Value.UIName = String.Format("$[{0}]{1}", newIndex, onlyName); // Append its index in front
-                        index = newIndex.ToString();
-                    }
-
-                    if (!csvContents.Contains(index)) // If the CSV already contains that index, don't add it to it
-                    {
-                        sw.Write(sw.NewLine);
-                        sw.Write(index);
-                        for (int i = 0; i < 7; i++)
-                        {
-                            sw.Write(',');
-                            sw.Write(tuning.Item2);
-                        }
-
-                        csvContents += index;
-                    }
+                    tuningDefinition.Value.UIName = $"$[{currentIndex}]{onlyName}";
                 }
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error: {ioex.Message}", "Error");
+
+                if (!existingIndices.Contains(currentIndex))
+                {
+                    AppendTuningToCsv(sw, currentIndex, onlyName);
+                    existingIndices.Add(currentIndex);
+                }
             }
 
             SaveTuningsJSON();
@@ -233,19 +255,115 @@ namespace RSMods
             var tuningsJson = JObject.Parse(tuningsFileContent);
             tuningsJson["Static"]["TuningDefinitions"] = JObject.FromObject(SetAndForgetMods.TuningsCollection);
 
-            try
-            {
-                File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error: {ioex}", "Error");
-            }
+            File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
         }
         #endregion
-        #region Custom Menu Options
-        // Custom Menu Options Mod & Direct Mode Mod
+        #region Tuning Queries
 
+        public static ArrangementTuning ToArrangementTuning(TuningDefinitionInfo tuning)
+        {
+            var s = tuning.Strings;
+            return new ArrangementTuning
+            {
+                String0 = s["string0"],
+                String1 = s["string1"],
+                String2 = s["string2"],
+                String3 = s["string3"],
+                String4 = s["string4"],
+                String5 = s["string5"]
+            };
+        }
+
+        public static bool IsTuningStandard(ArrangementTuning t, bool forceBass = false) =>
+            t.String0 == t.String1 && t.String1 == t.String2 && t.String2 == t.String3 &&
+            (forceBass || (t.String3 == t.String4 && t.String4 == t.String5));
+
+        public static bool IsTuningDrop(ArrangementTuning t, bool forceBass = false) =>
+            t.String0 + 2 == t.String1 && t.String1 == t.String2 && t.String2 == t.String3 &&
+            (forceBass || (t.String3 == t.String4 && t.String4 == t.String5));
+
+        public static IEnumerable<ArrangementTuning> GetDefinedTunings() =>
+            TuningsCollection.Values.Select(ToArrangementTuning);
+
+        private static string FormatArrangementLabel(SongData song, SongArrangement arrangement)
+        {
+            string prefix = string.Empty;
+            if (arrangement.Attributes.ArrangementProperties.Represent == 0)
+                prefix = "Alt ";
+            else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
+                prefix = "Bonus ";
+            return prefix + arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
+        }
+
+        public static SortedDictionary<string, ArrangementTuning> GetUnknownTunings(IEnumerable<SongData> songs)
+        {
+            var defined = GetDefinedTunings().ToList();
+            var result = new SortedDictionary<string, ArrangementTuning>();
+
+            foreach (SongData song in songs)
+            {
+                foreach (SongArrangement arrangement in song.Arrangements)
+                {
+                    if (defined.Contains(arrangement.Attributes.Tuning))
+                        continue;
+
+                    string label = FormatArrangementLabel(song, arrangement);
+                    if (!result.ContainsKey(label))
+                        result.Add(label, arrangement.Attributes.Tuning);
+                }
+            }
+
+            return result;
+        }
+
+        public static List<string> GetSongsWithTuning(IEnumerable<SongData> songs, ArrangementTuning tuning)
+        {
+            var result = new List<string>();
+
+            foreach (SongData song in songs)
+                foreach (SongArrangement arrangement in song.Arrangements)
+                    if (arrangement.Attributes.Tuning.Equals(tuning))
+                        result.Add(FormatArrangementLabel(song, arrangement));
+
+            result.Sort();
+            return result;
+        }
+
+        public static List<string> GetSongsWithBadBassTuning(IEnumerable<SongData> songs)
+        {
+            var result = new List<string>();
+
+            foreach (SongData song in songs)
+            {
+                foreach (SongArrangement arrangement in song.Arrangements)
+                {
+                    if (!arrangement.Attributes.ArrangementName.ToLower().Contains("bass"))
+                        continue;
+
+                    var t = arrangement.Attributes.Tuning;
+
+                    if (IsTuningStandard(t) || IsTuningDrop(t))
+                        continue;
+
+                    string label = FormatArrangementLabel(song, arrangement);
+
+                    if (result.Contains(label))
+                        continue;
+
+                    if (!song.ODLC &&
+                        !(t.String0 == 0 || t.String1 == 0 || t.String2 == 0 || t.String3 == 0) &&
+                        ((t.String4 == 0 && t.String5 == 0) || (t.String4 == 12 && t.String5 == 12)))
+                    {
+                        result.Add(label);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+        #region Custom Menu Options
         public static void AddExitGameMenuOption()
         {
             if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
@@ -268,30 +386,28 @@ namespace RSMods
         }
         #endregion
         #region Default Tones
-        // Custom Default Tones Mod
-
-        public static Dictionary<string, Tone2014> tonesFromAllProfiles = [];
+        private static readonly Dictionary<string, Tone2014> tonesFromAllProfiles = [];
 
         public static TuningDefinitionList TuningsCollection { get => tuningsCollection; }
 
-        public static void SetDefaultTones(string selectedToneName, int selectedToneType)
+        private static (bool IsSuccess, string ErrorMessage) UpdateToneManagerInCache(string selectedToneName, int targetToneIndex)
         {
             ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
 
             if (!File.Exists(Constants.ToneManager_CustomPath))
             {
-                MessageBox.Show("Could not extract tones from cache.psarc.", "Error");
-                return;
+                return (false, "Could not extract tones from cache.psarc. Please check your existing settings.");
+            }
+
+            if (!tonesFromAllProfiles.TryGetValue(selectedToneName, out var selectedTone))
+            {
+                return (false, $"The tone '{selectedToneName}' could not be found in the loaded profiles.");
             }
 
             string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
             var tonesJson = JObject.Parse(toneManagerFileContent);
-            //var toneList = tonesJson["Static"]["ToneManager"]["Tones"];
-            //var defaultTones = JsonConvert.DeserializeObject<List<Tone2014>>(toneList.ToString());
 
-            var selectedTone = tonesFromAllProfiles[selectedToneName];
-
-            tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
+            tonesJson["Static"]["ToneManager"]["Tones"][targetToneIndex]["GearList"] = JObject.FromObject(selectedTone.GearList);
 
             try
             {
@@ -299,58 +415,58 @@ namespace RSMods
             }
             catch (IOException ioex)
             {
-                MessageBox.Show($"Error:{ioex.Message}");
-                return;
+                return (false, $"Error saving tone data: {ioex.Message}");
             }
 
             ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
 
-            RepackCachePsarc();
+            try
+            {
+                RepackCachePsarc();
+            }
+            catch (IOException ioex)
+            {
+                return (false, $"Unable to repack cache.psarc: {ioex.Message}");
+            }
 
-            MessageBox.Show("Successfully changed default tones!", "Success");
+            return (true, string.Empty);
         }
 
-        public static void SetGuitarArcadeTone(string selectedToneName, int selectedToneType)
+        public static (bool IsSuccess, string Message) SetGuitarArcadeTone(string selectedToneName, int selectedToneType)
         {
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
+            const int GuitarArcadeOffset = 8;
+            int targetIndex = selectedToneType + GuitarArcadeOffset;
 
-            if (!File.Exists(Constants.ToneManager_CustomPath))
-                MessageBox.Show("Could not extract tones from cache.psarc. Please press Import Existing Settings button!", "Error");
+            var (IsSuccess, ErrorMessage) = UpdateToneManagerInCache(selectedToneName, targetIndex);
 
-            string toneManagerFileContent = File.ReadAllText(Constants.ToneManager_CustomPath);
-            var tonesJson = JObject.Parse(toneManagerFileContent);
-
-            var selectedTone = tonesFromAllProfiles[selectedToneName];
-
-            selectedToneType += 8; // GuitarArcade tones start at the 8th element of Tone list
-
-            tonesJson["Static"]["ToneManager"]["Tones"][selectedToneType]["GearList"] = JObject.FromObject(selectedTone.GearList);
-
-            try
+            if (!IsSuccess)
             {
-                File.WriteAllText(Constants.ToneManager_CustomPath, tonesJson.ToString());
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Error:{ioex.Message}");
-                return;
+                return (false, ErrorMessage);
             }
 
-            ZipUtilities.InjectFile(Constants.ToneManager_CustomPath, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
+            return (true, "Successfully changed GuitarArcade tones!");
+        }
 
-            RepackCachePsarc();
+        public static (bool IsSuccess, string Message) SetDefaultTones(string selectedToneName, int selectedToneType)
+        {
+            var (IsSuccess, ErrorMessage) = UpdateToneManagerInCache(selectedToneName, selectedToneType);
 
-            MessageBox.Show("Successfully changed GuitarArcade tones!", "Success");
+            if (!IsSuccess)
+            {
+                return (false, ErrorMessage);
+            }
+
+            return (true, "Successfully changed default tones!");
         }
 
         public static List<string> GetSteamProfilesTones()
         {
             var profileTones = new List<string>();
-            var userprofileFolder = GenUtil.GetSteamProfilesFolderManual();
+            var userProfileFolder = GenUtil.GetSteamProfilesFolderManual();
 
-            if (Directory.Exists(userprofileFolder))
+            if (Directory.Exists(userProfileFolder))
             {
-                var profiles = Directory.EnumerateFiles(userprofileFolder, "*_PRFLDB", SearchOption.AllDirectories).ToList();
+                var profiles = Directory.EnumerateFiles(userProfileFolder, "*_PRFLDB", SearchOption.AllDirectories).ToList();
 
                 tonesFromAllProfiles.Clear();
 
@@ -366,71 +482,81 @@ namespace RSMods
 
             return profileTones;
         }
+
         #endregion
         #region Fast Load
-        // Fast Load Mod
 
-        private static Tuple<string, bool> GetDriveType(char driveLetter) // This may not work on Win7, MSDN says its for >= Win8
+        private static bool DoesOSSupportReadingDriveTypes()
         {
-            if ((Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor >= 2) || Environment.OSVersion.Version.Major == 10) // OS Chart here: https://stackoverflow.com/a/2819962
-            {
-                try
-                {
-                    uint driveNumber = 0;
-
-                    ManagementScope scope = new(@"\\.\root\microsoft\windows\storage");
-                    using (ManagementObjectSearcher searcher = new("SELECT * FROM MSFT_Partition")) // Grab drive ID for this partition
-                    {
-                        scope.Connect();
-                        searcher.Scope = scope;
-
-                        foreach (ManagementObject queryObj in searcher.Get().Cast<ManagementObject>())
-                        {
-                            char letter = (char)queryObj["DriveLetter"];
-
-                            if (letter == driveLetter)
-                            {
-                                driveNumber = (uint)queryObj["DiskNumber"];
-                                break;
-                            }
-                        }
-                    }
-
-                    using (ManagementObjectSearcher searcher = new("SELECT * FROM MSFT_PhysicalDisk"))
-                    {
-                        string type = "";
-                        bool isNVMe = false;
-                        scope.Connect();
-                        searcher.Scope = scope;
-
-                        foreach (ManagementObject queryObj in searcher.Get().Cast<ManagementObject>())
-                        {
-                            string devID = queryObj["DeviceId"].ToString();
-
-                            if (devID != driveNumber.ToString()) // For whatever reason, DeviceID seems to be equivalent to driveNumber, but unlike driveNumber, it's a string
-                                continue;
-
-                            type = Convert.ToInt16(queryObj["MediaType"]) switch
-                            {
-                                1 => "Unspecified",
-                                3 => "HDD",
-                                4 => "SSD",
-                                5 => "SCM",
-                                _ => "Unspecified",
-                            };
-                            if (Convert.ToInt16(queryObj["BusType"]) == 17)
-                                isNVMe = true;
-
-                            return new Tuple<string, bool>(type, isNVMe);
-                        }
-                    }
-                }
-                catch (ManagementException) //Not much we can do in this case and it's not really important that we inform the user
-                { }
-            }
-            return new Tuple<string, bool>("Unspecified", false);
+            return Environment.OSVersion.Version >= new Version(6, 2); // OS Chart here: https://stackoverflow.com/a/2819962
         }
 
+        private static uint? GetDiskNumber(ManagementScope scope, char driveLetter)
+        {
+            string query = $"SELECT DiskNumber FROM MSFT_Partition WHERE DriveLetter = '{driveLetter}'";
+
+            using var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(query));
+            using var results = searcher.Get();
+
+            var partition = results.Cast<ManagementObject>().FirstOrDefault();
+
+            if (partition == null)
+                return null;
+
+            return Convert.ToUInt32(partition["DiskNumber"]);
+        }
+
+        // Physical drive media type, mapped from the WMI MSFT_PhysicalDisk MediaType code.
+        public enum DriveMediaType { Unspecified, Hdd, Ssd, Scm }
+
+        private static (DriveMediaType Type, bool IsNVMe) GetDriveSpecifications(ManagementScope scope, uint diskNumber)
+        {
+            string query = $"SELECT MediaType, BusType FROM MSFT_PhysicalDisk WHERE DeviceId = '{diskNumber}'";
+
+            using var searcher = new ManagementObjectSearcher(scope, new ObjectQuery(query));
+            using var results = searcher.Get();
+
+            var disk = results.Cast<ManagementObject>().FirstOrDefault();
+
+            if (disk == null)
+                return (DriveMediaType.Unspecified, false);
+
+            DriveMediaType type = Convert.ToInt16(disk["MediaType"]) switch
+            {
+                3 => DriveMediaType.Hdd,
+                4 => DriveMediaType.Ssd,
+                5 => DriveMediaType.Scm,
+                _ => DriveMediaType.Unspecified,
+            };
+
+            bool isNVMe = Convert.ToInt16(disk["BusType"]) == 17;
+
+            return (type, isNVMe);
+        }
+
+        public static (DriveMediaType Type, bool IsNVMe) GetDriveType(char driveLetter)
+        {
+            if (!DoesOSSupportReadingDriveTypes()) // This may not work on Win7, MSDN says its for >= Win8
+                return (DriveMediaType.Unspecified, false);
+
+            try
+            {
+                ManagementScope scope = new(@"\\.\root\microsoft\windows\storage");
+                scope.Connect();
+
+                uint? diskNumber = GetDiskNumber(scope, driveLetter);
+
+                if (diskNumber == null)
+                    return (DriveMediaType.Unspecified, false);
+
+                return GetDriveSpecifications(scope, diskNumber.Value);
+            }
+            catch (ManagementException)
+            {
+                // Best effort - not much we can do in this case and it's not really important that we inform the user
+                return (DriveMediaType.Unspecified, false);
+            }
+        }
 
         private static void AddFastLoadModFile(bool NVMe)
         {
@@ -440,54 +566,38 @@ namespace RSMods
                 File.Copy(Constants.IntroGFX_MidPath, Constants.IntroGFX_CustomPath, true);
         }
 
-        public static void AddFastLoadMod()
+        // Which confirmation (if any) the UI should show before applying the fast-load mod,
+        // based on the detected drive type.
+        public enum FastLoadDrivePrompt
+        {
+            None,            // Fast enough (SSD, non-NVMe) - no question needed.
+            ConfirmHddRisk,  // HDD - warn it may crash; proceed only if confirmed.
+            ConfirmNvme,     // NVMe detected - confirm before using the fastest option.
+            ConfirmUnknown   // Drive type unknown - ask whether it's NVMe.
+        }
+
+        public static FastLoadDrivePrompt GetFastLoadDrivePrompt()
+        {
+            char driveLetter = Constants.RSFolder.ToUpper()[0];
+            var (driveType, isNVMe) = GetDriveType(driveLetter);
+
+            if (driveType == DriveMediaType.Hdd) return FastLoadDrivePrompt.ConfirmHddRisk;
+            if (driveType == DriveMediaType.Ssd && isNVMe) return FastLoadDrivePrompt.ConfirmNvme;
+            if (driveType == DriveMediaType.Unspecified) return FastLoadDrivePrompt.ConfirmUnknown;
+            return FastLoadDrivePrompt.None;
+        }
+
+        public static void ApplyFastLoadMod(bool useNvmeFastLoad)
         {
             if (!Directory.Exists(Constants.CachePcPath) || GenUtil.IsDirectoryEmpty(Constants.CachePcPath))
                 UnpackCachePsarc();
 
-            try
-            {
-                char driveLetter = Constants.RSFolder.ToUpper()[0];
-                var driveType = GetDriveType(driveLetter);
-
-                if (driveType.Item1 == "HDD")
-                {
-                    if (MessageBox.Show(@"It appears as though Rocksmith installed on a hard disk drive. HDDs are normally too slow to support fast load mod and will likely result in a crash. \n Do you wish to proceed?", "Drive too slow for fast load", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        return;
-
-                    AddFastLoadModFile(false);
-                }
-                else if (driveType.Item1 == "SSD")
-                {
-                    if (driveType.Item2) // If is NVMe
-                    {
-                        if (MessageBox.Show("Can you confirm Rocksmith is installed on a NVMe drive?\n If you are unsure, press \"No\", because Rocksmith is likely to crash if you pick the fastest option!", "Is RS on a NVMe drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                            AddFastLoadModFile(true);
-                        else
-                            AddFastLoadModFile(false);
-                    }
-                    else
-                    {
-                        AddFastLoadModFile(false);
-                    }
-                }
-                else
-                {
-                    if (MessageBox.Show(@"We were unable to detect the drive type on which Rocksmith is installed. \n Is it on a NVMe drive? (if it's not, fastest loading option is likely to crash your game!)", "Fast drive?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        AddFastLoadModFile(true);
-                    else
-                        AddFastLoadModFile(false);
-                }
-            }
-            catch (IOException ioex)
-            {
-                MessageBox.Show($"Unable to copy required files. Error: {ioex.Message}");
-            }
+            AddFastLoadModFile(useNvmeFastLoad);
 
             ZipUtilities.InjectFile(Constants.IntroGFX_CustomPath, Constants.Cache4_7zPath, Constants.IntroGFX_InternalPath, OutArchiveFormat.SevenZip, CompressionMode.Append);
-
             RepackCachePsarc();
         }
+
         #endregion
         #region Custom Wwise
         public static void AddIncreasedVolumeWwiseBank()

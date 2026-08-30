@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
 using zlib;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
 using System.Text;
 using Microsoft.Win32;
 using RSMods.Util;
 using System.Linq;
 using RSMods.Data;
+using System.Web.Profile;
 
 namespace RSMods
 {
-    class Profiles
+    static class Profiles
     {
         #region General
+
+        public static string CurrentUnpackedProfileName { get; set; } = string.Empty;
 
         private static readonly byte[] PCSaveKey =
         [
@@ -155,51 +161,43 @@ namespace RSMods
 
         public static string GetSaveDirectory(bool forceRegistry = false)
         {
-            string fullProfileFolder = forceRegistry ? string.Empty : Constants.SavePath;
+            if (!forceRegistry && !string.IsNullOrEmpty(Constants.SavePath))
+            {
+                if (Constants.SavePath.IsSavePath())
+                {
+                    return Constants.SavePath;
+                }
+
+                Constants.SavePath = string.Empty;
+            }
 
             try
             {
-                if (string.IsNullOrEmpty(fullProfileFolder))
+                using var steamKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Valve\Steam");
+                if (steamKey == null)
+                    return GenUtil.GetSteamProfilesFolderManual();
+
+                string steamPath = steamKey.GetValue("SteamPath") as string;
+                if (string.IsNullOrEmpty(steamPath))
+                    return GenUtil.GetSteamProfilesFolderManual();
+
+                using var usersKey = steamKey.OpenSubKey("Users");
+                if (usersKey == null)
+                    return GenUtil.GetSteamProfilesFolderManual();
+
+                foreach (string user in usersKey.GetSubKeyNames())
                 {
-                    RegistryKey availableUser = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").OpenSubKey("Users");
+                    string fullProfileFolder = Path.Combine(steamPath, "userdata", user, "221680", "remote");
 
-                    if (availableUser == null) // If the key doesn't exist for whatever reason, try to manually find the path by searching for files with 
-                        return GenUtil.GetSteamProfilesFolderManual();
-
-                    string steamFolder = Registry.CurrentUser.OpenSubKey("SOFTWARE").OpenSubKey("Valve").OpenSubKey("Steam").GetValue("SteamPath").ToString(), profileSubFolders = "/221680/remote", userDataFolder = "/userdata/";
-
-                    foreach (string user in availableUser.GetSubKeyNames())
+                    if (Directory.Exists(fullProfileFolder))
                     {
-                        try
-                        {
-                            if (Directory.Exists(steamFolder + userDataFolder + user + profileSubFolders))
-                            {
-                                fullProfileFolder = steamFolder + userDataFolder + user + profileSubFolders;
-                                break;
-                            }
-                            else
-                                continue;
-                        }
-                        catch (Exception) // Directory doesn't exist and shoots an error.
-                        {
-                            continue;
-                        }
-                    }
-                }
-                else
-                {
-                    if (!fullProfileFolder.IsSavePath())
-                    {
-                        Constants.SavePath = string.Empty;
-                        return GetSaveDirectory();
+                        return fullProfileFolder;
                     }
                 }
             }
-            catch (NullReferenceException) // If for whatever reason the key doesn't exist, let's not crash the whole application
-            {
-            }
+            catch { }
 
-            return fullProfileFolder;
+            return GenUtil.GetSteamProfilesFolderManual();
         }
 
         #endregion
@@ -207,33 +205,26 @@ namespace RSMods
         public static void SaveProfile()
         {
             string profileFolder = GetSaveDirectory();
+            if (string.IsNullOrEmpty(profileFolder)) return;
 
-            if (profileFolder.Length == 0)
-                return;
+            string profileBackupsFolder = Path.Combine(Constants.RSFolder, "Profile_Backups");
+            string timestamp = DateTime.Now.ToString("MM-dd-yyyy_HH-mm-ss");
+            string timedBackupFolder = Path.Combine(profileBackupsFolder, timestamp);
 
-            string profileBackupsFolder = Path.Combine(RSMods.Data.Constants.RSFolder, "Profile_Backups");
-            DateTime now = DateTime.Now;
-            string timedBackupFolder = Path.Combine(profileBackupsFolder, now.ToString("MM-dd-yyyy_HH-mm-ss"));
-            string howToRestoreBackupTxt = Path.Combine(profileBackupsFolder, "howto.txt");
-
-            Directory.CreateDirectory(profileBackupsFolder);
             Directory.CreateDirectory(timedBackupFolder);
 
-            using (StreamWriter sw = File.CreateText(howToRestoreBackupTxt))
-            {
-                sw.WriteLine("If your save gets corrupted, take all the files in one of these folders and put them in this folder: " + profileFolder);
-            }
+            File.WriteAllText(Path.Combine(profileBackupsFolder, "howto.txt"), $"If your save gets corrupted, take all the files in one of these folders and put them here: {profileFolder}");
 
-            foreach (string file in Directory.GetFiles(profileFolder))
+            foreach (string file in Directory.EnumerateFiles(profileFolder))
             {
                 File.Copy(file, Path.Combine(timedBackupFolder, Path.GetFileName(file)), true);
             }
         }
 
-
         #region Decrypt Profile
 
-        public static JObject DecryptedProfile = null;
+        private static JObject decryptedProfile = null;
+        public static JObject DecryptedProfile { get => decryptedProfile; }
 
         private static void DecryptFile(Stream input, Stream output, byte[] key)
         {
@@ -310,8 +301,12 @@ namespace RSMods
             0x00, 0x00, 0x10, 0x01
         ];
 
+        public static void EncryptCurrentProfile()
+        {
+            EncryptProfile(DecryptedProfile.ToString(Newtonsoft.Json.Formatting.None), GetProfilePathFromName(CurrentUnpackedProfileName));
+        }
 
-        public static void EncryptProfile(string ProfileJson, string FileName)
+        private static void EncryptProfile(string ProfileJson, string FileName)
         {
             using MemoryStream decryptedProfileStream = new();
 
@@ -343,6 +338,20 @@ namespace RSMods
                     brEnc.BaseStream.CopyTo(sw.BaseStream);
                 }
             }
+        }
+
+        public static void SaveTonesToProfile(List<object> newGuitarTones, List<object> newBassTones)
+        {
+            var existingGuitarTones = DecryptedProfile["CustomTones"]?.ToObject<List<object>>() ?? [];
+            var existingBassTones = DecryptedProfile["BassTones"]?.ToObject<List<object>>() ?? [];
+
+            existingGuitarTones.AddRange(newGuitarTones);
+            existingBassTones.AddRange(newBassTones);
+
+            DecryptedProfile["CustomTones"] = JToken.FromObject(existingGuitarTones);
+            DecryptedProfile["BassTones"] = JToken.FromObject(existingBassTones);
+
+            EncryptCurrentProfile();
         }
 
         private static void EncryptFile(Stream input, Stream output, byte[] key)
@@ -390,6 +399,287 @@ namespace RSMods
 
             DecryptedProfile["Prizes"] = prizes;
         }
+
+        private static JObject ParseProfile(string profileName)
+        {
+            string profilePath = GetProfilePathFromName(profileName);
+            string decryptedData = DecryptProfiles(profilePath);
+
+            return JObject.Parse(decryptedData);
+        }
+
+        public static int GetSongListCount(string profileName)
+        {
+            try
+            {
+                JObject parsedJson = ParseProfile(profileName);
+                JArray songLists = (JArray)parsedJson["SongListsRoot"]["SongLists"];
+
+                return songLists.Count;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public static string GetProfilePathFromName(string profileName) => Path.Combine(GetSaveDirectory(), AvailableProfiles()[profileName] + "_PRFLDB");
+
+        public static void SetProfileAsActive(string selectedProfile)
+        {
+            decryptedProfile = ParseProfile(selectedProfile);
+        }
+        #endregion
+
+        public static bool ShouldIncludeSong(SongData song, HashSet<string> ownedDLC)
+        {
+            if (!song.Shipping || string.IsNullOrEmpty(song.Artist) || string.IsNullOrEmpty(song.Title))
+                return false;
+
+            if (song.RS1AppID != 0 && !ownedDLC.Contains(song.RS1AppID.ToString()))
+                return false;
+
+            return true;
+        }
+
+        public static HashSet<string> GetOwnedRS1DLC()
+        {
+            return new HashSet<string>(
+                DecryptedProfile["Stats"]["DLCTag"]
+                    .Children<JProperty>()
+                    .Select(p => p.Name)
+            );
+        }
+
+        public static int SongListCount => DecryptedProfile != null ? GetProfileSongLists().Count : 6;
+
+        public static List<List<string>> GetProfileSongLists() => DecryptedProfile["SongListsRoot"]["SongLists"].ToObject<List<List<string>>>();
+        public static List<string> GetProfileFavoriteSongs() => DecryptedProfile["FavoritesListRoot"]["FavoritesList"].ToObject<List<string>>();
+
+        public static List<List<string>> GetProfileSongListsWithFavorites()
+        {
+            var customLists = GetProfileSongLists();
+            var favorites = GetProfileFavoriteSongs();
+
+            return [favorites, .. customLists];
+        }
+
+        public static void SetSongInList(string dlcKey, int listIndex, bool add)
+        {
+            List<string> list = DecryptedProfile["SongListsRoot"]["SongLists"][listIndex].ToObject<List<string>>();
+
+            if (add && !list.Contains(dlcKey)) list.Add(dlcKey);
+            else if (!add && list.Contains(dlcKey)) list.Remove(dlcKey);
+
+            DecryptedProfile["SongListsRoot"]["SongLists"][listIndex] = JToken.FromObject(list);
+        }
+
+        public static void SetSongInFavorites(string dlcKey, bool add)
+        {
+            List<string> favorites = GetProfileFavoriteSongs();
+
+            if (add && !favorites.Contains(dlcKey)) favorites.Add(dlcKey);
+            else if (!add && favorites.Contains(dlcKey)) favorites.Remove(dlcKey);
+
+            DecryptedProfile["FavoritesListRoot"]["FavoritesList"] = JToken.FromObject(favorites);
+        }
+
+        public static bool AddSongList()
+        {
+            var lists = GetProfileSongLists();
+            if (lists.Count >= 20) return false;
+
+            lists.Add([]);
+            DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
+            EncryptCurrentProfile();
+            return true;
+        }
+
+        public static bool RemoveSongList()
+        {
+            var lists = GetProfileSongLists();
+            if (lists.Count <= 6) return false;
+
+            lists.RemoveAt(lists.Count - 1);
+            DecryptedProfile["SongListsRoot"]["SongLists"] = JToken.FromObject(lists);
+            EncryptCurrentProfile();
+            return true;
+        }
+
+        #region Backup Management
+
+        private const string BackupSourceFormat = "MM-dd-yyyy_HH-mm-ss";
+        private const string BackupDisplayFormat = "MMM dd, yyyy @ HH:mm:ss";
+
+        private static string FormatBackupFolderName(string folderName)
+        {
+            if (DateTime.TryParseExact(folderName, BackupSourceFormat, null, DateTimeStyles.None, out var dt))
+                return dt.ToString(BackupDisplayFormat);
+            return null;
+        }
+
+        public static IEnumerable<string> GetFormattedBackupNames()
+        {
+            string backupPath = Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups");
+            if (!Directory.Exists(backupPath))
+                return Enumerable.Empty<string>();
+
+            return Directory.EnumerateDirectories(backupPath)
+                .Select(Path.GetFileName)
+                .Select(FormatBackupFolderName)
+                .Where(formatted => formatted != null)
+                .Reverse();
+        }
+
+        /// <summary>
+        /// Returns the full source directory path for a display-formatted backup name,
+        /// or null if the name cannot be parsed.
+        /// </summary>
+        public static string GetBackupSourceDir(string displayName)
+        {
+            if (!DateTime.TryParseExact(displayName, BackupDisplayFormat, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
+                return null;
+
+            return Path.Combine(GenUtil.GetRSDirectory(), "Profile_Backups", dt.ToString(BackupSourceFormat));
+        }
+
+        public static void DeleteOldBackups(int maxAmountOfBackups)
+        {
+            if (maxAmountOfBackups == 0) // User says they want all the backups.
+                return;
+
+            string backupFolder = Path.Combine(Constants.RSFolder, "Profile_Backups");
+            if (!Directory.Exists(backupFolder))
+                return;
+
+            DirectoryInfo[] backups = [.. new DirectoryInfo(backupFolder).GetDirectories().OrderBy(f => f.LastWriteTime)];
+            int foldersLeftToRemove = backups.Length - maxAmountOfBackups;
+
+            foreach (DirectoryInfo backup in backups)
+            {
+                if (foldersLeftToRemove == 0)
+                    break;
+
+                if (Array.IndexOf(backups, backup.Name) < backups.Length - maxAmountOfBackups)
+                {
+                    foreach (string file in Directory.GetFiles(backup.FullName))
+                        File.Delete(file);
+                    Directory.Delete(backup.FullName);
+                    foldersLeftToRemove--;
+                }
+            }
+        }
+
+        public static void RestoreBackup(string sourceDir, string targetDir)
+        {
+            foreach (string file in Directory.EnumerateFiles(sourceDir))
+                File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+        }
+
+        #endregion
+        #region Tone Import
+
+        public static (int ImportedCount, List<string> ErrorMessages) ProcessToneManifests(string[] filenames)
+        {
+            List<object> allGuitarTones = [];
+            List<object> allBassTones = [];
+            List<string> errors = [];
+
+            foreach (string filename in filenames)
+            {
+                try
+                {
+                    var (guitarTones, bassTones) = ParseSingleManifest(filename);
+                    allGuitarTones.AddRange(guitarTones);
+                    allBassTones.AddRange(bassTones);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(ex.Message);
+                }
+            }
+
+            int totalImported = allGuitarTones.Count + allBassTones.Count;
+
+            if (totalImported > 0)
+                SaveTonesToProfile(allGuitarTones, allBassTones);
+
+            return (totalImported, errors);
+        }
+
+        private static (List<object> GuitarTones, List<object> BassTones) ParseSingleManifest(string filename)
+        {
+            string name = Path.GetFileName(filename);
+
+            var manifest = JObject.Parse(File.ReadAllText(filename));
+
+            if (manifest["Entries"] is not JObject entries)
+                throw new InvalidDataException($"Input Tone Manifest missing valid Entries: {name}");
+
+            if (!entries.HasValues)
+                throw new InvalidDataException($"Input Tone Manifest Entries has no children: {name}");
+
+            var firstEntry = entries.Properties().First();
+
+            if (string.IsNullOrEmpty(firstEntry.Name))
+                throw new InvalidDataException($"Input Tone Manifest has no ArrangementId: {name}");
+
+            if (firstEntry.Value.Type == JTokenType.Null || firstEntry.Value.Type == JTokenType.Undefined)
+                throw new InvalidDataException($"Input Tone Manifest has invalid ArrangementId: {name}");
+
+            if (firstEntry.Value["Attributes"] is not JToken attributes)
+                throw new InvalidDataException($"Input Tone Manifest has no arrangement Attributes: {name}");
+
+            string arrangementName = attributes["ArrangementName"]?.ToString();
+            if (string.IsNullOrEmpty(arrangementName))
+                throw new InvalidDataException($"Input Tone Manifest missing Arrangement Name: {name}");
+
+            if (attributes["Tones"] is not JArray tones)
+                throw new InvalidDataException($"Input Tone Manifest missing Tones: {name}");
+
+            bool isBass = arrangementName.IndexOf("Bass", StringComparison.OrdinalIgnoreCase) >= 0;
+            var toneList = tones.ToObject<List<object>>();
+
+            return isBass ? ([], toneList) : (toneList, []);
+        }
+
+        public static (int ImportedCount, List<string> ErrorMessages) ProcessXmlTones(string[] filenames, Func<Tone2014, bool> isGuitarPrompt)
+        {
+            List<object> guitarTones = [];
+            List<object> bassTones = [];
+            List<string> errors = [];
+
+            foreach (string filename in filenames)
+            {
+                try
+                {
+                    Tone2014 tone = Tone2014.LoadFromXmlTemplateFile(filename);
+
+                    if (tone == null)
+                    {
+                        errors.Add($"Failed to load tone from {Path.GetFileName(filename)}");
+                        continue;
+                    }
+
+                    if (isGuitarPrompt(tone))
+                        guitarTones.Add(tone);
+                    else
+                        bassTones.Add(tone);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Error reading {Path.GetFileName(filename)}: {ex.Message}");
+                }
+            }
+
+            int totalImported = guitarTones.Count + bassTones.Count;
+
+            if (totalImported > 0)
+                SaveTonesToProfile(guitarTones, bassTones);
+
+            return (totalImported, errors);
+        }
+
         #endregion
     }
 }

@@ -93,7 +93,7 @@
     <Reference Include="Rocksmith2014PsarcLib">
       <HintPath>Lib\Rocksmith2014PsarcLib.dll</HintPath>
     </Reference>
-    <Reference Include="RocksmithToolkitLib, Version=2.9.2.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="RocksmithToolkitLib, Version=2.9.2.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Lib\RocksmithToolkitLib.dll</HintPath>
     </Reference>
@@ -130,13 +130,22 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Enums.cs" />
+    <Compile Include="Core\IDialogService.cs" />
+    <Compile Include="Core\IAppEnvironment.cs" />
+    <Compile Include="Core\AppServices.cs" />
+    <Compile Include="WinForms\WinFormsDialogService.cs" />
+    <Compile Include="WinForms\WinFormsAppEnvironment.cs" />
     <Compile Include="GuitarSpeak.cs" />
     <Compile Include="IniManager.cs" />
     <Compile Include="IniSection.cs" />
     <Compile Include="MemoryStream.cs" />
+    <Compile Include="Midi\Midi.cs" />
+    <Compile Include="Midi\MidiDebug.cs" />
     <Compile Include="ModsSettings.cs" />
     <Compile Include="Profiles.cs" />
     <Compile Include="Rocksmith\RocksmithSettings.cs" />
+    <Compile Include="Rocksmith\Soundpacks.cs" />
+    <Compile Include="RSLocationResolver.cs" />
     <Compile Include="SetAndForgetMods.cs" />
     <Compile Include="SongManager.cs" />
     <Compile Include="Twitch\EffectServer\EffectMessage.cs" />
@@ -151,6 +160,48 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Designer.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Startup.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Settings.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Themes.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Keybindings.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Colors.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.SetAndForget.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Tooltips.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.GuitarSpeak.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Twitch.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.ASIO.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Rocksmith.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Profiles.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.SoundPacks.cs">
+      <DependentUpon>UI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI.Midi.cs">
       <DependentUpon>UI.cs</DependentUpon>
     </Compile>
     <Compile Include="KeyConversion.cs" />

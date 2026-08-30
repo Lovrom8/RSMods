@@ -1,5 +1,5 @@
-﻿using System;
 using System.IO;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,17 +10,20 @@ using System.Windows.Forms;
 
 namespace RSMods
 {
-    public class SongManager
+    public static class SongManager
     {
-        public static List<SongData> Songs = new List<SongData>();
+        private static List<SongData> Songs = [];
+
         public static List<SongData> ExtractSongData(ProgressBar progressBar = null)
         {
             Songs.Clear();
-            bool progressBarAvailable = progressBar != null;
-            List<string> allFiles = Directory.GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "dlc"), "*_p.psarc", SearchOption.AllDirectories).ToList();
-            allFiles.Add(Path.Combine(GenUtil.GetRSDirectory(), "songs.psarc"));
 
-            if (progressBarAvailable)
+            List<string> allFiles = Directory
+                .GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "dlc"), "*_p.psarc", SearchOption.AllDirectories)
+                .Append(Path.Combine(GenUtil.GetRSDirectory(), "songs.psarc"))
+                .ToList();
+
+            if (progressBar != null)
             {
                 progressBar.Visible = true;
                 progressBar.Minimum = 1;
@@ -29,97 +32,57 @@ namespace RSMods
                 progressBar.Step = 1;
             }
 
-            ParallelLoopResult loopResult = Parallel.ForEach<string>(allFiles, (file) =>
+            var rawArrangements = new ConcurrentBag<(SongArrangement Arrangement, bool IsODLC)>();
+
+            Parallel.ForEach(allFiles, file =>
             {
                 try
                 {
-                    using (PsarcFile psarc = new PsarcFile(file))
-                    {
+                    using PsarcFile psarc = new(file);
+                    bool isODLC = psarc.ExtractToolkitInfo().PackageAuthor == "Ubisoft";
 
-                        List<int> arrangementTypes = [];
-                        List<SongArrangement.ArrangementAttributes.ArrangementTuning> tunings = [];
-
-                        foreach (SongArrangement arrangement in psarc.ExtractArrangementManifests())
-                        {
-                            SongData song = new SongData()
-                            {
-                                Arrangement = arrangement,
-                                DLCKey = arrangement.Attributes.SongKey,
-                                Artist = arrangement.Attributes.ArtistName,
-                                Title = arrangement.Attributes.SongName,
-                                Shipping = arrangement.Attributes.Shipping,
-                                SKU = arrangement.Attributes.SKU,
-                                CommonName = $"{arrangement.Attributes.ArtistName} - {arrangement.Attributes.SongName}"
-                            };
-
-                            if (song.CommonName?.Length == 0 || song.CommonName == " - ") // Some songs have a glitched arrangment, so we skip it.
-                                continue;
-
-                            arrangementTypes.Add(arrangement.Attributes.ArrangementType);
-                            tunings.Add(arrangement.Attributes.Tuning);
-
-                            // Load all RS1 DLC and their ID so we can determine if the user owns it, and if we should display it accordingly.
-                            if (psarc.ExtractToolkitInfo().PackageAuthor == "Ubisoft")
-                            {
-                                song.ODLC = true;
-                                if (song.Arrangement.Attributes.SKU == "RS1" && song.Arrangement.Attributes.DLCRS1Key != null)
-                                    song.RS1AppID = song.Arrangement.Attributes.DLCRS1Key[0].WIN32;
-                            }
-
-                            Songs.RemoveAll(songData => songData == null); // If this isn't run then we can end up with some blank songs getting passed in and crashing the app.
-
-                            // If Song Name Exists -> Add To Current Values -> Return Updated Song
-                            if (Songs.Exists(songData => songData != null && Equals(songData.DLCKey, song.DLCKey)))
-                            {
-                                int index = Songs.IndexOf(new SongData { DLCKey = song.DLCKey });
-
-                                if (index != -1)
-                                {
-                                    SongData previousIteration = Songs[index];
-                                    previousIteration.Arrangements.Add(arrangement);
-                                    previousIteration.ArrangementTypes.AddRange(song.ArrangementTypes);
-                                    previousIteration.Tunings.AddRange(song.Tunings);
-                                    Songs[index] = previousIteration;
-                                }
-                                else
-                                {
-                                    song.ArrangementTypes = arrangementTypes;
-                                    song.Tunings = tunings;
-                                    song.Arrangements =
-                                    [
-                                        song.Arrangement
-                                    ];
-                                    Songs.Add(song);
-                                }
-                            }
-
-                            // Song Doesn't Exist In Our List
-                            else
-                            {
-                                song.ArrangementTypes = arrangementTypes;
-                                song.Tunings = tunings;
-                                song.Arrangements =
-                                [
-                                    song.Arrangement
-                                ];
-                                Songs.Add(song);
-                            }
-                        }
-                    }
+                    foreach (SongArrangement arrangement in psarc.ExtractArrangementManifests())
+                        rawArrangements.Add((arrangement, isODLC));
                 }
-                catch
-                {
-                }
+                catch { }
 
+                progressBar?.Invoke(() => progressBar.PerformStep());
             });
 
-            // Make sure we remove duplicate instances of the songs.
-            // We need to make our own Comparer class for it, since Equals() and GetHashCode() won't work for our custom type.
-            Songs = Songs.Distinct(new SongDataComparer()).ToList();
+            Songs = rawArrangements
+                .Where(x =>
+                {
+                    string name = $"{x.Arrangement.Attributes.ArtistName} - {x.Arrangement.Attributes.SongName}";
+                    return name.Length > 0 && name != " - "; // Some songs have a glitched arrangement
+                })
+                .GroupBy(x => x.Arrangement.Attributes.SongKey)
+                .Select(g =>
+                {
+                    var (first, isODLC) = g.First();
+                    var song = new SongData
+                    {
+                        Arrangement = first,
+                        Arrangements = g.Select(x => x.Arrangement).ToList(),
+                        DLCKey = first.Attributes.SongKey,
+                        Artist = first.Attributes.ArtistName,
+                        Title = first.Attributes.SongName,
+                        CommonName = $"{first.Attributes.ArtistName} - {first.Attributes.SongName}",
+                        Shipping = first.Attributes.Shipping,
+                        SKU = first.Attributes.SKU,
+                        ODLC = isODLC,
+                        ArrangementTypes = g.Select(x => x.Arrangement.Attributes.ArrangementType).ToList(),
+                        Tunings = g.Select(x => x.Arrangement.Attributes.Tuning).ToList(),
+                    };
 
-            Songs.Sort(CompareSongs);
+                    if (isODLC && first.Attributes.SKU == "RS1" && first.Attributes.DLCRS1Key != null)
+                        song.RS1AppID = first.Attributes.DLCRS1Key[0].WIN32;
 
-            if (progressBarAvailable)
+                    return song;
+                })
+                .OrderBy(s => s.CommonName)
+                .ToList();
+
+            if (progressBar != null)
             {
                 progressBar.Visible = false;
                 progressBar.Value = progressBar.Minimum;
@@ -127,23 +90,11 @@ namespace RSMods
 
             return Songs;
         }
-
-        private static int CompareSongs(SongData x, SongData y)
-        {
-            if (x == null)
-            {
-                return y == null ? 0 : -1;
-            }
-            else
-            {
-                return y == null ? 1 : x.CommonName.CompareTo(y.CommonName);
-            }
-        }
     }
 
     public class SongData
     {
-        public SongArrangement Arrangement { get; set; } // Raw arrangment, just in-case we need to mess with it.
+        public SongArrangement Arrangement { get; set; } // Raw arrangement, just in-case we need to mess with it.
         public List<SongArrangement> Arrangements { get; set; } // List of arrangements
         public string DLCKey { get; set; }
         public string Artist { get; set; }
@@ -155,23 +106,5 @@ namespace RSMods
         public int RS1AppID { get; set; } // AppID from RS1CompatDLC
         public List<int> ArrangementTypes { get; set; } // Lead = 0, Rhythm = 1, Combo = 2, Bass = 3
         public List<SongArrangement.ArrangementAttributes.ArrangementTuning> Tunings { get; set; }
-    }
-
-    public class SongDataComparer : IEqualityComparer<SongData>
-    {
-        public bool Equals(SongData x, SongData y)
-        {
-            if (x == null && y == null)
-                return true;
-            if (x == null || y == null)
-                return false;
-
-            return x.DLCKey == y.DLCKey;
-        }
-
-        public int GetHashCode(SongData obj)
-        {
-            return obj.DLCKey.GetHashCode();
-        }
     }
 }

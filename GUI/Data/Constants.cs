@@ -1,15 +1,12 @@
-﻿using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
+﻿using System.IO;
+using RSMods.Core;
 
 namespace RSMods.Data
 {
     public static class Constants
     {
-
-        public static Color DefaultBackgroundColor = Color.Azure;
-        public static Color DefaultTextColor = Color.Black;
-        public static Color DefaultButtonColor = SystemColors.ControlLight;
+        // The executable's own directory (replaces Application.StartupPath / Application.ExecutablePath).
+        private static string BaseDirectory => AppServices.Environment.BaseDirectory;
 
         public static string RSFolder { get; set; }
         public static string SavePath { get; set; }
@@ -26,9 +23,9 @@ namespace RSMods.Data
             ]);
         }
 
-        public static string SettingsPath { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GUI_Settings.ini"); } }
+        public static string SettingsPath { get { return Path.Combine(BaseDirectory, "GUI_Settings.ini"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
-        public static string WorkFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Temp"); } }
+        public static string WorkFolder { get { return Path.Combine(BaseDirectory, "Temp"); } }
         public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache_psarc_RS2014_Pc"); } }
         public static string Cache3_7zPath { get { return Path.Combine(CachePcPath, "cache3.7z"); } }
         public static string Cache4_7zPath { get { return Path.Combine(CachePcPath, "cache4.7z"); } }
@@ -37,7 +34,7 @@ namespace RSMods.Data
         public static string WwiseInitBnk_CustomPath { get { return Path.Combine(CustomModsFolder, "init.bnk"); } }
         public static string LocalizationCSV_InternalPath { get { return Path.Combine("localization", "maingame.csv"); } }
         public static string TuningsJSON_InternalPath { get { return Path.Combine("manifests", "tuning.database.json"); } }
-        public static string CustomModsFolder { get { return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "CustomMods"); } }
+        public static string CustomModsFolder { get { return Path.Combine(BaseDirectory, "CustomMods"); } }
         public static string LocalizationCSV_CustomPath { get { return Path.Combine(CustomModsFolder, "maingame.csv"); } }
         public static string TuningJSON_CustomPath { get { return Path.Combine(CustomModsFolder, "tuning.database.json"); } }
         public static string IntroGFX_InternalPath { get { return Path.Combine("gfxassets", "views", "introsequence.gfx"); } }

@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace RSMods.Twitch
@@ -244,6 +245,26 @@ namespace RSMods.Twitch
                     File.WriteAllText("TwitchDefaultEffects.xml", sww.ToString());
                 }
             }*/
+        }
+
+        public async Task SaveRewards()
+        {
+            await Task.Run(() =>
+            {
+                XmlSerializer xs = new XmlSerializer(Rewards.GetType());
+                using var sww = new StringWriter();
+                using XmlWriter writer = XmlWriter.Create(sww, new XmlWriterSettings { Indent = true });
+
+                xs.Serialize(writer, Rewards);
+
+                string effectListPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TwitchEnabledEffects.xml");
+                File.WriteAllText(effectListPath, sww.ToString());
+            });
+        }
+
+        public void SaveLog(string path)
+        {
+            File.WriteAllText(path, Log);
         }
 
         public void LoadEnabledEffects()

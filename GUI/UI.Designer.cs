@@ -1,4 +1,4 @@
-﻿namespace RSMods
+namespace RSMods
 {
     partial class MainForm
     {
@@ -6041,9 +6041,9 @@
             // 
             this.button_PlayResultVoiceOver.Location = new System.Drawing.Point(478, 211);
             this.button_PlayResultVoiceOver.Name = "button_PlayResultVoiceOver";
-            this.button_PlayResultVoiceOver.Size = new System.Drawing.Size(127, 23);
+            this.button_PlayResultVoiceOver.Size = new System.Drawing.Size(151, 23);
             this.button_PlayResultVoiceOver.TabIndex = 13;
-            this.button_PlayResultVoiceOver.Text = "Play Result VO";
+            this.button_PlayResultVoiceOver.Text = "Play Result VO (in-game!)";
             this.button_PlayResultVoiceOver.UseVisualStyleBackColor = true;
             this.button_PlayResultVoiceOver.Click += new System.EventHandler(this.SoundPacks_PlayResultVoiceOver);
             // 
@@ -6923,6 +6923,7 @@
             this.MinimumSize = new System.Drawing.Size(1186, 626);
             this.Name = "MainForm";
             this.Text = "Rocksmith 2014 DLL Modifier";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.groupBox_HowToEnumerate.ResumeLayout(false);
             this.groupBox_HowToEnumerate.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUpDown_ForceEnumerationXMS)).EndInit();

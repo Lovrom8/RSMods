@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using RSMods.Core;
 using RSMods.Data;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace RSMods.Util
 {
@@ -41,39 +41,26 @@ namespace RSMods.Util
 
         public static string GetDefaultBrowser(string url)
         {
-            string browserName = "iexplore.exe";
-            try
+            const string ieFallback = "iexplore.exe";
+            const string subKeyPath = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
+
+            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(subKeyPath))
             {
-                using RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice");
+                string progId = userChoiceKey?.GetValue("Progid")?.ToString();
 
-                if (userChoiceKey != null)
+                if (string.IsNullOrEmpty(progId))
                 {
-                    object progIdValue = userChoiceKey.GetValue("Progid");
-                    if (progIdValue != null)
-                    {
-                        /*if (progIdValue.ToString().ToLower().Contains("chrome"))
-                            browserName = "chrome.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("firefox"))
-                            browserName = "firefox.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("safari"))
-                            browserName = "safari.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("opera"))
-                            browserName = "opera.exe";
-                        else if (progIdValue.ToString().ToLower().Contains("brave"))
-                            browserName = "brave.exe";*/
+                    return ieFallback;
+                }
 
-                        if (progIdValue.ToString().IndexOf("edge", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                            return $"microsoft-edge:{url}";
-                        else
-                            return url;
-                    }
+                if (progId.IndexOf("edge", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return $"microsoft-edge:{url}";
                 }
             }
-            catch (NullReferenceException) { }
 
-            return browserName;
+            return url;
         }
-
 
         public static T Map<T, TU>(this T target, TU source) // Copy properties of base class to its derived class 
         {
@@ -92,15 +79,12 @@ namespace RSMods.Util
             return target;
         }
 
-        private static bool IsRSFolder(this string folderPath)
+        internal static bool IsRSFolder(this string folderPath)
         {
             if (!Directory.Exists(folderPath))
                 return false;
 
             string cachePsarcPath = Path.Combine(folderPath, "cache.psarc");
-
-            //if (IsDirectoryEmpty(dlcFolderPath))
-            //    return false;
 
             return File.Exists(cachePsarcPath);
         }
@@ -233,15 +217,19 @@ namespace RSMods.Util
             if (settingsPairs == null)
                 settingsDict = GetSettingsPairs(GetSettingsLines());
 
-            //  return settingsLines.FirstOrDefault(line => line.Contains(entryName)).Split('=')[1].Trim();
-
             if (settingsDict.ContainsKey(entryName))
                 return settingsDict[entryName];
             else
                 return String.Empty;
         }
 
-        public static string GetSaveFolder(bool overrideSkipPrompt = false)
+        /// <summary>
+        /// Best-effort detection of the Rocksmith save folder. Reads the cached / persisted value and,
+        /// as a side effect, refreshes <see cref="Constants.SavePathDeclined"/> from the settings file.
+        /// Returns the found path or an empty string; interactive prompting lives in
+        /// <see cref="RSLocationResolver"/>.
+        /// </summary>
+        public static string GetSaveFolder()
         {
             if (!IsSavePath(Constants.SavePath))
             {
@@ -250,13 +238,7 @@ namespace RSMods.Util
                     Constants.SavePath = GetSettingsEntry("SavePath");
                     Constants.SavePathDeclined = bool.TryParse(GetSettingsEntry("BypassSavePrompt"), out bool declined) && declined;
                     if (Constants.SavePath != string.Empty)
-                    {
                         return Constants.SavePath;
-                    }
-                    else if (Constants.SavePathDeclined && !overrideSkipPrompt)
-                    {
-                        return string.Empty;
-                    }
                 }
             }
             else
@@ -266,26 +248,30 @@ namespace RSMods.Util
             {
                 string potentialSaveFolder = Profiles.GetSaveDirectory();
 
-                while (!potentialSaveFolder.IsSavePath())
-                {
-                    if (MessageBox.Show("The save folder we found does not appear to be correct.\nPlease select your save folder.\nIt should follow the format: <Where Steam Is Installed>/userdata/#####/221680/remote\nPressing \"Cancel\" will prevent the usage of the \"Profile Edits\" tab", "Warning: Invalid Save Path", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
-                    {
-                        Constants.SavePathDeclined = true;
-                        return string.Empty;
-                    }
-
-                    potentialSaveFolder = AskUserForSavePath();
-                }
-
-                return potentialSaveFolder;
+                if (potentialSaveFolder.IsSavePath())
+                    return potentialSaveFolder;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("<Warning> GetSaveFolder, " + ex.Message);
+                // Detection is best-effort; the resolver surfaces "not found" to the user.
             }
+
             return string.Empty;
         }
 
+        public static string GetRsModsPath()
+        {
+            string rsDir = GetRSDirectory();
+
+            return Path.Combine(rsDir, "RSMods");
+        }
+
+        /// <summary>
+        /// Best-effort detection of the Rocksmith 2014 install folder: the cached / persisted value, then
+        /// probing (parent of our own folder, Steam common, install registry keys, custom Steam libraries).
+        /// Returns a validated folder or an empty string when nothing is found; the "please point us at it"
+        /// prompting and shutdown-on-give-up flow live in <see cref="RSLocationResolver"/>.
+        /// </summary>
         public static string GetRSDirectory()
         {
             if (!IsRSFolder(Constants.RSFolder))
@@ -305,8 +291,10 @@ namespace RSMods.Util
                 var rs2RootDir = string.Empty;
                 var steamRootPath = GetSteamDirectory();
 
-                if (Directory.GetParent(Application.StartupPath).FullName.IsRSFolder()) // Before we ask the user to say where RS is located, lets check to see if we are located in a RS Install folder.
-                    return Directory.GetParent(Application.StartupPath).FullName;
+                // Before anything else, check whether we are sitting inside a RS install folder.
+                string startupParent = Directory.GetParent(AppServices.Environment.BaseDirectory)?.FullName;
+                if (!string.IsNullOrEmpty(startupParent) && startupParent.IsRSFolder())
+                    return startupParent;
 
                 if (!string.IsNullOrEmpty(steamRootPath))
                 {
@@ -331,92 +319,43 @@ namespace RSMods.Util
                             rs2RootDir = GetCustomRSFolder(steamRootPath); // Grab custom Steam library paths from .vdf file
                         }
 
-                        if (string.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // If neither that's OK, ask the user to point the GUI to the correct location
-                        {
-                            MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, please select it manually!", "Your help is required!");
-                            return AskUserForRSFolder();
-                        }
+                        if (string.IsNullOrEmpty(rs2RootDir) || !rs2RootDir.IsRSFolder()) // Nothing valid detected — the resolver prompts.
+                            return string.Empty;
                     }
-                    else // RS-Folder does exist
+                    else if (!rs2RootDir.IsRSFolder()) // Folder exists but cache.psarc doesn't (old install / steam left-overs) — the resolver prompts.
                     {
-                        while (!rs2RootDir.IsRSFolder())  // If cache.psarc doesn't exist (old install / steam left-overs)
-                        {
-                            MessageBox.Show("We cannot verify your installation of Rocksmith 2014. It appears the folder we have saved doesn't contain a cache.psarc which is REQUIRED for Rocksmith 2014 to boot.", "Your help is required!");
-                            rs2RootDir = AskUserForRSFolder();
-
-                            if (rs2RootDir == string.Empty)
-                            {
-                                MessageBox.Show("We were unable to detect your Rocksmith 2014 folder, and you didn't give us a valid RS Folder.", "Closing Application");
-                                Application.Exit();
-                            }
-                        }
+                        return string.Empty;
                     }
                 }
 
                 return rs2RootDir;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("<Warning> GetSteamDirectory, " + ex.Message);
+                // Detection is best-effort; the resolver surfaces "not found" to the user.
             }
 
             return string.Empty;
         }
 
-        public static string AskUserForRSFolder()
-        {
-            FolderPicker dialog = new FolderPicker();
-
-            IntPtr ownerHandle = Application.OpenForms.Count > 0 ? Application.OpenForms[0].Handle : IntPtr.Zero;
-            if (dialog.ShowDialog(ownerHandle) == true)
-            {
-                string rsFolder = dialog.ResultPath;
-
-                if (!string.IsNullOrEmpty(rsFolder) && rsFolder.IsRSFolder())
-                {
-                    Constants.RSFolder = rsFolder;
-                    return rsFolder;
-                }
-            }
-
-            return string.Empty;
-        }
-
-        public static string AskUserForSavePath()
-        {
-            FolderPicker dialog = new FolderPicker();
-
-            IntPtr ownerHandle = Application.OpenForms.Count > 0 ? Application.OpenForms[0].Handle : IntPtr.Zero;
-            if (dialog.ShowDialog(ownerHandle) == true)
-            {
-                string savePath = dialog.ResultPath;
-
-                if (savePath.IsSavePath())
-                {
-                    Constants.SavePath = savePath;
-                    return savePath;
-                }
-            }
-
-            return String.Empty;
-        }
-
+        /// <summary>
+        /// Best-effort probe of the Steam userdata tree for a Rocksmith (221680) profile folder.
+        /// Returns an empty string when none is found; callers fall back to the resolver's prompt.
+        /// </summary>
         public static string GetSteamProfilesFolderManual()
         {
-            string steamUserdataPath = Path.Combine(GenUtil.GetSteamDirectory(), "userdata");
+            string steamUserdataPath = Path.Combine(GetSteamDirectory(), "userdata");
             try
             {
                 var subdirs = new DirectoryInfo(steamUserdataPath).GetDirectories(@"221680", SearchOption.AllDirectories).ToArray();
                 var userprofileFolder = subdirs.FirstOrDefault(dir => !dir.FullName.Contains("760")); //760 is the ID for Steam's screenshot thingy
 
-                if (Directory.Exists(userprofileFolder.FullName))
+                if (userprofileFolder != null && Directory.Exists(userprofileFolder.FullName))
                     return userprofileFolder.FullName;
-                else
-                    MessageBox.Show("Could not find profile folder!", "Error");
             }
-            catch (IOException ioex)
+            catch (IOException)
             {
-                MessageBox.Show($"Could not find Steam profiles folder: {ioex.Message}", "Error");
+                // Steam not installed / userdata missing — nothing to detect.
             }
 
             return string.Empty;

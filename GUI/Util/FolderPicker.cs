@@ -89,11 +89,11 @@ namespace RSMods.Util
 
         private static int CheckHr(int hr, bool throwOnError)
         {
-            if (hr != 0)
+            if (hr != 0 && throwOnError)
             {
-                if (throwOnError)
-                    Marshal.ThrowExceptionForHR(hr);
+                Marshal.ThrowExceptionForHR(hr);
             }
+
             return hr;
         }
 
