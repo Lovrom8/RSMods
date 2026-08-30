@@ -5,24 +5,14 @@ using System.IO;
 
 namespace RSMods
 {
-    public sealed class IniValidationWarning
+    public sealed class IniValidationWarning(string filePath, string section, string key, string rawValue, string defaultValue, string reason)
     {
-        public IniValidationWarning(string filePath, string section, string key, string rawValue, string defaultValue, string reason)
-        {
-            FilePath = filePath;
-            Section = section;
-            Key = key;
-            RawValue = rawValue;
-            DefaultValue = defaultValue;
-            Reason = reason;
-        }
-
-        public string FilePath { get; }
-        public string Section { get; }
-        public string Key { get; }
-        public string RawValue { get; }
-        public string DefaultValue { get; }
-        public string Reason { get; }
+        public string FilePath { get; } = filePath;
+        public string Section { get; } = section;
+        public string Key { get; } = key;
+        public string RawValue { get; } = rawValue;
+        public string DefaultValue { get; } = defaultValue;
+        public string Reason { get; } = reason;
     }
 
     public class IniManager(string filePath)
@@ -115,8 +105,10 @@ namespace RSMods
                 // _data ordering first, then any section that exists only as commented lines.
                 var sectionNames = new List<string>(_data.Keys);
                 foreach (var section in _commentedData.Keys)
+                {
                     if (!_data.ContainsKey(section))
                         sectionNames.Add(section);
+                }
 
                 foreach (var sectionName in sectionNames)
                 {
@@ -142,8 +134,10 @@ namespace RSMods
                     if (commentedSection != null)
                     {
                         foreach (var kvp in commentedSection)
+                        {
                             if (dataSection == null || !dataSection.ContainsKey(kvp.Key))
                                 sw.WriteLine($";{kvp.Key}={kvp.Value}");
+                        }
                     }
 
                     sw.WriteLine(); // Blank line for readability

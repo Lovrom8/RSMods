@@ -1,5 +1,10 @@
 # Set-and-Forget migration plan
 
+> **Status: complete.** All slices below have shipped and the WinForms GUI has been removed. The Core
+> `SetAndForgetMods` facade this plan produced was subsequently split into injected `CachePsarcService`,
+> `TuningService`, `ProfileToneService`, and `FastLoadService` — see the "Set-and-Forget service split"
+> entry in `docs/avalonia-migration.md`. This document is retained for historical context.
+
 A step-by-step plan for porting the WinForms Set-and-Forget tab (`GUI/UI.SetAndForget.cs`, backed by
 `GUI/SetAndForgetMods.cs`) to Avalonia, following the same shared-Core pattern used for SoundPacks and
 Profiles. Written as a handoff so a future session can execute it slice by slice.

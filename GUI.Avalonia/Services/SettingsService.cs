@@ -1,3 +1,5 @@
+using RSMods.Util;
+
 namespace RSMods.Services;
 
 /// <summary>
@@ -7,5 +9,14 @@ namespace RSMods.Services;
 /// </summary>
 internal sealed class SettingsService
 {
-    public Task SaveAsync() => Task.Run(RsModsSettings.Save);
+    /// <summary>
+    /// The mod DLL only reloads settings when it receives the WM_COPYDATA "update all" message; without
+    /// it a save sits on disk until the next game launch and the mod framework's per-mod
+    /// <c>OnSettingsChanged</c> hooks never fire. 
+    /// </summary>
+    public Task SaveAsync() => Task.Run(() =>
+    {
+        RsModsSettings.Save();
+        WinMsgUtil.SendMsgToRS("update all");
+    });
 }

@@ -54,12 +54,10 @@ namespace RSMods
 
         public static void DeleteOldBackups(string rocksmithFolder, int maximumBackups)
         {
-            if (maximumBackups == 0)
-                return;
+            if (maximumBackups == 0) return;
 
             string backupFolder = Path.Combine(rocksmithFolder, "Profile_Backups");
-            if (!Directory.Exists(backupFolder))
-                return;
+            if (!Directory.Exists(backupFolder)) return;
 
             DirectoryInfo[] backups = [.. new DirectoryInfo(backupFolder)
                 .GetDirectories()
@@ -84,13 +82,10 @@ namespace RSMods
 
         private static string FormatBackupFolderName(string folderName)
         {
-            if (DateTime.TryParseExact(
-                    folderName,
-                    BackupSourceFormat,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out DateTime timestamp))
+            if (DateTime.TryParseExact(folderName, BackupSourceFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timestamp))
+            {
                 return timestamp.ToString(BackupDisplayFormat, CultureInfo.CurrentCulture);
+            }
 
             return null;
         }

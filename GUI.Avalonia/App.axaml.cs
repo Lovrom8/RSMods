@@ -6,6 +6,7 @@ using RSMods.Core;
 using RSMods.Services;
 using RSMods.Util;
 using RSMods.Data;
+using RSMods.SetAndForget;
 using RSMods.Twitch;
 using RSMods.Twitch.EffectServer;
 using RSMods.ViewModels;
@@ -31,6 +32,14 @@ public sealed class App : Application
             services.AddSingleton<RocksmithSettingsService>();
             services.AddSingleton<AsioSettingsService>();
             services.AddSingleton<SoundPackService>();
+            services.AddSingleton<SongCatalogService>();
+            services.AddSingleton<CachePsarcService>();
+            services.AddSingleton<TuningService>();
+            services.AddSingleton<ProfileToneService>();
+            services.AddSingleton<IDriveInfoProvider, WmiDriveInfoProvider>();
+            services.AddSingleton<FastLoadService>();
+            services.AddSingleton<ProfileService>();
+            services.AddSingleton<ProfileToneImportService>();
             services.AddSingleton<SettingsWarningPresenter>();
             services.AddSingleton<ThemeService>();
             services.AddSingleton(new HttpClient());
@@ -67,10 +76,6 @@ public sealed class App : Application
             services.AddTransient<MainWindow>();
 
             _services = services.BuildServiceProvider();
-
-            var dialogs = _services.GetRequiredService<IDialogService>();
-            var environment = _services.GetRequiredService<IAppEnvironment>();
-            AppServices.Initialize(dialogs, environment);
 
             TryApplySavedAppearanceEarly();
 

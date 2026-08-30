@@ -7,8 +7,6 @@ namespace RSMods.Services;
 
 internal sealed class AvaloniaAppEnvironment : IAppEnvironment
 {
-    public string BaseDirectory => AppContext.BaseDirectory;
-
     public void RequestShutdown()
     {
         void Shutdown()

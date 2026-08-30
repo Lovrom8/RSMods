@@ -5,8 +5,8 @@ namespace RSMods.ViewModels;
 
 /// <summary>
 /// One checkbox cell in the song-list grid: a song's membership in a single list (Favorites or a numbered
-/// song list). Toggling writes straight through to the in-memory profile via the supplied callback,
-/// mirroring the WinForms grid; persisting to disk happens when the user saves the song lists.
+/// song list). Toggling writes straight through to the in-memory profile via the supplied callback. 
+/// Persisting to disk happens when the user saves the song lists.
 /// </summary>
 internal sealed partial class SongCellViewModel : ObservableObject
 {

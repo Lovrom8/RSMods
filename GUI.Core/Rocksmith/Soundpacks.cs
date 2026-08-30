@@ -13,9 +13,6 @@ namespace RSMods.Rocksmith
     /// SoundPack conversion and packaging: swaps Rocksmith's result-screen voice lines by converting a
     /// user-supplied audio file to WEM and dropping it into the unpacked <c>audio.psarc</c>, plus
     /// import/export of a <c>.rs_soundpack</c> archive and a reset to the stock voice lines.
-    ///
-    /// The class is UI-framework-free: <see cref="Reset"/> extracts the embedded stock pack from this
-    /// assembly and resolves its files from <see cref="AppContext.BaseDirectory"/>.
     /// </summary>
     public static class Soundpacks
     {
@@ -65,7 +62,7 @@ namespace RSMods.Rocksmith
             return wavFile;
         }
 
-        public static string ConvertOGGToWem(string oggFile, string appStartupPath)
+        private static string ConvertOGGToWem(string oggFile, string appStartupPath)
         {
             string oggFileName = Path.GetFileNameWithoutExtension(oggFile);
             string directory = Path.GetDirectoryName(oggFile);
@@ -82,13 +79,8 @@ namespace RSMods.Rocksmith
             string destWemName = Path.GetFileNameWithoutExtension(wemFile) + ".wem";
             string finalPath = Path.Combine(appStartupPath, destWemName);
 
-            if (File.Exists(finalPath)) File.Delete(finalPath);
-
-            // The lib now properly disposes of the OggStream, but let's keep this call here
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            File.Move(wemFile, finalPath);
+            if (!string.Equals(Path.GetFullPath(wemFile), Path.GetFullPath(finalPath), StringComparison.OrdinalIgnoreCase))
+                File.Move(wemFile, finalPath, true);
 
             return finalPath;
         }
@@ -111,34 +103,30 @@ namespace RSMods.Rocksmith
 
         public static void ConvertSoundAndReplace(string soundToReplace, string sourceFile, string rsModsPath)
         {
-            string currentFile = sourceFile;
-            string extension = Path.GetExtension(currentFile).ToLower();
-
-            if (extension == ".mp3")
-                currentFile = ConvertMP3ToWav(currentFile);
-
-            extension = Path.GetExtension(currentFile).ToLower();
-
-            if (extension == ".ogg")
-                currentFile = ConvertOGGToWem(currentFile, rsModsPath);
-            else if (extension == ".wav")
-                currentFile = ConvertWAVToWem(currentFile, rsModsPath);
-
-            if (currentFile != "null" && File.Exists(currentFile))
+            string temporaryFolder = CreateTemporaryFolder();
+            try
             {
+                string workingSource = Path.Combine(temporaryFolder, Path.GetFileName(sourceFile));
+                File.Copy(sourceFile, workingSource);
+
+                string convertedFile = Path.GetExtension(workingSource).ToLowerInvariant() switch
+                {
+                    ".mp3" => ConvertWAVToWem(ConvertMP3ToWav(workingSource), temporaryFolder),
+                    ".ogg" => ConvertOGGToWem(workingSource, temporaryFolder),
+                    ".wav" => ConvertWAVToWem(workingSource, temporaryFolder),
+                    ".wem" => workingSource,
+                    _ => throw new NotSupportedException("Sound files must use the MP3, OGG, WAV, or WEM format.")
+                };
+
+                if (!File.Exists(convertedFile))
+                    throw new InvalidOperationException("Conversion failed because the converted audio file was not created.");
+
                 string destination = Path.Combine(rsModsPath, soundToReplace);
-
-                if (File.Exists(destination))
-                    File.Delete(destination);
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-
-                File.Move(currentFile, destination);
+                File.Copy(convertedFile, destination, true);
             }
-            else
+            finally
             {
-                throw new Exception("Conversion failed. The resulting file path was null or missing.");
+                DeleteTemporaryFolder(temporaryFolder);
             }
         }
 
@@ -199,16 +187,40 @@ namespace RSMods.Rocksmith
 
         public static void Reset()
         {
-            string archive = Path.Combine(AppContext.BaseDirectory, "original.rs_soundpack");
+            string temporaryFolder = CreateTemporaryFolder();
+            try
+            {
+                GenUtil.ExtractEmbeddedResource(temporaryFolder, typeof(Soundpacks).Assembly, "RSMods.Core.Resources", ["original.rs_soundpack"]);
+                ImportSoundFile(Path.Combine(temporaryFolder, "original.rs_soundpack"));
+            }
+            finally
+            {
+                DeleteTemporaryFolder(temporaryFolder);
+            }
+        }
 
-            GenUtil.ExtractEmbeddedResource(
-                AppContext.BaseDirectory,
-                typeof(Soundpacks).Assembly,
-                "RSMods.Core.Resources",
-                ["original.rs_soundpack"]);
+        private static string CreateTemporaryFolder()
+        {
+            string path = Path.Combine(Path.GetTempPath(), "RSMods", "SoundPacks", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(path);
+            return path;
+        }
 
-            ImportSoundFile(archive);
-            File.Delete(archive);
+        private static void DeleteTemporaryFolder(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                    Directory.Delete(path, true);
+            }
+            catch (IOException)
+            {
+                // Cleanup must not hide the conversion/import result.
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Cleanup must not hide the conversion/import result.
+            }
         }
     }
 }

@@ -7,26 +7,20 @@ namespace RSMods.Twitch
     {
         public static List<TwitchReward> FindMatches(IEnumerable<TwitchReward> rewards, TwitchTriggerEvent trigger)
         {
-            if (rewards == null)
-                throw new ArgumentNullException(nameof(rewards));
-            if (trigger == null)
-                throw new ArgumentNullException(nameof(trigger));
+            ArgumentNullException.ThrowIfNull(rewards);
+            ArgumentNullException.ThrowIfNull(trigger);
 
             var matches = new List<TwitchReward>();
             foreach (TwitchReward reward in rewards)
             {
-                if (reward == null || !reward.Enabled)
+                if (reward?.Enabled != true)
                     continue;
 
-                if (trigger.Kind == TwitchTriggerKind.Bits &&
-                    reward is BitsReward bitsReward &&
-                    bitsReward.BitsAmount == trigger.Amount)
+                if (trigger.Kind == TwitchTriggerKind.Bits && reward is BitsReward bitsReward && bitsReward.BitsAmount == trigger.Amount)
                 {
                     matches.Add(reward);
                 }
-                else if (trigger.Kind == TwitchTriggerKind.ChannelPoints &&
-                         reward is ChannelPointsReward pointsReward &&
-                         pointsReward.PointsAmount == trigger.Amount)
+                else if (trigger.Kind == TwitchTriggerKind.ChannelPoints && reward is ChannelPointsReward pointsReward && pointsReward.PointsAmount == trigger.Amount)
                 {
                     matches.Add(reward);
                 }

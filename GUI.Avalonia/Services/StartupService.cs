@@ -23,28 +23,19 @@ internal sealed class StartupResult
 /// persist them to the shared <c>GUI_Settings.ini</c>, and load <see cref="RsModsSettings"/> so
 /// settings-dependent screens have data to bind.
 /// </summary>
-internal sealed class StartupService
+internal sealed class StartupService(IDialogService dialogs, IAppEnvironment environment)
 {
-    private readonly IDialogService _dialogs;
-    private readonly IAppEnvironment _environment;
-
-    public StartupService(IDialogService dialogs, IAppEnvironment environment)
-    {
-        _dialogs = dialogs;
-        _environment = environment;
-    }
-
     public async Task<StartupResult> RunAsync()
     {
         // The install folder is mandatory; an empty result means the resolver already requested shutdown.
-        string rsFolder = await RSLocationResolver.ResolveRSFolderAsync(_dialogs, _environment);
+        string rsFolder = await RSLocationResolver.ResolveRSFolderAsync(dialogs, environment);
         if (string.IsNullOrEmpty(rsFolder))
             return new StartupResult { Completed = false };
 
         // The save folder is optional; an empty result just disables profile-dependent features.
-        string savePath = await RSLocationResolver.ResolveSaveFolderAsync(_dialogs);
+        string savePath = await RSLocationResolver.ResolveSaveFolderAsync(dialogs);
 
-        // Persist the resolved paths so the next launch (and the WinForms GUI) can skip detection.
+        // Persist the resolved paths so the next launch can skip detection.
         Constants.SaveBaseSettings();
 
         var warnings = new List<IniValidationWarning>();

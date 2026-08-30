@@ -22,7 +22,7 @@ namespace RSMods.Twitch.EffectServer
                 Type = 1,
                 Viewer = string.IsNullOrWhiteSpace(viewer) ? "rsmods" : viewer,
                 DurationMilliseconds = checked((long)reward.Length * 1000L),
-                Parameters = new List<object>()
+                Parameters = []
             };
 
             if (request.Code == "solidnotes" && !string.IsNullOrWhiteSpace(reward.AdditionalMsg))
@@ -48,6 +48,7 @@ namespace RSMods.Twitch.EffectServer
             string normalized = code.Trim().ToLowerInvariant();
             if (normalized.StartsWith("enable ", StringComparison.Ordinal))
                 normalized = normalized.Substring("enable ".Length).Trim();
+
             return normalized;
         }
 
@@ -59,6 +60,7 @@ namespace RSMods.Twitch.EffectServer
                 bool isHex = (character >= '0' && character <= '9') ||
                              (character >= 'a' && character <= 'f') ||
                              (character >= 'A' && character <= 'F');
+
                 if (!isHex)
                     return false;
             }

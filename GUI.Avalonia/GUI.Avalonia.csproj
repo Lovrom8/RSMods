@@ -8,8 +8,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <RootNamespace>RSMods</RootNamespace>
-    <!-- Ships as RSMods.exe: preserves the installed <Rocksmith>/RSMods/RSMods.exe path and existing
-         shortcuts as the Avalonia app replaces the WinForms configurator. -->
+    <!-- Ships as RSMods.exe, preserving the installed <Rocksmith>/RSMods/RSMods.exe path and shortcuts. -->
     <AssemblyName>RSMods</AssemblyName>
     <!-- Win32 executable icon for the published RSMods.exe. Owned here now that the icon
          no longer lives under GUI/Assets. -->

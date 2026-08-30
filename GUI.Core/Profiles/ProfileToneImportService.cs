@@ -40,12 +40,9 @@ namespace RSMods
             return (importedCount, errors);
         }
 
-        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTones(
-            string[] fileNames,
-            Func<Tone2014, bool> isGuitarPrompt)
+        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTones(string[] fileNames, Func<Tone2014, bool> isGuitarPrompt)
         {
-            if (isGuitarPrompt == null)
-                throw new ArgumentNullException(nameof(isGuitarPrompt));
+            ArgumentNullException.ThrowIfNull(isGuitarPrompt);
 
             var guitarTones = new List<object>();
             var bassTones = new List<object>();
@@ -80,6 +77,14 @@ namespace RSMods
             }
 
             return (importedCount, errors);
+        }
+
+        /// <summary>Imports toolkit XML tones while exposing only their display names to the frontend.</summary>
+        public (int ImportedCount, List<string> ErrorMessages) ImportXmlTonesByName(string[] fileNames, Func<string, bool> isGuitarPromptByName)
+        {
+            ArgumentNullException.ThrowIfNull(isGuitarPromptByName);
+
+            return ImportXmlTones(fileNames, tone => isGuitarPromptByName(tone.Name));
         }
 
         private static (List<object> GuitarTones, List<object> BassTones) ParseManifest(string fileName)

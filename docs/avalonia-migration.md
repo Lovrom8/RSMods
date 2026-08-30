@@ -72,19 +72,19 @@ It currently owns:
   (its live-listen class), and a `RSMods.Midi` namespace would collide with it (CS0437). It covers only
   device enumeration; the WinForms live MIDI-in listening path is a debug diagnostic and is intentionally
   retired from the Avalonia migration scope.
-- Shared profile services: `Profiles`, `ProfileService`, `ProfileCodec`,
-  `ProfileBackupService`, and `ProfileToneImportService`.
-- Shared song and tuning logic: `SongManager`, `TuningService`, and `TuningDefinition`.
+- Shared profile services: `ProfileService`, `ProfileCodec`, `ProfileBackupService`, and
+  `ProfileToneImportService`.
+- Shared song and tuning logic: `SongCatalogService`, `TuningService`, and `TuningDefinition`.
 - Shared SoundPack logic: the `Soundpacks` conversion/import/export/reset class and a `SoundPackService`
   facade over `audio.psarc` unpack/repack (`Packer` + `GlobalProgress`), moved out of the WinForms GUI so
   both frontends share one source. The stock `original.rs_soundpack` is embedded here (under
   `RSMods.Core.Resources`) rather than in the WinForms assembly. This added two sub-package NAudio/native
   dependencies (see below).
-- Shared Set-and-Forget cache/tuning/tone logic: `SetAndForgetMods` and `ZipUtilities` now live in Core,
-  with the required stock cache files embedded under `RSMods.Core.Resources`. The public tuning-query
-  facade exposes only `SongData`, strings, and `TuningStrings`; its legacy `ArrangementTuning` methods are
-  internal so the Avalonia frontend does not need to reference the Rocksmith toolkit assemblies. WMI drive
-  detection uses the in-framework `System.Management` reference on net48 and the 8.0.0 package on net8.0.
+- Shared Set-and-Forget cache/tuning/tone logic lives in Core, with the required stock cache files embedded
+  under `RSMods.Core.Resources`. The former `SetAndForgetMods` god-facade has been split into injected
+  services (see below); the tuning-query facade exposes only `SongData`, strings, and `TuningStrings`, so the
+  Avalonia frontend does not need to reference the Rocksmith toolkit assemblies. WMI drive detection uses the
+  `System.Management` 8.0.0 package.
 - Shared Twitch Step 0 foundation under `GUI.Core/Twitch`: the legacy-compatible reward model, idempotent
   23-effect catalog, normalized trigger model and matcher, atomic polymorphic XML repository, DPAPI-backed
   OAuth token store, and lifecycle-safe localhost Rocksmith effect server. The native bridge preserves the
@@ -98,8 +98,7 @@ It currently owns:
   handling, structured state, bounded logs, and application-scoped orchestration through `TwitchService`.
 - The `WinMsgUtil` WM_COPYDATA helper (pure user32 P/Invoke), used to ask the running game to play a
   result voice-over.
-- Other shared models and helpers such as `Dictionaries`, `GuitarSpeak`, `MemoryStream`,
-  `ColorItem`, and `KeybindItem`.
+- Other shared models and helpers such as `Dictionaries`, `GuitarSpeak`, `ColorItem`, and `KeybindItem`.
 
 `GUI.Core` still references the existing libraries under `GUI/Lib`, including
 `RocksmithToolkitLib`, `Rocksmith2014PsarcLib`, and (for SoundPacks) `SevenZipSharp`. Those references
@@ -383,8 +382,7 @@ helper code where applicable.
 ### Avalonia Profiles screen (core slice)
 
 - Ported the first slice of the WinForms Profiles tab into a `ProfilesViewModel`/`ProfilesView`
-  navigation entry, driving the shared `Profiles`/`ProfileService`/`ProfileBackupService` facade directly
-  (no new Core infrastructure needed).
+  navigation entry, driving the shared `ProfileService` and `ProfileBackupService` directly.
 - Unlike the settings screens this is action-oriented, not a snapshot: selecting a profile decrypts and
   activates it, and each action (add/remove song list, lock/unlock rewards, restore a backup) executes and
   persists immediately — mirroring the WinForms tab, which has no Save/Revert here. File-bound work
@@ -528,6 +526,30 @@ helper code where applicable.
   absent and checks extraction success, removing the old reliance on WinForms' eager startup unpack.
 - This completes the Avalonia Set-and-Forget screen.
 
+### Set-and-Forget service split (post-migration cleanup)
+
+- Retired the `SetAndForgetMods` static god-facade (five responsibilities plus three unrelated pieces of
+  global state) now that WinForms is gone and the screen is its only consumer. It became four injected,
+  singleton-registered Core services under `RSMods.SetAndForget`.
+- `CachePsarcService` owns the `cache.psarc` lifecycle (unpack, backup, repack, restore, cleanup, import,
+  default-file staging) and a single `Modify(cache => cache.Inject(...))` primitive that centralises the
+  "ensure unpacked → mutate → repack" round-trip every mod used to repeat. `CacheModification.Inject` throws
+  when an injection does not take, so a partially-applied mod can no longer be reported as success. The
+  self-contained one-file mods (exit-game, direct-connect, increased-volume) and `AddCustomTunings` are thin
+  methods over `Modify`.
+- The existing `TuningService` is now injected directly into the view-model instead of being forwarded
+  through the facade. The former shared `unknownTunings` dictionary is gone: `GetUnknownTuningLookup` returns
+  an immutable `UnknownTuningLookup` the view-model holds, and `Load()`/`Save()` convenience overloads keep
+  the custom-mods path out of the frontend.
+- `ProfileToneService` owns profile enumeration, the imported `Tone2014` cache (now instance state, not a
+  static dictionary), and tone-manager updates through `CachePsarcService`.
+- `FastLoadService` owns the drive-prompt decision and intro-asset selection behind an injected
+  `IDriveInfoProvider` boundary (`WmiDriveInfoProvider` is the production implementation), covered by
+  `FastLoadServiceTests` with a fake provider.
+- Fixed `ImportExistingSettings`, which previously always returned `true`: it now reports whether both
+  extractions succeeded, and the view-model surfaces a failure instead of silently continuing.
+- `GUI.Core`, `GUI.Core.Tests` (32 passing), and `GUI.Avalonia` build with zero warnings.
+
 ### Twitch migration (Step 0 shared foundation)
 
 - Moved the polymorphic Twitch reward types and native effect request/response DTOs into `GUI.Core`, then
@@ -612,6 +634,63 @@ helper code where applicable.
   Twitch/Rocksmith smoke checklist remains a release-acceptance task because credentials and a running game
   are not available in this workspace.
 
+## The DLL seam
+
+Everything else in this document measures the migration against WinForms. This section is the other
+contract, and it is the one that does not show up in a feature-parity sweep: what the configurator owes
+the mod DLL. Both defects found the first time it was audited (a setting written to the wrong section, and
+the live-reload message going missing entirely) were invisible to every screen-by-screen parity check,
+because the GUI looked and behaved correctly — the game just never saw the result.
+
+Since the DLL's modular mod framework landed on `develop`, it groups settings by *owning mod*, while the
+configurator groups them by *INI section*. Nothing in either codebase ties a key to its consumer, so the
+rules below plus the guard test are what hold the seam together.
+
+### Telling a running game to reload
+
+`RSMods.ini` is not polled. The DLL re-reads it only on a WM_COPYDATA message (`dwData == 1`) handled by
+`Keybindings::UpdateSettingsOnGUIChange`:
+
+- `update all` — full reload via `Settings::UpdateSettings()`. This is what the configurator sends.
+- `update <custom|setting> <entry> <value>` — single-setting update via `Settings::ParseSettingUpdate`.
+- `WwiseEvent <name>`, `enable`/`disable <effect>`, `Reconnect` — non-settings traffic (SoundPacks, Twitch).
+
+The DLL routes settings messages through `Registry().EnqueueSettingsUpdate`, which posts them to the
+framework's `MainThreadInbox`; the next registry tick drains the batch and notifies each mod via
+`OnSettingsChanged` before re-resolving activation. **Skipping the message means none of that runs**, so a
+saved setting sits inert until the next game launch.
+
+`SettingsService.SaveAsync` is the single place this happens, because `RsModsSettings.Save()` is the only
+path that writes the file — the `IniSection` setters mutate memory and raise `SettingChanged` without
+persisting. A new screen that saves mod settings should go through `SettingsService`, not the static store.
+
+### Adding or moving a setting
+
+- **The section is part of the contract, not just the key.** The DLL names both (`reader.GetValue("Mod
+  Settings", "OnScreenFontSize", 24)`), and this store is section-aware, so the same key under the wrong
+  heading reads as absent and the DLL silently falls back to its default. The retired WinForms reader was
+  a section-blind line scan, which is why this class of bug could not happen before and can now.
+- **Put a new property in the nested class matching the DLL's section**, not the one matching the screen
+  it appears on. `OnScreenFont` and `OnScreenFontSize` sit on the same slider pair but live in different
+  sections, because that is what the DLL reads.
+- **Keybinds seed empty, never the DLL's default.** The DLL's hardcoded defaults (`"T"`, `"5"`, …) apply
+  only when a key is absent from the file entirely; both GUIs have always written `""`, leaving a bind
+  unset until the user assigns one.
+- **Fix a misplaced key before the build ships, not after.** Round-trip preservation means a key written
+  to the wrong section survives in users' files indefinitely, so correcting it later costs a migration
+  step and a way to delete keys — neither of which this store has, deliberately. While the Avalonia
+  configurator is unreleased, moving a property is just moving a property.
+
+### The guard test
+
+`GUI.Core.Tests/SettingsKeyParityTests.cs` scrapes `DLL/Settings.{cpp,hpp}` for every `(section, key)` the
+DLL reads, reflects `RsModsSettings` for every one the GUI writes, and asserts both directions. It covers
+declarative keys only — runtime-built names (`string{n}_N`, `SongListTitle_{i}`) drop out symmetrically —
+and `[GUI Settings]` is excluded as frontend-only.
+
+Its `KnownUnexposed` allowlist is the live inventory of settings the DLL reads that no GUI exposes. All
+three current entries are dead on the DLL side too, so the list should only ever shrink.
+
 ## Current migration boundary
 
 The user-facing configurator screens are migrated: Mod Settings, Custom Colors, Rocksmith, RS_ASIO,
@@ -693,7 +772,11 @@ list below.
 - Frontends own dialogs, navigation, control state, and warning presentation.
 - Shared logic should throw or return domain results; the frontend decides how to present them.
 - Prefer explicit dependencies and paths over hidden global discovery.
-- Keep settings round-trip-safe. Saving must not remove unknown keys, comments, or sections.
+- Keep settings round-trip-safe. Saving must not remove unknown keys, comments, or sections, and the
+  store has no way to delete a key — so a key written to the wrong section is effectively permanent
+  once released. Get the section right before shipping.
+- Settings must match the section the DLL reads them from, and saving mod settings must tell a running
+  game to reload. See "The DLL seam" — WinForms parity does not imply DLL parity.
 - Add abstractions only when a real caller needs them.
 - Keep the Avalonia frontend free of the legacy `RocksmithToolkitLib`/`Rocksmith2014PsarcLib` references.
   When a shared API takes a toolkit type (e.g. `Func<Tone2014,bool>`), expose a distinct-named
@@ -739,6 +822,9 @@ After the core settings screens are functional:
 The migration is complete when:
 
 - Every supported WinForms feature has an Avalonia equivalent or an explicit retirement decision.
+- The DLL contract holds, not just WinForms parity: `SettingsKeyParityTests` passes, and saving mod
+  settings takes effect in a running game without restarting it. Parity with a retired frontend says
+  nothing about the seam the DLL actually reads — see "The DLL seam".
 - Settings files round-trip without data loss.
 - Startup, dialogs, errors, and shutdown are fully asynchronous at the Avalonia edge.
 - `GUI.Core`, WinForms, and Avalonia builds remain green during the transition.

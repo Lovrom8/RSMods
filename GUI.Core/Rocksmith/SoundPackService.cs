@@ -12,16 +12,10 @@ using System.Threading.Tasks;
 namespace RSMods.Core
 {
     /// <summary>A result-screen voice line the user can replace: its display label and the WEM file it maps to.</summary>
-    public sealed class SoundPackVoiceLine
+    public sealed class SoundPackVoiceLine(string label, string wem)
     {
-        public SoundPackVoiceLine(string label, string wem)
-        {
-            Label = label;
-            Wem = wem;
-        }
-
-        public string Label { get; }
-        public string Wem { get; }
+        public string Label { get; } = label;
+        public string Wem { get; } = wem;
     }
 
     /// <summary>

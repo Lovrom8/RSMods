@@ -33,7 +33,8 @@ namespace RSMods
             new("SFX Volume", k => AudioKeybindings.SFXVolumeKey = k, () => AudioKeybindings.SFXVolumeKey),
             new("Display Mixer", k => AudioKeybindings.DisplayMixerKey = k, () => AudioKeybindings.DisplayMixerKey),
             new("Mute / Unmute Player 1", k => AudioKeybindings.MutePlayer1Key = k, () => AudioKeybindings.MutePlayer1Key),
-            new("Mute / Unmute Player 2", k => AudioKeybindings.MutePlayer2Key = k, () => AudioKeybindings.MutePlayer2Key)
+            new("Mute / Unmute Player 2", k => AudioKeybindings.MutePlayer2Key = k, () => AudioKeybindings.MutePlayer2Key),
+            new("Change Selected Volume", k => AudioKeybindings.ChangedSelectedVolumeKey = k, () => AudioKeybindings.ChangedSelectedVolumeKey)
         ];
 
         public static readonly List<KeybindItem> GuitarSpeakKeybinds =

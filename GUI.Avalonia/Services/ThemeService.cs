@@ -23,8 +23,7 @@ internal sealed class ThemeService
     ];
 
     /// <summary>Applies the persisted appearance settings; used once at startup.</summary>
-    public void ApplyFromSettings() =>
-        Apply(RsModsSettings.GUISettings.AppThemeVariant, RsModsSettings.GUISettings.AppAccentColor);
+    public void ApplyFromSettings() => Apply(RsModsSettings.GUISettings.AppThemeVariant, RsModsSettings.GUISettings.AppAccentColor);
 
     /// <summary>Applies a theme variant ("System" | "Light" | "Dark") and a 6-digit hex accent ("" = default).</summary>
     public void Apply(string variant, string accentHex)
@@ -49,7 +48,10 @@ internal sealed class ThemeService
         {
             // Drop any overrides so FluentTheme's built-in accent shows through.
             foreach (string key in AccentKeys)
+            {
                 app.Resources.Remove(key);
+            }
+
             return;
         }
 

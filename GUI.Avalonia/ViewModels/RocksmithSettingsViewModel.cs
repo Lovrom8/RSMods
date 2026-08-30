@@ -14,18 +14,11 @@ namespace RSMods.ViewModels;
 /// instance. Holds an editable snapshot loaded from the store and writes it back on save; the store's
 /// round-trip-safe backend preserves unknown sections, comments, and commented-out values.
 /// </summary>
-internal sealed partial class RocksmithSettingsViewModel : ObservableObject
+internal sealed partial class RocksmithSettingsViewModel(RocksmithSettingsService service, SettingsWarningPresenter warnings) : ObservableObject
 {
-    private readonly RocksmithSettingsService _service;
-    private readonly SettingsWarningPresenter _warnings;
+    private readonly SettingsWarningPresenter _warnings = warnings;
     private bool _loading;
     private bool _initialized;
-
-    public RocksmithSettingsViewModel(RocksmithSettingsService service, SettingsWarningPresenter warnings)
-    {
-        _service = service;
-        _warnings = warnings;
-    }
 
     // --- Audio ---
     [ObservableProperty] private bool _enableMicrophone;
@@ -58,21 +51,17 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
     [ObservableProperty] private MsaaMode _msaaSamples;
     [ObservableProperty] private bool _disableBrowser;
 
-    public static FullscreenMode[] FullscreenModes { get; } =
-        (FullscreenMode[])Enum.GetValues(typeof(FullscreenMode));
+    public static FullscreenMode[] FullscreenModes { get; } = (FullscreenMode[])Enum.GetValues(typeof(FullscreenMode));
 
-    public static VisualQualityMode[] VisualQualityModes { get; } =
-        (VisualQualityMode[])Enum.GetValues(typeof(VisualQualityMode));
+    public static VisualQualityMode[] VisualQualityModes { get; } = (VisualQualityMode[])Enum.GetValues(typeof(VisualQualityMode));
 
-    public static MsaaMode[] MsaaModes { get; } =
-        (MsaaMode[])Enum.GetValues(typeof(MsaaMode));
+    public static MsaaMode[] MsaaModes { get; } = (MsaaMode[])Enum.GetValues(typeof(MsaaMode));
 
     // --- Net ---
     [ObservableProperty] private bool _useProxy;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
     private bool _isDirty;
 
     [ObservableProperty]
@@ -88,7 +77,7 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
             return;
         _initialized = true;
 
-        var settings = _service.Get();
+        var settings = service.Get();
         var warnings = new List<IniValidationWarning>();
         void Collect(IniValidationWarning warning) => warnings.Add(warning);
 
@@ -110,7 +99,7 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
 
     private void Load()
     {
-        var s = _service.Get();
+        var s = service.Get();
         _loading = true;
         try
         {
@@ -155,7 +144,7 @@ internal sealed partial class RocksmithSettingsViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSaveOrRevert))]
     private async Task SaveAsync()
     {
-        var s = _service.Get();
+        var s = service.Get();
 
         // The store's setters persist to disk; run the write off the UI thread. SuspendSave coalesces
         // the per-property auto-saves into a single file write on scope dispose instead of one per setter.

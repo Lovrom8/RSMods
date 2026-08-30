@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
+using RSMods.Data;
 using RSMods.SetAndForget.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,12 @@ namespace RSMods.SetAndForget
     public sealed class TuningService
     {
         public TuningDefinitionList Tunings { get; private set; } = new TuningDefinitionList();
+
+        /// <summary>Loads the tuning database from the frontend's custom-mods folder.</summary>
+        public void Load() => Load(Constants.TuningJSON_CustomPath);
+
+        /// <summary>Saves the tuning database back to the frontend's custom-mods folder.</summary>
+        public void Save() => Save(Constants.TuningJSON_CustomPath);
 
         public void Load(string tuningJsonPath)
         {
@@ -143,6 +150,44 @@ namespace RSMods.SetAndForget
             result.Sort();
             return result;
         }
+
+        // --- Frontend-facing facade (POCO/string only; never leaks ArrangementTuning) ---
+
+        /// <summary>Songs whose arrangements match a defined tuning, resolved by its internal name.</summary>
+        public List<string> GetSongsWithSelectedTuning(string internalTuningName, IEnumerable<SongData> songs)
+        {
+            ArrangementTuning tuning = ToArrangementTuning(Tunings[internalTuningName]);
+            return GetSongsWithTuning(songs, tuning);
+        }
+
+        /// <summary>
+        /// Builds an immutable lookup of the "shows up as Custom" tunings found in the scanned songs. Replaces
+        /// the former shared mutable dictionary: the caller holds the result for as long as it needs it.
+        /// </summary>
+        public UnknownTuningLookup GetUnknownTuningLookup(IEnumerable<SongData> songs)
+        {
+            SortedDictionary<string, ArrangementTuning> unknown = GetUnknownTunings(songs);
+
+            var keys = new List<string>(unknown.Count);
+            var stringsByKey = new Dictionary<string, TuningStrings>(unknown.Count);
+            foreach (KeyValuePair<string, ArrangementTuning> entry in unknown)
+            {
+                keys.Add(entry.Key);
+                stringsByKey[entry.Key] = ToTuningStrings(entry.Value);
+            }
+
+            return new UnknownTuningLookup(keys, stringsByKey);
+        }
+
+        private static TuningStrings ToTuningStrings(ArrangementTuning tuning) => new()
+        {
+            String0 = tuning.String0,
+            String1 = tuning.String1,
+            String2 = tuning.String2,
+            String3 = tuning.String3,
+            String4 = tuning.String4,
+            String5 = tuning.String5
+        };
 
         public List<string> GetSongsWithBadBassTuning(IEnumerable<SongData> songs)
         {

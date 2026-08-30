@@ -41,6 +41,10 @@
 
         Invoke-Step 'Test Installer.Core' { dotnet test "$root\Installer.Core.Tests\Installer.Core.Tests.csproj" -c Release --nologo }
 
+        # Mod-framework unit tests (see DLL/Framework/README.md): standalone MSVC console programs with
+        # no game or Windows dependencies, kept in CI so they cannot rot out of compilation.
+        Invoke-Step 'Test mod framework' { & "$root\DLL\Framework\Tests\BuildAndRun.ps1" }
+
         # 5. Build the native mod DLL (Win32). Its output is written into Installer\Resources\, so it must
         #    run before the installer. SolutionDir is required when building the project standalone.
         Invoke-Step 'Build native DLL' { msbuild "$root\DLL\DLL.vcxproj" /t:Build /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir="$root\" /v:minimal /nologo }

@@ -176,13 +176,13 @@ namespace RSMods.Twitch
         private static string[] ReadScopes(JToken token)
         {
             if (token == null || token.Type == JTokenType.Null)
-                return new string[0];
+                return [];
             if (token.Type == JTokenType.Array)
                 return token.Values<string>().Where(scope => !string.IsNullOrWhiteSpace(scope)).ToArray();
 
             string value = (string)token;
             return string.IsNullOrWhiteSpace(value)
-                ? new string[0]
+                ? []
                 : value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
 

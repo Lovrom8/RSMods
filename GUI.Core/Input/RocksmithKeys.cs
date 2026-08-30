@@ -50,20 +50,11 @@ namespace RSMods
         };
 
         /// <summary>
-        /// Converts a WinForms or Avalonia input name to the canonical value stored in the INI.
-        /// Returns an empty string when the input is unknown.
-        /// </summary>
-        public static string Normalize(string inputName)
-        {
-            return KeyConversion.VirtualKey(inputName);
-        }
-
-        /// <summary>
         /// Classifies a framework input name without taking a dependency on that framework's key enum.
         /// </summary>
         public static RocksmithInputClassification Classify(string inputName)
         {
-            string virtualKey = Normalize(inputName);
+            string virtualKey = KeyConversion.VirtualKey(inputName);
 
             if (KeyDownVirtualKeys.Contains(virtualKey))
                 return RocksmithInputClassification.KeyDown;
@@ -78,11 +69,6 @@ namespace RSMods
                 return RocksmithInputClassification.Reserved;
 
             return RocksmithInputClassification.Unsupported;
-        }
-
-        public static bool IsRocksmithReservedKey(string inputName)
-        {
-            return IsReservedVirtualKey(Normalize(inputName));
         }
 
         private static bool IsReservedVirtualKey(string virtualKey)

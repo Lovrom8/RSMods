@@ -27,17 +27,9 @@ internal enum KeyCapturePhase
 /// toggle, enum, and numeric settings. Holds an editable snapshot loaded from <see cref="RsModsSettings"/>
 /// and writes it back on save; ranges come from the shared <see cref="RsModsLimits"/> rather than XAML.
 /// </summary>
-internal sealed partial class ModSettingsViewModel : ObservableObject
+internal sealed partial class ModSettingsViewModel(SettingsService settings, IDialogService dialogs, ProfileService profiles) : ObservableObject
 {
-    private readonly SettingsService _settings;
-    private readonly IDialogService _dialogs;
     private bool _loading;
-
-    public ModSettingsViewModel(SettingsService settings, IDialogService dialogs)
-    {
-        _settings = settings;
-        _dialogs = dialogs;
-    }
 
     // --- Toggles ---
     [ObservableProperty] private bool _toggleLoft;
@@ -56,11 +48,9 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     private EnumerationMode _forceReEnumeration;
     [ObservableProperty] private LoftMode _toggleLoftWhen;
 
-    public static EnumerationMode[] EnumerationModes { get; } =
-        (EnumerationMode[])Enum.GetValues(typeof(EnumerationMode));
+    public static EnumerationMode[] EnumerationModes { get; } = (EnumerationMode[])Enum.GetValues(typeof(EnumerationMode));
 
-    public static LoftMode[] LoftModes { get; } =
-        (LoftMode[])Enum.GetValues(typeof(LoftMode));
+    public static LoftMode[] LoftModes { get; } = (LoftMode[])Enum.GetValues(typeof(LoftMode));
 
     // --- Riff Repeater ---
     [ObservableProperty] private decimal _riffRepeaterSpeed;
@@ -154,14 +144,11 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     public bool ShowLyricsWhen => RemoveLyrics;
     public bool ShowSkylineWhen => Skyline;
 
-    public static HeadstockMode[] HeadstockModes { get; } =
-        (HeadstockMode[])Enum.GetValues(typeof(HeadstockMode));
+    public static HeadstockMode[] HeadstockModes { get; } = (HeadstockMode[])Enum.GetValues(typeof(HeadstockMode));
 
-    public static LyricsMode[] LyricsModes { get; } =
-        (LyricsMode[])Enum.GetValues(typeof(LyricsMode));
+    public static LyricsMode[] LyricsModes { get; } = (LyricsMode[])Enum.GetValues(typeof(LyricsMode));
 
-    public static SkylineMode[] SkylineModes { get; } =
-        (SkylineMode[])Enum.GetValues(typeof(SkylineMode));
+    public static SkylineMode[] SkylineModes { get; } = (SkylineMode[])Enum.GetValues(typeof(SkylineMode));
 
     // --- Audio ---
     [ObservableProperty]
@@ -283,11 +270,9 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     public ObservableCollection<string> AvailableMidiOutDevices { get; } = [];
     public ObservableCollection<string> AvailableMidiInDevices { get; } = [];
 
-    public static TuningPedalDevice[] TuningPedalDevices { get; } =
-        (TuningPedalDevice[])Enum.GetValues(typeof(TuningPedalDevice));
+    public static TuningPedalDevice[] TuningPedalDevices { get; } = (TuningPedalDevice[])Enum.GetValues(typeof(TuningPedalDevice));
 
-    public static AutoTuneWhen[] AutoTuneWhenModes { get; } =
-        (AutoTuneWhen[])Enum.GetValues(typeof(AutoTuneWhen));
+    public static AutoTuneWhen[] AutoTuneWhenModes { get; } = (AutoTuneWhen[])Enum.GetValues(typeof(AutoTuneWhen));
 
     /// <summary>
     /// The tuning each auto-tune offset targets, ordered from highest to lowest (offset = index - 3, so
@@ -388,7 +373,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
             ToggleLoftWhen = RsModsSettings.Toggles.ToggleLoftWhen;
 
             RiffRepeaterSpeed = RsModsSettings.ModSettings.RRSpeedInterval;
-            OnScreenFontSize = RsModsSettings.Toggles.OnScreenFontSize;
+            OnScreenFontSize = RsModsSettings.ModSettings.OnScreenFontSize;
             LoadFonts();
             OnScreenFont = RsModsSettings.Toggles.OnScreenFont;
 
@@ -496,7 +481,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         RsModsSettings.Toggles.ToggleLoftWhen = ToggleLoftWhen;
 
         RsModsSettings.ModSettings.RRSpeedInterval = RiffRepeaterSpeed;
-        RsModsSettings.Toggles.OnScreenFontSize = (int)OnScreenFontSize;
+        RsModsSettings.ModSettings.OnScreenFontSize = (int)OnScreenFontSize;
         RsModsSettings.Toggles.OnScreenFont = string.IsNullOrEmpty(OnScreenFont) ? "Arial" : OnScreenFont;
 
         // Seconds back to the milliseconds the store expects.
@@ -570,7 +555,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         foreach (KeybindRowViewModel row in AudioKeybinds)
             row.WriteBack();
 
-        await _settings.SaveAsync();
+        await settings.SaveAsync();
 
         IsDirty = false;
         StatusMessage = "Settings saved.";
@@ -647,7 +632,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
         try
         {
-            foreach (string profileName in Profiles.AvailableProfiles().Keys)
+            foreach (string profileName in profiles.GetAvailableProfiles().Keys)
                 AvailableProfiles.Add(profileName);
         }
         catch
@@ -758,7 +743,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 
         if (classification == RocksmithInputClassification.Reserved)
         {
-            bool useAnyway = await _dialogs.ShowConfirmAsync(
+            bool useAnyway = await dialogs.ShowConfirmAsync(
                 "That key is normally used by Rocksmith and may interfere with playing the game. Use it as a keybind anyway?",
                 "Keybinding warning");
             if (!useAnyway)

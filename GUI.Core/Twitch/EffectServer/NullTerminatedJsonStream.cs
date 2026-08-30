@@ -10,7 +10,7 @@ namespace RSMods.Twitch.EffectServer
     internal sealed class NullTerminatedJsonStream(Stream stream)
     {
         private readonly Stream _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        private readonly List<byte> _pending = new();
+        private readonly List<byte> _pending = [];
 
         public async Task WriteFrameAsync(string json, CancellationToken cancellationToken)
         {
@@ -19,7 +19,7 @@ namespace RSMods.Twitch.EffectServer
 
             Buffer.BlockCopy(jsonBytes, 0, frame, 0, jsonBytes.Length);
 
-            await _stream.WriteAsync(frame, 0, frame.Length, cancellationToken).ConfigureAwait(false);
+            await _stream.WriteAsync(frame, cancellationToken).ConfigureAwait(false);
             await _stream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -32,11 +32,12 @@ namespace RSMods.Twitch.EffectServer
                 {
                     byte[] frame = _pending.GetRange(0, terminator).ToArray();
                     _pending.RemoveRange(0, terminator + 1);
+
                     return Encoding.UTF8.GetString(frame);
                 }
 
                 byte[] buffer = new byte[1024];
-                int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                int bytesRead = await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
                 if (bytesRead == 0)
                     throw new EndOfStreamException("The Rocksmith effect connection closed before a complete response was received.");
 

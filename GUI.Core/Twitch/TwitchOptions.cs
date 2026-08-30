@@ -40,7 +40,7 @@ namespace RSMods.Twitch
 
         public bool HasRequiredScopes(IEnumerable<string> scopes)
         {
-            var granted = new HashSet<string>(scopes ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+            var granted = new HashSet<string>(scopes ?? [], StringComparer.OrdinalIgnoreCase);
             return RequiredScopes.All(granted.Contains);
         }
     }

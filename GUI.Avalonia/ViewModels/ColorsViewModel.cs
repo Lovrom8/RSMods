@@ -42,8 +42,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
 
     // --- Note colours ---
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowNoteColors))]
-    [NotifyPropertyChangedFor(nameof(ShowNoteSwatches))]
+    [NotifyPropertyChangedFor(nameof(ShowNoteColors), nameof(ShowNoteSwatches))]
     private bool _useSeparateNoteColors;
 
     [ObservableProperty]
@@ -64,8 +63,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
     public bool ShowHighwayColors => UseCustomHighwayColors;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
     private bool _isDirty;
 
     [ObservableProperty]
@@ -85,8 +83,7 @@ internal sealed partial class ColorsViewModel : ObservableObject
             swatch.PropertyChanged += OnSwatchChanged;
     }
 
-    private static ColorSwatchViewModel[] BuildRow() =>
-        StringLabels.Select(label => new ColorSwatchViewModel(label)).ToArray();
+    private static ColorSwatchViewModel[] BuildRow() => StringLabels.Select(label => new ColorSwatchViewModel(label)).ToArray();
 
     private IEnumerable<ColorSwatchViewModel> AllSwatches() =>
         StringColorsNormal

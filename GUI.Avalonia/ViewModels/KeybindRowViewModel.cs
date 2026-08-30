@@ -7,7 +7,7 @@ namespace RSMods.ViewModels;
 /// <summary>
 /// One editable keybinding row (a mod or audio bind). Holds the stored virtual-key string as an
 /// in-memory snapshot; the parent screen writes it back to the shared store on Save. The display
-/// value strips the "VK_" prefix, matching the WinForms keybinding labels.
+/// value strips the "VK_" prefix.
 /// </summary>
 internal sealed partial class KeybindRowViewModel(KeybindItem item) : ObservableObject
 {

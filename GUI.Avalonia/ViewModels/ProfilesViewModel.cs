@@ -15,15 +15,14 @@ namespace RSMods.ViewModels;
 /// <summary>
 /// The Profiles screen. Unlike the settings screens, this is action-oriented rather than a snapshot:
 /// selecting a profile decrypts it and makes it active, and each action (add/remove song list, lock/unlock
-/// rewards, restore a backup) executes and persists immediately through the shared <see cref="Profiles"/>
-/// services — mirroring the WinForms tab, which has no Save/Revert for these operations.
-///
-/// This first slice covers profile selection, song-list count management, rewards, and backups. The
-/// song-list/Favorites grid and tone imports are separate follow-up slices.
+/// rewards, restore a backup) executes and persists immediately through the shared <see cref="ProfileService"/> services.
 /// </summary>
-internal sealed partial class ProfilesViewModel(IDialogService dialogs) : ObservableObject
+internal sealed partial class ProfilesViewModel(
+    IDialogService dialogs,
+    ProfileService profiles,
+    ProfileToneImportService toneImports,
+    SongCatalogService songCatalog) : ObservableObject
 {
-    private readonly IDialogService _dialogs = dialogs;
     private bool _initialized;
 
     public ObservableCollection<string> AvailableProfiles { get; } = [];
@@ -40,13 +39,10 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedProfile))]
-    [NotifyCanExecuteChangedFor(nameof(UnlockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RemoveSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportJsonTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportXmlTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LoadSongsCommand))]
+    [NotifyCanExecuteChangedFor(
+        nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
+        nameof(ImportJsonTonesCommand), nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(RemoveSongListCommand)
+    )]
     private string? _selectedProfile;
 
     [ObservableProperty]
@@ -57,15 +53,11 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
     private int _songListCount;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(UnlockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RemoveSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertToBackupCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportJsonTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportXmlTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LoadSongsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(SaveSongListsCommand))]
+    [NotifyCanExecuteChangedFor(
+        nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
+        nameof(RemoveSongListCommand), nameof(RevertToBackupCommand), nameof(ImportJsonTonesCommand),
+        nameof(ImportXmlTonesCommand), nameof(LoadSongsCommand), nameof(SaveSongListsCommand)
+    )]
     private bool _isBusy;
 
     [ObservableProperty]
@@ -75,14 +67,11 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
     private bool _importTonesBulk;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(UnlockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LockRewardsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RemoveSongListCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportJsonTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ImportXmlTonesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LoadSongsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(SaveSongListsCommand))]
+    [NotifyCanExecuteChangedFor(
+        nameof(UnlockRewardsCommand), nameof(LockRewardsCommand), nameof(AddSongListCommand),
+        nameof(RemoveSongListCommand), nameof(ImportJsonTonesCommand), nameof(ImportXmlTonesCommand),
+        nameof(LoadSongsCommand), nameof(SaveSongListsCommand)
+    )]
     private bool _isLoadingSongs;
 
     [ObservableProperty]
@@ -111,7 +100,7 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         AvailableProfiles.Clear();
         try
         {
-            foreach (string profileName in Profiles.AvailableProfiles().Keys)
+            foreach (string profileName in profiles.GetAvailableProfiles().Keys)
                 AvailableProfiles.Add(profileName);
         }
         catch
@@ -125,7 +114,7 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         Backups.Clear();
         try
         {
-            foreach (string name in Profiles.GetFormattedBackupNames())
+            foreach (string name in ProfileBackupService.GetFormattedBackupNames(GenUtil.GetRSDirectory()))
                 Backups.Add(name);
         }
         catch
@@ -164,20 +153,16 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         try
         {
             // Decrypting the profile is file-bound; keep it off the UI thread.
-            await Task.Run(() =>
-            {
-                Profiles.CurrentUnpackedProfileName = profileName;
-                Profiles.SetProfileAsActive(profileName);
-            });
+            await Task.Run(() => profiles.SelectProfile(profileName));
 
-            SongListCount = Profiles.SongListCount;
+            SongListCount = profiles.SongListCount;
             StatusMessage = $"Loaded profile '{profileName}'.";
         }
         catch (Exception ex)
         {
             SongListCount = 0;
             StatusMessage = "Failed to load the profile.";
-            await _dialogs.ShowErrorAsync($"Could not load the profile:\n{ex.Message}");
+            await dialogs.ShowErrorAsync($"Could not load the profile:\n{ex.Message}");
         }
         finally
         {
@@ -199,89 +184,54 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
             ? "Are you sure you want to unlock all rewards?\nThat defeats the grind for in-game rewards."
             : "Are you sure you want to lock all rewards?\nThis will remove all access to in-game rewards.";
 
-        if (!await _dialogs.ShowConfirmAsync(prompt, "Are you sure?"))
+        if (!await dialogs.ShowConfirmAsync(prompt, "Are you sure?"))
             return;
 
-        IsBusy = true;
-        try
+        await RunBusyAsync(async () =>
         {
             await Task.Run(() =>
             {
-                Profiles.ChangeRewardStatus(unlock);
-                Profiles.EncryptCurrentProfile();
+                profiles.ChangeRewardStatus(unlock);
+                profiles.SaveActiveProfile();
             });
             StatusMessage = unlock ? "All rewards unlocked and saved." : "All rewards locked and saved.";
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to change rewards:\n{ex.Message}");
-            StatusMessage = "Failed to change rewards.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "Failed to change rewards");
     }
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
-    private async Task AddSongListAsync()
+    private Task AddSongListAsync() => RunBusyAsync(async () =>
     {
-        IsBusy = true;
-        try
+        // AddSongList persists immediately; false means the 20-list ceiling was hit.
+        bool added = await Task.Run(profiles.AddSongList);
+        if (!added)
         {
-            // AddSongList persists immediately; false means the 20-list ceiling was hit.
-            bool added = await Task.Run(Profiles.AddSongList);
-            if (!added)
-            {
-                await _dialogs.ShowInfoAsync(
-                    "Having more than 20 song lists is not supported.", "Cannot add song list");
-                return;
-            }
+            await dialogs.ShowInfoAsync("Having more than 20 song lists is not supported.", "Cannot add song list");
+            return;
+        }
 
-            SongListCount = Profiles.SongListCount;
-            // The grid's columns no longer match the profile's list count; reload to rebuild them.
-            ClearSongGrid();
-            StatusMessage = "Added a new song list.";
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to add a song list:\n{ex.Message}");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
+        SongListCount = profiles.SongListCount;
+        // The grid's columns no longer match the profile's list count; reload to rebuild them.
+        ClearSongGrid();
+        StatusMessage = "Added a new song list.";
+    }, "Failed to add a song list");
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
-    private async Task RemoveSongListAsync()
+    private Task RemoveSongListAsync() => RunBusyAsync(async () =>
     {
-        IsBusy = true;
-        try
+        // RemoveSongList persists immediately; false means the 6-list floor was hit.
+        bool removed = await Task.Run(profiles.RemoveSongList);
+        if (!removed)
         {
-            // RemoveSongList persists immediately; false means the 6-list floor was hit.
-            bool removed = await Task.Run(Profiles.RemoveSongList);
-            if (!removed)
-            {
-                await _dialogs.ShowInfoAsync(
-                    "There are no more song lists that can be removed.", "Cannot remove song list");
-                return;
-            }
+            await dialogs.ShowInfoAsync(
+                "There are no more song lists that can be removed.", "Cannot remove song list");
+            return;
+        }
 
-            SongListCount = Profiles.SongListCount;
-            // The grid's columns no longer match the profile's list count; reload to rebuild them.
-            ClearSongGrid();
-            StatusMessage = "Removed the newest song list.";
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to remove a song list:\n{ex.Message}");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
+        SongListCount = profiles.SongListCount;
+        // The grid's columns no longer match the profile's list count; reload to rebuild them.
+        ClearSongGrid();
+        StatusMessage = "Removed the newest song list.";
+    }, "Failed to remove a song list");
 
     [RelayCommand]
     private void RefreshBackups()
@@ -298,96 +248,63 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         if (SelectedBackup is not string name)
             return;
 
-        if (!await _dialogs.ShowConfirmAsync(
-                $"Revert your save data to the backup '{name}'?\nThis overwrites your current save profiles.",
-                "Revert to backup?"))
+        if (!await dialogs.ShowConfirmAsync($"Revert your save data to the backup '{name}'?\nThis overwrites your current save profiles.", "Revert to backup?"))
             return;
 
-        string? sourceDir = Profiles.GetBackupSourceDir(name);
+        string? sourceDir = ProfileBackupService.GetBackupSourceDirectory(GenUtil.GetRSDirectory(), name);
         if (string.IsNullOrEmpty(sourceDir))
         {
-            await _dialogs.ShowErrorAsync("Could not identify the backup date format.");
+            await dialogs.ShowErrorAsync("Could not identify the backup date format.");
             return;
         }
 
         if (!Directory.Exists(sourceDir))
         {
-            await _dialogs.ShowErrorAsync("The selected backup folder could not be found.");
+            await dialogs.ShowErrorAsync("The selected backup folder could not be found.");
             return;
         }
 
-        IsBusy = true;
-        try
+        await RunBusyAsync(async () =>
         {
-            await Task.Run(() => Profiles.RestoreBackup(sourceDir, GenUtil.GetSaveDirectory()));
+            await Task.Run(() => ProfileBackupService.RestoreBackup(sourceDir, GenUtil.GetSaveDirectory()));
             StatusMessage = $"Reverted to the backup: {name}";
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to restore backup:\n{ex.Message}");
-            StatusMessage = "Failed to restore the backup.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "Failed to restore the backup");
     }
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
     private async Task ImportJsonTonesAsync()
     {
-        IReadOnlyList<string> files = await _dialogs.PickFilesAsync(
-            "Import tone manifest(s)", "JSON", ["*.json"], ImportTonesBulk);
+        IReadOnlyList<string> files = await dialogs.PickFilesAsync("Import tone manifest(s)", "JSON", ["*.json"], ImportTonesBulk);
         if (files.Count == 0)
             return;
 
-        IsBusy = true;
-        try
+        await RunBusyAsync(async () =>
         {
-            var (imported, errors) = await Task.Run(() => Profiles.ProcessToneManifests([.. files]));
+            var (imported, errors) = await Task.Run(() => toneImports.ImportManifests([.. files]));
             await ReportToneImportAsync(imported, errors);
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to import tones:\n{ex.Message}");
-            StatusMessage = "Failed to import tones.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "Failed to import tones");
     }
 
     [RelayCommand(CanExecute = nameof(CanEditProfile))]
     private async Task ImportXmlTonesAsync()
     {
-        IReadOnlyList<string> files = await _dialogs.PickFilesAsync(
-            "Import toolkit XML tone(s)", "Toolkit tone", ["*.tone2014.xml"], ImportTonesBulk);
+        IReadOnlyList<string> files = await dialogs.PickFilesAsync("Import toolkit XML tone(s)", "Toolkit tone", ["*.tone2014.xml"], ImportTonesBulk);
         if (files.Count == 0)
             return;
 
-        IsBusy = true;
-        try
+        await RunBusyAsync(async () =>
         {
             // The import loop runs off the UI thread; each tone's guitar/bass choice marshals back to it.
-            var (imported, errors) = await Task.Run(() =>
-                Profiles.ProcessXmlTonesByName([.. files], PromptGuitarOrBass));
+            var (imported, errors) = await Task.Run(() => toneImports.ImportXmlTonesByName([.. files], PromptGuitarOrBass));
             await ReportToneImportAsync(imported, errors);
-        }
-        catch (Exception ex)
-        {
-            await _dialogs.ShowErrorAsync($"Failed to import tones:\n{ex.Message}");
-            StatusMessage = "Failed to import tones.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        }, "Failed to import tones");
     }
 
     /// <summary>
     /// Prompts for a tone's guitar/bass assignment. Called from the background import loop, so it marshals
     /// the modal onto the UI thread and blocks the worker until the user chooses (true = guitar).
+    /// Must only ever be invoked from a background thread: it blocks on the UI dispatcher, so calling it
+    /// from the UI thread would deadlock.
     /// </summary>
     private bool PromptGuitarOrBass(string toneName)
     {
@@ -396,9 +313,7 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         {
             try
             {
-                bool guitar = await _dialogs.ShowChoiceAsync(
-                    $"Save '{toneName}' as a guitar tone or a bass tone?",
-                    "Tone assignment", "Guitar", "Bass");
+                bool guitar = await dialogs.ShowChoiceAsync($"Save '{toneName}' as a guitar tone or a bass tone?", "Tone assignment", "Guitar", "Bass");
                 choice.SetResult(guitar);
             }
             catch (Exception ex)
@@ -414,19 +329,19 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
     {
         if (errorMessages.Count > 0)
         {
-            await _dialogs.ShowErrorAsync(
-                $"Import completed with some errors:\n\n{string.Join("\n", errorMessages)}", "Import warnings");
+            string errors = string.Join("\n", errorMessages);
+            await dialogs.ShowErrorAsync($"Import completed with some errors:\n\n{errors}", "Import warnings");
         }
 
         if (importedCount > 0)
         {
             StatusMessage = $"Added {importedCount} tone(s) to the profile.";
-            await _dialogs.ShowInfoAsync($"Added {importedCount} tone(s) to the profile.", "Import complete");
+            await dialogs.ShowInfoAsync($"Added {importedCount} tone(s) to the profile.", "Import complete");
         }
         else if (errorMessages.Count == 0)
         {
             StatusMessage = "No tones were found to import.";
-            await _dialogs.ShowInfoAsync("No tones were found to import.", "Import complete");
+            await dialogs.ShowInfoAsync("No tones were found to import.", "Import complete");
         }
         else
         {
@@ -446,46 +361,29 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         {
             // The psarc scan is the slow part and already runs on a background thread inside the service.
             var progress = new Progress<int>(value => LoadProgress = value);
-            List<SongData> songs = await SongManager.ExtractSongDataAsync(progress);
+            SongCatalogResult catalog = await songCatalog.GetSongsAsync(forceRefresh: HasLoadedSongs, progress: progress);
 
-            HashSet<string> ownedRs1Dlc = Profiles.GetOwnedRS1DLC();
-            List<List<string>> lists = Profiles.GetProfileSongListsWithFavorites();
+            HashSet<string> ownedRs1Dlc = profiles.GetOwnedRs1Dlc();
+            List<List<string>> lists = profiles.GetProfileSongListsWithFavorites();
             int songListCount = lists.Count - 1; // lists[0] is Favorites; the rest are the numbered lists.
 
-            // Columns: Favorites (cell 0) then one per numbered song list (cells 1..N), titled from settings.
-            var columns = new List<SongListColumn> { new("Favorites", 0) };
-            for (int listNumber = 1; listNumber <= songListCount; listNumber++)
-                columns.Add(new SongListColumn(RsModsSettings.GetSongListTitle(listNumber), listNumber));
-            SongListColumns = columns;
+            SongListColumns = BuildSongColumns(songListCount);
 
             SongRows.Clear();
-            foreach (SongData song in songs)
-            {
-                if (!Profiles.ShouldIncludeSong(song, ownedRs1Dlc))
-                    continue;
-
-                string dlcKey = song.DLCKey;
-                var cells = new SongCellViewModel[songListCount + 1];
-                cells[0] = new SongCellViewModel(
-                    lists[0].Contains(dlcKey), add => Profiles.SetSongInFavorites(dlcKey, add));
-                for (int listNumber = 1; listNumber <= songListCount; listNumber++)
-                {
-                    int listIndex = listNumber - 1; // SetSongInList indexes the numbered lists from 0.
-                    cells[listNumber] = new SongCellViewModel(
-                        lists[listNumber].Contains(dlcKey), add => Profiles.SetSongInList(dlcKey, listIndex, add));
-                }
-
-                SongRows.Add(new SongRowViewModel(song.Artist, song.Title, cells));
-            }
+            foreach (SongRowViewModel row in BuildSongRows(catalog.Songs, lists, ownedRs1Dlc))
+                SongRows.Add(row);
 
             HasLoadedSongs = true;
             SongColumnsChanged?.Invoke(this, EventArgs.Empty);
-            StatusMessage = $"Loaded {SongRows.Count} songs. Toggle Favorites/song lists, then Save song lists.";
+            string warning = catalog.Warnings.Count == 0
+                ? string.Empty
+                : $" Skipped {catalog.Warnings.Count} unreadable archive(s).";
+            StatusMessage = $"Loaded {SongRows.Count} songs. Toggle Favorites/song lists, then Save song lists.{warning}";
         }
         catch (Exception ex)
         {
             ClearSongGrid();
-            await _dialogs.ShowErrorAsync($"Failed to load songs:\n{ex.Message}");
+            await dialogs.ShowErrorAsync($"Failed to load songs:\n{ex.Message}");
             StatusMessage = "Failed to load songs.";
         }
         finally
@@ -494,22 +392,75 @@ internal sealed partial class ProfilesViewModel(IDialogService dialogs) : Observ
         }
     }
 
+    /// <summary>Favorites (cell 0) followed by one column per numbered song list (cells 1..N), titled from settings.</summary>
+    private static List<SongListColumn> BuildSongColumns(int songListCount)
+    {
+        var columns = new List<SongListColumn> { new("Favorites", 0) };
+        
+        for (int listNumber = 1; listNumber <= songListCount; listNumber++)
+        {
+            columns.Add(new SongListColumn(RsModsSettings.GetSongListTitle(listNumber), listNumber));
+        }
+
+        return columns;
+    }
+
+    /// <summary>
+    /// Builds one grid row per included song, each carrying a Favorites cell plus one cell per numbered list.
+    /// Every cell closes over its DLC key and list index so toggling it writes straight back to the profile.
+    /// </summary>
+    private List<SongRowViewModel> BuildSongRows(IReadOnlyList<SongData> songs, List<List<string>> lists, HashSet<string> ownedRs1Dlc)
+    {
+        int songListCount = lists.Count - 1;
+        var rows = new List<SongRowViewModel>();
+
+        foreach (SongData song in songs)
+        {
+            if (!ProfileService.ShouldIncludeSong(song, ownedRs1Dlc))
+                continue;
+
+            string dlcKey = song.DLCKey;
+            var cells = new SongCellViewModel[songListCount + 1];
+            cells[0] = new SongCellViewModel(lists[0].Contains(dlcKey), add => profiles.SetSongInFavorites(dlcKey, add));
+
+            for (int listNumber = 1; listNumber <= songListCount; listNumber++)
+            {
+                int listIndex = listNumber - 1; // SetSongInList indexes the numbered lists from 0.
+                cells[listNumber] = new SongCellViewModel(lists[listNumber].Contains(dlcKey), add => profiles.SetSongInList(dlcKey, listIndex, add));
+            }
+
+            rows.Add(new SongRowViewModel(song.Artist, song.Title, cells));
+        }
+
+        return rows;
+    }
+
     private bool CanSaveSongLists => HasLoadedSongs && !IsBusy && !IsLoadingSongs;
 
     [RelayCommand(CanExecute = nameof(CanSaveSongLists))]
-    private async Task SaveSongListsAsync()
+    private Task SaveSongListsAsync() => RunBusyAsync(async () =>
+    {
+        // Cell toggles already updated the in-memory profile; this persists it (encrypts + writes).
+        await Task.Run(profiles.SaveActiveProfile);
+        StatusMessage = "Song lists and favorites saved.";
+    }, "Failed to save song lists");
+
+    /// <summary>
+    /// Runs a busy-gated action behind the shared <see cref="IsBusy"/> flag, turning any exception into an
+    /// error dialog and matching status message. The action sets its own success status; confirmation prompts
+    /// and file pickers belong before the call, not inside it.
+    /// </summary>
+    private async Task RunBusyAsync(Func<Task> action, string failureMessage)
     {
         IsBusy = true;
         try
         {
-            // Cell toggles already updated the in-memory profile; this persists it (encrypts + writes).
-            await Task.Run(Profiles.EncryptCurrentProfile);
-            StatusMessage = "Song lists and favorites saved.";
+            await action();
         }
         catch (Exception ex)
         {
-            await _dialogs.ShowErrorAsync($"Failed to save song lists:\n{ex.Message}");
-            StatusMessage = "Failed to save song lists.";
+            await dialogs.ShowErrorAsync($"{failureMessage}:\n{ex.Message}");
+            StatusMessage = $"{failureMessage}.";
         }
         finally
         {

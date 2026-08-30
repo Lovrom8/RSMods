@@ -36,8 +36,7 @@ internal sealed partial class TuningStringViewModel : ObservableObject
         string noteName = GuitarSpeak.GuitarSpeakNoteOctaveMath((BaseMidiNote + offset).ToString());
         NoteName = Index == 5 ? noteName.ToLowerInvariant() : noteName;
 
-        bool extendedRange = RsModsSettings.Toggles.ExtendedRange &&
-            RsModsSettings.ModSettings.ExtendedRangeModeAt >= offset;
+        bool extendedRange = RsModsSettings.Toggles.ExtendedRange && RsModsSettings.ModSettings.ExtendedRangeModeAt >= offset;
         ColorHex = RsModsSettings.StringColors.GetStringColor(Index, normal: !extendedRange);
     }
 }

@@ -8,26 +8,36 @@ using System.Linq;
 
 namespace RSMods
 {
-    public sealed class ProfileService(ProfileCodec codec = null)
+    public sealed class ProfileService
     {
-        private readonly ProfileCodec _codec = codec ?? new ProfileCodec();
+        private readonly Func<string> _getSaveDirectory;
         private DecodedProfile _activeDocument;
         private JObject _activeProfile;
+        private string _activeProfilePath = string.Empty;
 
-        public string CurrentProfileName { get; set; } = string.Empty;
+        public ProfileService() : this(() => GenUtil.GetSaveDirectory())
+        {
+        }
+
+        internal ProfileService(Func<string> getSaveDirectory)
+        {
+            _getSaveDirectory = getSaveDirectory ?? throw new ArgumentNullException(nameof(getSaveDirectory));
+        }
+
         public JObject ActiveProfile => _activeProfile;
         public int SongListCount => _activeProfile != null ? GetProfileSongLists().Count : 6;
 
-        public Dictionary<string, string> GetAvailableProfiles()
+        public Dictionary<string, string> GetAvailableProfiles() => GetAvailableProfiles(_getSaveDirectory());
+
+        private static Dictionary<string, string> GetAvailableProfiles(string saveDirectory)
         {
             var profiles = new Dictionary<string, string>();
-            string saveDirectory = GenUtil.GetSaveDirectory();
             if (string.IsNullOrEmpty(saveDirectory)) return profiles;
 
             try
             {
                 string localProfilesPath = Path.Combine(saveDirectory, "LocalProfiles.json");
-                JObject localProfiles = JObject.Parse(_codec.Decode(localProfilesPath).Json);
+                JObject localProfiles = JObject.Parse(ProfileCodec.Decode(localProfilesPath).Json);
                 foreach (JToken profile in localProfiles.SelectToken("Profiles"))
                 {
                     profiles.Add(
@@ -43,11 +53,11 @@ namespace RSMods
             return profiles;
         }
 
-        public string DecodeProfileJson(string path, bool dumpToFile = false, string dumpFile = "profileDump.json")
+        public static string DecodeProfileJson(string path, bool dumpToFile = false, string dumpFile = "profileDump.json")
         {
             try
             {
-                return _codec.Decode(path, dumpToFile, dumpFile).Json;
+                return ProfileCodec.Decode(path, dumpToFile, dumpFile).Json;
             }
             catch
             {
@@ -57,9 +67,13 @@ namespace RSMods
 
         public void SelectProfile(string profileName)
         {
-            CurrentProfileName = profileName;
-            _activeDocument = LoadProfile(profileName);
-            _activeProfile = JObject.Parse(_activeDocument.Json);
+            string profilePath = GetProfilePath(profileName);
+            DecodedProfile document = ProfileCodec.Decode(profilePath);
+            JObject profile = JObject.Parse(document.Json);
+
+            _activeProfilePath = profilePath;
+            _activeDocument = document;
+            _activeProfile = profile;
         }
 
         public int GetSongListCount(string profileName)
@@ -77,14 +91,15 @@ namespace RSMods
 
         public string GetProfilePath(string profileName)
         {
-            return Path.Combine(GenUtil.GetSaveDirectory(), GetAvailableProfiles()[profileName] + "_PRFLDB");
+            string saveDirectory = _getSaveDirectory();
+            return Path.Combine(saveDirectory, GetAvailableProfiles(saveDirectory)[profileName] + "_PRFLDB");
         }
 
         public void SaveActiveProfile()
         {
             EnsureActiveProfile();
             string json = _activeProfile.ToString(Formatting.None);
-            _codec.Encode(json, GetProfilePath(CurrentProfileName), _activeDocument);
+            ProfileCodec.Encode(json, _activeProfilePath, _activeDocument);
         }
 
         public void SaveTones(List<object> newGuitarTones, List<object> newBassTones)
@@ -131,7 +146,7 @@ namespace RSMods
             _activeProfile["Prizes"] = prizes;
         }
 
-        public bool ShouldIncludeSong(SongData song, HashSet<string> ownedDlc)
+        public static bool ShouldIncludeSong(SongData song, HashSet<string> ownedDlc)
         {
             if (!song.Shipping || string.IsNullOrEmpty(song.Artist) || string.IsNullOrEmpty(song.Title))
                 return false;
@@ -219,12 +234,12 @@ namespace RSMods
 
         private DecodedProfile LoadProfile(string profileName)
         {
-            return _codec.Decode(GetProfilePath(profileName));
+            return ProfileCodec.Decode(GetProfilePath(profileName));
         }
 
         private void EnsureActiveProfile()
         {
-            if (_activeProfile == null || _activeDocument == null)
+            if (_activeProfile == null || _activeDocument == null || string.IsNullOrEmpty(_activeProfilePath))
                 throw new InvalidOperationException("No Rocksmith profile has been selected.");
         }
     }

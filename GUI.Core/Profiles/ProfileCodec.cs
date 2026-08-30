@@ -46,7 +46,7 @@ namespace RSMods
             0x00, 0x00, 0x10, 0x01
         ];
 
-        public DecodedProfile Decode(string path, bool dumpToFile = false, string dumpFile = "profileDump.json")
+        public static DecodedProfile Decode(string path, bool dumpToFile = false, string dumpFile = "profileDump.json")
         {
             using Stream input = File.OpenRead(path);
             using var output = new MemoryStream();
@@ -61,10 +61,9 @@ namespace RSMods
             return new DecodedProfile(json, userId);
         }
 
-        public void Encode(string profileJson, string fileName, DecodedProfile source)
+        public static void Encode(string profileJson, string fileName, DecodedProfile source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             Encode(profileJson, fileName, source.UserId);
         }
@@ -172,6 +171,7 @@ namespace RSMods
             using var cipher = new RijndaelManaged();
 #pragma warning restore SYSLIB0022
             InitializeCipher(cipher, key, CipherMode.ECB);
+
             // The EVAS header has already been consumed; only the remaining encrypted payload
             // participates in block decryption. Using the full file length pads the ciphertext
             // with header-sized garbage and can produce an invalid final block.

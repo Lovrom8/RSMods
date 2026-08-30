@@ -15,10 +15,7 @@ namespace RSMods.Util
         public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
             => value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
 
-        public static bool IsDirectoryEmpty(string path)
-        {
-            return !Directory.EnumerateFileSystemEntries(path).Any();
-        }
+        public static bool IsDirectoryEmpty(string path) => !Directory.EnumerateFileSystemEntries(path).Any();
 
         public static void ExtractEmbeddedResource(string outputDir, Assembly resourceAssembly, string resourceLocation, string[] files)
         {
@@ -53,7 +50,7 @@ namespace RSMods.Util
                     return ieFallback;
                 }
 
-                if (progId.IndexOf("edge", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (progId.Contains("edge", StringComparison.OrdinalIgnoreCase))
                 {
                     return $"microsoft-edge:{url}";
                 }
@@ -188,39 +185,6 @@ namespace RSMods.Util
             new(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 221680", "InstallLocation")
         ];
 
-        public static List<string> GetSettingsLines()
-        {
-            return File.Exists(Constants.SettingsPath) ? File.ReadAllLines(Constants.SettingsPath).ToList() : [];
-        }
-
-        private static Dictionary<string, string> settingsDict = null;
-        public static Dictionary<string, string> GetSettingsPairs(List<string> settingsLines)
-        {
-            var dictRet = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            settingsLines.ForEach(line =>
-            {
-                if (FlatKeyValueSettingsStore.TryParseLine(line, out string entry, out string value))
-                    dictRet[entry] = value;
-            }
-            );
-
-            settingsDict = dictRet;
-
-            return dictRet;
-        }
-
-        public static string GetSettingsEntry(string entryName, Dictionary<string, string> settingsPairs = default) // If you want to reread the settings, don't include the second arg
-        {
-            if (settingsPairs == null)
-                settingsDict = GetSettingsPairs(GetSettingsLines());
-
-            if (settingsDict.ContainsKey(entryName))
-                return settingsDict[entryName];
-            else
-                return String.Empty;
-        }
-
         /// <summary>
         /// Best-effort detection of the Rocksmith save folder. Reads the cached / persisted value and,
         /// as a side effect, refreshes <see cref="Constants.SavePathDeclined"/> from the settings file.
@@ -233,14 +197,17 @@ namespace RSMods.Util
             {
                 if (File.Exists(Constants.SettingsPath))
                 {
-                    Constants.SavePath = GetSettingsEntry("SavePath");
-                    Constants.SavePathDeclined = bool.TryParse(GetSettingsEntry("BypassSavePrompt"), out bool declined) && declined;
+                    var settings = new FlatKeyValueSettingsStore(Constants.SettingsPath);
+                    Constants.SavePath = settings.GetString("SavePath");
+                    Constants.SavePathDeclined = bool.TryParse(settings.GetString("BypassSavePrompt"), out bool declined) && declined;
                     if (Constants.SavePath != string.Empty)
                         return Constants.SavePath;
                 }
             }
             else
+            {
                 return Constants.SavePath;
+            }
 
             try
             {
@@ -257,12 +224,7 @@ namespace RSMods.Util
             return string.Empty;
         }
 
-        public static string GetRsModsPath()
-        {
-            string rsDir = GetRSDirectory();
-
-            return Path.Combine(rsDir, "RSMods");
-        }
+        public static string GetRsModsPath() => Path.Combine(GetRSDirectory(), "RSMods");
 
         /// <summary>
         /// Best-effort detection of the Rocksmith 2014 install folder: the cached / persisted value, then
@@ -276,7 +238,8 @@ namespace RSMods.Util
             {
                 if (File.Exists(Constants.SettingsPath))
                 {
-                    Constants.RSFolder = GetSettingsEntry("RSPath");
+                    var settings = new FlatKeyValueSettingsStore(Constants.SettingsPath);
+                    Constants.RSFolder = settings.GetString("RSPath");
                     if (Constants.RSFolder != string.Empty)
                     {
                         return Constants.RSFolder;

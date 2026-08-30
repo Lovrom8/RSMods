@@ -180,7 +180,7 @@ namespace RSMods.Twitch.EffectServer
                 TcpClient client;
                 try
                 {
-                    client = await _listener.AcceptTcpClientAsync().ConfigureAwait(false);
+                    client = await _listener.AcceptTcpClientAsync(cancellationToken).ConfigureAwait(false);
                 }
                 catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
                 {

@@ -13,7 +13,7 @@ namespace RSMods.ViewModels;
 /// <summary>
 /// Edits RS_ASIO.ini through the path-based <see cref="AsioSettings"/> instance. Preserves the
 /// store's two disable conventions (blank driver for Output/Input.0/Input.Mic, commented driver for
-/// Input.1) and the tri-state WASAPI output mode, and reuses the frontend-neutral device enumeration.
+/// Input.1) and the tri-state WASAPI output mode.
 /// </summary>
 internal sealed partial class AsioSettingsViewModel : ObservableObject
 {
@@ -48,15 +48,13 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     [ObservableProperty] private bool _enableWasapiInputs;
     [ObservableProperty] private bool _enableAsio;
 
-    public static WasapiOutputMode[] WasapiOutputModes { get; } =
-        (WasapiOutputMode[])Enum.GetValues(typeof(WasapiOutputMode));
+    public static WasapiOutputMode[] WasapiOutputModes { get; } = (WasapiOutputMode[])Enum.GetValues(typeof(WasapiOutputMode));
 
     // --- Asio (buffer) ---
     [ObservableProperty] private string _bufferSizeMode = RsAsioLimits.BufferModeDriver;
     [ObservableProperty] private decimal _customBufferSize;
 
-    public static string[] BufferModes { get; } =
-        [RsAsioLimits.BufferModeDriver, RsAsioLimits.BufferModeHost, RsAsioLimits.BufferModeCustom];
+    public static string[] BufferModes { get; } = [RsAsioLimits.BufferModeDriver, RsAsioLimits.BufferModeHost, RsAsioLimits.BufferModeCustom];
 
     public static decimal CustomBufferSizeMin => RsAsioLimits.CustomBufferSizeMin;
     public static decimal CustomBufferSizeMax => RsAsioLimits.CustomBufferSizeMax;
@@ -77,8 +75,7 @@ internal sealed partial class AsioSettingsViewModel : ObservableObject
     public static decimal VolumePercentMax => RsAsioLimits.VolumePercentMax;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
     private bool _isDirty;
 
     [ObservableProperty]

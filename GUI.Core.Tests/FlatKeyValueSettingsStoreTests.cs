@@ -55,4 +55,23 @@ public sealed class FlatKeyValueSettingsStoreTests
         Assert.Contains(";AccessToken = commented-value", contents);
         Assert.Contains("Other = value", contents);
     }
+
+    [Fact]
+    public void GetString_ReturnsLastMatchingValueCaseInsensitively()
+    {
+        using var temporary = new TemporaryDirectory();
+        string path = temporary.File("GUI_Settings.ini");
+        File.WriteAllLines(path,
+        [
+            "SavePath = old",
+            "savepath = current=save",
+            "BypassSavePrompt = true"
+        ]);
+
+        var settings = new FlatKeyValueSettingsStore(path);
+
+        Assert.Equal("current=save", settings.GetString("SAVEPATH"));
+        Assert.Equal("true", settings.GetString("BypassSavePrompt"));
+        Assert.Equal(string.Empty, settings.GetString("Missing"));
+    }
 }

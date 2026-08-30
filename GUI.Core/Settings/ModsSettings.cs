@@ -142,6 +142,7 @@ namespace RSMods
             public static string DisplayMixerKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
             public static string MutePlayer1Key { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
             public static string MutePlayer2Key { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
+            public static string ChangedSelectedVolumeKey { get => GetConvertedKey(); set => _audioKeybindings.SetString(value); }
         }
 
         public static class Toggles
@@ -183,10 +184,8 @@ namespace RSMods
             public static bool ChordsMode { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool ShowCurrentNoteOnScreen { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static string OnScreenFont { get => _toggleSwitches.GetString("Arial"); set => _toggleSwitches.SetString(value); }
-            public static int OnScreenFontSize { get => _toggleSwitches.GetInt(24); set => _toggleSwitches.SetInt(value); }
             public static string ProfileToLoad { get => _toggleSwitches.GetString(""); set => _toggleSwitches.SetString(value); }
             public static SongTimerWhen ShowSongTimerWhen { get => _toggleSwitches.GetEnum(SongTimerWhen.Manual); set => _toggleSwitches.SetEnum(value); }
-            public static string ShowSelectedVolumeWhen { get => _toggleSwitches.GetString("manual"); set => _toggleSwitches.SetString(value); }
             public static OnOffMode SecondaryMonitor { get => _toggleSwitches.GetEnum(OnOffMode.Off); set => _toggleSwitches.SetEnum(value); }
             public static bool SongPreviews { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
             public static bool OverrideInputVolumeEnabled { get => _toggleSwitches.GetBool(); set => _toggleSwitches.SetBool(value); }
@@ -237,6 +236,7 @@ namespace RSMods
             public static int RewindBy { get => _modSettings.GetInt(5000); set => _modSettings.SetInt(value); }
             public static int RewindLeadup { get => _modSettings.GetInt(2000); set => _modSettings.SetInt(value); }
             public static int CustomNSPTimeLimit { get => _modSettings.GetInt(10000); set => _modSettings.SetInt(value); }
+            public static int OnScreenFontSize { get => _modSettings.GetInt(24); set => _modSettings.SetInt(value); }
         }
 
         public static class GuitarSpeak

@@ -24,19 +24,17 @@ namespace RSMods.Twitch
         public List<TwitchReward> Load()
         {
             if (!File.Exists(_filePath))
-                return new List<TwitchReward>();
+                return [];
 
             using var stream = File.OpenRead(_filePath);
             return (List<TwitchReward>)Serializer.Deserialize(stream);
         }
 
-        public Task<List<TwitchReward>> LoadAsync()
-            => Task.Run(() => Load());
+        public Task<List<TwitchReward>> LoadAsync() => Task.Run(Load);
 
         public void Save(IReadOnlyCollection<TwitchReward> rewards)
         {
-            if (rewards == null)
-                throw new ArgumentNullException(nameof(rewards));
+            ArgumentNullException.ThrowIfNull(rewards);
 
             string directory = Path.GetDirectoryName(_filePath);
             if (!string.IsNullOrEmpty(directory))
@@ -65,8 +63,7 @@ namespace RSMods.Twitch
             }
         }
 
-        public Task SaveAsync(IReadOnlyCollection<TwitchReward> rewards)
-            => Task.Run(() => Save(rewards));
+        public Task SaveAsync(IReadOnlyCollection<TwitchReward> rewards) => Task.Run(() => Save(rewards));
 
         private static void ReplaceFile(string tempPath, string destinationPath)
         {

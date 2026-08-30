@@ -9,10 +9,8 @@ namespace RSMods.ViewModels;
 /// The default landing page: startup status plus the resolved Rocksmith install and save folders.
 /// The shell populates it once startup resolution completes.
 /// </summary>
-internal sealed partial class StatusViewModel : ObservableObject
+internal sealed partial class StatusViewModel(IDialogService dialogs) : ObservableObject
 {
-    private readonly IDialogService _dialogs;
-
     [ObservableProperty]
     private string _statusMessage = "Resolving your Rocksmith 2014 install…";
 
@@ -30,29 +28,20 @@ internal sealed partial class StatusViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SetSavePathCommand))]
     private bool _isReady;
 
-    public string SavePathDisplay => SavePathAvailable
-        ? SavePath!
-        : "No save folder set. Profile Edits stays disabled until one is selected.";
+    public string SavePathDisplay => SavePathAvailable ? SavePath! : "No save folder set. Profile Edits stays disabled until one is selected.";
 
     public string CoreAssembly => typeof(RsModsSettings).Assembly.GetName().Name ?? "GUI.Core";
-
-    public StatusViewModel(IDialogService dialogs)
-    {
-        _dialogs = dialogs;
-    }
 
     [RelayCommand(CanExecute = nameof(IsReady))]
     private async Task SetSavePathAsync()
     {
         // Force the prompt even if a previous run recorded that the user declined.
-        string picked = await RSLocationResolver.ResolveSaveFolderAsync(_dialogs, forcePrompt: true);
+        string picked = await RSLocationResolver.ResolveSaveFolderAsync(dialogs, forcePrompt: true);
 
         SavePath = picked;
         SavePathAvailable = !string.IsNullOrEmpty(picked);
         Constants.SaveBaseSettings();
 
-        StatusMessage = SavePathAvailable
-            ? "Save folder updated."
-            : "Save folder selection cancelled.";
+        StatusMessage = SavePathAvailable ? "Save folder updated." : "Save folder selection cancelled.";
     }
 }

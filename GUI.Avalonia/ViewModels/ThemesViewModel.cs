@@ -18,12 +18,9 @@ internal sealed record AccentPreset(string Name, string Hex, string SwatchHex);
 /// The Appearance screen. Replaces the WinForms tri-colour configurator recolouring with the idiomatic
 /// FluentTheme model: a light/dark/system variant plus an optional accent colour. Changes preview live via
 /// <see cref="ThemeService"/> and are only persisted to <see cref="RsModsSettings.GUISettings"/> on Save;
-/// Revert re-applies the last saved appearance.
 /// </summary>
-internal sealed partial class ThemesViewModel : ObservableObject
+internal sealed partial class ThemesViewModel(SettingsService settings, ThemeService theme) : ObservableObject
 {
-    private readonly SettingsService _settings;
-    private readonly ThemeService _theme;
     private bool _loading;
     private bool _initialized;
 
@@ -31,7 +28,7 @@ internal sealed partial class ThemesViewModel : ObservableObject
 
     // Curated accent choices; "Default" persists an empty hex so FluentTheme's own accent shows through.
     // The swatch hex is the colour previewed in the picker (Default shows FluentTheme's default blue).
-    public AccentPreset[] AccentPresets { get; } =
+    public static AccentPreset[] AccentPresets { get; } =
     [
         new("Default", "", "0078D7"),
         new("Blue", "0078D7", "0078D7"),
@@ -47,22 +44,14 @@ internal sealed partial class ThemesViewModel : ObservableObject
     private string _selectedThemeVariant = "System";
 
     [ObservableProperty]
-    private AccentPreset _selectedAccent;
+    private AccentPreset _selectedAccent = AccentPresets[0];
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(RevertCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(RevertCommand))]
     private bool _isDirty;
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
-
-    public ThemesViewModel(SettingsService settings, ThemeService theme)
-    {
-        _settings = settings;
-        _theme = theme;
-        _selectedAccent = AccentPresets[0];
-    }
 
     /// <summary>Builds the snapshot on first navigation; the store is already loaded by startup.</summary>
     public Task InitializeAsync()
@@ -78,6 +67,7 @@ internal sealed partial class ThemesViewModel : ObservableObject
     private void Load()
     {
         _loading = true;
+     
         try
         {
             string variant = RsModsSettings.GUISettings.AppThemeVariant;
@@ -107,7 +97,7 @@ internal sealed partial class ThemesViewModel : ObservableObject
             return;
 
         // Preview live so the whole app reflects the choice, even while unsaved.
-        _theme.Apply(SelectedThemeVariant, SelectedAccent.Hex);
+        theme.Apply(SelectedThemeVariant, SelectedAccent.Hex);
 
         if (_loading)
             return;
@@ -124,7 +114,7 @@ internal sealed partial class ThemesViewModel : ObservableObject
         RsModsSettings.GUISettings.AppThemeVariant = SelectedThemeVariant;
         RsModsSettings.GUISettings.AppAccentColor = SelectedAccent.Hex;
 
-        await _settings.SaveAsync();
+        await settings.SaveAsync();
 
         IsDirty = false;
         StatusMessage = "Appearance saved.";
@@ -135,7 +125,7 @@ internal sealed partial class ThemesViewModel : ObservableObject
     {
         Load();
         // Re-apply the restored appearance so the live preview matches the reverted values.
-        _theme.Apply(SelectedThemeVariant, SelectedAccent.Hex);
+        theme.Apply(SelectedThemeVariant, SelectedAccent.Hex);
         StatusMessage = "Reverted to the last saved values.";
     }
 }

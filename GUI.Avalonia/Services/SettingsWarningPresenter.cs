@@ -10,16 +10,9 @@ namespace RSMods.Services;
 /// domain's "this value was invalid and reset to its default" reports are shown to the user. This is
 /// the Avalonia counterpart to the WinForms settings sanitizer's warning dialog.
 /// </summary>
-internal sealed class SettingsWarningPresenter
+internal sealed class SettingsWarningPresenter(IDialogService dialogs)
 {
     private const int MaxShown = 10;
-
-    private readonly IDialogService _dialogs;
-
-    public SettingsWarningPresenter(IDialogService dialogs)
-    {
-        _dialogs = dialogs;
-    }
 
     public Task PresentAsync(IReadOnlyList<IniValidationWarning> warnings)
     {
@@ -41,7 +34,7 @@ internal sealed class SettingsWarningPresenter
         if (warnings.Count > shown)
             text.AppendLine($"… and {warnings.Count - shown} more.");
 
-        return _dialogs.ShowInfoAsync(text.ToString().TrimEnd(), "Some settings were reset");
+        return dialogs.ShowInfoAsync(text.ToString().TrimEnd(), "Some settings were reset");
     }
 
     private static string GetFileName(string filePath)
