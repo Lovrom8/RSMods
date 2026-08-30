@@ -1,0 +1,27 @@
+<UserControl
+    x:Class="RSMods.Views.StatusView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:StatusViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Migration status" />
+            <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Resolved locations" />
+                    <TextBlock Text="{Binding RocksmithFolder, StringFormat='Rocksmith: {0}', TargetNullValue='Rocksmith: resolving…'}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding SavePathDisplay, StringFormat='Save folder: {0}'}" TextWrapping="Wrap" />
+                    <TextBlock Opacity="0.7" Text="{Binding CoreAssembly, StringFormat='Core assembly: {0}'}" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding SetSavePathCommand}" Content="Set save folder" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

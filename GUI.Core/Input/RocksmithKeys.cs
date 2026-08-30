@@ -23,7 +23,7 @@ namespace RSMods
     public static class RocksmithKeys
     {
         // Rocksmith accepts these keys on the normal key-down event.
-        private static readonly HashSet<string> KeyDownVirtualKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> KeyDownVirtualKeys = new(StringComparer.OrdinalIgnoreCase)
         {
             // Standard and extended function keys (F8, F11 and F12 are reserved by Rocksmith).
             "VK_F1", "VK_F2", "VK_F3", "VK_F4", "VK_F5", "VK_F6", "VK_F7", "VK_F9", "VK_F10",
@@ -38,13 +38,13 @@ namespace RSMods
         };
 
         // WinForms and some keyboard drivers only surface these reliably on key-up.
-        private static readonly HashSet<string> KeyUpVirtualKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> KeyUpVirtualKeys = new(StringComparer.OrdinalIgnoreCase)
         {
             "VK_SNAPSHOT", "VK_PLAY", "VK_MEDIA_NEXT_TRACK", "VK_MEDIA_PLAY_PAUSE",
             "VK_MEDIA_PREV_TRACK", "VK_MEDIA_STOP"
         };
 
-        private static readonly HashSet<string> MouseVirtualKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> MouseVirtualKeys = new(StringComparer.OrdinalIgnoreCase)
         {
             "VK_MBUTTON", "VK_XBUTTON1", "VK_XBUTTON2"
         };

@@ -1,0 +1,73 @@
+<UserControl
+    x:Class="RSMods.Views.ThemesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:conv="clr-namespace:RSMods.Converters"
+    x:DataType="vm:ThemesViewModel">
+
+    <UserControl.Resources>
+        <!-- One accent choice: a preview swatch over its name. -->
+        <DataTemplate x:Key="AccentTemplate" x:DataType="vm:AccentPreset">
+            <StackPanel Width="72" Spacing="6">
+                <Border
+                    Height="32"
+                    BorderBrush="#4A5361" BorderThickness="1" CornerRadius="4"
+                    Background="{Binding SwatchHex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                <TextBlock HorizontalAlignment="Center" FontSize="12" Text="{Binding Name}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Appearance" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Choose how the configurator itself looks. Changes preview live; Save writes them to RSMods.ini. (This themes the app, not the game.)" />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Command="{Binding RevertCommand}" Content="Revert" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- Theme variant -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Theme" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="System follows your Windows light/dark setting." />
+                    <ComboBox
+                        Width="200"
+                        ItemsSource="{Binding ThemeVariants}"
+                        SelectedItem="{Binding SelectedThemeVariant}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Accent colour -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Accent colour" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Tints buttons, selections, and highlights across the app." />
+                    <ListBox
+                        Background="Transparent"
+                        ItemsSource="{Binding AccentPresets}"
+                        SelectedItem="{Binding SelectedAccent}"
+                        ItemTemplate="{StaticResource AccentTemplate}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

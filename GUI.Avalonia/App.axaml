@@ -4,6 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     RequestedThemeVariant="Default">
 
+    <Application.Resources>
+        <!-- Shell chrome brushes that track the theme variant so the header/nav don't stay dark on light. -->
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#20242B" />
+                    <SolidColorBrush x:Key="ShellNavBrush" Color="#181B20" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#E8EAED" />
+                    <SolidColorBrush x:Key="ShellNavBrush" Color="#F3F4F6" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>

@@ -1,0 +1,143 @@
+<UserControl
+    x:Class="RSMods.Views.AsioSettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:AsioSettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="820" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="RS_ASIO settings" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="RS_ASIO.ini — low-latency ASIO/WASAPI routing. Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Saving preserves comments and unknown entries." />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Command="{Binding RevertCommand}" Content="Revert" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- Config -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Config" />
+                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto">
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="WASAPI outputs" />
+                        <ComboBox
+                            Grid.Column="1"
+                            MinWidth="200"
+                            ItemsSource="{Binding WasapiOutputModes}"
+                            SelectedItem="{Binding WasapiOutputs}" />
+                    </Grid>
+                    <CheckBox Content="Enable WASAPI inputs" IsChecked="{Binding EnableWasapiInputs}" />
+                    <CheckBox Content="Enable ASIO" IsChecked="{Binding EnableAsio}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Buffer -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Buffer" />
+                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Buffer size mode" />
+                        <ComboBox
+                            Grid.Row="0" Grid.Column="1"
+                            MinWidth="200"
+                            ItemsSource="{Binding BufferModes}"
+                            SelectedItem="{Binding BufferSizeMode}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Custom buffer size" />
+                        <NumericUpDown
+                            Grid.Row="1" Grid.Column="1"
+                            Margin="0,10,0,0"
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="1"
+                            Minimum="{Binding CustomBufferSizeMin}"
+                            Maximum="{Binding CustomBufferSizeMax}"
+                            Value="{Binding CustomBufferSize}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Output -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Output" />
+                    <CheckBox Content="Enabled" IsChecked="{Binding OutputEnabled}" />
+                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Driver" />
+                        <ComboBox
+                            Grid.Row="0" Grid.Column="1"
+                            MinWidth="260"
+                            IsEnabled="{Binding OutputEnabled}"
+                            ItemsSource="{Binding AvailableDrivers}"
+                            SelectedItem="{Binding OutputDriver}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Base / alt base channel" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
+                            <NumericUpDown Width="130" Increment="1" Minimum="{Binding ChannelMin}" Maximum="{Binding ChannelMax}" Value="{Binding OutputBaseChannel}" />
+                            <NumericUpDown Width="130" Increment="1" Minimum="{Binding ChannelMin}" Maximum="{Binding ChannelMax}" Value="{Binding OutputAltBaseChannel}" />
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Master volume %" />
+                        <NumericUpDown
+                            Grid.Row="2" Grid.Column="1"
+                            Margin="0,10,0,0"
+                            Width="130" HorizontalAlignment="Left"
+                            Increment="1"
+                            Minimum="{Binding VolumePercentMin}"
+                            Maximum="{Binding VolumePercentMax}"
+                            Value="{Binding OutputMasterVolumePercent}" />
+                    </Grid>
+                    <CheckBox Content="Software endpoint volume control" IsChecked="{Binding OutputEnableEndpointVolume}" />
+                    <CheckBox Content="Software master volume control" IsChecked="{Binding OutputEnableMasterVolume}" />
+                    <CheckBox Content="Enable ref-count hack" IsChecked="{Binding OutputRefCountHack}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Inputs -->
+            <ItemsControl ItemsSource="{Binding Inputs}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:AsioInputViewModel">
+                        <Border Margin="0,0,0,18" Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                            <StackPanel Spacing="10">
+                                <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                                <CheckBox Content="Enabled" IsChecked="{Binding Enabled}" />
+                                <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto,Auto">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Driver" />
+                                    <ComboBox
+                                        Grid.Row="0" Grid.Column="1"
+                                        MinWidth="260"
+                                        IsEnabled="{Binding Enabled}"
+                                        ItemsSource="{Binding AvailableDrivers}"
+                                        SelectedItem="{Binding Driver}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Channel" />
+                                    <NumericUpDown
+                                        Grid.Row="1" Grid.Column="1"
+                                        Margin="0,10,0,0"
+                                        Width="130" HorizontalAlignment="Left"
+                                        Increment="1"
+                                        Minimum="{Binding ChannelMin}"
+                                        Maximum="{Binding ChannelMax}"
+                                        Value="{Binding Channel}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Master volume %" />
+                                    <NumericUpDown
+                                        Grid.Row="2" Grid.Column="1"
+                                        Margin="0,10,0,0"
+                                        Width="130" HorizontalAlignment="Left"
+                                        Increment="1"
+                                        Minimum="{Binding VolumePercentMin}"
+                                        Maximum="{Binding VolumePercentMax}"
+                                        Value="{Binding MasterVolumePercent}" />
+                                </Grid>
+                                <CheckBox Content="Software endpoint volume control" IsChecked="{Binding EnableEndpointVolume}" />
+                                <CheckBox Content="Software master volume control" IsChecked="{Binding EnableMasterVolume}" />
+                                <CheckBox Content="Enable ref-count hack" IsChecked="{Binding RefCountHack}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

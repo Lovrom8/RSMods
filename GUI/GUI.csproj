@@ -120,7 +120,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ASIO\GetASIODevices.cs" />
     <Compile Include="ASIO\RsAsioLimits.cs" />
     <Compile Include="Data\GitHubAsset.cs" />
     <Compile Include="Data\GitHubRelease.cs" />

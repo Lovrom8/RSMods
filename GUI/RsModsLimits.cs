@@ -1,64 +1,71 @@
 using System.Windows.Forms;
+using CoreLimits = RSMods.Core.RsModsLimits;
 
 namespace RSMods
 {
+    /// <summary>
+    /// WinForms-facing view over the shared <see cref="CoreLimits"/> ranges. The numeric ranges and
+    /// defaults now live in GUI.Core so the Avalonia frontend clamps identically; this class
+    /// re-exports them so existing WinForms callers stay unchanged and adds the WinForms-only control
+    /// wiring in <see cref="ApplyToUiControls"/>.
+    /// </summary>
     public static class RsModsLimits
     {
-        public const int VolumeIntervalMin = 1;
-        public const int VolumeIntervalMax = 100;
-        public const int VolumeIntervalDefault = 5;
+        public const int VolumeIntervalMin = CoreLimits.VolumeIntervalMin;
+        public const int VolumeIntervalMax = CoreLimits.VolumeIntervalMax;
+        public const int VolumeIntervalDefault = CoreLimits.VolumeIntervalDefault;
 
-        public const int RiffRepeaterSpeedMin = -50;
-        public const int RiffRepeaterSpeedMax = 50;
-        public const int RiffRepeaterSpeedDefault = 2;
+        public const int RiffRepeaterSpeedMin = CoreLimits.RiffRepeaterSpeedMin;
+        public const int RiffRepeaterSpeedMax = CoreLimits.RiffRepeaterSpeedMax;
+        public const int RiffRepeaterSpeedDefault = CoreLimits.RiffRepeaterSpeedDefault;
 
-        public const int NumberOfBackupsMin = 0;
-        public const int NumberOfBackupsMax = 100000;
-        public const int NumberOfBackupsDefault = 50;
+        public const int NumberOfBackupsMin = CoreLimits.NumberOfBackupsMin;
+        public const int NumberOfBackupsMax = CoreLimits.NumberOfBackupsMax;
+        public const int NumberOfBackupsDefault = CoreLimits.NumberOfBackupsDefault;
 
-        public const int OverrideInputVolumeMin = 0;
-        public const int OverrideInputVolumeMax = 100;
-        public const int OverrideInputVolumeDefault = 17;
+        public const int OverrideInputVolumeMin = CoreLimits.OverrideInputVolumeMin;
+        public const int OverrideInputVolumeMax = CoreLimits.OverrideInputVolumeMax;
+        public const int OverrideInputVolumeDefault = CoreLimits.OverrideInputVolumeDefault;
 
-        public const int FontSizeMin = 8;
-        public const int FontSizeMax = 80;
-        public const int FontSizeDefault = 24;
+        public const int FontSizeMin = CoreLimits.FontSizeMin;
+        public const int FontSizeMax = CoreLimits.FontSizeMax;
+        public const int FontSizeDefault = CoreLimits.FontSizeDefault;
 
-        public const int ExtendedRangeTuningMin = -12;
-        public const int ExtendedRangeTuningMax = -2;
-        public const int ExtendedRangeTuningDefault = -5;
+        public const int ExtendedRangeTuningMin = CoreLimits.ExtendedRangeTuningMin;
+        public const int ExtendedRangeTuningMax = CoreLimits.ExtendedRangeTuningMax;
+        public const int ExtendedRangeTuningDefault = CoreLimits.ExtendedRangeTuningDefault;
 
-        public const int MidiTuningOffsetMin = -3;
-        public const int MidiTuningOffsetMax = 12;
-        public const int MidiTuningOffsetDefault = 0;
+        public const int MidiTuningOffsetMin = CoreLimits.MidiTuningOffsetMin;
+        public const int MidiTuningOffsetMax = CoreLimits.MidiTuningOffsetMax;
+        public const int MidiTuningOffsetDefault = CoreLimits.MidiTuningOffsetDefault;
 
-        public const int EnumerateIntervalMsDefault = 5000;
-        public const decimal EnumerateIntervalSecondsMin = 0.1m;
-        public const decimal EnumerateIntervalSecondsMax = 100000m;
-        public const decimal EnumerateIntervalSecondsDefault = 5m;
+        public const int EnumerateIntervalMsDefault = CoreLimits.EnumerateIntervalMsDefault;
+        public const decimal EnumerateIntervalSecondsMin = CoreLimits.EnumerateIntervalSecondsMin;
+        public const decimal EnumerateIntervalSecondsMax = CoreLimits.EnumerateIntervalSecondsMax;
+        public const decimal EnumerateIntervalSecondsDefault = CoreLimits.EnumerateIntervalSecondsDefault;
 
-        public const int LoopingLeadUpMsDefault = 0;
-        public const decimal LoopingLeadUpSecondsMin = 0m;
-        public const decimal LoopingLeadUpSecondsMax = 5m;
-        public const decimal LoopingLeadUpSecondsDefault = 0m;
+        public const int LoopingLeadUpMsDefault = CoreLimits.LoopingLeadUpMsDefault;
+        public const decimal LoopingLeadUpSecondsMin = CoreLimits.LoopingLeadUpSecondsMin;
+        public const decimal LoopingLeadUpSecondsMax = CoreLimits.LoopingLeadUpSecondsMax;
+        public const decimal LoopingLeadUpSecondsDefault = CoreLimits.LoopingLeadUpSecondsDefault;
 
-        public const int RewindByMsDefault = 5000;
-        public const decimal RewindBySecondsMin = 0m;
-        public const decimal RewindBySecondsMax = 90m;
-        public const decimal RewindBySecondsDefault = 5m;
+        public const int RewindByMsDefault = CoreLimits.RewindByMsDefault;
+        public const decimal RewindBySecondsMin = CoreLimits.RewindBySecondsMin;
+        public const decimal RewindBySecondsMax = CoreLimits.RewindBySecondsMax;
+        public const decimal RewindBySecondsDefault = CoreLimits.RewindBySecondsDefault;
 
-        public const int RewindLeadupMsDefault = 2000;
-        public const decimal RewindLeadupSecondsMin = 0m;
-        public const decimal RewindLeadupSecondsMax = 90m;
-        public const decimal RewindLeadupSecondsDefault = 2m;
+        public const int RewindLeadupMsDefault = CoreLimits.RewindLeadupMsDefault;
+        public const decimal RewindLeadupSecondsMin = CoreLimits.RewindLeadupSecondsMin;
+        public const decimal RewindLeadupSecondsMax = CoreLimits.RewindLeadupSecondsMax;
+        public const decimal RewindLeadupSecondsDefault = CoreLimits.RewindLeadupSecondsDefault;
 
-        public const int NspTimerMsDefault = 10000;
-        public const decimal NspTimerSecondsMin = 2m;
-        public const decimal NspTimerSecondsMax = 60m;
-        public const decimal NspTimerSecondsDefault = 10m;
+        public const int NspTimerMsDefault = CoreLimits.NspTimerMsDefault;
+        public const decimal NspTimerSecondsMin = CoreLimits.NspTimerSecondsMin;
+        public const decimal NspTimerSecondsMax = CoreLimits.NspTimerSecondsMax;
+        public const decimal NspTimerSecondsDefault = CoreLimits.NspTimerSecondsDefault;
 
-        public const int TuningPedalMin = 1;
-        public const int TuningPedalMax = 4;
+        public const int TuningPedalMin = CoreLimits.TuningPedalMin;
+        public const int TuningPedalMax = CoreLimits.TuningPedalMax;
 
         public static void ApplyToUiControls(
             NumericUpDown volumeInterval,
@@ -108,11 +115,11 @@ namespace RSMods
             }
         }
 
-        public static int ExtendedRangeTuningToListIndex(int tuning) => (tuning * -1) - 2;
+        public static int ExtendedRangeTuningToListIndex(int tuning) => CoreLimits.ExtendedRangeTuningToListIndex(tuning);
 
-        public static int ListIndexToExtendedRangeTuning(int index) => (index * -1) - 2;
+        public static int ListIndexToExtendedRangeTuning(int index) => CoreLimits.ListIndexToExtendedRangeTuning(index);
 
-        public static int MidiOffsetToListIndex(int offset) => offset + 3;
+        public static int MidiOffsetToListIndex(int offset) => CoreLimits.MidiOffsetToListIndex(offset);
 
         private static void ConfigureNumeric(NumericUpDown control, decimal min, decimal max, decimal defaultValue)
         {

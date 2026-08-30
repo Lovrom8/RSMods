@@ -1,0 +1,93 @@
+<UserControl
+    x:Class="RSMods.Views.ColorsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:conv="clr-namespace:RSMods.Converters"
+    x:DataType="vm:ColorsViewModel">
+
+    <UserControl.Resources>
+        <!-- One colour cell: label, live preview, and an editable 6-digit hex value. -->
+        <DataTemplate x:Key="SwatchTemplate" x:DataType="vm:ColorSwatchViewModel">
+            <StackPanel Margin="0,0,0,8" Orientation="Horizontal" Spacing="10">
+                <TextBlock Width="110" VerticalAlignment="Center" Text="{Binding Label}" />
+                <Border
+                    Width="44" Height="26"
+                    BorderBrush="#4A5361" BorderThickness="1" CornerRadius="4"
+                    Background="{Binding Hex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
+                <TextBox Width="120" Watermark="RRGGBB" Text="{Binding Hex}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Custom Colors" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="String, note, and highway colours. Enter a 6-digit hex value (e.g. FF4F5A); the swatch previews it. Saving writes back to RSMods.ini, and only the colours you change are written." />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Command="{Binding RevertCommand}" Content="Revert" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- String colours -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="String colours" />
+                    <CheckBox Content="Use custom string colours" IsChecked="{Binding UseCustomStringColors}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="10" IsVisible="{Binding ShowStringColors}">
+                        <CheckBox Content="Show colour-blind palette" IsChecked="{Binding StringColorblindPalette}" />
+                        <ItemsControl
+                            IsVisible="{Binding !StringColorblindPalette}"
+                            ItemsSource="{Binding StringColorsNormal}"
+                            ItemTemplate="{StaticResource SwatchTemplate}" />
+                        <ItemsControl
+                            IsVisible="{Binding StringColorblindPalette}"
+                            ItemsSource="{Binding StringColorsColorblind}"
+                            ItemTemplate="{StaticResource SwatchTemplate}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Note colours -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Note colours" />
+                    <CheckBox Content="Use separate note colours" IsChecked="{Binding UseSeparateNoteColors}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="10" IsVisible="{Binding ShowNoteColors}">
+                        <CheckBox Content="Use Rocksmith's note colours" IsChecked="{Binding UseRocksmithNoteColors}" />
+                        <StackPanel Spacing="10" IsVisible="{Binding ShowNoteSwatches}">
+                            <CheckBox Content="Show colour-blind palette" IsChecked="{Binding NoteColorblindPalette}" />
+                            <ItemsControl
+                                IsVisible="{Binding !NoteColorblindPalette}"
+                                ItemsSource="{Binding NoteColorsNormal}"
+                                ItemTemplate="{StaticResource SwatchTemplate}" />
+                            <ItemsControl
+                                IsVisible="{Binding NoteColorblindPalette}"
+                                ItemsSource="{Binding NoteColorsColorblind}"
+                                ItemTemplate="{StaticResource SwatchTemplate}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Highway colours -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Highway colours" />
+                    <CheckBox Content="Use custom highway colours" IsChecked="{Binding UseCustomHighwayColors}" />
+                    <ItemsControl
+                        Margin="24,0,0,0"
+                        IsVisible="{Binding ShowHighwayColors}"
+                        ItemsSource="{Binding HighwaySwatches}"
+                        ItemTemplate="{StaticResource SwatchTemplate}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

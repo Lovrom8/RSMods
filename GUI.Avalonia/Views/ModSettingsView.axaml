@@ -1,0 +1,544 @@
+<UserControl
+    x:Class="RSMods.Views.ModSettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:ModSettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Mod Settings" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="A first slice of the mod settings. Editing a value marks the page unsaved; Save writes back to RSMods.ini while preserving comments and unknown entries." />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Command="{Binding RevertCommand}" Content="Revert" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- Toggles -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="SemiBold" Text="Toggles" />
+                    <CheckBox Content="Toggle 3D loft" IsChecked="{Binding ToggleLoft}" />
+                    <CheckBox Content="Show song timer" IsChecked="{Binding ShowSongTimer}" />
+                    <CheckBox Content="Rainbow strings" IsChecked="{Binding RainbowStrings}" />
+                    <CheckBox Content="Rainbow notes" IsChecked="{Binding RainbowNotes}" />
+                    <CheckBox Content="Fretless mode" IsChecked="{Binding Fretless}" />
+                    <CheckBox Content="Skyline" IsChecked="{Binding Skyline}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Modes -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Modes" />
+                    <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto" VerticalAlignment="Center">
+                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Force re-enumeration" />
+                        <ComboBox
+                            Grid.Row="0" Grid.Column="1"
+                            MinWidth="200"
+                            ItemsSource="{Binding EnumerationModes}"
+                            SelectedItem="{Binding ForceReEnumeration}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" VerticalAlignment="Center" Text="Toggle loft when" />
+                        <ComboBox
+                            Grid.Row="1" Grid.Column="1"
+                            Margin="0,10,0,0"
+                            MinWidth="200"
+                            ItemsSource="{Binding LoftModes}"
+                            SelectedItem="{Binding ToggleLoftWhen}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Riff Repeater -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Riff Repeater" />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Width="220" VerticalAlignment="Center" Text="Riff Repeater speed step" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="1"
+                            Minimum="{Binding RiffRepeaterSpeedMin}"
+                            Maximum="{Binding RiffRepeaterSpeedMax}"
+                            Value="{Binding RiffRepeaterSpeed}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- On-screen text font -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="On-screen text font" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="The font RSMods uses for any text it draws in game, such as the current-note display." />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Font" />
+                        <ComboBox
+                            MinWidth="260"
+                            ItemsSource="{Binding AvailableFonts}"
+                            SelectedItem="{Binding OnScreenFont}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Size" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="1"
+                            Minimum="{Binding FontSizeMin}"
+                            Maximum="{Binding FontSizeMax}"
+                            Value="{Binding OnScreenFontSize}" />
+                    </StackPanel>
+                    <Border Padding="12" Background="#181B20" CornerRadius="4">
+                        <TextBlock
+                            FontFamily="{Binding OnScreenFontPreview}"
+                            FontSize="22"
+                            Text="ABCabc 0123 — the quick brown fox" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Playback & timing -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Playback &amp; timing" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Durations are shown in seconds. Each numeric field applies only while its toggle is on." />
+
+                    <!-- Re-enumeration interval (gated by the Force re-enumeration mode above being non-Off) -->
+                    <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowReEnumerationInterval}">
+                        <TextBlock Width="220" VerticalAlignment="Center" Text="Re-enumerate every (seconds)" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="0.5" FormatString="0.###"
+                            Minimum="{Binding ReEnumerationIntervalMin}"
+                            Maximum="{Binding ReEnumerationIntervalMax}"
+                            Value="{Binding ReEnumerationIntervalSeconds}" />
+                    </StackPanel>
+
+                    <!-- Rewind -->
+                    <CheckBox Content="Allow rewind" IsChecked="{Binding AllowRewind}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="8" IsVisible="{Binding ShowRewindSettings}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="196" VerticalAlignment="Center" Text="Rewind by (seconds)" />
+                            <NumericUpDown
+                                MinWidth="200" HorizontalAlignment="Left"
+                                Increment="0.25" FormatString="0.###"
+                                Minimum="{Binding RewindByMin}"
+                                Maximum="{Binding RewindByMax}"
+                                Value="{Binding RewindBySeconds}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="196" VerticalAlignment="Center" Text="Rewind lead-up (seconds)" />
+                            <NumericUpDown
+                                MinWidth="200" HorizontalAlignment="Left"
+                                Increment="0.25" FormatString="0.###"
+                                Minimum="{Binding RewindLeadupMin}"
+                                Maximum="{Binding RewindLeadupMax}"
+                                Value="{Binding RewindLeadupSeconds}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Looping -->
+                    <CheckBox Content="Allow looping" IsChecked="{Binding AllowLooping}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowLoopingLeadUp}">
+                        <TextBlock Width="196" VerticalAlignment="Center" Text="Looping lead-up (seconds)" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="0.05" FormatString="0.###"
+                            Minimum="{Binding LoopingLeadUpMin}"
+                            Maximum="{Binding LoopingLeadUpMax}"
+                            Value="{Binding LoopingLeadUpSeconds}" />
+                    </StackPanel>
+
+                    <!-- Custom NSP timer -->
+                    <CheckBox Content="Use custom NSP timer" IsChecked="{Binding UseCustomNspTimer}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowNspTimer}">
+                        <TextBlock Width="196" VerticalAlignment="Center" Text="NSP time limit (seconds)" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="0.5" FormatString="0.###"
+                            Minimum="{Binding NspTimerMin}"
+                            Maximum="{Binding NspTimerMax}"
+                            Value="{Binding NspTimeLimitSeconds}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Visual toggles -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="SemiBold" Text="Visual toggles" />
+
+                    <CheckBox Content="Green screen wall" IsChecked="{Binding GreenScreenWall}" />
+                    <CheckBox Content="Remove inlays" IsChecked="{Binding RemoveInlays}" />
+                    <CheckBox Content="Remove lane markers" IsChecked="{Binding RemoveLaneMarkers}" />
+                    <CheckBox Content="Screenshot scores" IsChecked="{Binding ScreenShotScores}" />
+                    <CheckBox Content="Show current note on screen" IsChecked="{Binding ShowCurrentNoteOnScreen}" />
+
+                    <!-- Remove headstock + when -->
+                    <CheckBox Content="Remove headstock" IsChecked="{Binding RemoveHeadstock}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowHeadstockWhen}">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Remove when" />
+                        <ComboBox
+                            MinWidth="200"
+                            ItemsSource="{Binding HeadstockModes}"
+                            SelectedItem="{Binding RemoveHeadstockWhen}" />
+                    </StackPanel>
+
+                    <!-- Remove lyrics + when -->
+                    <CheckBox Content="Remove lyrics" IsChecked="{Binding RemoveLyrics}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowLyricsWhen}">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Remove when" />
+                        <ComboBox
+                            MinWidth="200"
+                            ItemsSource="{Binding LyricsModes}"
+                            SelectedItem="{Binding RemoveLyricsWhen}" />
+                    </StackPanel>
+
+                    <!-- Skyline "when" (the Skyline toggle itself lives in the Toggles section above) -->
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowSkylineWhen}">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Skyline off when" />
+                        <ComboBox
+                            MinWidth="200"
+                            ItemsSource="{Binding SkylineModes}"
+                            SelectedItem="{Binding ToggleSkylineWhen}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Audio -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="SemiBold" Text="Audio" />
+
+                    <CheckBox Content="Control game volume" IsChecked="{Binding ControlGameVolume}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowVolumeInterval}">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Volume step" />
+                        <NumericUpDown
+                            MinWidth="200" HorizontalAlignment="Left"
+                            Increment="1"
+                            Minimum="{Binding VolumeIntervalMin}"
+                            Maximum="{Binding VolumeIntervalMax}"
+                            Value="{Binding VolumeControlInterval}" />
+                    </StackPanel>
+
+                    <CheckBox Content="Allow audio in background" IsChecked="{Binding AllowAudioInBackground}" />
+                    <CheckBox Content="Linear Riff Repeater" IsChecked="{Binding LinearRiffRepeater}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Fixes & misc -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock FontWeight="SemiBold" Text="Fixes &amp; misc" />
+
+                    <CheckBox Content="Remove song previews" IsChecked="{Binding RemoveSongPreviews}" />
+                    <CheckBox Content="Fix bass tuning" IsChecked="{Binding FixBassTuning}" />
+                    <CheckBox Content="Fix Oculus crash" IsChecked="{Binding FixOculusCrash}" />
+                    <CheckBox Content="Prevent buggy tones" IsChecked="{Binding PreventBuggyTones}" />
+                    <CheckBox Content="Show current accuracy" IsChecked="{Binding ShowCurrentAccuracy}" />
+                    <CheckBox Content="Prevent pause mid-song" IsChecked="{Binding PreventPauseMidSong}" />
+                    <CheckBox Content="Remove fingerprints" IsChecked="{Binding RemoveFingerprints}" />
+                    <CheckBox Content="Bypass 2+ RTC message box" IsChecked="{Binding BypassTwoRtcMessageBox}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Extended range -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Extended range" />
+                    <CheckBox Content="Enable extended range" IsChecked="{Binding ExtendedRange}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="10" IsVisible="{Binding ShowExtendedRangeDetails}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="120" VerticalAlignment="Center" Text="Lowest tuning" />
+                            <ComboBox
+                                MinWidth="200"
+                                ItemsSource="{Binding ExtendedRangeTunings}"
+                                SelectedItem="{Binding ExtendedRangeTuning}" />
+                        </StackPanel>
+                        <CheckBox Content="Drop tuning" IsChecked="{Binding ExtendedRangeDropTuning}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Secondary monitor -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Secondary monitor" />
+                    <CheckBox Content="Move game to a secondary monitor" IsChecked="{Binding SecondaryMonitor}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="8" IsVisible="{Binding ShowSecondaryMonitorPosition}">
+                        <TextBlock
+                            FontSize="12"
+                            Opacity="0.7"
+                            TextWrapping="Wrap"
+                            Text="Drag this window onto the monitor and spot you want the game to start on, then capture its position." />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button
+                                Content="Set to current window position"
+                                Command="{Binding CaptureSecondaryMonitorPositionCommand}"
+                                CommandParameter="{Binding $parent[Window]}" />
+                            <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding SecondaryMonitorPositionText}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Alternative output sample rate -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Alternative output sample rate" />
+                    <CheckBox Content="Use alternative output sample rate" IsChecked="{Binding UseAlternativeOutputSampleRate}" />
+                    <StackPanel Margin="24,0,0,0" Orientation="Horizontal" Spacing="12" IsVisible="{Binding ShowSampleRate}">
+                        <TextBlock Width="120" VerticalAlignment="Center" Text="Sample rate (Hz)" />
+                        <ComboBox
+                            MinWidth="200"
+                            ItemsSource="{Binding OutputSampleRates}"
+                            SelectedItem="{Binding AlternativeOutputSampleRate}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Override input volume -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Override input volume" />
+                    <CheckBox Content="Override a capture device's input volume" IsChecked="{Binding OverrideInputVolumeEnabled}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="8" IsVisible="{Binding ShowOverrideInputVolume}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="120" VerticalAlignment="Center" Text="Input device" />
+                            <ComboBox
+                                MinWidth="260"
+                                ItemsSource="{Binding AvailableInputDevices}"
+                                SelectedItem="{Binding SelectedInputDevice}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="120" VerticalAlignment="Center" Text="Input volume" />
+                            <NumericUpDown
+                                MinWidth="200" HorizontalAlignment="Left"
+                                Increment="1"
+                                Minimum="{Binding OverrideInputVolumeMin}"
+                                Maximum="{Binding OverrideInputVolumeMax}"
+                                Value="{Binding OverrideInputVolume}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Profile auto-load -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Profile auto-load" />
+                    <CheckBox Content="Load a profile on game boot" IsChecked="{Binding AutoLoadProfile}" />
+                    <StackPanel Margin="24,0,0,0" Spacing="8" IsVisible="{Binding ShowProfileAutoLoad}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="120" VerticalAlignment="Center" Text="Profile" />
+                            <ComboBox
+                                MinWidth="220"
+                                ItemsSource="{Binding AvailableProfiles}"
+                                SelectedItem="{Binding SelectedProfile}" />
+                            <Button Content="Clear" Command="{Binding ClearProfileSelectionCommand}" />
+                        </StackPanel>
+                        <TextBlock
+                            FontSize="12"
+                            Opacity="0.7"
+                            TextWrapping="Wrap"
+                            Text="The list shows the Rocksmith profiles found in your save folder." />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- MIDI auto-tune & tuning pedal -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="MIDI auto-tune &amp; tuning pedal" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="If you have a MIDI-controllable drop-tuning pedal, RSMods can drive it to keep you in each song's tuning." />
+                    <CheckBox Content="Auto-tune for song" IsChecked="{Binding AutoTuneForSong}" />
+
+                    <StackPanel Margin="24,0,0,0" Spacing="12" IsVisible="{Binding ShowAutoTuneDetails}">
+                        <!-- MIDI out device (the pedal) -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="150" VerticalAlignment="Center" Text="MIDI out (pedal)" />
+                            <ComboBox
+                                MinWidth="280"
+                                ItemsSource="{Binding AvailableMidiOutDevices}"
+                                SelectedItem="{Binding SelectedMidiOutDevice}" />
+                        </StackPanel>
+
+                        <!-- Tuning pedal model + chords mode -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="150" VerticalAlignment="Center" Text="Tuning pedal" />
+                            <ComboBox
+                                MinWidth="200"
+                                ItemsSource="{Binding TuningPedalDevices}"
+                                SelectedItem="{Binding TuningPedal}" />
+                        </StackPanel>
+                        <CheckBox
+                            Margin="162,0,0,0"
+                            Content="Chords mode"
+                            IsVisible="{Binding ShowChordsMode}"
+                            IsChecked="{Binding ChordsMode}" />
+
+                        <!-- Target tuning offset -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="150" VerticalAlignment="Center" Text="Stay in tuning" />
+                            <ComboBox
+                                MinWidth="280"
+                                ItemsSource="{Binding AutoTuneOffsets}"
+                                SelectedItem="{Binding AutoTuneOffset}" />
+                        </StackPanel>
+
+                        <!-- MIDI in device (optional) -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="150" VerticalAlignment="Center" Text="MIDI in (optional)" />
+                            <ComboBox
+                                MinWidth="280"
+                                ItemsSource="{Binding AvailableMidiInDevices}"
+                                SelectedItem="{Binding SelectedMidiInDevice}" />
+                        </StackPanel>
+
+                        <!-- When to trigger -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Width="150" VerticalAlignment="Center" Text="Trigger when" />
+                            <ComboBox
+                                MinWidth="200"
+                                ItemsSource="{Binding AutoTuneWhenModes}"
+                                SelectedItem="{Binding AutoTuneForSongWhen}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Guitar Speak -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Guitar Speak" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Map guitar notes to key presses so you can drive menus with your guitar. Pick a note and octave, then assign it to the selected key press." />
+                    <CheckBox Content="Enable Guitar Speak" IsChecked="{Binding GuitarSpeakEnabled}" />
+
+                    <StackPanel Margin="24,0,0,0" Spacing="12" IsVisible="{Binding ShowGuitarSpeak}">
+                        <CheckBox Content="Active while tuning" IsChecked="{Binding GuitarSpeakWhileTuning}" />
+
+                        <!-- Mapping editor -->
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock FontSize="12" Opacity="0.7" Text="Note" />
+                                <ComboBox
+                                    MinWidth="80"
+                                    ItemsSource="{Binding GuitarSpeakNotes}"
+                                    SelectedItem="{Binding SelectedGuitarSpeakNote}" />
+                            </StackPanel>
+                            <StackPanel Spacing="4">
+                                <TextBlock FontSize="12" Opacity="0.7" Text="Octave" />
+                                <ComboBox
+                                    MinWidth="80"
+                                    ItemsSource="{Binding GuitarSpeakOctaves}"
+                                    SelectedItem="{Binding SelectedGuitarSpeakOctave}" />
+                            </StackPanel>
+                            <Button
+                                VerticalAlignment="Bottom"
+                                Content="Assign to selected key"
+                                Command="{Binding AssignGuitarSpeakCommand}" />
+                        </StackPanel>
+
+                        <!-- Key-press mappings -->
+                        <TextBlock FontSize="12" Opacity="0.7" Text="Key presses" />
+                        <ListBox
+                            MaxHeight="230"
+                            ItemsSource="{Binding GuitarSpeakMappings}"
+                            SelectedItem="{Binding SelectedGuitarSpeakMapping}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                        <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding NoteDisplay}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button
+                            HorizontalAlignment="Left"
+                            Content="Clear selected mapping"
+                            Command="{Binding ClearGuitarSpeakCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Keybindings -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Keybindings" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Select a bind, then press a key (or middle / side mouse button) in the capture box below its list to assign it. Keys Rocksmith reserves will ask for confirmation." />
+
+                    <Grid ColumnDefinitions="*,16,*">
+                        <!-- Mods -->
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Mods" />
+                            <ListBox
+                                MaxHeight="280"
+                                ItemsSource="{Binding ModKeybinds}"
+                                SelectedItem="{Binding SelectedModKeybind}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:KeybindRowViewModel">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                            <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding KeyDisplay}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBox
+                                x:Name="ModCaptureBox"
+                                IsReadOnly="True"
+                                Watermark="Press a key to assign…" />
+                        </StackPanel>
+
+                        <!-- Audio -->
+                        <StackPanel Grid.Column="2" Spacing="6">
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Audio" />
+                            <ListBox
+                                MaxHeight="280"
+                                ItemsSource="{Binding AudioKeybinds}"
+                                SelectedItem="{Binding SelectedAudioKeybind}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:KeybindRowViewModel">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                            <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding KeyDisplay}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBox
+                                x:Name="AudioCaptureBox"
+                                IsReadOnly="True"
+                                Watermark="Press a key to assign…" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

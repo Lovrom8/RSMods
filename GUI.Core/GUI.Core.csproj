@@ -24,6 +24,11 @@
     <!-- GenUtil's Steam/Rocksmith path detection reads the Windows registry. On net48 these types are
          in-framework; on net8.0 they come from this OOB package (Windows-only at runtime). -->
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <!-- Frontend-neutral capture-device enumeration (RSMods.Audio.InputDevices) uses the WASAPI
+         core-audio API. Only the WASAPI sub-package is referenced (not the NAudio meta-package, which
+         pulls in WinForms and would force a -windows TFM); this keeps GUI.Core UI-framework-free.
+         Same 2.0.0 the WinForms GUI already consumes. Windows-only at runtime. -->
+    <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,45 +1,55 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RSMods.Core;
 using RSMods.Services;
 
 namespace RSMods.ViewModels;
 
 internal sealed partial class MainWindowViewModel : ObservableObject
 {
-    private readonly IDialogService _dialogs;
     private readonly StartupService _startup;
+    private readonly SettingsWarningPresenter _warnings;
+    private readonly ThemeService _theme;
     private bool _initialized;
 
-    [ObservableProperty]
-    private string _statusMessage = "Resolving your Rocksmith 2014 install…";
+    public StatusViewModel Status { get; }
+    public ModSettingsViewModel ModSettings { get; }
+    public ColorsViewModel Colors { get; }
+    public RocksmithSettingsViewModel Rocksmith { get; }
+    public AsioSettingsViewModel Asio { get; }
+    public ThemesViewModel Themes { get; }
 
     [ObservableProperty]
-    private string? _rocksmithFolder;
+    private ObservableObject _currentPage;
 
     [ObservableProperty]
-    private string? _savePath;
+    [NotifyCanExecuteChangedFor(nameof(ShowModSettingsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowColorsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowRocksmithCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowAsioCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowThemesCommand))]
+    private bool _sectionsEnabled;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SavePathDisplay))]
-    private bool _savePathAvailable;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SectionsEnabled))]
-    private bool _isReady;
-
-    public bool SectionsEnabled => IsReady;
-
-    public string SavePathDisplay => SavePathAvailable
-        ? SavePath!
-        : "No save folder set. Profile Edits will stay disabled until one is selected.";
-
-    public string CoreAssembly => typeof(RsModsSettings).Assembly.GetName().Name ?? "GUI.Core";
-
-    public MainWindowViewModel(IDialogService dialogs, StartupService startup)
+    public MainWindowViewModel(
+        StartupService startup,
+        SettingsWarningPresenter warnings,
+        ThemeService theme,
+        StatusViewModel status,
+        ModSettingsViewModel modSettings,
+        ColorsViewModel colors,
+        RocksmithSettingsViewModel rocksmith,
+        AsioSettingsViewModel asio,
+        ThemesViewModel themes)
     {
-        _dialogs = dialogs;
         _startup = startup;
+        _warnings = warnings;
+        _theme = theme;
+        Status = status;
+        ModSettings = modSettings;
+        Colors = colors;
+        Rocksmith = rocksmith;
+        Asio = asio;
+        Themes = themes;
+        _currentPage = status;
     }
 
     /// <summary>
@@ -54,55 +64,62 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         var result = await _startup.RunAsync();
         if (!result.Completed)
         {
-            // The resolver already requested shutdown; leave the shell in its resolving state.
-            StatusMessage = "Rocksmith 2014 could not be located. Closing…";
+            // The resolver already requested shutdown; leave the status page in its resolving state.
+            Status.StatusMessage = "Rocksmith 2014 could not be located. Closing…";
             return;
         }
 
-        RocksmithFolder = result.RocksmithFolder;
-        SavePath = result.SavePath;
-        SavePathAvailable = result.SavePathAvailable;
-        IsReady = true;
-        StatusMessage = "Startup complete. Settings loaded and ready to configure.";
+        // Settings are loaded now, so the saved appearance can replace the default theme.
+        _theme.ApplyFromSettings();
 
-        await ReportWarningsAsync(result);
-    }
+        Status.RocksmithFolder = result.RocksmithFolder;
+        Status.SavePath = result.SavePath;
+        Status.SavePathAvailable = result.SavePathAvailable;
+        Status.IsReady = true;
+        Status.StatusMessage = "Startup complete. Settings loaded and ready to configure.";
 
-    private async Task ReportWarningsAsync(StartupResult result)
-    {
-        if (result.Warnings.Count == 0)
-            return;
+        // Settings are loaded now, so the settings screens can build their snapshots.
+        ModSettings.Load();
+        SectionsEnabled = true;
 
-        int shown = System.Math.Min(result.Warnings.Count, 10);
-        var lines = new System.Text.StringBuilder();
-        lines.AppendLine(
-            $"{result.Warnings.Count} invalid setting(s) in RSMods.ini were reset to their defaults:");
-        lines.AppendLine();
-
-        for (int i = 0; i < shown; i++)
-        {
-            var warning = result.Warnings[i];
-            lines.AppendLine($"• {warning.Section} {warning.Key}: \"{warning.RawValue}\" → {warning.DefaultValue}");
-        }
-
-        if (result.Warnings.Count > shown)
-            lines.AppendLine($"… and {result.Warnings.Count - shown} more.");
-
-        await _dialogs.ShowInfoAsync(lines.ToString().TrimEnd(), "Some settings were reset");
+        await _warnings.PresentAsync(result.Warnings);
     }
 
     [RelayCommand]
-    private async Task SetSavePathAsync()
+    private void ShowStatus() => CurrentPage = Status;
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private void ShowModSettings() => CurrentPage = ModSettings;
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowColorsAsync()
     {
-        // Force the prompt even if a previous run recorded that the user declined.
-        string picked = await RSLocationResolver.ResolveSaveFolderAsync(_dialogs, forcePrompt: true);
+        // Colours live in the already-loaded RSMods.ini store; the snapshot is built on first navigation.
+        await Colors.InitializeAsync();
+        CurrentPage = Colors;
+    }
 
-        SavePath = picked;
-        SavePathAvailable = !string.IsNullOrEmpty(picked);
-        Data.Constants.SaveBaseSettings();
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowRocksmithAsync()
+    {
+        // Rocksmith.ini is loaded lazily on first navigation; presents its own validation warnings.
+        await Rocksmith.InitializeAsync();
+        CurrentPage = Rocksmith;
+    }
 
-        StatusMessage = SavePathAvailable
-            ? "Save folder updated."
-            : "Save folder selection cancelled.";
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowAsioAsync()
+    {
+        // RS_ASIO.ini + device enumeration are loaded lazily on first navigation.
+        await Asio.InitializeAsync();
+        CurrentPage = Asio;
+    }
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowThemesAsync()
+    {
+        // Appearance reads the already-loaded GUI settings; the snapshot is built on first navigation.
+        await Themes.InitializeAsync();
+        CurrentPage = Themes;
     }
 }

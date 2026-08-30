@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using Microsoft.Win32;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace RSMods.ASIO
 {
+    /// <summary>
+    /// Enumeration of installed ASIO drivers from the Windows registry.
+    /// Detection is best-effort and returns an empty list on failure.
+    /// </summary>
     public static class Devices
     {
         private const string AsioX86RegistryPath = "Software\\WOW6432Node\\ASIO";
@@ -29,9 +32,9 @@ namespace RSMods.ASIO
                     }
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                MessageBox.Show($"ASIO Error: {ex.Message}", "ASIO Error");
+                // Best-effort detection
             }
 
             // Return the devices, but remove any duplicate entries.
@@ -64,22 +67,21 @@ namespace RSMods.ASIO
             return availableDevices;
         }
 
-        public struct DriverInfo
+        public struct DriverInfo : IEquatable<DriverInfo>
         {
             public string clsID;
             public string deviceName;
             public string deviceDescription;
 
-            public override readonly bool Equals(object obj)
-            {
-                if (obj == null)
-                    return false;
+            public override readonly bool Equals(object obj) => obj is DriverInfo other && Equals(other);
 
-                DriverInfo driverInfo = (DriverInfo)obj;
-                return deviceName == driverInfo.deviceName;
-            }
+            public readonly bool Equals(DriverInfo other) => deviceName == other.deviceName;
 
-            public override readonly int GetHashCode() => deviceName.GetHashCode();
+            public override readonly int GetHashCode() => (deviceName?.GetHashCode()) ?? 0;
+
+            public static bool operator ==(DriverInfo left, DriverInfo right) => left.Equals(right);
+
+            public static bool operator !=(DriverInfo left, DriverInfo right) => !left.Equals(right);
         }
     }
 }

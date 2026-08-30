@@ -1,49 +1,47 @@
 using System.Windows.Forms;
+using CoreLimits = RSMods.Core.RsAsioLimits;
 
-namespace RSMods.ASIO
+// Namespace RSMods (not RSMods.ASIO) so unqualified `RsAsioLimits` in the WinForms UI resolves to this
+// re-export via the enclosing namespace, winning over the using-imported RSMods.Core.RsAsioLimits.
+namespace RSMods
 {
+    /// <summary>
+    /// WinForms-facing view over the shared <see cref="CoreLimits"/> RS_ASIO ranges. The ranges,
+    /// defaults, buffer-mode constants, and validation helpers now live in GUI.Core so the Avalonia
+    /// frontend behaves identically; this class re-exports them (existing WinForms callers unchanged)
+    /// and keeps the WinForms-only control wiring in <see cref="ApplyToUiControls"/>.
+    /// </summary>
     public static class RsAsioLimits
     {
-        public const int CustomBufferSizeMin = 1;
-        public const int CustomBufferSizeMax = 65536;
-        public const int CustomBufferSizeDefault = 48;
+        public const int CustomBufferSizeMin = CoreLimits.CustomBufferSizeMin;
+        public const int CustomBufferSizeMax = CoreLimits.CustomBufferSizeMax;
+        public const int CustomBufferSizeDefault = CoreLimits.CustomBufferSizeDefault;
 
-        public const int ChannelMin = 0;
-        public const int ChannelMax = 255;
-        public const int ChannelDefault = 0;
-        public const int OutputBaseChannelDefault = 0;
-        public const int OutputAltBaseChannelDefault = 0;
-        public const int Input0ChannelDefault = 0;
-        public const int Input1ChannelDefault = 1;
-        public const int InputMicChannelDefault = 1;
+        public const int ChannelMin = CoreLimits.ChannelMin;
+        public const int ChannelMax = CoreLimits.ChannelMax;
+        public const int ChannelDefault = CoreLimits.ChannelDefault;
+        public const int OutputBaseChannelDefault = CoreLimits.OutputBaseChannelDefault;
+        public const int OutputAltBaseChannelDefault = CoreLimits.OutputAltBaseChannelDefault;
+        public const int Input0ChannelDefault = CoreLimits.Input0ChannelDefault;
+        public const int Input1ChannelDefault = CoreLimits.Input1ChannelDefault;
+        public const int InputMicChannelDefault = CoreLimits.InputMicChannelDefault;
 
-        public const int VolumePercentMin = 0;
-        public const int VolumePercentMax = 1000;
-        public const int VolumePercentDefault = 100;
+        public const int VolumePercentMin = CoreLimits.VolumePercentMin;
+        public const int VolumePercentMax = CoreLimits.VolumePercentMax;
+        public const int VolumePercentDefault = CoreLimits.VolumePercentDefault;
 
-        public const string BufferModeDriver = "driver";
-        public const string BufferModeHost = "host";
-        public const string BufferModeCustom = "custom";
+        public const string BufferModeDriver = CoreLimits.BufferModeDriver;
+        public const string BufferModeHost = CoreLimits.BufferModeHost;
+        public const string BufferModeCustom = CoreLimits.BufferModeCustom;
 
-        public const bool EnableWasapiOutputsDefault = false;
-        public const bool EnableWasapiInputsDefault = false;
-        public const bool EnableAsioDefault = true;
-        public const bool EnableSoftwareVolumeControlDefault = true;
+        public const bool EnableWasapiOutputsDefault = CoreLimits.EnableWasapiOutputsDefault;
+        public const bool EnableWasapiInputsDefault = CoreLimits.EnableWasapiInputsDefault;
+        public const bool EnableAsioDefault = CoreLimits.EnableAsioDefault;
+        public const bool EnableSoftwareVolumeControlDefault = CoreLimits.EnableSoftwareVolumeControlDefault;
 
-        public static bool IsValidBufferMode(string mode)
-        {
-            if (string.IsNullOrWhiteSpace(mode))
-                return false;
-            string m = mode.Trim().ToLowerInvariant();
-            return m == BufferModeDriver || m == BufferModeHost || m == BufferModeCustom;
-        }
+        public static bool IsValidBufferMode(string mode) => CoreLimits.IsValidBufferMode(mode);
 
-        public static bool IsWasapiOutputsPromptMode(string rawValue)
-        {
-            if (string.IsNullOrWhiteSpace(rawValue))
-                return false;
-            return int.TryParse(rawValue.Trim(), out int v) && v < 0;
-        }
+        public static bool IsWasapiOutputsPromptMode(string rawValue) => CoreLimits.IsWasapiOutputsPromptMode(rawValue);
 
         public static void ApplyToUiControls(
             NumericUpDown customBufferSize,

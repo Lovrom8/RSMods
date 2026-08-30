@@ -34,6 +34,9 @@ namespace RSMods
         private readonly Dictionary<string, Dictionary<string, string>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string[]> _sectionComments = new(StringComparer.OrdinalIgnoreCase);
 
+        private int _saveSuspendCount;
+        private bool _saveDeferred;
+
         public void Load()
         {
             _data.Clear();
@@ -70,8 +73,41 @@ namespace RSMods
             }
         }
 
+        /// <summary>
+        /// Suspends disk writes until the returned scope is disposed, coalescing a burst of setter-driven
+        /// <see cref="Save"/> calls into a single write on dispose. Callers that set many values at once
+        /// (for example a settings screen persisting its whole snapshot) use this to avoid rewriting the
+        /// file once per property; the default per-set auto-save behaviour is unchanged for callers that
+        /// don't opt in. Scopes nest, and a write only happens if at least one <see cref="Save"/> was
+        /// requested while suspended.
+        /// </summary>
+        public IDisposable SuspendSave()
+        {
+            _saveSuspendCount++;
+            return new SaveScope(this);
+        }
+
+        private void EndSuspendSave()
+        {
+            if (_saveSuspendCount == 0)
+                return;
+
+            _saveSuspendCount--;
+            if (_saveSuspendCount == 0 && _saveDeferred)
+            {
+                _saveDeferred = false;
+                Save();
+            }
+        }
+
         public void Save()
         {
+            if (_saveSuspendCount > 0)
+            {
+                _saveDeferred = true;
+                return;
+            }
+
             try
             {
                 using var sw = new StreamWriter(filePath);
@@ -303,6 +339,21 @@ namespace RSMods
                 rawValue,
                 defaultValue,
                 reason));
+        }
+
+        private sealed class SaveScope : IDisposable
+        {
+            private IniManager _owner;
+
+            public SaveScope(IniManager owner) => _owner = owner;
+
+            public void Dispose()
+            {
+                // Guard against a double dispose ending one scope twice.
+                IniManager owner = _owner;
+                _owner = null;
+                owner?.EndSuspendSave();
+            }
         }
     }
 }

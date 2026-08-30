@@ -47,6 +47,14 @@ namespace RSMods.Rocksmith
 
         public void Save() => _ini.Save();
 
+        /// <summary>
+        /// Coalesces the per-property auto-saves into a single write. Each section setter persists on
+        /// assignment (so a single edit is written immediately for callers that set one value at a time);
+        /// a caller writing many values at once wraps them in this scope so the file is rewritten once on
+        /// dispose instead of once per property.
+        /// </summary>
+        public IDisposable SuspendSave() => _ini.SuspendSave();
+
         public sealed class AudioSettings
         {
             public const int MinLatencyBuffer = 0;
