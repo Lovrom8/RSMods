@@ -127,8 +127,6 @@
     <Compile Include="WinForms\WinFormsAppEnvironment.cs" />
     <Compile Include="Midi\Midi.cs" />
     <Compile Include="Midi\MidiDebug.cs" />
-    <Compile Include="Rocksmith\Soundpacks.cs" />
-    <Compile Include="SetAndForgetMods.cs" />
     <Compile Include="Twitch\EffectServer\EffectMessage.cs" />
     <Compile Include="Twitch\EffectServer\EffectServerTCP.cs" />
     <Compile Include="Twitch\PubSub.cs" />
@@ -208,8 +206,6 @@
     <Compile Include="Twitch\RSModderBot.cs" />
     <Compile Include="Util\MessageBoxManager.cs" />
     <Compile Include="Util\SettingsSanitizer.cs" />
-    <Compile Include="Util\WinMsgUtil.cs" />
-    <Compile Include="Util\ZipUtils.cs" />
     <EmbeddedResource Include="UI.resx">
       <DependentUpon>UI.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -246,18 +242,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Resources\introsequence_original.gfx" />
-    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt" />
-    <EmbeddedResource Include="Resources\tuning.database.json" />
-    <EmbeddedResource Include="Resources\introsequence_max.gfx" />
     <EmbeddedResource Include="Resources\maingame_original.csv" />
-    <EmbeddedResource Include="Resources\maingame.csv" />
-    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json" />
-    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json" />
-    <EmbeddedResource Include="Resources\introsequence_mid.gfx" />
-    <EmbeddedResource Include="Resources\original.rs_soundpack" />
-    <EmbeddedResource Include="Resources\ui_menu_pillar_startup.database.json" />
-    <EmbeddedResource Include="Resources\init.bnk" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

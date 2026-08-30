@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace RSMods.Util
@@ -11,7 +11,7 @@ namespace RSMods.Util
         public int Bottom { get; set; }
     }
 
-    public static class WinMsgUtil // Use WM_COPYDATA message as a means of interprocess communication between the GUI and RS 
+    public static class WinMsgUtil // Use WM_COPYDATA message as a means of interprocess communication between the GUI and RS
     {
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);

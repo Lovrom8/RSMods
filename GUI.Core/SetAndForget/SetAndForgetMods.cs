@@ -10,9 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management;
-using System.Reflection;
-using System.Threading.Tasks;
-using RSMods.Core;
 using RSMods.SetAndForget;
 using RSMods.SetAndForget.Models;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
@@ -22,7 +19,7 @@ namespace RSMods
     public static class SetAndForgetMods
     {
         #region Generic
-        // General PSARC operations 
+        // General PSARC operations
 
         public static void RepackCachePsarc()
         {
@@ -30,7 +27,7 @@ namespace RSMods
                 UnpackCachePsarc();
 
             if (!File.Exists(Path.Combine(Constants.CachePcPath, "sltsv1_aggregategraph.nt")))
-                GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["sltsv1_aggregategraph.nt"]); //NOTE: when adding resources, change Build Action to Embeded Resource
+                GenUtil.ExtractEmbeddedResource(Constants.CachePcPath, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["sltsv1_aggregategraph.nt"]); //NOTE: when adding resources, change Build Action to Embeded Resource
 
             Packer.Pack(Constants.CachePcPath, Constants.CachePsarcPath);
         }
@@ -46,33 +43,21 @@ namespace RSMods
             Packer.Unpack(Constants.CachePsarcPath, Constants.WorkFolder);
         }
 
-        public static async Task<bool> RestoreDefaults(IDialogService dialogs)
+        /// <summary>
+        /// Restores the original cache archive from the backup created during the first unpack.
+        /// Confirmation and result presentation belong to the frontend; returning false means no
+        /// backup was available.
+        /// </summary>
+        public static bool RestoreDefaults()
         {
-            if (!await dialogs.ShowConfirmAsync("Do you wish to restore your cache.psarc to its original state?", "Restore cache.psarc?"))
+            if (!File.Exists(Constants.CacheBackupPath))
                 return false;
 
-            try
-            {
-                if (File.Exists(Constants.CacheBackupPath))
-                {
-                    File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
-                    await dialogs.ShowInfoAsync("Cache backup was restored!", "Backup restored");
-                }
-                else
-                {
-                    await dialogs.ShowErrorAsync("No cache backup found!");
-                }
+            File.Copy(Constants.CacheBackupPath, Constants.CachePsarcPath, true);
+            GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["tuning.database.json"]);
+            //TODO: extract the rest
 
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["tuning.database.json"]);
-                //TODO: extract the rest
-
-                return true;
-            }
-            catch (IOException ioex)
-            {
-                await dialogs.ShowErrorAsync("Problems restoring backup: " + ioex.Message);
-                return false;
-            }
+            return true;
         }
 
         public static void CleanUnpackedCache()
@@ -104,28 +89,28 @@ namespace RSMods
         public static void LoadDefaultFiles()
         {
             if (!File.Exists(Path.Combine(Constants.TuningJSON_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["tuning.database.json"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["tuning.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.IntroGFX_MidPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["introsequence_mid.gfx"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["introsequence_mid.gfx"]);
 
             if (!File.Exists(Path.Combine(Constants.IntroGFX_MaxPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["introsequence_max.gfx"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["introsequence_max.gfx"]);
 
             if (!File.Exists(Path.Combine(Constants.LocalizationCSV_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["maingame.csv"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["maingame.csv"]);
 
             if (!File.Exists(Path.Combine(Constants.ExtendedMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_mission.database.json"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["ui_menu_pillar_mission.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.MainMenuJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_main.database.json"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["ui_menu_pillar_main.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.DirectConnectStartupJson_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["ui_menu_pillar_startup.database.json"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["ui_menu_pillar_startup.database.json"]);
 
             if (!File.Exists(Path.Combine(Constants.WwiseInitBnk_CustomPath)))
-                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["init.bnk"]);
+                GenUtil.ExtractEmbeddedResource(Constants.CustomModsFolder, typeof(SetAndForgetMods).Assembly, "RSMods.Core.Resources", ["init.bnk"]);
         }
         #endregion
         #region Custom Tunings
@@ -170,28 +155,58 @@ namespace RSMods
         #endregion
         #region Tuning Queries
 
-        public static ArrangementTuning ToArrangementTuning(TuningDefinitionInfo tuning)
+        private static SortedDictionary<string, ArrangementTuning> unknownTunings = [];
+
+        internal static ArrangementTuning ToArrangementTuning(TuningDefinitionInfo tuning)
         {
             return TuningService.ToArrangementTuning(tuning);
         }
 
-        public static bool IsTuningStandard(ArrangementTuning t, bool forceBass = false) =>
+        internal static bool IsTuningStandard(ArrangementTuning t, bool forceBass = false) =>
             TuningService.IsStandard(t, forceBass);
 
-        public static bool IsTuningDrop(ArrangementTuning t, bool forceBass = false) =>
+        internal static bool IsTuningDrop(ArrangementTuning t, bool forceBass = false) =>
             TuningService.IsDrop(t, forceBass);
 
-        public static IEnumerable<ArrangementTuning> GetDefinedTunings() =>
+        internal static IEnumerable<ArrangementTuning> GetDefinedTunings() =>
             Tuning.GetDefinedTunings();
 
-        public static SortedDictionary<string, ArrangementTuning> GetUnknownTunings(IEnumerable<SongData> songs)
+        internal static SortedDictionary<string, ArrangementTuning> GetUnknownTunings(IEnumerable<SongData> songs)
         {
             return Tuning.GetUnknownTunings(songs);
         }
 
-        public static List<string> GetSongsWithTuning(IEnumerable<SongData> songs, ArrangementTuning tuning)
+        internal static List<string> GetSongsWithTuning(IEnumerable<SongData> songs, ArrangementTuning tuning)
         {
             return Tuning.GetSongsWithTuning(songs, tuning);
+        }
+
+        public static IReadOnlyList<string> GetUnknownTuningKeys(IReadOnlyList<SongData> songs)
+        {
+            unknownTunings = GetUnknownTunings(songs);
+            return unknownTunings.Keys.ToList();
+        }
+
+        public static TuningStrings GetUnknownTuningStrings(string key)
+        {
+            ArrangementTuning tuning = unknownTunings[key];
+            return new TuningStrings
+            {
+                String0 = tuning.String0,
+                String1 = tuning.String1,
+                String2 = tuning.String2,
+                String3 = tuning.String3,
+                String4 = tuning.String4,
+                String5 = tuning.String5
+            };
+        }
+
+        public static List<string> GetSongsWithSelectedTuning(
+            string internalTuningName,
+            IReadOnlyList<SongData> songs)
+        {
+            ArrangementTuning tuning = ToArrangementTuning(TuningsCollection[internalTuningName]);
+            return GetSongsWithTuning(songs, tuning);
         }
 
         public static List<string> GetSongsWithBadBassTuning(IEnumerable<SongData> songs)
@@ -229,9 +244,14 @@ namespace RSMods
 
         private static (bool IsSuccess, string ErrorMessage) UpdateToneManagerInCache(string selectedToneName, int targetToneIndex)
         {
-            ZipUtilities.ExtractSingleFile(Constants.CustomModsFolder, Constants.Cache7_7zPath, Constants.ToneManager_InternalPath);
+            if (!File.Exists(Constants.Cache7_7zPath))
+                UnpackCachePsarc();
 
-            if (!File.Exists(Constants.ToneManager_CustomPath))
+            if (!ZipUtilities.ExtractSingleFile(
+                    Constants.CustomModsFolder,
+                    Constants.Cache7_7zPath,
+                    Constants.ToneManager_InternalPath) ||
+                !File.Exists(Constants.ToneManager_CustomPath))
             {
                 return (false, "Could not extract tones from cache.psarc. Please check your existing settings.");
             }
@@ -271,6 +291,9 @@ namespace RSMods
 
         public static (bool IsSuccess, string Message) SetGuitarArcadeTone(string selectedToneName, int selectedToneType)
         {
+            if (selectedToneType < 0 || selectedToneType > 9)
+                return (false, "The selected Guitarcade tone target is invalid.");
+
             const int GuitarArcadeOffset = 8;
             int targetIndex = selectedToneType + GuitarArcadeOffset;
 
@@ -286,6 +309,9 @@ namespace RSMods
 
         public static (bool IsSuccess, string Message) SetDefaultTones(string selectedToneName, int selectedToneType)
         {
+            if (selectedToneType < 0 || selectedToneType > 2)
+                return (false, "The selected default tone target is invalid.");
+
             var (IsSuccess, ErrorMessage) = UpdateToneManagerInCache(selectedToneName, selectedToneType);
 
             if (!IsSuccess)
@@ -311,6 +337,9 @@ namespace RSMods
                 {
                     foreach (var tone in Tone2014.Import(profile))
                     {
+                        if (tonesFromAllProfiles.ContainsKey(tone.Name))
+                            continue;
+
                         tonesFromAllProfiles.Add(tone.Name, tone);
                         profileTones.Add(tone.Name);
                     }

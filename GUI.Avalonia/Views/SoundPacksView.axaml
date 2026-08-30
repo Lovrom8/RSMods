@@ -1,0 +1,117 @@
+<UserControl
+    x:Class="RSMods.Views.SoundPacksView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    xmlns:core="clr-namespace:RSMods.Core;assembly=GUI.Core"
+    x:DataType="vm:SoundPacksViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="820" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="SoundPacks" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Replace Rocksmith's result-screen voice lines with your own audio. Unpack the game's audio archive, swap any of the result lines (MP3, OGG, WAV or WEM), then repack. You can also import or export a whole sound pack to share with friends." />
+
+            <!-- Busy status -->
+            <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsBusy}">
+                <ProgressBar Width="120" IsIndeterminate="True" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- Determinate pack/unpack progress -->
+            <StackPanel Spacing="6" IsVisible="{Binding IsPacking}">
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressValue}" />
+                <TextBlock FontSize="12" Opacity="0.7" Text="{Binding ProgressOperation}" />
+            </StackPanel>
+
+            <!-- Not unpacked: prompt to unpack -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+                    IsVisible="{Binding ShowUnpackPrompt}">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Unpack audio.psarc" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="To edit sound packs, the game's audio archive has to be unpacked. This uses roughly 1.3 GB of disk space and can take a little while." />
+                    <Button Command="{Binding UnpackCommand}" Content="Unpack audio.psarc" />
+                </StackPanel>
+            </Border>
+
+            <!-- Unpacked: replace / repack / manage -->
+            <StackPanel Spacing="18" IsVisible="{Binding IsUnpacked}">
+
+                <!-- Replace voice lines -->
+                <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock FontWeight="SemiBold" Text="Replace result voice lines" />
+                        <TextBlock
+                            FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                            Text="Pick a result line and choose an audio file to replace it. WAV/OGG conversion needs Wwise installed. Remember to repack when you're done." />
+                        <ItemsControl ItemsSource="{Binding VoiceLines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="core:SoundPackVoiceLine">
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,3">
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding Label}" />
+                                        <Button
+                                            Grid.Column="1"
+                                            Content="Replace…"
+                                            Command="{Binding $parent[ItemsControl].((vm:SoundPacksViewModel)DataContext).ReplaceVoiceLineCommand}"
+                                            CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Repack / pack management -->
+                <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock FontWeight="SemiBold" Text="Apply &amp; manage" />
+                        <TextBlock
+                            FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                            Text="Repack writes your changes back into audio.psarc so the game can use them. Import/export bundle the current voice lines as a shareable .rs_soundpack. Reset restores the stock lines, and Remove unpacked frees the disk space." />
+                        <WrapPanel>
+                            <Button Margin="0,0,10,10" Command="{Binding RepackCommand}" Content="Repack audio.psarc" />
+                            <Button Margin="0,0,10,10" Command="{Binding ImportCommand}" Content="Import soundpack…" />
+                            <Button Margin="0,0,10,10" Command="{Binding ExportCommand}" Content="Export soundpack…" />
+                            <Button Margin="0,0,10,10" Command="{Binding ResetCommand}" Content="Reset to stock" />
+                            <Button Margin="0,0,10,10" Command="{Binding RemoveUnpackedCommand}" Content="Remove unpacked" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Preview result voice-overs -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Preview in-game" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="With Rocksmith running, select a result voice-over and play it to hear how it sounds in the game." />
+                    <ListBox
+                        Height="160"
+                        ItemsSource="{Binding ResultVoiceOvers}"
+                        SelectedItem="{Binding SelectedResultVo}" />
+                    <Button Command="{Binding PlayResultVoiceOverCommand}" Content="Play selected voice-over" />
+                </StackPanel>
+            </Border>
+
+            <!-- Tools -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Tools" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Wwise is required to convert WAV/OGG files to the game's audio format. Found a problem with sound packs? Report it on GitHub." />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding DownloadWwiseCommand}" Content="Download Wwise" />
+                        <Button Command="{Binding ReportBugCommand}" Content="Report a bug" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

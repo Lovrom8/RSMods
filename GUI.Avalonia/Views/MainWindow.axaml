@@ -34,6 +34,12 @@
         <DataTemplate DataType="vm:ProfilesViewModel">
             <views:ProfilesView />
         </DataTemplate>
+        <DataTemplate DataType="vm:SoundPacksViewModel">
+            <views:SoundPacksView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:SetAndForgetViewModel">
+            <views:SetAndForgetView />
+        </DataTemplate>
     </Window.DataTemplates>
 
     <Grid RowDefinitions="Auto,*">
@@ -54,6 +60,8 @@
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowRocksmithCommand}" Content="Rocksmith" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowAsioCommand}" Content="RS_ASIO" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowProfilesCommand}" Content="Profiles" />
+                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowSetAndForgetCommand}" Content="Set &amp; Forget" />
+                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowSoundPacksCommand}" Content="SoundPacks" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowThemesCommand}" Content="Appearance" />
                 </StackPanel>
             </Border>

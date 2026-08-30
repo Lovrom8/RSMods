@@ -24,4 +24,21 @@
     <ProjectReference Include="..\GUI.Core\GUI.Core.csproj" />
   </ItemGroup>
 
+  <!--
+    The shared Core's SoundPack (and later psarc) work calls native tools by path relative to the app base:
+    SevenZipSharp's 7z64.dll and RocksmithToolkitLib's Wwise/ogg toolchain under tools\. The WinForms GUI
+    ships these by xcopying its whole Lib\ tree into the output root as a post-build step; mirror that here
+    so the Avalonia app finds the same natives in the same relative locations.
+  -->
+  <ItemGroup>
+    <RSModsNative Include="..\GUI\Lib\**\*.*" />
+  </ItemGroup>
+  <Target Name="CopyRSModsNatives" AfterTargets="Build">
+    <Copy
+      SourceFiles="@(RSModsNative)"
+      DestinationFiles="@(RSModsNative->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true"
+      OverwriteReadOnlyFiles="true" />
+  </Target>
+
 </Project>

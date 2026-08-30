@@ -23,7 +23,7 @@ namespace RSMods.SetAndForget
             JObject root = JObject.Parse(fileContent);
             JToken definitions = root["Static"]["TuningDefinitions"];
             Tunings = JsonConvert.DeserializeObject<TuningDefinitionList>(definitions.ToString())
-                ?? new TuningDefinitionList();
+                ?? [];
         }
 
         public void Save(string tuningJsonPath)

@@ -27,6 +27,7 @@ public sealed class App : Application
             services.AddSingleton<SettingsService>();
             services.AddSingleton<RocksmithSettingsService>();
             services.AddSingleton<AsioSettingsService>();
+            services.AddSingleton<SoundPackService>();
             services.AddSingleton<SettingsWarningPresenter>();
             services.AddSingleton<ThemeService>();
             services.AddTransient<StatusViewModel>();
@@ -36,6 +37,8 @@ public sealed class App : Application
             services.AddTransient<AsioSettingsViewModel>();
             services.AddTransient<ThemesViewModel>();
             services.AddTransient<ProfilesViewModel>();
+            services.AddTransient<SoundPacksViewModel>();
+            services.AddTransient<SetAndForgetViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<MainWindow>();
 

@@ -18,6 +18,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     public AsioSettingsViewModel Asio { get; }
     public ThemesViewModel Themes { get; }
     public ProfilesViewModel Profiles { get; }
+    public SoundPacksViewModel SoundPacks { get; }
+    public SetAndForgetViewModel SetAndForget { get; }
 
     [ObservableProperty]
     private ObservableObject _currentPage;
@@ -29,6 +31,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ShowAsioCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowThemesCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowProfilesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowSoundPacksCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowSetAndForgetCommand))]
     private bool _sectionsEnabled;
 
     public MainWindowViewModel(
@@ -41,7 +45,9 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         RocksmithSettingsViewModel rocksmith,
         AsioSettingsViewModel asio,
         ThemesViewModel themes,
-        ProfilesViewModel profiles)
+        ProfilesViewModel profiles,
+        SoundPacksViewModel soundPacks,
+        SetAndForgetViewModel setAndForget)
     {
         _startup = startup;
         _warnings = warnings;
@@ -53,6 +59,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         Asio = asio;
         Themes = themes;
         Profiles = profiles;
+        SoundPacks = soundPacks;
+        SetAndForget = setAndForget;
         _currentPage = status;
     }
 
@@ -133,5 +141,21 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Profiles enumerate from the resolved save folder; the lists are built on first navigation.
         await Profiles.InitializeAsync();
         CurrentPage = Profiles;
+    }
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowSoundPacksAsync()
+    {
+        // SoundPacks reads its unpacked state from the resolved Rocksmith folder on first navigation.
+        await SoundPacks.InitializeAsync();
+        CurrentPage = SoundPacks;
+    }
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private async Task ShowSetAndForgetAsync()
+    {
+        // Stock cache-mod files and the tuning database are prepared on first navigation.
+        await SetAndForget.InitializeAsync();
+        CurrentPage = SetAndForget;
     }
 }

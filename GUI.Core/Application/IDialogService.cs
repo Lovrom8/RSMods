@@ -37,5 +37,12 @@ namespace RSMods.Core
         /// </summary>
         Task<IReadOnlyList<string>> PickFilesAsync(
             string title, string typeName, IReadOnlyList<string> patterns, bool allowMultiple);
+
+        /// <summary>
+        /// Save-file picker. <paramref name="pattern"/> is a glob such as "*.rs_soundpack". Returns the chosen
+        /// path (with the extension applied), or null if the user cancelled.
+        /// </summary>
+        Task<string?> PickSaveFileAsync(
+            string title, string suggestedFileName, string typeName, string pattern, string? startPath = null);
     }
 }

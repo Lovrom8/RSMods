@@ -70,5 +70,22 @@ namespace RSMods.WinForms
                 : Array.Empty<string>();
             return Task.FromResult(files);
         }
+
+        public Task<string?> PickSaveFileAsync(
+            string title, string suggestedFileName, string typeName, string pattern, string? startPath = null)
+        {
+            using var dialog = new SaveFileDialog
+            {
+                Title = title,
+                FileName = suggestedFileName,
+                Filter = $"{typeName}|{pattern}",
+            };
+
+            if (!string.IsNullOrEmpty(startPath))
+                dialog.InitialDirectory = startPath;
+
+            string? path = dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : null;
+            return Task.FromResult(path);
+        }
     }
 }

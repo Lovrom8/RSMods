@@ -18,7 +18,6 @@ using System.Diagnostics;
 using RocksmithToolkitLib.DLCPackage;
 using NAudio.CoreAudioApi;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
-using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 using static RSMods.RsModsSettings;
 using RSMods.ASIO;
 using RSMods.Rocksmith;
@@ -75,8 +74,27 @@ namespace RSMods
 
         private async void SetForget_RestoreDefaults(object sender, EventArgs e)
         {
-            if (await SetAndForgetMods.RestoreDefaults(AppServices.Dialogs))
+            if (!await AppServices.Dialogs.ShowConfirmAsync(
+                    "Do you wish to restore your cache.psarc to its original state?",
+                    "Restore cache.psarc?"))
+                return;
+
+            try
+            {
+                bool restored = await Task.Run(SetAndForgetMods.RestoreDefaults);
+                if (!restored)
+                {
+                    await AppServices.Dialogs.ShowErrorAsync("No cache backup found!");
+                    return;
+                }
+
                 SetForget_FillUI();
+                await AppServices.Dialogs.ShowInfoAsync("Cache backup was restored!", "Backup restored");
+            }
+            catch (IOException ioex)
+            {
+                await AppServices.Dialogs.ShowErrorAsync("Problems restoring backup: " + ioex.Message);
+            }
         }
 
         private void SetForget_ResetCache(object sender, EventArgs e)
@@ -359,9 +377,8 @@ namespace RSMods
 
         private void SetForget_FillCustomTuningList()
         {
-            customTunings = SetAndForgetMods.GetUnknownTunings(Songs);
             listBox_SetAndForget_SongsWithCustomTuning.Items.Clear();
-            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange([.. customTunings.Keys]);
+            listBox_SetAndForget_SongsWithCustomTuning.Items.AddRange([.. SetAndForgetMods.GetUnknownTuningKeys(Songs)]);
         }
 
         private void SetForget_FillSongsWithSelectedTuningList()
@@ -371,18 +388,17 @@ namespace RSMods
             if (listBox_Tunings.SelectedIndex == -1 || listBox_Tunings.SelectedItem.ToString() == "<New>")
                 return;
 
-            ArrangementTuning selectedTuning = SetAndForgetMods.ToArrangementTuning(SetAndForgetMods.TuningsCollection[listBox_Tunings.SelectedItem.ToString()]);
-            listBox_SetAndForget_SongsWithSelectedTuning.Items.AddRange([.. SetAndForgetMods.GetSongsWithTuning(Songs, selectedTuning)]);
+            string selectedTuning = listBox_Tunings.SelectedItem.ToString();
+            listBox_SetAndForget_SongsWithSelectedTuning.Items.AddRange([.. SetAndForgetMods.GetSongsWithSelectedTuning(selectedTuning, Songs)]);
         }
-
-        private SortedDictionary<string, ArrangementTuning> customTunings = [];
 
         private void SetForget_LoadCustomTuningFromSong(object sender, EventArgs e)
         {
             if (listBox_SetAndForget_SongsWithCustomTuning.SelectedIndex < 0)
                 return;
 
-            ArrangementTuning customTuning = customTunings[listBox_SetAndForget_SongsWithCustomTuning.SelectedItem.ToString()];
+            var customTuning = SetAndForgetMods.GetUnknownTuningStrings(
+                listBox_SetAndForget_SongsWithCustomTuning.SelectedItem.ToString());
 
             nUpDown_String0.Value = customTuning.String0;
             nUpDown_String1.Value = customTuning.String1;

@@ -1,0 +1,345 @@
+<UserControl
+    x:Class="RSMods.Views.SetAndForgetView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:RSMods.Converters"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:SetAndForgetViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="860" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Set &amp; Forget" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Apply one-click changes to Rocksmith's cache.psarc. Each mod keeps a backup of the original cache and repacks the archive immediately, so wait for an operation to finish before starting another." />
+
+            <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding ShowIndeterminateBusy}">
+                <ProgressBar Width="120" IsIndeterminate="True" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <TextBlock
+                FontSize="12"
+                Opacity="0.7"
+                IsVisible="{Binding !IsBusy}"
+                Text="{Binding StatusMessage}" />
+
+            <Border
+                Padding="18"
+                BorderBrush="#4A5361"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsEnabled="{Binding !IsBusy}">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Custom tunings editor" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Choose an existing tuning to edit it, or select &lt;New&gt; to create one. String values are semitone offsets from standard tuning. Add, Save, and Remove update the local tuning database; use Add custom tunings below when you are ready to inject it into the game." />
+
+                    <Grid ColumnDefinitions="220,*" ColumnSpacing="18">
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock FontSize="12" FontWeight="SemiBold" Text="Tunings" />
+                            <ListBox
+                                Height="270"
+                                ItemsSource="{Binding TuningNames}"
+                                SelectedItem="{Binding SelectedTuningName}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="12">
+                            <Grid ColumnDefinitions="*,120" ColumnSpacing="12">
+                                <StackPanel Grid.Column="0" Spacing="5">
+                                    <TextBlock FontSize="12" Text="Internal name" />
+                                    <TextBox
+                                        IsReadOnly="{Binding !IsNewTuning}"
+                                        Text="{Binding InternalTuningName}"
+                                        Watermark="Unique internal key" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Spacing="5">
+                                    <TextBlock FontSize="12" Text="UI index" />
+                                    <NumericUpDown
+                                        Increment="1"
+                                        Minimum="-1"
+                                        Maximum="100000"
+                                        Value="{Binding UiIndex}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel Spacing="5">
+                                <TextBlock FontSize="12" Text="Display name" />
+                                <TextBox Text="{Binding UiName}" Watermark="Name shown in Rocksmith" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="22,80,100,*" ColumnSpacing="8">
+                                    <TextBlock Grid.Column="1" FontSize="11" Opacity="0.65" Text="String" />
+                                    <TextBlock Grid.Column="2" FontSize="11" Opacity="0.65" Text="Offset" />
+                                    <TextBlock Grid.Column="3" FontSize="11" Opacity="0.65" Text="Note" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding TuningStrings}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:TuningStringViewModel">
+                                            <Grid ColumnDefinitions="22,80,100,*" ColumnSpacing="8" Margin="0,3">
+                                                <Border
+                                                    Grid.Column="0"
+                                                    Width="16"
+                                                    Height="16"
+                                                    VerticalAlignment="Center"
+                                                    Background="{Binding ColorHex, Converter={x:Static converters:HexToBrushConverter.Instance}}"
+                                                    BorderBrush="#77808D"
+                                                    BorderThickness="1"
+                                                    CornerRadius="3" />
+                                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Label}" />
+                                                <NumericUpDown
+                                                    Grid.Column="2"
+                                                    Increment="1"
+                                                    Minimum="-24"
+                                                    Maximum="24"
+                                                    Value="{Binding Offset}" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    VerticalAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding NoteName}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <WrapPanel>
+                                <Button Margin="0,0,10,0" Command="{Binding AddTuningCommand}" Content="Add tuning" />
+                                <Button Margin="0,0,10,0" Command="{Binding SaveTuningCommand}" Content="Save changes" />
+                                <Button Command="{Binding RemoveTuningCommand}" Content="Remove tuning" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Songs by tuning" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Scan your Rocksmith song library to see which arrangements use the selected definition and which arrangements would appear in-game as Custom Tuning." />
+
+                    <Button
+                        HorizontalAlignment="Left"
+                        Command="{Binding LoadSongsCommand}"
+                        Content="Load songs" />
+
+                    <StackPanel Spacing="6" IsVisible="{Binding IsLoadingSongs}">
+                        <ProgressBar
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding SongLoadProgress}" />
+                        <TextBlock FontSize="12" Opacity="0.7" Text="Scanning song archives..." />
+                    </StackPanel>
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="14"
+                        IsVisible="{Binding HasLoadedSongs}">
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock FontWeight="SemiBold" Text="Songs with selected tuning" />
+                            <TextBlock
+                                FontSize="11"
+                                Opacity="0.65"
+                                Text="{Binding SelectedTuningName}" />
+                            <ListBox
+                                Height="230"
+                                ItemsSource="{Binding SongsWithSelectedTuning}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock FontWeight="SemiBold" Text="Shows as Custom Tuning" />
+                            <TextBlock
+                                FontSize="11"
+                                Opacity="0.65"
+                                TextWrapping="Wrap"
+                                Text="Select an arrangement to copy its six offsets into the &lt;New&gt; editor." />
+                            <ListBox
+                                Height="200"
+                                ItemsSource="{Binding UnknownTuningKeys}"
+                                SelectedItem="{Binding SelectedUnknownTuningKey}" />
+                            <Button
+                                Command="{Binding LoadCustomTuningFromSongCommand}"
+                                Content="Load selected into &lt;New&gt;" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="18"
+                BorderBrush="#4A5361"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsEnabled="{Binding !IsBusy}">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Default &amp; Guitarcade tones" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Load tones stored in your Rocksmith profiles, select one, then assign it to a default instrument slot or one of the ten Guitarcade games. Each assignment updates and repacks cache.psarc immediately." />
+
+                    <Button
+                        HorizontalAlignment="Left"
+                        Command="{Binding LoadProfileTonesCommand}"
+                        Content="Load profile tones" />
+
+                    <Grid ColumnDefinitions="260,*" ColumnSpacing="18">
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock FontSize="12" FontWeight="SemiBold" Text="Profile tones" />
+                            <ListBox
+                                Height="280"
+                                ItemsSource="{Binding ProfileTones}"
+                                SelectedItem="{Binding SelectedProfileTone}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="14">
+                            <Border Padding="12" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="6">
+                                <StackPanel Spacing="8">
+                                    <TextBlock FontWeight="SemiBold" Text="Default tone" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        Opacity="0.65"
+                                        TextWrapping="Wrap"
+                                        Text="Choose which default instrument tone the selected profile tone should replace." />
+                                    <ComboBox
+                                        ItemsSource="{Binding DefaultToneTargets}"
+                                        SelectedItem="{Binding SelectedDefaultToneTarget}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ToneTargetOption">
+                                                <TextBlock Text="{Binding Label}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button
+                                        Command="{Binding AssignDefaultToneCommand}"
+                                        Content="Assign selected tone" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Padding="12" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="6">
+                                <StackPanel Spacing="8">
+                                    <TextBlock FontWeight="SemiBold" Text="Guitarcade tone" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        Opacity="0.65"
+                                        TextWrapping="Wrap"
+                                        Text="Choose which Guitarcade game's tone the selected profile tone should replace." />
+                                    <ComboBox
+                                        ItemsSource="{Binding GuitarcadeToneTargets}"
+                                        SelectedItem="{Binding SelectedGuitarcadeToneTarget}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ToneTargetOption">
+                                                <TextBlock Text="{Binding Label}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button
+                                        Command="{Binding AssignGuitarcadeToneCommand}"
+                                        Content="Assign selected tone" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="One-click cache mods" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="These actions unpack cache.psarc when needed, inject the selected change, and repack it for the game. Applying another action preserves the already-unpacked changes so the mods can be combined." />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="10">
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding AddCustomTuningsCommand}"
+                            Content="Add custom tunings" />
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding IncreaseVolumeCommand}"
+                            Content="Turn it up to eleven" />
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding AddExitGameCommand}"
+                            Content="Add Exit Game menu option" />
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding AddDirectConnectCommand}"
+                            Content="Add Direct Connect mode" />
+                        <Button
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding ApplyFastLoadCommand}"
+                            Content="Enable Fast Load" />
+                    </Grid>
+
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Fast Load checks the drive containing Rocksmith. HDD and unknown-drive results require confirmation; NVMe users can opt into the fastest variant." />
+                </StackPanel>
+            </Border>
+
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <TextBlock FontWeight="SemiBold" Text="Cache management" />
+                    <TextBlock
+                        FontSize="12"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="Restore the automatic backup, rebuild the temporary unpacked cache, or import changes already present there. Removing temporary folders frees the working space without changing the game's current cache.psarc." />
+
+                    <WrapPanel>
+                        <Button Margin="0,0,10,10" Command="{Binding RestoreDefaultsCommand}" Content="Restore cache backup" />
+                        <Button Margin="0,0,10,10" Command="{Binding UnpackAgainCommand}" Content="Unpack again" />
+                        <Button Margin="0,0,10,10" Command="{Binding ImportExistingSettingsCommand}" Content="Import existing settings" />
+                        <Button Margin="0,0,10,10" Command="{Binding RemoveTempFoldersCommand}" Content="Remove temporary folders" />
+                    </WrapPanel>
+
+                    <Border Padding="12" Background="#22D98B2B" BorderBrush="#9A6B25" BorderThickness="1" CornerRadius="6">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <StackPanel Grid.Column="0" Spacing="3">
+                                <TextBlock FontWeight="SemiBold" Text="Last resort: verify with Steam" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Opacity="0.75"
+                                    TextWrapping="Wrap"
+                                    Text="If restoring the cache backup does not fix the game, ask Steam to redownload modified game files and remove the local working cache." />
+                            </StackPanel>
+                            <Button
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Command="{Binding ResetCacheCommand}"
+                                Content="Verify game files" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -29,9 +29,21 @@
          pulls in WinForms and would force a -windows TFM); this keeps GUI.Core UI-framework-free.
          Same 2.0.0 the WinForms GUI already consumes. Windows-only at runtime. -->
     <PackageReference Include="NAudio.Wasapi" Version="2.0.0" />
+    <!-- SoundPacks MP3 decoding (Soundpacks.ConvertMP3ToWav) uses NAudio's ACM Mp3FileReader, which lives
+         in NAudio.WinMM; WaveFileWriter comes from the transitive NAudio.Core. Like NAudio.Wasapi this is
+         a sub-package (not the meta-package), so it does not drag in WinForms or force a -windows TFM. -->
+    <PackageReference Include="NAudio.WinMM" Version="2.0.0" />
+    <!-- Set-and-Forget drive detection uses WMI. net48 supplies System.Management in-framework; the
+         net8.0 target needs the out-of-band package. Windows-only at runtime. -->
+    <PackageReference Include="System.Management" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <!-- The bundled Newtonsoft.Json 12 assembly targets .NET Framework 4.5. When it runs under .NET 8,
+         its legacy CAS compatibility path loads System.Security.Permissions. A raw assembly reference
+         cannot declare that transitive dependency, so include it explicitly for the Avalonia target. -->
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Management" Condition="'$(TargetFramework)' == 'net48'" />
     <!-- Shared song/profile services consume the existing Rocksmith archive model. The assembly is
          supplied by the legacy GUI project until that dependency is replaced with a modern package. -->
     <Reference Include="Rocksmith2014PsarcLib">
@@ -54,6 +66,28 @@
       <HintPath>..\GUI\Lib\zlib.net.dll</HintPath>
       <Private>true</Private>
     </Reference>
+    <!-- SoundPack import/export archives a .rs_soundpack (zip) via SevenZipSharp. The managed wrapper is
+         referenced here; its native 7z64.dll is copied to each frontend's output (see the GUIs' projects). -->
+    <Reference Include="SevenZipSharp">
+      <HintPath>..\GUI\Lib\SevenZipSharp.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The stock voice-line pack restored by Soundpacks.Reset(). Embedded here (rather than in the WinForms
+         GUI as before) so the shared Core owns it and both frontends can restore the defaults. -->
+    <EmbeddedResource Include="Resources\original.rs_soundpack" />
+    <EmbeddedResource Include="Resources\init.bnk" />
+    <EmbeddedResource Include="Resources\introsequence_max.gfx" />
+    <EmbeddedResource Include="Resources\introsequence_mid.gfx" />
+    <EmbeddedResource Include="Resources\introsequence_original.gfx" />
+    <EmbeddedResource Include="Resources\maingame.csv" />
+    <EmbeddedResource Include="Resources\sltsv1_aggregategraph.nt" />
+    <EmbeddedResource Include="Resources\tuning.database.json" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_main.database.json" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_mission.database.json" />
+    <EmbeddedResource Include="Resources\ui_menu_pillar_startup.database.json" />
   </ItemGroup>
 
 </Project>

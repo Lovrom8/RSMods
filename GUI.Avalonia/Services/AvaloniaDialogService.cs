@@ -60,6 +60,29 @@ internal sealed class AvaloniaDialogService : IDialogService
             .ToList();
     }
 
+    public async Task<string?> PickSaveFileAsync(
+        string title, string suggestedFileName, string typeName, string pattern, string? startPath = null)
+    {
+        var owner = GetOwner();
+        var options = new FilePickerSaveOptions
+        {
+            Title = title,
+            SuggestedFileName = suggestedFileName,
+            DefaultExtension = pattern.TrimStart('*', '.'),
+            ShowOverwritePrompt = true,
+            FileTypeChoices = [new FilePickerFileType(typeName) { Patterns = [pattern] }],
+        };
+
+        if (!string.IsNullOrWhiteSpace(startPath) && Directory.Exists(startPath))
+            options.SuggestedStartLocation = await owner.StorageProvider.TryGetFolderFromPathAsync(startPath);
+
+        var file = await owner.StorageProvider.SaveFilePickerAsync(options);
+        if (file is null)
+            return null;
+
+        return file.Path.IsFile ? file.Path.LocalPath : file.Path.ToString();
+    }
+
     private static Window GetOwner()
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime

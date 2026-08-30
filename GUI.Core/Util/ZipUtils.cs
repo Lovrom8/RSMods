@@ -1,4 +1,4 @@
-﻿using SevenZip;
+using SevenZip;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
+using RSMods.Core;
 
 namespace RSMods.Util
 {
@@ -93,7 +93,7 @@ namespace RSMods.Util
         {
             SetupZlib();
 
-            // -- SUPER CRITICAL CODE HERE -- 
+            // -- SUPER CRITICAL CODE HERE --
             try
             {
                 if (String.IsNullOrEmpty(internalArchivePath))
@@ -132,8 +132,10 @@ namespace RSMods.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error:{ex.Message}", "File injection failed");
-                return false;
+                // Surface the failure to the caller. Both frontends invoke this from inside a try/catch that
+                // presents IOExceptions through IDialogService (see UI.SetAndForget's RunModActionAsync), so
+                // wrap as IOException instead of popping a WinForms MessageBox from this shared Core code.
+                throw new IOException($"File injection failed: {ex.Message}", ex);
             }
 
             return true;
@@ -237,33 +239,13 @@ namespace RSMods.Util
                 {
                     return;
                 }
-
-                //    Stream stream = null;
-                //    Assembly asm = Assembly.GetExecutingAssembly();
-                //    string libraryPath = string.Empty;
-
-                //    if (IntPtr.Size == 8)
-                //    {
-                //        libraryPath = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(SevenZipExtractor)).Location), @"7z64.dll");
-                //        stream = asm.GetManifestResourceStream("libs.7z64.dll");
-                //    }
-                //    else
-                //    {
-                //        libraryPath = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(SevenZipExtractor)).Location), @"7z86.dll");
-                //        stream = asm.GetManifestResourceStream("libs.7z86.dll");
-                //    }
-
-                //    if (!File.Exists(libraryPath))
-                //    {
-                //        byte[] myAssembly = new byte[stream.Length];
-                //        stream.Read(myAssembly, 0, (int)stream.Length);
-                //        File.WriteAllBytes(libraryPath, myAssembly);
-                //        stream.Close();
             }
 
             // "7za.dll" only supports 7Zip archives
-            // use "7z64.dll" to support many archive formats 
-            var libraryPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "7z64.dll");
+            // use "7z64.dll" to support many archive formats.
+            // Resolve against the application's base directory (not the CWD) so this works from Avalonia too,
+            // matching how Soundpacks locates the same native library.
+            var libraryPath = Path.Combine(AppServices.Environment.BaseDirectory, "7z64.dll");
 
             SevenZipBase.SetLibraryPath(libraryPath);
 

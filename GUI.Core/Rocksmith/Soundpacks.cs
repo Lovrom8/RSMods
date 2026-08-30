@@ -1,19 +1,27 @@
-﻿using NAudio.Wave;
+using NAudio.Wave;
 using RocksmithToolkitLib.Ogg;
-using RocksmithToolkitLib.XmlRepository;
+using RSMods.Core;
 using RSMods.Util;
 using SevenZip;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Windows.Forms;
 
 namespace RSMods.Rocksmith
 {
-    internal static class Soundpacks
+    /// <summary>
+    /// SoundPack conversion and packaging: swaps Rocksmith's result-screen voice lines by converting a
+    /// user-supplied audio file to WEM and dropping it into the unpacked <c>audio.psarc</c>, plus
+    /// import/export of a <c>.rs_soundpack</c> archive and a reset to the stock voice lines.
+    ///
+    /// Moved out of the WinForms GUI into <c>GUI.Core</c> so both the WinForms and Avalonia frontends
+    /// share one source. The class is UI-framework-free: <see cref="Reset"/> extracts the embedded stock
+    /// pack from this assembly and uses <see cref="AppServices"/> for the base directory instead of
+    /// <c>System.Windows.Forms.Application.StartupPath</c>.
+    /// </summary>
+    public static class Soundpacks
     {
-        internal static class VoiceLines
+        public static class VoiceLines
         {
             public const string BadPerformance = "2066953778.wem";
             public const string DisappointingPerformance = "2067218742.wem";
@@ -37,7 +45,12 @@ namespace RSMods.Rocksmith
 
         public const string SoundPackLocationPrefix = "audio_psarc\\audio_psarc_RS2014_Pc\\audio\\windows\\";
         public const string SoundPackEnglishPrefix = "english(us)\\";
-    
+
+        // The 7z native library and the stock pack resolve against the application's base directory, not the
+        // current working directory. This matters for Avalonia, whose CWD is not the RSMods folder.
+        private static string SevenZipLibraryPath =>
+            Path.Combine(AppServices.Environment.BaseDirectory, "7z64.dll");
+
         private static void SafeDelete(string path)
         {
             if (File.Exists(path)) File.Delete(path);
@@ -47,7 +60,10 @@ namespace RSMods.Rocksmith
         {
             string wavFile = Path.Combine(Path.GetDirectoryName(mp3File), Path.GetFileNameWithoutExtension(mp3File) + ".wav");
 
-            using (Mp3FileReader mp3FileReader = new(mp3File))
+            // NAudio's convenience Mp3FileReader lives in the meta-package (which drags in WinForms and would
+            // force a -windows TFM). Use the netstandard Mp3FileReaderBase with the same ACM decompressor its
+            // default constructor would have used, keeping GUI.Core UI-framework-free.
+            using (var mp3FileReader = new Mp3FileReaderBase(mp3File, waveFormat => new AcmMp3FrameDecompressor(waveFormat)))
             {
                 WaveFileWriter.CreateWaveFile(wavFile, mp3FileReader);
             }
@@ -134,14 +150,18 @@ namespace RSMods.Rocksmith
 
         public static void ImportSoundFile(string fileName)
         {
-            SevenZipExtractor.SetLibraryPath("7z64.dll");
+            SevenZipExtractor.SetLibraryPath(SevenZipLibraryPath);
             using SevenZipExtractor extractor = new(fileName);
-            extractor.ExtractArchive(SoundPackLocationPrefix);
+
+            // Extract under the RSMods folder (where the unpacked audio.psarc lives and where Export reads
+            // from), not the current working directory. The original WinForms code extracted CWD-relative,
+            // which only lined up because that build ran from the RSMods folder.
+            extractor.ExtractArchive(Path.Combine(GenUtil.GetRsModsPath(), SoundPackLocationPrefix));
         }
 
         public static void ExportSoundFile(string fileName)
         {
-            SevenZipCompressor.SetLibraryPath("7z64.dll");
+            SevenZipCompressor.SetLibraryPath(SevenZipLibraryPath);
 
             SevenZipCompressor compressor = new()
             {
@@ -185,9 +205,16 @@ namespace RSMods.Rocksmith
 
         public static void Reset()
         {
-            GenUtil.ExtractEmbeddedResource(Application.StartupPath, Assembly.GetExecutingAssembly(), "RSMods.Resources", ["original.rs_soundpack"]);
-            ImportSoundFile("original.rs_soundpack");
-            File.Delete("original.rs_soundpack");
+            string archive = Path.Combine(AppServices.Environment.BaseDirectory, "original.rs_soundpack");
+
+            GenUtil.ExtractEmbeddedResource(
+                AppServices.Environment.BaseDirectory,
+                typeof(Soundpacks).Assembly,
+                "RSMods.Core.Resources",
+                ["original.rs_soundpack"]);
+
+            ImportSoundFile(archive);
+            File.Delete(archive);
         }
     }
 }
