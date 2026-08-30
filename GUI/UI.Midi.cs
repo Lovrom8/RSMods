@@ -95,6 +95,9 @@ namespace RSMods
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             ShutdownMidi();
+            _twitchAuthorizationCancellation?.Cancel();
+            TwitchRuntime.StopAsync().GetAwaiter().GetResult();
+            _twitchAuthorizationCancellation?.Dispose();
         }
     }
 }

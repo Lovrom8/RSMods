@@ -26,6 +26,8 @@ namespace RSMods
 {
     public partial class MainForm : Form
     {
+        private CancellationTokenSource _twitchAuthorizationCancellation;
+
         private void Twitch_Show()
         {
             foreach (Control ctrl in tab_Twitch.Controls)
@@ -40,7 +42,6 @@ namespace RSMods
                     if (!string.IsNullOrEmpty(selectedReward.AdditionalMsg) && selectedReward.AdditionalMsg != "Random")
                         row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#" + selectedReward.AdditionalMsg);
 
-                    Twitch_CheckForTurboSpeed(selectedReward);
                 }
             }
 
@@ -51,31 +52,14 @@ namespace RSMods
         {
             label_TwitchUsernameVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Username", false, DataSourceUpdateMode.OnPropertyChanged));
             label_TwitchChannelIDVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ChannelID", false, DataSourceUpdateMode.OnPropertyChanged));
-            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "AccessToken", false, DataSourceUpdateMode.OnPropertyChanged));
-
-            // Hide values by default (Security just in case the streamer is live with RSMods on screen)
-            label_TwitchUsernameVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
-            label_TwitchChannelIDVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
-            label_TwitchAccessTokenVal.DataBindings.Add(new Binding("Visible", checkBox_RevealTwitchAuthToken, "Checked", false, DataSourceUpdateMode.OnPropertyChanged));
+            Binding protectedTokenBinding = new("Text", TwitchSettings.Get, "AuthorizationStored", false, DataSourceUpdateMode.Never);
+            protectedTokenBinding.Format += (s, e) =>
+                e.Value = e.Value is bool stored && stored ? "Stored securely" : "Not stored";
+            label_TwitchAccessTokenVal.DataBindings.Add(protectedTokenBinding);
 
             textBox_TwitchLog.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "Log"));
 
-            Binding listeningToTwitchBinding = new("Text", TwitchSettings.Get, "Authorized");
-            listeningToTwitchBinding.Format += (s, e) =>
-            {
-                if ((bool)e.Value && TwitchSettings.Get.Reauthorized) // If we are authorized
-                {
-                    PubSub.Get.SetUp(); // Well... this is probably not the best place since it's called a lot, but wing it
-                    TwitchSettings.Get.Reauthorized = false;
-                    timerValidateTwitch.Enabled = true;
-                    Twitch_Show();
-                }
-
-                e.Value = (bool)e.Value ? "Listening to Twitch events" : "Not listening to twitch events";
-            };
-            label_IsListeningToEvents.DataBindings.Add(listeningToTwitchBinding);
-
-            checkBox_TwitchForceReauth.Checked = TwitchSettings.Get.ForceReauth;
+            label_IsListeningToEvents.DataBindings.Add(new Binding("Text", TwitchSettings.Get, "ListeningStatus"));
 
             foreach (var defaultReward in TwitchSettings.Get.DefaultRewards) // BindingList... yeah, not yet
                 dgv_DefaultRewards.Rows.Add(defaultReward.Name, defaultReward.Description);
@@ -85,27 +69,59 @@ namespace RSMods
 
         }
 
-        private async void PrepTwitch_LoadSettings()
+        private void PrepTwitch_LoadSettings()
         {
-            TwitchSettings.Get._context = SynchronizationContext.Current;
-            await TwitchSettings.Get.LoadSettings();
+            TwitchSettings.Get.LoadSettings();
             TwitchSettings.Get.LoadDefaultEffects();
             TwitchSettings.Get.LoadEnabledEffects();
+            TwitchRuntime.Initialize(this);
         }
 
-        private void Twitch_ReAuthorize(object sender, EventArgs e)
+        private async void Twitch_ReAuthorize(object sender, EventArgs e)
         {
-            ImplicitAuth auth = new();
-
-            string authRes = auth.MakeAuthRequest();
-
-            if (!authRes.Equals("OK"))
+            _twitchAuthorizationCancellation?.Cancel();
+            _twitchAuthorizationCancellation?.Dispose();
+            _twitchAuthorizationCancellation = new CancellationTokenSource();
+            button_TwitchReAuthorize.Enabled = false;
+            try
             {
-                MessageBox.Show($"Please open the following link in your browser: {authRes}", "Can't open your browser!");
+                TwitchDeviceAuthorization authorization = await TwitchRuntime.Service.BeginAuthorizationAsync(
+                    _twitchAuthorizationCancellation.Token);
+                try
+                {
+                    Process.Start(new ProcessStartInfo(authorization.VerificationUri.AbsoluteUri)
+                    {
+                        UseShellExecute = true
+                    });
+                }
+                catch
+                {
+                    // The URL and code are shown below, so browser launch failure is recoverable.
+                }
+
+                MessageBox.Show(
+                    $"Enter code {authorization.UserCode} at:{Environment.NewLine}{authorization.VerificationUri}",
+                    "Authorize RSMods with Twitch",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                await TwitchRuntime.Service.CompleteAuthorizationAsync(
+                    authorization,
+                    _twitchAuthorizationCancellation.Token);
+                Twitch_Show();
+            }
+            catch (OperationCanceledException)
+            {
+                TwitchSettings.Get.AddToLog("Twitch authorization cancelled.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Twitch authorization", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                button_TwitchReAuthorize.Enabled = true;
             }
         }
-
-        private void Twitch_NewAccessToken(object sender, EventArgs e) => checkBox_RevealTwitchAuthToken.Checked = false;
 
         private void Twitch_AutoScrollLog(object sender, EventArgs e)
         {
@@ -113,18 +129,11 @@ namespace RSMods
             textBox_TwitchLog.ScrollToCaret();
         }
 
-        private void Twitch_CheckForTurboSpeed(TwitchReward selectedReward)
+        private async Task Twitch_SaveRewards()
         {
-            if (selectedReward.Name.Contains("TurboSpeed"))
-            {
-                if (selectedReward.Enabled)
-                    WinMsgUtil.SendMsgToRS("enable TurboSpeed");
-                else
-                    WinMsgUtil.SendMsgToRS("disable TurboSpeed");
-            }
+            await TwitchSettings.Get.SaveRewards();
+            TwitchRuntime.RewardsChanged();
         }
-
-        private async Task Twitch_SaveRewards() => await TwitchSettings.Get.SaveRewards();
 
         private async void Twitch_AddReward(object sender, EventArgs e)
         {
@@ -240,8 +249,6 @@ namespace RSMods
             else if (selectedReward is ChannelPointsReward channelPointsReward)
                 channelPointsReward.PointsAmount = Convert.ToInt32(selectedRow.Cells["colEnabledRewardsAmount"].Value);
 
-            Twitch_CheckForTurboSpeed(selectedReward);
-
             await Twitch_SaveRewards();
         }
 
@@ -341,14 +348,14 @@ namespace RSMods
             if (dgv_EnabledRewards.CurrentCell == null)
                 return;
 
-            PubSub.SendMessageToRocksmith(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex]);
+            TwitchRuntime.TryQueueReward(TwitchSettings.Get.Rewards[dgv_EnabledRewards.CurrentCell.RowIndex], "RSMods test");
         }
 
         private void Twitch_TestReward(object sender, EventArgs e)
         {
-            if (Process.GetProcessesByName("Rocksmith2014").Length == 0)
+            if (!TwitchRuntime.Service.IsRocksmithConnected)
             {
-                TwitchSettings.Get.AddToLog("The game does not appear to be running!");
+                TwitchSettings.Get.AddToLog("Rocksmith is not connected to the effect bridge.");
                 return;
             }
 
@@ -361,29 +368,7 @@ namespace RSMods
             button_SolidNoteColorRandom.Visible = show;
         }
 
-        private void Twitch_timerValidate(object sender, EventArgs e)
-        {
-            if (checkBox_TwitchForceReauth.Checked)
-            {
-                TwitchSettings.Get.AddToLog("Reauthorizing...");
-                TwitchSettings.Get.AddToLog("----------------");
-
-                var auth = new ImplicitAuth(); // Force the issue
-                auth.MakeAuthRequest(true); // When the request finishes, it will trigger PropertyChanged & set Reauthorized, which in turn will reset PubSub
-            }
-            else
-            {
-                PubSub.Get.Resub();
-            }
-        }
-
         private static void Twitch_SaveSettings() => TwitchSettings.Get.SaveSettings();
-
-        private void Twitch_ForceReauth(object sender, EventArgs e)
-        {
-            TwitchSettings.Get.ForceReauth = checkBox_TwitchForceReauth.Checked;
-            Twitch_SaveSettings();
-        }
 
         private void Twitch_SaveLog(object sender, EventArgs e)
         {
@@ -399,6 +384,5 @@ namespace RSMods
             }
         }
 
-        private void Twitch_CopyCredentialsForDevs(object sender, MouseEventArgs e) => Clipboard.SetText("Send to RSMod Developers ( Discord Ffio#2221 or LovroM8#9999 )\nUsername: " + TwitchSettings.Get.Username + "\nChannel ID: " + TwitchSettings.Get.ChannelID + "\nAccess Token: " + TwitchSettings.Get.AccessToken);
     }
 }

@@ -431,9 +431,7 @@ namespace RSMods
             this.nUpDown_Rocksmith_ScreenHeight = new System.Windows.Forms.NumericUpDown();
             this.nUpDown_Rocksmith_ScreenWidth = new System.Windows.Forms.NumericUpDown();
             this.tab_Twitch = new System.Windows.Forms.TabPage();
-            this.checkBox_RevealTwitchAuthToken = new System.Windows.Forms.CheckBox();
             this.button_SaveLogToFile = new System.Windows.Forms.Button();
-            this.checkBox_TwitchForceReauth = new System.Windows.Forms.CheckBox();
             this.button_TestTwitchReward = new System.Windows.Forms.Button();
             this.button_SolidNoteColorRandom = new System.Windows.Forms.Button();
             this.textBox_SolidNoteColorPicker = new System.Windows.Forms.TextBox();
@@ -548,7 +546,6 @@ namespace RSMods
             this.button_ChangeTextColor = new System.Windows.Forms.Button();
             this.button_ChangeBackgroundColor = new System.Windows.Forms.Button();
             this.checkBox_ChangeTheme = new System.Windows.Forms.CheckBox();
-            this.timerValidateTwitch = new System.Windows.Forms.Timer(this.components);
             this.label_SettingsSaved = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.button_UpdateRSMods = new System.Windows.Forms.Button();
@@ -5656,9 +5653,7 @@ namespace RSMods
             // tab_Twitch
             // 
             this.tab_Twitch.BackColor = System.Drawing.Color.Azure;
-            this.tab_Twitch.Controls.Add(this.checkBox_RevealTwitchAuthToken);
             this.tab_Twitch.Controls.Add(this.button_SaveLogToFile);
-            this.tab_Twitch.Controls.Add(this.checkBox_TwitchForceReauth);
             this.tab_Twitch.Controls.Add(this.button_TestTwitchReward);
             this.tab_Twitch.Controls.Add(this.button_SolidNoteColorRandom);
             this.tab_Twitch.Controls.Add(this.textBox_SolidNoteColorPicker);
@@ -5687,17 +5682,6 @@ namespace RSMods
             this.tab_Twitch.TabIndex = 6;
             this.tab_Twitch.Text = "Twitch Bot (Beta)";
             // 
-            // checkBox_RevealTwitchAuthToken
-            // 
-            this.checkBox_RevealTwitchAuthToken.AutoSize = true;
-            this.checkBox_RevealTwitchAuthToken.Location = new System.Drawing.Point(548, 87);
-            this.checkBox_RevealTwitchAuthToken.Name = "checkBox_RevealTwitchAuthToken";
-            this.checkBox_RevealTwitchAuthToken.Size = new System.Drawing.Size(60, 17);
-            this.checkBox_RevealTwitchAuthToken.TabIndex = 126;
-            this.checkBox_RevealTwitchAuthToken.Text = "Reveal";
-            this.checkBox_RevealTwitchAuthToken.UseVisualStyleBackColor = true;
-            this.checkBox_RevealTwitchAuthToken.MouseHover += new System.EventHandler(this.ToolTips_Show);
-            // 
             // button_SaveLogToFile
             // 
             this.button_SaveLogToFile.Location = new System.Drawing.Point(950, 361);
@@ -5708,17 +5692,6 @@ namespace RSMods
             this.button_SaveLogToFile.UseVisualStyleBackColor = true;
             this.button_SaveLogToFile.Visible = false;
             this.button_SaveLogToFile.Click += new System.EventHandler(this.Twitch_SaveLog);
-            // 
-            // checkBox_TwitchForceReauth
-            // 
-            this.checkBox_TwitchForceReauth.AutoSize = true;
-            this.checkBox_TwitchForceReauth.Location = new System.Drawing.Point(820, 12);
-            this.checkBox_TwitchForceReauth.Name = "checkBox_TwitchForceReauth";
-            this.checkBox_TwitchForceReauth.Size = new System.Drawing.Size(86, 17);
-            this.checkBox_TwitchForceReauth.TabIndex = 124;
-            this.checkBox_TwitchForceReauth.Text = "Force reauth";
-            this.checkBox_TwitchForceReauth.UseVisualStyleBackColor = true;
-            this.checkBox_TwitchForceReauth.CheckedChanged += new System.EventHandler(this.Twitch_ForceReauth);
             // 
             // button_TestTwitchReward
             // 
@@ -5942,8 +5915,6 @@ namespace RSMods
             this.label_TwitchAccessTokenVal.Name = "label_TwitchAccessTokenVal";
             this.label_TwitchAccessTokenVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchAccessTokenVal.TabIndex = 8;
-            this.label_TwitchAccessTokenVal.TextChanged += new System.EventHandler(this.Twitch_NewAccessToken);
-            this.label_TwitchAccessTokenVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
             this.label_TwitchAccessTokenVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchChannelIDVal
@@ -5953,7 +5924,6 @@ namespace RSMods
             this.label_TwitchChannelIDVal.Name = "label_TwitchChannelIDVal";
             this.label_TwitchChannelIDVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchChannelIDVal.TabIndex = 7;
-            this.label_TwitchChannelIDVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
             this.label_TwitchChannelIDVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchUsernameVal
@@ -5963,7 +5933,6 @@ namespace RSMods
             this.label_TwitchUsernameVal.Name = "label_TwitchUsernameVal";
             this.label_TwitchUsernameVal.Size = new System.Drawing.Size(0, 13);
             this.label_TwitchUsernameVal.TabIndex = 6;
-            this.label_TwitchUsernameVal.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Twitch_CopyCredentialsForDevs);
             this.label_TwitchUsernameVal.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // label_TwitchAccessToken
@@ -5971,9 +5940,9 @@ namespace RSMods
             this.label_TwitchAccessToken.AutoSize = true;
             this.label_TwitchAccessToken.Location = new System.Drawing.Point(281, 87);
             this.label_TwitchAccessToken.Name = "label_TwitchAccessToken";
-            this.label_TwitchAccessToken.Size = new System.Drawing.Size(62, 13);
+            this.label_TwitchAccessToken.Size = new System.Drawing.Size(74, 13);
             this.label_TwitchAccessToken.TabIndex = 5;
-            this.label_TwitchAccessToken.Text = "Auth token:";
+            this.label_TwitchAccessToken.Text = "Authorization:";
             // 
             // label_TwitchChannelID
             // 
@@ -6876,11 +6845,6 @@ namespace RSMods
             this.checkBox_ChangeTheme.CheckedChanged += new System.EventHandler(this.CustomTheme_ChangeTheme);
             this.checkBox_ChangeTheme.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
-            // timerValidateTwitch
-            // 
-            this.timerValidateTwitch.Interval = 150000;
-            this.timerValidateTwitch.Tick += new System.EventHandler(this.Twitch_timerValidate);
-            // 
             // label_SettingsSaved
             // 
             this.label_SettingsSaved.AutoSize = true;
@@ -7246,8 +7210,6 @@ namespace RSMods
         private System.Windows.Forms.Button button_SolidNoteColorPicker;
         private System.Windows.Forms.Button button_SolidNoteColorRandom;
         private System.Windows.Forms.Button button_TestTwitchReward;
-        private System.Windows.Forms.Timer timerValidateTwitch;
-        private System.Windows.Forms.CheckBox checkBox_TwitchForceReauth;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colEnabledRewardsEnabled;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colEnabledRewardsLength;
@@ -7272,7 +7234,6 @@ namespace RSMods
         private System.Windows.Forms.Label label_SettingsSaved;
         private System.Windows.Forms.CheckBox checkBox_ExtendedRangeDrop;
         private System.Windows.Forms.CheckBox checkBox_ShowCurrentNote;
-        private System.Windows.Forms.CheckBox checkBox_RevealTwitchAuthToken;
         private System.Windows.Forms.GroupBox groupBox_Keybindings_AUDIO;
         private System.Windows.Forms.Button button_ClearSelectedKeybind_AUDIO;
         private System.Windows.Forms.Label label_NewAssignmentAUDIO;

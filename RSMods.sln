@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI.Core", "GUI.Core\GUI.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI.Avalonia", "GUI.Avalonia\GUI.Avalonia.csproj", "{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI.Core.Tests", "GUI.Core.Tests\GUI.Core.Tests.csproj", "{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug with Wwise Logging|Win32 = Debug with Wwise Logging|Win32
@@ -65,6 +67,14 @@ Global
 		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release with Wwise Logging|Win32.Build.0 = Release|Any CPU
 		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release|Win32.ActiveCfg = Release|Any CPU
 		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release|Win32.Build.0 = Release|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Debug with Wwise Logging|Win32.ActiveCfg = Debug|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Debug with Wwise Logging|Win32.Build.0 = Debug|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Debug|Win32.Build.0 = Debug|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Release with Wwise Logging|Win32.ActiveCfg = Release|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Release with Wwise Logging|Win32.Build.0 = Release|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B7D60B0E-0A48-4B95-A1E9-5A4D27D4C19A}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

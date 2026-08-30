@@ -20,6 +20,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     public ProfilesViewModel Profiles { get; }
     public SoundPacksViewModel SoundPacks { get; }
     public SetAndForgetViewModel SetAndForget { get; }
+    public TwitchViewModel Twitch { get; }
 
     [ObservableProperty]
     private ObservableObject _currentPage;
@@ -33,6 +34,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ShowProfilesCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowSoundPacksCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowSetAndForgetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowTwitchCommand))]
     private bool _sectionsEnabled;
 
     public MainWindowViewModel(
@@ -47,7 +49,8 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         ThemesViewModel themes,
         ProfilesViewModel profiles,
         SoundPacksViewModel soundPacks,
-        SetAndForgetViewModel setAndForget)
+        SetAndForgetViewModel setAndForget,
+        TwitchViewModel twitch)
     {
         _startup = startup;
         _warnings = warnings;
@@ -61,6 +64,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         Profiles = profiles;
         SoundPacks = soundPacks;
         SetAndForget = setAndForget;
+        Twitch = twitch;
         _currentPage = status;
     }
 
@@ -93,6 +97,9 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Settings are loaded now, so the settings screens can build their snapshots.
         ModSettings.Load();
         SectionsEnabled = true;
+
+        // Twitch is application-scoped and starts whether or not its page is opened.
+        await Twitch.InitializeAsync();
 
         await _warnings.PresentAsync(result.Warnings);
     }
@@ -158,4 +165,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         await SetAndForget.InitializeAsync();
         CurrentPage = SetAndForget;
     }
+
+    [RelayCommand(CanExecute = nameof(SectionsEnabled))]
+    private void ShowTwitch() => CurrentPage = Twitch;
 }

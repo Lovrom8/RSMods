@@ -9,6 +9,7 @@ using System.Reflection;
 using static RSMods.RsModsSettings;
 using RSMods.ASIO;
 using RSMods.Rocksmith;
+using RSMods.Twitch;
 
 namespace RSMods
 {
@@ -150,11 +151,12 @@ namespace RSMods
         {
             try
             {
-                await GithubUpdater.CallGithubAPI();
-                button_UpdateRSMods.Visible = GithubUpdater.IsUpdateAvailable();
-
                 PrepTwitch_LoadSettings();
                 Twitch_Setup();
+                await TwitchRuntime.StartAsync();
+
+                await GithubUpdater.CallGithubAPI();
+                button_UpdateRSMods.Visible = GithubUpdater.IsUpdateAvailable();
             }
             catch
             {

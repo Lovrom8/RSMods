@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using RSMods.Core;
 using RSMods.Services;
 using RSMods.Util;
+using RSMods.Data;
+using RSMods.Twitch;
+using RSMods.Twitch.EffectServer;
 using RSMods.ViewModels;
 using RSMods.Views;
 
@@ -30,6 +33,26 @@ public sealed class App : Application
             services.AddSingleton<SoundPackService>();
             services.AddSingleton<SettingsWarningPresenter>();
             services.AddSingleton<ThemeService>();
+            services.AddSingleton(new HttpClient());
+            services.AddSingleton<TwitchOptions>();
+            services.AddSingleton<ITwitchClock>(SystemTwitchClock.Instance);
+            services.AddSingleton(provider =>
+            {
+                var store = new TwitchTokenStore(Constants.TwitchTokenPath);
+                store.LoadOrImportLegacy(
+                    Constants.SettingsPath,
+                    provider.GetRequiredService<TwitchOptions>().ClientId);
+                return store;
+            });
+            services.AddSingleton(_ => new TwitchRewardRepository(Constants.TwitchRewardsPath));
+            services.AddSingleton<TwitchAuthService>();
+            services.AddSingleton<TwitchApiClient>();
+            services.AddSingleton<ITwitchEventSubClient>(provider => new TwitchEventSubClient(
+                provider.GetRequiredService<TwitchApiClient>(),
+                provider.GetRequiredService<TwitchOptions>(),
+                clock: provider.GetRequiredService<ITwitchClock>()));
+            services.AddSingleton<RocksmithEffectServer>();
+            services.AddSingleton<TwitchService>();
             services.AddTransient<StatusViewModel>();
             services.AddTransient<ModSettingsViewModel>();
             services.AddTransient<ColorsViewModel>();
@@ -39,6 +62,7 @@ public sealed class App : Application
             services.AddTransient<ProfilesViewModel>();
             services.AddTransient<SoundPacksViewModel>();
             services.AddTransient<SetAndForgetViewModel>();
+            services.AddSingleton<TwitchViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<MainWindow>();
 

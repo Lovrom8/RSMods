@@ -157,10 +157,9 @@ namespace RSMods
             TooltipDictionary.Add(label_TwitchAuthorized, "Please take care to make sure none of these entries are shown on your stream.");
             TooltipDictionary.Add(label_TwitchUsername, "Please take care to make sure none of these entries are shown on your stream.");
             TooltipDictionary.Add(label_TwitchChannelID, "Please take care to make sure none of these entries are shown on your stream.");
-            TooltipDictionary.Add(label_TwitchAccessTokenVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
-            TooltipDictionary.Add(label_TwitchUsernameVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
-            TooltipDictionary.Add(label_TwitchChannelIDVal, "Please make sure this value is never shown live.\nClick to copy this to your clipboard.\nThis value is needed when asking for Twitch support from the RSMods devs.");
-            TooltipDictionary.Add(checkBox_RevealTwitchAuthToken, "Only reveal this when asked by RSMods developers.\nThis is how we look to see when events happen in your stream.");
+            TooltipDictionary.Add(label_TwitchAccessTokenVal, "Shows whether Twitch authorization is stored. The token itself is never displayed.");
+            TooltipDictionary.Add(label_TwitchUsernameVal, "The Twitch account used for EventSub authorization.");
+            TooltipDictionary.Add(label_TwitchChannelIDVal, "The Twitch channel used for EventSub subscriptions.");
 
             // Custom Noteway Colors
             TooltipDictionary.Add(button_ChangeNumberedFrets, "This will change the color of all numbered frets in game.\n3, 5, 7, 9, 12, 15, 17, 19, 21, 24.\nThis needs to be paired with Change UnNumbered Frets or it won't work!");

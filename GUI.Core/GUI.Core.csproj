@@ -40,10 +40,15 @@
          its legacy CAS compatibility path loads System.Security.Permissions. A raw assembly reference
          cannot declare that transitive dependency, so include it explicitly for the Avalonia target. -->
     <PackageReference Include="System.Security.Permissions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <!-- Twitch OAuth material is encrypted with Windows DPAPI. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <!-- IAsyncDisposable is built into net8.0 and supplied to the legacy target by this package. -->
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System.Management" Condition="'$(TargetFramework)' == 'net48'" />
+    <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net48'" />
     <!-- Shared song/profile services consume the existing Rocksmith archive model. The assembly is
          supplied by the legacy GUI project until that dependency is replaced with a modern package. -->
     <Reference Include="Rocksmith2014PsarcLib">

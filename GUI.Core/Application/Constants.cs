@@ -15,15 +15,17 @@ namespace RSMods.Data
 
         public static void SaveBaseSettings()
         {
-            File.WriteAllLines(SettingsPath,
-            [
-                $"RSPath = {RSFolder}",
-                $"SavePath = {SavePath}",
-                $"BypassSavePrompt = {SavePathDeclined}"
-            ]);
+            FlatKeyValueSettingsStore.UpdateFile(SettingsPath, settings =>
+            {
+                settings.SetString("RSPath", RSFolder);
+                settings.SetString("SavePath", SavePath);
+                settings.SetString("BypassSavePrompt", SavePathDeclined.ToString());
+            });
         }
 
         public static string SettingsPath { get { return Path.Combine(BaseDirectory, "GUI_Settings.ini"); } }
+        public static string TwitchTokenPath { get { return Path.Combine(BaseDirectory, "TwitchAuth.dat"); } }
+        public static string TwitchRewardsPath { get { return Path.Combine(BaseDirectory, "TwitchEnabledEffects.xml"); } }
         public static string CachePsarcPath { get { return Path.Combine(RSFolder, "cache.psarc"); } }
         public static string WorkFolder { get { return Path.Combine(BaseDirectory, "Temp"); } }
         public static string CachePcPath { get { return Path.Combine(WorkFolder, "cache_psarc_RS2014_Pc"); } }

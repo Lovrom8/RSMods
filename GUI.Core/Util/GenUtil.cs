@@ -196,14 +196,12 @@ namespace RSMods.Util
         private static Dictionary<string, string> settingsDict = null;
         public static Dictionary<string, string> GetSettingsPairs(List<string> settingsLines)
         {
-            var dictRet = new Dictionary<string, string>();
+            var dictRet = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             settingsLines.ForEach(line =>
             {
-                string entry = line.Split('=')[0].Trim();
-                string value = line.Split('=')[1].Trim();
-
-                dictRet.Add(entry, value);
+                if (FlatKeyValueSettingsStore.TryParseLine(line, out string entry, out string value))
+                    dictRet[entry] = value;
             }
             );
 
