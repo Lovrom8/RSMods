@@ -13,7 +13,7 @@
 
         <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
             <Button x:Name="NegativeButton" MinWidth="84" Click="NegativeButton_OnClick" Content="No" />
-            <Button MinWidth="84" Click="PositiveButton_OnClick" Content="OK" />
+            <Button x:Name="PositiveButton" MinWidth="84" Click="PositiveButton_OnClick" Content="OK" />
         </StackPanel>
     </Grid>
 </Window>

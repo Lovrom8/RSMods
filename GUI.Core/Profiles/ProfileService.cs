@@ -8,16 +8,11 @@ using System.Linq;
 
 namespace RSMods
 {
-    public sealed class ProfileService
+    public sealed class ProfileService(ProfileCodec codec = null)
     {
-        private readonly ProfileCodec _codec;
+        private readonly ProfileCodec _codec = codec ?? new ProfileCodec();
         private DecodedProfile _activeDocument;
         private JObject _activeProfile;
-
-        public ProfileService(ProfileCodec codec = null)
-        {
-            _codec = codec ?? new ProfileCodec();
-        }
 
         public string CurrentProfileName { get; set; } = string.Empty;
         public JObject ActiveProfile => _activeProfile;
@@ -27,8 +22,7 @@ namespace RSMods
         {
             var profiles = new Dictionary<string, string>();
             string saveDirectory = GenUtil.GetSaveDirectory();
-            if (string.IsNullOrEmpty(saveDirectory))
-                return profiles;
+            if (string.IsNullOrEmpty(saveDirectory)) return profiles;
 
             try
             {

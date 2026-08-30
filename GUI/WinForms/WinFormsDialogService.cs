@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RSMods.Core;
@@ -33,6 +34,16 @@ namespace RSMods.WinForms
             return Task.FromResult(result == DialogResult.Yes);
         }
 
+        public Task<bool> ShowChoiceAsync(string message, string title, string positiveText, string negativeText)
+        {
+            // The WinForms Profiles tab does its own MessageBoxManager relabelling in-place; this adapter
+            // method exists for interface parity and maps the positive choice to Yes.
+            var result = MessageBox.Show(
+                $"{message}\n\nYes = {positiveText}\nNo = {negativeText}",
+                title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            return Task.FromResult(result == DialogResult.Yes);
+        }
+
         public Task<string?> PickFolderAsync(string title, string? startPath = null)
         {
             var picker = new FolderPicker { Title = title };
@@ -42,6 +53,22 @@ namespace RSMods.WinForms
             IntPtr owner = Application.OpenForms.Count > 0 ? Application.OpenForms[0].Handle : IntPtr.Zero;
             bool? picked = picker.ShowDialog(owner);
             return Task.FromResult(picked == true ? picker.ResultPath : null);
+        }
+
+        public Task<IReadOnlyList<string>> PickFilesAsync(
+            string title, string typeName, IReadOnlyList<string> patterns, bool allowMultiple)
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Title = title,
+                Multiselect = allowMultiple,
+                Filter = $"{typeName}|{string.Join(";", patterns)}",
+            };
+
+            IReadOnlyList<string> files = dialog.ShowDialog() == DialogResult.OK
+                ? dialog.FileNames
+                : Array.Empty<string>();
+            return Task.FromResult(files);
         }
     }
 }

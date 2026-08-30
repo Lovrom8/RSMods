@@ -7,14 +7,9 @@ using System.IO;
 namespace RSMods
 {
     /// <summary>Imports JSON manifest and toolkit XML tones into the active profile.</summary>
-    public sealed class ProfileToneImportService
+    public sealed class ProfileToneImportService(ProfileService profiles)
     {
-        private readonly ProfileService _profiles;
-
-        public ProfileToneImportService(ProfileService profiles)
-        {
-            _profiles = profiles ?? throw new ArgumentNullException(nameof(profiles));
-        }
+        private readonly ProfileService _profiles = profiles ?? throw new ArgumentNullException(nameof(profiles));
 
         public (int ImportedCount, List<string> ErrorMessages) ImportManifests(string[] fileNames)
         {
@@ -38,7 +33,9 @@ namespace RSMods
 
             int importedCount = guitarTones.Count + bassTones.Count;
             if (importedCount > 0)
+            {
                 _profiles.SaveTones(guitarTones, bassTones);
+            }
 
             return (importedCount, errors);
         }
@@ -78,7 +75,9 @@ namespace RSMods
 
             int importedCount = guitarTones.Count + bassTones.Count;
             if (importedCount > 0)
+            {
                 _profiles.SaveTones(guitarTones, bassTones);
+            }
 
             return (importedCount, errors);
         }

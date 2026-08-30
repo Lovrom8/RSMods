@@ -1,0 +1,135 @@
+<UserControl
+    x:Class="RSMods.Views.ProfilesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:ProfilesViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Profiles" />
+            <TextBlock
+                FontSize="13"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Manage your Rocksmith save profiles. Select a profile to edit its song lists and rewards, or restore a previous backup of your save data. Each action is applied and saved immediately." />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <ProgressBar Width="120" IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+                <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
+            </StackPanel>
+
+            <!-- Profile selection -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Profile" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock VerticalAlignment="Center" Text="Active profile:" />
+                        <ComboBox
+                            Width="240"
+                            PlaceholderText="Select a profile"
+                            ItemsSource="{Binding AvailableProfiles}"
+                            SelectedItem="{Binding SelectedProfile}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Song lists -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+                    IsVisible="{Binding HasSelectedProfile}">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Song lists" />
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Song lists in this profile:" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding SongListCount}" />
+                    </StackPanel>
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Rocksmith keeps between 6 and 20 song lists. Adding or removing a list is saved to the profile straight away." />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding AddSongListCommand}" Content="Add song list" />
+                        <Button Command="{Binding RemoveSongListCommand}" Content="Remove newest" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Rewards -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+                    IsVisible="{Binding HasSelectedProfile}">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Rewards" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Unlock every in-game reward at once, or lock them all back. This rewrites the profile's reward state." />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding UnlockRewardsCommand}" Content="Unlock all rewards" />
+                        <Button Command="{Binding LockRewardsCommand}" Content="Lock all rewards" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Import tones -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+                    IsVisible="{Binding HasSelectedProfile}">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Import tones" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Add custom tones to the selected profile from a CDLC tone manifest (.json) or a Toolkit tone template (.tone2014.xml). XML tones ask whether each tone is for guitar or bass." />
+                    <CheckBox Content="Select multiple files at once" IsChecked="{Binding ImportTonesBulk}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding ImportJsonTonesCommand}" Content="Import JSON manifest…" />
+                        <Button Command="{Binding ImportXmlTonesCommand}" Content="Import Toolkit XML…" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Song lists / Favorites grid -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+                    IsVisible="{Binding HasSelectedProfile}">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Song list &amp; Favorites editor" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Load your song library to add songs to Favorites and to each song list. Reading the archives can take a while. Toggling a box updates the profile in memory; click Save song lists to write it to disk." />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding LoadSongsCommand}" Content="Load songs" />
+                        <Button Command="{Binding SaveSongListsCommand}" Content="Save song lists" />
+                        <ProgressBar
+                            Width="160" Minimum="0" Maximum="100"
+                            Value="{Binding LoadProgress}"
+                            IsVisible="{Binding IsLoadingSongs}" />
+                    </StackPanel>
+                    <DataGrid
+                        x:Name="SongsGrid"
+                        Height="420"
+                        AutoGenerateColumns="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeColumns="True"
+                        CanUserSortColumns="True"
+                        GridLinesVisibility="All"
+                        IsVisible="{Binding HasLoadedSongs}"
+                        ItemsSource="{Binding SongRows}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Backups -->
+            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <StackPanel Spacing="10">
+                    <TextBlock FontWeight="SemiBold" Text="Backups" />
+                    <TextBlock
+                        FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                        Text="Restore your save data from an automatic backup. This overwrites your current profiles, so use it only to recover." />
+                    <ListBox
+                        Height="160"
+                        ItemsSource="{Binding Backups}"
+                        SelectedItem="{Binding SelectedBackup}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding RevertToBackupCommand}" Content="Revert to selected backup" />
+                        <Button Command="{Binding RefreshBackupsCommand}" Content="Refresh" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

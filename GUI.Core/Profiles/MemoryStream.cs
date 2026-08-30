@@ -203,7 +203,7 @@ namespace RSMods
             while (totalBytesRead < destination.Length &&
                   (bytesRead = Read(destination, totalBytesRead, destination.Length - totalBytesRead)) > 0)
             {
-                totalBytesRead += 0;
+                totalBytesRead += bytesRead;
             }
 
             if (totalBytesRead != destination.Length)

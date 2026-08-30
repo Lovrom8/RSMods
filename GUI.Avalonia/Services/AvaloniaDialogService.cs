@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -18,6 +20,9 @@ internal sealed class AvaloniaDialogService : IDialogService
     public Task<bool> ShowConfirmAsync(string message, string title = "") =>
         MessageDialog.ShowAsync(GetOwner(), message, title, confirmation: true);
 
+    public Task<bool> ShowChoiceAsync(string message, string title, string positiveText, string negativeText) =>
+        MessageDialog.ShowChoiceAsync(GetOwner(), message, title, positiveText, negativeText);
+
     public async Task<string?> PickFolderAsync(string title, string? startPath = null)
     {
         var owner = GetOwner();
@@ -36,6 +41,23 @@ internal sealed class AvaloniaDialogService : IDialogService
 
         var path = folders[0].Path;
         return path.IsFile ? path.LocalPath : path.ToString();
+    }
+
+    public async Task<IReadOnlyList<string>> PickFilesAsync(
+        string title, string typeName, IReadOnlyList<string> patterns, bool allowMultiple)
+    {
+        var owner = GetOwner();
+        var options = new FilePickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = allowMultiple,
+            FileTypeFilter = [new FilePickerFileType(typeName) { Patterns = [.. patterns] }],
+        };
+
+        var files = await owner.StorageProvider.OpenFilePickerAsync(options);
+        return files
+            .Select(file => file.Path.IsFile ? file.Path.LocalPath : file.Path.ToString())
+            .ToList();
     }
 
     private static Window GetOwner()

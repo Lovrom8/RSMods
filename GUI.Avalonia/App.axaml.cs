@@ -35,6 +35,7 @@ public sealed class App : Application
             services.AddTransient<RocksmithSettingsViewModel>();
             services.AddTransient<AsioSettingsViewModel>();
             services.AddTransient<ThemesViewModel>();
+            services.AddTransient<ProfilesViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<MainWindow>();
 

@@ -69,7 +69,7 @@ namespace RSMods
             Encode(profileJson, fileName, source.UserId);
         }
 
-        internal void Encode(string profileJson, string fileName, byte[] userId)
+        internal static void Encode(string profileJson, string fileName, byte[] userId)
         {
             if (userId == null || userId.Length != 4)
                 throw new InvalidDataException("Rocksmith profile user id must contain four bytes.");
@@ -227,7 +227,9 @@ namespace RSMods
             zlibOutput.finish();
             output.Flush();
             if (output.CanSeek)
+            {
                 output.Position = 0;
+            }
 
             return zlibOutput.TotalOut;
         }

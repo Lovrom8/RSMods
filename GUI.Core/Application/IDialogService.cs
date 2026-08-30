@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RSMods.Core
@@ -21,7 +22,20 @@ namespace RSMods.Core
         /// <summary>Yes/No (or OK/Cancel) confirmation. Returns true for the affirmative choice.</summary>
         Task<bool> ShowConfirmAsync(string message, string title = "");
 
+        /// <summary>
+        /// Two-choice prompt with custom button labels (e.g. "Guitar"/"Bass"). Returns true for the
+        /// positive (first) choice, false for the negative one.
+        /// </summary>
+        Task<bool> ShowChoiceAsync(string message, string title, string positiveText, string negativeText);
+
         /// <summary>Folder picker. Returns the chosen path, or null if the user cancelled.</summary>
         Task<string?> PickFolderAsync(string title, string? startPath = null);
+
+        /// <summary>
+        /// Multi-file open picker. <paramref name="patterns"/> are glob patterns such as "*.json" or
+        /// "*.tone2014.xml". Returns the chosen file paths, or an empty list if the user cancelled.
+        /// </summary>
+        Task<IReadOnlyList<string>> PickFilesAsync(
+            string title, string typeName, IReadOnlyList<string> patterns, bool allowMultiple);
     }
 }

@@ -14,7 +14,6 @@ namespace RSMods
     public static class Profiles
     {
         private static readonly ProfileService Service = new ProfileService();
-        private static readonly ProfileBackupService Backups = new ProfileBackupService();
         private static readonly ProfileToneImportService ToneImports = new ProfileToneImportService(Service);
 
         public static string CurrentUnpackedProfileName
@@ -30,7 +29,7 @@ namespace RSMods
 
         public static void SaveProfile()
         {
-            Backups.CreateBackup(GenUtil.GetSaveDirectory(), Constants.RSFolder);
+            ProfileBackupService.CreateBackup(GenUtil.GetSaveDirectory(), Constants.RSFolder);
         }
 
         public static string DecryptProfiles(
@@ -88,22 +87,22 @@ namespace RSMods
 
         public static IEnumerable<string> GetFormattedBackupNames()
         {
-            return Backups.GetFormattedBackupNames(GenUtil.GetRSDirectory());
+            return ProfileBackupService.GetFormattedBackupNames(GenUtil.GetRSDirectory());
         }
 
         public static string GetBackupSourceDir(string displayName)
         {
-            return Backups.GetBackupSourceDirectory(GenUtil.GetRSDirectory(), displayName);
+            return ProfileBackupService.GetBackupSourceDirectory(GenUtil.GetRSDirectory(), displayName);
         }
 
         public static void DeleteOldBackups(int maxAmountOfBackups)
         {
-            Backups.DeleteOldBackups(Constants.RSFolder, maxAmountOfBackups);
+            ProfileBackupService.DeleteOldBackups(Constants.RSFolder, maxAmountOfBackups);
         }
 
         public static void RestoreBackup(string sourceDir, string targetDir)
         {
-            Backups.RestoreBackup(sourceDir, targetDir);
+            ProfileBackupService.RestoreBackup(sourceDir, targetDir);
         }
 
         public static (int ImportedCount, List<string> ErrorMessages) ProcessToneManifests(string[] fileNames)
@@ -116,6 +115,19 @@ namespace RSMods
             Func<Tone2014, bool> isGuitarPrompt)
         {
             return ToneImports.ImportXmlTones(fileNames, isGuitarPrompt);
+        }
+
+        /// <summary>
+        /// UI-friendly variant of <see cref="ProcessXmlTones(string[], Func{Tone2014, bool})"/> that surfaces
+        /// only the tone's display name to the prompt, so frontends need not reference the toolkit's
+        /// <see cref="Tone2014"/> type. A distinct name (rather than an overload) keeps callers from having to
+        /// resolve against the <see cref="Tone2014"/> signature, which would drag in that assembly reference.
+        /// </summary>
+        public static (int ImportedCount, List<string> ErrorMessages) ProcessXmlTonesByName(
+            string[] fileNames,
+            Func<string, bool> isGuitarPromptByName)
+        {
+            return ToneImports.ImportXmlTones(fileNames, tone => isGuitarPromptByName(tone.Name));
         }
     }
 }

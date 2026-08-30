@@ -31,6 +31,9 @@
         <DataTemplate DataType="vm:ThemesViewModel">
             <views:ThemesView />
         </DataTemplate>
+        <DataTemplate DataType="vm:ProfilesViewModel">
+            <views:ProfilesView />
+        </DataTemplate>
     </Window.DataTemplates>
 
     <Grid RowDefinitions="Auto,*">
@@ -50,6 +53,7 @@
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowColorsCommand}" Content="Custom Colors" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowRocksmithCommand}" Content="Rocksmith" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowAsioCommand}" Content="RS_ASIO" />
+                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowProfilesCommand}" Content="Profiles" />
                     <Button HorizontalContentAlignment="Left" Command="{Binding ShowThemesCommand}" Content="Appearance" />
                 </StackPanel>
             </Border>

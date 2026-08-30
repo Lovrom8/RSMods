@@ -12,7 +12,7 @@ namespace RSMods
         private const string BackupSourceFormat = "MM-dd-yyyy_HH-mm-ss";
         private const string BackupDisplayFormat = "MMM dd, yyyy @ HH:mm:ss";
 
-        public void CreateBackup(string profileFolder, string rocksmithFolder)
+        public static void CreateBackup(string profileFolder, string rocksmithFolder)
         {
             if (string.IsNullOrEmpty(profileFolder))
                 return;
@@ -29,11 +29,11 @@ namespace RSMods
                 File.Copy(file, Path.Combine(timestampedFolder, Path.GetFileName(file)), true);
         }
 
-        public IEnumerable<string> GetFormattedBackupNames(string rocksmithFolder)
+        public static IEnumerable<string> GetFormattedBackupNames(string rocksmithFolder)
         {
             string backupPath = Path.Combine(rocksmithFolder, "Profile_Backups");
             if (!Directory.Exists(backupPath))
-                return Enumerable.Empty<string>();
+                return [];
 
             return Directory.EnumerateDirectories(backupPath)
                 .Select(Path.GetFileName)
@@ -42,23 +42,17 @@ namespace RSMods
                 .Reverse();
         }
 
-        public string GetBackupSourceDirectory(string rocksmithFolder, string displayName)
+        public static string GetBackupSourceDirectory(string rocksmithFolder, string displayName)
         {
-            if (!DateTime.TryParseExact(
-                    displayName,
-                    BackupDisplayFormat,
-                    CultureInfo.CurrentCulture,
-                    DateTimeStyles.None,
-                    out DateTime timestamp))
+            if (!DateTime.TryParseExact(displayName, BackupDisplayFormat, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime timestamp))
+            {
                 return null;
+            }
 
-            return Path.Combine(
-                rocksmithFolder,
-                "Profile_Backups",
-                timestamp.ToString(BackupSourceFormat));
+            return Path.Combine(rocksmithFolder, "Profile_Backups", timestamp.ToString(BackupSourceFormat));
         }
 
-        public void DeleteOldBackups(string rocksmithFolder, int maximumBackups)
+        public static void DeleteOldBackups(string rocksmithFolder, int maximumBackups)
         {
             if (maximumBackups == 0)
                 return;
@@ -67,21 +61,22 @@ namespace RSMods
             if (!Directory.Exists(backupFolder))
                 return;
 
-            DirectoryInfo[] backups = new DirectoryInfo(backupFolder)
+            DirectoryInfo[] backups = [.. new DirectoryInfo(backupFolder)
                 .GetDirectories()
-                .OrderBy(folder => folder.LastWriteTime)
-                .ToArray();
+                .OrderBy(folder => folder.LastWriteTime)];
 
             foreach (DirectoryInfo backup in backups.Take(Math.Max(0, backups.Length - maximumBackups)))
             {
                 foreach (FileInfo file in backup.GetFiles())
+                {
                     file.Delete();
+                }
 
                 backup.Delete();
             }
         }
 
-        public void RestoreBackup(string sourceDirectory, string targetDirectory)
+        public static void RestoreBackup(string sourceDirectory, string targetDirectory)
         {
             foreach (string file in Directory.EnumerateFiles(sourceDirectory))
                 File.Copy(file, Path.Combine(targetDirectory, Path.GetFileName(file)), true);
