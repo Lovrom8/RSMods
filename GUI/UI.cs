@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RSMods.Core;
@@ -22,12 +23,16 @@ namespace RSMods
 
         private readonly bool AllowSaving = true;
 
+        private AsioSettings _asioSettings;
+        private RocksmithSettings _rocksmithSettings;
+
         public MainForm()
         {
             InitializeComponent();
             SetupWindowMetadata();
 
             LoadEnvironment();
+            InitializeGameSettings();
 
             WireUpEvents();
 
@@ -62,11 +67,20 @@ namespace RSMods
             Constants.SaveBaseSettings();
         }
 
+        private void InitializeGameSettings()
+        {
+            _asioSettings = new AsioSettings(Path.Combine(Constants.RSFolder, AsioSettings.DefaultFileName));
+            _rocksmithSettings = new RocksmithSettings(Path.Combine(Constants.RSFolder, RocksmithSettings.DefaultFileName));
+        }
+
         private void WireUpEvents()
         {
             RsModsSettings.SettingChanged += OnSettingChanged;
-            RocksmithSettings.SettingChanged += OnSettingChanged;
-            AsioSettings.SettingChanged += OnSettingChanged;
+            _rocksmithSettings.SettingChanged += OnSettingChanged;
+            _asioSettings.SettingChanged += OnSettingChanged;
+            RsModsSettings.ValidationWarning += OnSettingValidationWarning;
+            _rocksmithSettings.ValidationWarning += OnSettingValidationWarning;
+            _asioSettings.ValidationWarning += OnSettingValidationWarning;
 
             this.Shown += MainForm_Shown;
         }
@@ -90,6 +104,8 @@ namespace RSMods
 
         private void LoadModState()
         {
+            SettingsSanitizer.Clear();
+
             Midi_LoadDevices();
             Startup_LoadInputDevices();
             Startup_VerifyInstallOfASIO();
@@ -104,6 +120,17 @@ namespace RSMods
 
             Startup_CheckStatusAudioPsarc();
             SoundPacks_LoadResultVoiceOverList();
+            SettingsSanitizer.ShowWarningsIfAny();
+        }
+
+        private static void OnSettingValidationWarning(IniValidationWarning warning)
+        {
+            SettingsSanitizer.ReportInvalid(
+                Path.GetFileName(warning.FilePath),
+                $"{warning.Section} {warning.Key}",
+                warning.RawValue,
+                warning.DefaultValue,
+                warning.Reason);
         }
 
         private void FinalizeStartup()

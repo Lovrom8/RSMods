@@ -4,6 +4,9 @@ using System.IO;
 
 namespace RSMods
 {
+    /// <summary>
+    /// Block-backed stream used by Rocksmith profile compression to avoid large contiguous buffers.
+    /// </summary>
     public class MemoryStream : Stream
     {
         public MemoryStream()

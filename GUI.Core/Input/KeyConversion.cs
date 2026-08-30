@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace RSMods {
-    static class KeyConversion {
+    // Portable string <-> virtual-key conversion used by both UI frontends.
+    public static class KeyConversion {
         #region Convert VKey To UI
         public static string VKeyToUI(string VKey)
         {
@@ -11,44 +11,6 @@ namespace RSMods {
             if (VKey.Contains("VK_"))
                 ReplacementValue = ReplacementValue.Substring(3, ReplacementValue.Length - 3);
             return ReplacementValue;
-        }
-        #endregion
-        #region Acceptable Keys
-        public static readonly Keys[] KeyDownDictionary = [ // As to why not every key is in here, refer to this picture as to what keys are used my Rocksmith by default. https://pastebin.com/raw/7f1CvkUt | https://i.imgur.com/lpNv3yG.png
-            // Standard Function Keys
-            Keys.F1, Keys.F2, Keys.F3, Keys.F4, Keys.F5, Keys.F6, Keys.F7, Keys.F9, Keys.F10,
-            // Elgato Keys / Extended Function Keys
-            Keys.F13, Keys.F14, Keys.F15, Keys.F16, Keys.F17, Keys.F18, Keys.F19, Keys.F20, Keys.F21, Keys.F22,  Keys.F23, Keys.F24,
-            // Special Keys
-            Keys.Pause, Keys.Scroll, Keys.Insert,
-            // Symbol Keys
-            Keys.OemSemicolon, Keys.Oemtilde, Keys.Oemcomma, Keys.OemMinus, Keys.OemPeriod, Keys.OemQuotes, Keys.OemQuestion, Keys.OemOpenBrackets, Keys.OemCloseBrackets,
-            // Modifier Keys
-            Keys.CapsLock, Keys.Apps,
-            // Numlock Keys
-            Keys.Subtract, Keys.NumLock, Keys.Multiply, Keys.Divide, Keys.Decimal
-        ];
-
-        public static readonly Keys[] KeyUpDictionary = [ // Same with KeyDownDictionary, but these are all the keys that can only be read on KeyUp
-            // Print Screen
-            Keys.PrintScreen,
-            // Media Keys
-            Keys.Play, Keys.MediaNextTrack, Keys.MediaPlayPause, Keys.MediaPreviousTrack, Keys.MediaStop
-        ];
-
-        public static readonly MouseButtons[] MouseButtonDictionary = [ // Same with KeyUpDictonary, and KeyDownDictionary but with the mouse's extra buttons.
-             // Middle Mouse Button
-             MouseButtons.Middle,
-             // Side Buttons
-             MouseButtons.XButton1, MouseButtons.XButton2
-        ];
-
-        public static bool IsRocksmithReservedKey(Keys key)
-        {
-            bool isNumber = key >= Keys.D0 && key <= Keys.D9;
-            bool isLetter = key >= Keys.A && key <= Keys.Z;
-
-            return isNumber || isLetter;
         }
         #endregion
         #region C# Keys -> VKey
@@ -181,7 +143,7 @@ namespace RSMods {
             MapAliasesToVK("VK_LAUNCH_APP2", "LaunchApp2", "App2");
 
             // OEM (Symbol) Keys
-            MapAliasesToVK("VK_OEM_1", "ColonSemiColon", "SemiColonColon", "Oem1");
+            MapAliasesToVK("VK_OEM_1", "ColonSemiColon", "SemiColonColon", "Oem1", "OemSemicolon");
             MapAliasesToVK("VK_OEM_PLUS", "OEMPlus", "NumRowPlus");
             MapAliasesToVK("VK_OEM_COMMA", "Comma", "Oemcomma");
             MapAliasesToVK("VK_OEM_MINUS", "OEMMinus", "NumRowMinus");
@@ -190,8 +152,8 @@ namespace RSMods {
             MapAliasesToVK("VK_OEM_3", "Tilda", "BackTick", "Oemtilde");
             MapAliasesToVK("VK_OEM_4", "OemOpenBrackets", "[", "Oem4");
             MapAliasesToVK("VK_OEM_5", "BackSlashPipe", "PipeBackSlash", "Oem5", "|\\");
-            MapAliasesToVK("VK_OEM_6", "CloseBrackets", "]", "Oem6");
-            MapAliasesToVK("VK_OEM_7", "Quotes", "Oem7", "\"'");
+            MapAliasesToVK("VK_OEM_6", "CloseBrackets", "]", "Oem6", "OemCloseBrackets");
+            MapAliasesToVK("VK_OEM_7", "Quotes", "Oem7", "OemQuotes", "\"'");
             MapAliasesToVK("VK_OEM_CLEAR", "OEMClear");
 
             // X-Input Gamepad

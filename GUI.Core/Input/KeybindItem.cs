@@ -2,6 +2,7 @@
 
 namespace RSMods.Util
 {
+    /// <summary>UI-neutral metadata and accessors for a configurable keybinding.</summary>
     public class KeybindItem(string displayName, Action<string> setKey, Func<string> getKey)
     {
         public string DisplayName { get; set; } = displayName;

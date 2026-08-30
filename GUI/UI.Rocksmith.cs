@@ -27,20 +27,20 @@ namespace RSMods
     public partial class MainForm : Form
     {
         // Audio Settings
-        private void Rocksmith_EnableMicrophone(object sender, EventArgs e) => RocksmithSettings.Audio.EnableMicrophone = checkBox_Rocksmith_EnableMicrophone.Checked;
-        private void Rocksmith_ExclusiveMode(object sender, EventArgs e) => RocksmithSettings.Audio.ExclusiveMode = checkBox_Rocksmith_ExclusiveMode.Checked;
-        private void Rocksmith_LatencyBuffer(object sender, EventArgs e) => RocksmithSettings.Audio.LatencyBuffer = (int)nUpDown_Rocksmith_LatencyBuffer.Value;
-        private void Rocksmith_ForceWDM(object sender, EventArgs e) => RocksmithSettings.Audio.ForceWDM = checkBox_Rocksmith_ForceWDM.Checked;
-        private void Rocksmith_ForceDirextXSink(object sender, EventArgs e) => RocksmithSettings.Audio.ForceDirectXSink = checkBox_Rocksmith_ForceDirextXSink.Checked;
-        private void Rocksmith_DumpAudioLog(object sender, EventArgs e) => RocksmithSettings.Audio.DumpAudioLog = checkBox_Rocksmith_DumpAudioLog.Checked;
+        private void Rocksmith_EnableMicrophone(object sender, EventArgs e) => _rocksmithSettings.Audio.EnableMicrophone = checkBox_Rocksmith_EnableMicrophone.Checked;
+        private void Rocksmith_ExclusiveMode(object sender, EventArgs e) => _rocksmithSettings.Audio.ExclusiveMode = checkBox_Rocksmith_ExclusiveMode.Checked;
+        private void Rocksmith_LatencyBuffer(object sender, EventArgs e) => _rocksmithSettings.Audio.LatencyBuffer = (int)nUpDown_Rocksmith_LatencyBuffer.Value;
+        private void Rocksmith_ForceWDM(object sender, EventArgs e) => _rocksmithSettings.Audio.ForceWDM = checkBox_Rocksmith_ForceWDM.Checked;
+        private void Rocksmith_ForceDirextXSink(object sender, EventArgs e) => _rocksmithSettings.Audio.ForceDirectXSink = checkBox_Rocksmith_ForceDirextXSink.Checked;
+        private void Rocksmith_DumpAudioLog(object sender, EventArgs e) => _rocksmithSettings.Audio.DumpAudioLog = checkBox_Rocksmith_DumpAudioLog.Checked;
         private void Rocksmith_MaxBufferSize(object sender, EventArgs e)
         {
-            RocksmithSettings.Audio.MaxOutputBufferSize = (int)nUpDown_Rocksmith_MaxOutputBuffer.Value;
+            _rocksmithSettings.Audio.MaxOutputBufferSize = (int)nUpDown_Rocksmith_MaxOutputBuffer.Value;
             if (nUpDown_Rocksmith_MaxOutputBuffer.Value == 0)
                 checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
         }
-        private void Rocksmith_RTCOnly(object sender, EventArgs e) => RocksmithSettings.Audio.RealToneCableOnly = checkBox_Rocksmith_RTCOnly.Checked;
-        private void Rocksmith_LowLatencyMode(object sender, EventArgs e) => RocksmithSettings.Audio.Win32UltraLowLatencyMode = checkBox_Rocksmith_LowLatencyMode.Checked;
+        private void Rocksmith_RTCOnly(object sender, EventArgs e) => _rocksmithSettings.Audio.RealToneCableOnly = checkBox_Rocksmith_RTCOnly.Checked;
+        private void Rocksmith_LowLatencyMode(object sender, EventArgs e) => _rocksmithSettings.Audio.Win32UltraLowLatencyMode = checkBox_Rocksmith_LowLatencyMode.Checked;
 
         private void Rocksmith_AutomateMaxBufferSize(object sender, EventArgs e)
         {
@@ -49,12 +49,12 @@ namespace RSMods
         }
 
         // Visual Settings
-        private void Rocksmith_GamepadUI(object sender, EventArgs e) => RocksmithSettings.RendererWin32.ShowGamepadUI = checkBox_Rocksmith_GamepadUI.Checked;
-        private void Rocksmith_ScreenWidth(object sender, EventArgs e) => RocksmithSettings.RendererWin32.ScreenWidth = (int)nUpDown_Rocksmith_ScreenWidth.Value;
-        private void Rocksmith_ScreenHeight(object sender, EventArgs e) => RocksmithSettings.RendererWin32.ScreenHeight = (int)nUpDown_Rocksmith_ScreenHeight.Value;
-        private void Rocksmith_Windowed(object sender, EventArgs e) => RocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.Windowed;
-        private void Rocksmith_NonExclusiveFullScreen(object sender, EventArgs e) => RocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.NonExclusive;
-        private void Rocksmith_ExclusiveFullScreen(object sender, EventArgs e) => RocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.Exclusive;
+        private void Rocksmith_GamepadUI(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.ShowGamepadUI = checkBox_Rocksmith_GamepadUI.Checked;
+        private void Rocksmith_ScreenWidth(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.ScreenWidth = (int)nUpDown_Rocksmith_ScreenWidth.Value;
+        private void Rocksmith_ScreenHeight(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.ScreenHeight = (int)nUpDown_Rocksmith_ScreenHeight.Value;
+        private void Rocksmith_Windowed(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.Windowed;
+        private void Rocksmith_NonExclusiveFullScreen(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.NonExclusive;
+        private void Rocksmith_ExclusiveFullScreen(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.Fullscreen = FullscreenMode.Exclusive;
         private void Rocksmith_LowQuality(object sender, EventArgs e)
         {
             checkBox_Rocksmith_DepthOfField.Checked = false;
@@ -65,7 +65,7 @@ namespace RSMods
             checkBox_Rocksmith_PostEffects.Enabled = false;
             checkBox_Rocksmith_HighResScope.Enabled = false;
 
-            RocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Low;
+            _rocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Low;
         }
         private void Rocksmith_MediumQuality(object sender, EventArgs e)
         {
@@ -77,7 +77,7 @@ namespace RSMods
             checkBox_Rocksmith_PostEffects.Enabled = false;
             checkBox_Rocksmith_HighResScope.Enabled = false;
 
-            RocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Medium;
+            _rocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Medium;
         }
         private void Rocksmith_HighQuality(object sender, EventArgs e)
         {
@@ -89,7 +89,7 @@ namespace RSMods
             checkBox_Rocksmith_PostEffects.Enabled = false;
             checkBox_Rocksmith_HighResScope.Enabled = false;
 
-            RocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.High;
+            _rocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.High;
         }
 
         private void Rocksmith_CustomQuality(object sender, EventArgs e)
@@ -98,17 +98,17 @@ namespace RSMods
             checkBox_Rocksmith_PostEffects.Enabled = true;
             checkBox_Rocksmith_HighResScope.Enabled = true;
 
-            RocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Custom;
+            _rocksmithSettings.RendererWin32.VisualQuality = VisualQualityMode.Custom;
         }
-        private void Rocksmith_RenderWidth(object sender, EventArgs e) => RocksmithSettings.RendererWin32.RenderingWidth = (int)nUpDown_Rocksmith_RenderWidth.Value;
-        private void Rocksmith_RenderHeight(object sender, EventArgs e) => RocksmithSettings.RendererWin32.RenderingHeight = (int)nUpDown_Rocksmith_RenderHeight.Value;
-        private void Rocksmith_PostEffects(object sender, EventArgs e) => RocksmithSettings.RendererWin32.EnablePostEffects = checkBox_Rocksmith_PostEffects.Checked;
-        private void Rocksmith_Shadows(object sender, EventArgs e) => RocksmithSettings.RendererWin32.EnableShadows = checkBox_Rocksmith_Shadows.Checked;
-        private void Rocksmith_HighResScope(object sender, EventArgs e) => RocksmithSettings.RendererWin32.EnableHighResScope = checkBox_Rocksmith_HighResScope.Checked;
-        private void Rocksmith_DepthOfField(object sender, EventArgs e) => RocksmithSettings.RendererWin32.EnableDepthOfField = checkBox_Rocksmith_DepthOfField.Checked;
-        private void Rocksmith_PerPixelLighting(object sender, EventArgs e) => RocksmithSettings.RendererWin32.EnablePerPixelLighting = checkBox_Rocksmith_PerPixelLighting.Checked;
-        private void Rocksmith_MSAA(object sender, EventArgs e) => RocksmithSettings.RendererWin32.MsaaSamples = checkBox_Rocksmith_MSAASamples.Checked ? MsaaMode.X4 : MsaaMode.Off;
-        private void Rocksmith_DisableBrowser(object sender, EventArgs e) => RocksmithSettings.RendererWin32.DisableBrowser = checkBox_Rocksmith_DisableBrowser.Checked;
+        private void Rocksmith_RenderWidth(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.RenderingWidth = (int)nUpDown_Rocksmith_RenderWidth.Value;
+        private void Rocksmith_RenderHeight(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.RenderingHeight = (int)nUpDown_Rocksmith_RenderHeight.Value;
+        private void Rocksmith_PostEffects(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.EnablePostEffects = checkBox_Rocksmith_PostEffects.Checked;
+        private void Rocksmith_Shadows(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.EnableShadows = checkBox_Rocksmith_Shadows.Checked;
+        private void Rocksmith_HighResScope(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.EnableHighResScope = checkBox_Rocksmith_HighResScope.Checked;
+        private void Rocksmith_DepthOfField(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.EnableDepthOfField = checkBox_Rocksmith_DepthOfField.Checked;
+        private void Rocksmith_PerPixelLighting(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.EnablePerPixelLighting = checkBox_Rocksmith_PerPixelLighting.Checked;
+        private void Rocksmith_MSAA(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.MsaaSamples = checkBox_Rocksmith_MSAASamples.Checked ? MsaaMode.X4 : MsaaMode.Off;
+        private void Rocksmith_DisableBrowser(object sender, EventArgs e) => _rocksmithSettings.RendererWin32.DisableBrowser = checkBox_Rocksmith_DisableBrowser.Checked;
 
         private void Rocksmith_EnableRenderRes(object sender, EventArgs e)
         {
@@ -125,6 +125,6 @@ namespace RSMods
         }
 
         // Network Settings
-        private void Rocksmith_UseProxy(object sender, EventArgs e) => RocksmithSettings.Net.UseProxy = checkBox_Rocksmith_UseProxy.Checked;
+        private void Rocksmith_UseProxy(object sender, EventArgs e) => _rocksmithSettings.Net.UseProxy = checkBox_Rocksmith_UseProxy.Checked;
     }
 }

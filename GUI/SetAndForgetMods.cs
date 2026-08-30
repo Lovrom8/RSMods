@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RocksmithToolkitLib.DLCPackage;
 using RocksmithToolkitLib.DLCPackage.Manifest2014.Tone;
@@ -14,6 +13,8 @@ using System.Management;
 using System.Reflection;
 using System.Threading.Tasks;
 using RSMods.Core;
+using RSMods.SetAndForget;
+using RSMods.SetAndForget.Models;
 using ArrangementTuning = Rocksmith2014PsarcLib.Psarc.Models.Json.SongArrangement.ArrangementAttributes.ArrangementTuning;
 
 namespace RSMods
@@ -47,7 +48,7 @@ namespace RSMods
 
         public static async Task<bool> RestoreDefaults(IDialogService dialogs)
         {
-            if (!await dialogs.ShowConfirmAsync("Do you wish to restore your cache.psarc to it's original state?", "Restore cache.psarc?"))
+            if (!await dialogs.ShowConfirmAsync("Do you wish to restore your cache.psarc to its original state?", "Restore cache.psarc?"))
                 return false;
 
             try
@@ -130,15 +131,11 @@ namespace RSMods
         #region Custom Tunings
         // Custom Tunings Mod
 
-        private static TuningDefinitionList tuningsCollection;
+        private static readonly TuningService Tuning = new TuningService();
 
         public static void LoadTuningsCollection()
         {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            var tuningsList = tuningsJson["Static"]["TuningDefinitions"];
-
-            tuningsCollection = JsonConvert.DeserializeObject<TuningDefinitionList>(tuningsList.ToString());
+            Tuning.Load(Constants.TuningJSON_CustomPath);
         }
 
         public static void AddCustomTunings()
@@ -154,212 +151,52 @@ namespace RSMods
             RepackCachePsarc();
         }
 
-        //Regex rxIndexExists = new(@"\[.*?\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // If it already has an index enclosed by []
-        //Regex rxGetIndex = new(@"\[(\d+)\]", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract the digits that lay between []
-        //Regex rxGrabAfterBracket = new(@"\](.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase); // Extract everything post ]
-
         public static (string Index, string Name) SplitTuningUIName(string uiName)
         {
-            if (string.IsNullOrEmpty(uiName))
-                return ("0", uiName);
-
-            int startBracket = uiName.IndexOf('[');
-            int endBracket = uiName.IndexOf(']');
-
-            if (startBracket >= 0 && endBracket > startBracket)
-            {
-                string indexStr = uiName.Substring(startBracket + 1, endBracket - startBracket - 1);
-
-                if (int.TryParse(indexStr, out _))
-                {
-                    string nameStr = uiName.Substring(endBracket + 1);
-                    return (indexStr, nameStr);
-                }
-            }
-
-            return ("0", uiName);
-        }
-
-        private static HashSet<int> LoadExistingLocalizationIndices(string filePath)
-        {
-            var indices = new HashSet<int>();
-
-            if (!File.Exists(filePath))
-                return indices;
-
-            foreach (var line in File.ReadLines(filePath))
-            {
-                var parts = line.Split(',');
-                if (parts.Length > 0 && int.TryParse(parts[0], out int parsedIndex))
-                {
-                    indices.Add(parsedIndex);
-                }
-            }
-
-            return indices;
-        }
-
-        private static int GetNextAvailableLocalizationIndex(HashSet<int> existingIndices, int startingIndex)
-        {
-            int currentIndex = startingIndex;
-
-            while (existingIndices.Contains(currentIndex))
-            {
-                currentIndex++;
-            }
-
-            return currentIndex;
-        }
-
-        private static void AppendTuningToCsv(StreamWriter sw, int index, string tuningName)
-        {
-            string repeatedNames = string.Join(",", Enumerable.Repeat(tuningName, 7));
-            string csvRow = $"{Environment.NewLine}{index},{repeatedNames}";
-
-            sw.Write(csvRow);
+            return TuningService.SplitUiName(uiName);
         }
 
         public static void AddLocalizationForTuningEntries()
         {
-            HashSet<int> existingIndices = LoadExistingLocalizationIndices(Constants.LocalizationCSV_CustomPath);
-            int nextAvailableIndex = 37500;
-
-            using StreamWriter sw = new(Constants.LocalizationCSV_CustomPath, true);
-
-            foreach (var tuningDefinition in TuningsCollection)
-            {
-                var (indexStr, onlyName) = SplitTuningUIName(tuningDefinition.Value.UIName);
-                int.TryParse(indexStr, out int currentIndex);
-
-                if (currentIndex == 0)
-                {
-                    currentIndex = GetNextAvailableLocalizationIndex(existingIndices, nextAvailableIndex);
-                    nextAvailableIndex = currentIndex + 1;
-
-                    tuningDefinition.Value.UIName = $"$[{currentIndex}]{onlyName}";
-                }
-
-                if (!existingIndices.Contains(currentIndex))
-                {
-                    AppendTuningToCsv(sw, currentIndex, onlyName);
-                    existingIndices.Add(currentIndex);
-                }
-            }
-
-            SaveTuningsJSON();
+            Tuning.AddLocalizationEntries(
+                Constants.LocalizationCSV_CustomPath,
+                Constants.TuningJSON_CustomPath);
         }
 
         public static void SaveTuningsJSON()
         {
-            string tuningsFileContent = File.ReadAllText(Constants.TuningJSON_CustomPath);
-            var tuningsJson = JObject.Parse(tuningsFileContent);
-            tuningsJson["Static"]["TuningDefinitions"] = JObject.FromObject(SetAndForgetMods.TuningsCollection);
-
-            File.WriteAllText(Constants.TuningJSON_CustomPath, tuningsJson.ToString());
+            Tuning.Save(Constants.TuningJSON_CustomPath);
         }
         #endregion
         #region Tuning Queries
 
         public static ArrangementTuning ToArrangementTuning(TuningDefinitionInfo tuning)
         {
-            var s = tuning.Strings;
-            return new ArrangementTuning
-            {
-                String0 = s["string0"],
-                String1 = s["string1"],
-                String2 = s["string2"],
-                String3 = s["string3"],
-                String4 = s["string4"],
-                String5 = s["string5"]
-            };
+            return TuningService.ToArrangementTuning(tuning);
         }
 
         public static bool IsTuningStandard(ArrangementTuning t, bool forceBass = false) =>
-            t.String0 == t.String1 && t.String1 == t.String2 && t.String2 == t.String3 &&
-            (forceBass || (t.String3 == t.String4 && t.String4 == t.String5));
+            TuningService.IsStandard(t, forceBass);
 
         public static bool IsTuningDrop(ArrangementTuning t, bool forceBass = false) =>
-            t.String0 + 2 == t.String1 && t.String1 == t.String2 && t.String2 == t.String3 &&
-            (forceBass || (t.String3 == t.String4 && t.String4 == t.String5));
+            TuningService.IsDrop(t, forceBass);
 
         public static IEnumerable<ArrangementTuning> GetDefinedTunings() =>
-            TuningsCollection.Values.Select(ToArrangementTuning);
-
-        private static string FormatArrangementLabel(SongData song, SongArrangement arrangement)
-        {
-            string prefix = string.Empty;
-            if (arrangement.Attributes.ArrangementProperties.Represent == 0)
-                prefix = "Alt ";
-            else if (arrangement.Attributes.ArrangementProperties.BonusArr == 1)
-                prefix = "Bonus ";
-            return prefix + arrangement.Attributes.ArrangementName + " for " + song.Artist + " - " + song.Title;
-        }
+            Tuning.GetDefinedTunings();
 
         public static SortedDictionary<string, ArrangementTuning> GetUnknownTunings(IEnumerable<SongData> songs)
         {
-            var defined = GetDefinedTunings().ToList();
-            var result = new SortedDictionary<string, ArrangementTuning>();
-
-            foreach (SongData song in songs)
-            {
-                foreach (SongArrangement arrangement in song.Arrangements)
-                {
-                    if (defined.Contains(arrangement.Attributes.Tuning))
-                        continue;
-
-                    string label = FormatArrangementLabel(song, arrangement);
-                    if (!result.ContainsKey(label))
-                        result.Add(label, arrangement.Attributes.Tuning);
-                }
-            }
-
-            return result;
+            return Tuning.GetUnknownTunings(songs);
         }
 
         public static List<string> GetSongsWithTuning(IEnumerable<SongData> songs, ArrangementTuning tuning)
         {
-            var result = new List<string>();
-
-            foreach (SongData song in songs)
-                foreach (SongArrangement arrangement in song.Arrangements)
-                    if (arrangement.Attributes.Tuning.Equals(tuning))
-                        result.Add(FormatArrangementLabel(song, arrangement));
-
-            result.Sort();
-            return result;
+            return Tuning.GetSongsWithTuning(songs, tuning);
         }
 
         public static List<string> GetSongsWithBadBassTuning(IEnumerable<SongData> songs)
         {
-            var result = new List<string>();
-
-            foreach (SongData song in songs)
-            {
-                foreach (SongArrangement arrangement in song.Arrangements)
-                {
-                    if (!arrangement.Attributes.ArrangementName.ToLower().Contains("bass"))
-                        continue;
-
-                    var t = arrangement.Attributes.Tuning;
-
-                    if (IsTuningStandard(t) || IsTuningDrop(t))
-                        continue;
-
-                    string label = FormatArrangementLabel(song, arrangement);
-
-                    if (result.Contains(label))
-                        continue;
-
-                    if (!song.ODLC &&
-                        !(t.String0 == 0 || t.String1 == 0 || t.String2 == 0 || t.String3 == 0) &&
-                        ((t.String4 == 0 && t.String5 == 0) || (t.String4 == 12 && t.String5 == 12)))
-                    {
-                        result.Add(label);
-                    }
-                }
-            }
-
-            return result;
+            return Tuning.GetSongsWithBadBassTuning(songs);
         }
 
         #endregion
@@ -388,7 +225,7 @@ namespace RSMods
         #region Default Tones
         private static readonly Dictionary<string, Tone2014> tonesFromAllProfiles = [];
 
-        public static TuningDefinitionList TuningsCollection { get => tuningsCollection; }
+        public static TuningDefinitionList TuningsCollection => Tuning.Tunings;
 
         private static (bool IsSuccess, string ErrorMessage) UpdateToneManagerInCache(string selectedToneName, int targetToneIndex)
         {
@@ -444,7 +281,7 @@ namespace RSMods
                 return (false, ErrorMessage);
             }
 
-            return (true, "Successfully changed GuitarArcade tones!");
+            return (true, "Successfully changed Guitarcade tones!");
         }
 
         public static (bool IsSuccess, string Message) SetDefaultTones(string selectedToneName, int selectedToneType)

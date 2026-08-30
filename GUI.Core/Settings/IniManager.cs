@@ -5,9 +5,30 @@ using System.IO;
 
 namespace RSMods
 {
+    public sealed class IniValidationWarning
+    {
+        public IniValidationWarning(string filePath, string section, string key, string rawValue, string defaultValue, string reason)
+        {
+            FilePath = filePath;
+            Section = section;
+            Key = key;
+            RawValue = rawValue;
+            DefaultValue = defaultValue;
+            Reason = reason;
+        }
+
+        public string FilePath { get; }
+        public string Section { get; }
+        public string Key { get; }
+        public string RawValue { get; }
+        public string DefaultValue { get; }
+        public string Reason { get; }
+    }
+
     public class IniManager(string filePath)
     {
         public event Action SettingChanged;
+        public event Action<IniValidationWarning> ValidationWarning;
 
         private readonly Dictionary<string, Dictionary<string, string>> _data = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Dictionary<string, string>> _commentedData = new(StringComparer.OrdinalIgnoreCase);
@@ -172,10 +193,26 @@ namespace RSMods
         {
             string def = forceNumeric ? (defaultValue ? "1" : "0") : (defaultValue ? "on" : "off");
             var str = GetString(section, key, def);
+            string normalized = str.Trim();
 
-            return str.Equals("on", StringComparison.OrdinalIgnoreCase) ||
-                   str.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-                   str == "1";
+            if (normalized.Equals("on", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
+                normalized == "1")
+            {
+                return true;
+            }
+
+            if (normalized.Equals("off", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("false", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("no", StringComparison.OrdinalIgnoreCase) ||
+                normalized == "0")
+            {
+                return false;
+            }
+
+            ReportInvalid(section, key, str, def, "not a valid boolean (expected 0/1/true/false/yes/no)");
+            return defaultValue;
         }
 
         public void SetBool(string section, string key, bool value, bool forceNumeric = false)
@@ -184,11 +221,47 @@ namespace RSMods
         public int GetInt(string section, string key, int defaultValue = 0)
         {
             var str = GetString(section, key, defaultValue.ToString());
-            return int.TryParse(str, out var result) ? result : defaultValue;
+            if (int.TryParse(str, out var result))
+                return result;
+
+            ReportInvalid(section, key, str, defaultValue.ToString(), "not a valid integer");
+            return defaultValue;
         }
 
         public void SetInt(string section, string key, int value)
             => SetString(section, key, value.ToString());
+
+        public decimal GetDecimal(string section, string key, decimal defaultValue = 0)
+        {
+            string defaultText = defaultValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string raw = GetString(section, key, defaultText);
+            if (decimal.TryParse(raw, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal result))
+                return result;
+
+            ReportInvalid(section, key, raw, defaultText, "not a valid number");
+            return defaultValue;
+        }
+
+        public T GetEnum<T>(string section, string key, T defaultValue = default) where T : struct, Enum
+        {
+            string raw = GetString(section, key, defaultValue.ToString().ToLowerInvariant());
+            if (Enum.TryParse(raw, ignoreCase: true, out T result) && Enum.IsDefined(typeof(T), result))
+                return result;
+
+            ReportInvalid(section, key, raw, defaultValue.ToString().ToLowerInvariant(), $"not a valid {typeof(T).Name} value");
+            return defaultValue;
+        }
+
+        public T GetEnumInt<T>(string section, string key, T defaultValue = default) where T : struct, Enum
+        {
+            int defaultNumber = Convert.ToInt32(defaultValue);
+            string raw = GetString(section, key, defaultNumber.ToString());
+            if (int.TryParse(raw, out int result) && Enum.IsDefined(typeof(T), result))
+                return (T)Enum.ToObject(typeof(T), result);
+
+            ReportInvalid(section, key, raw, defaultNumber.ToString(), $"not a valid {typeof(T).Name} value");
+            return defaultValue;
+        }
 
         public string GetCommentedString(string section, string key, string defaultValue = "")
         {
@@ -219,6 +292,17 @@ namespace RSMods
         public void SetSectionComments(string section, string[] comments)
         {
             _sectionComments[section] = comments;
+        }
+
+        private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
+        {
+            ValidationWarning?.Invoke(new IniValidationWarning(
+                filePath,
+                section,
+                key,
+                rawValue,
+                defaultValue,
+                reason));
         }
     }
 }

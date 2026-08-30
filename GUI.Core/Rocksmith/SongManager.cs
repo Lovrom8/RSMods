@@ -1,40 +1,46 @@
+using System;
 using System.IO;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Rocksmith2014PsarcLib.Psarc;
 using Rocksmith2014PsarcLib.Psarc.Models.Json;
 using RSMods.Util;
-using System.Windows.Forms;
 
 namespace RSMods
 {
     public static class SongManager
     {
-        private static List<SongData> Songs = [];
-
-        public static List<SongData> ExtractSongData(ProgressBar progressBar = null)
+        /// <summary>
+        /// Reads Rocksmith song archives away from the calling UI thread. Progress is reported as a
+        /// percentage from 0 through 100 so either frontend can present it with its native controls.
+        /// </summary>
+        public static Task<List<SongData>> ExtractSongDataAsync(
+            IProgress<int> progress = null,
+            CancellationToken cancellationToken = default)
         {
-            Songs.Clear();
+            return Task.Run(() => ExtractSongData(progress, cancellationToken), cancellationToken);
+        }
+
+        private static List<SongData> ExtractSongData(
+            IProgress<int> progress,
+            CancellationToken cancellationToken)
+        {
+            progress?.Report(0);
 
             List<string> allFiles = Directory
                 .GetFiles(Path.Combine(GenUtil.GetRSDirectory(), "dlc"), "*_p.psarc", SearchOption.AllDirectories)
                 .Append(Path.Combine(GenUtil.GetRSDirectory(), "songs.psarc"))
                 .ToList();
 
-            if (progressBar != null)
-            {
-                progressBar.Visible = true;
-                progressBar.Minimum = 1;
-                progressBar.Maximum = allFiles.Count;
-                progressBar.Value = 1;
-                progressBar.Step = 1;
-            }
-
             var rawArrangements = new ConcurrentBag<(SongArrangement Arrangement, bool IsODLC)>();
+            var parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
+            object progressLock = new object();
+            int processedFiles = 0;
 
-            Parallel.ForEach(allFiles, file =>
+            Parallel.ForEach(allFiles, parallelOptions, file =>
             {
                 try
                 {
@@ -46,10 +52,14 @@ namespace RSMods
                 }
                 catch { }
 
-                progressBar?.Invoke(() => progressBar.PerformStep());
+                lock (progressLock)
+                {
+                    processedFiles++;
+                    progress?.Report(processedFiles * 100 / allFiles.Count);
+                }
             });
 
-            Songs = rawArrangements
+            return rawArrangements
                 .Where(x =>
                 {
                     string name = $"{x.Arrangement.Attributes.ArtistName} - {x.Arrangement.Attributes.SongName}";
@@ -81,14 +91,6 @@ namespace RSMods
                 })
                 .OrderBy(s => s.CommonName)
                 .ToList();
-
-            if (progressBar != null)
-            {
-                progressBar.Visible = false;
-                progressBar.Value = progressBar.Minimum;
-            }
-
-            return Songs;
         }
     }
 

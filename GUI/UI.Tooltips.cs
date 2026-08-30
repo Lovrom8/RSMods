@@ -35,7 +35,7 @@ namespace RSMods
             TooltipDictionary.Add(checkBox_ToggleLoft, "Disables the game background, amps and noise reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith Streamers to make it easy to Luma Key out the game background.\nPlayer just sees an all black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press.");
             TooltipDictionary.Add(checkBox_SongTimer, "Experimental.\nIntent is to show a box with your timestamp position through the song.");
             TooltipDictionary.Add(checkBox_ExtendedRange, "Alters the string and note colors to make it easier to play a 5 string bass or 7 string guitar.");
-            TooltipDictionary.Add(checkBox_ForceEnumeration, "Game will automatically start an Enumeration sequence when a new psarc file is detected as having been added to the dlc folder.\nNot necesary to enable if you're already using Rocksniffer to do the same thing.");
+            TooltipDictionary.Add(checkBox_ForceEnumeration, "Game will automatically start an Enumeration sequence when a new psarc file is detected as having been added to the dlc folder.\nNot necessary to enable if you're already using Rocksniffer to do the same thing.");
             TooltipDictionary.Add(checkBox_RemoveHeadstock, "Stops the Headstock of the guitar being drawn.\n“Headless” guitar mode. Just cleans up some more of the UI.");
             TooltipDictionary.Add(checkBox_RemoveSkyline, "Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press.");
             TooltipDictionary.Add(checkBox_GreenScreen, "Changes just a section of the game background to all black, amusing for a selective “green screen” stream experience.\nInvalidated by \"No Loft\".");
@@ -83,7 +83,7 @@ namespace RSMods
             TooltipDictionary.Add(groupBox_OnScreenFont, "If RSMods needs to show text in game, what font should we use?");
             TooltipDictionary.Add(groupBox_AutoLoadProfiles, "If you play with another person, but want to always load into your account this is the place for you.\nThis gets the same benefits of \"Autoload Last Used Profile\" but allows you to pick which profile will always load first");
             TooltipDictionary.Add(listBox_AutoLoadProfiles, "A list of all the profiles you have saved inside of Rocksmith 2014");
-            TooltipDictionary.Add(checkBox_BackupProfile, "Everytime you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save everytime you open this GUI.");
+            TooltipDictionary.Add(checkBox_BackupProfile, "Every time you play Rocksmith there is an extremely small chance your save can get corrupted.\nWhen your save gets corrupted, most of the time you can't recover and need to start anew.\nThis mod will create a backup of your save every time you open this GUI.");
             TooltipDictionary.Add(groupBox_Backups, "If you open the RSMods GUI a lot, and are low on disk space, this is the spot for you.\nThis section allows you to set how many backups we store before we start deleting older backups.\nSet this to 0 to allow us to store as many backups as possible.");
             TooltipDictionary.Add(checkBox_UnlimitedBackups, "If you have an insane amount of disk space, and want to save all your backups, check this box.\nWith this checked, we save every backup when you open RSMods and will never delete them.");
             TooltipDictionary.Add(groupBox_RRSpeed, "Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.");
@@ -150,7 +150,7 @@ namespace RSMods
             TooltipDictionary.Add(button_SolidNoteColorRandom, "This will choose a random color for you. \nThe color does not change per activation, what you see here is how it is set for good.");
             TooltipDictionary.Add(button_AddSelectedReward, "Add the configured event trigger.");
             TooltipDictionary.Add(button_RemoveReward, "Remove the selected event trigger.");
-            TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have recieved a donation.");
+            TooltipDictionary.Add(button_TestTwitchReward, "Manually activate the mod without needing to have received a donation.");
             TooltipDictionary.Add(dgv_DefaultRewards, "Lists the possible events you can use to set a trigger.");
             TooltipDictionary.Add(dgv_EnabledRewards, "Lists the events you have configured - how long they are activated for - and their cost.");
             TooltipDictionary.Add(textBox_TwitchLog, "Shows notifications from Twitch - and what got triggered from these tools.");
@@ -185,7 +185,12 @@ namespace RSMods
             TooltipDictionary.Add(label_ASIO_CustomBufferSize, "The lower this value goes, the lower the latency.\nWhile bringing down the latency, you have a higher chance of crackling audio.\nTry to find the sweet spot.");
             TooltipDictionary.Add(checkBox_ASIO_ASIO, "This is the main reason people use RS_ASIO.\nEnable this if you have an audio interface to potentially lower latency.");
             TooltipDictionary.Add(checkBox_ASIO_WASAPI_Input, "Enable this if you want to play with a USB cable AND your audio interface in multiplayer");
-            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Output, "Enable this if you have headphones that don't go through your audio interface.");
+            TooltipDictionary.Add(checkBox_ASIO_WASAPI_Output,
+                "Use WASAPI for game audio output (tri-state - click to cycle):\n" +
+                "  Unchecked (0) - force WASAPI output OFF\n" +
+                "  Checked (1) - force WASAPI output ON\n" +
+                "  Indeterminate / square (-1) - prompt every boot (RS_ASIO special value)\n" +
+                "Enable ON if you have headphones that don't go through your audio interface.");
             TooltipDictionary.Add(checkBox_ASIO_Output_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
             TooltipDictionary.Add(checkBox_ASIO_Input0_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");
             TooltipDictionary.Add(checkBox_ASIO_Input1_ControlEndpointVolume, "The EndpointVolume API enables specialized clients to control\nand monitor the volume levels of audio endpoint devices.");

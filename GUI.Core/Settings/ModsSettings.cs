@@ -10,10 +10,17 @@ namespace RSMods
     public static class RsModsSettings
     {
         private static Action _settingChangedHandler;
+        private static Action<IniValidationWarning> _validationWarningHandler;
         public static event Action SettingChanged
         {
             add { _settingChangedHandler += value; if (_ini != null) _ini.SettingChanged += value; }
             remove { _settingChangedHandler -= value; if (_ini != null) _ini.SettingChanged -= value; }
+        }
+
+        public static event Action<IniValidationWarning> ValidationWarning
+        {
+            add { _validationWarningHandler += value; if (_ini != null) _ini.ValidationWarning += value; }
+            remove { _validationWarningHandler -= value; if (_ini != null) _ini.ValidationWarning -= value; }
         }
 
         private static IniManager _ini;
@@ -33,6 +40,8 @@ namespace RSMods
             _ini = new IniManager(path);
             if (_settingChangedHandler != null)
                 _ini.SettingChanged += _settingChangedHandler;
+            if (_validationWarningHandler != null)
+                _ini.ValidationWarning += _validationWarningHandler;
 
             _ini.Load();
 
@@ -56,11 +65,11 @@ namespace RSMods
 
         public static List<string> SongListTitles { get; } = [];
 
-        public static List<string> RefreshSongListTitles()
+        public static List<string> RefreshSongListTitles(int songListCount)
         {
             SongListTitles.Clear();
 
-            for (int i = 1; i <= Profiles.SongListCount; i++)
+            for (int i = 1; i <= songListCount; i++)
                 SongListTitles.Add(GetSongListTitle(i));
 
             return SongListTitles;

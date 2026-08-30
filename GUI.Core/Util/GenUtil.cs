@@ -79,7 +79,7 @@ namespace RSMods.Util
             return target;
         }
 
-        internal static bool IsRSFolder(this string folderPath)
+        public static bool IsRSFolder(this string folderPath)
         {
             if (!Directory.Exists(folderPath))
                 return false;
@@ -246,7 +246,7 @@ namespace RSMods.Util
 
             try
             {
-                string potentialSaveFolder = Profiles.GetSaveDirectory();
+                string potentialSaveFolder = GetSaveDirectory();
 
                 if (potentialSaveFolder.IsSavePath())
                     return potentialSaveFolder;
@@ -359,6 +359,52 @@ namespace RSMods.Util
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Best-effort detection of the Rocksmith save (profile) folder: the cached value, then the Steam
+        /// registry (each user's <c>userdata/&lt;id&gt;/221680/remote</c>), falling back to a userdata probe.
+        /// Returns the found path or an empty string. Pure path detection — no prompting.
+        /// </summary>
+        public static string GetSaveDirectory(bool forceRegistry = false)
+        {
+            if (!forceRegistry && !string.IsNullOrEmpty(Constants.SavePath))
+            {
+                if (Constants.SavePath.IsSavePath())
+                {
+                    return Constants.SavePath;
+                }
+
+                Constants.SavePath = string.Empty;
+            }
+
+            try
+            {
+                using var steamKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Valve\Steam");
+                if (steamKey == null)
+                    return GetSteamProfilesFolderManual();
+
+                string steamPath = steamKey.GetValue("SteamPath") as string;
+                if (string.IsNullOrEmpty(steamPath))
+                    return GetSteamProfilesFolderManual();
+
+                using var usersKey = steamKey.OpenSubKey("Users");
+                if (usersKey == null)
+                    return GetSteamProfilesFolderManual();
+
+                foreach (string user in usersKey.GetSubKeyNames())
+                {
+                    string fullProfileFolder = Path.Combine(steamPath, "userdata", user, "221680", "remote");
+
+                    if (Directory.Exists(fullProfileFolder))
+                    {
+                        return fullProfileFolder;
+                    }
+                }
+            }
+            catch { }
+
+            return GetSteamProfilesFolderManual();
         }
     }
 }

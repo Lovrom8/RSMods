@@ -4,8 +4,7 @@ using static RSMods.RsModsSettings;
 
 namespace RSMods
 {
-
-    static class Dictionaries
+    public static class Dictionaries
     {
         public static readonly List<KeybindItem> ModKeybinds =
         [

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RSMods.Data
+namespace RSMods.SetAndForget.Models
 {
     public class TuningDefinitionInfo
     {

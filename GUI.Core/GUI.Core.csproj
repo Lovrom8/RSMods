@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The UI-agnostic core of the RSMods configurator: the abstractions (IDialogService, IAppEnvironment,
+    AppServices) plus the portable model (INI backend, settings, path detection), shared by the current
+    WinForms GUI and the future Avalonia GUI. Not the core of RSMods the mod (that is the DLL) — this is
+    the shared core of its GUI frontends. Multi-targeted net48;net8.0: net48 is what the existing GUI
+    consumes today, net8.0 proves the decoupled layer is Avalonia-ready.
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <LangVersion>12.0</LangVersion>
+    <!-- No project-wide nullable context: the codebase predates NRT. IDialogService opts itself in
+         via its own '#nullable enable' pragma (as do the WinForms-side implementers). -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Rocksmith2014PsarcLib is an AMD64 assembly and Rocksmith 2014 itself is 64-bit. -->
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>RSMods.Core</RootNamespace>
+    <AssemblyName>GUI.Core</AssemblyName>
+    <ProjectGuid>{D8F21F24-9C2B-42E1-925A-76B844950137}</ProjectGuid>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- GenUtil's Steam/Rocksmith path detection reads the Windows registry. On net48 these types are
+         in-framework; on net8.0 they come from this OOB package (Windows-only at runtime). -->
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared song/profile services consume the existing Rocksmith archive model. The assembly is
+         supplied by the legacy GUI project until that dependency is replaced with a modern package. -->
+    <Reference Include="Rocksmith2014PsarcLib">
+      <HintPath>..\GUI\Lib\Rocksmith2014PsarcLib.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="MiscUtil">
+      <HintPath>..\GUI\Lib\MiscUtil.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\GUI\Lib\Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="RocksmithToolkitLib">
+      <HintPath>..\GUI\Lib\RocksmithToolkitLib.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="zlib.net">
+      <HintPath>..\GUI\Lib\zlib.net.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

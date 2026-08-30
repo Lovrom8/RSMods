@@ -46,11 +46,13 @@ namespace RSMods
         {
             e.SuppressKeyPress = true;
 
-            if (KeyConversion.KeyDownDictionary.Contains(e.KeyCode))
+            RocksmithInputClassification classification = RocksmithKeys.Classify(e.KeyCode.ToString());
+
+            if (classification == RocksmithInputClassification.KeyDown)
             {
                 textBox.Text = e.KeyCode.ToString();
             }
-            else if (KeyConversion.IsRocksmithReservedKey(e.KeyCode))
+            else if (classification == RocksmithInputClassification.Reserved)
             {
                 var result = MessageBox.Show(
                     "The key you entered is currently used by Rocksmith and may interfere with being able to use the game properly. Are you sure you want to use this keybinding?",
@@ -71,7 +73,7 @@ namespace RSMods
 
         private void Keypress_CheckUp(object sender, KeyEventArgs e)
         {
-            if (KeyConversion.KeyUpDictionary.Contains(e.KeyCode))
+            if (RocksmithKeys.Classify(e.KeyCode.ToString()) == RocksmithInputClassification.KeyUp)
             {
                 if (sender == textBox_NewKeyAssignment_MODS)
                     textBox_NewKeyAssignment_MODS.Text = e.KeyCode.ToString();
@@ -82,7 +84,7 @@ namespace RSMods
 
         private void Keypress_CheckMouse(object sender, MouseEventArgs e)
         {
-            if (KeyConversion.MouseButtonDictionary.Contains(e.Button))
+            if (RocksmithKeys.Classify(e.Button.ToString()) == RocksmithInputClassification.MouseButton)
             {
                 if (sender == textBox_NewKeyAssignment_MODS)
                     textBox_NewKeyAssignment_MODS.Text = e.Button.ToString();

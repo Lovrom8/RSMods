@@ -52,7 +52,7 @@ namespace RSMods
 
         private void Startup_LoadSonglists()
         {
-            foreach (string songlist in RsModsSettings.RefreshSongListTitles())
+            foreach (string songlist in RsModsSettings.RefreshSongListTitles(Profiles.SongListCount))
                 listBox_Songlist.Items.Add(songlist);
         }
 
@@ -121,7 +121,7 @@ namespace RSMods
 
         private void Startup_VerifyInstallOfASIO()
         {
-            if (!AsioSettings.SettingsExist)
+            if (!_asioSettings.SettingsExist)
                 TabController.TabPages.Remove(tab_RSASIO);
             else
                 Startup_LoadASIODevices();

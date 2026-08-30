@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using RSMods.Core;
 using RSMods.Data;
+using RSMods.SetAndForget.Models;
 using RSMods.Util;
 using System.Reflection;
 using System.Collections.Generic;
@@ -181,7 +182,7 @@ namespace RSMods
                     SetAndForgetMods.TuningsCollection[selectedItem] = SetForget_GetCurrentTuningInfo();
 
                     if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
-                        SetForget_LoadSongsToWorkOn(sender, e);
+                        await SetForget_LoadSongsToWorkOnAsync();
                 }
             }
 
@@ -197,7 +198,7 @@ namespace RSMods
             MessageBox.Show("Saved current tuning, don't forget to press \"Add Custom Tunings\" button when you are done!", "Success");
         }
 
-        private void SetForget_RemoveTuning(object sender, EventArgs e)
+        private async void SetForget_RemoveTuning(object sender, EventArgs e)
         {
             if (listBox_Tunings.SelectedIndex == -1)
                 return;
@@ -211,10 +212,10 @@ namespace RSMods
             listBox_Tunings.Items.Remove(selectedItem);
 
             if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
-                SetForget_LoadSongsToWorkOn(sender, e);
+                await SetForget_LoadSongsToWorkOnAsync();
         }
 
-        private void SetForget_AddTuning(object sender, EventArgs e)
+        private async void SetForget_AddTuning(object sender, EventArgs e)
         {
             if (listBox_Tunings.SelectedIndex == -1)
                 listBox_Tunings.SelectedIndex = 0;
@@ -237,7 +238,7 @@ namespace RSMods
                 listBox_Tunings.Items.Add(internalName);
 
                 if (listBox_SetAndForget_SongsWithCustomTuning.Items.Count > 0)
-                    SetForget_LoadSongsToWorkOn(sender, e);
+                    await SetForget_LoadSongsToWorkOnAsync();
             }
             else
             {
@@ -317,13 +318,32 @@ namespace RSMods
             MessageBox.Show(result.Message, "Tone change result");
         }
 
-        private void SetForget_LoadSongsToWorkOn(object sender, EventArgs e)
+        private async void SetForget_LoadSongsToWorkOn(object sender, EventArgs e)
         {
-            Songs = SongManager.ExtractSongData(progressBar_FillSongsWithCustomTunings); // Load all the data from the songs
+            await SetForget_LoadSongsToWorkOnAsync();
+        }
 
-            SetForget_ShowLoadedSongs(); // Makes the listboxes and labels visible for songs with tunings.
-            SetForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
-            SetForget_FillSongsWithSelectedTuningList(); // Get a list of all song & arrangement combos that have the same tuning as selected in listBox_Tunings.
+        private async Task SetForget_LoadSongsToWorkOnAsync()
+        {
+            progressBar_FillSongsWithCustomTunings.Minimum = 0;
+            progressBar_FillSongsWithCustomTunings.Maximum = 100;
+            progressBar_FillSongsWithCustomTunings.Value = 0;
+            progressBar_FillSongsWithCustomTunings.Visible = true;
+
+            try
+            {
+                var progress = new Progress<int>(value => progressBar_FillSongsWithCustomTunings.Value = value);
+                Songs = await SongManager.ExtractSongDataAsync(progress);
+
+                SetForget_ShowLoadedSongs(); // Makes the listboxes and labels visible for songs with tunings.
+                SetForget_FillCustomTuningList(); // Get a list of all song & arrangement combos that will show up as "Custom Tuning" if not dealt with.
+                SetForget_FillSongsWithSelectedTuningList(); // Get a list of all song & arrangement combos that have the same tuning as selected in listBox_Tunings.
+            }
+            finally
+            {
+                progressBar_FillSongsWithCustomTunings.Visible = false;
+                progressBar_FillSongsWithCustomTunings.Value = 0;
+            }
         }
 
         private void SetForget_ShowLoadedSongs()

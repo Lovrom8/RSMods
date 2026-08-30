@@ -2407,7 +2407,7 @@ namespace RSMods
             this.button_AssignNewGuitarArcadeTone.Name = "button_AssignNewGuitarArcadeTone";
             this.button_AssignNewGuitarArcadeTone.Size = new System.Drawing.Size(224, 35);
             this.button_AssignNewGuitarArcadeTone.TabIndex = 114;
-            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New GuitarArcade Default";
+            this.button_AssignNewGuitarArcadeTone.Text = "Assign Tone As New Guitarcade Default";
             this.button_AssignNewGuitarArcadeTone.UseVisualStyleBackColor = true;
             this.button_AssignNewGuitarArcadeTone.Click += new System.EventHandler(this.SetForget_AssignNewGuitarArcadeTone);
             // 
@@ -4469,7 +4469,7 @@ namespace RSMods
             // 
             this.nUpDown_ASIO_InputMic_Channel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_InputMic_Channel.Maximum = new decimal(new int[] {
-            64,
+            255,
             0,
             0,
             0});
@@ -4545,7 +4545,7 @@ namespace RSMods
             // 
             this.nUpDown_ASIO_Output_AltBaseChannel.Location = new System.Drawing.Point(338, 52);
             this.nUpDown_ASIO_Output_AltBaseChannel.Maximum = new decimal(new int[] {
-            64,
+            255,
             0,
             0,
             0});
@@ -4636,7 +4636,7 @@ namespace RSMods
             // 
             this.nUpDown_ASIO_Output_BaseChannel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_Output_BaseChannel.Maximum = new decimal(new int[] {
-            64,
+            255,
             0,
             0,
             0});
@@ -4767,7 +4767,7 @@ namespace RSMods
             // 
             this.nUpDown_ASIO_Input1_Channel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_Input1_Channel.Maximum = new decimal(new int[] {
-            64,
+            255,
             0,
             0,
             0});
@@ -4898,7 +4898,7 @@ namespace RSMods
             // 
             this.nUpDown_ASIO_Input0_Channel.Location = new System.Drawing.Point(338, 28);
             this.nUpDown_ASIO_Input0_Channel.Maximum = new decimal(new int[] {
-            64,
+            255,
             0,
             0,
             0});
@@ -4972,8 +4972,9 @@ namespace RSMods
             this.checkBox_ASIO_WASAPI_Output.Size = new System.Drawing.Size(125, 17);
             this.checkBox_ASIO_WASAPI_Output.TabIndex = 0;
             this.checkBox_ASIO_WASAPI_Output.Text = "Use WASAPI Output";
+            this.checkBox_ASIO_WASAPI_Output.ThreeState = true;
             this.checkBox_ASIO_WASAPI_Output.UseVisualStyleBackColor = true;
-            this.checkBox_ASIO_WASAPI_Output.CheckedChanged += new System.EventHandler(this.ASIO_WASAPI_Output);
+            this.checkBox_ASIO_WASAPI_Output.CheckStateChanged += new System.EventHandler(this.ASIO_WASAPI_Output);
             this.checkBox_ASIO_WASAPI_Output.MouseHover += new System.EventHandler(this.ToolTips_Show);
             // 
             // groupBox_ASIO_BufferSize
@@ -5011,12 +5012,12 @@ namespace RSMods
             0});
             this.nUpDown_ASIO_CustomBufferSize.Location = new System.Drawing.Point(20, 129);
             this.nUpDown_ASIO_CustomBufferSize.Maximum = new decimal(new int[] {
-            496,
+            65536,
             0,
             0,
             0});
             this.nUpDown_ASIO_CustomBufferSize.Minimum = new decimal(new int[] {
-            16,
+            1,
             0,
             0,
             0});
@@ -5024,7 +5025,7 @@ namespace RSMods
             this.nUpDown_ASIO_CustomBufferSize.Size = new System.Drawing.Size(120, 20);
             this.nUpDown_ASIO_CustomBufferSize.TabIndex = 3;
             this.nUpDown_ASIO_CustomBufferSize.Value = new decimal(new int[] {
-            16,
+            48,
             0,
             0,
             0});
@@ -5305,7 +5306,7 @@ namespace RSMods
             this.checkBox_Rocksmith_EnableRenderRes.Name = "checkBox_Rocksmith_EnableRenderRes";
             this.checkBox_Rocksmith_EnableRenderRes.Size = new System.Drawing.Size(160, 17);
             this.checkBox_Rocksmith_EnableRenderRes.TabIndex = 11;
-            this.checkBox_Rocksmith_EnableRenderRes.Text = "Seperate Render Resolution";
+            this.checkBox_Rocksmith_EnableRenderRes.Text = "Separate Render Resolution";
             this.checkBox_Rocksmith_EnableRenderRes.UseVisualStyleBackColor = true;
             this.checkBox_Rocksmith_EnableRenderRes.CheckedChanged += new System.EventHandler(this.Rocksmith_EnableRenderRes);
             // 

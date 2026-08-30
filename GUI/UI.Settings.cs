@@ -29,6 +29,20 @@ namespace RSMods
     {
         private void PriorSettings_LoadModSettings()
         {
+            RsModsLimits.ApplyToUiControls(
+                nUpDown_VolumeInterval,
+                nUpDown_RiffRepeaterSpeed,
+                nUpDown_NumberOfBackups,
+                nUpDown_OverrideInputVolume,
+                nUpDown_ForceEnumerationXMS,
+                nUpDown_LoopingLeadUp,
+                nUpDown_RewindBy,
+                nUpDown_RewindLeadup,
+                nUpDown_NSPTimer,
+                trackBar_FontSize,
+                listBox_ExtendedRangeTunings,
+                listBox_MidiAutoTuningOffset);
+
             if (Toggles.ToggleLoft)
             {
                 checkBox_ToggleLoft.Checked = true;
@@ -51,7 +65,7 @@ namespace RSMods
                 groupBox_Keybindings_AUDIO.Visible = true;
                 groupBox_ControlVolumeIncrement.Visible = true;
 
-                nUpDown_VolumeInterval.Value = GenUtil.Clamp(ModSettings.VolumeControlInterval, (int)nUpDown_VolumeInterval.Minimum, (int)nUpDown_VolumeInterval.Maximum);
+                SetNumericSetting(nUpDown_VolumeInterval, ModSettings.VolumeControlInterval, RsModsLimits.VolumeIntervalDefault, "RSMods.ini", nameof(ModSettings.VolumeControlInterval));
             }
 
             if (Toggles.ShowSongTimer)
@@ -142,7 +156,7 @@ namespace RSMods
                 checkBox_RiffRepeaterSpeedAboveOneHundred.Checked = true;
                 groupBox_RRSpeed.Visible = true;
 
-                nUpDown_RiffRepeaterSpeed.Value = GenUtil.Clamp(ModSettings.RRSpeedInterval, nUpDown_RiffRepeaterSpeed.Minimum, nUpDown_RiffRepeaterSpeed.Maximum);
+                SetNumericSetting(nUpDown_RiffRepeaterSpeed, ModSettings.RRSpeedInterval, RsModsLimits.RiffRepeaterSpeedDefault, "RSMods.ini", nameof(ModSettings.RRSpeedInterval));
             }
 
             if (Toggles.AutoTuneForSong)
@@ -151,7 +165,13 @@ namespace RSMods
                 groupBox_MidiAutoTuneDevice.Visible = true;
                 label_SelectedMidiOutDevice.Text = "Midi Device: " + Toggles.AutoTuneForSongDevice;
                 groupBox_MidiAutoTuningOffset.Visible = true;
-                listBox_MidiAutoTuningOffset.SelectedIndex = ModSettings.TuningOffset + 3;
+                SettingsSanitizer.SafeSetSelectedIndex(
+                    listBox_MidiAutoTuningOffset,
+                    RsModsLimits.MidiOffsetToListIndex(ModSettings.TuningOffset),
+                    RsModsLimits.MidiOffsetToListIndex(RsModsLimits.MidiTuningOffsetDefault),
+                    "RSMods.ini",
+                    nameof(ModSettings.TuningOffset),
+                    ModSettings.TuningOffset.ToString());
                 groupBox_MidiAutoTuningWhen.Visible = true;
                 label_SelectedMidiInDevice.Text = "Midi Device: " + Toggles.MidiInDevice;
 
@@ -187,7 +207,7 @@ namespace RSMods
 
             if (GUISettings.BackupProfile)
             {
-                nUpDown_NumberOfBackups.Value = GenUtil.Clamp(GUISettings.NumberOfBackups, (int)nUpDown_NumberOfBackups.Minimum, (int)nUpDown_NumberOfBackups.Maximum);
+                SetNumericSetting(nUpDown_NumberOfBackups, GUISettings.NumberOfBackups, RsModsLimits.NumberOfBackupsDefault, "RSMods.ini", nameof(GUISettings.NumberOfBackups));
                 groupBox_Backups.Visible = true;
             }
 
@@ -199,9 +219,15 @@ namespace RSMods
 
             checkBox_EnableLooping.Checked = Toggles.AllowLooping;
             groupBox_LoopingLeadUp.Visible = checkBox_EnableLooping.Checked;
-            nUpDown_LoopingLeadUp.Value = GenUtil.Clamp(ModSettings.LoopingLeadUp / 1000m, nUpDown_LoopingLeadUp.Minimum, nUpDown_LoopingLeadUp.Maximum);
-            listBox_ExtendedRangeTunings.SelectedIndex = (ModSettings.ExtendedRangeModeAt * -1) - 2; // Loads old ER tuning settings
-            trackBar_FontSize.Value = Math.Max(Toggles.OnScreenFontSize, trackBar_FontSize.Minimum);
+            SetNumericSetting(nUpDown_LoopingLeadUp, ModSettings.LoopingLeadUp / 1000m, RsModsLimits.LoopingLeadUpSecondsDefault, "RSMods.ini", nameof(ModSettings.LoopingLeadUp));
+            SettingsSanitizer.SafeSetSelectedIndex(
+                listBox_ExtendedRangeTunings,
+                RsModsLimits.ExtendedRangeTuningToListIndex(ModSettings.ExtendedRangeModeAt),
+                RsModsLimits.ExtendedRangeTuningToListIndex(RsModsLimits.ExtendedRangeTuningDefault),
+                "RSMods.ini",
+                nameof(ModSettings.ExtendedRangeModeAt),
+                ModSettings.ExtendedRangeModeAt.ToString());
+            SettingsSanitizer.SafeSetTrackBar(trackBar_FontSize, Toggles.OnScreenFontSize.ToString(), RsModsLimits.FontSizeDefault, "RSMods.ini", nameof(Toggles.OnScreenFontSize));
             checkBox_GuitarSpeakWhileTuning.Checked = RsModsSettings.GuitarSpeak.GuitarSpeakWhileTuning;
             checkBox_ChangeTheme.Checked = GUISettings.CustomTheme;
             checkBox_ScreenShotScores.Checked = Toggles.ScreenShotScores;
@@ -224,9 +250,9 @@ namespace RSMods
             checkBox_UseAltSampleRate_Output.Checked = Toggles.AltOutputSampleRate;
             groupBox_SampleRateOutput.Visible = checkBox_UseAltSampleRate_Output.Checked;
             listBox_AltSampleRatesOutput.SelectedItem = $"{ModSettings.AlternativeOutputSampleRate} Hz";
-            nUpDown_ForceEnumerationXMS.Value = GenUtil.Clamp(ModSettings.CheckForNewSongsInterval / 1000, (int)nUpDown_ForceEnumerationXMS.Minimum, (int)nUpDown_ForceEnumerationXMS.Maximum); // Loads old settings for enumeration every x ms
+            SetNumericSetting(nUpDown_ForceEnumerationXMS, ModSettings.CheckForNewSongsInterval / 1000m, RsModsLimits.EnumerateIntervalSecondsDefault, "RSMods.ini", nameof(ModSettings.CheckForNewSongsInterval));
             listBox_AvailableInputDevices.SelectedItem = Toggles.OverrideInputVolumeDevice;
-            nUpDown_OverrideInputVolume.Value = GenUtil.Clamp(ModSettings.OverrideInputVolume, (int)nUpDown_OverrideInputVolume.Minimum, (int)nUpDown_OverrideInputVolume.Maximum);
+            SetNumericSetting(nUpDown_OverrideInputVolume, ModSettings.OverrideInputVolume, RsModsLimits.OverrideInputVolumeDefault, "RSMods.ini", nameof(ModSettings.OverrideInputVolume));
             checkBox_ER_SeparateNoteColors.Checked = Toggles.SeparateNoteColors == OnOffMode.On;
             groupBox_NoteColors.Visible = checkBox_ER_SeparateNoteColors.Checked;
             checkBox_BackupProfile.Checked = GUISettings.BackupProfile;
@@ -236,8 +262,8 @@ namespace RSMods
             checkBox_AllowRewind.Checked = Toggles.AllowRewind;
             groupBox_RewindBy.Visible = checkBox_AllowRewind.Checked;
             groupBox_RewindLeadup.Visible = checkBox_AllowRewind.Checked;
-            nUpDown_RewindBy.Value = GenUtil.Clamp(ModSettings.RewindBy / 1000m, nUpDown_RewindBy.Minimum, nUpDown_RewindBy.Maximum);
-            nUpDown_RewindLeadup.Value = GenUtil.Clamp(ModSettings.RewindLeadup / 1000m, nUpDown_RewindLeadup.Minimum, nUpDown_RewindLeadup.Maximum);
+            SetNumericSetting(nUpDown_RewindBy, ModSettings.RewindBy / 1000m, RsModsLimits.RewindBySecondsDefault, "RSMods.ini", nameof(ModSettings.RewindBy));
+            SetNumericSetting(nUpDown_RewindLeadup, ModSettings.RewindLeadup / 1000m, RsModsLimits.RewindLeadupSecondsDefault, "RSMods.ini", nameof(ModSettings.RewindLeadup));
             checkBox_FixOculusCrash.Checked = Toggles.FixOculusCrash;
             checkBox_FixBrokenTones.Checked = Toggles.FixBrokenTones;
             checkBox_CustomNSPTimer.Checked = Toggles.UseCustomNSPTimer;
@@ -245,95 +271,116 @@ namespace RSMods
             checkBox_PreventMidSongPause.Checked = Toggles.PreventMidSongPause;
             checkBox_RemoveFingerprints.Checked = Toggles.RemoveFingerprints;
             groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
-            nUpDown_NSPTimer.Value = GenUtil.Clamp(ModSettings.CustomNSPTimeLimit / 1000m, nUpDown_NSPTimer.Minimum, nUpDown_NSPTimer.Maximum);
+            SetNumericSetting(nUpDown_NSPTimer, ModSettings.CustomNSPTimeLimit / 1000m, RsModsLimits.NspTimerSecondsDefault, "RSMods.ini", nameof(ModSettings.CustomNSPTimeLimit));
         }
 
         private void PriorSettings_LoadASIOSettings()
         {
-            if (!AsioSettings.SettingsExist)
+            RsAsioLimits.ApplyToUiControls(
+                nUpDown_ASIO_CustomBufferSize,
+                nUpDown_ASIO_Output_BaseChannel,
+                nUpDown_ASIO_Output_AltBaseChannel,
+                nUpDown_ASIO_Output_MaxVolume,
+                nUpDown_ASIO_Input0_Channel,
+                nUpDown_ASIO_Input0_MaxVolume,
+                nUpDown_ASIO_Input1_Channel,
+                nUpDown_ASIO_Input1_MaxVolume,
+                nUpDown_ASIO_InputMic_Channel,
+                nUpDown_ASIO_InputMic_MaxVolume,
+                checkBox_ASIO_WASAPI_Output);
+
+            if (!_asioSettings.SettingsExist)
                 return;
 
             // Config
-            checkBox_ASIO_WASAPI_Output.Checked = AsioSettings.Config.EnableWasapiOutputs;
-            checkBox_ASIO_WASAPI_Input.Checked = AsioSettings.Config.EnableWasapiInputs;
-            checkBox_ASIO_ASIO.Checked = AsioSettings.Config.EnableAsio;
+            checkBox_ASIO_WASAPI_Output.CheckState = _asioSettings.Config.WasapiOutputs switch
+            {
+                WasapiOutputMode.On => CheckState.Checked,
+                WasapiOutputMode.Prompt => CheckState.Indeterminate,
+                _ => CheckState.Unchecked
+            };
+            checkBox_ASIO_WASAPI_Input.Checked = _asioSettings.Config.EnableWasapiInputs;
+            checkBox_ASIO_ASIO.Checked = _asioSettings.Config.EnableAsio;
 
             // Asio Buffer
-            switch (AsioSettings.AsioSection.BufferSizeMode)
+            switch (_asioSettings.AsioSection.BufferSizeMode)
             {
-                case "custom":
+                case RsAsioLimits.BufferModeCustom:
                     radio_ASIO_BufferSize_Custom.Checked = true;
-                    nUpDown_ASIO_CustomBufferSize.Value = GenUtil.Clamp(AsioSettings.AsioSection.CustomBufferSize, (int)nUpDown_ASIO_CustomBufferSize.Minimum, (int)nUpDown_ASIO_CustomBufferSize.Maximum);
+                    SetNumericSetting(nUpDown_ASIO_CustomBufferSize, _asioSettings.AsioSection.CustomBufferSize, RsAsioLimits.CustomBufferSizeDefault, "RS_ASIO.ini", nameof(_asioSettings.AsioSection.CustomBufferSize));
                     break;
-                case "driver":
+                case RsAsioLimits.BufferModeDriver:
                     radio_ASIO_BufferSize_Driver.Checked = true;
                     break;
-                case "host":
+                case RsAsioLimits.BufferModeHost:
                     radio_ASIO_BufferSize_Host.Checked = true;
                     break;
             }
 
             // Output
-            nUpDown_ASIO_Output_BaseChannel.Value = GenUtil.Clamp(AsioSettings.Output.BaseChannel, (int)nUpDown_ASIO_Output_BaseChannel.Minimum, (int)nUpDown_ASIO_Output_BaseChannel.Maximum);
-            nUpDown_ASIO_Output_AltBaseChannel.Value = GenUtil.Clamp(AsioSettings.Output.AltBaseChannel, (int)nUpDown_ASIO_Output_AltBaseChannel.Minimum, (int)nUpDown_ASIO_Output_AltBaseChannel.Maximum);
-            checkBox_ASIO_Output_ControlEndpointVolume.Checked = AsioSettings.Output.EnableSoftwareEndpointVolumeControl;
-            checkBox_ASIO_Output_ControlMasterVolume.Checked = AsioSettings.Output.EnableSoftwareMasterVolumeControl;
-            nUpDown_ASIO_Output_MaxVolume.Value = GenUtil.Clamp(AsioSettings.Output.SoftwareMasterVolumePercent, (int)nUpDown_ASIO_Output_MaxVolume.Minimum, (int)nUpDown_ASIO_Output_MaxVolume.Maximum);
-            checkBox_ASIO_Output_Disabled.Checked = AsioSettings.Output.Disabled;
-            listBox_AvailableASIODevices_Output.SelectedItem = AsioSettings.Output.Driver;
-            checkBox_ASIO_Output_EnableRefHack.Checked = AsioSettings.Output.EnableRefCountHack;
+            SetNumericSetting(nUpDown_ASIO_Output_BaseChannel, _asioSettings.Output.BaseChannel, RsAsioLimits.OutputBaseChannelDefault, "RS_ASIO.ini", nameof(_asioSettings.Output.BaseChannel));
+            SetNumericSetting(nUpDown_ASIO_Output_AltBaseChannel, _asioSettings.Output.AltBaseChannel, RsAsioLimits.OutputAltBaseChannelDefault, "RS_ASIO.ini", nameof(_asioSettings.Output.AltBaseChannel));
+            checkBox_ASIO_Output_ControlEndpointVolume.Checked = _asioSettings.Output.EnableSoftwareEndpointVolumeControl;
+            checkBox_ASIO_Output_ControlMasterVolume.Checked = _asioSettings.Output.EnableSoftwareMasterVolumeControl;
+            SetNumericSetting(nUpDown_ASIO_Output_MaxVolume, _asioSettings.Output.SoftwareMasterVolumePercent, RsAsioLimits.VolumePercentDefault, "RS_ASIO.ini", nameof(_asioSettings.Output.SoftwareMasterVolumePercent));
+            checkBox_ASIO_Output_Disabled.Checked = _asioSettings.Output.Disabled;
+            listBox_AvailableASIODevices_Output.SelectedItem = _asioSettings.Output.Driver;
+            checkBox_ASIO_Output_EnableRefHack.Checked = _asioSettings.Output.EnableRefCountHack;
 
             // Input0
-            nUpDown_ASIO_Input0_Channel.Value = GenUtil.Clamp(AsioSettings.Input0.Channel, (int)nUpDown_ASIO_Input0_Channel.Minimum, (int)nUpDown_ASIO_Input0_Channel.Maximum);
-            checkBox_ASIO_Input0_ControlEndpointVolume.Checked = AsioSettings.Input0.EnableSoftwareEndpointVolumeControl;
-            checkBox_ASIO_Input0_ControlMasterVolume.Checked = AsioSettings.Input0.EnableSoftwareMasterVolumeControl;
-            nUpDown_ASIO_Input0_MaxVolume.Value = GenUtil.Clamp(AsioSettings.Input0.SoftwareMasterVolumePercent, (int)nUpDown_ASIO_Input0_MaxVolume.Minimum, (int)nUpDown_ASIO_Input0_MaxVolume.Maximum);
-            checkBox_ASIO_Input0_Disabled.Checked = AsioSettings.Input0.Disabled;
-            listBox_AvailableASIODevices_Input0.SelectedItem = AsioSettings.Input0.Driver;
-            checkBox_ASIO_Input0_EnableRefHack.Checked = AsioSettings.Input0.EnableRefCountHack;
+            SetNumericSetting(nUpDown_ASIO_Input0_Channel, _asioSettings.Input0.Channel, RsAsioLimits.Input0ChannelDefault, "RS_ASIO.ini", nameof(_asioSettings.Input0.Channel));
+            checkBox_ASIO_Input0_ControlEndpointVolume.Checked = _asioSettings.Input0.EnableSoftwareEndpointVolumeControl;
+            checkBox_ASIO_Input0_ControlMasterVolume.Checked = _asioSettings.Input0.EnableSoftwareMasterVolumeControl;
+            SetNumericSetting(nUpDown_ASIO_Input0_MaxVolume, _asioSettings.Input0.SoftwareMasterVolumePercent, RsAsioLimits.VolumePercentDefault, "RS_ASIO.ini", nameof(_asioSettings.Input0.SoftwareMasterVolumePercent));
+            checkBox_ASIO_Input0_Disabled.Checked = _asioSettings.Input0.Disabled;
+            listBox_AvailableASIODevices_Input0.SelectedItem = _asioSettings.Input0.Driver;
+            checkBox_ASIO_Input0_EnableRefHack.Checked = _asioSettings.Input0.EnableRefCountHack;
 
             // Input1
-            nUpDown_ASIO_Input1_Channel.Value = GenUtil.Clamp(AsioSettings.Input1.Channel, (int)nUpDown_ASIO_Input1_Channel.Minimum, (int)nUpDown_ASIO_Input1_Channel.Maximum);
-            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = AsioSettings.Input1.EnableSoftwareEndpointVolumeControl;
-            checkBox_ASIO_Input1_ControlMasterVolume.Checked = AsioSettings.Input1.EnableSoftwareMasterVolumeControl;
-            nUpDown_ASIO_Input1_MaxVolume.Value = GenUtil.Clamp(AsioSettings.Input1.SoftwareMasterVolumePercent, (int)nUpDown_ASIO_Input1_MaxVolume.Minimum, (int)nUpDown_ASIO_Input1_MaxVolume.Maximum);
-            checkBox_ASIO_Input1_Disabled.Checked = AsioSettings.Input1.Disabled;
-            listBox_AvailableASIODevices_Input1.SelectedItem = AsioSettings.Input1.Driver;
-            checkBox_ASIO_Input1_EnableRefHack.Checked = AsioSettings.Input1.EnableRefCountHack;
+            SetNumericSetting(nUpDown_ASIO_Input1_Channel, _asioSettings.Input1.Channel, RsAsioLimits.Input1ChannelDefault, "RS_ASIO.ini", nameof(_asioSettings.Input1.Channel));
+            checkBox_ASIO_Input1_ControlEndpointVolume.Checked = _asioSettings.Input1.EnableSoftwareEndpointVolumeControl;
+            checkBox_ASIO_Input1_ControlMasterVolume.Checked = _asioSettings.Input1.EnableSoftwareMasterVolumeControl;
+            SetNumericSetting(nUpDown_ASIO_Input1_MaxVolume, _asioSettings.Input1.SoftwareMasterVolumePercent, RsAsioLimits.VolumePercentDefault, "RS_ASIO.ini", nameof(_asioSettings.Input1.SoftwareMasterVolumePercent));
+            checkBox_ASIO_Input1_Disabled.Checked = _asioSettings.Input1.Disabled;
+            listBox_AvailableASIODevices_Input1.SelectedItem = _asioSettings.Input1.Driver;
+            checkBox_ASIO_Input1_EnableRefHack.Checked = _asioSettings.Input1.EnableRefCountHack;
 
             // InputMic
-            nUpDown_ASIO_InputMic_Channel.Value = GenUtil.Clamp(AsioSettings.InputMic.Channel, (int)nUpDown_ASIO_InputMic_Channel.Minimum, (int)nUpDown_ASIO_InputMic_Channel.Maximum);
-            checkBox_ASIO_InputMic_ControlEndpointVolume.Checked = AsioSettings.InputMic.EnableSoftwareEndpointVolumeControl;
-            checkBox_ASIO_InputMic_ControlMasterVolume.Checked = AsioSettings.InputMic.EnableSoftwareMasterVolumeControl;
-            nUpDown_ASIO_InputMic_MaxVolume.Value = GenUtil.Clamp(AsioSettings.InputMic.SoftwareMasterVolumePercent, (int)nUpDown_ASIO_InputMic_MaxVolume.Minimum, (int)nUpDown_ASIO_InputMic_MaxVolume.Maximum);
-            checkBox_ASIO_InputMic_Disabled.Checked = AsioSettings.InputMic.Disabled;
-            listBox_AvailableASIODevices_InputMic.SelectedItem = AsioSettings.InputMic.Driver;
-            checkBox_ASIO_InputMic_EnableRefHack.Checked = AsioSettings.InputMic.EnableRefCountHack;
+            SetNumericSetting(nUpDown_ASIO_InputMic_Channel, _asioSettings.InputMic.Channel, RsAsioLimits.InputMicChannelDefault, "RS_ASIO.ini", nameof(_asioSettings.InputMic.Channel));
+            checkBox_ASIO_InputMic_ControlEndpointVolume.Checked = _asioSettings.InputMic.EnableSoftwareEndpointVolumeControl;
+            checkBox_ASIO_InputMic_ControlMasterVolume.Checked = _asioSettings.InputMic.EnableSoftwareMasterVolumeControl;
+            SetNumericSetting(nUpDown_ASIO_InputMic_MaxVolume, _asioSettings.InputMic.SoftwareMasterVolumePercent, RsAsioLimits.VolumePercentDefault, "RS_ASIO.ini", nameof(_asioSettings.InputMic.SoftwareMasterVolumePercent));
+            checkBox_ASIO_InputMic_Disabled.Checked = _asioSettings.InputMic.Disabled;
+            listBox_AvailableASIODevices_InputMic.SelectedItem = _asioSettings.InputMic.Driver;
+            checkBox_ASIO_InputMic_EnableRefHack.Checked = _asioSettings.InputMic.EnableRefCountHack;
         }
 
         private void PriorSettings_LoadRocksmithSettings()
         {
             // Audio Settings
-            checkBox_Rocksmith_EnableMicrophone.Checked = RocksmithSettings.Audio.EnableMicrophone;
-            checkBox_Rocksmith_ExclusiveMode.Checked = RocksmithSettings.Audio.ExclusiveMode;
-            if (RocksmithSettings.Audio.LatencyBuffer <= RocksmithSettings.Audio.MinLatencyBuffer || RocksmithSettings.Audio.LatencyBuffer > RocksmithSettings.Audio.MaxLatencyBuffer)
-                RocksmithSettings.Audio.LatencyBuffer = RocksmithSettings.Audio.DefaultLatencyBuffer;
-            nUpDown_Rocksmith_LatencyBuffer.Value = RocksmithSettings.Audio.LatencyBuffer;
-            checkBox_Rocksmith_ForceWDM.Checked = RocksmithSettings.Audio.ForceWDM;
-            checkBox_Rocksmith_ForceDirextXSink.Checked = RocksmithSettings.Audio.ForceDirectXSink;
-            checkBox_Rocksmith_DumpAudioLog.Checked = RocksmithSettings.Audio.DumpAudioLog;
-            if (RocksmithSettings.Audio.MaxOutputBufferSize != 0)
-                nUpDown_Rocksmith_MaxOutputBuffer.Value = RocksmithSettings.Audio.MaxOutputBufferSize;
+            checkBox_Rocksmith_EnableMicrophone.Checked = _rocksmithSettings.Audio.EnableMicrophone;
+            checkBox_Rocksmith_ExclusiveMode.Checked = _rocksmithSettings.Audio.ExclusiveMode;
+            if (_rocksmithSettings.Audio.LatencyBuffer <= RocksmithSettings.AudioSettings.MinLatencyBuffer ||
+                _rocksmithSettings.Audio.LatencyBuffer > RocksmithSettings.AudioSettings.MaxLatencyBuffer)
+            {
+                _rocksmithSettings.Audio.LatencyBuffer = RocksmithSettings.AudioSettings.DefaultLatencyBuffer;
+            }
+            nUpDown_Rocksmith_LatencyBuffer.Value = _rocksmithSettings.Audio.LatencyBuffer;
+            checkBox_Rocksmith_ForceWDM.Checked = _rocksmithSettings.Audio.ForceWDM;
+            checkBox_Rocksmith_ForceDirextXSink.Checked = _rocksmithSettings.Audio.ForceDirectXSink;
+            checkBox_Rocksmith_DumpAudioLog.Checked = _rocksmithSettings.Audio.DumpAudioLog;
+            if (_rocksmithSettings.Audio.MaxOutputBufferSize != 0)
+                nUpDown_Rocksmith_MaxOutputBuffer.Value = _rocksmithSettings.Audio.MaxOutputBufferSize;
             else
                 checkBox_Rocksmith_Override_MaxOutputBufferSize.Checked = true;
-            checkBox_Rocksmith_RTCOnly.Checked = RocksmithSettings.Audio.RealToneCableOnly;
-            checkBox_Rocksmith_LowLatencyMode.Checked = RocksmithSettings.Audio.Win32UltraLowLatencyMode;
+            checkBox_Rocksmith_RTCOnly.Checked = _rocksmithSettings.Audio.RealToneCableOnly;
+            checkBox_Rocksmith_LowLatencyMode.Checked = _rocksmithSettings.Audio.Win32UltraLowLatencyMode;
 
             // Visual Settings
-            checkBox_Rocksmith_GamepadUI.Checked = RocksmithSettings.RendererWin32.ShowGamepadUI;
-            nUpDown_Rocksmith_ScreenWidth.Value = GenUtil.Clamp(RocksmithSettings.RendererWin32.ScreenWidth, (int)nUpDown_Rocksmith_ScreenWidth.Minimum, (int)nUpDown_Rocksmith_ScreenWidth.Maximum);
-            nUpDown_Rocksmith_ScreenHeight.Value = GenUtil.Clamp(RocksmithSettings.RendererWin32.ScreenHeight, (int)nUpDown_Rocksmith_ScreenHeight.Minimum, (int)nUpDown_Rocksmith_ScreenHeight.Maximum);
-            switch (RocksmithSettings.RendererWin32.Fullscreen)
+            checkBox_Rocksmith_GamepadUI.Checked = _rocksmithSettings.RendererWin32.ShowGamepadUI;
+            SetNumericSetting(nUpDown_Rocksmith_ScreenWidth, _rocksmithSettings.RendererWin32.ScreenWidth, 0, "Rocksmith.ini", nameof(_rocksmithSettings.RendererWin32.ScreenWidth));
+            SetNumericSetting(nUpDown_Rocksmith_ScreenHeight, _rocksmithSettings.RendererWin32.ScreenHeight, 0, "Rocksmith.ini", nameof(_rocksmithSettings.RendererWin32.ScreenHeight));
+            switch (_rocksmithSettings.RendererWin32.Fullscreen)
             {
                 case FullscreenMode.Windowed:
                     radio_Rocksmith_Windowed.Checked = true;
@@ -347,18 +394,18 @@ namespace RSMods
                 default:
                     break;
             }
-            nUpDown_Rocksmith_RenderWidth.Value = GenUtil.Clamp(RocksmithSettings.RendererWin32.RenderingWidth, (int)nUpDown_Rocksmith_RenderWidth.Minimum, (int)nUpDown_Rocksmith_RenderWidth.Maximum);
-            nUpDown_Rocksmith_RenderHeight.Value = GenUtil.Clamp(RocksmithSettings.RendererWin32.RenderingHeight, (int)nUpDown_Rocksmith_RenderHeight.Minimum, (int)nUpDown_Rocksmith_RenderHeight.Maximum);
-            checkBox_Rocksmith_PostEffects.Checked = RocksmithSettings.RendererWin32.EnablePostEffects;
-            checkBox_Rocksmith_Shadows.Checked = RocksmithSettings.RendererWin32.EnableShadows;
-            checkBox_Rocksmith_HighResScope.Checked = RocksmithSettings.RendererWin32.EnableHighResScope;
-            checkBox_Rocksmith_DepthOfField.Checked = RocksmithSettings.RendererWin32.EnableDepthOfField;
-            checkBox_Rocksmith_PerPixelLighting.Checked = RocksmithSettings.RendererWin32.EnablePerPixelLighting;
-            checkBox_Rocksmith_MSAASamples.Checked = RocksmithSettings.RendererWin32.MsaaSamples == MsaaMode.X4;
-            checkBox_Rocksmith_DisableBrowser.Checked = RocksmithSettings.RendererWin32.DisableBrowser;
-            checkBox_Rocksmith_EnableRenderRes.Checked = RocksmithSettings.RendererWin32.RenderingWidth != 0 || RocksmithSettings.RendererWin32.RenderingHeight != 0;
+            SetNumericSetting(nUpDown_Rocksmith_RenderWidth, _rocksmithSettings.RendererWin32.RenderingWidth, 0, "Rocksmith.ini", nameof(_rocksmithSettings.RendererWin32.RenderingWidth));
+            SetNumericSetting(nUpDown_Rocksmith_RenderHeight, _rocksmithSettings.RendererWin32.RenderingHeight, 0, "Rocksmith.ini", nameof(_rocksmithSettings.RendererWin32.RenderingHeight));
+            checkBox_Rocksmith_PostEffects.Checked = _rocksmithSettings.RendererWin32.EnablePostEffects;
+            checkBox_Rocksmith_Shadows.Checked = _rocksmithSettings.RendererWin32.EnableShadows;
+            checkBox_Rocksmith_HighResScope.Checked = _rocksmithSettings.RendererWin32.EnableHighResScope;
+            checkBox_Rocksmith_DepthOfField.Checked = _rocksmithSettings.RendererWin32.EnableDepthOfField;
+            checkBox_Rocksmith_PerPixelLighting.Checked = _rocksmithSettings.RendererWin32.EnablePerPixelLighting;
+            checkBox_Rocksmith_MSAASamples.Checked = _rocksmithSettings.RendererWin32.MsaaSamples == MsaaMode.X4;
+            checkBox_Rocksmith_DisableBrowser.Checked = _rocksmithSettings.RendererWin32.DisableBrowser;
+            checkBox_Rocksmith_EnableRenderRes.Checked = _rocksmithSettings.RendererWin32.RenderingWidth != 0 || _rocksmithSettings.RendererWin32.RenderingHeight != 0;
 
-            switch (RocksmithSettings.RendererWin32.VisualQuality)
+            switch (_rocksmithSettings.RendererWin32.VisualQuality)
             {
                 case VisualQualityMode.Low:
                     radio_Rocksmith_LowQuality.Checked = true;
@@ -377,7 +424,22 @@ namespace RSMods
             }
 
             // Network Settings
-            checkBox_Rocksmith_UseProxy.Checked = RocksmithSettings.Net.UseProxy;
+            checkBox_Rocksmith_UseProxy.Checked = _rocksmithSettings.Net.UseProxy;
+        }
+
+        private static void SetNumericSetting(
+            NumericUpDown control,
+            decimal value,
+            decimal defaultValue,
+            string sourceFile,
+            string settingName)
+        {
+            SettingsSanitizer.SafeSetNumericUpDown(
+                control,
+                value.ToString(),
+                defaultValue,
+                sourceFile,
+                settingName);
         }
 
         private void Reset_DefaultSettings(object sender, EventArgs e)
@@ -703,7 +765,7 @@ namespace RSMods
             {
                 Profiles.SaveProfile();
 
-                if (string.IsNullOrEmpty(Profiles.GetSaveDirectory()))
+                if (string.IsNullOrEmpty(GenUtil.GetSaveDirectory()))
                 {
                     MessageBox.Show("It looks like your profile(s) can't be found :(\nWe are disabling the Backup Profile mod so it doesn't look like we're lying to you.");
                     checkBox_BackupProfile.Checked = false;

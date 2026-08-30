@@ -120,34 +120,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ASIO\AsioSettings.cs" />
     <Compile Include="ASIO\GetASIODevices.cs" />
-    <Compile Include="Data\Constants.cs" />
+    <Compile Include="ASIO\RsAsioLimits.cs" />
     <Compile Include="Data\GitHubAsset.cs" />
     <Compile Include="Data\GitHubRelease.cs" />
-    <Compile Include="Data\TuningDefinition.cs" />
-    <Compile Include="Dictionaries.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Enums.cs" />
-    <Compile Include="Core\IDialogService.cs" />
-    <Compile Include="Core\IAppEnvironment.cs" />
-    <Compile Include="Core\AppServices.cs" />
     <Compile Include="WinForms\WinFormsDialogService.cs" />
     <Compile Include="WinForms\WinFormsAppEnvironment.cs" />
-    <Compile Include="GuitarSpeak.cs" />
-    <Compile Include="IniManager.cs" />
-    <Compile Include="IniSection.cs" />
-    <Compile Include="MemoryStream.cs" />
     <Compile Include="Midi\Midi.cs" />
     <Compile Include="Midi\MidiDebug.cs" />
-    <Compile Include="ModsSettings.cs" />
-    <Compile Include="Profiles.cs" />
-    <Compile Include="Rocksmith\RocksmithSettings.cs" />
     <Compile Include="Rocksmith\Soundpacks.cs" />
-    <Compile Include="RSLocationResolver.cs" />
     <Compile Include="SetAndForgetMods.cs" />
-    <Compile Include="SongManager.cs" />
     <Compile Include="Twitch\EffectServer\EffectMessage.cs" />
     <Compile Include="Twitch\EffectServer\EffectServerTCP.cs" />
     <Compile Include="Twitch\PubSub.cs" />
@@ -164,57 +146,69 @@
     </Compile>
     <Compile Include="UI.Startup.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Settings.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Themes.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Keybindings.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Colors.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.SetAndForget.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Tooltips.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.GuitarSpeak.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Twitch.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.ASIO.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Rocksmith.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Profiles.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.SoundPacks.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI.Midi.cs">
       <DependentUpon>UI.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="KeyConversion.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RsModsLimits.cs" />
     <Compile Include="Util\ExeUtil.cs" />
     <Compile Include="Util\FolderPicker.cs" />
-    <Compile Include="Util\GenUtil.cs" />
     <Compile Include="Util\GithubUpdater.cs" />
-    <Compile Include="Util\KeybindItem.cs" />
-    <Compile Include="Util\ColorItem.cs" />
     <Compile Include="Twitch\RSModderBot.cs" />
     <Compile Include="Util\MessageBoxManager.cs" />
+    <Compile Include="Util\SettingsSanitizer.cs" />
     <Compile Include="Util\WinMsgUtil.cs" />
     <Compile Include="Util\ZipUtils.cs" />
     <EmbeddedResource Include="UI.resx">
@@ -344,6 +338,15 @@
     <PackageReference Include="TwitchLib.PubSub">
       <Version>3.1.5-CI-20200907-9</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- GUI.Core multi-targets net48;net8.0. This project is net48, so pin the reference to the
+         net48 output (an old-style project does not negotiate the TFM for a multi-targeted reference). -->
+    <ProjectReference Include="..\GUI.Core\GUI.Core.csproj">
+      <Project>{D8F21F24-9C2B-42E1-925A-76B844950137}</Project>
+      <Name>GUI.Core</Name>
+      <SetTargetFramework>TargetFramework=net48</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

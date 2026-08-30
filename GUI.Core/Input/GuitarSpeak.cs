@@ -1,6 +1,6 @@
-﻿namespace RSMods
+namespace RSMods
 {
-    static class GuitarSpeak
+    public static class GuitarSpeak
     {
         public static string GuitarSpeakNoteOctaveMath(string inputString)
         {

@@ -23,10 +23,7 @@ namespace RSMods
             => _ini.SetInt(_sectionName, key, value);
 
         public decimal GetDecimal(decimal defaultValue = 0, [CallerMemberName] string key = "")
-        {
-            var str = GetString(defaultValue.ToString(CultureInfo.InvariantCulture), key);
-            return decimal.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : defaultValue;
-        }
+            => _ini.GetDecimal(_sectionName, key, defaultValue);
 
         public void SetDecimal(decimal value, [CallerMemberName] string key = "")
             => SetString(value.ToString(CultureInfo.InvariantCulture), key);
@@ -38,10 +35,7 @@ namespace RSMods
             => _ini.SetBool(_sectionName, key, value, _numericBools);
 
         public T GetEnum<T>(T defaultValue = default, [CallerMemberName] string key = "") where T : struct, Enum
-        {
-            string raw = _ini.GetString(_sectionName, key, defaultValue.ToString().ToLowerInvariant());
-            return Enum.TryParse<T>(raw, ignoreCase: true, out var result) ? result : defaultValue;
-        }
+            => _ini.GetEnum(_sectionName, key, defaultValue);
 
         public void SetEnum<T>(T value, [CallerMemberName] string key = "") where T : struct, Enum
             => _ini.SetString(_sectionName, key, value.ToString().ToLowerInvariant());
@@ -49,10 +43,7 @@ namespace RSMods
         public void Save() => _ini.Save();
 
         public T GetEnumInt<T>(T defaultValue = default, [CallerMemberName] string key = "") where T : struct, Enum
-        {
-            int raw = _ini.GetInt(_sectionName, key, Convert.ToInt32(defaultValue));
-            return Enum.IsDefined(typeof(T), raw) ? (T)Enum.ToObject(typeof(T), raw) : defaultValue;
-        }
+            => _ini.GetEnumInt(_sectionName, key, defaultValue);
 
         public void SetEnumInt<T>(T value, [CallerMemberName] string key = "") where T : struct, Enum
             => _ini.SetInt(_sectionName, key, Convert.ToInt32(value));

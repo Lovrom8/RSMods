@@ -73,6 +73,8 @@ namespace RSMods
 
                 button_Profiles_SaveSonglist.Enabled = false;
 
+                progressBar_Profiles_LoadPsarcs.Minimum = 0;
+                progressBar_Profiles_LoadPsarcs.Maximum = 100;
                 progressBar_Profiles_LoadPsarcs.Value = 0;
                 progressBar_Profiles_LoadPsarcs.Visible = true;
             }
@@ -88,26 +90,33 @@ namespace RSMods
             }
         }
 
-        private void Profiles_LoadSongs(object sender, EventArgs e)
+        private async void Profiles_LoadSongs(object sender, EventArgs e)
         {
             PrepareSongListUI(false);
 
-            Songs = SongManager.ExtractSongData(progressBar_Profiles_LoadPsarcs);
-            var ownedRS1DLC = Profiles.GetOwnedRS1DLC();
-            var allSongLists = Profiles.GetProfileSongListsWithFavorites();
-
-            foreach (var song in Songs)
+            try
             {
-                if (!Profiles.ShouldIncludeSong(song, ownedRS1DLC))
-                    continue;
+                var progress = new Progress<int>(value => progressBar_Profiles_LoadPsarcs.Value = value);
+                Songs = await SongManager.ExtractSongDataAsync(progress);
+                var ownedRS1DLC = Profiles.GetOwnedRS1DLC();
+                var allSongLists = Profiles.GetProfileSongListsWithFavorites();
 
-                object[] row = MapSongToRow(song, allSongLists);
-                dgv_Profiles_Songlists.Rows.Add(row);
+                foreach (var song in Songs)
+                {
+                    if (!Profiles.ShouldIncludeSong(song, ownedRS1DLC))
+                        continue;
+
+                    object[] row = MapSongToRow(song, allSongLists);
+                    dgv_Profiles_Songlists.Rows.Add(row);
+                }
+
+                Profiles_RefreshSonglistNames();
+                UpdateSongListColumnVisibility(allSongLists.Count - 1); // -1 because Favorites is list 0
             }
-
-            Profiles_RefreshSonglistNames();
-            UpdateSongListColumnVisibility(allSongLists.Count - 1); // -1 because Favorites is list 0
-            PrepareSongListUI(true);
+            finally
+            {
+                PrepareSongListUI(true);
+            }
         }
 
         private void UpdateSongListColumnVisibility(int activeSongListCount)
@@ -240,7 +249,7 @@ namespace RSMods
 
         private void Profiles_Helper_GenerateValidSonglists()
         {
-            RsModsSettings.RefreshSongListTitles();
+            RsModsSettings.RefreshSongListTitles(Profiles.SongListCount);
             listBox_Songlist.Items.Clear();
 
             foreach (string SongList in RsModsSettings.SongListTitles)
@@ -320,7 +329,7 @@ namespace RSMods
 
             try
             {
-                Profiles.RestoreBackup(sourceDir, Profiles.GetSaveDirectory());
+                Profiles.RestoreBackup(sourceDir, GenUtil.GetSaveDirectory());
                 MessageBox.Show($"Reverted to the backup: {localizedName}");
             }
             catch (Exception ex)

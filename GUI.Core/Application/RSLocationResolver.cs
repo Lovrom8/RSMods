@@ -11,11 +11,6 @@ namespace RSMods
     /// <see cref="IDialogService"/> when auto-detection fails. This is the interactive counterpart to
     /// <see cref="GenUtil"/>'s pure detection: it owns every dialog and the shutdown-on-give-up flow that
     /// used to be baked into <c>GetRSDirectory</c> / <c>GetSaveFolder</c>.
-    ///
-    /// It is a coordinator (same layer as <see cref="SetAndForgetMods"/>), not a leaf utility — it depends
-    /// only on the app abstractions, so the WinForms shell and the future Avalonia shell drive the exact
-    /// same flow. The resolved values are written into <see cref="Constants"/>, after which the scattered
-    /// <c>GetRSDirectory()</c> callers simply read the cached path.
     /// </summary>
     public static class RSLocationResolver
     {
@@ -73,7 +68,7 @@ namespace RSMods
                 return string.Empty;
 
             // Registry-based detection as a last automatic attempt before bothering the user.
-            string fromRegistry = Profiles.GetSaveDirectory(true);
+            string fromRegistry = GenUtil.GetSaveDirectory(true);
             if (!string.IsNullOrEmpty(fromRegistry) && fromRegistry.IsSavePath())
             {
                 Constants.SavePath = fromRegistry;
@@ -99,7 +94,7 @@ namespace RSMods
             {
                 string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 installation folder");
 
-                if (string.IsNullOrEmpty(picked)) // user cancelled
+                if (picked == null || picked.Length == 0) // user cancelled
                     return string.Empty;
 
                 if (picked.IsRSFolder())
@@ -122,7 +117,7 @@ namespace RSMods
             {
                 string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 save folder");
 
-                if (string.IsNullOrEmpty(picked)) // user cancelled — allowed, disables Profile Edits
+                if (picked == null || picked.Length == 0) // user cancelled — allowed, disables Profile Edits
                     return string.Empty;
 
                 if (picked.IsSavePath())
