@@ -1,0 +1,54 @@
+<Window
+    x:Class="RSMods.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:MainWindowViewModel"
+    Title="RSMods"
+    Width="1080"
+    Height="720"
+    MinWidth="800"
+    MinHeight="520"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Padding="24,18" Background="#20242B">
+            <StackPanel Spacing="3">
+                <TextBlock FontSize="24" FontWeight="SemiBold" Text="RSMods" />
+                <TextBlock Opacity="0.7" Text="Avalonia migration shell" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="220,*">
+            <Border Padding="18" Background="#181B20">
+                <StackPanel Spacing="10">
+                    <TextBlock Margin="4,0,0,8" FontWeight="SemiBold" Text="Sections" />
+                    <Button HorizontalContentAlignment="Left" Content="Status" />
+                    <Button HorizontalContentAlignment="Left" Content="Mod Settings" IsEnabled="{Binding SectionsEnabled}" />
+                    <Button HorizontalContentAlignment="Left" Content="Rocksmith" IsEnabled="{Binding SectionsEnabled}" />
+                    <Button HorizontalContentAlignment="Left" Content="RS_ASIO" IsEnabled="{Binding SectionsEnabled}" />
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Column="1">
+                <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+                    <TextBlock FontSize="28" FontWeight="SemiBold" Text="Migration status" />
+                    <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+
+                    <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                        <StackPanel Spacing="10">
+                            <TextBlock FontWeight="SemiBold" Text="Resolved locations" />
+                            <TextBlock Text="{Binding RocksmithFolder, StringFormat='Rocksmith: {0}', TargetNullValue='Rocksmith: resolving…'}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SavePathDisplay, StringFormat='Save folder: {0}'}" TextWrapping="Wrap" />
+                            <TextBlock Opacity="0.7" Text="{Binding CoreAssembly, StringFormat='Core assembly: {0}'}" />
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Command="{Binding SetSavePathCommand}" Content="Set save folder" IsEnabled="{Binding SectionsEnabled}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

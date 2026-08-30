@@ -280,11 +280,15 @@ namespace RSMods.Util
                 {
                     Constants.RSFolder = GetSettingsEntry("RSPath");
                     if (Constants.RSFolder != string.Empty)
+                    {
                         return Constants.RSFolder;
+                    }
                 }
             }
             else
+            {
                 return Constants.RSFolder;
+            }
 
             try
             {
@@ -332,7 +336,7 @@ namespace RSMods.Util
             }
             catch
             {
-                // Detection is best-effort; the resolver surfaces "not found" to the user.
+                // Detection is best-effort
             }
 
             return string.Empty;

@@ -94,11 +94,11 @@ namespace RSMods
             {
                 string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 installation folder");
 
-                if (picked == null || picked.Length == 0) // user cancelled
+                if (string.IsNullOrEmpty(picked)) // user cancelled
                     return string.Empty;
 
                 if (picked.IsRSFolder())
-                    return picked;
+                    return picked!;
 
                 await dialogs.ShowErrorAsync(
                     "We cannot verify your installation of Rocksmith 2014. The folder you selected doesn't contain a cache.psarc, which is REQUIRED for Rocksmith 2014 to boot. Please select the correct folder.",
@@ -117,11 +117,11 @@ namespace RSMods
             {
                 string? picked = await dialogs.PickFolderAsync("Select your Rocksmith 2014 save folder");
 
-                if (picked == null || picked.Length == 0) // user cancelled — allowed, disables Profile Edits
+                if (string.IsNullOrEmpty(picked)) // user cancelled — allowed, disables Profile Edits
                     return string.Empty;
 
                 if (picked.IsSavePath())
-                    return picked;
+                    return picked!;
 
                 bool retry = await dialogs.ShowConfirmAsync(
                     "The save folder you selected does not appear to be correct (no LocalProfiles.json).\n" +

@@ -1,0 +1,19 @@
+<Window
+    x:Class="RSMods.Views.MessageDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="460"
+    CanResize="False"
+    ShowInTaskbar="False"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="24" RowDefinitions="Auto,Auto" RowSpacing="22">
+        <TextBlock x:Name="MessageText" MaxWidth="620" TextWrapping="Wrap" />
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
+            <Button x:Name="NegativeButton" MinWidth="84" Click="NegativeButton_OnClick" Content="No" />
+            <Button MinWidth="84" Click="PositiveButton_OnClick" Content="OK" />
+        </StackPanel>
+    </Grid>
+</Window>

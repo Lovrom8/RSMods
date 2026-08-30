@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
@@ -15,6 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Inst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI.Core", "GUI.Core\GUI.Core.csproj", "{D8F21F24-9C2B-42E1-925A-76B844950137}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI.Avalonia", "GUI.Avalonia\GUI.Avalonia.csproj", "{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +49,22 @@ Global
 		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Release with Wwise Logging|Win32.Build.0 = Release|Any CPU
 		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Release|Win32.ActiveCfg = Release|Any CPU
 		{9E11FD67-DFFE-40F1-8E69-26D359F896EC}.Release|Win32.Build.0 = Release|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Debug with Wwise Logging|Win32.ActiveCfg = Debug|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Debug with Wwise Logging|Win32.Build.0 = Debug|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Debug|Win32.Build.0 = Debug|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Release with Wwise Logging|Win32.ActiveCfg = Release|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Release with Wwise Logging|Win32.Build.0 = Release|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D8F21F24-9C2B-42E1-925A-76B844950137}.Release|Win32.Build.0 = Release|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Debug with Wwise Logging|Win32.ActiveCfg = Debug|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Debug with Wwise Logging|Win32.Build.0 = Debug|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Debug|Win32.Build.0 = Debug|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release with Wwise Logging|Win32.ActiveCfg = Release|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release with Wwise Logging|Win32.Build.0 = Release|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release|Win32.ActiveCfg = Release|Any CPU
+		{A8E6F0F8-6205-4A83-92D2-15C45FE582CF}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
