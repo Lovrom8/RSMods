@@ -12,6 +12,7 @@
 
 #include "../Log.hpp"
 #include "ConflictResolver.hpp"
+#include "HudRegistry.hpp"
 #include "MainThreadInbox.hpp"
 #include "ModContext.hpp"
 #include "ResourceLedger.hpp"
@@ -101,6 +102,7 @@ namespace Framework {
 
 			record.state = ModState::Faulted;
 			Commands().RemoveMod(record.mod.get());
+			Hud().RemoveMod(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -117,6 +119,10 @@ namespace Framework {
 		// for), then settle into Inactive - or Faulted when the teardown is itself a fault.
 		void BeginTeardown(Record& record, DeactivationReason reason) {
 			Revert(record);
+
+			// Unlike command bindings, a HUD element is meaningless once the mod stops ticking,
+			// so drop it on every deactivation. The mod re-publishes on its next active tick.
+			Hud().RemoveMod(record.mod.get());
 
 			const ModState target = TeardownTargetState(reason);
 			if (target == ModState::Faulted) {
@@ -420,6 +426,7 @@ namespace Framework {
 
 			impl->Invoke(record, &IMod::OnShutdown, "OnShutdown");
 			Commands().RemoveMod(record.mod.get());
+			Hud().RemoveMod(record.mod.get());
 		}
 
 		impl->records.clear();
