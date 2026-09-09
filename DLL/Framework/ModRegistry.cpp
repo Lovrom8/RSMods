@@ -396,8 +396,9 @@ namespace Framework {
 		Inbox().PostSettingsUpdate(std::move(apply));
 	}
 
-	void ModRegistry::Tick(GamePhase phase) {
+	bool ModRegistry::Tick(GamePhase phase) {
 		impl->ctx.phase = phase;
+		impl->ctx.fastTickRequested = false; // Reset before the pass; mods re-raise it from their tick hooks.
 
 		impl->HandleCommandFaults();
 		impl->DrainSettings();
@@ -413,6 +414,8 @@ namespace Framework {
 		// resource the outgoing mod hasn't released; reverts are synchronous, so one pass suffices.
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
+
+		return impl->ctx.fastTickRequested; // Aggregate over the pass: did any mod ask for a tighter interval?
 	}
 
 	void ModRegistry::Shutdown() {

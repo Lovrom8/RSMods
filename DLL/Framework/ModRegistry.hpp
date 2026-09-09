@@ -34,7 +34,7 @@ namespace Framework {
 		void DispatchInitialize();
 		void DispatchCommands(GamePhase phase, bool gameLoaded);
 		void EnqueueSettingsUpdate(std::function<void()> apply);
-		void Tick(GamePhase phase);
+		bool Tick(GamePhase phase); // Returns whether any ticked mod requested a tighter next interval.
 		void Shutdown();
 
 	private:

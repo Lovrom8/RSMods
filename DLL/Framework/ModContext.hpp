@@ -54,6 +54,11 @@ namespace Framework {
 	struct ModContext {
 		GamePhase phase = GamePhase::Loading;
 		const IMod* currentMod = nullptr; // Set by the registry before each hook call.
+		bool fastTickRequested = false; // Raised by a mod that needs a tighter tick this pass; the registry resets and consumes it.
+
+		// Ask the MainThread loop to shorten its next maintenance interval. Call it every pass the need
+		// persists (e.g. while watching a loop end for a seek-back); it self-clears when no mod requests it.
+		void RequestFastTick() { fastTickRequested = true; }
 
 		CommandBinder Commands() const { return { Framework::Commands(), currentMod }; }
 		HudBinder Hud() const { return { Framework::Hud(), currentMod }; }

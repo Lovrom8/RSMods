@@ -32,4 +32,5 @@ private:
 	void AutoTuneInTuner(Framework::ModContext& c);
 	void AutoTuneInSong(Framework::ModContext& c);
 	void RevertTuning();
+	void PublishHud(Framework::ModContext& c);
 };

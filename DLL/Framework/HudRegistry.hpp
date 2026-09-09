@@ -11,6 +11,7 @@ namespace Framework {
 		TopLeft,
 		TopCenter,
 		TopRight,
+		TopTuning,
 		HighwayLeft,
 		MenuBanner,
 	};

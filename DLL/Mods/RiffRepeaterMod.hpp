@@ -25,4 +25,6 @@ private:
 	static void SetLoopEnd(const Framework::KeyEvent& event);
 	static void ChangeSpeed(const Framework::ModContext& c, const Framework::KeyEvent& event);
 	void SyncLinearSpeeds(Framework::ModContext& c);
+	void PublishHud(Framework::ModContext& c);
+	void UpdateLoopState(Framework::ModContext& c);
 };

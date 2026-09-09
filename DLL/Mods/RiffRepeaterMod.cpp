@@ -1,10 +1,14 @@
 #include "../stdafx.h"
 #include "RiffRepeaterMod.hpp"
+#include "../SongTimer.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::GamePhase;
+using Framework::HudText;
+using Framework::HudAnchor;
 namespace Setting = Settings::Setting;
 
 void RiffRepeaterMod::OnInitialize(ModContext& c) {
@@ -113,6 +117,9 @@ void RiffRepeaterMod::OnMenuTick(ModContext& c) {
 	if (!GameState::Menus::IsInScoreMenus() && RiffRepeater::currentlyEnabled_Above100) {
 		RiffRepeater::DisableTimeStretch();
 	}
+
+	UpdateLoopState(c);
+	PublishHud(c);
 }
 
 void RiffRepeaterMod::OnSongTick(ModContext& c) {
@@ -124,6 +131,77 @@ void RiffRepeaterMod::OnSongTick(ModContext& c) {
 	if (c.IsOn(Setting::RRSpeedAboveOneHundred)) {
 		RiffRepeater::EnableTimeStretch();
 	}
+
+	UpdateLoopState(c);
+	PublishHud(c);
+}
+
+void RiffRepeaterMod::UpdateLoopState(ModContext& c) {
+	if (!c.IsOn(Setting::AllowLooping) || (Keybindings::loopStart == NULL && Keybindings::loopEnd == NULL)) {
+		return;
+	}
+
+	if (GameState::Menus::IsInLearnASongModes()) {
+		if (c.phase == GamePhase::Song) {
+			// Prevent the user from creating a loop that starts at a negative timestamp.
+			const float leadUp = static_cast<float>(c.Int(Setting::LoopingLeadUp)) / 1000.f;
+			if (leadUp >= Keybindings::loopStart) {
+				Keybindings::roughLoopStart = 0.f;
+			}
+			else {
+				Keybindings::roughLoopStart = Keybindings::loopStart - leadUp;
+			}
+
+			// If we are paused, reset the grey note timer.
+			if (GameState::Menus::IsInLearnASongPauseModes()) {
+				// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
+				// Deactivated notes are greyed out, and do not register with note detection.
+				// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
+				if (SongTimer::GetGreyNoteTimer() != Keybindings::loopStart) {
+					SongTimer::SetGreyNoteTimer(Keybindings::loopStart);
+				}
+			}
+			// If not paused AND a full loop is armed, we are actively watching for the loop end. Ask for a
+			// tighter tick so the seek-back lands within a frame or two instead of up to one 250 ms tick;
+			// then seek once we reach the end. The request self-clears when the loop is cleared.
+			else if (Keybindings::loopStart != NULL && Keybindings::loopEnd != NULL) {
+				c.RequestFastTick();
+				if (SongTimer::SongTimer() >= Keybindings::loopEnd) {
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + GameState::GetSongKey()).c_str(), 0x1234, static_cast<AkTimeMs>(Keybindings::roughLoopStart * 1000), false);
+				}
+			}
+		}
+	}
+	else if (GameState::Menus::IsInModesWithAllowedFastRiffRepeater()) {
+		// Reset loopStart and loopEnd to NULL as the user wants to do a loop with RR, or is changing some settings.
+		Keybindings::loopStart = NULL;
+		Keybindings::loopEnd = NULL;
+	}
+}
+
+void RiffRepeaterMod::PublishHud(ModContext& c) {
+	const bool speedVisible = (c.IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID &&
+		(GameState::Menus::IsInModesWithAllowedFastRiffRepeater() || GameState::Menus::IsOnScoreScreens())) ||
+		RiffRepeater::currentlyEnabled_Above100;
+
+	HudText speedSnapshot;
+	speedSnapshot.visible = speedVisible;
+	if (speedVisible) {
+		const float speed = RiffRepeater::GetSpeed(true);
+		speedSnapshot.text = "Song Speed: " + std::to_string(static_cast<int>(roundf(speed))) + "%";
+	}
+	c.Hud().Set("rr-speed", { HudAnchor::TopCenter, 0 }, std::move(speedSnapshot));
+
+	const bool loopVisible = c.IsOn(Setting::AllowLooping) &&
+		(Keybindings::loopStart != NULL || Keybindings::loopEnd != NULL) &&
+		GameState::Menus::IsInLearnASongModes();
+
+	HudText loopSnapshot;
+	loopSnapshot.visible = loopVisible;
+	if (loopVisible) {
+		loopSnapshot.text = "Loop: " + SongTimer::FormatTime(Keybindings::loopStart) + " - " + SongTimer::FormatTime(Keybindings::loopEnd);
+	}
+	c.Hud().Set("loop-timer", { HudAnchor::TopCenter, 10 }, std::move(loopSnapshot));
 }
 
 static Framework::ModRegistrar<RiffRepeaterMod> _riffRepeaterReg;

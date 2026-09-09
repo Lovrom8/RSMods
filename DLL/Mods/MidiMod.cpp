@@ -101,6 +101,7 @@ void MidiMod::AutoTuneInTuner(ModContext& c) {
 // In a song. Tune the pedal from the song's tuning the first time through, honouring the When setting.
 void MidiMod::OnSongTick(ModContext& c) {
 	AutoTuneInSong(c);
+	PublishHud(c);
 }
 
 void MidiMod::OnMenuTick(ModContext& c) {
@@ -111,6 +112,7 @@ void MidiMod::OnMenuTick(ModContext& c) {
 	}
 
 	AutoTuneInTuner(c);
+	PublishHud(c);
 }
 
 void MidiMod::OnDisabled(ModContext&) {
@@ -139,6 +141,19 @@ void MidiMod::AutoTuneInSong(ModContext& c) {
 			(c.When(Setting::AutoTuneForSongWhen) == When::Manual && Midi::userWantsToUseAutoTuning))) {
 		Midi::AutomateTuning();
 	}
+}
+
+void MidiMod::PublishHud(ModContext& c) {
+	Framework::HudText snapshot;
+	snapshot.visible = c.IsOn(Setting::AutoTuneForSong) &&
+		Settings::GetKeyBind(Setting::Key::TuningOffset) != NULL &&
+		GameState::Menus::IsInTuningMenus();
+
+	if (snapshot.visible) {
+		snapshot.text = "Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset);
+	}
+
+	c.Hud().Set("autotune-tuning", { Framework::HudAnchor::TopTuning, 0 }, std::move(snapshot));
 }
 
 static Framework::ModRegistrar<MidiMod> _midiReg;

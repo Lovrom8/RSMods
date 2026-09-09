@@ -25,6 +25,9 @@ namespace {
 		case Framework::HudAnchor::TopCenter:
 			return { static_cast<LONG>(w / 2.0f - w / 38.4f), static_cast<LONG>(w / 2.0f + w / 38.4f),
 					 static_cast<LONG>(h / 54.0f), DT_CENTER | DT_NOCLIP };
+		case Framework::HudAnchor::TopTuning:
+			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.65f),
+					 static_cast<LONG>(h / 30.85f), DT_LEFT | DT_NOCLIP };
 		case Framework::HudAnchor::HighwayLeft:
 			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.75f),
 					 static_cast<LONG>(h / 1.75f), DT_LEFT | DT_NOCLIP };
@@ -52,124 +55,41 @@ Resolution GameOverlay::GetWindowSize() {
 	return currentSize;
 }
 
-namespace GameOverlay { namespace {
-void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { 0u, 0u }, DWORD format = DT_LEFT | DT_NOCLIP)
-{
-	CComPtr<ID3DXFont> font;
-	bool useInputFontSize = setFontSize.height != 0;
+namespace GameOverlay {
+	namespace {
+		void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { 0u, 0u }, DWORD format = DT_LEFT | DT_NOCLIP)
+		{
+			CComPtr<ID3DXFont> font;
+			bool useInputFontSize = setFontSize.height != 0;
 
-	if (useInputFontSize) {
-		int targetH = setFontSize.height;
-		const std::string face = Settings::ReturnSettingValue(Setting::OnScreenFont);
-		FontKey key = FontKey::Make(face, targetH, 0, FW_NORMAL, false);
+			if (useInputFontSize) {
+				int targetH = setFontSize.height;
+				const std::string face = Settings::ReturnSettingValue(Setting::OnScreenFont);
+				FontKey key = FontKey::Make(face, targetH, 0, FW_NORMAL, false);
 
-		if (!fontCache.Get(pDevice, key, font)) {
-			LOG_ERROR("Could not acquire custom-sized font." << std::endl);
-			return;
-		}
-	}
-	else {
-		if (cachedFont) {
-			font = cachedFont;
-		}
-		else {
-			LOG_ERROR("Default font is not cached!" << std::endl);
-			return;
-		}
-	}
-
-	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
-
-	font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
-	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
-}
-}} // namespace GameOverlay::(anonymous)
-
-void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
-{
-	if (Settings::IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID &&
-		(GameState::Menus::IsInModesWithAllowedFastRiffRepeater() || GameState::Menus::IsOnScoreScreens()) || RiffRepeater::currentlyEnabled_Above100) {
-		realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
-
-		DX9DrawText(
-			"Song Speed: " + std::to_string(static_cast<int>(roundf(realSongSpeed))) + "%",
-			whiteText,
-			static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f),                          // 20 pixels from top
-			static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-			static_cast<int>(WindowSize.height / 16.0f),                          // 120 pixels from top
-			pDevice,
-			{ NULL, NULL },
-			DT_CENTER | DT_NOCLIP);
-	}
-}
-
-void GameOverlay::DisplayCurrentTuningForAutoTune()
-{
-	if (Settings::IsOn(Setting::AutoTuneForSong) && Settings::GetKeyBind(Setting::Key::TuningOffset) != NULL && GameState::Menus::IsInTuningMenus()) {
-		DX9DrawText(
-			"Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset),
-			whiteText,
-			static_cast<int>(WindowSize.width / 5.5),		// 349 pixels left of the center in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 30.85),	// 35 pixels from the top
-			static_cast<int>(WindowSize.width / 5.65),		// 339 pixels right of center
-			static_cast<int>(WindowSize.height / 8),		// 135 pixels from the top
-			pDevice);
-	}
-}
-
-void GameOverlay::DisplayLoopStartEndTimes(float loopStart, float loopEnd)
-{
-	DX9DrawText(
-		"Loop: " + SongTimer::FormatTime(loopStart) + " - " + SongTimer::FormatTime(loopEnd),
-		whiteText,
-		static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-		static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
-		static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-		static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
-		pDevice,
-		{ NULL, NULL },
-		DT_CENTER | DT_NOCLIP);
-}
-
-void HandleLooping() {
-	if (Settings::IsOn(Setting::AllowLooping) && (Keybindings::loopStart != NULL || Keybindings::loopEnd != NULL)) {
-		// Only enable looping in learn a song modes (learn a song & non-stop play)
-		if (GameState::Menus::IsInLearnASongModes()) {
-			GameOverlay::DisplayLoopStartEndTimes(Keybindings::loopStart, Keybindings::loopEnd);
-
-			// Prevent the user from creating a loop that starts at a negative timestamp.
-			if ((Settings::GetModSetting(Setting::LoopingLeadUp) / 1000.f) >= Keybindings::loopStart) {
-				Keybindings::roughLoopStart = 0.f;
+				if (!fontCache.Get(pDevice, key, font)) {
+					LOG_ERROR("Could not acquire custom-sized font." << std::endl);
+					return;
+				}
 			}
 			else {
-				Keybindings::roughLoopStart = Keybindings::loopStart - (Settings::GetModSetting(Setting::LoopingLeadUp) / 1000.f);
-			}
-
-			// If we are paused, reset the grey note timer.
-			if (GameState::Menus::IsInLearnASongPauseModes()) {
-				// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
-				// Deactivated notes are greyed out, and do not register with note detection.
-				// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
-				if (SongTimer::GetGreyNoteTimer() != Keybindings::loopStart) {
-					SongTimer::SetGreyNoteTimer(Keybindings::loopStart);
+				if (cachedFont) {
+					font = cachedFont;
+				}
+				else {
+					LOG_ERROR("Default font is not cached!" << std::endl);
+					return;
 				}
 			}
 
-			// If not paused AND we are at the end of the loop, seek to the start of the loop.
-			else if (Keybindings::loopStart != NULL && Keybindings::loopEnd != NULL && (SongTimer::SongTimer() >= Keybindings::loopEnd)) {
-				Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + GameState::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(Keybindings::roughLoopStart * 1000), false);
-			}
-		}
-		// Difference between learnASongModes & fastRRModes is the inclusion of RR. This means that this check is only gets the RR menus.
-		else if (GameState::Menus::IsInModesWithAllowedFastRiffRepeater()) {
-			// Reset loopStart and loopEnd to NULL as the user wants to do a loop with RR, or is changing some settings.
-			Keybindings::loopStart = NULL;
-			Keybindings::loopEnd = NULL;
+			RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
+
+			font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
+			font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
 		}
 	}
+} // namespace GameOverlay::(anonymous)
 
-}
 
 void GameOverlay::CheckCurrentFont() {
 	const std::string currentFontName = Settings::ReturnSettingValue(Setting::OnScreenFont);
@@ -236,7 +156,20 @@ void GameOverlay::DrawModHud(IDirect3DDevice9* device) {
 		}
 
 		const int fontHeight = element.snapshot.fontHeight;
-		const float step = fontHeight > 0 ? static_cast<float>(fontHeight) : defaultStep;
+		float step = defaultStep;
+
+		if (fontHeight > 0) {
+			step = static_cast<float>(fontHeight);
+		}
+		else if (cachedFont) {
+			RECT r{ layout.left, 0, layout.right, 0 };
+			int h = cachedFont->DrawTextA(nullptr, element.snapshot.text.c_str(), -1, &r, layout.format | DT_CALCRECT, 0);
+			if (h <= 0) h = (r.bottom - r.top);
+			if (h > 0) {
+				int gap = (std::max)(1, h / 4);
+				step = (std::max)(defaultStep, static_cast<float>(h + 2 * gap));
+			}
+		}
 
 		DX9DrawText(element.snapshot.text, element.snapshot.colorHex,
 			layout.left, static_cast<int>(cursorY), layout.right, static_cast<int>(cursorY + step),
@@ -253,11 +186,6 @@ void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
 		pDevice = device;
 
 		CheckCurrentFont();
-
-		DisplayRiffRepeaterOverHundredPercentSpeed();
-		DisplayCurrentTuningForAutoTune();
 		DrawModHud(device);
-
-		HandleLooping();
 	}
 }

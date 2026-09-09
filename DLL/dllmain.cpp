@@ -233,17 +233,21 @@ unsigned WINAPI MainThread() {
 		const auto now = std::chrono::steady_clock::now();
 		if (now < nextModTick) continue;
 
+		bool wantsFastTick = false;
 		if (GameState::GameLoaded) {
 			ModManager::HandlePostGameLoadedMods();
-			Framework::Registry().Tick(GameState::IsInSong() ? Framework::GamePhase::Song : Framework::GamePhase::Menu);
+			wantsFastTick = Framework::Registry().Tick(GameState::IsInSong() ? Framework::GamePhase::Song : Framework::GamePhase::Menu);
 		}
 		else {
 			ModManager::UpdateGameLoadingState();
 			Framework::Registry().Tick(Framework::GamePhase::Loading);
 		}
 
-		// Missed maintenance deadlines are not replayed as a burst of catch-up ticks.
-		nextModTick = std::chrono::steady_clock::now() + std::chrono::milliseconds(250);
+		// Adaptive maintenance cadence: tighten only while a mod is actively watching a deadline (e.g. a
+		// loop end), otherwise idle at 250 ms. Missed deadlines are not replayed as a burst of catch-up ticks.
+		const auto maintenanceInterval = wantsFastTick ? std::chrono::milliseconds(33)   // ~30 Hz while looping
+														: std::chrono::milliseconds(250);
+		nextModTick = std::chrono::steady_clock::now() + maintenanceInterval;
 	}
 
 	CrowdControl::StopServer();
