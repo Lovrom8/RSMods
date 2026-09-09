@@ -1,13 +1,11 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Mods/GuitarSpeak.hpp"
 #include "Mods/RiffRepeater.hpp"
 #include "Mods/Midi.hpp"
 #include <atlbase.h>
 #include <algorithm>
 #include "Keybindings.hpp"
-#include "NoteData.h"
 #include "GameState.hpp"
 
 namespace GameOverlay {
@@ -22,11 +20,9 @@ namespace GameOverlay {
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
 	void SetPDevice(IDirect3DDevice9* pDevice, Resolution windowSize);
-	void DisplayCurrentNote();
 	void DisplayRiffRepeaterOverHundredPercentSpeed();
 	void DisplayCurrentTuningForAutoTune();
 	void DisplayLoopStartEndTimes(float loopStart, float loopEnd);
-	void DisplaySongAccuracy();
 	void CheckCurrentFont();
 	void DrawModHud(IDirect3DDevice9* pDevice); // Draws every element mods published to Framework::Hud().
 	void RenderOverlay(IDirect3DDevice9* pDevice);

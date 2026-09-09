@@ -148,9 +148,26 @@ overlay:
   other volume ops live. The mod no longer touches Wwise directly.
 
 The result: `GameOverlay` is back to being purely the DX9 render backend (device, font cache,
-`DX9DrawText`, `WindowSize`, `DrawModHud`, and the note/RR/tuning/accuracy/song-timer `Display*`
-functions), and `VolumeDisplayMod` is a self-contained mod. The same eviction would clean up any future
-mod that still reads host globals.
+`DX9DrawText`, `WindowSize`, and `DrawModHud`), and all mods are self-contained. All bespoke `Display*`
+functions have been retired, making `DrawModHud` the single overlay draw path in the entire codebase.
+
+## Completed ports & consumers
+
+| Overlay / Feature | Mod Owner | Anchor | Order |
+|---|---|---|---|
+| Volume popup | `VolumeDisplayMod` | `TopLeft` | 0 |
+| Volume mixer | `VolumeDisplayMod` | `TopLeft` | 10 + index |
+| RR song speed | `RiffRepeaterMod` | `TopCenter` | 0 |
+| Looping display | `RiffRepeaterMod` | `TopCenter` | 10 |
+| Song timer | `ShowSongTimerMod` | `TopRight` | 0 |
+| Song accuracy | `SongAccuracyMod` | `TopRight` | 10 |
+| Auto-tune tuning | `MidiMod` | `TopTuning` | 0 |
+| In-song current note | `ShowCurrentNoteMod` | `HighwayLeft` | 0 |
+| In-menu current note | `ShowCurrentNoteMod` | `MenuBanner` | 0 |
+
+In addition, `HandleLooping` audio seeking (`Wwise::SoundEngine::SeekOnEvent`) and grey note timer manipulation
+(`SongTimer::SetGreyNoteTimer`) were evicted from `RenderOverlay` on the D3D render thread to `RiffRepeaterMod::OnSongTick`
+on the MainThread.
 
 ## Natural next steps
 
@@ -158,13 +175,9 @@ mod that still reads host globals.
    contributor ask (a bar/meter, a coloured selection highlight in the mixer) is a new `HudText`-sibling
    variant drawn from shared resources — still push-snapshot, still off the render thread. Add it when a
    real consumer needs it, not before.
-2. **Port the remaining `GameOverlay` overlays** (RR speed, current note, tuning, accuracy) onto
-   `ctx.Hud()` the way the mixer and song timer were, so `DrawModHud` becomes the single overlay draw path
-   and the bespoke `Display*` functions retire. Each is a small, independent port. Until then, `TopCenter`
-   is still drawn directly by the RR-speed overlay, so a mod publishing there would overlap it.
-3. **`MenuBinder`** — the menu-registration sibling of `HudBinder`/`CommandBinder`. Deliberately deferred
+2. **`MenuBinder`** — the menu-registration sibling of `HudBinder`/`CommandBinder`. Deliberately deferred
    until a real menu consumer (likely DropPedal) exists; do not build it speculatively.
-4. **Owner-scoped D3D callbacks** stay deleted (see `render-hooks.md`). They are structurally excluded
+3. **Owner-scoped D3D callbacks** stay deleted (see `render-hooks.md`). They are structurally excluded
    from the external mod API (a raw device handle can't cross the ABI shim, and it forfeits the
    off-render-thread invariant) and revive **only** for an in-tree mod that owns device resources with an
    enable/disable lifecycle. The declarative surface above is the drawing API for everyone else.

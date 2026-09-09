@@ -11,6 +11,8 @@ namespace Framework {
 		TopLeft,
 		TopCenter,
 		TopRight,
+		HighwayLeft,
+		MenuBanner,
 	};
 
 	// Copyable snapshot published from the MainThread; the render thread reads copies only,
