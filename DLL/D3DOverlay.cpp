@@ -1,9 +1,38 @@
 #include "stdafx.h"
 #include "D3DOverlay.hpp"
+#include "Framework/HudRegistry.hpp"
 
 namespace Setting = Settings::Setting;
 
-/// <returns>Size of Rocksmith Window</returns>
+namespace {
+	// Pixel band per anchor, derived from the live window size. Insets deliberately match the old
+	// hand-written overlays so single-occupant stacks land pixel-for-pixel where they always did.
+	struct AnchorLayout {
+		LONG left;
+		LONG right;
+		LONG top;
+		DWORD format;
+	};
+
+	AnchorLayout AnchorStart(Framework::HudAnchor anchor, const Resolution& window) {
+		const float w = static_cast<float>(window.width);
+		const float h = static_cast<float>(window.height);
+
+		switch (anchor) {
+		case Framework::HudAnchor::TopRight:
+			return { static_cast<LONG>(w - w / 16.0f), static_cast<LONG>(w - w / 96.0f),
+					 static_cast<LONG>(h / 54.0f), DT_RIGHT | DT_NOCLIP };
+		case Framework::HudAnchor::TopCenter:
+			return { static_cast<LONG>(w / 2.0f - w / 38.4f), static_cast<LONG>(w / 2.0f + w / 38.4f),
+					 static_cast<LONG>(h / 54.0f), DT_CENTER | DT_NOCLIP };
+		case Framework::HudAnchor::TopLeft:
+		default:
+			return { static_cast<LONG>(w / 96.0f), static_cast<LONG>(w / 19.2f),
+					 static_cast<LONG>(h / 54.0f), DT_LEFT | DT_NOCLIP };
+		}
+	}
+}
+
 Resolution GameOverlay::GetWindowSize() {
 	RECT windowSize;
 
@@ -17,19 +46,8 @@ Resolution GameOverlay::GetWindowSize() {
 	return currentSize;
 }
 
-/// <summary>
-/// Draw text on screen
-/// </summary>
-/// <param name="textToDraw"> - What text should be written?</param>
-/// <param name="textColorHex"> - What color? Given in hex in the AA,RR,GG,BB format.</param>
-/// <param name="topLeftX"> - top LEFT of textbox</param>
-/// <param name="topLeftY"> - TOP left of textbox</param>
-/// <param name="bottomRightX"> - bottom RIGHT of textbox</param>
-/// <param name="bottomRightY"> - BOTTOM right of textbox</param>
-/// <param name="pDevice"> - Device Pointer</param>
-/// <param name="setFontSize"> - Override font size</param>
-/// <param name="format"> - DrawText format</param>
-void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize, DWORD format)
+namespace GameOverlay { namespace {
+void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { 0u, 0u }, DWORD format = DT_LEFT | DT_NOCLIP)
 {
 	CComPtr<ID3DXFont> font;
 	bool useInputFontSize = setFontSize.height != 0;
@@ -56,67 +74,10 @@ void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, i
 
 	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
 
-	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
 	font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
 	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
 }
-
-void GameOverlay::DisplayMixer() {
-	// Display the whole mixer if displayMixer is true
-	if (Settings::IsOn(Setting::VolumeControlEnabled) && displayMixer) {
-
-		float offset = 0;
-		for (int volumeIndex = 0; volumeIndex < (int)mixerChannels.size(); ++volumeIndex) {
-
-			float volume = 0;
-			RTPCValue_type type = RTPCValue_GameObject;
-			Wwise::SoundEngine::Query::GetRTPCValue(mixerChannels[volumeIndex].channel, AK_INVALID_GAME_OBJECT, &volume, &type);
-
-			DX9DrawText(
-				std::string(mixerChannels[volumeIndex].label) + std::to_string(static_cast<int>(volume)) + "%",
-				whiteText,
-				static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
-				static_cast<int>(WindowSize.height / 54.0f + offset), // 20 pixels from top (plus an offset to display multiple values)
-				static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
-				static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
-				pDevice);
-
-			// Adjust the offset to display the next value
-			offset += WindowSize.height / 54.0f;
-		}
-	}
-	// Display just the current volume based on context (This will display the last volume that was adjusted for a few seconds after adjusting it)
-	else if (Settings::IsOn(Setting::VolumeControlEnabled) && displayCurrentVolume) {
-		float volume = 0;
-		RTPCValue_type type = RTPCValue_GameObject;
-		Wwise::SoundEngine::Query::GetRTPCValue(mixerChannels[currentVolumeIndex].channel, AK_INVALID_GAME_OBJECT, &volume, &type);
-
-		DX9DrawText(
-			std::string(mixerChannels[currentVolumeIndex].label) + std::to_string(static_cast<int>(volume)) + "%",
-			whiteText,
-			static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f), // 20 pixels from top 
-			static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
-			static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
-			pDevice);
-	}
-}
-
-void GameOverlay::DisplaySongTimer()
-{
-	if (D3DHooks::showSongTimerOnScreen && SongTimer::SongTimer() != 0.f) {
-		DX9DrawText(
-			D3DHooks::ConvertFloatTimeToStringTime(SongTimer::SongTimer()),
-			whiteText,
-			static_cast<int>(WindowSize.width - WindowSize.width / 16.0f), // 120 pixels left from right edge in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f),                   // 20 pixels from top
-			static_cast<int>(WindowSize.width - WindowSize.width / 96.0f), // 20 left from right edge
-			static_cast<int>(WindowSize.height / 16.0f),                   // 120 pixels from top
-			pDevice,
-			{ NULL, NULL },
-			DT_RIGHT | DT_NOCLIP);
-	}
-}
+}} // namespace GameOverlay::(anonymous)
 
 void GameOverlay::DisplayCurrentNote()
 {
@@ -181,7 +142,7 @@ void GameOverlay::DisplayCurrentTuningForAutoTune()
 void GameOverlay::DisplayLoopStartEndTimes(float loopStart, float loopEnd)
 {
 	DX9DrawText(
-		"Loop: " + D3DHooks::ConvertFloatTimeToStringTime(loopStart) + " - " + D3DHooks::ConvertFloatTimeToStringTime(loopEnd),
+		"Loop: " + SongTimer::FormatTime(loopStart) + " - " + SongTimer::FormatTime(loopEnd),
 		whiteText,
 		static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
 		static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
@@ -290,7 +251,7 @@ void GameOverlay::DisplaySongAccuracy() {
 			top += lh + 2 * gap;
 			bottom += lh + 2 * gap;
 		}
-		else { //JIC
+		else {
 			auto line = static_cast<int>(WindowSize.height / 54.0f);
 			top += line;
 			bottom += line;
@@ -342,21 +303,58 @@ void GameOverlay::OnResetDevice() {
 	fontCache.OnResetDevice();
 }
 
+// SnapshotVisible() returns copies, so no lock is held across the DX9 draw calls and mod code
+// is never re-entered on the render thread.
+void GameOverlay::DrawModHud(IDirect3DDevice9* device) {
+	std::vector<Framework::HudElement> elements = Framework::Hud().SnapshotVisible();
+
+	// Deterministic stacking: by anchor, then order, then id; owner pointer only as a final stable tiebreak.
+	std::sort(elements.begin(), elements.end(),
+		[](const Framework::HudElement& a, const Framework::HudElement& b) {
+			if (a.anchor != b.anchor) return a.anchor < b.anchor;
+			if (a.order != b.order)   return a.order < b.order;
+			if (a.id != b.id)         return a.id < b.id;
+			return a.owner < b.owner;
+		});
+
+	const float defaultStep = WindowSize.height / 54.0f; // legacy per-line spacing when no custom height
+	bool haveAnchor = false;
+	Framework::HudAnchor anchor{};
+	AnchorLayout layout{};
+	float cursorY = 0;
+
+	for (const Framework::HudElement& element : elements) {
+		if (!haveAnchor || element.anchor != anchor) {
+			layout = AnchorStart(element.anchor, WindowSize);
+			cursorY = static_cast<float>(layout.top);
+			anchor = element.anchor;
+			haveAnchor = true;
+		}
+
+		const int fontHeight = element.snapshot.fontHeight;
+		const float step = fontHeight > 0 ? static_cast<float>(fontHeight) : defaultStep;
+
+		DX9DrawText(element.snapshot.text, element.snapshot.colorHex,
+			layout.left, static_cast<int>(cursorY), layout.right, static_cast<int>(cursorY + step),
+			device, { 0u, static_cast<unsigned int>(fontHeight) }, layout.format);
+
+		cursorY += step;
+	}
+}
+
 void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
-	// Draw text on screen
-	// NOTE: NEVER USE SET VALUES. Always do division of WindowSize width AND heigh so every resolution should have the text in around the same spot.
+	// Always derive positions from WindowSize fractions — never hardcode pixels — so every resolution places text consistently.
 	if (GameState::GameLoaded) {
 		WindowSize = GetWindowSize();
 		pDevice = device;
 
 		CheckCurrentFont();
 
-		DisplayMixer();
-		DisplaySongTimer();
 		DisplayRiffRepeaterOverHundredPercentSpeed();
 		DisplayCurrentNote();
 		DisplayCurrentTuningForAutoTune();
 		DisplaySongAccuracy();
+		DrawModHud(device);
 
 		HandleLooping();
 	}

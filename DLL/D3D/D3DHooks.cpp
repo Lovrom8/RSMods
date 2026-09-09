@@ -734,23 +734,6 @@ void D3DHooks::UpdateHeadstockCacheForMenu() {
 	}
 }
 
-std::string D3DHooks::ConvertFloatTimeToStringTime(float timeInSeconds)
-{
-	using namespace std::chrono;
-
-	const auto dur = duration_cast<seconds>(duration<float>(timeInSeconds));
-	const auto h = duration_cast<hours>(dur);
-	const auto m = duration_cast<minutes>(dur % hours(1));
-	const auto s = duration_cast<seconds>(dur % minutes(1));
-
-	if (h.count() > 0)
-	{
-		return std::format("{:02}h:{:02}m:{:02}s", h.count(), m.count(), s.count());
-	}
-
-	return std::format("{:02}m:{:02}s", m.count(), s.count());
-}
-
 void D3DHooks::RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice) {
 	if (regenerateUserDefinedTexture.exchange(false)) {
 		RSColor userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue(Setting::SolidNoteColor));

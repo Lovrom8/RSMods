@@ -59,7 +59,6 @@ namespace D3DHooks {
 	inline bool RemoveLyrics = false; // If true, remove the lyrics from Learn A Song & Non-stop Play. (True - No Lyrics, False - Keep Lyrics)
 	
 	inline std::atomic<bool> RemoveHeadstockInThisMenu = false; // If true, the headstock of the guitar / bass will be disabled in this menu. (True - No Headstock, False - Keep Headstock)
-	inline bool showSongTimerOnScreen = false; // If true, the current song timer will be shown in the top-right of the screen. This will only work when inside a song. (True - Show, False - Hide)
 	inline bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
 	inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
 	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
@@ -76,12 +75,6 @@ namespace D3DHooks {
 	// Misc
 	inline bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
 
-	/// <summary>
-	/// Convert time stored as a float of seconds, to h:m:s
-	/// </summary>
-	/// <param name="timeInSeconds"> - Float containing number of seconds elapsed.</param>
-	/// <returns>std::string of time in "h:m:s" format.</returns>
-	std::string ConvertFloatTimeToStringTime(float timeInSeconds);
 	void RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice);
 
 	// Refreshes the headstock texture cache based on the current/previous menu. Call once per menu tick.

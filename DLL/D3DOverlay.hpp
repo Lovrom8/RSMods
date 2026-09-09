@@ -12,7 +12,6 @@
 
 namespace GameOverlay {
 	Resolution GetWindowSize();
-	void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { NULL, NULL }, DWORD format = DT_LEFT | DT_NOCLIP);
 
 	inline HRESULT CustomDX9Font = NULL;
 	inline ID3DXFont* DX9FontEncapsulation = NULL;
@@ -23,35 +22,16 @@ namespace GameOverlay {
 	inline Resolution WindowSize;
 	inline IDirect3DDevice9* pDevice;
 	void SetPDevice(IDirect3DDevice9* pDevice, Resolution windowSize);
-	void DisplayMixer();
-	void DisplaySongTimer();
 	void DisplayCurrentNote();
 	void DisplayRiffRepeaterOverHundredPercentSpeed();
 	void DisplayCurrentTuningForAutoTune();
 	void DisplayLoopStartEndTimes(float loopStart, float loopEnd);
 	void DisplaySongAccuracy();
 	void CheckCurrentFont();
+	void DrawModHud(IDirect3DDevice9* pDevice); // Draws every element mods published to Framework::Hud().
 	void RenderOverlay(IDirect3DDevice9* pDevice);
-  void OnLostDevice();
+	void OnLostDevice();
 	void OnResetDevice();
-  
-	struct MixerEntry { const char* channel; const char* label; };
-	inline constexpr std::array<MixerEntry, 7> mixerChannels = { {
-		{ Settings::Setting::Channel::Master,    "Master Volume: "     },
-		{ Settings::Setting::Channel::Music,     "Song Volume: "       },
-		{ Settings::Setting::Channel::Player1,   "Player 1 Volume: "   }, // covers both Guitar and Bass for P1
-		{ Settings::Setting::Channel::Player2,   "Player 2 Volume: "   }, // covers both Guitar and Bass for P2
-		{ Settings::Setting::Channel::Mic,       "Microphone Volume: " },
-		{ Settings::Setting::Channel::VoiceOver, "Voice-Over Volume: " }, // Rocksmith Dad VO
-		{ Settings::Setting::Channel::SFX,       "SFX Volume: "        },
-	} };
-
-	inline unsigned int currentVolumeIndex = 0; // Mixer volume to change. 0 - Master, 1 - Song, 2 - P1, 3 - P2, 4 - Mic, 5 - VO, 6 - SFX
-
-	// Volume adjustment mod
-	inline bool displayMixer = false;
-	inline bool displayCurrentVolume = false;
-	inline auto displayVolumeStartTime = std::chrono::steady_clock::time_point(); // Defaults to epoch time
 
 	inline static std::string cachedFontName = "";
 	inline static int cachedFontSize = 0;
