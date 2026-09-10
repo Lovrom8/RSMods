@@ -466,3 +466,11 @@ bool D3D::CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, D
 		return false;
 	}
 }
+
+void D3D::LoadTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+
+	if (!nonexistentTexture) {
+		D3DXCreateTextureFromFile(pDevice, L"nonexistenttexture.dds", &nonexistentTexture); // Black Notes
+	}
+}

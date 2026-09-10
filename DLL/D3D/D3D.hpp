@@ -27,6 +27,7 @@ namespace D3D {
 	HRESULT GenerateSolidTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32);
 	void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16);
 	void GenerateTextures(IDirect3DDevice9* pDevice, TextureType type);
+	void LoadTextures(IDirect3DDevice9* pDevice);
 	bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, DWORD& o_crc);
 };
 

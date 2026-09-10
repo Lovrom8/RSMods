@@ -181,7 +181,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	Menu::Init(pDevice, (LONG_PTR)WndProc);
 	Menu::RenderImGuiMenu();
-	Menu::UpdateStringTextures(pDevice);
+	D3D::LoadTextures(pDevice);
 	UpdateGameWindowStacking();
 	GameOverlay::RenderOverlay(pDevice);
 	D3DHooks::RegenerateTwitchNoteColors(pDevice);

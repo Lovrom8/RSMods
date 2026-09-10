@@ -312,6 +312,9 @@
     <ClCompile Include="Mods\AutoLoadProfileMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\CalibrationMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -389,6 +392,9 @@
     </ClCompile>
     <ClCompile Include="Framework\ResourceLedger.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControlMod.cpp">
+      <Filter>Mods</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -686,6 +692,9 @@
     <ClInclude Include="Mods\AutoLoadProfileMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\CalibrationMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -708,6 +717,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\MicrophoneVolumeOverrideMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VoiceOverControlMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp">
