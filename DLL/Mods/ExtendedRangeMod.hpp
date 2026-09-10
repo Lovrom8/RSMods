@@ -1,6 +1,8 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
+#include <d3d9.h>
 #include <optional>
 
 #include "../Framework/Framework.hpp"
@@ -15,13 +17,19 @@ public:
 	std::vector<std::string_view> ClaimsExclusive() const override { return { "string-colors" }; }
 
 	void OnInitialize(Framework::ModContext& c) override;
+	void OnEnabled(Framework::ModContext& c) override;
+	void OnDisabled(Framework::ModContext& c) override;
 	void OnShutdown(Framework::ModContext& c) override;
 	void OnSongEnter(Framework::ModContext& c) override;
 	void OnSongTick(Framework::ModContext& c) override;
 	void OnMenuTick(Framework::ModContext& c) override;
 	void OnSongExit(Framework::ModContext& c) override;
 
+	static void RegenerateTextures(IDirect3DDevice9* pDevice);
+	static void ReleaseTextures();
+
 private:
+	static inline std::atomic<bool> s_active = false;
 	using Clock = std::chrono::steady_clock;
 
 	// Tuning takes ~1.5s to settle before the game's numbers are trustworthy. This used to be a

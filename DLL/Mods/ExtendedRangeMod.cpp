@@ -2,6 +2,7 @@
 #include "ExtendedRangeMod.hpp"
 #include "Midi.hpp"
 #include "ExtendedRangeMode.hpp"
+#include "../D3D/D3DHooks.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
@@ -37,8 +38,35 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 		"Toggle Extended Range");
 }
 
+void ExtendedRangeMod::OnEnabled(ModContext&) {
+	s_active = true;
+	D3DHooks::RecreateTextures = true;
+}
+
+void ExtendedRangeMod::OnDisabled(ModContext&) {
+	s_active = false;
+	ReleaseTextures();
+}
+
 void ExtendedRangeMod::OnShutdown(ModContext&) {
+	s_active = false;
+	ReleaseTextures();
 	ERMode::StopRainbowThread();
+}
+
+void ExtendedRangeMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+
+	if (!s_active) {
+		ReleaseTextures();
+		return;
+	}
+
+	ERMode::RegenerateTextures(pDevice);
+}
+
+void ExtendedRangeMod::ReleaseTextures() {
+	ERMode::ReleaseTextures();
 }
 
 // Edge: this mod became active in a song.
