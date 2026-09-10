@@ -396,6 +396,9 @@
     <ClCompile Include="Framework\ResourceLedger.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\DrawRegistry.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\VoiceOverControlMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -774,6 +777,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DrawRegistry.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Resolution.h">

@@ -79,6 +79,7 @@ namespace D3DHooks {
 	void CheckRecreateTextures(IDirect3DDevice9* pDevice);
 	void GenerateRandomTextures(IDirect3DDevice9* pDevice);
 	void RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice);
+	void InitializeCrcProvider();
 
 	// Refreshes the headstock texture cache based on the current/previous menu. Call once per menu tick.
 	void UpdateHeadstockCacheForMenu();

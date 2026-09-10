@@ -8,6 +8,7 @@
 #include "CommandRouter.hpp"
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
+#include "DrawRegistry.hpp"
 
 namespace Settings {
 	// Opaque declarations keep the framework core free of the whole of Settings.hpp; only ModContext.cpp pulls it in. 
@@ -62,6 +63,15 @@ namespace Framework {
 		}
 	};
 
+	struct DrawBinder {
+		DrawRegistry& draw;
+		const IMod* mod;
+
+		void Register(std::string id, int priority, DrawPath path, DrawInterceptor fn) const {
+			draw.Register(mod, std::move(id), priority, path, std::move(fn));
+		}
+	};
+
 	// Internal per-hook context
 	struct ModContext {
 		GamePhase phase = GamePhase::Loading;
@@ -75,6 +85,7 @@ namespace Framework {
 		CommandBinder Commands() const { return { Framework::Commands(), currentMod }; }
 		HudBinder Hud() const { return { Framework::Hud(), currentMod }; }
 		MenuBinder Menu() const { return { Framework::Menus(), currentMod }; }
+		DrawBinder Draw() const { return { Framework::Draw(), currentMod }; }
 
 		// Defined in ModContext.cpp so this header stays free of Settings.hpp.
 		bool IsOn(std::string_view key) const;

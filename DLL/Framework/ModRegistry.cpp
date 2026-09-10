@@ -106,6 +106,7 @@ namespace Framework {
 			Commands().RemoveMod(record.mod.get());
 			Hud().RemoveMod(record.mod.get());
 			Menus().RemoveMod(record.mod.get());
+			Draw().RemoveMod(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -131,6 +132,7 @@ namespace Framework {
 			if (target == ModState::Faulted) {
 				Commands().RemoveMod(record.mod.get());
 				Menus().RemoveMod(record.mod.get());
+				Draw().RemoveMod(record.mod.get());
 			}
 
 			record.state = target;
@@ -353,6 +355,12 @@ namespace Framework {
 			Menus().PublishAvailability(std::move(avail));
 		}
 
+		void PublishDrawActive() {
+			Draw().RebuildActive([this](const IMod* mod) {
+				return IsOwnerAvailable(mod, Availability::Active);
+			});
+		}
+
 		std::vector<Record> records;
 		ModContext ctx;
 		bool resourceIndexDirty = false;
@@ -397,6 +405,7 @@ namespace Framework {
 
 		Commands().RefreshDiagnostics();
 		impl->PublishMenuAvailability();
+		impl->PublishDrawActive();
 	}
 
 	void ModRegistry::DispatchCommands(GamePhase phase, bool gameLoaded) {
@@ -434,6 +443,7 @@ namespace Framework {
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
 		impl->PublishMenuAvailability();
+		impl->PublishDrawActive();
 
 		return impl->ctx.fastTickRequested; // Aggregate over the pass: did any mod ask for a tighter interval?
 	}
@@ -443,6 +453,8 @@ namespace Framework {
 	}
 
 	void ModRegistry::Shutdown() {
+		Draw().RebuildActive([](const IMod*) { return false; });
+
 		for (auto& record : impl->records) {
 			if (record.state == ModState::Registered)
 				continue;
@@ -455,6 +467,7 @@ namespace Framework {
 			Commands().RemoveMod(record.mod.get());
 			Hud().RemoveMod(record.mod.get());
 			Menus().RemoveMod(record.mod.get());
+			Draw().RemoveMod(record.mod.get());
 		}
 
 		impl->records.clear();

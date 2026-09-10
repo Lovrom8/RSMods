@@ -7,6 +7,22 @@
 
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
+using Framework::DrawContext;
+using Framework::DrawResult;
+using Framework::DrawOutcome;
+using Framework::DrawPath;
+
+void D3DHooks::InitializeCrcProvider() {
+	Framework::DrawContext::SetDefaultCrcProvider([](IDirect3DDevice9* device, DWORD stage) -> std::optional<DWORD> {
+		if (!device) return std::nullopt;
+		LPDIRECT3DBASETEXTURE9 pBase = nullptr;
+		if (FAILED(device->GetTexture(stage, &pBase)) || !pBase) return std::nullopt;
+		DWORD crcVal = 0;
+		const bool ok = D3D::CRCForTexture(reinterpret_cast<LPDIRECT3DTEXTURE9>(pBase), device, crcVal);
+		pBase->Release();
+		return ok ? std::optional<DWORD>(crcVal) : std::nullopt;
+	});
+}
 
 /// <summary>
 /// IDirect3DDevice9::DrawPrimitive Middleware. Mainly used for Note Tails
@@ -19,6 +35,20 @@ namespace Setting = Settings::Setting;
 HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) { // Mainly used for Note Tails
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
+
+	Mesh currentMesh(Stride, PrimCount, 0);
+	ThiccMesh currentThicc(Stride, PrimCount, 0, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
+	DrawContext ctx{ pDevice, currentMesh, currentThicc, DrawPath::Primitive, GameState::IsInSong() };
+	auto active = Framework::Draw().ActiveSnapshot(DrawPath::Primitive);
+	for (const auto& e : *active) {
+		DrawResult r = e.fn(ctx);
+		switch (r.outcome) {
+			case DrawOutcome::Hide: return REMOVE_TEXTURE;
+			case DrawOutcome::Show: return SHOW_TEXTURE;
+			case DrawOutcome::ReplaceTexture: pDevice->SetTexture(r.stage, r.texture); break;
+			case DrawOutcome::Pass: break;
+		}
+	}
 
 	// Note-tails for Extended Range / Custom Colors
 	if (ERMode::AttemptedERInThisSong && ERMode::UseEROrColorsInThisSong && NOTE_TAILS) {
@@ -270,6 +300,19 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		if (IsExtraRemoved(removedMeshes, currentThicc))
 			return REMOVE_TEXTURE;
+	}
+
+	// Interceptor Registry Walk
+	DrawContext ctx{ pDevice, current, currentThicc, DrawPath::Indexed, GameState::IsInSong() };
+	auto active = Framework::Draw().ActiveSnapshot(DrawPath::Indexed);
+	for (const auto& e : *active) {
+		DrawResult r = e.fn(ctx);
+		switch (r.outcome) {
+			case DrawOutcome::Hide: return REMOVE_TEXTURE;
+			case DrawOutcome::Show: return SHOW_TEXTURE;
+			case DrawOutcome::ReplaceTexture: pDevice->SetTexture(r.stage, r.texture); break;
+			case DrawOutcome::Pass: break;
+		}
 	}
 
 	// Mods

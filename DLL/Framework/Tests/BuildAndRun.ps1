@@ -26,7 +26,8 @@ $Tests = @(
     @{ Name = 'MainThreadInboxTests';   Sources = @('MainThreadInbox.cpp') },
     @{ Name = 'HudRegistryTests';       Sources = @('HudRegistry.cpp') },
     @{ Name = 'MenuRegistryTests';      Sources = @('MenuRegistry.cpp') },
-    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp') }
+    @{ Name = 'DrawRegistryTests';      Sources = @('DrawRegistry.cpp') },
+    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp') }
 )
 
 # Locate the MSVC developer environment (matches the DLL's v143 toolset).
