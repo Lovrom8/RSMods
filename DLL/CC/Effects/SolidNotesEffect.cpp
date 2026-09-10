@@ -2,6 +2,7 @@
 #include "SolidNotesEffect.hpp"
 #include "../../Framework/Framework.hpp"
 #include "../../D3D/D3DHooks.hpp"
+#include "../../Mods/TwitchMod.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -54,7 +55,8 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			D3DHooks::regenerateUserDefinedTexture = true;
+			TwitchMod::regenerateUserDefinedTexture = true;
+			D3DHooks::RecreateTextures = true;
 		});
 
 		SetDuration(request);
@@ -108,19 +110,19 @@ namespace CrowdControl::Effects {
 
 		LOG_INFO("SolidNotesRandomEffect - Colors Saved" << std::endl);
 		
-		static std::uniform_real_distribution<> urd(0, D3DHooks::randomTextureCount - 1);
-		D3DHooks::currentRandomTexture = urd(rng);
+		static std::uniform_real_distribution<> urd(0, TwitchMod::randomTextureCount - 1);
+		TwitchMod::currentRandomTexture = urd(rng);
 
-		LOG_INFO("SolidNotesRandomEffect - Picked color " << D3DHooks::currentRandomTexture << "/" << D3DHooks::randomTextureCount << std::endl);
+		LOG_INFO("SolidNotesRandomEffect - Picked color " << TwitchMod::currentRandomTexture << "/" << TwitchMod::randomTextureCount << std::endl);
 
 		// Set random solid color
 		ERMode::customSolidColor.clear();
-		if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextureColors.size()) {
-			ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, D3DHooks::randomTextureColors[D3DHooks::currentRandomTexture]);
+		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextureColors.size()) {
+			ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, TwitchMod::randomTextureColors[TwitchMod::currentRandomTexture]);
 		}
 
-		if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextures.size()) {
-			D3DHooks::twitchUserDefinedTexture = D3DHooks::randomTextures[D3DHooks::currentRandomTexture];
+		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextures.size()) {
+			TwitchMod::twitchUserDefinedTexture = TwitchMod::randomTextures[TwitchMod::currentRandomTexture];
 		}
 
 		Framework::Registry().EnqueueSettingsUpdate([] {
@@ -195,7 +197,8 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			D3DHooks::regenerateUserDefinedTexture = true;
+			TwitchMod::regenerateUserDefinedTexture = true;
+			D3DHooks::RecreateTextures = true;
 		});
 
 		SetDuration(request);

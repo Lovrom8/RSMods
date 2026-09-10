@@ -24,12 +24,14 @@ public:
 	void OnSongTick(Framework::ModContext& c) override;
 	void OnMenuTick(Framework::ModContext& c) override;
 	void OnSongExit(Framework::ModContext& c) override;
+	void OnSettingsChanged(Framework::ModContext& c) override;
 
 	static void RegenerateTextures(IDirect3DDevice9* pDevice);
 	static void ReleaseTextures();
 
 private:
 	static inline std::atomic<bool> s_active = false;
+	static inline std::atomic<LPDIRECT3DTEXTURE9> s_noteTexture = nullptr;
 	using Clock = std::chrono::steady_clock;
 
 	// Tuning takes ~1.5s to settle before the game's numbers are trustworthy. This used to be a
@@ -44,6 +46,7 @@ private:
 	std::optional<Clock::time_point> tunerSettleUntil;
 
 	void ApplyColors();
+	static void UpdateNoteTexture(const Framework::ModContext& c);
 	static Clock::time_point SettleDeadline(const Framework::ModContext& c);
 	static bool SkipTuningSettle(const Framework::ModContext& c);
 };

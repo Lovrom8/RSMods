@@ -3,6 +3,7 @@
 #include "ModManager.hpp"
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
+#include "Mods/TwitchMod.hpp"
 #include "D3DOverlay.hpp"
 
 namespace Setting = Settings::Setting;
@@ -172,9 +173,9 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Menu::RenderImGuiMenu();
 	D3D::LoadTextures(pDevice);
 	D3DHooks::CheckRecreateTextures(pDevice);
+	TwitchMod::RunPerFrameEffects(pDevice);
 	UpdateGameWindowStacking();
 	GameOverlay::RenderOverlay(pDevice);
-	D3DHooks::RegenerateTwitchNoteColors(pDevice);
 
 	return originalReturn;
 }
