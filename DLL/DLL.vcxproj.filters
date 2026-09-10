@@ -402,6 +402,18 @@
     <ClCompile Include="Mods\VoiceOverControlMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\FretlessMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveInlaysMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveLaneMarkersMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GreenScreenWallMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -681,6 +693,18 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\RemoveLyricsMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\FretlessMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RemoveInlaysMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GreenScreenWallMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\ShowSongTimerMod.hpp">

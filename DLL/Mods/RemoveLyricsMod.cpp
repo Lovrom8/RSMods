@@ -1,10 +1,16 @@
 #include "../stdafx.h"
 #include "RemoveLyricsMod.hpp"
+#include "../D3D/D3D.hpp"
+#include "../D3D/D3DHelper.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::DrawContext;
+using Framework::DrawResult;
+using Framework::DrawOutcome;
+using Framework::DrawPath;
 using Settings::When;
 namespace Setting = Settings::Setting;
 
@@ -17,13 +23,24 @@ void RemoveLyricsMod::OnInitialize(ModContext& c) {
 		Setting::Key::RemoveLyrics,
 		KeyEdge::Up,
 		Availability::Initialized,
-		[](ModContext&, const KeyEvent&) {
-			D3DHooks::RemoveLyrics = !D3DHooks::RemoveLyrics;
+		[this](ModContext&, const KeyEvent&) {
+			removeLyricsActive.store(!removeLyricsActive.load(std::memory_order_relaxed), std::memory_order_relaxed);
 		},
 		[](const ModContext& context, const KeyEvent&) {
 			return context.When(Setting::RemoveLyricsWhen) == When::Manual;
 		},
 		"Remove Lyrics");
+
+	c.Draw().Register("RemoveLyrics", 0, DrawPath::Indexed, [this](DrawContext& ctx) -> DrawResult {
+		if (ctx.inSong && removeLyricsActive.load(std::memory_order_relaxed) && IsExtraRemoved(lyrics, ctx.thicc)) {
+			return { DrawOutcome::Hide };
+		}
+		return { DrawOutcome::Pass };
+	});
+}
+
+void RemoveLyricsMod::OnDisabled(ModContext&) {
+	removeLyricsActive.store(false, std::memory_order_relaxed);
 }
 
 void RemoveLyricsMod::OnSongTick(ModContext& c) {
@@ -37,8 +54,8 @@ void RemoveLyricsMod::OnMenuTick(ModContext& c) {
 // "Startup" mode latches lyric removal on once loaded; the manual keybinding and the
 // render-time setting check own every other case, so this is the mod's only policy.
 void RemoveLyricsMod::ApplyStartup(ModContext& c) {
-	if (!D3DHooks::RemoveLyrics && c.When(Setting::RemoveLyricsWhen) == When::Startup) {
-		D3DHooks::RemoveLyrics = true;
+	if (!removeLyricsActive.load(std::memory_order_relaxed) && c.When(Setting::RemoveLyricsWhen) == When::Startup) {
+		removeLyricsActive.store(true, std::memory_order_relaxed);
 	}
 }
 

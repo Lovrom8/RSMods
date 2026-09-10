@@ -570,24 +570,8 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		MemUtil::SetStaticValue(Offsets::ptr_drunkShit.Get(), (float)keepValueWithin(rng), sizeof(float));
 	}
 
-	// Greenscreen Wall
-	if ((Settings::IsOn(Setting::GreenScreenWallEnabled) || GreenScreenWall) && IsExtraRemoved(greenScreenWallMesh, currentThicc))
-		return REMOVE_TEXTURE;
-
-	// Thicc Mesh Mods that are as simple as doing a simple check against the params of this function.
-	if (GameState::IsInSong()) {
-		if (Settings::IsOn(Setting::FretlessModeEnabled) && IsExtraRemoved(fretless, currentThicc))
-			return REMOVE_TEXTURE;
-		if (Settings::IsOn(Setting::RemoveInlaysEnabled) && IsExtraRemoved(inlays, currentThicc))
-			return REMOVE_TEXTURE;
-		if (Settings::IsOn(Setting::RemoveLaneMarkersEnabled) && IsExtraRemoved(laneMarkers, currentThicc))
-			return REMOVE_TEXTURE;
-		if (RemoveLyrics && Settings::IsOn(Setting::RemoveLyricsEnabled) && IsExtraRemoved(lyrics, currentThicc))
-			return REMOVE_TEXTURE;
-	}
-
 	// Remove Headstock Artifacts
-	else if (GameState::Menus::IsInTuningMenus() && Settings::IsOn(Setting::RemoveHeadstockEnabled) && RemoveHeadstockInThisMenu)
+	if (GameState::Menus::IsInTuningMenus() && Settings::IsOn(Setting::RemoveHeadstockEnabled) && RemoveHeadstockInThisMenu)
 	{
 		// This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
 		if (IsExtraRemoved(tuningLetters, currentThicc)) 
