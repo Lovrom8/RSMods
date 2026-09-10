@@ -183,7 +183,6 @@ namespace ModManager {
 		if (GameState::IsInSong())
 			return;
 
-		D3DHooks::UpdateHeadstockCacheForMenu();
 		GameState::previousMenu = GameState::currentMenu;
 	}
 

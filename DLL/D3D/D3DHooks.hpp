@@ -49,13 +49,7 @@ namespace D3DHooks {
 	HRESULT APIENTRY Hook_EndScene(IDirect3DDevice9* pDevice);
 
 	// Mod Settings
-	inline bool resetHeadstockCache = true; // Do we want to reset the headstock cache? Triggers when opening tuning menu
-	inline bool toggleSkyline = false; // Do we want to toggle the skyline right now? Triggers to false when turned on/ off
 	inline int EnumSliderVal = 10000; // Sleep every X ms for enumeration (1000 ms = 1s)
-	inline bool SkylineOff = false; // Is the skyline disabled right now? Toggles when skyline turns off (True - No Skyline, False - Skyline)
-	inline bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
-	
-	inline std::atomic<bool> RemoveHeadstockInThisMenu = false; // If true, the headstock of the guitar / bass will be disabled in this menu. (True - No Headstock, False - Keep Headstock)
 	inline bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
 	inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
 	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
@@ -77,9 +71,6 @@ namespace D3DHooks {
 	void GenerateRandomTextures(IDirect3DDevice9* pDevice);
 	void RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice);
 	void InitializeCrcProvider();
-
-	// Refreshes the headstock texture cache based on the current/previous menu. Call once per menu tick.
-	void UpdateHeadstockCacheForMenu();
 
 	inline HWND cachedGameHwnd = nullptr;
 	inline HWND GetGameWindow() {

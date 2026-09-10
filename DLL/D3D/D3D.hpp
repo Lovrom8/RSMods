@@ -17,7 +17,7 @@ namespace D3D {
 inline static std::random_device rd;
 inline static std::mt19937 rng(rd());
 
-inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture, pBaseNotewayTexture, pBaseGutterTexture, pBaseFretNumTexture;
+inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
 
 inline unsigned long crc;
 inline unsigned long crcNotewayFretNumbers = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLanes = 0x35193, crcNotewayGutters = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
@@ -25,7 +25,7 @@ inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e06
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
 inline unsigned long crcLyrics = 0x00000000;
 
-inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
+inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture;
 inline LPDIRECT3DTEXTURE9 nonexistentTexture;
 
 inline unsigned int currIdx = 0;
@@ -157,17 +157,6 @@ inline std::vector<ThiccMesh> fingerprintMeshes{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 }
 #define REMOVE_TEXTURE (D3D_OK)
 
 /*------------------------ CRC Calculation --------------------------------------- */
-inline std::vector<LPDIRECT3DTEXTURE9> headstockTexturePointers; // the guitar / bass headstock
-inline std::vector<LPDIRECT3DTEXTURE9> skylineTexturePointers; // the dynamic difficulty bars
-inline std::vector<LPDIRECT3DTEXTURE9> notewayTexturePointers; // stems & accents
-
-inline LPDIRECT3DBASETEXTURE9 pBaseTextures[3];
-inline LPDIRECT3DTEXTURE9 pCurrTextures[3];
-
-inline void AddToTextureList(std::vector<LPDIRECT3DTEXTURE9>& textureList, LPDIRECT3DTEXTURE9 newTexture) {
-	if (std::ranges::find(textureList, newTexture) == textureList.end())
-		textureList.push_back(newTexture);
-}
 
 inline DWORD QuickCheckSum(DWORD* BufferData, size_t Size) // Yes, we are aware it's not exactly CRC anymore, but it does the job :)
 {

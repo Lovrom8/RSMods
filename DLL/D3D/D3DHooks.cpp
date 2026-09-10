@@ -44,7 +44,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 		DrawResult r = e.fn(ctx);
 		switch (r.outcome) {
 			case DrawOutcome::Hide: return REMOVE_TEXTURE;
-			case DrawOutcome::Show: return SHOW_TEXTURE;
+			case DrawOutcome::Show: return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
 			case DrawOutcome::ReplaceTexture: pDevice->SetTexture(r.stage, r.texture); break;
 			case DrawOutcome::Pass: break;
 		}
@@ -215,8 +215,6 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 /// <param name="PrimCount"> - Number of primitives to render.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be the following: D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount) { // Draw things on screen
-	static bool calculatedCRC = false, calculatedHeadstocks = false, calculatedSkyline = false;
-
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
 
@@ -312,46 +310,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 			case DrawOutcome::Show: return SHOW_TEXTURE;
 			case DrawOutcome::ReplaceTexture: pDevice->SetTexture(r.stage, r.texture); break;
 			case DrawOutcome::Pass: break;
-		}
-	}
-
-	// Mods
-
-    bool RemoveFingerprints = Settings::IsOn(Setting::RemoveFingerprints);
-	if (RemoveFingerprints && IsExtraRemoved(fingerprintMeshes, currentThicc)) {
-		for (DWORD stage = 0; stage < 2; stage++) {
-			LPDIRECT3DBASETEXTURE9 pTuningTexBase = nullptr;
-			pDevice->GetTexture(stage, &pTuningTexBase);
-			if (pTuningTexBase) {
-				DWORD tuningCRC = 0;
-				if (D3D::CRCForTexture((LPDIRECT3DTEXTURE9)pTuningTexBase, pDevice, tuningCRC)) {
-					if (tuningCRC == crcFingerprintNumber || tuningCRC == crcFingerprintIcon) { pTuningTexBase->Release(); return REMOVE_TEXTURE; }
-				}
-				pTuningTexBase->Release();
-			}
-		}
-	}
-
-	// Change Noteway Color | This NEEDS to be above Extended Range / Custom Colors or it won't work.
-	if (IsToBeRemoved(noteHighway, current) && Settings::IsOn(Setting::CustomHighwayColors)) {
-		pDevice->GetTexture(1, &pBaseNotewayTexture);
-		pCurrNotewayTexture = (IDirect3DTexture9*)pBaseNotewayTexture;
-
-		if (pBaseNotewayTexture) {
-			if (D3D::CRCForTexture(pCurrNotewayTexture, pDevice, crc)) {
-
-				// Noteway Texture
-				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
-					pDevice->SetTexture(1, CustomHighwayColorsMod::GetNotewayTexture());
-
-				// Fret Number texture
-				else if (crc == crcNotewayFretNumbers && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
-					pDevice->SetTexture(1, CustomHighwayColorsMod::GetFretNumTexture());
-
-				// Gutter texture
-				else if (crc == crcNotewayGutters && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
-					pDevice->SetTexture(1, CustomHighwayColorsMod::GetGutterTexture());
-			}
 		}
 	}
 
@@ -570,104 +528,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		MemUtil::SetStaticValue(Offsets::ptr_drunkShit.Get(), (float)keepValueWithin(rng), sizeof(float));
 	}
 
-	// Remove Headstock Artifacts
-	if (GameState::Menus::IsInTuningMenus() && Settings::IsOn(Setting::RemoveHeadstockEnabled) && RemoveHeadstockInThisMenu)
-	{
-		// This is called to remove those pesky tuning letters that share the same texture values as fret numbers and chord fingerings
-		if (IsExtraRemoved(tuningLetters, currentThicc)) 
-			return REMOVE_TEXTURE;
-
-		// This is called to remove the tuner's highlights
-		if (IsExtraRemoved(tunerHighlight, currentThicc))
-			return REMOVE_TEXTURE;
-
-		// Lefties need their own little place in life...
-		if (IsExtraRemoved(leftyFix, currentThicc)) 
-			return REMOVE_TEXTURE;
-	}
-
-	// Skyline Removal
-	if (toggleSkyline && POSSIBLE_SKYLINE) {
-
-		// If the user is in "Song" mode for Toggle Skyline and is NOT in a song -> draw the UI.
-		// This means we show the skyline in the learn a song - Song Details page.
-		if (DrawSkylineInMenu) { 
-			SkylineOff = false;
-			return SHOW_TEXTURE;
-		}
-
-		pDevice->GetTexture(1, &pBaseTextures[1]);
-		pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
-
-		// There's only two textures in Stage 1 for meshes with Stride = 16, so we could as well skip CRC calcuation and just check if !pBaseTextures[1] and return REMOVE_TEXTURE directly
-		if (pBaseTextures[1]) {  
-			if (D3D::CRCForTexture(pCurrTextures[1], pDevice, crc)) {
-
-				// Purple rectangles + orange line beneath them
-				if (crc == crcSkylinePurple || crc == crcSkylineOrange) { 
-					SkylineOff = true;
-					return REMOVE_TEXTURE;
-				}
-			}
-		}
-
-		pDevice->GetTexture(0, &pBaseTextures[0]);
-		pCurrTextures[0] = (IDirect3DTexture9*)pBaseTextures[0];
-
-		if (pBaseTextures[0]) {
-			if (D3D::CRCForTexture(pCurrTextures[0], pDevice, crc)) {
-
-				// There's a few more of textures used in Stage 0, so doing the same is no-go; Shadow-ish thing in the background + backgrounds of rectangles.
-				if (crc == crcSkylineBackground || crc == crcSkylineShadow) {  
-					SkylineOff = true;
-					return REMOVE_TEXTURE;
-				}
-			}
-		}
-	}
-
-	// Headstock Removal
-	else if (Settings::IsOn(Setting::RemoveHeadstockEnabled)) {
-		if (POSSIBLE_HEADSTOCKS) { // If we call GetTexture without any filtering, it causes a lockup when ALT-TAB-ing/changing fullscreen to windowed and vice versa
-			if (!RemoveHeadstockInThisMenu) // This user has RemoveHeadstock only on during the song. So if we aren't in the song, we need to draw the headstock texture.
-				return SHOW_TEXTURE;
-
-			pDevice->GetTexture(1, &pBaseTextures[1]);
-			pCurrTextures[1] = (IDirect3DTexture9*)pBaseTextures[1];
-
-			// Need to reset cache, and this is a headstock texture.
-			if (resetHeadstockCache && IsExtraRemoved(headstockThicc, currentThicc)) {
-				if (!pBaseTextures[1]) //if there's no texture for Stage 1
-					return REMOVE_TEXTURE;
-
-				// Take a CRC of the texture, and check it against our preset CRCs.
-				if (D3D::CRCForTexture(pCurrTextures[1], pDevice, crc)) {
-					if (crc == crcHeadstock0 || crc == crcHeadstock1 || crc == crcHeadstock2 || crc == crcHeadstock3 || crc == crcHeadstock4)
-						AddToTextureList(headstockTexturePointers, pCurrTextures[1]);
-				}
-
-				int headstockCRCLimit = 3;
-
-				// If the user is in multiplayer, we have to make sure our CRC limit is double or some bugs appear.
-				if (GameState::Menus::IsInMultiplayerTunerMenus())
-					headstockCRCLimit = 6;
-
-				// We've calculated all CRCs that we can, within our limit.
-				if (headstockTexturePointers.size() == headstockCRCLimit) {
-					calculatedHeadstocks = true;
-					resetHeadstockCache = false;
-				}
-
-				return REMOVE_TEXTURE;
-			}
-
-			// We've already cached the headstocks we're using, so find the one we are working with and remove it.
-			if (calculatedHeadstocks)
-				if (std::ranges::find(headstockTexturePointers, pCurrTextures[1]) != headstockTexturePointers.end())
-					return REMOVE_TEXTURE;
-		}
-	}
-
 	// Rainbow Notes || This part NEEDS to be below Extended Range / Custom Colors or it won't work.
 	if (RainbowNotes) { 
 
@@ -680,20 +540,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	
 	return SHOW_TEXTURE; // KEEP THIS LINE. This translates to "Display Graphics".
-}
-
-// Resets the headstock texture cache when appropriate, so we aren't re-running the same textures over and over again.
-void D3DHooks::UpdateHeadstockCacheForMenu() {
-	if (Settings::IsOn(Setting::RemoveHeadstockEnabled) && !GameState::Menus::IsInTuningMenus() ||
-		GameState::currentMenu == "MissionMenu") {
-		resetHeadstockCache = true;
-	}
-
-	// If the current menu is not the same as the previous menu and if it's one of menus where you tune your guitar (i.e. headstock is shown), reset the cache because user may want to change the headstock style
-	if (GameState::previousMenu != GameState::currentMenu && GameState::Menus::IsInTuningMenus()) {
-		resetHeadstockCache = true;
-		headstockTexturePointers.clear();
-	}
 }
 
 void D3DHooks::GenerateRandomTextures(IDirect3DDevice9* pDevice) {
