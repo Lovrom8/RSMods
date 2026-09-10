@@ -207,6 +207,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\CustomHighwayColorsMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -435,6 +440,7 @@
     <ClInclude Include="Mods\RiffRepeaterMod.hpp" />
     <ClInclude Include="Mods\AutoLoadProfileMod.hpp" />
     <ClInclude Include="Mods\CalibrationMod.hpp" />
+    <ClInclude Include="Mods\CustomHighwayColorsMod.hpp" />
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp" />
     <ClInclude Include="Mods\MidiMod.hpp" />
     <ClInclude Include="Mods\SongAccuracyMod.hpp" />

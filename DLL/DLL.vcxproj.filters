@@ -315,6 +315,9 @@
     <ClCompile Include="Mods\CalibrationMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\CustomHighwayColorsMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -693,6 +696,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\CalibrationMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomHighwayColorsMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp">
