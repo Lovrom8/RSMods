@@ -173,6 +173,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Menu::RenderImGuiMenu();
 	D3D::LoadTextures(pDevice);
 	D3DHooks::CheckRecreateTextures(pDevice);
+	Framework::Draw().RunPendingReleases();
 	TwitchMod::RunPerFrameEffects(pDevice);
 	UpdateGameWindowStacking();
 	GameOverlay::RenderOverlay(pDevice);

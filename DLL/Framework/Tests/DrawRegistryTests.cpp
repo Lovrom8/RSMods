@@ -234,6 +234,60 @@ int main() {
 		Check("RemoveMod unregisters texture regen callbacks for owner", modARegenCount == 11 && modBRegenCount == 3);
 	}
 
+	// 8. Deferred texture release lifecycle (RegisterTextureLifecycle, RequestTextureRelease, RunPendingReleases, CancelTextureRelease).
+	{
+		DrawRegistry reg;
+		int modARegenCount = 0;
+		int modAReleaseCount = 0;
+		int modBReleaseCount = 0;
+
+		reg.RegisterTextureLifecycle(
+			&modA,
+			[&](IDirect3DDevice9*) { ++modARegenCount; },
+			[&]() { ++modAReleaseCount; }
+		);
+
+		reg.RegisterTextureLifecycle(
+			&modB,
+			nullptr,
+			[&]() { ++modBReleaseCount; }
+		);
+
+		// Non-null device runs registered regen callback
+		IDirect3DDevice9* dummyDevice = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0xDEADBEEF));
+		reg.RegenerateAllTextures(dummyDevice);
+		Check("RegisterTextureLifecycle wires regen callback", modARegenCount == 1);
+
+		// No release requested yet -> RunPendingReleases is a no-op
+		reg.RunPendingReleases();
+		Check("RunPendingReleases without requests does nothing", modAReleaseCount == 0 && modBReleaseCount == 0);
+
+		// Enqueue release for modA idempotently (multiple requests = 1 release invocation)
+		reg.RequestTextureRelease(&modA);
+		reg.RequestTextureRelease(&modA);
+		reg.RequestTextureRelease(&modB);
+
+		// Run pending releases drains both callbacks
+		reg.RunPendingReleases();
+		Check("RunPendingReleases drains requested releases once (idempotent enqueue)", modAReleaseCount == 1 && modBReleaseCount == 1);
+
+		// Subsequent RunPendingReleases does not invoke again (drained)
+		reg.RunPendingReleases();
+		Check("RunPendingReleases is cleared after drain", modAReleaseCount == 1 && modBReleaseCount == 1);
+
+		// CancelTextureRelease cancels a pending release before drain
+		reg.RequestTextureRelease(&modA);
+		reg.CancelTextureRelease(&modA);
+		reg.RunPendingReleases();
+		Check("CancelTextureRelease removes pending release before drain", modAReleaseCount == 1);
+
+		// RemoveMod clears pending releases and unregisters callbacks
+		reg.RequestTextureRelease(&modA);
+		reg.RemoveMod(&modA);
+		reg.RunPendingReleases();
+		Check("RemoveMod cancels pending releases and unregisters release callback", modAReleaseCount == 1);
+	}
+
 	std::cout << (g_failures == 0 ? "ALL DRAWREGISTRY TESTS PASSED\n" : "DRAWREGISTRY TESTS FAILED\n");
 	return g_failures == 0 ? 0 : 1;
 }

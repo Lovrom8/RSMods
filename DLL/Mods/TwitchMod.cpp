@@ -120,7 +120,13 @@ void TwitchMod::OnInitialize(ModContext& c) {
 		return { DrawOutcome::Pass };
 	});
 
-	c.Draw().RegisterTextureRegen(&TwitchMod::RegenerateTextures);
+	c.Draw().RegisterTextureLifecycle(&TwitchMod::RegenerateTextures, &TwitchMod::ReleaseTextures);
+}
+
+void TwitchMod::OnEnabled(ModContext& c) {
+	c.Draw().CancelTextureRelease();
+	SyncState();
+	D3DHooks::RecreateTextures = true;
 }
 
 void TwitchMod::OnSongTick(ModContext&) {
@@ -153,9 +159,10 @@ void TwitchMod::RunPerFrameEffects(IDirect3DDevice9*) {
 	}
 }
 
-void TwitchMod::OnDisabled(ModContext&) {
+void TwitchMod::OnDisabled(ModContext& c) {
 	s_activeSolidTexture.store(nullptr, std::memory_order_release);
 	D3DHooks::RecreateTextures = true;
+	c.Draw().RequestTextureRelease();
 }
 
 void TwitchMod::OnSettingsChanged(ModContext&) {

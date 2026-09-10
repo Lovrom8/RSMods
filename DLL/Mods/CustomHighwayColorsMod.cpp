@@ -84,18 +84,19 @@ void CustomHighwayColorsMod::OnInitialize(Framework::ModContext& c) {
 		return { Framework::DrawOutcome::Pass };
 	});
 
-	c.Draw().RegisterTextureRegen(&CustomHighwayColorsMod::RegenerateTextures);
+	c.Draw().RegisterTextureLifecycle(&CustomHighwayColorsMod::RegenerateTextures, &CustomHighwayColorsMod::ReleaseTextures);
 }
 
-void CustomHighwayColorsMod::OnEnabled(Framework::ModContext&) {
+void CustomHighwayColorsMod::OnEnabled(Framework::ModContext& c) {
 	s_active = true;
+	c.Draw().CancelTextureRelease();
 	UpdateColorPresence();
 	D3DHooks::RecreateTextures = true;
 }
 
-void CustomHighwayColorsMod::OnDisabled(Framework::ModContext&) {
+void CustomHighwayColorsMod::OnDisabled(Framework::ModContext& c) {
 	s_active = false;
-	ReleaseTextures();
+	c.Draw().RequestTextureRelease();
 }
 
 void CustomHighwayColorsMod::OnSettingsChanged(Framework::ModContext&) {

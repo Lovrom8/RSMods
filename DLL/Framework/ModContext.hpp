@@ -71,8 +71,25 @@ namespace Framework {
 			draw.Register(mod, std::move(id), priority, path, std::move(fn));
 		}
 
+		// Register regen + release together; preferred for mods that own D3D textures.
+		void RegisterTextureLifecycle(TextureRegenCallback regenFn, TextureReleaseCallback releaseFn) const {
+			draw.RegisterTextureLifecycle(mod, std::move(regenFn), std::move(releaseFn));
+		}
+
+		// Register regen-only (no deferred release); use when no D3D textures are owned.
 		void RegisterTextureRegen(TextureRegenCallback fn) const {
 			draw.RegisterTextureRegen(mod, std::move(fn));
+		}
+
+		// Queue a deferred release for this mod's textures. Safe to call from OnDisabled.
+		// Actual release runs at the next RunPendingReleases call (EndScene).
+		void RequestTextureRelease() const {
+			draw.RequestTextureRelease(mod);
+		}
+
+		// Cancel a pending deferred release (e.g. if re-enabled before EndScene).
+		void CancelTextureRelease() const {
+			draw.CancelTextureRelease(mod);
 		}
 	};
 

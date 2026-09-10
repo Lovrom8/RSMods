@@ -69,6 +69,8 @@ namespace Framework {
 
 	// Texture regeneration callback called at frame boundaries (EndScene).
 	using TextureRegenCallback = std::function<void(IDirect3DDevice9*)>;
+	// Texture release callback called at frame boundaries (EndScene) when a release was requested.
+	using TextureReleaseCallback  = std::function<void()>;
 
 	struct ActiveEntry {
 		int priority = 0;
@@ -89,10 +91,23 @@ namespace Framework {
 		void Register(const IMod* owner, std::string id, int priority, DrawPath path,
 			DrawInterceptor fn);
 
-		// MainThread: register a texture regeneration callback owned by `owner`.
+		// MainThread: register texture regen AND release callbacks together.
+		// Prefer this over separate RegisterTextureRegen when the mod also owns D3D textures,
+		// so the release path is always declared alongside the regen path.
+		void RegisterTextureLifecycle(const IMod* owner, TextureRegenCallback regenFn, TextureReleaseCallback releaseFn);
+
+		// MainThread: register a texture regeneration callback owned by `owner` (regen-only; no release).
 		void RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn);
 
-		// MainThread: drop every interceptor and regen callback owned by this mod.
+		// MainThread: queue a deferred texture release for `owner`. Safe to call from OnDisabled.
+		// The release callback registered via RegisterTextureLifecycle is invoked once on the
+		// render thread at the next RunPendingReleases call (EndScene), after all DIP/DP are done.
+		void RequestTextureRelease(const IMod* owner);
+
+		// MainThread: cancel a previously requested deferred texture release for `owner`.
+		void CancelTextureRelease(const IMod* owner);
+
+		// MainThread: drop every interceptor, regen, and release callback owned by this mod.
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: rebuild the active snapshot from currently-enabled owners.
@@ -103,6 +118,10 @@ namespace Framework {
 
 		// Render thread (EndScene): execute all registered texture regeneration callbacks.
 		void RegenerateAllTextures(IDirect3DDevice9* pDevice);
+
+		// Render thread (EndScene): drain and invoke all pending release callbacks.
+		// Must be called after RegenerateAllTextures so regen always wins over a same-frame release.
+		void RunPendingReleases();
 
 	private:
 		struct Impl;

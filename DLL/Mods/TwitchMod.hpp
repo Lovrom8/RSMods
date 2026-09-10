@@ -12,6 +12,7 @@ public:
 	MOD_ID(TwitchMod)
 
 	void OnInitialize(Framework::ModContext& c) override;
+	void OnEnabled(Framework::ModContext& c) override;
 	void OnSongTick(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;
 	void OnSettingsChanged(Framework::ModContext& c) override;

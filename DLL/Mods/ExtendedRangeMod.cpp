@@ -80,18 +80,20 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 		return { DrawOutcome::Pass };
 	});
 
-	c.Draw().RegisterTextureRegen(&ExtendedRangeMod::RegenerateTextures);
+	c.Draw().RegisterTextureLifecycle(&ExtendedRangeMod::RegenerateTextures, &ExtendedRangeMod::ReleaseTextures);
 }
 
-void ExtendedRangeMod::OnEnabled(ModContext&) {
+void ExtendedRangeMod::OnEnabled(ModContext& c) {
 	s_active = true;
+	c.Draw().CancelTextureRelease();
 	D3DHooks::RecreateTextures = true;
 }
 
-void ExtendedRangeMod::OnDisabled(ModContext&) {
+void ExtendedRangeMod::OnDisabled(ModContext& c) {
 	s_active = false;
 	s_noteTexture.store(nullptr, std::memory_order_release);
 	D3DHooks::RecreateTextures = true;
+	c.Draw().RequestTextureRelease();
 }
 
 void ExtendedRangeMod::OnShutdown(ModContext&) {

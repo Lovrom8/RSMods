@@ -57,7 +57,14 @@ namespace Framework {
 			const IMod* owner = nullptr;
 			TextureRegenCallback fn;
 		};
-		std::vector<RegisteredRegen> regenCallbacks;
+		struct RegisteredRelease {
+			const IMod* owner = nullptr;
+			TextureReleaseCallback fn;
+		};
+
+		std::vector<RegisteredRegen>  regenCallbacks;
+		std::vector<RegisteredRelease> releaseCallbacks;
+		std::vector<const IMod*> pendingReleases;  // owners waiting for deferred release
 
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activeIndexed;
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activePrimitive;
@@ -68,6 +75,7 @@ namespace Framework {
 			activePrimitive.store(empty, std::memory_order_relaxed);
 		}
 	};
+
 
 	DrawRegistry::DrawRegistry() : impl(std::make_unique<Impl>()) {}
 	DrawRegistry::~DrawRegistry() = default;
@@ -90,6 +98,30 @@ namespace Framework {
 		}
 	}
 
+	void DrawRegistry::RegisterTextureLifecycle(const IMod* owner, TextureRegenCallback regenFn, TextureReleaseCallback releaseFn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+
+		// Regen
+		{
+			auto it = std::find_if(impl->regenCallbacks.begin(), impl->regenCallbacks.end(),
+				[owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
+			if (it == impl->regenCallbacks.end())
+				impl->regenCallbacks.push_back({ owner, std::move(regenFn) });
+			else
+				it->fn = std::move(regenFn);
+		}
+
+		// Release
+		{
+			auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
+				[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+			if (it == impl->releaseCallbacks.end())
+				impl->releaseCallbacks.push_back({ owner, std::move(releaseFn) });
+			else
+				it->fn = std::move(releaseFn);
+		}
+	}
+
 	void DrawRegistry::RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
@@ -104,12 +136,28 @@ namespace Framework {
 		}
 	}
 
+	void DrawRegistry::RequestTextureRelease(const IMod* owner) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		// Only enqueue if not already pending (idempotent)
+		auto it = std::find(impl->pendingReleases.begin(), impl->pendingReleases.end(), owner);
+		if (it == impl->pendingReleases.end())
+			impl->pendingReleases.push_back(owner);
+	}
+
+	void DrawRegistry::CancelTextureRelease(const IMod* owner) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
+	}
+
 	void DrawRegistry::RemoveMod(const IMod* owner) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		
 		std::erase_if(impl->interceptors, [owner](const RegisteredInterceptor& r) { return r.owner == owner; });
 		std::erase_if(impl->regenCallbacks, [owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
+		std::erase_if(impl->releaseCallbacks, [owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+		std::erase_if(impl->pendingReleases, [owner](const IMod* p) { return p == owner; });
 	}
+
 
 	void DrawRegistry::RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
@@ -167,6 +215,27 @@ namespace Framework {
 
 		for (const auto& cb : callbacks) {
 			cb(pDevice);
+		}
+	}
+
+	void DrawRegistry::RunPendingReleases() {
+		std::vector<TextureReleaseCallback> callbacks;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			if (impl->pendingReleases.empty()) return;
+
+			callbacks.reserve(impl->pendingReleases.size());
+			for (const IMod* owner : impl->pendingReleases) {
+				auto it = std::find_if(impl->releaseCallbacks.begin(), impl->releaseCallbacks.end(),
+					[owner](const Impl::RegisteredRelease& r) { return r.owner == owner; });
+				if (it != impl->releaseCallbacks.end() && it->fn)
+					callbacks.push_back(it->fn);
+			}
+			impl->pendingReleases.clear();
+		}
+
+		for (const auto& cb : callbacks) {
+			cb();
 		}
 	}
 

@@ -269,77 +269,189 @@ fan-out in `DrawRegistry`:
 
 ---
 
-## 8. What Follows
+## 8. How to Add a Rendering Mod
 
-1. **`D3DHooks` fully mod-agnostic [COMPLETED]** — `D3DHooks.cpp` contains zero `#include "../Mods/..."`
-   and zero mod references. `Hook_DIP` and `Hook_DP` contain purely the registry walks and fallbacks.
-2. **Tests [COMPLETED]** — `Framework/Tests/DrawRegistryTests.cpp` covers priority ordering,
-   snapshot rebuild, RemoveMod, path routing, terminal short-circuiting, lazy StageCRC caching,
-   and texture regeneration fan-out and unregistration.
-3. **Adding a Rendering Mod Tutorial**:
-   See below.
-4. **Stretch: named mesh tags** — promote raw CRC constants into a classification service.
-
-### Adding a Rendering Mod Walkthrough
-
-To create a mod that modifies or hides rendering:
-
-1. **Declare the Mod**:
-   Inherit from `Framework::IMod` and implement `OnInitialize(ModContext& c)`:
-   ```cpp
-   class MyRenderMod : public Framework::IMod {
-   public:
-       MOD_ID(MyRenderMod)
-
-       bool IsEnabled(const Framework::ModContext& c) const override {
-           return c.IsOn("MyModEnabled");
-       }
-
-       void OnInitialize(Framework::ModContext& c) override {
-           // Register a draw interceptor:
-           c.Draw().Register("MyEffect", 25, Framework::DrawPath::Indexed, [](Framework::DrawContext& ctx) -> Framework::DrawResult {
-               if (!ctx.inSong) return { Framework::DrawOutcome::Pass };
-
-               // Check mesh signature
-               if (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 2) {
-                   // Query CRC once per stage per draw (cached automatically):
-                   auto crc = ctx.StageCRC(1);
-                   if (crc && *crc == 0x12345678) {
-                       return { Framework::DrawOutcome::ReplaceTexture, 1, s_myTexture };
-                   }
-               }
-               return { Framework::DrawOutcome::Pass };
-           });
-
-           // Register texture regeneration if your mod creates procedural textures:
-           c.Draw().RegisterTextureRegen([](IDirect3DDevice9* dev) {
-               RegenerateTextures(dev);
-           });
-       }
-   };
-   ```
-
-2. **Trigger Texture Recreation**:
-   When settings change, call `D3DHooks::RecreateTextures = true;`. At the next frame boundary in `Hook_EndScene`,
-   `RegenerateAllTextures(pDevice)` will safely call your registered regeneration method.
-
-3. **Lifecycle**:
-   When your mod is disabled, faulted, or unloaded, `DrawRegistry::RemoveMod` automatically drops
-   your draw interceptors and texture regeneration callbacks.
+This section is a real guide against the shipped code, not a spec. Read it top-to-bottom before writing interceptor logic.
 
 ---
 
-## 9. Risks
+### 8.1 The priority ladder
+
+Lower priority number runs earlier. The live ladder:
+
+| Priority | Owner                    | Path     | What it does |
+|----------|--------------------------|----------|--------------|
+| -10      | `CustomHighwayColorsMod` | Indexed  | Highway texture swap (noteway, fret numbers, gutter) |
+| 10       | `RainbowNotesStems`      | Indexed  | Rainbow stems / bend-slide indicators |
+| 20       | `ExtendedRangeNotes`     | Both     | ER / custom-color note heads, tails, stems |
+| 30       | `TwitchNotes`            | Both     | Remove / transparent / solid-color note overlay |
+| 40       | `RainbowNotesHeadsTails` | Both     | Rainbow note heads + tails |
+
+Tie-breaking is alphabetical on owner `Id()`.
+
+---
+
+### 8.2 Outcomes
+
+| `DrawOutcome`    | Effect                                          | Terminal? |
+|------------------|-------------------------------------------------|-----------|
+| `Pass`           | Do nothing, continue to next interceptor         | no        |
+| `Hide`           | `return REMOVE_TEXTURE`                          | **yes**   |
+| `Show`           | `return SHOW_TEXTURE`                            | **yes**   |
+| `ReplaceTexture` | `pDevice->SetTexture(stage, tex)` and **continue** | no      |
+
+`ReplaceTexture` is non-terminal deliberately — it allows a later interceptor to override it.
+Call `ctx.device->SetTexture(stage, tex)` directly if you need to set a texture **and** return a terminal outcome in the same interceptor.
+
+---
+
+### 8.3 Shared mesh/CRC helpers — `DrawMeshTags.hpp`
+
+All mesh-classification predicates and CRC constants live in `DLL/Mods/DrawMeshTags.hpp`.
+**Never** duplicate the stride/primcount numbers or raw CRC values in your mod.
+
+```cpp
+#include "DrawMeshTags.hpp"
+
+// Mesh geometry
+DrawMesh::IsNoteHead(ctx)           // seven-string head or modifier shape
+DrawMesh::IsNoteStemOrAccent(ctx)   // stem / bend / slide / accent
+DrawMesh::IsNoteTail(ctx)           // Primitive path, Stride 12
+
+// CRC helpers (all internally use ctx.StageCRC — cached once per stage per draw)
+DrawMesh::IsNoteStemCrc(ctx)                          // stage 1 is stem or bend-slide CRC
+DrawMesh::StageMatches(ctx, 1, DrawMesh::CrcNoteLanes) // generic tag check
+
+// Available CRC constants:
+//   DrawMesh::CrcStemsAccents, CrcBendSlideIndicators
+//   DrawMesh::CrcNoteLanes, CrcNotewayFretNumbers, CrcNotewayGutters
+//   DrawMesh::CrcSkylinePurple, CrcSkylineOrange, CrcSkylineBackground, CrcSkylineShadow
+//   DrawMesh::CrcHeadstock0..4
+```
+
+---
+
+### 8.4 Texture lifetime rule
+
+> **Never call `ReleaseTextures()` (or any COM `Release()`) on the MainThread.**
+> That window overlaps with the render thread's interceptor pointer load → `SetTexture`.
+
+The correct pattern for mods that own procedural textures:
+
+**`OnInitialize`**: use `RegisterTextureLifecycle` (regen + release in one declaration):
+```cpp
+c.Draw().RegisterTextureLifecycle(
+    &MyMod::RegenerateTextures,   // render thread, called by CheckRecreateTextures
+    &MyMod::ReleaseTextures);     // render thread, called by RunPendingReleases
+```
+
+**`OnDisabled`**: null the interceptor-facing atomic and enqueue a deferred release:
+```cpp
+void MyMod::OnDisabled(ModContext& c) {
+    s_myTexture.store(nullptr, std::memory_order_release); // interceptor self-guards this frame
+    c.Draw().RequestTextureRelease();                      // deferred, runs at next EndScene
+}
+```
+
+**`OnShutdown`**: synchronous `ReleaseTextures()` is fine — the render loop is ending:
+```cpp
+void MyMod::OnShutdown(ModContext&) {
+    ReleaseTextures(); // safe: no render thread in flight
+}
+```
+
+**`OnEnabled` / `OnSettingsChanged`**: trigger regen by setting `D3DHooks::RecreateTextures = true;`.
+
+---
+
+### 8.5 Worked example A — simple mesh hide (no textures)
+
+`RemoveInlaysMod` (Tier A) hides fretboard inlays while in a song. No textures owned.
+
+```cpp
+class RemoveInlaysMod : public Framework::IMod {
+public:
+    MOD_ID(RemoveInlaysMod)
+
+    bool IsEnabled(const Framework::ModContext& c) const override {
+        return c.IsOn(Setting::RemoveInlaysEnabled);
+    }
+
+    void OnInitialize(Framework::ModContext& c) override {
+        c.Draw().Register("RemoveInlays", 0, Framework::DrawPath::Indexed,
+            [](Framework::DrawContext& ctx) -> Framework::DrawResult {
+                if (!ctx.inSong) return { Framework::DrawOutcome::Pass };
+                if (IsExtraRemoved(inlays, ctx.thicc))
+                    return { Framework::DrawOutcome::Hide };
+                return { Framework::DrawOutcome::Pass };
+            });
+        // No RegisterTextureLifecycle — this mod owns no D3D textures.
+    }
+};
+```
+
+---
+
+### 8.6 Worked example B — CRC-matched texture replacement (owns D3D textures)
+
+Pattern derived from `CustomHighwayColorsMod`. Owns a texture pack; replaces highway texture on CRC match.
+
+```cpp
+class MyHighwayMod : public Framework::IMod {
+public:
+    MOD_ID(MyHighwayMod)
+
+    bool IsEnabled(const Framework::ModContext& c) const override {
+        return c.IsOn("MyHighwayEnabled");
+    }
+
+    void OnInitialize(Framework::ModContext& c) override {
+        // -10: runs before the note cluster so the highway is styled first.
+        c.Draw().Register("MyHighway", -10, Framework::DrawPath::Indexed,
+            [](Framework::DrawContext& ctx) -> Framework::DrawResult {
+                auto tex = s_texture.load(std::memory_order_acquire);
+                if (!tex) return { Framework::DrawOutcome::Pass };
+
+                // Only match the noteway lane CRC on stage 1:
+                if (IsToBeRemoved(noteHighway, ctx.mesh) &&
+                    DrawMesh::StageMatches(ctx, 1, DrawMesh::CrcNoteLanes)) {
+                    return { Framework::DrawOutcome::ReplaceTexture, 1, tex };
+                }
+                return { Framework::DrawOutcome::Pass };
+            });
+
+        c.Draw().RegisterTextureLifecycle(&MyHighwayMod::Regenerate, &MyHighwayMod::Release);
+    }
+
+    void OnEnabled(Framework::ModContext&)  override { D3DHooks::RecreateTextures = true; }
+    void OnDisabled(Framework::ModContext& c) override {
+        s_texture.store(nullptr, std::memory_order_release);
+        c.Draw().RequestTextureRelease();
+    }
+    void OnShutdown(Framework::ModContext&) override { Release(); }
+
+    static void Regenerate(IDirect3DDevice9* dev) { /* D3D::GenerateGradientTexture(...) */ }
+    static void Release() { D3D::ReleaseTexture(&s_rawTexture); s_texture.store(nullptr, std::memory_order_release); }
+
+private:
+    static inline IDirect3DTexture9*            s_rawTexture = nullptr;
+    static inline std::atomic<IDirect3DTexture9*> s_texture  = nullptr;
+};
+```
+
+---
+
+## 9. Known Risks
 
 - **Frame time.** `std::function` + `shared_ptr` load per draw × thousands/frame. Mitigate by
   ordering cheap mesh-only interceptors ahead of CRC ones, and rely on the shared
   `StageCRC` cache — at most one `CRCForTexture` per stage per draw regardless of tenant
-  count, a net win over today's repeated computation. **Measure on Tier A before continuing.**
+  count.
 - **Ordering regressions.** The above/below-ER relationships are load-bearing. Encode them as
-  explicit priorities and migrate Tier C as a single unit, never piecemeal.
+  explicit priorities. Never migrate Tier C mods piecemeal — interceptor and legacy-block deletion
+  must land in the same commit.
 - **DIP/DP drift.** Register note-tail interceptors as `DrawPath::Both`.
 - **Snapshot staleness.** `RebuildActive` must fire on every enable/disable/fault and
   settings change. Miss one and a toggled mod keeps or loses effect until the next rebuild.
-  Hook it to the exact points that already drive `OnSettingsChanged` / mod activation in
-  `ModRegistry`.
-```
+- **Texture UAF.** Always use `RegisterTextureLifecycle` + `RequestTextureRelease` for mods
+  that own D3D textures. Calling COM `Release()` on the MainThread (in `OnDisabled`) is a UAF.
