@@ -5,6 +5,7 @@
 #include "../D3D/D3D.hpp"
 #include "../D3D/D3DHelper.hpp"
 #include "../D3D/D3DHooks.hpp"
+#include "DrawMeshTags.hpp"
 
 using Framework::ModContext;
 using Framework::DrawContext;
@@ -52,27 +53,25 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 		if (!tex) return { DrawOutcome::Pass };
 
 		if (ctx.path == DrawPath::Primitive) {
-			if (ctx.mesh.Stride == 12) {
+			if (DrawMesh::IsNoteTail(ctx)) {
 				return { DrawOutcome::ReplaceTexture, 1, tex };
 			}
 			return { DrawOutcome::Pass };
 		}
 
 		// DrawPath::Indexed
-		if (IsToBeRemoved(sevenstring, ctx.mesh) || IsExtraRemoved(noteModifiers, ctx.thicc)) {
+		if (DrawMesh::IsNoteHead(ctx)) {
 			return { DrawOutcome::ReplaceTexture, 1, tex };
 		}
 
 		// Note stems, bends, slides, and accents
-		if ((ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 2 && ctx.mesh.NumVertices == 4) ||
-		    (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 4 && ctx.mesh.NumVertices == 6)) {
+		if (DrawMesh::IsNoteStemOrAccent(ctx)) {
 			// If RainbowNotes is active, let RainbowNotes (Priority 10) own stems
 			if (ERMode::RainbowNotesEnabled.load(std::memory_order_relaxed) && ERMode::customNoteColorH.load(std::memory_order_relaxed) > 0) {
 				return { DrawOutcome::Pass };
 			}
 
-			auto crc1 = ctx.StageCRC(1);
-			if (crc1 && (*crc1 == crcStemsAccents || *crc1 == crcBendSlideIndicators)) {
+			if (DrawMesh::IsNoteStemCrc(ctx)) {
 				return { DrawOutcome::ReplaceTexture, 1, tex };
 			}
 		}

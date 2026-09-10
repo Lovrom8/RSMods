@@ -108,9 +108,10 @@ private:
 
 The existing draw classifiers (`NOTE_STEMS`, `NOTE_TAILS`, `OPEN_NOTE_ACCENTS`,
 `IsToBeRemoved(sevenstring, mesh)`, `IsExtraRemoved(noteModifiers, thicc)`, etc.) stay
-where they are; interceptors call them against `ctx.mesh` / `ctx.thicc`. The CRC constants
-(`crcStemsAccents`, `crcSkyline*`, `crcHeadstock*`, `crcNoteLanes`, ...) remain accessible
-to interceptors for now (Section 7 proposes promoting them to named tags later).
+where they are; interceptors call them against `ctx.mesh` / `ctx.thicc`. The CRC tag values
+live as immutable constants in `namespace D3D::Crc` (`D3D::Crc::StemsAccents`,
+`D3D::Crc::Skyline*`, `D3D::Crc::Headstock*`, `D3D::Crc::NoteLanes`, ...); interceptors compare
+against them through `DrawMesh::StageMatches` / `DrawMesh::StageMatchesAny`.
 
 ---
 
@@ -319,14 +320,17 @@ DrawMesh::IsNoteStemOrAccent(ctx)   // stem / bend / slide / accent
 DrawMesh::IsNoteTail(ctx)           // Primitive path, Stride 12
 
 // CRC helpers (all internally use ctx.StageCRC — cached once per stage per draw)
-DrawMesh::IsNoteStemCrc(ctx)                          // stage 1 is stem or bend-slide CRC
-DrawMesh::StageMatches(ctx, 1, DrawMesh::CrcNoteLanes) // generic tag check
+DrawMesh::IsNoteStemCrc(ctx)                                 // stage 1 is stem or bend-slide CRC
+DrawMesh::StageMatches(ctx, 1, D3D::Crc::NoteLanes)          // single tag check
+DrawMesh::StageMatchesAny(ctx, 1, { D3D::Crc::Headstock0,    // any-of tag check
+                                    D3D::Crc::Headstock1 })
 
-// Available CRC constants:
-//   DrawMesh::CrcStemsAccents, CrcBendSlideIndicators
-//   DrawMesh::CrcNoteLanes, CrcNotewayFretNumbers, CrcNotewayGutters
-//   DrawMesh::CrcSkylinePurple, CrcSkylineOrange, CrcSkylineBackground, CrcSkylineShadow
-//   DrawMesh::CrcHeadstock0..4
+// Available CRC tag constants (namespace D3D::Crc):
+//   StemsAccents, BendSlideIndicators
+//   NoteLanes, NotewayFretNumbers, NotewayGutters
+//   SkylinePurple, SkylineOrange, SkylineBackground, SkylineShadow
+//   Headstock0..4
+//   FingerprintNumber, FingerprintIcon
 ```
 
 ---
@@ -414,7 +418,7 @@ public:
 
                 // Only match the noteway lane CRC on stage 1:
                 if (IsToBeRemoved(noteHighway, ctx.mesh) &&
-                    DrawMesh::StageMatches(ctx, 1, DrawMesh::CrcNoteLanes)) {
+                    DrawMesh::StageMatches(ctx, 1, D3D::Crc::NoteLanes)) {
                     return { Framework::DrawOutcome::ReplaceTexture, 1, tex };
                 }
                 return { Framework::DrawOutcome::Pass };

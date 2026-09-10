@@ -2,6 +2,7 @@
 #include "RemoveFingerprintsMod.hpp"
 #include "../D3D/D3D.hpp"
 #include "../D3D/D3DHelper.hpp"
+#include "DrawMeshTags.hpp"
 
 using Framework::ModContext;
 using Framework::DrawContext;
@@ -18,8 +19,7 @@ void RemoveFingerprintsMod::OnInitialize(ModContext& c) {
 	c.Draw().Register("RemoveFingerprints", 0, DrawPath::Indexed, [](DrawContext& ctx) -> DrawResult {
 		if (IsExtraRemoved(fingerprintMeshes, ctx.thicc)) {
 			for (DWORD stage = 0; stage < 2; ++stage) {
-				auto crc = ctx.StageCRC(stage);
-				if (crc && (*crc == crcFingerprintNumber || *crc == crcFingerprintIcon)) {
+				if (DrawMesh::StageMatchesAny(ctx, stage, { D3D::Crc::FingerprintNumber, D3D::Crc::FingerprintIcon })) {
 					return { DrawOutcome::Hide };
 				}
 			}

@@ -2,6 +2,7 @@
 #include "RemoveHeadstockMod.hpp"
 #include "../D3D/D3D.hpp"
 #include "../D3D/D3DHelper.hpp"
+#include "DrawMeshTags.hpp"
 #include <algorithm>
 
 using Framework::ModContext;
@@ -96,11 +97,11 @@ void RemoveHeadstockMod::OnInitialize(ModContext& c) {
 
 		// Need to reset cache, and this is a headstock texture
 		if (resetHeadstockCache.load(std::memory_order_relaxed) && IsExtraRemoved(headstockThicc, ctx.thicc)) {
-			auto crc = ctx.StageCRC(1);
-			if (!crc)
+			if (!ctx.StageCRC(1))
 				return { DrawOutcome::Hide };
 
-			if (*crc == crcHeadstock0 || *crc == crcHeadstock1 || *crc == crcHeadstock2 || *crc == crcHeadstock3 || *crc == crcHeadstock4) {
+			if (DrawMesh::StageMatchesAny(ctx, 1, { D3D::Crc::Headstock0, D3D::Crc::Headstock1,
+			                                        D3D::Crc::Headstock2, D3D::Crc::Headstock3, D3D::Crc::Headstock4 })) {
 				LPDIRECT3DBASETEXTURE9 pBase = nullptr;
 				if (SUCCEEDED(ctx.device->GetTexture(1, &pBase)) && pBase) {
 					auto pTex = reinterpret_cast<LPDIRECT3DTEXTURE9>(pBase);

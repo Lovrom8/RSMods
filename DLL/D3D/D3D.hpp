@@ -20,10 +20,33 @@ inline static std::mt19937 rng(rd());
 inline LPDIRECT3DBASETEXTURE9 pBaseTexture, pBaseRainbowTexture;
 
 inline unsigned long crc;
-inline unsigned long crcNotewayFretNumbers = 0x00090000, crcNoteLanes = 0x005a00b9, crcIncomingLanes = 0x35193, crcNotewayGutters = 0x00004a4a, crcStemsAccents = 0x02a50002, crcBendSlideIndicators = 0x4922065c;
-inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
-inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
+inline unsigned long crcIncomingLanes = 0x35193;
 inline unsigned long crcLyrics = 0x00000000;
+
+// Texture CRC tags used by the DrawMesh interceptors. These are fixed identifiers baked into the game's
+// assets, so they are immutable constants rather than mutable globals. Compare against them through
+// DrawMesh::StageMatches / StageMatchesAny; do not read the stage CRC and inline the comparison.
+namespace D3D::Crc {
+	inline constexpr DWORD NotewayFretNumbers  = 0x00090000;
+	inline constexpr DWORD NoteLanes           = 0x005a00b9;
+	inline constexpr DWORD NotewayGutters      = 0x00004a4a;
+	inline constexpr DWORD StemsAccents        = 0x02a50002;
+	inline constexpr DWORD BendSlideIndicators = 0x4922065c;
+
+	inline constexpr DWORD SkylinePurple       = 0x65b846aa;
+	inline constexpr DWORD SkylineOrange       = 0xbad9e064;
+	inline constexpr DWORD SkylineBackground   = 0xc605fbd2;
+	inline constexpr DWORD SkylineShadow       = 0xff1c61ff;
+
+	inline constexpr DWORD Headstock0          = 0x008d5439;
+	inline constexpr DWORD Headstock1          = 0x000d4439;
+	inline constexpr DWORD Headstock2          = 0x00000000;
+	inline constexpr DWORD Headstock3          = 0xa55470f6;
+	inline constexpr DWORD Headstock4          = 0x008f4039;
+
+	inline constexpr DWORD FingerprintNumber   = 0x00042080;
+	inline constexpr DWORD FingerprintIcon     = 0xFBF75F17;
+}
 
 inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture;
 inline LPDIRECT3DTEXTURE9 nonexistentTexture;
@@ -136,7 +159,6 @@ inline std::vector<Mesh> noteHighway{ { 32, 2, 4} };
 inline std::vector<ThiccMesh> allMeshes;
 inline std::vector<ThiccMesh> removedMeshes;
 
-inline unsigned long crcFingerprintNumber = 0x00042080, crcFingerprintIcon = 0xFBF75F17;
 inline std::vector<ThiccMesh> fingerprintMeshes{ { 32, 2, 4, 0, 0, 4, 2, 12, 4 }, { 12, 6, 8, 0, 0, 4, 2, 8, 4 } };
 
 // Misc

@@ -3,9 +3,12 @@
 #include "Framework/HudRegistry.hpp"
 #include "GameState.hpp"
 
-#include <atlbase.h>
+#include <windows.h>
+#include <wrl/client.h>
 #include <algorithm>
 #include <unordered_map>
+
+using Microsoft::WRL::ComPtr;
 
 namespace Setting = Settings::Setting;
 
@@ -94,17 +97,17 @@ namespace {
 
 	class FontCache {
 	public:
-		bool Get(IDirect3DDevice9* dev, const FontKey& key, CComPtr<ID3DXFont>& out) {
-			out.Release();
+		bool Get(IDirect3DDevice9* dev, const FontKey& key, ComPtr<ID3DXFont>& out) {
+			out.Reset();
 			if (auto it = cache.find(key); it != cache.end() && it->second) {
 				out = it->second;
 				return true;
 			}
 
-			CComPtr<ID3DXFont> font;
+			ComPtr<ID3DXFont> font;
 			HRESULT hr = D3DXCreateFontA(dev, key.height, 0, key.weight, 1, key.italic,
 				DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
-				DEFAULT_PITCH | FF_DONTCARE, key.face.c_str(), &font);
+				DEFAULT_PITCH | FF_DONTCARE, key.face.c_str(), font.GetAddressOf());
 			if (FAILED(hr) || !font) return false;
 
 			auto [iter, inserted] = cache.try_emplace(key, font);
@@ -121,17 +124,17 @@ namespace {
 			for (const auto& [key, fontPtr] : cache) if (fontPtr) fontPtr->OnResetDevice();
 		}
 	private:
-		std::unordered_map<FontKey, CComPtr<ID3DXFont>, FontKeyHash> cache;
+		std::unordered_map<FontKey, ComPtr<ID3DXFont>, FontKeyHash> cache;
 	};
 
 	FontCache fontCache;
 	std::string cachedFontName = "";
 	int cachedFontSize = 0;
-	CComPtr<ID3DXFont> cachedFont;
+	ComPtr<ID3DXFont> cachedFont;
 
 	void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { 0u, 0u }, DWORD format = DT_LEFT | DT_NOCLIP)
 	{
-		CComPtr<ID3DXFont> font;
+		ComPtr<ID3DXFont> font;
 		bool useInputFontSize = setFontSize.height != 0;
 
 		if (useInputFontSize) {
@@ -168,7 +171,7 @@ namespace {
 			LOG_INFO("Font settings changed. Re-caching default font..." << std::endl);
 
 			FontKey newKey = FontKey::Make(currentFontName, currentFontSize, 0, FW_NORMAL, false);
-			CComPtr<ID3DXFont> newFont;
+			ComPtr<ID3DXFont> newFont;
 
 			if (fontCache.Get(device, newKey, newFont)) {
 				cachedFont = newFont;

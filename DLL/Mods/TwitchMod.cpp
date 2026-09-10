@@ -6,6 +6,7 @@
 #include "../Offsets.hpp"
 #include "../MemUtil.hpp"
 #include "../Settings.hpp"
+#include "DrawMeshTags.hpp"
 
 using Framework::ModContext;
 using Framework::DrawContext;
@@ -14,20 +15,6 @@ using Framework::DrawOutcome;
 using Framework::DrawPath;
 namespace Setting = Settings::Setting;
 
-namespace {
-	inline bool IsNoteHead(const DrawContext& ctx) {
-		return IsToBeRemoved(sevenstring, ctx.mesh) || IsExtraRemoved(noteModifiers, ctx.thicc);
-	}
-
-	inline bool IsNoteStemOrAccent(const DrawContext& ctx) {
-		return (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 2 && ctx.mesh.NumVertices == 4) ||
-		       (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 4 && ctx.mesh.NumVertices == 6);
-	}
-
-	inline bool IsNoteTail(const DrawContext& ctx) {
-		return ctx.mesh.Stride == 12;
-	}
-}
 
 void TwitchMod::SyncState() {
 	bool remove = Settings::IsTwitchSettingEnabled(Setting::Twitch::RemoveNotes);
@@ -68,15 +55,12 @@ void TwitchMod::OnInitialize(ModContext& c) {
 
 		if (s_removeNotes.load(std::memory_order_relaxed)) {
 			if (ctx.path == DrawPath::Primitive) {
-				if (IsNoteTail(ctx)) return { DrawOutcome::Hide };
+				if (DrawMesh::IsNoteTail(ctx)) return { DrawOutcome::Hide };
 			}
 			else { // Indexed
-				if (IsNoteHead(ctx)) return { DrawOutcome::Hide };
-				if (IsNoteStemOrAccent(ctx)) {
-					auto crc1 = ctx.StageCRC(1);
-					if (crc1 && (*crc1 == crcStemsAccents || *crc1 == crcBendSlideIndicators)) {
-						return { DrawOutcome::Hide };
-					}
+				if (DrawMesh::IsNoteHead(ctx)) return { DrawOutcome::Hide };
+				if (DrawMesh::IsNoteStemOrAccent(ctx) && DrawMesh::IsNoteStemCrc(ctx)) {
+					return { DrawOutcome::Hide };
 				}
 			}
 			return { DrawOutcome::Pass };
@@ -84,15 +68,12 @@ void TwitchMod::OnInitialize(ModContext& c) {
 
 		if (s_transparentNotes.load(std::memory_order_relaxed)) {
 			if (ctx.path == DrawPath::Primitive) {
-				if (IsNoteTail(ctx)) return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
+				if (DrawMesh::IsNoteTail(ctx)) return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
 			}
 			else { // Indexed
-				if (IsNoteHead(ctx)) return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
-				if (IsNoteStemOrAccent(ctx)) {
-					auto crc1 = ctx.StageCRC(1);
-					if (crc1 && (*crc1 == crcStemsAccents || *crc1 == crcBendSlideIndicators)) {
-						return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
-					}
+				if (DrawMesh::IsNoteHead(ctx)) return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
+				if (DrawMesh::IsNoteStemOrAccent(ctx) && DrawMesh::IsNoteStemCrc(ctx)) {
+					return { DrawOutcome::ReplaceTexture, 1, nonexistentTexture };
 				}
 			}
 			return { DrawOutcome::Pass };
@@ -102,15 +83,12 @@ void TwitchMod::OnInitialize(ModContext& c) {
 			LPDIRECT3DTEXTURE9 tex = s_activeSolidTexture.load(std::memory_order_relaxed);
 			if (tex) {
 				if (ctx.path == DrawPath::Primitive) {
-					if (IsNoteTail(ctx)) return { DrawOutcome::ReplaceTexture, 1, tex };
+					if (DrawMesh::IsNoteTail(ctx)) return { DrawOutcome::ReplaceTexture, 1, tex };
 				}
 				else { // Indexed
-					if (IsNoteHead(ctx)) return { DrawOutcome::ReplaceTexture, 1, tex };
-					if (IsNoteStemOrAccent(ctx)) {
-						auto crc1 = ctx.StageCRC(1);
-						if (crc1 && (*crc1 == crcStemsAccents || *crc1 == crcBendSlideIndicators)) {
-							return { DrawOutcome::ReplaceTexture, 1, tex };
-						}
+					if (DrawMesh::IsNoteHead(ctx)) return { DrawOutcome::ReplaceTexture, 1, tex };
+					if (DrawMesh::IsNoteStemOrAccent(ctx) && DrawMesh::IsNoteStemCrc(ctx)) {
+						return { DrawOutcome::ReplaceTexture, 1, tex };
 					}
 				}
 			}

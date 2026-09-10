@@ -4,6 +4,7 @@
 #include "../D3D/D3D.hpp"
 #include "../D3D/D3DHelper.hpp"
 #include "../D3D/D3DHooks.hpp"
+#include "DrawMeshTags.hpp"
 
 using Framework::ModContext;
 using Framework::DrawContext;
@@ -15,20 +16,6 @@ using Framework::Availability;
 using Framework::KeyEvent;
 namespace Setting = Settings::Setting;
 
-namespace {
-	inline bool IsNoteHead(const DrawContext& ctx) {
-		return IsToBeRemoved(sevenstring, ctx.mesh) || IsExtraRemoved(noteModifiers, ctx.thicc);
-	}
-
-	inline bool IsNoteStemOrAccent(const DrawContext& ctx) {
-		return (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 2 && ctx.mesh.NumVertices == 4) ||
-		       (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 4 && ctx.mesh.NumVertices == 6);
-	}
-
-	inline bool IsNoteTail(const DrawContext& ctx) {
-		return ctx.mesh.Stride == 12;
-	}
-}
 
 bool RainbowNotesMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RainbowNotesEnabled) || ERMode::IsRainbowNotesEnabled();
@@ -59,12 +46,9 @@ void RainbowNotesMod::OnInitialize(ModContext& c) {
 		if (h <= 0) return { DrawOutcome::Pass };
 		if (h > 179) h %= 180;
 
-		if (IsNoteStemOrAccent(ctx)) {
-			auto crc1 = ctx.StageCRC(1);
-			if (crc1 && (*crc1 == crcStemsAccents || *crc1 == crcBendSlideIndicators)) {
-				if (h < static_cast<int>(ERMode::rainbowTextures.size()) && ERMode::rainbowTextures[h]) {
-					return { DrawOutcome::ReplaceTexture, 1, ERMode::rainbowTextures[h] };
-				}
+		if (DrawMesh::IsNoteStemOrAccent(ctx) && DrawMesh::IsNoteStemCrc(ctx)) {
+			if (h < static_cast<int>(ERMode::rainbowTextures.size()) && ERMode::rainbowTextures[h]) {
+				return { DrawOutcome::ReplaceTexture, 1, ERMode::rainbowTextures[h] };
 			}
 		}
 
@@ -81,14 +65,14 @@ void RainbowNotesMod::OnInitialize(ModContext& c) {
 		if (h > 179) h %= 180;
 
 		if (ctx.path == DrawPath::Primitive) {
-			if (IsNoteTail(ctx)) {
+			if (DrawMesh::IsNoteTail(ctx)) {
 				if (h < static_cast<int>(ERMode::rainbowTextures.size()) && ERMode::rainbowTextures[h]) {
 					return { DrawOutcome::ReplaceTexture, 1, ERMode::rainbowTextures[h] };
 				}
 			}
 		}
 		else { // Indexed
-			if (IsNoteHead(ctx)) {
+			if (DrawMesh::IsNoteHead(ctx)) {
 				if (h < static_cast<int>(ERMode::rainbowTextures.size()) && ERMode::rainbowTextures[h]) {
 					return { DrawOutcome::ReplaceTexture, 1, ERMode::rainbowTextures[h] };
 				}

@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 #include "RemoveSkylineMod.hpp"
 #include "../D3D/D3D.hpp"
+#include "DrawMeshTags.hpp"
 
 using Framework::ModContext;
 using Framework::DrawContext;
@@ -29,14 +30,12 @@ void RemoveSkylineMod::OnInitialize(ModContext& c) {
 			return { DrawOutcome::Show };
 		}
 
-		auto crc1 = ctx.StageCRC(1);
-		if (crc1 && (*crc1 == crcSkylinePurple || *crc1 == crcSkylineOrange)) {
+		if (DrawMesh::StageMatchesAny(ctx, 1, { D3D::Crc::SkylinePurple, D3D::Crc::SkylineOrange })) {
 			skylineOff.store(true, std::memory_order_relaxed);
 			return { DrawOutcome::Hide };
 		}
 
-		auto crc0 = ctx.StageCRC(0);
-		if (crc0 && (*crc0 == crcSkylineBackground || *crc0 == crcSkylineShadow)) {
+		if (DrawMesh::StageMatchesAny(ctx, 0, { D3D::Crc::SkylineBackground, D3D::Crc::SkylineShadow })) {
 			skylineOff.store(true, std::memory_order_relaxed);
 			return { DrawOutcome::Hide };
 		}

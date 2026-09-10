@@ -5,6 +5,7 @@
 #include "../D3D/D3DHooks.hpp"
 #include "../Settings.hpp"
 #include "../Framework/Framework.hpp"
+#include "DrawMeshTags.hpp"
 
 struct HighwayTexturePack {
 	LPDIRECT3DTEXTURE9 noteway = nullptr;
@@ -70,13 +71,13 @@ void CustomHighwayColorsMod::OnInitialize(Framework::ModContext& c) {
 
 			auto crc = ctx.StageCRC(1);
 			if (crc) {
-				if (*crc == crcNoteLanes && s_hasNotewayColors.load(std::memory_order_relaxed) && pack->noteway) {
+				if (*crc == D3D::Crc::NoteLanes && s_hasNotewayColors.load(std::memory_order_relaxed) && pack->noteway) {
 					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->noteway };
 				}
-				if (*crc == crcNotewayFretNumbers && s_hasFretNumColor.load(std::memory_order_relaxed) && pack->fretNum) {
+				if (*crc == D3D::Crc::NotewayFretNumbers && s_hasFretNumColor.load(std::memory_order_relaxed) && pack->fretNum) {
 					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->fretNum };
 				}
-				if (*crc == crcNotewayGutters && s_hasGutterColor.load(std::memory_order_relaxed) && pack->gutter) {
+				if (*crc == D3D::Crc::NotewayGutters && s_hasGutterColor.load(std::memory_order_relaxed) && pack->gutter) {
 					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->gutter };
 				}
 			}
