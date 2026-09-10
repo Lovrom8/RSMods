@@ -375,6 +375,9 @@
     <ClCompile Include="Framework\HudRegistry.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\MenuRegistry.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
     <ClCompile Include="Framework\ModContext.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -738,6 +741,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\HudRegistry.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MenuRegistry.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\MainThreadInbox.hpp">

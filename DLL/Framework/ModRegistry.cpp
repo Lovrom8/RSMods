@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "../Log.hpp"
 #include "ConflictResolver.hpp"
 #include "HudRegistry.hpp"
+#include "MenuRegistry.hpp"
 #include "MainThreadInbox.hpp"
 #include "ModContext.hpp"
 #include "ResourceLedger.hpp"
@@ -103,6 +105,7 @@ namespace Framework {
 			record.state = ModState::Faulted;
 			Commands().RemoveMod(record.mod.get());
 			Hud().RemoveMod(record.mod.get());
+			Menus().RemoveMod(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -127,6 +130,7 @@ namespace Framework {
 			const ModState target = TeardownTargetState(reason);
 			if (target == ModState::Faulted) {
 				Commands().RemoveMod(record.mod.get());
+				Menus().RemoveMod(record.mod.get());
 			}
 
 			record.state = target;
@@ -335,6 +339,20 @@ namespace Framework {
 			}
 		}
 
+		void PublishMenuAvailability() {
+			std::unordered_map<const IMod*, Availability> avail;
+			avail.reserve(records.size());
+			for (const auto& record : records) {
+				if (record.state == ModState::Active) {
+					avail.emplace(record.mod.get(), Availability::Active);
+				}
+				else if (record.state == ModState::Inactive) {
+					avail.emplace(record.mod.get(), Availability::Initialized);
+				}
+			}
+			Menus().PublishAvailability(std::move(avail));
+		}
+
 		std::vector<Record> records;
 		ModContext ctx;
 		bool resourceIndexDirty = false;
@@ -378,6 +396,7 @@ namespace Framework {
 		}
 
 		Commands().RefreshDiagnostics();
+		impl->PublishMenuAvailability();
 	}
 
 	void ModRegistry::DispatchCommands(GamePhase phase, bool gameLoaded) {
@@ -414,8 +433,13 @@ namespace Framework {
 		// resource the outgoing mod hasn't released; reverts are synchronous, so one pass suffices.
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
+		impl->PublishMenuAvailability();
 
 		return impl->ctx.fastTickRequested; // Aggregate over the pass: did any mod ask for a tighter interval?
+	}
+
+	bool ModRegistry::IsOwnerAvailable(const IMod* mod, Availability required) const {
+		return impl->IsOwnerAvailable(mod, required);
 	}
 
 	void ModRegistry::Shutdown() {
@@ -430,10 +454,12 @@ namespace Framework {
 			impl->Invoke(record, &IMod::OnShutdown, "OnShutdown");
 			Commands().RemoveMod(record.mod.get());
 			Hud().RemoveMod(record.mod.get());
+			Menus().RemoveMod(record.mod.get());
 		}
 
 		impl->records.clear();
 		Ledger().Release(&registryOwner);
+		Menus().PublishAvailability({});
 	}
 
 	ModRegistry& Registry() {
