@@ -64,7 +64,6 @@ namespace D3DHooks {
 	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
 	inline bool PrideMode = false; // If true, the background will be cycle through colors.
 	inline bool RainbowNotes = false; // If true, the notes will turn rainbow along with the stems
-	inline bool AutomatedSelectedVolume = false; // If true, we will always show the selected volume.
 
 	inline std::atomic_bool RecreateTextures = false; // User has triggered an update, so we need to re-create textures.
 	inline std::atomic_bool RecreateTextureTimer = false; // If user spams recreating textures then we end up with a lot of memory usage. Limit how often we update textures.

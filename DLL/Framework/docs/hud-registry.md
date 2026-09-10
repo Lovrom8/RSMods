@@ -147,9 +147,9 @@ overlay:
   inside `DisplayMixer`; it is now `VolumeControl::CurrentVolume(channel)`, called on MainThread where the
   other volume ops live. The mod no longer touches Wwise directly.
 
-The result: `GameOverlay` is back to being purely the DX9 render backend (device, font cache,
-`DX9DrawText`, `WindowSize`, and `DrawModHud`), and all mods are self-contained. All bespoke `Display*`
-functions have been retired, making `DrawModHud` the single overlay draw path in the entire codebase.
+The result: `GameOverlay` is back to being purely the DX9 render backend for `Framework::Hud()`
+that encapsulates font caching and text layout. All bespoke `Display*` functions have been retired,
+making `GameOverlay::RenderOverlay` the single overlay draw path in the entire codebase.
 
 ## Completed ports & consumers
 
