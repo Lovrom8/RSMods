@@ -1,39 +1,18 @@
 #pragma once
-#include <gdiplus.h>
 
 #include "D3DHelper.hpp"
-
-// #pragma intrinsic(_ReturnAddress) Not actually declared
-#pragma comment (lib, "gdiplus.lib")
-
-struct RSColor;
-typedef std::map<std::string, RSColor> ColorMap;
-typedef std::vector<RSColor> ColorList;
+#include "../RSColor.h"
 
 namespace D3D {
-	enum TextureType {
-		Random = 0,
-		Random_Solid = 1,
-		Rainbow = 2,
-		Strings = 3,
-		Notes = 4,
-		Noteway = 5,
-		Gutter = 6,
-		FretNums = 7,
-	};
-
-	ColorMap GetCustomColors(int strIdx, bool CB);
-	void SetCustomColors();
+	void ReleaseTexture(IDirect3DTexture9** ppTexture);
 	HRESULT GenerateSolidTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppD3Dtex, DWORD colour32);
-	void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, ColorList colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16);
-	void GenerateTextures(IDirect3DDevice9* pDevice, TextureType type);
+	void GenerateGradientTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const ColorList& colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16);
+	inline void GenerateTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const ColorList& colorSet, UINT in_width = 256, UINT in_height = 128, int in_lineHeight = 8, int howManyLines = 16) {
+		GenerateGradientTexture(pDevice, ppTexture, colorSet, in_width, in_height, in_lineHeight, howManyLines);
+	}
 	void LoadTextures(IDirect3DDevice9* pDevice);
 	bool CRCForTexture(LPDIRECT3DTEXTURE9 texture, IDirect3DDevice9* pDevice, DWORD& o_crc);
 };
-
-inline Gdiplus::GdiplusStartupInput inp;
-inline Gdiplus::GdiplusStartupOutput outp;
-inline ULONG_PTR token_;
 
 inline static std::random_device rd;
 inline static std::mt19937 rng(rd());
@@ -45,32 +24,12 @@ inline unsigned long crcNotewayFretNumbers = 0x00090000, crcNoteLanes = 0x005a00
 inline unsigned long crcSkylinePurple = 0x65b846aa, crcSkylineOrange = 0xbad9e064, crcSkylineBackground = 0xc605fbd2, crcSkylineShadow = 0xff1c61ff;
 inline unsigned long crcHeadstock0 = 0x008d5439, crcHeadstock1 = 0x000d4439, crcHeadstock2 = 0x00000000, crcHeadstock3 = 0xa55470f6, crcHeadstock4 = 0x008f4039;
 inline unsigned long crcLyrics = 0x00000000;
-inline unsigned long crcChordPanelFHM1 = 0x4a79e046, crcChordPanelFHM2 = 0x1540d75c, crcChordPanelFHM3 = 0xfaa66ca;
 
-inline float rainbowSpeed = 2.f;
-inline const int randomTextureCount = 10;
-inline LPDIRECT3DTEXTURE9 Red, Green, Blue, Yellow;
-inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture, pCurrentChordPanelTexture;
-inline LPDIRECT3DTEXTURE9 gradientTextureNormal, gradientTextureSeven, nonexistentTexture, additiveNoteTexture, customStringColorTexture, customNoteColorTexture, twitchUserDefinedTexture, notewayTexture, gutterTexture, fretNumTexture;
-inline LPDIRECT3DTEXTURE9 customHeadstockTexture;
-inline LPDIRECT3DTEXTURE9 customGreenScreenWall_Stage0, customGreenScreenWall_Stage1, customGreenScreenWall_Stage2, customGreenScreenWall_Stage3, customGreenScreenWall_Stage4, customGreenScreenWall_Stage5, customGreenScreenWall_Stage6;
-inline LPDIRECT3DTEXTURE9 customChordPanelFHMTexture;
-inline LPDIRECT3DBASETEXTURE9 pBaseChordPanelTexture;
-inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
-inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
-inline ColorList randomTextureColors;
+inline LPDIRECT3DTEXTURE9 pCurrTexture, pCurrRainbowTexture, pCurrNotewayTexture;
+inline LPDIRECT3DTEXTURE9 nonexistentTexture;
 
-inline int selectedIdx = 0, counter = 0, currentRandomTexture = 0;
 inline unsigned int currIdx = 0;
 inline INT currStride, currNumVertices, currPrimCount, currStartIndex, currStartRegister, currPrimType, currDeclType, currVectorCount, currNumElements;
-inline bool cbEnabled, generateTexture = false;
-inline const char* comboStringsItems[] = { "0", "1", "2", "3", "4", "5" };
-inline static int selectedString = 0, selectedDevice = 0;
-inline static int strR, strG, strB;
-
-inline int StringChangeInterval = 50; // In ms
-inline bool RandomTexturesEnabled = false;
-inline int currentRandTexture = 0;
 
 inline float realSongSpeed;
 
