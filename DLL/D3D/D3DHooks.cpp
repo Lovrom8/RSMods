@@ -2,12 +2,6 @@
 #include "D3DHooks.hpp"
 #include "../Framework/Framework.hpp"
 #include "../D3DOverlay.hpp"
-#include "../Mods/CustomHighwayColorsMod.hpp"
-#include "../Mods/ExtendedRangeMod.hpp"
-#include "../Mods/TwitchMod.hpp"
-
-using Settings::NoteColorMode;
-namespace Setting = Settings::Setting;
 using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
@@ -129,14 +123,6 @@ HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirec
 /// <param name="i_Stride"> - Stride of the component, in bytes.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT StreamNumber, IDirect3DVertexBuffer9* pStreamData, UINT OffsetInBytes, UINT i_Stride) {
-	D3DVERTEXBUFFER_DESC desc;
-
-	// Remove Line Markers mod.
-	if (i_Stride == 32 && NumElements == 8 && VectorCount == 4 && decl->Type == 2) { 
-		pStreamData->GetDesc(&desc);
-		vertexBufferSize = desc.Size;
-	}
-
 	// Call original SetStreamSource.
 	return oSetStreamSource(pDevice, StreamNumber, pStreamData, OffsetInBytes, i_Stride);
 }
@@ -182,7 +168,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		Stream_Data->Release();
 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
-	if (Settings::ReturnSettingValue(Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
+	if (Settings::ReturnSettingValue(Settings::Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem
 		static std::atomic_bool reloadQueued = false;
 		if (!reloadQueued.exchange(true)) {
 			Framework::Registry().EnqueueSettingsUpdate([] {
@@ -283,11 +269,6 @@ void D3DHooks::CheckRecreateTextures(IDirect3DDevice9* pDevice) {
 	if (!pDevice) return;
 
 	if (RecreateTextures.exchange(false)) {
-		ExtendedRangeMod::RegenerateTextures(pDevice);
-		CustomHighwayColorsMod::RegenerateTextures(pDevice);
-		TwitchMod::RegenerateTextures(pDevice);
-	}
-	else if (TwitchMod::regenerateUserDefinedTexture.exchange(false)) {
-		TwitchMod::RegenerateUserDefinedTexture(pDevice);
+		Framework::Draw().RegenerateAllTextures(pDevice);
 	}
 }

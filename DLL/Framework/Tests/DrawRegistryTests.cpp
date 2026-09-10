@@ -193,6 +193,47 @@ int main() {
 		Check("StageCRC returns nullopt for non-existent texture", !crc2_first.has_value());
 	}
 
+	// 7. Texture regeneration fan-out and lifecycle cleanup.
+	{
+		DrawRegistry reg;
+		int modARegenCount = 0;
+		int modBRegenCount = 0;
+		IDirect3DDevice9* passedDevice = nullptr;
+
+		reg.RegisterTextureRegen(&modA, [&](IDirect3DDevice9* dev) {
+			++modARegenCount;
+			passedDevice = dev;
+		});
+
+		reg.RegisterTextureRegen(&modB, [&](IDirect3DDevice9*) {
+			++modBRegenCount;
+		});
+
+		// Fake device pointer for test
+		IDirect3DDevice9* dummyDevice = reinterpret_cast<IDirect3DDevice9*>(static_cast<std::uintptr_t>(0xDEADBEEF));
+
+		// Null device is a no-op
+		reg.RegenerateAllTextures(nullptr);
+		Check("null device does not invoke callbacks", modARegenCount == 0 && modBRegenCount == 0);
+
+		// Non-null device runs all registered callbacks
+		reg.RegenerateAllTextures(dummyDevice);
+		Check("RegenerateAllTextures invokes registered callbacks", modARegenCount == 1 && modBRegenCount == 1);
+		Check("passed device pointer matches", passedDevice == dummyDevice);
+
+		// Re-registering replaces callback rather than duplicating
+		reg.RegisterTextureRegen(&modA, [&](IDirect3DDevice9*) {
+			modARegenCount += 10;
+		});
+		reg.RegenerateAllTextures(dummyDevice);
+		Check("re-registration replaces callback without duplication", modARegenCount == 11 && modBRegenCount == 2);
+
+		// RemoveMod unregisters texture regen callbacks for that mod
+		reg.RemoveMod(&modA);
+		reg.RegenerateAllTextures(dummyDevice);
+		Check("RemoveMod unregisters texture regen callbacks for owner", modARegenCount == 11 && modBRegenCount == 3);
+	}
+
 	std::cout << (g_failures == 0 ? "ALL DRAWREGISTRY TESTS PASSED\n" : "DRAWREGISTRY TESTS FAILED\n");
 	return g_failures == 0 ? 0 : 1;
 }

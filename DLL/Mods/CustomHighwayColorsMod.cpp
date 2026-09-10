@@ -83,6 +83,8 @@ void CustomHighwayColorsMod::OnInitialize(Framework::ModContext& c) {
 		}
 		return { Framework::DrawOutcome::Pass };
 	});
+
+	c.Draw().RegisterTextureRegen(&CustomHighwayColorsMod::RegenerateTextures);
 }
 
 void CustomHighwayColorsMod::OnEnabled(Framework::ModContext&) {

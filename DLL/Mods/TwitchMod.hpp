@@ -13,6 +13,7 @@ public:
 
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnSongTick(Framework::ModContext& c) override;
+	void OnDisabled(Framework::ModContext& c) override;
 	void OnSettingsChanged(Framework::ModContext& c) override;
 	void OnShutdown(Framework::ModContext& c) override;
 
@@ -28,7 +29,6 @@ public:
 	static inline std::vector<LPDIRECT3DTEXTURE9> randomTextures = std::vector<LPDIRECT3DTEXTURE9>(randomTextureCount, nullptr);
 	static inline ColorList randomTextureColors = ColorList(randomTextureCount);
 	static inline int currentRandomTexture = 0;
-	static inline std::atomic<bool> regenerateUserDefinedTexture = false;
 
 private:
 	static inline std::atomic<bool> s_removeNotes = false;

@@ -26,7 +26,6 @@ namespace D3DHooks {
 
 	inline LPDIRECT3DVERTEXBUFFER9 Stream_Data;
 	inline UINT Offset = 0;
-	inline UINT vertexBufferSize;
 
 	inline bool debug = true;
 
@@ -44,12 +43,6 @@ namespace D3DHooks {
 	HRESULT APIENTRY Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters);
 	HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount);
 	HRESULT APIENTRY Hook_EndScene(IDirect3DDevice9* pDevice);
-
-	// Mod Settings
-	inline int EnumSliderVal = 10000; // Sleep every X ms for enumeration (1000 ms = 1s)
-	inline bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
-	inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
-	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
 
 	inline std::atomic_bool RecreateTextures = true; // Initialized to true so textures generate on frame 1. Set to true whenever settings update.
 

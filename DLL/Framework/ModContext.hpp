@@ -70,6 +70,10 @@ namespace Framework {
 		void Register(std::string id, int priority, DrawPath path, DrawInterceptor fn) const {
 			draw.Register(mod, std::move(id), priority, path, std::move(fn));
 		}
+
+		void RegisterTextureRegen(TextureRegenCallback fn) const {
+			draw.RegisterTextureRegen(mod, std::move(fn));
+		}
 	};
 
 	// Internal per-hook context

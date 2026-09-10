@@ -230,75 +230,102 @@ register as `DrawPath::Both` so DIP and DP cannot drift.
 Migrate one tier at a time. After each tier, delete the corresponding flags from
 `D3DHooks.hpp` and confirm a frame-time and visual parity check before the next.
 
-### Tier A — PoC: pure mesh-signature `Hide` (no CRC, no ordering deps)
-`Fretless`, `RemoveInlays`, `RemoveLaneMarkers`, `GreenScreenWall`, `RemoveLyrics`
-(`D3DHooks.cpp` ~lines 530-544, plus the greenscreen block ~531). Each interceptor:
-`IsExtraRemoved(list, ctx.thicc)` (+ `ctx.inSong` where the original required it) →
-`Hide`, else `Pass`. **This tier validates the snapshot + walk + frame time before anything
-subtle.** Get a frame-time number here.
+### Tier A — PoC: pure mesh-signature `Hide` [COMPLETED]
+`Fretless`, `RemoveInlays`, `RemoveLaneMarkers`, `GreenScreenWall`, `RemoveLyrics`.
+Migrated to DrawRegistry interceptors returning `DrawOutcome::Hide` or `Pass`.
+Legacy blocks in `Hook_DIP` deleted.
 
-### Tier B — CRC-based single-texture ops
-`RemoveFingerprints`, `Skyline` removal, `CustomHighwayColors` (stage-1 `ReplaceTexture` on
-CRC match), then `Headstock` removal. Headstock carries cache state
-(`resetHeadstockCache`, `headstockTexturePointers`, `RemoveHeadstockInThisMenu`) and
-`UpdateHeadstockCacheForMenu` — move all of it into the owning mod. All CRC reads go through
-`ctx.StageCRC`.
+### Tier B — CRC-based single-texture ops [COMPLETED]
+`RemoveFingerprints`, `RemoveSkyline`, `CustomHighwayColors` (stage-1 `ReplaceTexture`),
+and `RemoveHeadstock`. State moved into owning mods. All CRC reads go through `ctx.StageCRC`.
 
-### Tier C — ordering-sensitive note cluster (migrate as ONE unit)
-`ExtendedRange`/`CustomColors`, `RainbowNotes` (its "above ER" and "below ER" halves become
-two interceptors at two priorities), Twitch `RemoveNotes` / `TransparentNotes` /
-`SolidNotes`. These share mesh classification and the `crcStemsAccents` /
-`crcBendSlideIndicators` CRCs — now computed once via `ctx.StageCRC`. Encode the existing
-"NEEDS to be above/below Extended Range" comments as explicit priorities. Also migrate the
-`Hook_DP` note-tail duplicates here via `DrawPath::Both`.
+### Tier C — ordering-sensitive note cluster [COMPLETED]
+`RainbowNotes` (stems at priority 10, heads/tails at 40), `ExtendedRange` (priority 20),
+Twitch note mods (`RemoveNotes`, `TransparentNotes`, `SolidNotes` at priority 30).
+`Hook_DP` note tails migrated via `DrawPath::Both`. All legacy note blocks deleted from `Hook_DIP` and `Hook_DP`.
 
-### Tier D — non-draw effects riding the DIP hook (move out entirely)
-Twitch `FYourFC` (zeroes note streak) and `DrunkMode` (writes a float via `MemUtil`) are not
-rendering. Move them to the Twitch mod's `OnSongTick`. They must not become draw
-interceptors.
+### Tier D — non-draw effects riding the DIP hook [COMPLETED]
+Twitch `FYourFC` (note streak zeroing) and `DrunkMode` (camera float write) moved out of DIP
+into `TwitchMod::RunPerFrameEffects()`, called at the per-frame render boundary in `Hook_EndScene`
+gated on `GameState::IsInSong()`.
 
-### State to retire from `D3DHooks.hpp` as tiers land
+### State retired from `D3DHooks.hpp` [COMPLETED]
 `RainbowNotes`, `PrideMode`, `RemoveLyrics`, `GreenScreenWall`, `toggleSkyline`,
 `SkylineOff`, `DrawSkylineInMenu`, `RemoveHeadstockInThisMenu`, `resetHeadstockCache`,
 `twitchUserDefinedTexture`, `randomTextures`, `randomTextureColors`, `currentRandomTexture`,
-headstock caches. Each moves into its owning mod.
+`ToggleOffLoftWhenDoneWithMod`, `DiscoModeEnabled`, `DiscoModeInitialSetting`,
+`EnumSliderVal`, `vertexBufferSize`, headstock caches.
 
 ---
 
-## 7. Fold In the Generation Switchboard
+## 7. Fold In the Generation Switchboard [COMPLETED]
 
-Kill the twin hardcoded lists in `CheckRecreateTextures` and `RegenerateTwitchNoteColors`
-(`D3DHooks.cpp` ~694-715). Add a texture-regen fan-out to the framework (either a small
-sibling `TextureRegen` list or a regen callback registered alongside the draw interceptor):
-
-- `ExtendedRangeMod` / `CustomHighwayColorsMod` already expose `RegenerateTextures` —
-  register those.
-- Twitch registers `GenerateRandomTextures` and the user-defined-color regen currently in
-  `RegenerateTwitchNoteColors`.
-
-`CheckRecreateTextures` then walks registered callbacks under the existing
-`RecreateTextures.exchange(false)` frame-boundary gate — no named mods. Keep the
-frame-boundary timing (EndScene) exactly as `texture-utilities.md` Section 3 describes.
+The hardcoded mod lists in `CheckRecreateTextures` were replaced by generic texture-regeneration
+fan-out in `DrawRegistry`:
+- `DrawRegistry::RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn)`
+- `DrawRegistry::RegenerateAllTextures(IDirect3DDevice9* pDevice)`
+- `ExtendedRangeMod`, `CustomHighwayColorsMod`, and `TwitchMod` self-register on `OnInitialize`.
+- `CheckRecreateTextures` delegates solely to `Framework::Draw().RegenerateAllTextures(pDevice)`.
 
 ---
 
 ## 8. What Follows
 
-1. **`D3DHooks` becomes fully mod-agnostic** — the mirror of `D3D.cpp`. `.hpp` shrinks to
-   hook plumbing (orig fn pointers, device-caps helpers, window handle); `.cpp` holds only
-   the mechanical hooks (`SetVertexShader` capture, `SetStreamSource`, `Reset`, EndScene)
-   plus the two registry walks.
-2. **Tests** — add `Framework/Tests/DrawRegistryTests.cpp` beside the existing
-   Hud/Menu/StateMachine/CommandRouter tests: priority ordering, snapshot rebuild on
-   enable/disable/fault, terminal vs non-terminal outcomes, and that `StageCRC` computes
-   once per stage per draw. Make `DrawContext`'s CRC source injectable (a functor defaulting
-   to `D3D::CRCForTexture`) so tests run with no device.
-3. **Docs** — keep this file current; add a short "adding a rendering mod" walkthrough once
-   the API is real, in the style of `texture-utilities.md` Section 4.
-4. **Stretch: named mesh tags** — promote the raw CRC constants (`crcStemsAccents`,
-   `crcSkyline*`, ...) into a classification service so interceptors match on
-   `"note-stem"` / `"skyline-bg"` instead of magic numbers, moving the constant table out of
-   the global namespace.
+1. **`D3DHooks` fully mod-agnostic [COMPLETED]** — `D3DHooks.cpp` contains zero `#include "../Mods/..."`
+   and zero mod references. `Hook_DIP` and `Hook_DP` contain purely the registry walks and fallbacks.
+2. **Tests [COMPLETED]** — `Framework/Tests/DrawRegistryTests.cpp` covers priority ordering,
+   snapshot rebuild, RemoveMod, path routing, terminal short-circuiting, lazy StageCRC caching,
+   and texture regeneration fan-out and unregistration.
+3. **Adding a Rendering Mod Tutorial**:
+   See below.
+4. **Stretch: named mesh tags** — promote raw CRC constants into a classification service.
+
+### Adding a Rendering Mod Walkthrough
+
+To create a mod that modifies or hides rendering:
+
+1. **Declare the Mod**:
+   Inherit from `Framework::IMod` and implement `OnInitialize(ModContext& c)`:
+   ```cpp
+   class MyRenderMod : public Framework::IMod {
+   public:
+       MOD_ID(MyRenderMod)
+
+       bool IsEnabled(const Framework::ModContext& c) const override {
+           return c.IsOn("MyModEnabled");
+       }
+
+       void OnInitialize(Framework::ModContext& c) override {
+           // Register a draw interceptor:
+           c.Draw().Register("MyEffect", 25, Framework::DrawPath::Indexed, [](Framework::DrawContext& ctx) -> Framework::DrawResult {
+               if (!ctx.inSong) return { Framework::DrawOutcome::Pass };
+
+               // Check mesh signature
+               if (ctx.mesh.Stride == 32 && ctx.mesh.PrimCount == 2) {
+                   // Query CRC once per stage per draw (cached automatically):
+                   auto crc = ctx.StageCRC(1);
+                   if (crc && *crc == 0x12345678) {
+                       return { Framework::DrawOutcome::ReplaceTexture, 1, s_myTexture };
+                   }
+               }
+               return { Framework::DrawOutcome::Pass };
+           });
+
+           // Register texture regeneration if your mod creates procedural textures:
+           c.Draw().RegisterTextureRegen([](IDirect3DDevice9* dev) {
+               RegenerateTextures(dev);
+           });
+       }
+   };
+   ```
+
+2. **Trigger Texture Recreation**:
+   When settings change, call `D3DHooks::RecreateTextures = true;`. At the next frame boundary in `Hook_EndScene`,
+   `RegenerateAllTextures(pDevice)` will safely call your registered regeneration method.
+
+3. **Lifecycle**:
+   When your mod is disabled, faulted, or unloaded, `DrawRegistry::RemoveMod` automatically drops
+   your draw interceptors and texture regeneration callbacks.
 
 ---
 

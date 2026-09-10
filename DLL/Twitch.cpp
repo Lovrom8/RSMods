@@ -48,7 +48,6 @@ namespace Twitch {
 					Framework::Registry().EnqueueSettingsUpdate([currMsg, type] {
 						Settings::ParseSolidColorsMessage(currMsg);
 						Settings::ParseTwitchToggle(currMsg, type);
-						TwitchMod::regenerateUserDefinedTexture = true;
 						D3DHooks::RecreateTextures = true;
 					});
 					return true;

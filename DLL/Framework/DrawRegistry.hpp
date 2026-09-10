@@ -67,6 +67,9 @@ namespace Framework {
 	// Render-thread interceptor callback. MUST NOT query Settings by string.
 	using DrawInterceptor = std::function<DrawResult(DrawContext&)>;
 
+	// Texture regeneration callback called at frame boundaries (EndScene).
+	using TextureRegenCallback = std::function<void(IDirect3DDevice9*)>;
+
 	struct ActiveEntry {
 		int priority = 0;
 		std::string_view ownerId;
@@ -86,7 +89,10 @@ namespace Framework {
 		void Register(const IMod* owner, std::string id, int priority, DrawPath path,
 			DrawInterceptor fn);
 
-		// MainThread: drop every interceptor owned by this mod.
+		// MainThread: register a texture regeneration callback owned by `owner`.
+		void RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn);
+
+		// MainThread: drop every interceptor and regen callback owned by this mod.
 		void RemoveMod(const IMod* owner);
 
 		// MainThread: rebuild the active snapshot from currently-enabled owners.
@@ -94,6 +100,9 @@ namespace Framework {
 
 		// Render thread: lock-free load of the immutable, priority-sorted active list for a path.
 		[[nodiscard]] std::shared_ptr<const std::vector<ActiveEntry>> ActiveSnapshot(DrawPath path) const;
+
+		// Render thread (EndScene): execute all registered texture regeneration callbacks.
+		void RegenerateAllTextures(IDirect3DDevice9* pDevice);
 
 	private:
 		struct Impl;

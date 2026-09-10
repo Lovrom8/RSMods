@@ -79,6 +79,8 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 
 		return { DrawOutcome::Pass };
 	});
+
+	c.Draw().RegisterTextureRegen(&ExtendedRangeMod::RegenerateTextures);
 }
 
 void ExtendedRangeMod::OnEnabled(ModContext&) {
@@ -88,8 +90,8 @@ void ExtendedRangeMod::OnEnabled(ModContext&) {
 
 void ExtendedRangeMod::OnDisabled(ModContext&) {
 	s_active = false;
-	s_noteTexture.store(nullptr, std::memory_order_relaxed);
-	ReleaseTextures();
+	s_noteTexture.store(nullptr, std::memory_order_release);
+	D3DHooks::RecreateTextures = true;
 }
 
 void ExtendedRangeMod::OnShutdown(ModContext&) {

@@ -55,7 +55,6 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			TwitchMod::regenerateUserDefinedTexture = true;
 			D3DHooks::RecreateTextures = true;
 		});
 
@@ -197,7 +196,6 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			TwitchMod::regenerateUserDefinedTexture = true;
 			D3DHooks::RecreateTextures = true;
 		});
 

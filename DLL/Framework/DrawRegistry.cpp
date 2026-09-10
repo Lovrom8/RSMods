@@ -53,6 +53,12 @@ namespace Framework {
 		mutable std::mutex mutex;
 		std::vector<RegisteredInterceptor> interceptors;
 
+		struct RegisteredRegen {
+			const IMod* owner = nullptr;
+			TextureRegenCallback fn;
+		};
+		std::vector<RegisteredRegen> regenCallbacks;
+
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activeIndexed;
 		std::atomic<std::shared_ptr<const std::vector<ActiveEntry>>> activePrimitive;
 
@@ -66,8 +72,7 @@ namespace Framework {
 	DrawRegistry::DrawRegistry() : impl(std::make_unique<Impl>()) {}
 	DrawRegistry::~DrawRegistry() = default;
 
-	void DrawRegistry::Register(const IMod* owner, std::string id, int priority, DrawPath path,
-		DrawInterceptor fn) {
+	void DrawRegistry::Register(const IMod* owner, std::string id, int priority, DrawPath path, DrawInterceptor fn) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
 
 		auto it = std::find_if(impl->interceptors.begin(), impl->interceptors.end(),
@@ -85,9 +90,25 @@ namespace Framework {
 		}
 	}
 
+	void DrawRegistry::RegisterTextureRegen(const IMod* owner, TextureRegenCallback fn) {
+		std::lock_guard<std::mutex> lock(impl->mutex);
+
+		auto it = std::find_if(impl->regenCallbacks.begin(), impl->regenCallbacks.end(),
+			[owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
+		
+		if (it == impl->regenCallbacks.end()) {
+			impl->regenCallbacks.push_back({ owner, std::move(fn) });
+		}
+		else {
+			it->fn = std::move(fn);
+		}
+	}
+
 	void DrawRegistry::RemoveMod(const IMod* owner) {
 		std::lock_guard<std::mutex> lock(impl->mutex);
+		
 		std::erase_if(impl->interceptors, [owner](const RegisteredInterceptor& r) { return r.owner == owner; });
+		std::erase_if(impl->regenCallbacks, [owner](const Impl::RegisteredRegen& r) { return r.owner == owner; });
 	}
 
 	void DrawRegistry::RebuildActive(std::function<bool(const IMod*)> isOwnerEnabled) {
@@ -130,6 +151,23 @@ namespace Framework {
 			return impl->activePrimitive.load(std::memory_order_acquire);
 		}
 		return impl->activeIndexed.load(std::memory_order_acquire);
+	}
+
+	void DrawRegistry::RegenerateAllTextures(IDirect3DDevice9* pDevice) {
+		if (!pDevice) return;
+
+		std::vector<TextureRegenCallback> callbacks;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			callbacks.reserve(impl->regenCallbacks.size());
+			for (const auto& r : impl->regenCallbacks) {
+				if (r.fn) callbacks.push_back(r.fn);
+			}
+		}
+
+		for (const auto& cb : callbacks) {
+			cb(pDevice);
+		}
 	}
 
 	DrawRegistry& Draw() {

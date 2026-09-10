@@ -1,6 +1,10 @@
 #include "../stdafx.h"
 #include "Loft.hpp"
 
+namespace {
+	bool s_toggleOffLoftWhenDoneWithMod = false;
+}
+
 namespace Loft {
 	/// <summary>
 	/// Turn the background / "map" on or off.
@@ -29,7 +33,7 @@ namespace Loft {
 		if (enable) {
 			// Turn on loft so the effects of the mod are actually shown.
 			if (*(float*)noLoft == 1) {
-				D3DHooks::ToggleOffLoftWhenDoneWithMod = true;
+				s_toggleOffLoftWhenDoneWithMod = true;
 				ToggleLoft();
 			}
 		}
@@ -37,9 +41,9 @@ namespace Loft {
 			MemUtil::SetStaticValue(Offsets::ptr_drunkShit.Get(), 0.3333333333f, sizeof(float));
 
 			// User originally had the loft off, but then we turned on this mod, so turn the loft back off.
-			if (D3DHooks::ToggleOffLoftWhenDoneWithMod) {
+			if (s_toggleOffLoftWhenDoneWithMod) {
 				ToggleLoft();
-				D3DHooks::ToggleOffLoftWhenDoneWithMod = false;
+				s_toggleOffLoftWhenDoneWithMod = false;
 			}
 		}
 	}
