@@ -1,6 +1,7 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "SolidNotesEffect.hpp"
 #include "../../Framework/Framework.hpp"
+#include "../../D3D/D3DHooks.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -107,16 +108,20 @@ namespace CrowdControl::Effects {
 
 		LOG_INFO("SolidNotesRandomEffect - Colors Saved" << std::endl);
 		
-		static std::uniform_real_distribution<> urd(0, randomTextureCount - 1);
-		currentRandomTexture = urd(rng);
+		static std::uniform_real_distribution<> urd(0, D3DHooks::randomTextureCount - 1);
+		D3DHooks::currentRandomTexture = urd(rng);
 
-		LOG_INFO("SolidNotesRandomEffect - Picked color " << currentRandomTexture << "/" << randomTextureCount << std::endl);
+		LOG_INFO("SolidNotesRandomEffect - Picked color " << D3DHooks::currentRandomTexture << "/" << D3DHooks::randomTextureCount << std::endl);
 
 		// Set random solid color
 		ERMode::customSolidColor.clear();
-		ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
+		if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextureColors.size()) {
+			ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, D3DHooks::randomTextureColors[D3DHooks::currentRandomTexture]);
+		}
 
-		twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+		if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextures.size()) {
+			D3DHooks::twitchUserDefinedTexture = D3DHooks::randomTextures[D3DHooks::currentRandomTexture];
+		}
 
 		Framework::Registry().EnqueueSettingsUpdate([] {
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");

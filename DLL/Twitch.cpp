@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Twitch.hpp"
 #include "Framework/Framework.hpp"
+#include "D3D/D3DHooks.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -31,12 +32,16 @@ namespace Twitch {
 			if (type == "enable") {
 				if (Contains(currMsg, "Random")) {
 					static std::uniform_real_distribution<> urd(0, 9);
-					currentRandomTexture = (int)urd(rng);
+					D3DHooks::currentRandomTexture = (int)urd(rng);
 
 					ERMode::customSolidColor.clear();
-					ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
+					if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextureColors.size()) {
+						ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, D3DHooks::randomTextureColors[D3DHooks::currentRandomTexture]);
+					}
 
-					twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+					if (D3DHooks::currentRandomTexture >= 0 && D3DHooks::currentRandomTexture < (int)D3DHooks::randomTextures.size()) {
+						D3DHooks::twitchUserDefinedTexture = D3DHooks::randomTextures[D3DHooks::currentRandomTexture];
+					}
 				}
 				else {
 					Framework::Registry().EnqueueSettingsUpdate([currMsg, type] {
