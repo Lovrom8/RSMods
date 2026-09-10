@@ -112,6 +112,16 @@ The framework manages two decoupled UI interaction surfaces for mods:
 > For historical context on a retired framework-owned generic render-hook callback subsystem, see
 > [`docs/render-hooks.md`](docs/render-hooks.md).
 
+The one contributor-facing seam still spread across core files is **settings**: adding a setting today
+means editing `Settings.hpp`, `Settings.cpp`, and the GUI. The plan to close it — a mod-owned
+declarative `SettingDecl` schema the framework generates INI defaults and GUI controls from — is in
+[`docs/settings-schema.md`](docs/settings-schema.md) (planned, best landed during the Avalonia migration).
+
+How third-party mods should be allowed to *ship* — out-of-tree repos vs. runtime binary loading vs. the
+trust boundary, and why review becomes a badge rather than a merge gate — is worked through in
+[`docs/plugin-distribution.md`](docs/plugin-distribution.md). Short version: the internal C++ API stays
+unfrozen; make the source surface zero-core-edit first, freeze a C ABI only once it stops moving.
+
 ## Main-thread inbox
 
 `MainThreadInbox` (`Inbox()`) is the single main-thread work queue. Foreign threads post to it -

@@ -8,6 +8,7 @@
 #include "HudRegistry.hpp"
 #include "MenuRegistry.hpp"
 #include "DrawRegistry.hpp"
+#include "SettingsSchema.hpp"
 #include "ModContext.hpp"
 #include "ConflictResolver.hpp"
 #include "ModRegistry.hpp"

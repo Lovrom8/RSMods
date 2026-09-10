@@ -67,6 +67,12 @@
     <Filter Include="Main Headers\Structs">
       <UniqueIdentifier>{c933318d-bc01-4c38-adc2-0ccdeb45535d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Headers">
+      <UniqueIdentifier>{fa6ed996-22c5-4303-a764-fa6205ae892a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Headers">
+      <UniqueIdentifier>{f05ece22-f2cc-4201-a7d4-73b135062403}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -423,6 +429,9 @@
     <ClCompile Include="Mods\TwitchMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\SettingsSchema.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MemUtil.hpp">
@@ -496,15 +505,6 @@
     </ClInclude>
     <ClInclude Include="Lib\Detours\detours.h">
       <Filter>Main Headers\Detours</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3DHelper.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3DHooks.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3D.hpp">
-      <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
@@ -863,14 +863,68 @@
     <ClInclude Include="ModManager.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
-    <ClInclude Include="D3D\GdiplusManager.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
     <ClInclude Include="NoteData.h">
       <Filter>Main Headers\Structs</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\SettingsSchema.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandTypes.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandRouter.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ConflictResolver.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DrawRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Framework.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\HudRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\IMod.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MainThreadInbox.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ModContext.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MenuRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ModRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\ResourceLedger.hpp">
-      <Filter>Framework</Filter>
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\GamePhase.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3D.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHelper.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHooks.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DOverlay.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D\GdiplusManager.hpp">
+      <Filter>D3D\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

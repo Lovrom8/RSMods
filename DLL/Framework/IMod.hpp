@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "GamePhase.hpp"
+#include "SettingsSchema.hpp"
 
 // Keeps a mod's internal framework identity equal to its concrete class name.
 // The assertion catches copying the macro from another class without updating its argument.
@@ -28,6 +29,9 @@ namespace Framework {
 
 		// Must be cheap and side-effect free.
 		virtual bool IsEnabled(const ModContext&) const { return true; }
+
+		// Declarative configuration schema owned by this mod.
+		virtual SettingDefs Settings() const { return {}; }
 
 		// Losing any claimed resource suppresses the mod.
 		virtual std::vector<std::string_view> ClaimsExclusive() const { return {}; }

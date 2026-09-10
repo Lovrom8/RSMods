@@ -205,8 +205,8 @@ unsigned WINAPI MainThread() {
 
 	Keybindings::InitializeCommands();
 	ModManager::InitializeConfiguration();
-	ModManager::InitializeMods(debug);
 	Framework::Registry().InstantiatePending();
+	ModManager::InitializeMods(debug);
 	ModManager::ApplyStartupMods();
 	Framework::Registry().DispatchInitialize();
 

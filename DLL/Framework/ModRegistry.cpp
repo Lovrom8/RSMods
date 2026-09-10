@@ -18,6 +18,7 @@
 #include "MainThreadInbox.hpp"
 #include "ModContext.hpp"
 #include "ResourceLedger.hpp"
+#include "SettingsSchema.hpp"
 
 namespace Framework {
 	PendingRegistration* g_modPendingHead = nullptr;
@@ -107,6 +108,7 @@ namespace Framework {
 			Hud().RemoveMod(record.mod.get());
 			Menus().RemoveMod(record.mod.get());
 			Draw().RemoveMod(record.mod.get());
+			SettingsSchema().RemoveMod(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -386,6 +388,13 @@ namespace Framework {
 			return;
 		}
 
+		const auto settings = mod->Settings();
+		std::string duplicateKey;
+		if (!settings.empty() && !SettingsSchema().Register(mod.get(), settings, &duplicateKey)) {
+			LOG_ERROR("[Framework] Duplicate setting key '" << duplicateKey << "' in mod '" << id << "' - registration rejected" << std::endl);
+			return;
+		}
+
 		LOG_INFO("[Framework] Registered mod: " << id << std::endl);
 		impl->records.push_back(Impl::Record{ .mod = std::move(mod) });
 		impl->resourceIndexDirty = true;
@@ -468,6 +477,7 @@ namespace Framework {
 			Hud().RemoveMod(record.mod.get());
 			Menus().RemoveMod(record.mod.get());
 			Draw().RemoveMod(record.mod.get());
+			SettingsSchema().RemoveMod(record.mod.get());
 		}
 
 		impl->records.clear();

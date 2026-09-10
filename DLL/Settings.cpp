@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Settings.hpp"
+#include "Framework/SettingsSchema.hpp"
 
 #include <mutex>
 #include <shared_mutex>
@@ -301,7 +302,6 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings[Setting::RemoveHeadstockEnabled] = reader.GetValue("Toggle Switches", "Headstock", "off");
 	modSettings[Setting::RemoveSkylineEnabled] = reader.GetValue("Toggle Switches", "Skyline", "off");
-	modSettings[Setting::GreenScreenWallEnabled] = reader.GetValue("Toggle Switches", "GreenScreenWall", "off");
 	modSettings[Setting::ForceProfileEnabled] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
 	modSettings[Setting::FretlessModeEnabled] = reader.GetValue("Toggle Switches", "Fretless", "off");
 	modSettings[Setting::RemoveInlaysEnabled] = reader.GetValue("Toggle Switches", "Inlays", "off");
@@ -345,6 +345,16 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::DisplayCurrentAccuracy] = reader.GetValue("Toggle Switches", "DisplayCurrentAccuracy", "off");
 	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
 	modSettings[Setting::RemoveFingerprints] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
+
+	// Schema-driven mod settings: populate declared INI location with declared fallback defaults
+	for (const auto& decl : Framework::SettingsSchema().GetAll()) {
+		if (decl.type == Framework::SettingType::Int) {
+			customSettings[decl.key] = reader.GetLongValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.GetIntDefault());
+		}
+		else {
+			modSettings[decl.key] = reader.GetValue(decl.ini.section.c_str(), decl.ini.name.c_str(), decl.def.c_str());
+		}
+	}
 }
 
 /// <summary>

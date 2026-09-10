@@ -91,6 +91,9 @@ namespace {
 			std::vector<std::string_view> v; for (auto& s : claimStrings) v.push_back(s); return v;
 		}
 
+		Framework::SettingDefs declaredSettings;
+		Framework::SettingDefs Settings() const override { return declaredSettings; }
+
 		void OnInitialize(Framework::ModContext& c) override {
 			Rec("OnInitialize");
 			if (!commandSetting.empty()) {
@@ -382,6 +385,33 @@ static void Test_ShutdownRevertsAndDestroysInOrder() {
 		"shutdown order: OnSongExit -> OnDisabled -> OnShutdown -> destruction");
 }
 
+static void Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize() {
+	ClearEvents();
+	ModRegistry reg;
+	auto m = std::make_unique<TestMod>("WithSettings");
+	m->declaredSettings = {
+		Framework::SettingDef::Toggle("TestToggle", "TestIni", "Test Label")
+	};
+	// Register mod (analogous to InstantiatePending / static ModRegistrar)
+	reg.Register(std::move(m));
+
+	// Before DispatchInitialize runs, SettingsSchema() must already contain the harvested setting
+	const auto* def = Framework::SettingsSchema().Find("TestToggle");
+	Expect(def != nullptr, "mod settings harvested immediately upon registration (before DispatchInitialize)");
+	if (def) {
+		Expect(def->ini.name == "TestIni", "harvested setting has correct ini.name");
+		Expect(def->ini.section == "Toggle Switches", "harvested setting has correct default section");
+	}
+
+	// DispatchInitialize runs afterwards
+	reg.DispatchInitialize();
+	Expect(Has("WithSettings:OnInitialize"), "mod initializes after settings were registered");
+
+	reg.Shutdown();
+	// After shutdown, SettingsSchema cleans up settings owned by the mod
+	Expect(Framework::SettingsSchema().Find("TestToggle") == nullptr, "schema cleaned up after mod shutdown");
+}
+
 int main() {
 	std::cout << "ModRegistry state-machine tests\n";
 
@@ -399,6 +429,7 @@ int main() {
 	Test_KeyAvailabilityTracksRegistryLifecycle();
 	Test_ConflictSuppressionGatesEffectiveCommand();
 	Test_DuplicateIdRejected();
+	Test_StartupOrderHarvestsSettingsBeforeDispatchInitialize();
 	Test_ShutdownRevertsAndDestroysInOrder();
 
 	std::cout << (g_failures == 0 ? "\nALL PASS\n" : "\nFAILURES: " + std::to_string(g_failures) + "\n");

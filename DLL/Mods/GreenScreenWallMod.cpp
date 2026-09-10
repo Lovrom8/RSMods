@@ -8,14 +8,22 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDef;
+using Framework::SettingDefs;
 namespace Setting = Settings::Setting;
 
-void GreenScreenWallMod::SetLessonWall(bool active) {
-	lessonWallActive.store(active, std::memory_order_relaxed);
+SettingDefs GreenScreenWallMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::GreenScreenWallEnabled, "GreenScreenWall", "Green Screen Wall")
+	};
 }
 
 bool GreenScreenWallMod::IsEnabled(const ModContext& c) const {
 	return true;
+}
+
+void GreenScreenWallMod::SetLessonWall(bool active) {
+	lessonWallActive.store(active, std::memory_order_relaxed);
 }
 
 void GreenScreenWallMod::OnSettingsChanged(ModContext& c) {
