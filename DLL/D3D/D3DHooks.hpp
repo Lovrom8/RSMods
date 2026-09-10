@@ -65,15 +65,19 @@ namespace D3DHooks {
 	inline bool PrideMode = false; // If true, the background will be cycle through colors.
 	inline bool RainbowNotes = false; // If true, the notes will turn rainbow along with the stems
 
-	inline std::atomic_bool RecreateTextures = false; // User has triggered an update, so we need to re-create textures.
-	inline std::atomic_bool RecreateTextureTimer = false; // If user spams recreating textures then we end up with a lot of memory usage. Limit how often we update textures.
+	inline std::atomic_bool RecreateTextures = true; // Initialized to true so textures generate on frame 1. Set to true whenever settings update.
+
+	inline const int randomTextureCount = 10;
+	inline LPDIRECT3DTEXTURE9 twitchUserDefinedTexture = nullptr;
+	inline std::vector<LPDIRECT3DTEXTURE9> randomTextures(randomTextureCount);
+	inline ColorList randomTextureColors(randomTextureCount);
+	inline int currentRandomTexture = 0;
 
 	// Dev Functions
 	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
 
-	// Misc
-	inline bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
-
+	void CheckRecreateTextures(IDirect3DDevice9* pDevice);
+	void GenerateRandomTextures(IDirect3DDevice9* pDevice);
 	void RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice);
 
 	// Refreshes the headstock texture cache based on the current/previous menu. Call once per menu tick.

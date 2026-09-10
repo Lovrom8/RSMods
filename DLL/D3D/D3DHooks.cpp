@@ -2,6 +2,8 @@
 #include "D3DHooks.hpp"
 #include "../Framework/Framework.hpp"
 #include "../D3DOverlay.hpp"
+#include "../Mods/CustomHighwayColorsMod.hpp"
+#include "../Mods/ExtendedRangeMod.hpp"
 
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
@@ -24,12 +26,12 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 
 		switch (Settings::GetModSetting(Setting::SeparateNoteColors)) {
 			case 0: // Use same color scheme on notes as we do on strings
-				pDevice->SetTexture(1, customStringColorTexture);
+				pDevice->SetTexture(1, ERMode::customStringColorTexture);
 				break;
 			case 1: // Default Colors, so don't do anything.
 				break;
 			case 2: // Use Custom Note Color Scheme
-				pDevice->SetTexture(1, customNoteColorTexture);
+				pDevice->SetTexture(1, ERMode::customNoteColorTexture);
 				break;
 			default:
 				break;
@@ -54,7 +56,7 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 	
 	// Note-tails for Rainbow Notes.
 	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0 && NOTE_TAILS)
-		pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+		pDevice->SetTexture(1, ERMode::rainbowTextures[ERMode::customNoteColorH]);
 
 	// Call the original DrawPrimitive.
 	return oDrawPrimitive(pDevice, PrimType, StartIndex, PrimCount);
@@ -200,11 +202,6 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		}
 	}
 
-	if (setAllToNoteGradientTexture) {
-		pDevice->SetTexture(currStride, gradientTextureSeven);
-		return SHOW_TEXTURE;
-	}
-
 	Mesh current(Stride, PrimCount, NumVertices);
 	ThiccMesh currentThicc(Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
@@ -302,65 +299,18 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 				// Noteway Texture
 				if (crc == crcNoteLanes && Settings::ReturnNotewayColor("CustomHighwayNumbered") != (std::string)"" && Settings::ReturnNotewayColor("CustomHighwayUnNumbered") != (std::string)"")
-					pDevice->SetTexture(1, notewayTexture);
+					pDevice->SetTexture(1, CustomHighwayColorsMod::GetNotewayTexture());
 
 				// Fret Number texture
 				else if (crc == crcNotewayFretNumbers && Settings::ReturnNotewayColor("CustomFretNubmers") != (std::string)"")
-					pDevice->SetTexture(1, fretNumTexture);
+					pDevice->SetTexture(1, CustomHighwayColorsMod::GetFretNumTexture());
 
 				// Gutter texture
 				else if (crc == crcNotewayGutters && Settings::ReturnNotewayColor("CustomHighwayGutter") != (std::string)"")
-					pDevice->SetTexture(1, gutterTexture);
+					pDevice->SetTexture(1, CustomHighwayColorsMod::GetGutterTexture());
 			}
 		}
 	}
-
-	//if (IsExtraRemoved(chordPanel, currentThicc))
-	//{
-	//	pDevice->GetTexture(0, &pBaseChordPanelTexture);
-	//	pCurrentChordPanelTexture = (IDirect3DTexture9*)pBaseChordPanelTexture;
-
-	//	if (pBaseChordPanelTexture)
-	//	{
-	//		if (D3D::CRCForTexture(pCurrentChordPanelTexture, pDevice, crc))
-	//		{
-	//			if (crc == crcChordPanelFHM1 || crc == crcChordPanelFHM2 || crc == crcChordPanelFHM3)
-	//			{
-	//				pDevice->SetTexture(0, customChordPanelFHMTexture);
-	//				return SHOW_TEXTURE;
-	//			}
-	//			//else
-	//			//{
-	//			//	_LOG("Chord panel texture CRC: 0x" << std::hex << crc << std::endl);
-	//			//}
-	//		}
-	//	}
-	//}
-
-
-	// // Custom Loft Gameplay Wall / Narnia / Portal / Venue wall
-	//if (IsExtraRemoved(greenScreenWallMesh, currentThicc)) {
-	//		//// Save Loft Texture To File
-	//	//DumpTextureStages(pDevice, "greenscreenwall");
-
-	//	// Use Custom Texture (File names can be found in venues/loft01.psarc/assets/generic/env/the_loft/
-	//	// Files sent in currently require the name "stage#.png" where # is the number attached to the texture variable. Ex: customGreenScreenWall_Stage3 would need a file named "stage3.png"
-
-	//	// Background tile displays as follows:
-	//	// Top 512 of Background Tile are shown at the bottom of the screen, repeated 1-1/2 times.
-	//	// Bottom 512 of Background Tile are shown at the top of the screen, repeated 2-1/2 times.
-
-	//	// Example: What is shown - https://cdn.discordapp.com/attachments/711634485388771439/813523398587711488/unknown.png vs What is sent - https://cdn.discordapp.com/attachments/711634485388771439/813523420947152916/stage0.png
-	//	// Example: Full wall (which you will never see for more than a second or so) - https://cdn.discordapp.com/attachments/711634485388771439/813524110390460436/unknown.png
-
-	//	pDevice->SetTexture(0, customGreenScreenWall_Stage0);   // Background Tile | loft_concrete_wall_b.dds | 1024x1024 | Can be modified. Used for the background.
-	//	//pDevice->SetTexture(1, customGreenScreenWall_Stage1); // Noise | noise03.dds | 256x256 | Doesn't have any effect
-	//	//pDevice->SetTexture(2, customGreenScreenWall_Stage2); // Caustic (Indirect) | caustic_indirect01.dds | 256x256 | Doesn't have any effect
-	//	//pDevice->SetTexture(3, customGreenScreenWall_Stage3); // Narnia / Venue Fade In Mask | fade_shape.dds | 512x512 | Can be modified. If you use a single colored square, you can make an almost "movie like" flashback.
-	//	//pDevice->SetTexture(4, customGreenScreenWall_Stage4); // White square (Unknown) | 1024x1024 | Doesn't have any effect
-	//	//pDevice->SetTexture(5, customGreenScreenWall_Stage5); // Pipes and wall trim | portal_wall_ao.dds | 1024x1024 | Can be modified.
-	//	//pDevice->SetTexture(6, customGreenScreenWall_Stage6); // N Mask of Background tile | loft_concrete_wall_b_n.dds | 1024x1024 | Don't modify
-	//}
 
 	// Rainbow Notes | This part NEEDS to be above Extended Range / Custom Colors or it won't work.
 	if (ERMode::RainbowNotesEnabled && ERMode::customNoteColorH > 0) { 
@@ -382,28 +332,13 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 				// Same checksum for stems and accents, because they use the same texture. Bends and slides use the same texture.
 				if (crc == crcStemsAccents || crc == crcBendSlideIndicators)
-					pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+					pDevice->SetTexture(1, ERMode::rainbowTextures[ERMode::customNoteColorH]);
 			}
 		}
 
 		// As of right now, this requires rainbow strings to be toggled on
 		if (PrideMode && NOTE_TAILS) 
-			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
-	}
-
-	// User has updated their settings, and we need to recreate our textures
-	if (RecreateTextures && RecreateTextureTimer) {
-		// Generate textures to be called later
-		D3D::GenerateTextures(pDevice, D3D::Random_Solid);
-		D3D::GenerateTextures(pDevice, D3D::Strings);
-		D3D::GenerateTextures(pDevice, D3D::Notes);
-		D3D::GenerateTextures(pDevice, D3D::Noteway);
-		D3D::GenerateTextures(pDevice, D3D::Gutter);
-		D3D::GenerateTextures(pDevice, D3D::FretNums);
-		D3D::GenerateTextures(pDevice, D3D::Rainbow);
-
-		RecreateTextures = false;
-		RecreateTextureTimer = false;
+			pDevice->SetTexture(1, ERMode::rainbowTextures[ERMode::customNoteColorH]);
 	}
 		
 	//if (Settings::ReturnSettingValue("DiscoModeEnabled") == "on") {
@@ -457,11 +392,11 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (Settings::GetNoteColorMode() == NoteColorMode::SameAsStrings || (Settings::IsOn(Setting::SeparateNoteColors) && Settings::GetNoteColorMode() == NoteColorMode::Custom)) {
 
 			// Color notes like string colors
-			LPDIRECT3DTEXTURE9 textureToUseOnNotes = customStringColorTexture;
+			LPDIRECT3DTEXTURE9 textureToUseOnNotes = ERMode::customStringColorTexture;
 
 			// Custom colored notes
 			if (Settings::GetNoteColorMode() == NoteColorMode::Custom)
-				textureToUseOnNotes = customNoteColorTexture;
+				textureToUseOnNotes = ERMode::customNoteColorTexture;
 
 			// Change all pieces of note head's textures
 			if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc))  
@@ -711,7 +646,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 		// Rainbow Note Heads
 		if (IsToBeRemoved(sevenstring, current) || IsExtraRemoved(noteModifiers, currentThicc)) 
-			pDevice->SetTexture(1, rainbowTextures[ERMode::customNoteColorH]);
+			pDevice->SetTexture(1, ERMode::rainbowTextures[ERMode::customNoteColorH]);
 
 		RainbowNotes = false;
 	}
@@ -734,16 +669,47 @@ void D3DHooks::UpdateHeadstockCacheForMenu() {
 	}
 }
 
+void D3DHooks::GenerateRandomTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+
+	if (randomTextureColors.size() != randomTextureCount) {
+		randomTextureColors.resize(randomTextureCount);
+	}
+
+	static std::uniform_real_distribution<> urd(0.0f, 1.0f);
+
+	for (int textIdx = 0; textIdx < randomTextureCount; ++textIdx) {
+		RSColor rndColor;
+		rndColor.r = (float)urd(rng);
+		rndColor.g = (float)urd(rng);
+		rndColor.b = (float)urd(rng);
+
+		randomTextureColors[textIdx] = rndColor;
+
+		ColorList colorSet(16, rndColor);
+		D3D::GenerateGradientTexture(pDevice, &randomTextures[textIdx], colorSet);
+	}
+}
+
+void D3DHooks::CheckRecreateTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+
+	if (RecreateTextures.exchange(false)) {
+		ExtendedRangeMod::RegenerateTextures(pDevice);
+		CustomHighwayColorsMod::RegenerateTextures(pDevice);
+		GenerateRandomTextures(pDevice);
+	}
+}
+
 void D3DHooks::RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice) {
 	if (regenerateUserDefinedTexture.exchange(false)) {
 		RSColor userDefColor = Settings::ConvertHexToColor(Settings::ReturnSettingValue(Setting::SolidNoteColor));
 
 		ColorList customColorList(16, userDefColor);
-		D3D::GenerateTexture(pDevice, &twitchUserDefinedTexture, customColorList);
+		D3D::GenerateGradientTexture(pDevice, &twitchUserDefinedTexture, customColorList);
 
 		ERMode::customSolidColor.clear();
-		for (int str = 0; str < 6;str++)
+		for (int str = 0; str < 6; str++)
 			ERMode::customSolidColor.push_back(userDefColor);
-
 	}
 }

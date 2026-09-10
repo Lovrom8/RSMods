@@ -29,17 +29,7 @@ bool wwiseLogging = false;
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {
-	// Initial some values.
-	int currentCount = 0;
-
 	while (!GameState::GameClosing) {
-		// If this is the 32nd loop, remake the D3D textures.
-		// This allows us to have real-time updates to textures.
-		if (currentCount == 31) {
-			currentCount = 0;
-			D3DHooks::RecreateTextureTimer = true;
-		}
-
 		// If we have sent a Midi PC/CC value to this thread, send the Midi value.
 		if (Midi::sendPC)
 			Midi::SendProgramChange(Midi::dataToSendPC);
@@ -48,7 +38,6 @@ unsigned WINAPI MidiThread() {
 			Midi::SendControlChange(Midi::dataToSendCC);
 
 		Sleep(Midi::sleepFor);
-		currentCount++;
 	}
 
 	return 0;
@@ -182,6 +171,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Menu::Init(pDevice, (LONG_PTR)WndProc);
 	Menu::RenderImGuiMenu();
 	D3D::LoadTextures(pDevice);
+	D3DHooks::CheckRecreateTextures(pDevice);
 	UpdateGameWindowStacking();
 	GameOverlay::RenderOverlay(pDevice);
 	D3DHooks::RegenerateTwitchNoteColors(pDevice);
