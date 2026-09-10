@@ -181,12 +181,6 @@ namespace ModManager {
 		if (GameState::IsInSong())
 			return;
 
-		// Returning to a menu ends the song: drop the A/B loop markers so the next song starts fresh.
-		if (Settings::IsOn(Setting::AllowLooping)) {
-			Keybindings::loopStart = NULL;
-			Keybindings::loopEnd = NULL;
-		}
-
 		D3DHooks::UpdateHeadstockCacheForMenu();
 		GameState::previousMenu = GameState::currentMenu;
 	}
