@@ -28,6 +28,8 @@ public sealed class App : Application
             var services = new ServiceCollection();
             services.AddSingleton<IAppEnvironment, AvaloniaAppEnvironment>();
             services.AddSingleton<IDialogService, AvaloniaDialogService>();
+            services.AddSingleton<NavigationService>();
+            services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<NavigationService>());
             services.AddSingleton<StartupService>();
             services.AddSingleton<IManifestService, ManifestService>();
             services.AddSingleton<IChoicesProvider, AvaloniaChoicesProvider>();

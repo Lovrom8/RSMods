@@ -1,0 +1,67 @@
+#!/bin/sh
+# Pre-commit hook: keep mods.manifest.json in sync with the DLL settings schema.
+#
+# Fires only when a commit touches files that feed the manifest (a mod's setting
+# declarations or the schema core). It delegates to the same verifier CI uses:
+#
+#     DLL/Framework/Tests/BuildAndRun.ps1 -VerifyManifest
+#
+# which dumps the schema from the last-built DLL and byte-compares it against the
+# committed mods.manifest.json.
+#
+# This is a fast, best-effort local guard: it checks against whatever
+# xinput1_3.dll was last built, so it catches the common "rebuilt the DLL but
+# forgot to re-dump the manifest" mistake. If no DLL is built it warns and lets
+# the commit through -- appveyor's "Verify manifest currency" step is the
+# authoritative gate.
+#
+# Bypass once with:   SKIP_MANIFEST_CHECK=1 git commit ...
+# or entirely with:   git commit --no-verify
+
+[ "$SKIP_MANIFEST_CHECK" = "1" ] && exit 0
+
+# Manifest-affecting staged files (added / copied / modified / renamed).
+changed=$(git diff --cached --name-only --diff-filter=ACMR \
+    -- 'DLL/Mods/*.cpp' 'DLL/Mods/*.hpp' \
+       'DLL/Framework/SettingsSchema.cpp' 'DLL/Framework/SettingsSchema.hpp' \
+       'DLL/Settings.cpp' 'DLL/Settings.hpp')
+
+[ -z "$changed" ] && exit 0
+
+echo "pre-commit: settings schema changed; verifying mods.manifest.json currency..."
+
+ps=$(command -v pwsh 2>/dev/null || command -v powershell.exe 2>/dev/null)
+if [ -z "$ps" ]; then
+    echo "  ! No PowerShell found; skipping manifest check (CI will still verify)." >&2
+    exit 0
+fi
+
+root=$(git rev-parse --show-toplevel)
+script="$root/DLL/Framework/Tests/BuildAndRun.ps1"
+if [ ! -f "$script" ]; then
+    echo "  ! $script not found; skipping manifest check." >&2
+    exit 0
+fi
+
+out=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$script" -VerifyManifest 2>&1)
+status=$?
+
+if [ "$status" -eq 0 ]; then
+    echo "  mods.manifest.json is up to date."
+    exit 0
+fi
+
+# Non-zero: distinguish "no built DLL" (warn, allow) from "stale manifest" (block).
+if printf '%s' "$out" | grep -qi "not found"; then
+    echo "  ! DLL not built yet; skipping manifest check (CI will still verify)." >&2
+    exit 0
+fi
+
+echo "$out" >&2
+echo "" >&2
+echo "  x mods.manifest.json is out of date with the DLL settings schema." >&2
+echo "    Rebuild the DLL, then run:" >&2
+echo "      powershell DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest" >&2
+echo "    and stage the regenerated mods.manifest.json before committing." >&2
+echo "    (bypass once with: SKIP_MANIFEST_CHECK=1 git commit ...)" >&2
+exit 1

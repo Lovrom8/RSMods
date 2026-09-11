@@ -1,0 +1,64 @@
+<UserControl
+    x:Class="RSMods.Views.GuitarSpeakControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:ModSettingsViewModel">
+
+    <Border
+        Padding="18"
+        BorderBrush="#4A5361"
+        BorderThickness="1"
+        CornerRadius="8">
+        <StackPanel Spacing="10">
+            <TextBlock FontWeight="SemiBold" Text="Guitar Speak Note Mappings" />
+            <TextBlock
+                FontSize="12"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Map guitar notes to key presses so you can drive menus with your guitar. Pick a note and octave, then assign it to the selected key press." />
+
+            <!-- Mapping editor -->
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <StackPanel Spacing="4">
+                    <TextBlock FontSize="12" Opacity="0.7" Text="Note" />
+                    <ComboBox
+                        MinWidth="80"
+                        ItemsSource="{Binding GuitarSpeakNotes}"
+                        SelectedItem="{Binding SelectedGuitarSpeakNote}" />
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock FontSize="12" Opacity="0.7" Text="Octave" />
+                    <ComboBox
+                        MinWidth="80"
+                        ItemsSource="{Binding GuitarSpeakOctaves}"
+                        SelectedItem="{Binding SelectedGuitarSpeakOctave}" />
+                </StackPanel>
+                <Button
+                    VerticalAlignment="Bottom"
+                    Content="Assign to selected key"
+                    Command="{Binding AssignGuitarSpeakCommand}" />
+            </StackPanel>
+
+            <!-- Key-press mappings -->
+            <TextBlock FontSize="12" Opacity="0.7" Text="Key presses" />
+            <ListBox
+                MaxHeight="230"
+                ItemsSource="{Binding GuitarSpeakMappings}"
+                SelectedItem="{Binding SelectedGuitarSpeakMapping}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GuitarSpeakRowViewModel">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                            <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding NoteDisplay}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button
+                HorizontalAlignment="Left"
+                Content="Clear selected mapping"
+                Command="{Binding ClearGuitarSpeakCommand}" />
+        </StackPanel>
+    </Border>
+</UserControl>

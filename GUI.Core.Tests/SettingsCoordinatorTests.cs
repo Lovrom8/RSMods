@@ -275,6 +275,12 @@ public sealed class SettingsCoordinatorTests
             Assert.False(customEditor.IsDirty);
             Assert.False(coordinator.IsDirty);
 
+            // OpenEditorCommand triggers EditorRequested
+            string? requestedEditor = null;
+            customEditor.EditorRequested += ed => requestedEditor = ed;
+            customEditor.OpenEditorCommand.Execute(null);
+            Assert.Equal("GuitarSpeak", requestedEditor);
+
             // Marking dirty propagates to Coordinator.IsDirty
             customEditor.SetDirty(true);
             Assert.True(customEditor.IsDirty);

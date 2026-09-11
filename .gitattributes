@@ -1,0 +1,4 @@
+# Git hook scripts run under sh; they must stay LF even on Windows checkouts
+# (core.autocrlf=true would otherwise give them CRLF and break the shebang).
+.githooks/pre-commit text eol=lf
+.githooks/* text eol=lf

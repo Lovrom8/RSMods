@@ -1,0 +1,64 @@
+<UserControl
+    x:Class="RSMods.Views.KeybindingsControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:RSMods.ViewModels"
+    x:DataType="vm:ModSettingsViewModel">
+
+    <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+        <StackPanel Spacing="12">
+            <TextBlock FontWeight="SemiBold" Text="Keybindings" />
+            <TextBlock
+                FontSize="12"
+                Opacity="0.7"
+                TextWrapping="Wrap"
+                Text="Select a bind, then press a key (or middle / side mouse button) in the capture box below its list to assign it. Keys Rocksmith reserves will ask for confirmation." />
+
+            <Grid ColumnDefinitions="*,16,*">
+                <!-- Mods -->
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Mods" />
+                    <ListBox
+                        MaxHeight="280"
+                        ItemsSource="{Binding ModKeybinds}"
+                        SelectedItem="{Binding SelectedModKeybind}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:KeybindRowViewModel">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                    <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding KeyDisplay}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBox
+                        x:Name="ModCaptureBox"
+                        IsReadOnly="True"
+                        Watermark="Press a key to assign…" />
+                </StackPanel>
+
+                <!-- Audio -->
+                <StackPanel Grid.Column="2" Spacing="6">
+                    <TextBlock FontSize="13" FontWeight="SemiBold" Text="Audio" />
+                    <ListBox
+                        MaxHeight="280"
+                        ItemsSource="{Binding AudioKeybinds}"
+                        SelectedItem="{Binding SelectedAudioKeybind}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:KeybindRowViewModel">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding DisplayName}" />
+                                    <TextBlock Grid.Column="1" Opacity="0.8" Text="{Binding KeyDisplay}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBox
+                        x:Name="AudioCaptureBox"
+                        IsReadOnly="True"
+                        Watermark="Press a key to assign…" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

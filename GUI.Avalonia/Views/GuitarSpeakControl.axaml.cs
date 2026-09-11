@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace RSMods.Views;
 
-internal sealed partial class ModSettingsView : UserControl
+internal sealed partial class GuitarSpeakControl : UserControl
 {
-    public ModSettingsView()
+    public GuitarSpeakControl()
     {
         InitializeComponent();
     }

@@ -35,6 +35,7 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
     private readonly IDialogService _dialogs;
+    private readonly INavigationService _navigation;
     private bool _loading;
     private bool _childRowsDirty;
 
@@ -47,8 +48,8 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     {
         get
         {
-            var font = Coordinator.Find<EnumSettingFieldViewModel>("OnScreenFont")?.SelectedValue;
-            return new FontFamily(string.IsNullOrEmpty(font) ? "Arial" : font);
+            var fontName = Coordinator.Find<EnumSettingFieldViewModel>("OnScreenFont")?.SelectedValue;
+            return string.IsNullOrWhiteSpace(fontName) ? FontFamily.Default : new FontFamily(fontName);
         }
     }
 
@@ -106,11 +107,18 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _statusMessage = string.Empty;
 
-    public ModSettingsViewModel(SettingsCoordinator coordinator, SettingsService settings, IDialogService dialogs)
+    public ModSettingsViewModel(
+        SettingsCoordinator coordinator,
+        SettingsService settings,
+        IDialogService dialogs,
+        INavigationService navigation)
     {
         Coordinator = coordinator;
         _settingsService = settings;
         _dialogs = dialogs;
+        _navigation = navigation;
+
+        WireCustomEditors();
 
         Coordinator.StateChanged += (_, _) =>
         {
@@ -120,6 +128,56 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
                 UpdateDirty();
             }
         };
+    }
+
+    private void WireCustomEditors()
+    {
+        foreach (var field in Coordinator.AllFields)
+        {
+            if (field is CustomEditorFieldViewModel customEditor)
+            {
+                customEditor.EditorRequested += OnCustomEditorRequested;
+            }
+        }
+
+        if (Coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor") is { } guitarSpeakEditor)
+        {
+            guitarSpeakEditor.SaveHandler = _ =>
+            {
+                foreach (GuitarSpeakRowViewModel row in GuitarSpeakMappings)
+                    row.WriteBack();
+            };
+        }
+    }
+
+    private async void OnCustomEditorRequested(string editorType)
+    {
+        switch (editorType)
+        {
+            case "HighwayColors":
+            case "StringColors":
+                await _navigation.NavigateToAsync(NavigationTarget.Colors, editorType);
+                break;
+
+            case "Twitch":
+                await _navigation.NavigateToAsync(NavigationTarget.Twitch);
+                break;
+
+            case "GuitarSpeak":
+                if (Coordinator.Find<BoolSettingFieldViewModel>("GuitarSpeak") is { } gsToggle && !gsToggle.Value)
+                {
+                    gsToggle.Value = true;
+                }
+                RefreshAuxiliaryProperties();
+                StatusMessage = "Guitar Speak note mappings opened below.";
+                break;
+
+            case "Midi":
+                await _dialogs.ShowInfoAsync(
+                    "Configure MIDI input and auto-tune devices in the Mod Settings toggles and pickers above.",
+                    "MIDI Setup");
+                break;
+        }
     }
 
     private void RefreshAuxiliaryProperties()
@@ -320,6 +378,10 @@ internal sealed partial class ModSettingsViewModel : ObservableObject
         if (!_loading)
         {
             _childRowsDirty = true;
+            if (Coordinator.Find<CustomEditorFieldViewModel>("GuitarSpeakCustomEditor") is { } gsEditor)
+            {
+                gsEditor.SetDirty(true);
+            }
             UpdateDirty();
         }
     }
