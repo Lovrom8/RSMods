@@ -70,13 +70,13 @@ namespace Framework {
 		ordered_json StringOrNull(const std::string& s) {
 			return s.empty() ? ordered_json(nullptr) : ordered_json(s);
 		}
-	}
 
-	void to_json(ordered_json& j, const SettingDef::VisibleWhen& v) {
-		j = ordered_json{
-			{ "key", v.key },
-			{ "equals", v.equals }
-		};
+		ordered_json VisibleWhenToJson(const SettingDef::VisibleWhen& v) {
+			return ordered_json{
+				{ "key", v.key },
+				{ "equals", v.equals }
+			};
+		}
 	}
 
 	void to_json(ordered_json& j, const SettingDef& d) {
@@ -93,7 +93,7 @@ namespace Framework {
 			{ "scale", d.scale ? ordered_json(*d.scale) : nullptr },
 			{ "choices", d.choices },
 			{ "choicesSource", StringOrNull(d.choicesSource) },
-			{ "visibleWhen", d.visibleWhen ? ordered_json(*d.visibleWhen) : nullptr },
+			{ "visibleWhen", d.visibleWhen ? VisibleWhenToJson(*d.visibleWhen) : nullptr },
 			{ "editor", StringOrNull(d.editor) }
 		};
 	}

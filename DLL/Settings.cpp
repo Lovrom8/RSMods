@@ -260,17 +260,12 @@ void Settings::ReadModSettings() {
 		{Setting::TuningPedal, reader.GetLongValue("Mod Settings", "TuningPedal", 0)},
 		{Setting::TuningOffset, reader.GetLongValue("Mod Settings", "TuningOffset", 0)},
 		{Setting::VolumeControlInterval, reader.GetLongValue("Mod Settings", "VolumeControlInterval", 5)},
-		{Setting::SecondaryMonitorXPosition, reader.GetLongValue("Mod Settings", "SecondaryMonitorXPosition", 0)},
-		{Setting::SecondaryMonitorYPosition, reader.GetLongValue("Mod Settings", "SecondaryMonitorYPosition", 0)},
 		{Setting::SeparateNoteColorsMode, reader.GetLongValue("Mod Settings", "SeparateNoteColorsMode", 0)}, // 0 = same as strings, 1 = default, 2 = custom
 		{Setting::CustomStringColors, reader.GetLongValue("Toggle Switches", "CustomStringColors", 0)}, //0 = default, 1 = Zag, 2 = custom colors
 		{Setting::OverrideInputVolume, reader.GetLongValue("Mod Settings", "OverrideInputVolume", 17)}, // 17 is what Rocksmith calls default.
-		{Setting::AlternativeOutputSampleRate, reader.GetLongValue("Mod Settings", "AlternativeOutputSampleRate", 48000)},
 		{Setting::LoopingLeadUp, reader.GetLongValue("Mod Settings", "LoopingLeadUp", 0)},
 		{Setting::RewindBy, reader.GetLongValue("Mod Settings", "RewindBy", 5000)},
 		{Setting::RewindLeadup, reader.GetLongValue("Mod Settings", "RewindLeadup", 2000)},
-		{Setting::CustomNSPTimeLimit, reader.GetLongValue("Mod Settings", "CustomNSPTimeLimit", 10000)},
-		{Setting::OnScreenFontSize, reader.GetLongValue("Mod Settings", "OnScreenFontSize", 24)},
 
 		{Setting::GuitarSpeakDelete, reader.GetLongValue("Guitar Speak", "GuitarSpeakDeleteWhen", 0)},
 		{Setting::GuitarSpeakSpace, reader.GetLongValue("Guitar Speak", "GuitarSpeakSpaceWhen", 0)},
@@ -289,19 +284,14 @@ void Settings::ReadModSettings() {
 		{Setting::GuitarSpeakAlt, reader.GetLongValue("Guitar Speak", "GuitarSpeakAltWhen", 0)},
 	};
 
-	modSettings[Setting::ToggleLoftEnabled] = reader.GetValue("Toggle Switches", "ToggleLoft", "off");
 	modSettings[Setting::VolumeControlEnabled] = reader.GetValue("Toggle Switches", "VolumeControl", "off");
-	modSettings[Setting::ShowSongTimerEnabled] = reader.GetValue("Toggle Switches", "ShowSongTimer", "off");
 	modSettings[Setting::ForceReEnumerationEnabled] = reader.GetValue("Toggle Switches", "ForceReEnumeration", "off");
 	modSettings[Setting::RainbowStringsEnabled] = reader.GetValue("Toggle Switches", "RainbowStrings", "off");
-	modSettings[Setting::RainbowNotesEnabled] = reader.GetValue("Toggle Switches", "RainbowNotes", "off");
 	modSettings[Setting::ExtendedRangeEnabled] = reader.GetValue("Toggle Switches", "ExtendedRange", "off");
 	modSettings[Setting::ExtendedRangeDropTuning] = reader.GetValue("Toggle Switches", "ExtendedRangeDropTuning", "off");
 	modSettings[Setting::ExtendedRangeFixBassTuning] = reader.GetValue("Toggle Switches", "ExtendedRangeFixBassTuning", "off");
 	modSettings[Setting::SeparateNoteColors] = reader.GetValue("Toggle Switches", "SeparateNoteColors", "off");
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
-	modSettings[Setting::ForceProfileEnabled] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
-	modSettings[Setting::ToggleLoftWhen] = reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual");
 	modSettings[Setting::GuitarSpeak] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
 	modSettings[Setting::GuitarSpeakWhileTuning] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
 	modSettings[Setting::RRSpeedAboveOneHundred] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
@@ -314,21 +304,14 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::AutoTuneForSoftwareTrueTuningSettings] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningSettings", "");
 	modSettings[Setting::AutoTuneForSoftwareTrueTuningTriggers] = reader.GetValue("Toggle Switches", "AutoTuneForSoftwareTrueTuningTriggers", "");
 	modSettings[Setting::ChordsMode] = reader.GetValue("Toggle Switches", "ChordsMode", "off");
-	modSettings[Setting::ShowCurrentNoteOnScreen] = reader.GetValue("Toggle Switches", "ShowCurrentNoteOnScreen", "off");
-	modSettings[Setting::OnScreenFont] = reader.GetValue("Toggle Switches", "OnScreenFont", "Arial");
-	modSettings[Setting::ProfileToLoad] = reader.GetValue("Toggle Switches", "ProfileToLoad", "");
 	modSettings[Setting::CustomHighwayColors] = reader.GetValue("Highway Colors", "CustomHighwayColors", "off");
-	modSettings[Setting::ShowSongTimerWhen] = reader.GetValue("Toggle Switches", "ShowSongTimerWhen", "manual");
-	modSettings[Setting::SecondaryMonitor] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
 	modSettings[Setting::OverrideInputVolumeEnabled] = reader.GetValue("Toggle Switches", "OverrideInputVolumeEnabled", "off");
 	modSettings[Setting::OverrideInputVolumeDevice] = reader.GetValue("Toggle Switches", "OverrideInputVolumeDevice", "");
 	modSettings[Setting::LinearRiffRepeater] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
-	modSettings[Setting::AltOutputSampleRate] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 	modSettings[Setting::AllowLooping] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
 	modSettings[Setting::AllowRewind] = reader.GetValue("Toggle Switches", "AllowRewind", "off");
 	modSettings[Setting::FixOculusCrash] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 	modSettings[Setting::FixBrokenTones] = reader.GetValue("Toggle Switches", "FixBrokenTones", "off");
-	modSettings[Setting::UseCustomNSPTimer] = reader.GetValue("Toggle Switches", "UseCustomNSPTimer", "off");
 	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
 
 	// Schema-driven mod settings: populate declared INI location with declared fallback defaults

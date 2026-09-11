@@ -258,6 +258,46 @@ int main() {
 			.WithVisibleWhen("KeyToggle", "on");
 		Check("WithVisibleWhen sets visibleWhen key", e2.visibleWhen.has_value() && e2.visibleWhen->key == "KeyToggle");
 		Check("WithVisibleWhen sets visibleWhen equals", e2.visibleWhen.has_value() && e2.visibleWhen->equals == "on");
+
+		// Fluent builders
+		auto tf = SettingDef::Toggle("KeyToggleClean", "Clean Toggle Label")
+			.IniName("CustomIni")
+			.Category("Custom Group")
+			.Hint("Toggle Tooltip");
+		Check("tf key correct", tf.key == "KeyToggleClean");
+		Check("tf ini.section default", tf.ini.section == "Toggle Switches");
+		Check("tf ini.name custom", tf.ini.name == "CustomIni");
+		Check("tf category custom", tf.category == "Custom Group");
+		Check("tf hint custom", tf.hint == "Toggle Tooltip");
+		Check("tf def default", tf.def == "off");
+
+		auto ef = SettingDef::Enum("KeyEnumFluent", "Fluent Enum")
+			.Ini("Custom Section", "CustomEnumName")
+			.Choices({ "opt1", "opt2", "opt3" }, "opt2")
+			.WithVisibleWhen("ParentToggle", "on");
+		Check("ef type Enum", ef.type == SettingType::Enum);
+		Check("ef ini.section custom", ef.ini.section == "Custom Section");
+		Check("ef ini.name custom", ef.ini.name == "CustomEnumName");
+		Check("ef choices count 3", ef.choices.size() == 3);
+		Check("ef def is opt2", ef.def == "opt2");
+		Check("ef visibleWhen key", ef.visibleWhen.has_value() && ef.visibleWhen->key == "ParentToggle");
+		Check("ef visibleWhen equals", ef.visibleWhen.has_value() && ef.visibleWhen->equals == "on");
+
+		// Choices without explicit default takes front
+		auto efDefaultFront = SettingDef::Enum("KeyFront", "Front Label")
+			.Choices({ "first", "second" });
+		Check("efDefaultFront def is first", efDefaultFront.def == "first");
+
+		auto nf = SettingDef::Numeric("KeyNumFluent", "Fluent Num")
+			.Range(10, 90)
+			.Scale(0.01)
+			.Default("50");
+		Check("nf type Int", nf.type == SettingType::Int);
+		Check("nf min 10", nf.min.has_value() && *nf.min == 10);
+		Check("nf max 90", nf.max.has_value() && *nf.max == 90);
+		Check("nf scale 0.01", nf.scale.has_value() && *nf.scale == 0.01);
+		Check("nf def 50", nf.def == "50");
+		Check("nf GetIntDefault 50", nf.GetIntDefault() == 50);
 	}
 
 	// 6. Startup ordering: schema populated before reader pass vs after

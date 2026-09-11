@@ -358,6 +358,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 extern "C" __declspec(dllexport) void CALLBACK DumpManifest(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
 	Framework::Registry().InstantiatePending();
 	std::string outputPath = (lpszCmdLine && *lpszCmdLine) ? lpszCmdLine : "mods.manifest.json";
+	if (outputPath.size() >= 2 && outputPath.front() == '"' && outputPath.back() == '"') {
+		outputPath = outputPath.substr(1, outputPath.size() - 2);
+	}
 	std::ofstream out(outputPath);
 	if (out.is_open()) {
 		out << Framework::SettingsSchema().DumpManifestJson() << std::endl;

@@ -27,7 +27,7 @@ if ($DumpManifest) {
     if (Test-Path $dll) {
         $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
         Write-Host "=== Dumping mods.manifest.json ===" -ForegroundColor Cyan
-        Start-Process -FilePath "C:\Windows\SysWOW64\rundll32.exe" -ArgumentList "`"$dll,DumpManifest`" `"$manifestPath`"" -Wait -NoNewWindow
+        Start-Process -FilePath "C:\Windows\SysWOW64\rundll32.exe" -ArgumentList "`"$dll`",DumpManifest `"$manifestPath`"" -Wait -NoNewWindow
         Write-Host "Manifest successfully dumped to $manifestPath" -ForegroundColor Green
         exit 0
     }

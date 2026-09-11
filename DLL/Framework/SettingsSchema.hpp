@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cassert>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -48,19 +50,122 @@ namespace Framework {
 		struct VisibleWhen {
 			std::string key;
 			std::string equals;
+
+			VisibleWhen() = default;
+			VisibleWhen(std::string_view k, std::string_view eq)
+				: key(k), equals(eq) {}
 		};
 
 		std::optional<VisibleWhen> visibleWhen = std::nullopt;           // Tier 2: { key, equals }
 		std::string editor = {};                                         // Tier 3: custom UserControl name
 
-		SettingDef WithVisibleWhen(std::string_view parentKey, std::string_view equalsVal = "on") && {
-			visibleWhen = VisibleWhen{ std::string(parentKey), std::string(equalsVal) };
+		// --- Fluent Builders (paired && and const & overloads for temporary safety) ---
+
+		SettingDef Ini(std::string_view section, std::string_view name) && {
+			ini.section = std::string(section);
+			ini.name = std::string(name);
 			return std::move(*this);
 		}
+		SettingDef Ini(std::string_view section, std::string_view name) const & {
+			SettingDef copy = *this;
+			copy.ini.section = std::string(section);
+			copy.ini.name = std::string(name);
+			return copy;
+		}
 
+		SettingDef IniName(std::string_view name) && {
+			ini.name = std::string(name);
+			return std::move(*this);
+		}
+		SettingDef IniName(std::string_view name) const & {
+			SettingDef copy = *this;
+			copy.ini.name = std::string(name);
+			return copy;
+		}
+
+		SettingDef Default(std::string_view defaultVal) && {
+			def = std::string(defaultVal);
+			return std::move(*this);
+		}
+		SettingDef Default(std::string_view defaultVal) const & {
+			SettingDef copy = *this;
+			copy.def = std::string(defaultVal);
+			return copy;
+		}
+
+		SettingDef Category(std::string_view cat) && {
+			category = std::string(cat);
+			return std::move(*this);
+		}
+		SettingDef Category(std::string_view cat) const & {
+			SettingDef copy = *this;
+			copy.category = std::string(cat);
+			return copy;
+		}
+
+		SettingDef Hint(std::string_view h) && {
+			hint = std::string(h);
+			return std::move(*this);
+		}
+		SettingDef Hint(std::string_view h) const & {
+			SettingDef copy = *this;
+			copy.hint = std::string(h);
+			return copy;
+		}
+
+		SettingDef Choices(std::vector<std::string> choiceList, std::string_view defaultChoice = {}) && {
+			choices = std::move(choiceList);
+			if (!defaultChoice.empty()) {
+				assert(std::ranges::find(choices, defaultChoice) != choices.end() && "Enum default value must be present in choices list");
+				def = std::string(defaultChoice);
+			}
+			else if (def.empty() && !choices.empty()) {
+				def = choices.front();
+			}
+			return std::move(*this);
+		}
+		SettingDef Choices(std::vector<std::string> choiceList, std::string_view defaultChoice = {}) const & {
+			SettingDef copy = *this;
+			copy.choices = std::move(choiceList);
+			if (!defaultChoice.empty()) {
+				assert(std::ranges::find(copy.choices, defaultChoice) != copy.choices.end() && "Enum default value must be present in choices list");
+				copy.def = std::string(defaultChoice);
+			}
+			else if (copy.def.empty() && !copy.choices.empty()) {
+				copy.def = copy.choices.front();
+			}
+			return copy;
+		}
+
+		SettingDef Range(int minVal, int maxVal) && {
+			min = minVal;
+			max = maxVal;
+			return std::move(*this);
+		}
+		SettingDef Range(int minVal, int maxVal) const & {
+			SettingDef copy = *this;
+			copy.min = minVal;
+			copy.max = maxVal;
+			return copy;
+		}
+
+		SettingDef Scale(double scaleVal) && {
+			scale = scaleVal;
+			return std::move(*this);
+		}
+		SettingDef Scale(double scaleVal) const & {
+			SettingDef copy = *this;
+			copy.scale = scaleVal;
+			return copy;
+		}
+
+		SettingDef WithVisibleWhen(std::string_view parentKey, std::string_view equalsVal = "on") && {
+			visibleWhen.emplace(parentKey, equalsVal);
+			return std::move(*this);
+		}
 		SettingDef WithVisibleWhen(std::string_view parentKey, std::string_view equalsVal = "on") const & {
 			SettingDef copy = *this;
-			copy.visibleWhen = VisibleWhen{ std::string(parentKey), std::string(equalsVal) };
+			copy.visibleWhen.emplace(parentKey, equalsVal);
 			return copy;
 		}
 
@@ -75,7 +180,21 @@ namespace Framework {
 			}
 		}
 
-		// Factory for standard boolean switches
+		// --- Base Factories for Common Kinds ---
+
+		// Standard toggle switch (defaults section/category to "Toggle Switches", def to "off", iniName to key)
+		static SettingDef Toggle(std::string_view key, std::string_view label) {
+			return SettingDef{
+				.key = std::string(key),
+				.ini = { "Toggle Switches", std::string(key) },
+				.type = SettingType::Bool,
+				.def = "off",
+				.label = std::string(label),
+				.category = "Toggle Switches"
+			};
+		}
+
+		// Toggle with custom INI name (and optional full tailoring)
 		static SettingDef Toggle(std::string_view key, std::string_view iniName, std::string_view label,
 			std::string_view section = "Toggle Switches", std::string_view category = "Toggle Switches",
 			std::string_view def = "off", std::string_view hint = {}) {
@@ -90,7 +209,42 @@ namespace Framework {
 			};
 		}
 
-		// Factory for integer settings
+		// Enum choice setting (chain with .Choices({...}, defaultChoice))
+		static SettingDef Enum(std::string_view key, std::string_view label) {
+			return SettingDef{
+				.key = std::string(key),
+				.ini = { "Toggle Switches", std::string(key) },
+				.type = SettingType::Enum,
+				.label = std::string(label),
+				.category = "Toggle Switches"
+			};
+		}
+
+		// Integer numeric setting (chain with .Range(min, max), .Default(...))
+		static SettingDef Numeric(std::string_view key, std::string_view label) {
+			return SettingDef{
+				.key = std::string(key),
+				.ini = { "Mod Settings", std::string(key) },
+				.type = SettingType::Int,
+				.def = "0",
+				.label = std::string(label),
+				.category = "Mod Settings"
+			};
+		}
+
+		// String setting (chain with .Ini(), .Default(), etc.)
+		static SettingDef String(std::string_view key, std::string_view label) {
+			return SettingDef{
+				.key = std::string(key),
+				.ini = { "Toggle Switches", std::string(key) },
+				.type = SettingType::String,
+				.def = "",
+				.label = std::string(label),
+				.category = "Toggle Switches"
+			};
+		}
+
+		// Positional factories for backward compatibility
 		static SettingDef Numeric(std::string_view key, std::string_view section, std::string_view iniName,
 			std::string_view label, std::string_view def, std::optional<int> min = std::nullopt,
 			std::optional<int> max = std::nullopt, std::optional<double> scale = std::nullopt,
@@ -109,7 +263,6 @@ namespace Framework {
 			};
 		}
 
-		// Factory for static enum choice settings
 		static SettingDef EnumChoice(std::string_view key, std::string_view section, std::string_view iniName,
 			std::string_view label, std::string_view def, std::vector<std::string> choices,
 			std::string_view category = "Mod Settings", std::string_view hint = {}) {
