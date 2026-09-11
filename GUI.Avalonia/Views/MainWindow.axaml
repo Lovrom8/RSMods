@@ -6,10 +6,10 @@
     xmlns:views="clr-namespace:RSMods.Views"
     x:DataType="vm:MainWindowViewModel"
     Title="RSMods"
-    Width="1080"
-    Height="720"
-    MinWidth="800"
-    MinHeight="520"
+    Width="1360"
+    Height="860"
+    MinWidth="1000"
+    MinHeight="600"
     WindowStartupLocation="CenterScreen">
 
     <Window.DataTemplates>
@@ -49,7 +49,7 @@
         <Border Padding="24,18" Background="{DynamicResource ShellHeaderBrush}">
             <StackPanel Spacing="3">
                 <TextBlock FontSize="24" FontWeight="SemiBold" Text="RSMods" />
-                <TextBlock Opacity="0.7" Text="Avalonia migration shell" />
+                <TextBlock Opacity="0.7" Text="Rocksmith 2014 Mod Configurator" />
             </StackPanel>
         </Border>
 

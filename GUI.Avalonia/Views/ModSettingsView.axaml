@@ -13,7 +13,7 @@
     </UserControl.Resources>
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
+        <StackPanel Margin="32,24" HorizontalAlignment="Stretch" Spacing="18">
             <TextBlock FontSize="28" FontWeight="SemiBold" Text="Mod Settings" />
             <TextBlock
                 FontSize="13"
@@ -38,8 +38,8 @@
                             BorderThickness="1"
                             CornerRadius="8"
                             IsVisible="{Binding HasVisibleFields}">
-                            <StackPanel Spacing="12">
-                                <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                            <StackPanel Spacing="14">
+                                <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Title}" />
                                 <ItemsControl ItemsSource="{Binding Fields}">
                                     <ItemsControl.Styles>
                                         <Style Selector="ItemsControl > ContentPresenter" x:DataType="settings:SettingFieldViewModel">
@@ -48,75 +48,97 @@
                                     </ItemsControl.Styles>
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Spacing="10" />
+                                            <WrapPanel Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.DataTemplates>
                                         <!-- Bool / Toggle -->
                                         <DataTemplate DataType="settings:BoolSettingFieldViewModel">
-                                            <CheckBox
-                                                Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}"
-                                                Content="{Binding Label}"
-                                                IsChecked="{Binding Value}"
-                                                ToolTip.Tip="{Binding Hint}" />
+                                            <Border Width="320" Margin="0,0,14,6">
+                                                <CheckBox
+                                                    Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}"
+                                                    IsChecked="{Binding Value}"
+                                                    ToolTip.Tip="{Binding Hint}">
+                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                </CheckBox>
+                                            </Border>
                                         </DataTemplate>
 
                                         <!-- Numeric -->
                                         <DataTemplate DataType="settings:NumericSettingFieldViewModel">
-                                            <StackPanel
-                                                Orientation="Horizontal"
-                                                Spacing="12"
-                                                Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                <TextBlock Width="220" VerticalAlignment="Center" Text="{Binding Label}" ToolTip.Tip="{Binding Hint}" />
-                                                <NumericUpDown
-                                                    MinWidth="200"
-                                                    HorizontalAlignment="Left"
-                                                    Minimum="{Binding Minimum}"
-                                                    Maximum="{Binding Maximum}"
-                                                    Increment="{Binding Increment}"
-                                                    FormatString="{Binding FormatString}"
-                                                    Value="{Binding Value}" />
-                                            </StackPanel>
+                                            <Border Width="320" Margin="0,0,14,6">
+                                                <Grid ColumnDefinitions="*,110"
+                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                    <TextBlock
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding Label}"
+                                                        ToolTip.Tip="{Binding Hint}"
+                                                        TextTrimming="CharacterEllipsis"
+                                                        Margin="0,0,8,0" />
+                                                    <NumericUpDown
+                                                        Grid.Column="1"
+                                                        HorizontalAlignment="Stretch"
+                                                        Minimum="{Binding Minimum}"
+                                                        Maximum="{Binding Maximum}"
+                                                        Increment="{Binding Increment}"
+                                                        FormatString="{Binding FormatString}"
+                                                        Value="{Binding Value}" />
+                                                </Grid>
+                                            </Border>
                                         </DataTemplate>
 
                                         <!-- Enum / Choices -->
                                         <DataTemplate DataType="settings:EnumSettingFieldViewModel">
-                                            <StackPanel
-                                                Orientation="Horizontal"
-                                                Spacing="12"
-                                                Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                <TextBlock Width="220" VerticalAlignment="Center" Text="{Binding Label}" ToolTip.Tip="{Binding Hint}" />
-                                                <ComboBox
-                                                    MinWidth="200"
-                                                    ItemsSource="{Binding Choices}"
-                                                    SelectedItem="{Binding SelectedValue}" />
-                                            </StackPanel>
+                                            <Border Width="320" Margin="0,0,14,6">
+                                                <Grid ColumnDefinitions="*,130"
+                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                    <TextBlock
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding Label}"
+                                                        ToolTip.Tip="{Binding Hint}"
+                                                        TextTrimming="CharacterEllipsis"
+                                                        Margin="0,0,8,0" />
+                                                    <ComboBox
+                                                        Grid.Column="1"
+                                                        HorizontalAlignment="Stretch"
+                                                        ItemsSource="{Binding Choices}"
+                                                        SelectedItem="{Binding SelectedValue}" />
+                                                </Grid>
+                                            </Border>
                                         </DataTemplate>
 
                                         <!-- String / Text -->
                                         <DataTemplate DataType="settings:StringSettingFieldViewModel">
-                                            <StackPanel
-                                                Orientation="Horizontal"
-                                                Spacing="12"
-                                                Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                <TextBlock Width="220" VerticalAlignment="Center" Text="{Binding Label}" ToolTip.Tip="{Binding Hint}" />
-                                                <TextBox
-                                                    MinWidth="200"
-                                                    Text="{Binding Value}" />
-                                            </StackPanel>
+                                            <Border Width="320" Margin="0,0,14,6">
+                                                <Grid ColumnDefinitions="*,130"
+                                                      Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                    <TextBlock
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding Label}"
+                                                        ToolTip.Tip="{Binding Hint}"
+                                                        TextTrimming="CharacterEllipsis"
+                                                        Margin="0,0,8,0" />
+                                                    <TextBox
+                                                        Grid.Column="1"
+                                                        HorizontalAlignment="Stretch"
+                                                        Text="{Binding Value}" />
+                                                </Grid>
+                                            </Border>
                                         </DataTemplate>
 
                                         <!-- Custom Editor Launcher -->
                                         <DataTemplate DataType="settings:CustomEditorFieldViewModel">
-                                            <StackPanel
-                                                Orientation="Horizontal"
-                                                Spacing="12"
-                                                Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
-                                                <Button
-                                                    Content="{Binding ButtonText}"
-                                                    Command="{Binding OpenEditorCommand}"
-                                                    ToolTip.Tip="{Binding Hint}" />
-                                            </StackPanel>
+                                            <Border Width="320" Margin="0,0,14,6">
+                                                <StackPanel
+                                                    Orientation="Horizontal"
+                                                    Spacing="12"
+                                                    Margin="{Binding IsNested, Converter={StaticResource BoolToIndent}}">
+                                                    <Button
+                                                        Content="{Binding ButtonText}"
+                                                        Command="{Binding OpenEditorCommand}"
+                                                        ToolTip.Tip="{Binding Hint}" />
+                                                </StackPanel>
+                                            </Border>
                                         </DataTemplate>
                                     </ItemsControl.DataTemplates>
                                 </ItemsControl>
