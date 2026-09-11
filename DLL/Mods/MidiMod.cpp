@@ -2,6 +2,12 @@
 #include "MidiMod.hpp"
 #include "Midi.hpp"
 
+using Framework::SettingDefs;
+using Framework::SettingDef;
+using Framework::Toggle;
+using Framework::Numeric;
+using Framework::Enum;
+using Framework::String;
 using Framework::ModContext;
 using Framework::GamePhase;
 using Framework::KeyEdge;
@@ -9,6 +15,53 @@ using Framework::Availability;
 using Framework::KeyEvent;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs MidiMod::Settings() const {
+	return {
+		Toggle(Setting::AutoTuneForSong, "AutoTuneForSong", "Auto Tune For Song"),
+		String(Setting::AutoTuneForSongDevice, "Auto Tune MIDI Output Device")
+			.Ini("Toggle Switches", "AutoTuneForSongDevice")
+			.ChoicesSource("MidiOutDevices")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		String(Setting::MidiInDevice, "MIDI Input Device")
+			.Ini("Toggle Switches", "MidiInDevice")
+			.ChoicesSource("MidiInDevices"),
+		Enum(Setting::AutoTuneForSongWhen, "Auto Tune When")
+			.Ini("Toggle Switches", "AutoTuneForSongWhen")
+			.Choices({ "manual", "tuner" }, "manual")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		Numeric(Setting::TuningPedal, "Tuning Pedal")
+			.Ini("Mod Settings", "TuningPedal")
+			.Default("0")
+			.Range(0, 5),
+		Numeric(Setting::TuningOffset, "Tuning Offset")
+			.Ini("Mod Settings", "TuningOffset")
+			.Default("0")
+			.Range(-3, 12),
+		Toggle(Setting::ChordsMode, "ChordsMode", "Chords Mode")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		String(Setting::AutoTuneForSoftwareSemitoneSettings, "Software Semitone Settings")
+			.Ini("Toggle Switches", "AutoTuneForSoftwareSemitoneSettings")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		String(Setting::AutoTuneForSoftwareSemitoneTriggers, "Software Semitone Triggers")
+			.Ini("Toggle Switches", "AutoTuneForSoftwareSemitoneTriggers")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		String(Setting::AutoTuneForSoftwareTrueTuningSettings, "Software True Tuning Settings")
+			.Ini("Toggle Switches", "AutoTuneForSoftwareTrueTuningSettings")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		String(Setting::AutoTuneForSoftwareTrueTuningTriggers, "Software True Tuning Triggers")
+			.Ini("Toggle Switches", "AutoTuneForSoftwareTrueTuningTriggers")
+			.WithVisibleWhen(Setting::AutoTuneForSong),
+		SettingDef{
+			"MidiCustomEditor",
+			{ "Mod Settings", "MidiCustomEditor" },
+			Framework::SettingType::String,
+			"",
+			"MIDI Setup",
+			"Open the custom MIDI and pedal setup editor",
+		}.WithEditor("Midi"),
+	};
+}
 
 std::vector<std::string_view> MidiMod::ClaimsExclusive() const {
 	return { "tuning-controller" };

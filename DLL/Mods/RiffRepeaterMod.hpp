@@ -20,6 +20,8 @@ public:
 	void OnSongExit(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;
 
+	Framework::SettingDefs Settings() const override;
+
 private:
 	static void Rewind(const Framework::ModContext& c);
 	void SetLoopStart(const Framework::KeyEvent& event);

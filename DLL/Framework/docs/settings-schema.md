@@ -1,9 +1,9 @@
-# Settings schema (plan)
+# Settings schema
 
-> **Status: planned, not built.** This is the design for the last decoupling surface — mod-owned
-> configuration. Every other seam (lifecycle, activation, commands, HUD, menu, draw) already lets a
-> contributor add a mod in one `.cpp`; settings are the one thing still spread across core files it
-> doesn't own. Build it during the Avalonia GUI migration, not after.
+> **Status: built and active on the DLL side.** All 32 mods are migrated to declarative `Settings()`
+> schemas; INI loading in `Settings.cpp` is data-driven; unit tests verify schema aggregation and JSON
+> dumping; and `mods.manifest.json` is exported. The remaining step is rendering the manifest on the
+> Avalonia GUI side.
 
 ## The problem
 

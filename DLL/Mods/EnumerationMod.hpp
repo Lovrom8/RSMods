@@ -19,6 +19,8 @@ public:
 	void OnTick(Framework::ModContext& c) override;
 	void OnShutdown(Framework::ModContext& c) override;
 
+	Framework::SettingDefs Settings() const override;
+
 private:
 	void UpdateSettings(const Framework::ModContext& c);
 	void MonitorDlcDirectory(std::stop_token st);

@@ -4,7 +4,25 @@
 
 using Framework::ModContext;
 using Framework::Availability;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::String;
+using Framework::Numeric;
 namespace Setting = Settings::Setting;
+
+SettingDefs MicrophoneVolumeOverrideMod::Settings() const {
+	return {
+		Toggle(Setting::OverrideInputVolumeEnabled, "OverrideInputVolumeEnabled", "Override Microphone Volume"),
+		String(Setting::OverrideInputVolumeDevice, "Microphone Device")
+			.ChoicesSource("microphones")
+			.WithVisibleWhen(Setting::OverrideInputVolumeEnabled),
+		Numeric(Setting::OverrideInputVolume, "Microphone Volume")
+			.Ini("Mod Settings", "OverrideInputVolume")
+			.Default("17")
+			.Range(0, 100)
+			.WithVisibleWhen(Setting::OverrideInputVolumeEnabled),
+	};
+}
 
 bool MicrophoneVolumeOverrideMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::OverrideInputVolumeEnabled);
@@ -67,5 +85,6 @@ void MicrophoneVolumeOverrideMod::DrawMenu() {
 	if (ImGui::Button("Random Volume"))
 		AudioDevices::SetMicrophoneVolume(selectedMicrophone, rand() % 100);
 }
+
 
 static Framework::ModRegistrar<MicrophoneVolumeOverrideMod> _micVolumeOverrideReg;

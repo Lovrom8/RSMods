@@ -8,6 +8,9 @@
 #include "../Settings.hpp"
 #include "DrawMeshTags.hpp"
 
+using Framework::SettingDefs;
+using Framework::SettingDef;
+using Framework::SettingType;
 using Framework::ModContext;
 using Framework::DrawContext;
 using Framework::DrawResult;
@@ -15,6 +18,18 @@ using Framework::DrawOutcome;
 using Framework::DrawPath;
 namespace Setting = Settings::Setting;
 
+SettingDefs TwitchMod::Settings() const {
+	return {
+		SettingDef{
+			"TwitchSettings",
+			{ "Twitch", "Settings" },
+			SettingType::String,
+			"",
+			"Twitch Integration",
+			"Configure Twitch channel rewards and Crowd Control integration",
+		}.WithEditor("Twitch"),
+	};
+}
 
 void TwitchMod::SyncState() {
 	bool remove = Settings::IsTwitchSettingEnabled(Setting::Twitch::RemoveNotes);

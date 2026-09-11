@@ -7,28 +7,22 @@
 #include "../Framework/Framework.hpp"
 #include "DrawMeshTags.hpp"
 
-struct HighwayTexturePack {
-	LPDIRECT3DTEXTURE9 noteway = nullptr;
-	LPDIRECT3DTEXTURE9 gutter = nullptr;
-	LPDIRECT3DTEXTURE9 fretNum = nullptr;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::ModContext;
+using Framework::DrawPath;
+using Framework::DrawResult;
+using Framework::DrawContext;
+using Framework::DrawOutcome;
 
-	~HighwayTexturePack() {
-		D3D::ReleaseTexture(&noteway);
-		D3D::ReleaseTexture(&gutter);
-		D3D::ReleaseTexture(&fretNum);
-	}
-};
-
-namespace {
-	Framework::ModRegistrar<CustomHighwayColorsMod> _customHighwayColorsReg;
-
-	void GenerateSingleColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const std::string& colorKey, UINT width, UINT height, int lineHeight, int lines) {
-		ColorList colorSet = { Settings::ConvertHexToColor(Settings::ReturnNotewayColor(colorKey)) };
-		D3D::GenerateGradientTexture(pDevice, ppTexture, colorSet, width, height, lineHeight, lines);
-	}
+SettingDefs CustomHighwayColorsMod::Settings() const {
+	return {
+		Toggle(Settings::Setting::CustomHighwayColors, "CustomHighwayColors", "Custom Highway Colors", "Highway Colors")
+			.WithEditor("HighwayColors"),
+	};
 }
 
-bool CustomHighwayColorsMod::IsEnabled(const Framework::ModContext& c) const {
+bool CustomHighwayColorsMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Settings::Setting::CustomHighwayColors);
 }
 
@@ -63,49 +57,49 @@ LPDIRECT3DTEXTURE9 CustomHighwayColorsMod::GetFretNumTexture() noexcept {
 	return pack ? pack->fretNum : nullptr;
 }
 
-void CustomHighwayColorsMod::OnInitialize(Framework::ModContext& c) {
-	c.Draw().Register("CustomHighwayColors", -10, Framework::DrawPath::Indexed, [](Framework::DrawContext& ctx) -> Framework::DrawResult {
+void CustomHighwayColorsMod::OnInitialize(ModContext& c) {
+	c.Draw().Register("CustomHighwayColors", -10, DrawPath::Indexed, [](DrawContext& ctx) -> DrawResult {
 		if (IsToBeRemoved(noteHighway, ctx.mesh)) {
 			auto pack = s_textures.load(std::memory_order_acquire);
-			if (!pack) return { Framework::DrawOutcome::Pass };
+			if (!pack) return { DrawOutcome::Pass };
 
 			auto crc = ctx.StageCRC(1);
 			if (crc) {
 				if (*crc == D3D::Crc::NoteLanes && s_hasNotewayColors.load(std::memory_order_relaxed) && pack->noteway) {
-					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->noteway };
+					return { DrawOutcome::ReplaceTexture, 1, pack->noteway };
 				}
 				if (*crc == D3D::Crc::NotewayFretNumbers && s_hasFretNumColor.load(std::memory_order_relaxed) && pack->fretNum) {
-					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->fretNum };
+					return { DrawOutcome::ReplaceTexture, 1, pack->fretNum };
 				}
 				if (*crc == D3D::Crc::NotewayGutters && s_hasGutterColor.load(std::memory_order_relaxed) && pack->gutter) {
-					return { Framework::DrawOutcome::ReplaceTexture, 1, pack->gutter };
+					return { DrawOutcome::ReplaceTexture, 1, pack->gutter };
 				}
 			}
 		}
-		return { Framework::DrawOutcome::Pass };
+		return { DrawOutcome::Pass };
 	});
 
 	c.Draw().RegisterTextureLifecycle(&CustomHighwayColorsMod::RegenerateTextures, &CustomHighwayColorsMod::ReleaseTextures);
 }
 
-void CustomHighwayColorsMod::OnEnabled(Framework::ModContext& c) {
+void CustomHighwayColorsMod::OnEnabled(ModContext& c) {
 	s_active = true;
 	c.Draw().CancelTextureRelease();
 	UpdateColorPresence();
 	D3DHooks::RecreateTextures = true;
 }
 
-void CustomHighwayColorsMod::OnDisabled(Framework::ModContext& c) {
+void CustomHighwayColorsMod::OnDisabled(ModContext& c) {
 	s_active = false;
 	c.Draw().RequestTextureRelease();
 }
 
-void CustomHighwayColorsMod::OnSettingsChanged(Framework::ModContext&) {
+void CustomHighwayColorsMod::OnSettingsChanged(ModContext&) {
 	UpdateColorPresence();
 	D3DHooks::RecreateTextures = true;
 }
 
-void CustomHighwayColorsMod::OnShutdown(Framework::ModContext&) {
+void CustomHighwayColorsMod::OnShutdown(ModContext&) {
 	s_active = false;
 	ReleaseTextures();
 }
@@ -133,6 +127,13 @@ void CustomHighwayColorsMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
 	s_textures.store(std::move(newPack), std::memory_order_release);
 }
 
+void CustomHighwayColorsMod::GenerateSingleColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const std::string& colorKey, UINT width, UINT height, int lineHeight, int lines) {
+	ColorList colorSet = { Settings::ConvertHexToColor(Settings::ReturnNotewayColor(colorKey)) };
+	D3D::GenerateGradientTexture(pDevice, ppTexture, colorSet, width, height, lineHeight, lines);
+}
+
 void CustomHighwayColorsMod::ReleaseTextures() {
 	s_textures.store(nullptr, std::memory_order_release);
 }
+
+static Framework::ModRegistrar<CustomHighwayColorsMod> _customHighwayColorsReg;

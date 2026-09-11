@@ -11,6 +11,8 @@ class TwitchMod : public Framework::IMod {
 public:
 	MOD_ID(TwitchMod)
 
+	Framework::SettingDefs Settings() const override;
+
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnEnabled(Framework::ModContext& c) override;
 	void OnSongTick(Framework::ModContext& c) override;

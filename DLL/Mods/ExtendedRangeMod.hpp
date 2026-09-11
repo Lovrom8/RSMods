@@ -16,6 +16,8 @@ public:
 
 	std::vector<std::string_view> ClaimsExclusive() const override { return { "string-colors" }; }
 
+	Framework::SettingDefs Settings() const override;
+
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnEnabled(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;

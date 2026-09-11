@@ -16,8 +16,8 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveSkylineMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveSkylineEnabled, "Skyline", "Remove Skyline"),
-		SettingDef::EnumChoice(Setting::ToggleSkylineWhen, "Toggle Switches", "ToggleSkylineWhen",
-			"Remove Skyline Mode", "song", { "song", "startup" }, "Toggle Switches")
+		SettingDef::Enum(Setting::ToggleSkylineWhen, "Remove Skyline Mode")
+			.Choices({ "song", "startup" }, "song")
 			.WithVisibleWhen(Setting::RemoveSkylineEnabled)
 	};
 }

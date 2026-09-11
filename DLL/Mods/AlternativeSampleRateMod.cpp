@@ -3,7 +3,19 @@
 
 using Framework::ModContext;
 using Framework::GamePhase;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs AlternativeSampleRateMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::AltOutputSampleRate, "AltOutputSampleRate", "Alternative Output Sample Rate"),
+		SettingDef::Numeric(Setting::AlternativeOutputSampleRate, "Output Sample Rate")
+			.Ini("Mod Settings", "AlternativeOutputSampleRate")
+			.Default("48000")
+			.WithVisibleWhen(Setting::AltOutputSampleRate)
+	};
+}
 
 bool AlternativeSampleRateMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::AltOutputSampleRate);

@@ -19,8 +19,8 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveHeadstockMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveHeadstockEnabled, "Headstock", "Remove Headstock"),
-		SettingDef::EnumChoice(Setting::RemoveHeadstockWhen, "Toggle Switches", "RemoveHeadstockWhen",
-			"Remove Headstock Mode", "song", { "song", "startup" }, "Toggle Switches")
+		SettingDef::Enum(Setting::RemoveHeadstockWhen, "Remove Headstock Mode")
+			.Choices({ "song", "startup" }, "song")
 			.WithVisibleWhen(Setting::RemoveHeadstockEnabled)
 	};
 }

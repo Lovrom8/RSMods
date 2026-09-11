@@ -10,6 +10,7 @@ public:
 	MOD_ID(AlternativeSampleRateMod)
 	
 	bool IsEnabled(const Framework::ModContext& c) const override;
+	Framework::SettingDefs Settings() const override;
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnTick(Framework::ModContext& c) override;
 };

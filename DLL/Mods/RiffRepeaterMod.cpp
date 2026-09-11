@@ -9,7 +9,35 @@ using Framework::KeyEvent;
 using Framework::GamePhase;
 using Framework::HudText;
 using Framework::HudAnchor;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::Numeric;
 namespace Setting = Settings::Setting;
+
+SettingDefs RiffRepeaterMod::Settings() const {
+	return {
+		Toggle(Setting::LinearRiffRepeater, "LinearRiffRepeater", "Linear Riff Repeater"),
+		Toggle(Setting::AllowRewind, "AllowRewind", "Allow Rewind"),
+		Numeric(Setting::RewindBy, "Rewind By (ms)")
+			.Ini("Mod Settings", "RewindBy")
+			.Default("5000")
+			.WithVisibleWhen(Setting::AllowRewind),
+		Numeric(Setting::RewindLeadup, "Rewind Leadup (ms)")
+			.Ini("Mod Settings", "RewindLeadup")
+			.Default("2000")
+			.WithVisibleWhen(Setting::AllowRewind),
+		Toggle(Setting::AllowLooping, "AllowLooping", "Allow Looping"),
+		Numeric(Setting::LoopingLeadUp, "Looping Leadup (ms)")
+			.Ini("Mod Settings", "LoopingLeadUp")
+			.Default("0")
+			.WithVisibleWhen(Setting::AllowLooping),
+		Toggle(Setting::RRSpeedAboveOneHundred, "RRSpeedAboveOneHundred", "Riff Repeater Speed Above 100%"),
+		Numeric(Setting::RRSpeedInterval, "RR Speed Interval")
+			.Ini("Mod Settings", "RRSpeedInterval")
+			.Default("2")
+			.WithVisibleWhen(Setting::RRSpeedAboveOneHundred),
+	};
+}
 
 void RiffRepeaterMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(
@@ -202,6 +230,7 @@ void RiffRepeaterMod::PublishHud(ModContext& c) {
 		const float speed = RiffRepeater::GetSpeed(true);
 		speedSnapshot.text = "Song Speed: " + std::to_string(static_cast<int>(roundf(speed))) + "%";
 	}
+	
 	c.Hud().Set("rr-speed", { HudAnchor::TopCenter, 0 }, std::move(speedSnapshot));
 
 	const bool loopVisible = c.IsOn(Setting::AllowLooping) &&
@@ -215,5 +244,6 @@ void RiffRepeaterMod::PublishHud(ModContext& c) {
 	}
 	c.Hud().Set("loop-timer", { HudAnchor::TopCenter, 10 }, std::move(loopSnapshot));
 }
+
 
 static Framework::ModRegistrar<RiffRepeaterMod> _riffRepeaterReg;

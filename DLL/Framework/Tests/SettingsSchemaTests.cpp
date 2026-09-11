@@ -298,6 +298,18 @@ int main() {
 		Check("nf scale 0.01", nf.scale.has_value() && *nf.scale == 0.01);
 		Check("nf def 50", nf.def == "50");
 		Check("nf GetIntDefault 50", nf.GetIntDefault() == 50);
+
+		// Free functions Toggle, Numeric, Enum, String and ChoicesSource / WithEditor
+		auto freeToggle = Framework::Toggle("FreeToggle", "Free Toggle");
+		Check("freeToggle type Bool", freeToggle.type == SettingType::Bool);
+		Check("freeToggle key", freeToggle.key == "FreeToggle");
+
+		auto freeString = Framework::String("FreeString", "Free String")
+			.ChoicesSource("microphones")
+			.WithEditor("CustomEditor");
+		Check("freeString type String", freeString.type == SettingType::String);
+		Check("freeString choicesSource", freeString.choicesSource == "microphones");
+		Check("freeString editor", freeString.editor == "CustomEditor");
 	}
 
 	// 6. Startup ordering: schema populated before reader pass vs after

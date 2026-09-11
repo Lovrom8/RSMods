@@ -19,8 +19,8 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveLyricsMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveLyricsEnabled, "Lyrics", "Remove Lyrics"),
-		SettingDef::EnumChoice(Setting::RemoveLyricsWhen, "Toggle Switches", "RemoveLyricsWhen",
-			"Remove Lyrics Mode", "manual", { "manual", "startup" }, "Toggle Switches")
+		SettingDef::Enum(Setting::RemoveLyricsWhen, "Remove Lyrics Mode")
+			.Choices({ "manual", "startup" }, "manual")
 			.WithVisibleWhen(Setting::RemoveLyricsEnabled)
 	};
 }

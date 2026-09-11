@@ -5,8 +5,21 @@
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
-using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::Numeric;
 namespace Setting = Settings::Setting;
+
+SettingDefs VolumeDisplayMod::Settings() const {
+	return {
+		Toggle(Setting::VolumeControlEnabled, "VolumeControl", "Volume Control"),
+		Numeric(Setting::VolumeControlInterval, "Volume Control Interval")
+			.Ini("Mod Settings", "VolumeControlInterval")
+			.Default("5")
+			.Range(1, 25)
+			.WithVisibleWhen(Setting::VolumeControlEnabled),
+	};
+}
 
 void VolumeDisplayMod::OnInitialize(ModContext& c) {
 	auto commands = c.Commands();
@@ -126,5 +139,6 @@ std::string VolumeDisplayMod::LineFor(int index) const {
 bool VolumeDisplayMod::PopupExpired() const {
 	return std::chrono::steady_clock::now() - popupRaised > std::chrono::seconds(3);
 }
+
 
 static Framework::ModRegistrar<VolumeDisplayMod> _volumeDisplayReg;

@@ -7,6 +7,11 @@
 #include "../D3D/D3DHooks.hpp"
 #include "DrawMeshTags.hpp"
 
+using Framework::SettingDefs;
+using Framework::SettingDef;
+using Framework::Toggle;
+using Framework::Numeric;
+using Framework::String;
 using Framework::ModContext;
 using Framework::DrawContext;
 using Framework::DrawResult;
@@ -18,6 +23,40 @@ using Framework::KeyEvent;
 using Settings::StringColorMode;
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
+
+SettingDefs ExtendedRangeMod::Settings() const {
+	return {
+		Toggle(Setting::ExtendedRangeEnabled, "ExtendedRange", "Extended Range"),
+		Toggle(Setting::ExtendedRangeDropTuning, "ExtendedRangeDropTuning", "Extended Range Drop Tuning")
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Toggle(Setting::ExtendedRangeFixBassTuning, "ExtendedRangeFixBassTuning", "Fix Bass Tuning")
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Numeric(Setting::ExtendedRangeMode, "Extended Range Mode Threshold")
+			.Ini("Mod Settings", "ExtendedRangeModeAt")
+			.Default("-5")
+			.Range(-12, -2)
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Numeric(Setting::CustomStringColors, "Custom String Colors")
+			.Ini("Toggle Switches", "CustomStringColors")
+			.Default("0")
+			.Range(0, 2),
+		Toggle(Setting::SeparateNoteColors, "SeparateNoteColors", "Separate Note Colors"),
+		Numeric(Setting::SeparateNoteColorsMode, "Separate Note Colors Mode")
+			.Ini("Mod Settings", "SeparateNoteColorsMode")
+			.Default("0")
+			.Range(0, 2)
+			.WithVisibleWhen(Setting::SeparateNoteColors),
+		Toggle(Setting::RainbowStringsEnabled, "RainbowStrings", "Rainbow Strings"),
+		SettingDef{
+			"StringColorsCustomEditor",
+			{ "String Colors", "CustomEditor" },
+			Framework::SettingType::String,
+			"",
+			"String & Note Color Editor",
+			"Open the custom string and note color palette editor",
+		}.WithEditor("StringColors"),
+	};
+}
 
 void ExtendedRangeMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(

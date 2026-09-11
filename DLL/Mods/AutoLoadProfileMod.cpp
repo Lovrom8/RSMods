@@ -4,7 +4,17 @@
 
 using Framework::ModContext;
 using Framework::GamePhase;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs AutoLoadProfileMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ForceProfileEnabled, "ForceProfileLoad", "Auto Load Profile"),
+		SettingDef::String(Setting::ProfileToLoad, "Profile to Load")
+			.WithVisibleWhen(Setting::ForceProfileEnabled)
+	};
+}
 
 bool AutoLoadProfileMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::ForceProfileEnabled);

@@ -7,8 +7,19 @@ using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs LoftMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ToggleLoftEnabled, "ToggleLoft", "Toggle Loft"),
+		SettingDef::Enum(Setting::ToggleLoftWhen, "Toggle Loft Mode")
+			.Choices({ "manual", "song", "startup" }, "manual")
+			.WithVisibleWhen(Setting::ToggleLoftEnabled)
+	};
+}
 
 bool LoftMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::ToggleLoftEnabled);
@@ -31,6 +42,7 @@ void LoftMod::OnDisabled(ModContext&) {
 		Loft::ToggleLoft();
 		loftOff = false;
 	}
+
 	GreenScreenWallMod::SetLessonWall(false);
 }
 
@@ -41,6 +53,7 @@ void LoftMod::OnSongTick(ModContext& c) {
 		}
 		loftOff = true;
 	}
+	
 	ApplyAlwaysOn(c);
 }
 
@@ -53,6 +66,7 @@ void LoftMod::OnMenuTick(ModContext& c) {
 		
 		if (!GameState::LessonMode) GreenScreenWallMod::SetLessonWall(false);
 	}
+
 	ApplyAlwaysOn(c);
 }
 

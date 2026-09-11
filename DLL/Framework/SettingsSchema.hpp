@@ -169,6 +169,26 @@ namespace Framework {
 			return copy;
 		}
 
+		SettingDef ChoicesSource(std::string_view source) && {
+			choicesSource = source;
+			return std::move(*this);
+		}
+		SettingDef ChoicesSource(std::string_view source) const & {
+			SettingDef copy = *this;
+			copy.choicesSource = source;
+			return copy;
+		}
+
+		SettingDef WithEditor(std::string_view editorName) && {
+			editor = editorName;
+			return std::move(*this);
+		}
+		SettingDef WithEditor(std::string_view editorName) const & {
+			SettingDef copy = *this;
+			copy.editor = editorName;
+			return copy;
+		}
+
 		// Helper to safely parse an integer default
 		int GetIntDefault(int fallback = 0) const {
 			if (def.empty()) return fallback;
@@ -281,6 +301,26 @@ namespace Framework {
 
 	using SettingDecl = SettingDef;
 	using SettingDefs = std::vector<SettingDef>;
+
+	// Free factory functions for SettingDef so mods can use:
+	//   using Framework::Toggle; using Framework::Numeric; using Framework::Enum; using Framework::String;
+	inline SettingDef Toggle(std::string_view key, std::string_view label) {
+		return SettingDef::Toggle(key, label);
+	}
+	inline SettingDef Toggle(std::string_view key, std::string_view iniName, std::string_view label,
+		std::string_view section = "Toggle Switches", std::string_view category = "Toggle Switches",
+		std::string_view def = "off", std::string_view hint = {}) {
+		return SettingDef::Toggle(key, iniName, label, section, category, def, hint);
+	}
+	inline SettingDef Enum(std::string_view key, std::string_view label) {
+		return SettingDef::Enum(key, label);
+	}
+	inline SettingDef Numeric(std::string_view key, std::string_view label) {
+		return SettingDef::Numeric(key, label);
+	}
+	inline SettingDef String(std::string_view key, std::string_view label) {
+		return SettingDef::String(key, label);
+	}
 
 	class IMod;
 

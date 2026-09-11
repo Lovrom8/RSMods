@@ -14,12 +14,20 @@ using Framework::DrawPath;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
 
+SettingDefs RainbowNotesMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RainbowNotesEnabled, "RainbowNotes", "Rainbow Notes")
+	};
+}
 
 bool RainbowNotesMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RainbowNotesEnabled) || ERMode::IsRainbowNotesEnabled();
 }
+
 
 void RainbowNotesMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(

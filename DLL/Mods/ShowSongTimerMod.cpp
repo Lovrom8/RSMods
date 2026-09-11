@@ -7,8 +7,19 @@ using Framework::GamePhase;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs ShowSongTimerMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ShowSongTimerEnabled, "ShowSongTimer", "Show Song Timer"),
+		SettingDef::Enum(Setting::ShowSongTimerWhen, "Show Song Timer Mode")
+			.Choices({ "manual", "automatic" }, "manual")
+			.WithVisibleWhen(Setting::ShowSongTimerEnabled)
+	};
+}
 
 // It has to stay Active (and tick) in manual mode too, because the timer is published through 
 // ctx.Hud() every tick and HUD elements cleared whenever a mod deactivates.

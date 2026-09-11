@@ -3,7 +3,24 @@
 #include "GuitarSpeak.hpp"
 
 using Framework::ModContext;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs ShowCurrentNoteMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ShowCurrentNoteOnScreen, "ShowCurrentNoteOnScreen", "Show Current Note"),
+		SettingDef::String(Setting::OnScreenFont, "On-Screen Font")
+			.Default("Arial")
+			.ChoicesSource("SystemFonts")
+			.WithVisibleWhen(Setting::ShowCurrentNoteOnScreen),
+		SettingDef::Numeric(Setting::OnScreenFontSize, "On-Screen Font Size")
+			.Ini("Mod Settings", "OnScreenFontSize")
+			.Default("24")
+			.Range(10, 72)
+			.WithVisibleWhen(Setting::ShowCurrentNoteOnScreen)
+	};
+}
 
 bool ShowCurrentNoteMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::ShowCurrentNoteOnScreen);

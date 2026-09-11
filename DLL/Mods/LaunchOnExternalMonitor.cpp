@@ -8,6 +8,20 @@ bool LaunchOnExternalMonitorMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::SecondaryMonitor);
 }
 
+Framework::SettingDefs LaunchOnExternalMonitorMod::Settings() const {
+	return {
+		Framework::SettingDef::Toggle(Setting::SecondaryMonitor, "SecondaryMonitor", "Launch on Secondary Monitor"),
+		Framework::SettingDef::Numeric(Setting::SecondaryMonitorXPosition, "Secondary Monitor X Position")
+			.Ini("Mod Settings", "SecondaryMonitorXPosition")
+			.Default("0")
+			.WithVisibleWhen(Setting::SecondaryMonitor),
+		Framework::SettingDef::Numeric(Setting::SecondaryMonitorYPosition, "Secondary Monitor Y Position")
+			.Ini("Mod Settings", "SecondaryMonitorYPosition")
+			.Default("0")
+			.WithVisibleWhen(Setting::SecondaryMonitor)
+	};
+}
+
 void LaunchOnExternalMonitorMod::OnMenuTick(ModContext& c) {
 	MoveOnce(c);
 }

@@ -17,6 +17,7 @@ public:
 	// resource (default priority 0) so a future higher-priority DropPedal can take over tuning by claiming the
 	// same resource, which suppresses this mod.
 	std::vector<std::string_view> ClaimsExclusive() const override;
+	Framework::SettingDefs Settings() const override;
 
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnTick(Framework::ModContext& c) override;     // Device scanning (post-load only).
