@@ -27,7 +27,16 @@ namespace {
 
 	int CustomSettingUnlocked(const std::string& name) {
 		auto it = Settings::customSettings.find(name);
-		return it != Settings::customSettings.end() ? it->second : 0;
+		if (it != Settings::customSettings.end()) {
+			return it->second;
+		}
+		auto itMod = Settings::modSettings.find(name);
+		if (itMod != Settings::modSettings.end() && !itMod->second.empty()) {
+			try {
+				return std::stoi(itMod->second);
+			} catch (...) {}
+		}
+		return 0;
 	}
 
 	unsigned int VKCodeUnlocked(const std::string& vkString) {
@@ -128,6 +137,7 @@ void Settings::Initialize()
 		{Setting::DisplayCurrentAccuracy, "off"},
 		{Setting::PreventMidSongPause, "off"},
 		{Setting::RemoveFingerprints, "off"},
+		{Setting::AlternativeOutputSampleRate, "48000"},
 	};
 
 	customSettings = {

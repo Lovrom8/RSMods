@@ -18,23 +18,30 @@ SettingDefs RiffRepeaterMod::Settings() const {
 	return {
 		Toggle(Setting::LinearRiffRepeater, "LinearRiffRepeater", "Linear Riff Repeater"),
 		Toggle(Setting::AllowRewind, "AllowRewind", "Allow Rewind"),
-		Numeric(Setting::RewindBy, "Rewind By (ms)")
+		Numeric(Setting::RewindBy, "Rewind By (seconds)")
 			.Ini("Mod Settings", "RewindBy")
 			.Default("5000")
+			.Range(0, 90000)
+			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowRewind),
-		Numeric(Setting::RewindLeadup, "Rewind Leadup (ms)")
+		Numeric(Setting::RewindLeadup, "Rewind Leadup (seconds)")
 			.Ini("Mod Settings", "RewindLeadup")
 			.Default("2000")
+			.Range(0, 90000)
+			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowRewind),
 		Toggle(Setting::AllowLooping, "AllowLooping", "Allow Looping"),
-		Numeric(Setting::LoopingLeadUp, "Looping Leadup (ms)")
+		Numeric(Setting::LoopingLeadUp, "Looping Leadup (seconds)")
 			.Ini("Mod Settings", "LoopingLeadUp")
 			.Default("0")
+			.Range(0, 5000)
+			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowLooping),
 		Toggle(Setting::RRSpeedAboveOneHundred, "RRSpeedAboveOneHundred", "Riff Repeater Speed Above 100%"),
 		Numeric(Setting::RRSpeedInterval, "RR Speed Interval")
 			.Ini("Mod Settings", "RRSpeedInterval")
 			.Default("2")
+			.Range(-50, 50)
 			.WithVisibleWhen(Setting::RRSpeedAboveOneHundred),
 	};
 }
@@ -242,8 +249,8 @@ void RiffRepeaterMod::PublishHud(ModContext& c) {
 	if (loopVisible) {
 		loopSnapshot.text = "Loop: " + SongTimer::FormatTime(loopStart) + " - " + SongTimer::FormatTime(loopEnd);
 	}
+
 	c.Hud().Set("loop-timer", { HudAnchor::TopCenter, 10 }, std::move(loopSnapshot));
 }
-
 
 static Framework::ModRegistrar<RiffRepeaterMod> _riffRepeaterReg;

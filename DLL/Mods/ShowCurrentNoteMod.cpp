@@ -17,7 +17,7 @@ SettingDefs ShowCurrentNoteMod::Settings() const {
 		SettingDef::Numeric(Setting::OnScreenFontSize, "On-Screen Font Size")
 			.Ini("Mod Settings", "OnScreenFontSize")
 			.Default("24")
-			.Range(10, 72)
+			.Range(8, 80)
 			.WithVisibleWhen(Setting::ShowCurrentNoteOnScreen)
 	};
 }

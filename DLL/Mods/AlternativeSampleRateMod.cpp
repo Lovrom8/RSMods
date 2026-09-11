@@ -10,9 +10,9 @@ namespace Setting = Settings::Setting;
 SettingDefs AlternativeSampleRateMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::AltOutputSampleRate, "AltOutputSampleRate", "Alternative Output Sample Rate"),
-		SettingDef::Numeric(Setting::AlternativeOutputSampleRate, "Output Sample Rate")
+		SettingDef::Enum(Setting::AlternativeOutputSampleRate, "Output Sample Rate")
 			.Ini("Mod Settings", "AlternativeOutputSampleRate")
-			.Default("48000")
+			.Choices({ "44100", "48000", "88200", "96000", "176400", "192000" }, "48000")
 			.WithVisibleWhen(Setting::AltOutputSampleRate)
 	};
 }

@@ -138,6 +138,12 @@ This tiering is the same boundary as `plugin-distribution.md`: third-party / out
 1–2 (pure manifest, no C# needed), while tier-3 editors stay in-tree (an out-of-tree binary plugin can't
 ship a C# editor anyway).
 
+> [!NOTE]
+> **Tier-3 Dirty Tracking**: `CustomEditorFieldViewModel.Save` is a no-op and does not track `IsDirty`
+> generically. Bespoke sub-UIs (Guitar Speak, custom colors, MIDI, Twitch) manage their own internal
+> dirty state and save lifecycle (e.g., via dedicated save handlers or `_childRowsDirty` in `ModSettingsViewModel`).
+> Generic coordinator dirty tracking applies to Tier 1 and Tier 2 declarative fields.
+
 **Avalonia mechanics.** An `ObservableCollection<SettingFieldViewModel>` in `GUI.Core` with a base VM and
 `Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsVisible`
 computed from its `visibleWhen`. An `ItemsControl` over the collection with **per-type `DataTemplate`s**
