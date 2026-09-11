@@ -143,7 +143,145 @@
     <ClCompile Include="Framework\SettingsSchema.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Mods\*.cpp">
+    <ClCompile Include="Mods\AllowAudioInBackgroundMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\AudioDevices.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\AutoLoadProfileMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\BugPrevention.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\CalibrationMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\CollectColors.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomHighwayColorsMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomSongTitles.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\DisableControllers.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\Enumeration.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\EnumerationMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ExtendedRangeMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ExtendedRangeMode.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\FretlessMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\GreenScreenWallMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSkeletons.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSpeak.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\GuitarSpeakMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\LaunchOnExternalMonitor.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\Loft.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\LoftMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\MicrophoneVolumeOverrideMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\Midi.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\MidiMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\NonStopPlayTimerMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RainbowNotesMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveFingerprintsMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveHeadstockMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveInlaysMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveLaneMarkersMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveLyricsMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveSkylineMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RiffRepeater.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RiffRepeaterMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ScreenShotScoresMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ShowCurrentNoteMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ShowSongTimerMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\SongAccuracyMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\SongPreviewsMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\TrueTuning.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\TwitchMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\TwoRTCBypassMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControl.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControlMod.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\VolumeControl.cpp">
+      <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\VolumeDisplayMod.cpp">
       <PrecompiledHeaderFile>../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ObjectUtil.cpp" />
@@ -264,7 +402,54 @@
     <ClInclude Include="Menu.hpp" />
     <ClInclude Include="MidiPedal.h" />
     <ClInclude Include="ModManager.hpp" />
-    <ClInclude Include="Mods\*.hpp" />
+    <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp" />
+    <ClInclude Include="Mods\AlternativeSampleRateMod.hpp" />
+    <ClInclude Include="Mods\AudioDevices.hpp" />
+    <ClInclude Include="Mods\AutoLoadProfileMod.hpp" />
+    <ClInclude Include="Mods\BugPrevention.hpp" />
+    <ClInclude Include="Mods\CalibrationMod.hpp" />
+    <ClInclude Include="Mods\CollectColors.hpp" />
+    <ClInclude Include="Mods\CustomHighwayColorsMod.hpp" />
+    <ClInclude Include="Mods\CustomSongTitles.hpp" />
+    <ClInclude Include="Mods\DisableControllers.hpp" />
+    <ClInclude Include="Mods\DrawMeshTags.hpp" />
+    <ClInclude Include="Mods\Enumeration.hpp" />
+    <ClInclude Include="Mods\EnumerationMod.hpp" />
+    <ClInclude Include="Mods\ExtendedRangeMod.hpp" />
+    <ClInclude Include="Mods\ExtendedRangeMode.hpp" />
+    <ClInclude Include="Mods\FretlessMod.hpp" />
+    <ClInclude Include="Mods\GreenScreenWallMod.hpp" />
+    <ClInclude Include="Mods\GuitarSkeletons.hpp" />
+    <ClInclude Include="Mods\GuitarSpeak.hpp" />
+    <ClInclude Include="Mods\GuitarSpeakMod.hpp" />
+    <ClInclude Include="Mods\LaunchOnExternalMonitor.hpp" />
+    <ClInclude Include="Mods\Loft.hpp" />
+    <ClInclude Include="Mods\LoftMod.hpp" />
+    <ClInclude Include="Mods\MicrophoneVolumeOverrideMod.hpp" />
+    <ClInclude Include="Mods\Midi.hpp" />
+    <ClInclude Include="Mods\MidiMod.hpp" />
+    <ClInclude Include="Mods\NonStopPlayTimerMod.hpp" />
+    <ClInclude Include="Mods\RainbowNotesMod.hpp" />
+    <ClInclude Include="Mods\RemoveFingerprintsMod.hpp" />
+    <ClInclude Include="Mods\RemoveHeadstockMod.hpp" />
+    <ClInclude Include="Mods\RemoveInlaysMod.hpp" />
+    <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp" />
+    <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
+    <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
+    <ClInclude Include="Mods\RiffRepeater.hpp" />
+    <ClInclude Include="Mods\RiffRepeaterMod.hpp" />
+    <ClInclude Include="Mods\ScreenShotScoresMod.hpp" />
+    <ClInclude Include="Mods\ShowCurrentNoteMod.hpp" />
+    <ClInclude Include="Mods\ShowSongTimerMod.hpp" />
+    <ClInclude Include="Mods\SongAccuracyMod.hpp" />
+    <ClInclude Include="Mods\SongPreviewsMod.hpp" />
+    <ClInclude Include="Mods\TrueTuning.hpp" />
+    <ClInclude Include="Mods\TwitchMod.hpp" />
+    <ClInclude Include="Mods\TwoRTCBypassMod.hpp" />
+    <ClInclude Include="Mods\VoiceOverControl.hpp" />
+    <ClInclude Include="Mods\VoiceOverControlMod.hpp" />
+    <ClInclude Include="Mods\VolumeControl.hpp" />
+    <ClInclude Include="Mods\VolumeDisplayMod.hpp" />
     <ClInclude Include="Framework\GamePhase.hpp" />
     <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp" />
     <ClInclude Include="Framework\CommandRouter.hpp" />
