@@ -169,9 +169,10 @@ publish/
 # TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
-# The configurator's win-x64 publish profile is a checked-in release contract (no secrets), not a
-# machine-local web-deploy setting - keep it tracked. See docs/winforms-retirement-plan.md, Slice 2.
+# The configurator and installer win-x64 publish profiles are checked-in release contracts (no secrets),
+# not machine-local web-deploy settings - keep them tracked.
 !GUI.Avalonia/Properties/PublishProfiles/win-x64.pubxml
+!Installer/Properties/PublishProfiles/win-x64.pubxml
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to

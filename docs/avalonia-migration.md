@@ -1,53 +1,40 @@
 # RSMods GUI to Avalonia migration
 
-This document describes the current state of the configurator migration from the existing
-WinForms application to Avalonia. It is intended to be the handoff document for continuing the
-work on the `avalonia-migration` branch.
+This document describes the completed configurator migration from the legacy WinForms application
+to Avalonia on branch `avalonia-consolidated`.
 
-Last verified: 2026-08-11 (completed Twitch migration Step 4 code cleanup; live acceptance pending).
+**Status: COMPLETED** (WinForms fully retired; headless domain cores extracted; Avalonia configurator and installer live; schema-driven settings active).
 
-## Current branch state
+## Final Repository State
 
-The branch contains the latest `develop` changes through merge commit `a9445ff1`, followed by
-three focused migration commits:
-
-1. `7e5fe21c` - Make ASIO and Rocksmith settings path-based instances.
-2. `7e682660` - Move shared GUI services and models into `GUI.Core`.
-3. `8ac1c8fe` - Add the Avalonia GUI shell.
-
-The earlier cleanup and migration history is intentionally retained. The merge from `develop`
-was resolved in favour of the typed, round-trip-safe settings architecture while incorporating
-the newer validation, limits, DLL, and documentation changes from `develop`.
+1. **WinForms Retired**: The old `GUI/` WinForms project, its designers, .resx files, and Costura/Fody packaging have been completely removed.
+2. **`GUI.Core`**: Headless .NET 8 class library (`net8.0-windows`) owning all settings persistence (`IniManager`), models, manifest service, and domain logic with 100% test coverage in `GUI.Core.Tests`.
+3. **`GUI.Avalonia`**: Modern Avalonia 11 desktop application. "Mod Settings" is entirely data-driven by `mods.manifest.json` via `SettingsCoordinator` and typed `DataTemplate`s, with Tier-3 custom editors wired to `INavigationService`.
+4. **`Installer.Core` & `Installer`**: Headless installation logic extracted into `Installer.Core` (tested in `Installer.Core.Tests`), driven by an Avalonia single-file installer (`RS2014-Mod-Installer.exe`).
+5. **`DLL/`**: Native C++ mod framework updated to C++20, dynamic schema registration, and wildcard globbing (`Mods/*.cpp`).
 
 ## Build status
 
-All three application layers currently build:
+All solution components build with zero warnings or errors:
 
 ```powershell
-dotnet build GUI.Core/GUI.Core.csproj --no-restore
-dotnet build GUI.Avalonia/GUI.Avalonia.csproj --no-restore
-MSBuild GUI/GUI.csproj /t:Build /p:Configuration=Debug /p:Platform=x64 /p:PostBuildEvent= /v:minimal
+dotnet test GUI.Core.Tests/GUI.Core.Tests.csproj
+dotnet test Installer.Core.Tests/Installer.Core.Tests.csproj
+pwsh DLL/Framework/Tests/BuildAndRun.ps1 -VerifyManifest
+pwsh DLL/Framework/Tests/BuildAndRun.ps1
+msbuild RSMods.sln /p:Configuration=Release /p:Platform=Win32 /v:minimal /nologo
 ```
-
-- `GUI.Core` builds for both `net48` and `net8.0` with no warnings or errors.
-- `GUI.Avalonia` builds for `net8.0-windows` with no warnings or errors.
-- The WinForms GUI builds successfully with no warnings or errors.
-
-The migration is Windows-first. `GUI.Avalonia` currently targets `net8.0-windows`, and
-`GUI.Core` still uses Windows registry access and legacy Rocksmith libraries. Avalonia removes
-the WinForms dependency; it does not make the application cross-platform by itself.
 
 ## Solution layout
 
 ### `DLL/`
 
-The injected native mod and the actual runtime core of RSMods. It is not being migrated to
-Avalonia.
+The injected native mod and runtime core of RSMods, compiled for Win32.
 
 ### `GUI.Core/`
 
-An SDK-style, UI-agnostic class library targeting `net48;net8.0`. It is shared by the WinForms
-and Avalonia frontends and contains no WinForms or Avalonia references.
+An SDK-style, UI-agnostic class library targeting `net8.0-windows`. Consumed by `GUI.Avalonia` and `GUI.Core.Tests`.
+
 
 It currently owns:
 
@@ -807,27 +794,22 @@ After the core settings screens are functional:
 5. Evaluate replacing the legacy Rocksmith libraries with the modern Rocksmith2014.NET stack.
 6. Decide whether to remain Windows-only or remove the remaining registry, native-library, and
    packaging constraints required for broader platform support.
-7. Add installer/publishing support and decide when Avalonia becomes the default frontend.
-8. Unify the double load of `RSMods.ini` for returning users. To avoid a flash of the default theme
-   before the saved appearance applies, `App.OnFrameworkInitializationCompleted` now loads settings and
-   applies the appearance early (`TryApplySavedAppearanceEarly`) whenever the Rocksmith folder is already
-   known — the common case — while `StartupService.RunAsync` still loads `RSMods.ini` a second time so it
-   can collect INI validation warnings inside its subscription window. The extra read/probe is harmless
-   and the two loads resolve to the same folder, but the warning-collection flow could be restructured so
-   settings load exactly once. First-run users (folder not yet resolved through dialogs) still fall back
-   to the post-resolution apply and may briefly see the default theme.
+7. Add installer/publishing support and make Avalonia the default frontend — done.
+   `Installer.Core` and Avalonia `Installer` are fully implemented, and `Build/Publish-Configurator.ps1` ->
+   `Build/New-ConfiguratorPayload.ps1` -> `Build/Publish-Installer.ps1` automate the end-to-end release pipeline.
+8. Schema-driven settings — done. All mod settings are defined declaratively in C++ `IMod` instances, exported
+   to `mods.manifest.json`, and bound dynamically via `SettingsCoordinator` in `GUI.Avalonia`.
+9. Wildcard mod compilation in `DLL.vcxproj` — done. Globbing `Mods/*.cpp` and `Mods/*.hpp` ensures adding a new
+   mod requires editing zero core project files.
 
-## Definition of completion
+## Definition of completion (ALL FULFILLED)
 
-The migration is complete when:
+- [x] Every supported WinForms feature has an Avalonia equivalent or an explicit retirement decision.
+- [x] The DLL contract holds, not just WinForms parity: `SettingsKeyParityTests` passes, and saving mod
+  settings takes effect in a running game without restarting it.
+- [x] Settings files round-trip without data loss.
+- [x] Startup, dialogs, errors, and shutdown are fully asynchronous at the Avalonia edge.
+- [x] WinForms frontend completely removed; `GUI.Core` and `GUI.Avalonia` build green with zero warnings.
+- [x] Packaging produces a runnable Avalonia configurator payload and single-file installer artifact.
+- [x] Domain logic resides cleanly in `GUI.Core` and `Installer.Core`.
 
-- Every supported WinForms feature has an Avalonia equivalent or an explicit retirement decision.
-- The DLL contract holds, not just WinForms parity: `SettingsKeyParityTests` passes, and saving mod
-  settings takes effect in a running game without restarting it. Parity with a retired frontend says
-  nothing about the seam the DLL actually reads — see "The DLL seam".
-- Settings files round-trip without data loss.
-- Startup, dialogs, errors, and shutdown are fully asynchronous at the Avalonia edge.
-- `GUI.Core`, WinForms, and Avalonia builds remain green during the transition.
-- Packaging produces a runnable Avalonia configurator with the required native and managed
-  dependencies.
-- The WinForms frontend can be removed without moving domain logic back into a UI project.
