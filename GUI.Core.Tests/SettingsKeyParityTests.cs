@@ -166,6 +166,33 @@ public sealed class SettingsKeyParityTests
                 keys.Add((match.Groups["section"].Value, key));
         }
 
+        // Declarative mod settings in mods.manifest.json
+        string manifestPath = Path.Combine(repositoryRoot, "mods.manifest.json");
+        if (File.Exists(manifestPath))
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifestPath));
+            foreach (System.Text.Json.JsonElement element in doc.RootElement.EnumerateArray())
+            {
+                // Tier 3 pure custom editor launchers (not INI values)
+                if (element.TryGetProperty("editor", out var editor) &&
+                    editor.ValueKind == System.Text.Json.JsonValueKind.String &&
+                    !string.IsNullOrEmpty(editor.GetString()) &&
+                    element.TryGetProperty("type", out var type) &&
+                    type.GetString() == "String")
+                {
+                    continue;
+                }
+
+                if (element.TryGetProperty("ini", out System.Text.Json.JsonElement ini))
+                {
+                    string? section = ini.GetProperty("section").GetString();
+                    string? name = ini.GetProperty("name").GetString();
+                    if (!string.IsNullOrEmpty(section) && !string.IsNullOrEmpty(name))
+                        keys.Add((section, name));
+                }
+            }
+        }
+
         Assert.True(keys.Count > 50,
             $"Only found {keys.Count} DLL setting reads, so the scrape is probably broken rather than " +
             "the contract. Check whether DLL/Settings.cpp changed how it reads the INI.");
