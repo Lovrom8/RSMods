@@ -4,7 +4,15 @@
 #include "../NoteData.h"
 
 using Framework::ModContext;
+using Framework::SettingDef;
+using Framework::SettingDefs;
 namespace Setting = Settings::Setting;
+
+SettingDefs SongAccuracyMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::DisplayCurrentAccuracy, "DisplayCurrentAccuracy", "Display Current Accuracy")
+	};
+}
 
 bool SongAccuracyMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::DisplayCurrentAccuracy);

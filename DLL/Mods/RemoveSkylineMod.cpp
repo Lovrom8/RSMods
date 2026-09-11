@@ -8,8 +8,19 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs RemoveSkylineMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RemoveSkylineEnabled, "Skyline", "Remove Skyline"),
+		SettingDef::EnumChoice(Setting::ToggleSkylineWhen, "Toggle Switches", "ToggleSkylineWhen",
+			"Remove Skyline Mode", "song", { "song", "startup" }, "Toggle Switches")
+			.WithVisibleWhen(Setting::RemoveSkylineEnabled)
+	};
+}
 
 bool RemoveSkylineMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RemoveSkylineEnabled);

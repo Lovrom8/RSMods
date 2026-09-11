@@ -8,7 +8,15 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs RemoveLaneMarkersMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RemoveLaneMarkersEnabled, "LaneMarkers", "Remove Lane Markers")
+	};
+}
 
 bool RemoveLaneMarkersMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RemoveLaneMarkersEnabled);
@@ -19,6 +27,7 @@ void RemoveLaneMarkersMod::OnInitialize(ModContext& c) {
 		if (ctx.inSong && IsExtraRemoved(laneMarkers, ctx.thicc)) {
 			return { DrawOutcome::Hide };
 		}
+
 		return { DrawOutcome::Pass };
 	});
 }

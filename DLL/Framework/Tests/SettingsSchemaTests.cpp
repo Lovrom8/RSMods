@@ -253,6 +253,11 @@ int main() {
 		Check("EnumChoice type == Enum", e.type == SettingType::Enum);
 		Check("EnumChoice choices count == 3", e.choices.size() == 3);
 		Check("EnumChoice GetIntDefault() == 1", e.GetIntDefault() == 1);
+
+		auto e2 = SettingDef::EnumChoice("KeyEnum2", "Mod Settings", "IniEnum2", "Enum Label", "song", { "song", "startup" })
+			.WithVisibleWhen("KeyToggle", "on");
+		Check("WithVisibleWhen sets visibleWhen key", e2.visibleWhen.has_value() && e2.visibleWhen->key == "KeyToggle");
+		Check("WithVisibleWhen sets visibleWhen equals", e2.visibleWhen.has_value() && e2.visibleWhen->equals == "on");
 	}
 
 	// 6. Startup ordering: schema populated before reader pass vs after

@@ -1,0 +1,324 @@
+[
+  {
+    "key": "BypassTwoRTCMessageBox",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "BypassTwoRTCMessageBox"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Bypass Two Real Tone Cables Warning",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "AllowAudioInBackground",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AllowAudioInBackground"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Allow Audio in Background",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ScreenShotScores",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ScreenShotScores"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Screenshot Scores",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "SongPreviews",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "SongPreviews"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Song Previews",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "DisplayCurrentAccuracy",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "DisplayCurrentAccuracy"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Display Current Accuracy",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveFingerprints",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveFingerprints"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Fingerprints",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "GreenScreenWallEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "GreenScreenWall"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Green Screen Wall",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveLaneMarkersEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "LaneMarkers"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Lane Markers",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveInlaysEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Inlays"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Inlays",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "FretlessModeEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Fretless"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Fretless Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveLyrics",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Lyrics"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Lyrics",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveLyricsWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveLyricsWhen"
+    },
+    "type": "Enum",
+    "default": "manual",
+    "label": "Remove Lyrics Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "manual",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveLyrics",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveHeadstockEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Headstock"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Headstock",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveHeadstockWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveHeadstockWhen"
+    },
+    "type": "Enum",
+    "default": "song",
+    "label": "Remove Headstock Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "song",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveHeadstockEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveSkylineEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Skyline"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Skyline",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ToggleSkylineWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ToggleSkylineWhen"
+    },
+    "type": "Enum",
+    "default": "song",
+    "label": "Remove Skyline Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "song",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveSkylineEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  }
+]

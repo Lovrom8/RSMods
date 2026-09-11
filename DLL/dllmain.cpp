@@ -302,6 +302,15 @@ void SetupLogging() {
 	}
 }
 
+static bool IsRunningUnderGame() {
+	char executable[MAX_PATH]{};
+	GetModuleFileNameA(NULL, executable, MAX_PATH);
+	std::string path(executable);
+	std::string lower;
+	for (char c : path) lower += static_cast<char>(tolower(c));
+	return lower.find("rocksmith2014") != std::string::npos;
+}
+
 /// <summary>
 /// Hook into the game for us to run our own code. **DISPLAYS DEBUG CONSOLE ON DEBUG BUILD**
 /// </summary>
@@ -312,12 +321,19 @@ void SetupLogging() {
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			SetupLogging();
 			DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
+			if (!IsRunningUnderGame()) {
+				// Running under rundll32 or a generator tool: do not hook the host process
+				return TRUE;
+			}
+			SetupLogging();
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;
 		case DLL_PROCESS_DETACH:
+			if (!IsRunningUnderGame()) {
+				return TRUE;
+			}
 			Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 			if (Menu::ImGuiInit)
@@ -333,4 +349,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	}
 	
 	return TRUE;
+}
+
+/// <summary>
+/// Rundll32-compatible entrypoint to dump the aggregate mod schema manifest to a JSON file.
+/// Usage: rundll32 RSMods.dll,DumpManifest [path\to\mods.manifest.json]
+/// </summary>
+extern "C" __declspec(dllexport) void CALLBACK DumpManifest(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
+	Framework::Registry().InstantiatePending();
+	std::string outputPath = (lpszCmdLine && *lpszCmdLine) ? lpszCmdLine : "mods.manifest.json";
+	std::ofstream out(outputPath);
+	if (out.is_open()) {
+		out << Framework::SettingsSchema().DumpManifestJson() << std::endl;
+	}
 }

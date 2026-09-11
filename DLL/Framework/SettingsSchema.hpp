@@ -53,6 +53,17 @@ namespace Framework {
 		std::optional<VisibleWhen> visibleWhen = std::nullopt;           // Tier 2: { key, equals }
 		std::string editor = {};                                         // Tier 3: custom UserControl name
 
+		SettingDef WithVisibleWhen(std::string_view parentKey, std::string_view equalsVal = "on") && {
+			visibleWhen = VisibleWhen{ std::string(parentKey), std::string(equalsVal) };
+			return std::move(*this);
+		}
+
+		SettingDef WithVisibleWhen(std::string_view parentKey, std::string_view equalsVal = "on") const & {
+			SettingDef copy = *this;
+			copy.visibleWhen = VisibleWhen{ std::string(parentKey), std::string(equalsVal) };
+			return copy;
+		}
+
 		// Helper to safely parse an integer default
 		int GetIntDefault(int fallback = 0) const {
 			if (def.empty()) return fallback;

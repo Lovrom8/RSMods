@@ -9,7 +9,15 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDef;
+using Framework::SettingDefs;
 namespace Setting = Settings::Setting;
+
+SettingDefs RemoveFingerprintsMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RemoveFingerprints, "RemoveFingerprints", "Remove Fingerprints")
+	};
+}
 
 bool RemoveFingerprintsMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RemoveFingerprints);

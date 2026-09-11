@@ -11,8 +11,19 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs RemoveLyricsMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RemoveLyricsEnabled, "Lyrics", "Remove Lyrics"),
+		SettingDef::EnumChoice(Setting::RemoveLyricsWhen, "Toggle Switches", "RemoveLyricsWhen",
+			"Remove Lyrics Mode", "manual", { "manual", "startup" }, "Toggle Switches")
+			.WithVisibleWhen(Setting::RemoveLyricsEnabled)
+	};
+}
 
 bool RemoveLyricsMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RemoveLyricsEnabled);
@@ -35,6 +46,7 @@ void RemoveLyricsMod::OnInitialize(ModContext& c) {
 		if (ctx.inSong && removeLyricsActive.load(std::memory_order_relaxed) && IsExtraRemoved(lyrics, ctx.thicc)) {
 			return { DrawOutcome::Hide };
 		}
+
 		return { DrawOutcome::Pass };
 	});
 }

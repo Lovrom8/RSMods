@@ -8,7 +8,15 @@ using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
 using Framework::DrawPath;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs FretlessMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::FretlessModeEnabled, "Fretless", "Fretless Mode")
+	};
+}
 
 bool FretlessMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::FretlessModeEnabled);

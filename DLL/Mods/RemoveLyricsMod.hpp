@@ -7,6 +7,7 @@ class RemoveLyricsMod : public Framework::IMod {
 public:
 	MOD_ID(RemoveLyricsMod)
 	bool IsEnabled(const Framework::ModContext& c) const override;
+	Framework::SettingDefs Settings() const override;
 
 	void OnInitialize(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;

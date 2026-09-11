@@ -13,6 +13,7 @@ public:
     MOD_ID(RemoveHeadstockMod)
 
     bool IsEnabled(const Framework::ModContext& c) const override;
+    Framework::SettingDefs Settings() const override;
 
     void OnInitialize(Framework::ModContext& c) override;
     void OnEnabled(Framework::ModContext& c) override;

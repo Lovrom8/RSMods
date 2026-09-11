@@ -6,10 +6,14 @@
 # (no windows.h / stdafx), so each test compiles against only the handful of
 # framework translation units it actually uses.
 #
-# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1
+# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1 [-DumpManifest]
 # CI entrypoint: appveyor.yml (the `test_script` step runs this script on the develop branch).
 #
 # Exits non-zero if any test fails to build or reports test failures.
+
+param (
+    [switch]$DumpManifest
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -17,6 +21,21 @@ $TestsDir  = $PSScriptRoot
 $Framework = Split-Path $TestsDir -Parent            # ...\DLL\Framework
 $OutDir    = Join-Path $TestsDir 'bin'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
+
+if ($DumpManifest) {
+    $dll = Join-Path $TestsDir '..\..\Installer\Resources\xinput1_3.dll'
+    if (Test-Path $dll) {
+        $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
+        Write-Host "=== Dumping mods.manifest.json ===" -ForegroundColor Cyan
+        Start-Process -FilePath "C:\Windows\SysWOW64\rundll32.exe" -ArgumentList "`"$dll,DumpManifest`" `"$manifestPath`"" -Wait -NoNewWindow
+        Write-Host "Manifest successfully dumped to $manifestPath" -ForegroundColor Green
+        exit 0
+    }
+    else {
+        Write-Host "xinput1_3.dll not found; build DLL before dumping manifest." -ForegroundColor Red
+        exit 1
+    }
+}
 
 # Extra framework translation units each test must link against (besides its own .cpp).
 $Tests = @(

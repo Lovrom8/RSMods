@@ -300,20 +300,10 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::ExtendedRangeFixBassTuning] = reader.GetValue("Toggle Switches", "ExtendedRangeFixBassTuning", "off");
 	modSettings[Setting::SeparateNoteColors] = reader.GetValue("Toggle Switches", "SeparateNoteColors", "off");
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
-	modSettings[Setting::RemoveHeadstockEnabled] = reader.GetValue("Toggle Switches", "Headstock", "off");
-	modSettings[Setting::RemoveSkylineEnabled] = reader.GetValue("Toggle Switches", "Skyline", "off");
 	modSettings[Setting::ForceProfileEnabled] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
-	modSettings[Setting::FretlessModeEnabled] = reader.GetValue("Toggle Switches", "Fretless", "off");
-	modSettings[Setting::RemoveInlaysEnabled] = reader.GetValue("Toggle Switches", "Inlays", "off");
 	modSettings[Setting::ToggleLoftWhen] = reader.GetValue("Toggle Switches", "ToggleLoftWhen", "manual");
-	modSettings[Setting::ToggleSkylineWhen] = reader.GetValue("Toggle Switches", "ToggleSkylineWhen", "song");
-	modSettings[Setting::RemoveLaneMarkersEnabled] = reader.GetValue("Toggle Switches", "LaneMarkers", "off");
-	modSettings[Setting::RemoveLyricsEnabled] = reader.GetValue("Toggle Switches", "Lyrics", "off");
-	modSettings[Setting::RemoveLyricsWhen] = reader.GetValue("Toggle Switches", "RemoveLyricsWhen", "manual");
 	modSettings[Setting::GuitarSpeak] = reader.GetValue("Toggle Switches", "GuitarSpeak", "off");
 	modSettings[Setting::GuitarSpeakWhileTuning] = reader.GetValue("Guitar Speak", "GuitarSpeakWhileTuning", "off");
-	modSettings[Setting::RemoveHeadstockWhen] = reader.GetValue("Toggle Switches", "RemoveHeadstockWhen", "song");
-	modSettings[Setting::ScreenShotScores] = reader.GetValue("Toggle Switches", "ScreenShotScores", "off");
 	modSettings[Setting::RRSpeedAboveOneHundred] = reader.GetValue("Toggle Switches", "RRSpeedAboveOneHundred", "off");
 	modSettings[Setting::AutoTuneForSong] = reader.GetValue("Toggle Switches", "AutoTuneForSong", "off");
 	modSettings[Setting::AutoTuneForSongDevice] = reader.GetValue("Toggle Switches", "AutoTuneForSongDevice", "");
@@ -330,11 +320,8 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::CustomHighwayColors] = reader.GetValue("Highway Colors", "CustomHighwayColors", "off");
 	modSettings[Setting::ShowSongTimerWhen] = reader.GetValue("Toggle Switches", "ShowSongTimerWhen", "manual");
 	modSettings[Setting::SecondaryMonitor] = reader.GetValue("Toggle Switches", "SecondaryMonitor", "off");
-	modSettings[Setting::SongPreviews] = reader.GetValue("Toggle Switches", "SongPreviews", "off");
 	modSettings[Setting::OverrideInputVolumeEnabled] = reader.GetValue("Toggle Switches", "OverrideInputVolumeEnabled", "off");
 	modSettings[Setting::OverrideInputVolumeDevice] = reader.GetValue("Toggle Switches", "OverrideInputVolumeDevice", "");
-	modSettings[Setting::AllowAudioInBackground] = reader.GetValue("Toggle Switches", "AllowAudioInBackground", "off");
-	modSettings[Setting::BypassTwoRTCMessageBox] = reader.GetValue("Toggle Switches", "BypassTwoRTCMessageBox", "off");
 	modSettings[Setting::LinearRiffRepeater] = reader.GetValue("Toggle Switches", "LinearRiffRepeater", "off");
 	modSettings[Setting::AltOutputSampleRate] = reader.GetValue("Toggle Switches", "AltOutputSampleRate", "off");
 	modSettings[Setting::AllowLooping] = reader.GetValue("Toggle Switches", "AllowLooping", "off");
@@ -342,9 +329,7 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::FixOculusCrash] = reader.GetValue("Toggle Switches", "FixOculusCrash", "off");
 	modSettings[Setting::FixBrokenTones] = reader.GetValue("Toggle Switches", "FixBrokenTones", "off");
 	modSettings[Setting::UseCustomNSPTimer] = reader.GetValue("Toggle Switches", "UseCustomNSPTimer", "off");
-	modSettings[Setting::DisplayCurrentAccuracy] = reader.GetValue("Toggle Switches", "DisplayCurrentAccuracy", "off");
 	modSettings[Setting::PreventMidSongPause] = reader.GetValue("Toggle Switches", "PreventMidSongPause", "off");
-	modSettings[Setting::RemoveFingerprints] = reader.GetValue("Toggle Switches", "RemoveFingerprints", "off");
 
 	// Schema-driven mod settings: populate declared INI location with declared fallback defaults
 	for (const auto& decl : Framework::SettingsSchema().GetAll()) {

@@ -8,3 +8,4 @@ XInputGetDSoundAudioDeviceGuids=XInput_XInputGetDSoundAudioDeviceGuids @4
 XInputGetKeystroke=XInput_XInputGetKeystroke @5
 XInputGetState=XInput_XInputGetState @6
 XInputSetState=XInput_XInputSetState @7
+DumpManifest @8

@@ -12,7 +12,18 @@ using Framework::DrawOutcome;
 using Framework::DrawPath;
 using Settings::When;
 using Framework::GamePhase;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs RemoveHeadstockMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::RemoveHeadstockEnabled, "Headstock", "Remove Headstock"),
+		SettingDef::EnumChoice(Setting::RemoveHeadstockWhen, "Toggle Switches", "RemoveHeadstockWhen",
+			"Remove Headstock Mode", "song", { "song", "startup" }, "Toggle Switches")
+			.WithVisibleWhen(Setting::RemoveHeadstockEnabled)
+	};
+}
 
 bool RemoveHeadstockMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::RemoveHeadstockEnabled);
