@@ -1,13 +1,13 @@
 [
   {
-    "key": "SecondaryMonitor",
+    "key": "VolumeControlEnabled",
     "ini": {
       "section": "Toggle Switches",
-      "name": "SecondaryMonitor"
+      "name": "VolumeControl"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Launch on Secondary Monitor",
+    "label": "Volume Control",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -19,231 +19,26 @@
     "editor": null
   },
   {
-    "key": "SecondaryMonitorXPosition",
+    "key": "VolumeControlInterval",
     "ini": {
       "section": "Mod Settings",
-      "name": "SecondaryMonitorXPosition"
+      "name": "VolumeControlInterval"
     },
     "type": "Int",
-    "default": "0",
-    "label": "Secondary Monitor X Position",
+    "default": "5",
+    "label": "Volume Control Interval",
     "hint": "",
     "category": "Mod Settings",
-    "min": null,
-    "max": null,
+    "min": 1,
+    "max": 100,
     "scale": null,
     "choices": [],
     "choicesSource": null,
     "visibleWhen": {
-      "key": "SecondaryMonitor",
+      "key": "VolumeControlEnabled",
       "equals": "on"
     },
     "editor": null
-  },
-  {
-    "key": "SecondaryMonitorYPosition",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "SecondaryMonitorYPosition"
-    },
-    "type": "Int",
-    "default": "0",
-    "label": "Secondary Monitor Y Position",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "SecondaryMonitor",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "ExtendedRangeEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ExtendedRange"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Extended Range",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "ExtendedRangeDropTuning",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ExtendedRangeDropTuning"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Extended Range Drop Tuning",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ExtendedRangeEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "ExtendedRangeFixBassTuning",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ExtendedRangeFixBassTuning"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Fix Bass Tuning",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ExtendedRangeEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "ExtendedRangeMode",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "ExtendedRangeModeAt"
-    },
-    "type": "Int",
-    "default": "-5",
-    "label": "Extended Range Mode Threshold",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": -12,
-    "max": -2,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ExtendedRangeEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "CustomStringColors",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "CustomStringColors"
-    },
-    "type": "Int",
-    "default": "0",
-    "label": "Custom String Colors",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 2,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "SeparateNoteColors",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "SeparateNoteColors"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Separate Note Colors",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "SeparateNoteColorsMode",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "SeparateNoteColorsMode"
-    },
-    "type": "Int",
-    "default": "0",
-    "label": "Separate Note Colors Mode",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 2,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "SeparateNoteColors",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "RainbowStringsEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "RainbowStrings"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Rainbow Strings",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "StringColorsCustomEditor",
-    "ini": {
-      "section": "String Colors",
-      "name": "CustomEditor"
-    },
-    "type": "String",
-    "default": "",
-    "label": "String & Note Color Editor",
-    "hint": "Open the custom string and note color palette editor",
-    "category": "",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": "StringColors"
   },
   {
     "key": "BypassTwoRTCMessageBox",
@@ -265,14 +60,33 @@
     "editor": null
   },
   {
-    "key": "AllowAudioInBackground",
+    "key": "TwitchSettings",
+    "ini": {
+      "section": "Twitch",
+      "name": "Settings"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Twitch Integration",
+    "hint": "Configure Twitch channel rewards and Crowd Control integration",
+    "category": "",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": "Twitch"
+  },
+  {
+    "key": "SongPreviews",
     "ini": {
       "section": "Toggle Switches",
-      "name": "AllowAudioInBackground"
+      "name": "SongPreviews"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Allow Audio in Background",
+    "label": "Song Previews",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -282,6 +96,816 @@
     "choicesSource": null,
     "visibleWhen": null,
     "editor": null
+  },
+  {
+    "key": "DisplayCurrentAccuracy",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "DisplayCurrentAccuracy"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Display Current Accuracy",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ShowSongTimerEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ShowSongTimer"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Show Song Timer",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ShowSongTimerWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ShowSongTimerWhen"
+    },
+    "type": "Enum",
+    "default": "manual",
+    "label": "Show Song Timer Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "manual",
+      "automatic"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ShowSongTimerEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "ShowCurrentNoteOnScreen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ShowCurrentNoteOnScreen"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Show Current Note",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "OnScreenFont",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "OnScreenFont"
+    },
+    "type": "String",
+    "default": "Arial",
+    "label": "On-Screen Font",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": "SystemFonts",
+    "visibleWhen": {
+      "key": "ShowCurrentNoteOnScreen",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "OnScreenFontSize",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "OnScreenFontSize"
+    },
+    "type": "Int",
+    "default": "24",
+    "label": "On-Screen Font Size",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 8,
+    "max": 80,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ShowCurrentNoteOnScreen",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "ScreenShotScores",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ScreenShotScores"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Screenshot Scores",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "LinearRiffRepeater",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "LinearRiffRepeater"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Linear Riff Repeater",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "AllowRewind",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AllowRewind"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Allow Rewind",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RewindBy",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "RewindBy"
+    },
+    "type": "Int",
+    "default": "5000",
+    "label": "Rewind By (seconds)",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 90000,
+    "scale": 0.001,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AllowRewind",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RewindLeadup",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "RewindLeadup"
+    },
+    "type": "Int",
+    "default": "2000",
+    "label": "Rewind Leadup (seconds)",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 90000,
+    "scale": 0.001,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AllowRewind",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AllowLooping",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AllowLooping"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Allow Looping",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "LoopingLeadUp",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "LoopingLeadUp"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Looping Leadup (seconds)",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 5000,
+    "scale": 0.001,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AllowLooping",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RRSpeedAboveOneHundred",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RRSpeedAboveOneHundred"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Riff Repeater Speed Above 100%",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RRSpeedInterval",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "RRSpeedInterval"
+    },
+    "type": "Int",
+    "default": "2",
+    "label": "RR Speed Interval",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": -50,
+    "max": 50,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RRSpeedAboveOneHundred",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveSkylineEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Skyline"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Skyline",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ToggleSkylineWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ToggleSkylineWhen"
+    },
+    "type": "Enum",
+    "default": "song",
+    "label": "Remove Skyline Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "song",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveSkylineEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveLyrics",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Lyrics"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Lyrics",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveLyricsWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveLyricsWhen"
+    },
+    "type": "Enum",
+    "default": "manual",
+    "label": "Remove Lyrics Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "manual",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveLyrics",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveLaneMarkersEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "LaneMarkers"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Lane Markers",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveInlaysEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Inlays"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Inlays",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveHeadstockEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "Headstock"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Headstock",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RemoveHeadstockWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveHeadstockWhen"
+    },
+    "type": "Enum",
+    "default": "song",
+    "label": "Remove Headstock Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "song",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "RemoveHeadstockEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RemoveFingerprints",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RemoveFingerprints"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Remove Fingerprints",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "RainbowNotesEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RainbowNotes"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Rainbow Notes",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "UseCustomNSPTimer",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "UseCustomNSPTimer"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Use Custom Non-Stop Play Timer",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "CustomNSPTimeLimit",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "CustomNSPTimeLimit"
+    },
+    "type": "Int",
+    "default": "10000",
+    "label": "NSP Time Limit (seconds)",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 2000,
+    "max": 60000,
+    "scale": 0.001,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "UseCustomNSPTimer",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSong",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSong"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Auto Tune For Song",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSongDevice",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSongDevice"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Auto Tune MIDI Output Device",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": "MidiOutDevices",
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "MidiInDevice",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "MidiInDevice"
+    },
+    "type": "String",
+    "default": "",
+    "label": "MIDI Input Device",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": "MidiInDevices",
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSongWhen",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSongWhen"
+    },
+    "type": "Enum",
+    "default": "manual",
+    "label": "Auto Tune When",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "manual",
+      "tuner"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "TuningPedal",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "TuningPedal"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Tuning Pedal",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 5,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "TuningOffset",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "TuningOffset"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Tuning Offset",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": -3,
+    "max": 12,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ChordsMode",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ChordsMode"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Chords Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSoftwareSemitoneSettings",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSoftwareSemitoneSettings"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Software Semitone Settings",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSoftwareSemitoneTriggers",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSoftwareSemitoneTriggers"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Software Semitone Triggers",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSoftwareTrueTuningSettings",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSoftwareTrueTuningSettings"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Software True Tuning Settings",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "AutoTuneForSoftwareTrueTuningTriggers",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "AutoTuneForSoftwareTrueTuningTriggers"
+    },
+    "type": "String",
+    "default": "",
+    "label": "Software True Tuning Triggers",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "AutoTuneForSong",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "MidiCustomEditor",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "MidiCustomEditor"
+    },
+    "type": "String",
+    "default": "",
+    "label": "MIDI Setup",
+    "hint": "Open the custom MIDI and pedal setup editor",
+    "category": "",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": "Midi"
   },
   {
     "key": "OverrideInputVolumeEnabled",
@@ -347,14 +971,14 @@
     "editor": null
   },
   {
-    "key": "ScreenShotScores",
+    "key": "ToggleLoftEnabled",
     "ini": {
       "section": "Toggle Switches",
-      "name": "ScreenShotScores"
+      "name": "ToggleLoft"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Screenshot Scores",
+    "label": "Toggle Loft",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -366,14 +990,40 @@
     "editor": null
   },
   {
-    "key": "SongPreviews",
+    "key": "ToggleLoftWhen",
     "ini": {
       "section": "Toggle Switches",
-      "name": "SongPreviews"
+      "name": "ToggleLoftWhen"
+    },
+    "type": "Enum",
+    "default": "manual",
+    "label": "Toggle Loft Mode",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [
+      "manual",
+      "song",
+      "startup"
+    ],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ToggleLoftEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "SecondaryMonitor",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "SecondaryMonitor"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Song Previews",
+    "label": "Launch on Secondary Monitor",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -382,6 +1032,50 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "SecondaryMonitorXPosition",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "SecondaryMonitorXPosition"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Secondary Monitor X Position",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "SecondaryMonitor",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "SecondaryMonitorYPosition",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "SecondaryMonitorYPosition"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Secondary Monitor Y Position",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "SecondaryMonitor",
+      "equals": "on"
+    },
     "editor": null
   },
   {
@@ -778,14 +1472,14 @@
     "editor": null
   },
   {
-    "key": "ShowCurrentNoteOnScreen",
+    "key": "GreenScreenWallEnabled",
     "ini": {
       "section": "Toggle Switches",
-      "name": "ShowCurrentNoteOnScreen"
+      "name": "GreenScreenWall"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Show Current Note",
+    "label": "Green Screen Wall",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -797,166 +1491,122 @@
     "editor": null
   },
   {
-    "key": "OnScreenFont",
+    "key": "FretlessModeEnabled",
     "ini": {
       "section": "Toggle Switches",
-      "name": "OnScreenFont"
+      "name": "Fretless"
     },
-    "type": "String",
-    "default": "Arial",
-    "label": "On-Screen Font",
+    "type": "Bool",
+    "default": "off",
+    "label": "Fretless Mode",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
     "max": null,
     "scale": null,
     "choices": [],
-    "choicesSource": "SystemFonts",
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ExtendedRangeEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ExtendedRange"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Extended Range",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "ExtendedRangeDropTuning",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ExtendedRangeDropTuning"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Extended Range Drop Tuning",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
     "visibleWhen": {
-      "key": "ShowCurrentNoteOnScreen",
+      "key": "ExtendedRangeEnabled",
       "equals": "on"
     },
     "editor": null
   },
   {
-    "key": "OnScreenFontSize",
+    "key": "ExtendedRangeFixBassTuning",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "ExtendedRangeFixBassTuning"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Fix Bass Tuning",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "ExtendedRangeEnabled",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "ExtendedRangeMode",
     "ini": {
       "section": "Mod Settings",
-      "name": "OnScreenFontSize"
+      "name": "ExtendedRangeModeAt"
     },
     "type": "Int",
-    "default": "24",
-    "label": "On-Screen Font Size",
+    "default": "-5",
+    "label": "Extended Range Mode Threshold",
     "hint": "",
     "category": "Mod Settings",
-    "min": 8,
-    "max": 80,
+    "min": -12,
+    "max": -2,
     "scale": null,
     "choices": [],
     "choicesSource": null,
     "visibleWhen": {
-      "key": "ShowCurrentNoteOnScreen",
+      "key": "ExtendedRangeEnabled",
       "equals": "on"
     },
     "editor": null
   },
   {
-    "key": "DisplayCurrentAccuracy",
+    "key": "CustomStringColors",
     "ini": {
       "section": "Toggle Switches",
-      "name": "DisplayCurrentAccuracy"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Display Current Accuracy",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSong",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSong"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Auto Tune For Song",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSongDevice",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSongDevice"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Auto Tune MIDI Output Device",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": "MidiOutDevices",
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "MidiInDevice",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "MidiInDevice"
-    },
-    "type": "String",
-    "default": "",
-    "label": "MIDI Input Device",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": "MidiInDevices",
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSongWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSongWhen"
-    },
-    "type": "Enum",
-    "default": "manual",
-    "label": "Auto Tune When",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "manual",
-      "tuner"
-    ],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "TuningPedal",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "TuningPedal"
+      "name": "CustomStringColors"
     },
     "type": "Int",
     "default": "0",
-    "label": "Tuning Pedal",
+    "label": "Custom String Colors",
     "hint": "",
     "category": "Mod Settings",
     "min": 0,
-    "max": 5,
+    "max": 2,
     "scale": null,
     "choices": [],
     "choicesSource": null,
@@ -964,33 +1614,14 @@
     "editor": null
   },
   {
-    "key": "TuningOffset",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "TuningOffset"
-    },
-    "type": "Int",
-    "default": "0",
-    "label": "Tuning Offset",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": -3,
-    "max": 12,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "ChordsMode",
+    "key": "SeparateNoteColors",
     "ini": {
       "section": "Toggle Switches",
-      "name": "ChordsMode"
+      "name": "SeparateNoteColors"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Chords Mode",
+    "label": "Separate Note Colors",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -998,110 +1629,60 @@
     "scale": null,
     "choices": [],
     "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
+    "visibleWhen": null,
     "editor": null
   },
   {
-    "key": "AutoTuneForSoftwareSemitoneSettings",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSoftwareSemitoneSettings"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Software Semitone Settings",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSoftwareSemitoneTriggers",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSoftwareSemitoneTriggers"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Software Semitone Triggers",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSoftwareTrueTuningSettings",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSoftwareTrueTuningSettings"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Software True Tuning Settings",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "AutoTuneForSoftwareTrueTuningTriggers",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AutoTuneForSoftwareTrueTuningTriggers"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Software True Tuning Triggers",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AutoTuneForSong",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "MidiCustomEditor",
+    "key": "SeparateNoteColorsMode",
     "ini": {
       "section": "Mod Settings",
-      "name": "MidiCustomEditor"
+      "name": "SeparateNoteColorsMode"
+    },
+    "type": "Int",
+    "default": "0",
+    "label": "Separate Note Colors Mode",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 0,
+    "max": 2,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": {
+      "key": "SeparateNoteColors",
+      "equals": "on"
+    },
+    "editor": null
+  },
+  {
+    "key": "RainbowStringsEnabled",
+    "ini": {
+      "section": "Toggle Switches",
+      "name": "RainbowStrings"
+    },
+    "type": "Bool",
+    "default": "off",
+    "label": "Rainbow Strings",
+    "hint": "",
+    "category": "Toggle Switches",
+    "min": null,
+    "max": null,
+    "scale": null,
+    "choices": [],
+    "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "StringColorsCustomEditor",
+    "ini": {
+      "section": "String Colors",
+      "name": "CustomEditor"
     },
     "type": "String",
     "default": "",
-    "label": "MIDI Setup",
-    "hint": "Open the custom MIDI and pedal setup editor",
+    "label": "String & Note Color Editor",
+    "hint": "Open the custom string and note color palette editor",
     "category": "",
     "min": null,
     "max": null,
@@ -1109,53 +1690,50 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": "Midi"
+    "editor": "StringColors"
   },
   {
-    "key": "AltOutputSampleRate",
+    "key": "ForceReEnumerationEnabled",
     "ini": {
       "section": "Toggle Switches",
-      "name": "AltOutputSampleRate"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Alternative Output Sample Rate",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "AlternativeOutputSampleRate",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "AlternativeOutputSampleRate"
+      "name": "ForceReEnumeration"
     },
     "type": "Enum",
-    "default": "48000",
-    "label": "Output Sample Rate",
+    "default": "off",
+    "label": "Force Enumeration",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
     "max": null,
     "scale": null,
     "choices": [
-      "44100",
-      "48000",
-      "88200",
-      "96000",
-      "176400",
-      "192000"
+      "off",
+      "manual",
+      "automatic"
     ],
     "choicesSource": null,
+    "visibleWhen": null,
+    "editor": null
+  },
+  {
+    "key": "CheckForNewSongsInterval",
+    "ini": {
+      "section": "Mod Settings",
+      "name": "CheckForNewSongsInterval"
+    },
+    "type": "Int",
+    "default": "5000",
+    "label": "Song Scan Interval (seconds)",
+    "hint": "",
+    "category": "Mod Settings",
+    "min": 100,
+    "max": 100000000,
+    "scale": 0.001,
+    "choices": [],
+    "choicesSource": null,
     "visibleWhen": {
-      "key": "AltOutputSampleRate",
-      "equals": "on"
+      "key": "ForceReEnumerationEnabled",
+      "equals": "automatic"
     },
     "editor": null
   },
@@ -1220,14 +1798,14 @@
     "editor": null
   },
   {
-    "key": "LinearRiffRepeater",
+    "key": "AltOutputSampleRate",
     "ini": {
       "section": "Toggle Switches",
-      "name": "LinearRiffRepeater"
+      "name": "AltOutputSampleRate"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Linear Riff Repeater",
+    "label": "Alternative Output Sample Rate",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -1239,304 +1817,43 @@
     "editor": null
   },
   {
-    "key": "AllowRewind",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AllowRewind"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Allow Rewind",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RewindBy",
+    "key": "AlternativeOutputSampleRate",
     "ini": {
       "section": "Mod Settings",
-      "name": "RewindBy"
-    },
-    "type": "Int",
-    "default": "5000",
-    "label": "Rewind By (seconds)",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 90000,
-    "scale": 0.001,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AllowRewind",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "RewindLeadup",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "RewindLeadup"
-    },
-    "type": "Int",
-    "default": "2000",
-    "label": "Rewind Leadup (seconds)",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 90000,
-    "scale": 0.001,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AllowRewind",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "AllowLooping",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "AllowLooping"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Allow Looping",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "LoopingLeadUp",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "LoopingLeadUp"
-    },
-    "type": "Int",
-    "default": "0",
-    "label": "Looping Leadup (seconds)",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 0,
-    "max": 5000,
-    "scale": 0.001,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "AllowLooping",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "RRSpeedAboveOneHundred",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "RRSpeedAboveOneHundred"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Riff Repeater Speed Above 100%",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RRSpeedInterval",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "RRSpeedInterval"
-    },
-    "type": "Int",
-    "default": "2",
-    "label": "RR Speed Interval",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": -50,
-    "max": 50,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "RRSpeedAboveOneHundred",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "VolumeControlEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "VolumeControl"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Volume Control",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "VolumeControlInterval",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "VolumeControlInterval"
-    },
-    "type": "Int",
-    "default": "5",
-    "label": "Volume Control Interval",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 1,
-    "max": 100,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "VolumeControlEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "UseCustomNSPTimer",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "UseCustomNSPTimer"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Use Custom Non-Stop Play Timer",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "CustomNSPTimeLimit",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "CustomNSPTimeLimit"
-    },
-    "type": "Int",
-    "default": "10000",
-    "label": "NSP Time Limit (seconds)",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 2000,
-    "max": 60000,
-    "scale": 0.001,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "UseCustomNSPTimer",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "ShowSongTimerEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ShowSongTimer"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Show Song Timer",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "ShowSongTimerWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ShowSongTimerWhen"
+      "name": "AlternativeOutputSampleRate"
     },
     "type": "Enum",
-    "default": "manual",
-    "label": "Show Song Timer Mode",
+    "default": "48000",
+    "label": "Output Sample Rate",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
     "max": null,
     "scale": null,
     "choices": [
-      "manual",
-      "automatic"
+      "44100",
+      "48000",
+      "88200",
+      "96000",
+      "176400",
+      "192000"
     ],
     "choicesSource": null,
     "visibleWhen": {
-      "key": "ShowSongTimerEnabled",
+      "key": "AltOutputSampleRate",
       "equals": "on"
     },
     "editor": null
   },
   {
-    "key": "TwitchSettings",
-    "ini": {
-      "section": "Twitch",
-      "name": "Settings"
-    },
-    "type": "String",
-    "default": "",
-    "label": "Twitch Integration",
-    "hint": "Configure Twitch channel rewards and Crowd Control integration",
-    "category": "",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": "Twitch"
-  },
-  {
-    "key": "RainbowNotesEnabled",
+    "key": "AllowAudioInBackground",
     "ini": {
       "section": "Toggle Switches",
-      "name": "RainbowNotes"
+      "name": "AllowAudioInBackground"
     },
     "type": "Bool",
     "default": "off",
-    "label": "Rainbow Notes",
+    "label": "Allow Audio in Background",
     "hint": "",
     "category": "Toggle Switches",
     "min": null,
@@ -1545,323 +1862,6 @@
     "choices": [],
     "choicesSource": null,
     "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveFingerprints",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "RemoveFingerprints"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Fingerprints",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "GreenScreenWallEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "GreenScreenWall"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Green Screen Wall",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveLaneMarkersEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "LaneMarkers"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Lane Markers",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveInlaysEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Inlays"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Inlays",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "FretlessModeEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Fretless"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Fretless Mode",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveLyrics",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Lyrics"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Lyrics",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveLyricsWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "RemoveLyricsWhen"
-    },
-    "type": "Enum",
-    "default": "manual",
-    "label": "Remove Lyrics Mode",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "manual",
-      "startup"
-    ],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "RemoveLyrics",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "RemoveHeadstockEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Headstock"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Headstock",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "RemoveHeadstockWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "RemoveHeadstockWhen"
-    },
-    "type": "Enum",
-    "default": "song",
-    "label": "Remove Headstock Mode",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "song",
-      "startup"
-    ],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "RemoveHeadstockEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "RemoveSkylineEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "Skyline"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Remove Skyline",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "ToggleSkylineWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ToggleSkylineWhen"
-    },
-    "type": "Enum",
-    "default": "song",
-    "label": "Remove Skyline Mode",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "song",
-      "startup"
-    ],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "RemoveSkylineEnabled",
-      "equals": "on"
-    },
-    "editor": null
-  },
-  {
-    "key": "ForceReEnumerationEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ForceReEnumeration"
-    },
-    "type": "Enum",
-    "default": "off",
-    "label": "Force Enumeration",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "off",
-      "manual",
-      "automatic"
-    ],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "CheckForNewSongsInterval",
-    "ini": {
-      "section": "Mod Settings",
-      "name": "CheckForNewSongsInterval"
-    },
-    "type": "Int",
-    "default": "5000",
-    "label": "Song Scan Interval (seconds)",
-    "hint": "",
-    "category": "Mod Settings",
-    "min": 100,
-    "max": 100000000,
-    "scale": 0.001,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ForceReEnumerationEnabled",
-      "equals": "automatic"
-    },
-    "editor": null
-  },
-  {
-    "key": "ToggleLoftEnabled",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ToggleLoft"
-    },
-    "type": "Bool",
-    "default": "off",
-    "label": "Toggle Loft",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [],
-    "choicesSource": null,
-    "visibleWhen": null,
-    "editor": null
-  },
-  {
-    "key": "ToggleLoftWhen",
-    "ini": {
-      "section": "Toggle Switches",
-      "name": "ToggleLoftWhen"
-    },
-    "type": "Enum",
-    "default": "manual",
-    "label": "Toggle Loft Mode",
-    "hint": "",
-    "category": "Toggle Switches",
-    "min": null,
-    "max": null,
-    "scale": null,
-    "choices": [
-      "manual",
-      "song",
-      "startup"
-    ],
-    "choicesSource": null,
-    "visibleWhen": {
-      "key": "ToggleLoftEnabled",
-      "equals": "on"
-    },
     "editor": null
   }
 ]
