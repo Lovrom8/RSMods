@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using RSMods.Core;
+using RSMods.Core.Settings;
 using RSMods.Services;
 using RSMods.Util;
 using RSMods.Data;
@@ -28,6 +29,9 @@ public sealed class App : Application
             services.AddSingleton<IAppEnvironment, AvaloniaAppEnvironment>();
             services.AddSingleton<IDialogService, AvaloniaDialogService>();
             services.AddSingleton<StartupService>();
+            services.AddSingleton<IManifestService, ManifestService>();
+            services.AddSingleton<IChoicesProvider, AvaloniaChoicesProvider>();
+            services.AddSingleton<SettingsCoordinator>();
             services.AddSingleton<SettingsService>();
             services.AddSingleton<RocksmithSettingsService>();
             services.AddSingleton<AsioSettingsService>();

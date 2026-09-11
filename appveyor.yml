@@ -49,6 +49,9 @@
         #    run before the installer. SolutionDir is required when building the project standalone.
         Invoke-Step 'Build native DLL' { msbuild "$root\DLL\DLL.vcxproj" /t:Build /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir="$root\" /v:minimal /nologo }
 
+        # Verify that committed mods.manifest.json exactly matches the DLL's DumpManifest export.
+        Invoke-Step 'Verify manifest currency' { & "$root\DLL\Framework\Tests\BuildAndRun.ps1" -VerifyManifest }
+
         # Publish the Avalonia installer as the self-contained, single-file release artifact.
         Invoke-Step 'Publish installer' { & "$root\Build\Publish-Installer.ps1" }
   # 7. Publish artifacts: the installer executable is the user-facing release; the payload manifest is a

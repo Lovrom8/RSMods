@@ -122,7 +122,9 @@ mirroring the DLL side's declarative-default-plus-escape-hatch.
 - **Tier 1 — pure declarative fields.** `Bool` / static `Enum` / `Int` with `min`/`max` / plain `String`.
   The majority of toggles. Render straight from the manifest with **zero** hand-code; a new mod's control
   appears automatically. `min`/`max`/`choices` come from the manifest, retiring the duplicate copies in
-  `RsModsLimits.cs` and `Enums.cs` for these fields.
+  `RsModsLimits.cs` and `Enums.cs` for these fields. Note that `Color` is reserved in `SettingType` for
+  future simple single-hex color entries; complex multi-part palettes (e.g. `HighwayColors`, `StringColors`)
+  remain in Tier 3.
 - **Tier 2 — declarative + a named runtime hook.** Three things the current VM does that a static list
   can't hold literally: **gating** (`ShowRewindSettings => AllowRewind`) → a `visibleWhen {key, equals}`
   on the descriptor; **unit scale** (stored ms, shown seconds, `/1000` on load) → a `scale`/`unit`;
@@ -139,10 +141,12 @@ This tiering is the same boundary as `plugin-distribution.md`: third-party / out
 ship a C# editor anyway).
 
 > [!NOTE]
-> **Tier-3 Dirty Tracking**: `CustomEditorFieldViewModel.Save` is a no-op and does not track `IsDirty`
-> generically. Bespoke sub-UIs (Guitar Speak, custom colors, MIDI, Twitch) manage their own internal
-> dirty state and save lifecycle (e.g., via dedicated save handlers or `_childRowsDirty` in `ModSettingsViewModel`).
-> Generic coordinator dirty tracking applies to Tier 1 and Tier 2 declarative fields.
+> **Tier-3 Dirty Tracking & Lifecycle**: To prevent bespoke editors from needing ad-hoc dirty state in the
+> outer VM, `CustomEditorFieldViewModel` provides generic dirty tracking:
+> - `SetDirty(bool)` marks the field dirty and raises `SettingsCoordinator.IsDirty`.
+> - `SaveHandler(IniManager)` and `LoadHandler(IniManager)` can be registered so sub-editors participate
+>   directly in the coordinator's atomic save/load passes. Sub-editors can also manage independent persistence
+>   if needed.
 
 **Avalonia mechanics.** An `ObservableCollection<SettingFieldViewModel>` in `GUI.Core` with a base VM and
 `Bool`/`Enum`/`Numeric`/`Choice` derivations, each holding the descriptor + live value + an `IsVisible`

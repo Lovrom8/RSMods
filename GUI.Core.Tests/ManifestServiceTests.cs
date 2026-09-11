@@ -30,10 +30,34 @@ public sealed class ManifestServiceTests
         Assert.NotNull(interval);
         Assert.Equal(SettingType.Int, interval.Type);
         Assert.Equal(1, interval.Min);
-        Assert.Equal(25, interval.Max);
+        Assert.Equal(100, interval.Max);
         Assert.NotNull(interval.VisibleWhen);
         Assert.Equal("VolumeControlEnabled", interval.VisibleWhen.Key);
         Assert.Equal("on", interval.VisibleWhen.ExpectedValue);
+
+        var altSampleRate = service.Find("AlternativeOutputSampleRate");
+        Assert.NotNull(altSampleRate);
+        Assert.Equal(SettingType.Enum, altSampleRate.Type);
+        Assert.Equal("48000", altSampleRate.Default);
+        Assert.NotNull(altSampleRate.Choices);
+        Assert.Contains("48000", altSampleRate.Choices);
+        Assert.Contains("96000", altSampleRate.Choices);
+
+        var nsp = service.Find("CustomNSPTimeLimit");
+        Assert.NotNull(nsp);
+        Assert.Equal(2000, nsp.Min);
+        Assert.Equal(60000, nsp.Max);
+        Assert.Equal(0.001, nsp.Scale);
+
+        var rewind = service.Find("RewindBy");
+        Assert.NotNull(rewind);
+        Assert.Equal(0, rewind.Min);
+        Assert.Equal(90000, rewind.Max);
+        Assert.Equal(0.001, rewind.Scale);
+
+        var font = service.Find("OnScreenFont");
+        Assert.NotNull(font);
+        Assert.Equal("SystemFonts", font.ChoicesSource);
     }
 
     [Fact]

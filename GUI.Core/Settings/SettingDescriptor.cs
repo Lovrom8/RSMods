@@ -9,7 +9,8 @@ public enum SettingType
     Bool,
     Int,
     Enum,
-    String
+    String,
+    Color
 }
 
 public sealed record IniLocation(

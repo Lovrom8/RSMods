@@ -217,6 +217,64 @@ public sealed class SettingsKeyParityTests
         return constants;
     }
 
+    [Fact]
+    public void CommittedManifestMatchesDllExportWhenDllIsPresent()
+    {
+        string root = FindRepositoryRoot();
+        string committedManifestPath = Path.Combine(root, "mods.manifest.json");
+        Assert.True(File.Exists(committedManifestPath), "mods.manifest.json must exist at repository root.");
+
+        string[] candidateDllPaths =
+        [
+            Path.Combine(root, "DLL", "Installer", "Resources", "xinput1_3.dll"),
+            Path.Combine(root, "Installer", "Resources", "xinput1_3.dll"),
+            Path.Combine(root, "DLL", "Release", "xinput1_3.dll")
+        ];
+
+        string? dllPath = candidateDllPaths
+            .Where(File.Exists)
+            .OrderByDescending(File.GetLastWriteTimeUtc)
+            .FirstOrDefault();
+        if (dllPath is null)
+        {
+            // Native DLL not built in this test run environment; skip dump assertion
+            return;
+        }
+
+        string tempManifestPath = Path.Combine(Path.GetTempPath(), $"mods.manifest.test.{Guid.NewGuid():N}.json");
+        try
+        {
+            string systemX86 = Environment.GetFolderPath(Environment.SpecialFolder.SystemX86);
+            string rundll32 = Path.Combine(string.IsNullOrEmpty(systemX86) ? "C:\\Windows\\System32" : systemX86, "rundll32.exe");
+
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = rundll32,
+                Arguments = $"\"{dllPath}\",DumpManifest \"{tempManifestPath}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var proc = System.Diagnostics.Process.Start(psi);
+            Assert.NotNull(proc);
+            bool finished = proc.WaitForExit(10000);
+            Assert.True(finished, "rundll32 DumpManifest timed out.");
+            Assert.True(File.Exists(tempManifestPath), "rundll32 DumpManifest failed to produce output file.");
+
+            string committedJson = File.ReadAllText(committedManifestPath).Replace("\r\n", "\n").Trim();
+            string dumpedJson = File.ReadAllText(tempManifestPath).Replace("\r\n", "\n").Trim();
+
+            Assert.True(committedJson == dumpedJson,
+                "mods.manifest.json is out of date with the DLL declarations! " +
+                "Rebuild the DLL and run 'pwsh DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest' to sync the committed manifest.");
+        }
+        finally
+        {
+            if (File.Exists(tempManifestPath))
+                File.Delete(tempManifestPath);
+        }
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

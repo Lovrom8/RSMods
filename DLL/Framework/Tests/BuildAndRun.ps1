@@ -12,7 +12,8 @@
 # Exits non-zero if any test fails to build or reports test failures.
 
 param (
-    [switch]$DumpManifest
+    [switch]$DumpManifest,
+    [switch]$VerifyManifest
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,9 +23,15 @@ $Framework = Split-Path $TestsDir -Parent            # ...\DLL\Framework
 $OutDir    = Join-Path $TestsDir 'bin'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
+$candidateDlls = @(
+    (Join-Path $TestsDir '..\..\Installer\Resources\xinput1_3.dll'),
+    (Join-Path $TestsDir '..\..\..\Installer\Resources\xinput1_3.dll'),
+    (Join-Path $TestsDir '..\..\Release\xinput1_3.dll')
+)
+$dll = $candidateDlls | Where-Object { Test-Path $_ } | Sort-Object { (Get-Item $_).LastWriteTimeUtc } -Descending | Select-Object -First 1
+
 if ($DumpManifest) {
-    $dll = Join-Path $TestsDir '..\..\Installer\Resources\xinput1_3.dll'
-    if (Test-Path $dll) {
+    if ($dll -and (Test-Path $dll)) {
         $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
         Write-Host "=== Dumping mods.manifest.json ===" -ForegroundColor Cyan
         & cmd /c "C:\Windows\SysWOW64\rundll32.exe `"$dll`",DumpManifest `"$manifestPath`""
@@ -33,6 +40,33 @@ if ($DumpManifest) {
     }
     else {
         Write-Host "xinput1_3.dll not found; build DLL before dumping manifest." -ForegroundColor Red
+        exit 1
+    }
+}
+
+if ($VerifyManifest) {
+    if ($dll -and (Test-Path $dll)) {
+        $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
+        $tempPath = [System.IO.Path]::GetTempFileName()
+        try {
+            Write-Host "=== Verifying mods.manifest.json currency ===" -ForegroundColor Cyan
+            & cmd /c "C:\Windows\SysWOW64\rundll32.exe `"$dll`",DumpManifest `"$tempPath`""
+            $committed = (Get-Content $manifestPath -Raw).Trim() -replace "`r`n", "`n"
+            $dumped = (Get-Content $tempPath -Raw).Trim() -replace "`r`n", "`n"
+            if ($committed -ne $dumped) {
+                Write-Host "ERROR: mods.manifest.json is out of date with DLL declarations!" -ForegroundColor Red
+                Write-Host "Run 'powershell DLL/Framework/Tests/BuildAndRun.ps1 -DumpManifest' to sync the committed manifest." -ForegroundColor Yellow
+                exit 1
+            }
+            Write-Host "mods.manifest.json is up to date with DLL declarations." -ForegroundColor Green
+            exit 0
+        }
+        finally {
+            if (Test-Path $tempPath) { Remove-Item $tempPath -Force }
+        }
+    }
+    else {
+        Write-Host "xinput1_3.dll not found; build DLL before verifying manifest." -ForegroundColor Red
         exit 1
     }
 }

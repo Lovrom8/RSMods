@@ -24,6 +24,7 @@ namespace RSMods
         }
 
         private static IniManager _ini;
+        public static IniManager Ini => _ini;
         private static IniSection _songListTitles;
         private static IniSection _keybinds;
         private static IniSection _audioKeybindings;

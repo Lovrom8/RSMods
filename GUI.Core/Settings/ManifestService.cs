@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -45,11 +44,9 @@ public sealed class ManifestService : IManifestService
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
     }
 
-    public SettingDescriptor? Find(string key) =>
-        _byKey.TryGetValue(key, out var desc) ? desc : null;
+    public SettingDescriptor? Find(string key) => _byKey.TryGetValue(key, out var desc) ? desc : null;
 
-    public IEnumerable<IGrouping<string, SettingDescriptor>> GetCategories() =>
-        _descriptors.GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "General" : d.Category);
+    public IEnumerable<IGrouping<string, SettingDescriptor>> GetCategories() => _descriptors.GroupBy(d => string.IsNullOrWhiteSpace(d.Category) ? "General" : d.Category);
 
     private static List<SettingDescriptor> LoadDescriptors()
     {
