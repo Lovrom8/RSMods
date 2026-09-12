@@ -150,6 +150,9 @@ namespace Settings {
 		// Solid Notes (user-defined hex color; lives in modSettings, set by the Twitch/CC SolidNotes effect)
 		inline constexpr char SolidNoteColor[]         = "SolidNoteColor";
 
+		// Ultrawide support
+		inline constexpr char Ultrawide[]               = "Ultrawide";
+
 		// Wwise RTPC channel names passed to SetRTPCValue / GetRTPCValue.
 		namespace Channel {
 			inline constexpr char Master[]    = "Master_Volume";

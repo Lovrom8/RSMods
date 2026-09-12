@@ -147,6 +147,7 @@ namespace RSMods
                     { ReadSettings.UseCustomNSPTimerIdentifier, CreateDefaultOnOldINI(ReadSettings.UseCustomNSPTimerIdentifier, "off") }, // Allows the user to have a custom timer for Non-stop Play instead of the 10.9 seconds that it defaults to.
                     { ReadSettings.DisplayCurrentAccuracyIdentifier, CreateDefaultOnOldINI(ReadSettings.DisplayCurrentAccuracyIdentifier, "off") },
                     { ReadSettings.PreventMidSongPauseIdentifier, CreateDefaultOnOldINI(ReadSettings.PreventMidSongPauseIdentifier, "off") },
+                    { ReadSettings.UltrawideIdentifier, CreateDefaultOnOldINI(ReadSettings.UltrawideIdentifier, "off") }, // Fills 21:9 / 32:9 displays: the 3D scene gains horizontal FOV (Hor+) while the HUD and menus stay 16:9. No-op on 16:9.
                     { ReadSettings.RemoveFingerprintsIdentifier, CreateDefaultOnOldINI(ReadSettings.RemoveFingerprintsIdentifier, "off") },
                 }
             );

@@ -267,6 +267,7 @@ Same VKey format. Require `VolumeControl = on`. Use Control with the key to decr
 | `UseCustomNSPTimer` | `off` | on/off | Custom Non-stop Play inter-song timer. |
 | `DisplayCurrentAccuracy` | `off` | on/off | Show current accuracy on screen. |
 | `PreventMidSongPause` | `off` | on/off | Prevent accidental mid-song pause. |
+| `Ultrawide` | `off` | on/off | Ultrawide (21:9 / 32:9) display support. The interface stays 16:9. |
 
 ### `[String Colors]`
 Hex colors without `#` (e.g. `FF4F5A`). Indices `0`–`5` = low E … high E. `_N` = normal songs; `_CB` = Extended Range / colorblind palette (DLL defaults below).

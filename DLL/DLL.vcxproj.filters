@@ -291,6 +291,9 @@
     <ClCompile Include="Mods\RemoveSkylineMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\UltrawideMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\RemoveHeadstockMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -389,6 +392,9 @@
     <ClInclude Include="Settings.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
+    <ClInclude Include="AspectRatio.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Lib\DirectX\d3d9.h">
       <Filter>Main Headers\DirectX</Filter>
     </ClInclude>
@@ -456,6 +462,9 @@
       <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="D3D/D3DHooks.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/UltrawideShaders.hpp">
       <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="D3D/D3D.hpp">
@@ -651,6 +660,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\RemoveSkylineMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UltrawideMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\RemoveHeadstockMod.hpp">

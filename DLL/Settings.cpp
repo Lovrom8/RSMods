@@ -127,6 +127,7 @@ void Settings::Initialize()
 		{Setting::DisplayCurrentAccuracy, "off"},
 		{Setting::PreventMidSongPause, "off"},
 		{Setting::RemoveFingerprints, "off"},
+		{Setting::Ultrawide, "off"},
 	};
 
 	customSettings = {
@@ -301,6 +302,7 @@ void Settings::ReadModSettings() {
 	modSettings[Setting::DiscoModeEnabled] = reader.GetValue("Toggle Switches", "DiscoMode", "off");
 	modSettings[Setting::RemoveHeadstockEnabled] = reader.GetValue("Toggle Switches", "Headstock", "off");
 	modSettings[Setting::RemoveSkylineEnabled] = reader.GetValue("Toggle Switches", "Skyline", "off");
+	modSettings[Setting::Ultrawide] = reader.GetValue("Toggle Switches", "Ultrawide", "off");
 	modSettings[Setting::GreenScreenWallEnabled] = reader.GetValue("Toggle Switches", "GreenScreenWall", "off");
 	modSettings[Setting::ForceProfileEnabled] = reader.GetValue("Toggle Switches", "ForceProfileLoad", "off");
 	modSettings[Setting::FretlessModeEnabled] = reader.GetValue("Toggle Switches", "Fretless", "off");

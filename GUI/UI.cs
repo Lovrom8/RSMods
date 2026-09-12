@@ -864,6 +864,7 @@ namespace RSMods
             checkBox_CustomNSPTimer.Checked = ReadSettings.ProcessSettings(ReadSettings.UseCustomNSPTimerIdentifier) == "on";
             checkBox_DisplayCurrentAccuracy.Checked = ReadSettings.ProcessSettings(ReadSettings.DisplayCurrentAccuracyIdentifier) == "on";
             checkBox_PreventMidSongPause.Checked = ReadSettings.ProcessSettings(ReadSettings.PreventMidSongPauseIdentifier) == "on";
+            checkBox_Ultrawide.Checked = ReadSettings.ProcessSettings(ReadSettings.UltrawideIdentifier) == "on";
             checkBox_RemoveFingerprints.Checked = ReadSettings.ProcessSettings(ReadSettings.RemoveFingerprintsIdentifier) == "on";
             groupBox_NSPTimer.Visible = checkBox_CustomNSPTimer.Checked;
             {
@@ -2831,6 +2832,7 @@ namespace RSMods
 
         private void Save_DisplaySongAccuracy(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.DisplayCurrentAccuracyIdentifier, checkBox_DisplayCurrentAccuracy.Checked.ToString().ToLower());
         private void Save_PreventMidSongPause(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.PreventMidSongPauseIdentifier, checkBox_PreventMidSongPause.Checked.ToString().ToLower());
+        private void Save_Ultrawide(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.UltrawideIdentifier, checkBox_Ultrawide.Checked.ToString().ToLower());
 
         private void Save_NSPTimer(object sender, EventArgs e) => SaveSettings_Save(ReadSettings.CustomNSPTimeLimitIdentifier, ((int)(nUpDown_NSPTimer.Value * 1000)).ToString());
 

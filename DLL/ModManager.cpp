@@ -125,6 +125,10 @@ namespace ModManager {
 		oEndScene = (tEndScene)MemUtil::TrampHook((byte*)vTable[D3DInfo::EndScene_Index], (byte*)D3DHooks::Hook_EndScene, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-endscene
 		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitive_Index], (byte*)D3DHooks::Hook_DIP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawindexedprimitive
 		oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitive_Index], (byte*)D3DHooks::Hook_DP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawprimitive
+		oStretchRect = (tStretchRect)MemUtil::TrampHook((byte*)vTable[D3DInfo::StretchRect_Index], (byte*)D3DHooks::Hook_StretchRect, 5); // Widens the game's 16:9 letterbox composite for the ultrawide mod.
+		oSetRenderTarget = (tSetRenderTarget)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetRenderTarget_Index], (byte*)D3DHooks::Hook_SetRenderTarget, 5); // Tracks whether the scene target is bound for the ultrawide mod.
+		oDrawPrimitiveUP = (tDrawPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawPrimitiveUP, 5); // Ultrawide correction covers every draw entry point.
+		oDrawIndexedPrimitiveUP = (tDrawIndexedPrimitiveUP)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitiveUP_Index], (byte*)D3DHooks::Hook_DrawIndexedPrimitiveUP, 5);
 	}
 
 	/// <summary>

@@ -2,6 +2,9 @@
 #include "D3DHooks.hpp"
 #include "../Framework/Framework.hpp"
 #include "../D3DOverlay.hpp"
+#include "../AspectRatio.hpp"
+#include "UltrawideShaders.hpp"
+#include "../Mods/UltrawideMod.hpp"
 
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
@@ -17,6 +20,9 @@ namespace Setting = Settings::Setting;
 HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT StartIndex, UINT PrimCount) { // Mainly used for Note Tails
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
+
+	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
+	ultrawideScope.Apply();
 
 	// Note-tails for Extended Range / Custom Colors
 	if (ERMode::AttemptedERInThisSong && ERMode::UseEROrColorsInThisSong && NOTE_TAILS) {
@@ -61,6 +67,27 @@ HRESULT APIENTRY D3DHooks::Hook_DP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE P
 }
 
 /// <summary>
+/// IDirect3DDevice9::DrawPrimitiveUP Middleware. Exists so the ultrawide correction covers every
+/// draw entry point; the game's own behaviour passes through untouched.
+/// </summary>
+HRESULT APIENTRY D3DHooks::Hook_DrawPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT PrimCount, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
+	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
+	ultrawideScope.Apply();
+
+	return oDrawPrimitiveUP(pDevice, PrimType, PrimCount, pVertexStreamZeroData, VertexStreamZeroStride);
+}
+
+/// <summary>
+/// IDirect3DDevice9::DrawIndexedPrimitiveUP Middleware. See Hook_DrawPrimitiveUP.
+/// </summary>
+HRESULT APIENTRY D3DHooks::Hook_DrawIndexedPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT MinVertexIndex, UINT NumVertices, UINT PrimCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride) {
+	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
+	ultrawideScope.Apply();
+
+	return oDrawIndexedPrimitiveUP(pDevice, PrimType, MinVertexIndex, NumVertices, PrimCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride);
+}
+
+/// <summary>
 /// IDirect3DDevice9::SetVertexDeclaration Middleware.
 /// </summary>
 /// <param name="pDevice"> - Device Pointer</param>
@@ -93,6 +120,103 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShaderConstantF(LPDIRECT3DDEVICE9 pDevi
 }
 
 /// <summary>
+/// Refresh the ultrawide correction state. Called once per frame from Hook_EndScene, so the
+/// per-constant-upload path never has to touch Settings or query the swap chain.
+/// </summary>
+void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
+	// Only widen. A narrower-than-16:9 display gives a scale above 1.0, which would push the
+	// camera frustum and the remapped viewport outside the backbuffer, so the mod stays inert.
+	const bool active = ultrawideSettingOn.load(std::memory_order_relaxed)
+		&& ultrawideBackBufferValid && AspectRatio::IsWiderThanReference(ultrawideClipXScale);
+
+	ultrawideActive.store(active, std::memory_order_relaxed);
+
+	if (ultrawideBackBufferValid && ultrawideBackBufferHeight)
+		UltrawideMod::SetDisplayAspect(static_cast<double>(ultrawideBackBufferWidth) / ultrawideBackBufferHeight);
+
+	if (ultrawideBackBufferValid || !pDevice)
+		return;
+
+	IDirect3DSwapChain9* swapChain = nullptr;
+	if (FAILED(pDevice->GetSwapChain(0, &swapChain)) || !swapChain)
+		return;
+
+	D3DPRESENT_PARAMETERS presentParameters{};
+	if (SUCCEEDED(swapChain->GetPresentParameters(&presentParameters))
+		&& presentParameters.BackBufferWidth && presentParameters.BackBufferHeight) {
+
+		ultrawideClipXScale = AspectRatio::ClipXScale(presentParameters.BackBufferWidth, presentParameters.BackBufferHeight);
+		ultrawideBackBufferWidth = presentParameters.BackBufferWidth;
+		ultrawideBackBufferHeight = presentParameters.BackBufferHeight;
+		ultrawideBackBufferValid = true;
+	}
+
+	swapChain->Release();
+}
+
+/// <summary>
+/// IDirect3DDevice9::StretchRect Middleware.
+/// </summary>
+HRESULT APIENTRY D3DHooks::Hook_StretchRect(LPDIRECT3DDEVICE9 pDevice, IDirect3DSurface9* pSourceSurface, const RECT* pSourceRect, IDirect3DSurface9* pDestSurface, const RECT* pDestRect, D3DTEXTUREFILTERTYPE Filter) {
+	if (ultrawideActive.load(std::memory_order_relaxed) && pDestRect && pDestSurface) {
+		D3DSURFACE_DESC destinationDescription{};
+
+		if (SUCCEEDED(pDestSurface->GetDesc(&destinationDescription))) {
+			const AspectRatio::Rect destination{ pDestRect->left, pDestRect->top, pDestRect->right, pDestRect->bottom };
+			AspectRatio::Rect widened{};
+
+			if (AspectRatio::WidenLetterbox(destination, destinationDescription.Width, destinationDescription.Height, widened)) {
+				const RECT widenedRect{ widened.left, widened.top, widened.right, widened.bottom };
+
+				return oStretchRect(pDevice, pSourceSurface, pSourceRect, pDestSurface, &widenedRect, Filter);
+			}
+		}
+	}
+
+	return oStretchRect(pDevice, pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
+}
+
+/// <summary>
+/// IDirect3DDevice9::SetRenderTarget Middleware. Tracks whether the scene target is bound, so the
+/// aspect correction can confine itself to draws that actually reach the screen.
+/// </summary>
+HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
+	if (RenderTargetIndex == 0) {
+
+		if (pRenderTarget) {
+			D3DSURFACE_DESC targetDescription{};
+			IDirect3DTexture9* container = nullptr;
+			if (SUCCEEDED(pRenderTarget->GetDesc(&targetDescription))
+				&& SUCCEEDED(pRenderTarget->GetContainer(__uuidof(IDirect3DTexture9), reinterpret_cast<void**>(&container))) && container) {
+				ultrawideRenderTargetTextures[container] = { targetDescription.Width, targetDescription.Height };
+				container->Release();
+			}
+		}
+
+		bool isScene = false;
+		UINT width = 0;
+		UINT height = 0;
+
+		if (pRenderTarget && ultrawideBackBufferValid) {
+			D3DSURFACE_DESC description{};
+
+			if (SUCCEEDED(pRenderTarget->GetDesc(&description))) {
+				width = description.Width;
+				height = description.Height;
+
+				isScene = AspectRatio::SameAspect(width, height, ultrawideBackBufferWidth, ultrawideBackBufferHeight);
+			}
+		}
+
+		ultrawideRenderTargetIsScene = isScene;
+		ultrawideRenderTargetWidth = width;
+		ultrawideRenderTargetHeight = height;
+	}
+
+	return oSetRenderTarget(pDevice, RenderTargetIndex, pRenderTarget);
+}
+
+/// <summary>
 /// IDirect3DDevice9::SetVertexShader Middleware.
 /// </summary>
 /// <param name="pDevice"> - Device Pointer</param>
@@ -103,7 +227,9 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 		vShader = veShader;
 		vShader->GetFunction(NULL, &vSize);
 	}
-	
+
+	UltrawideShaders::OnVertexShaderBound(veShader);
+
 	// Call the original SetVertexShader.
 	return oSetVertexShader(pDevice, veShader);
 }
@@ -166,6 +292,10 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	if (SUCCEEDED(ResetReturn)) {
 		ImGui_ImplDX9_CreateDeviceObjects();
 		GameOverlay::OnResetDevice();
+
+		ultrawideBackBufferValid = false; // Resolution may have changed; recompute the scale lazily.
+		ultrawideRenderTargetTextures.clear(); // Targets are recreated after a reset; stale pointers must not match new textures.
+		UltrawideShaders::Forget(); // Same hazard: shaders are released across a reset too.
 	}
 
 	return ResetReturn;
@@ -187,6 +317,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 
 	if (pDevice->GetStreamSource(0, &Stream_Data, &Offset, &Stride) == D3D_OK)
 		Stream_Data->Release();
+
+	UltrawideShaders::DrawScope ultrawideScope(pDevice, PrimCount);
+	ultrawideScope.Apply();
 
 	// This could potentially lead to game locking up (because DIP is called multiple times per frame) if that value is not filled, but generally it should work 
 	if (Settings::ReturnSettingValue(Setting::ExtendedRangeEnabled).length() < 2) { // Due to some weird reasons, sometimes settings decide to go missing - this may solve the problem

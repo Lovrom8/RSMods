@@ -64,6 +64,7 @@ namespace RSMods
             this.groupBox_EnabledMods = new System.Windows.Forms.GroupBox();
             this.checkBox_RemoveFingerprints = new System.Windows.Forms.CheckBox();
             this.checkBox_PreventMidSongPause = new System.Windows.Forms.CheckBox();
+            this.checkBox_Ultrawide = new System.Windows.Forms.CheckBox();
             this.checkBox_DisplayCurrentAccuracy = new System.Windows.Forms.CheckBox();
             this.checkBox_CustomNSPTimer = new System.Windows.Forms.CheckBox();
             this.checkBox_FixBrokenTones = new System.Windows.Forms.CheckBox();
@@ -1082,6 +1083,7 @@ namespace RSMods
             // 
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveFingerprints);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_PreventMidSongPause);
+            this.groupBox_EnabledMods.Controls.Add(this.checkBox_Ultrawide);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_DisplayCurrentAccuracy);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_CustomNSPTimer);
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_FixBrokenTones);
@@ -1122,7 +1124,7 @@ namespace RSMods
             this.groupBox_EnabledMods.Controls.Add(this.checkBox_RemoveHeadstock);
             this.groupBox_EnabledMods.Location = new System.Drawing.Point(18, 23);
             this.groupBox_EnabledMods.Name = "groupBox_EnabledMods";
-            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 469);
+            this.groupBox_EnabledMods.Size = new System.Drawing.Size(319, 490);
             this.groupBox_EnabledMods.TabIndex = 50;
             this.groupBox_EnabledMods.TabStop = false;
             this.groupBox_EnabledMods.Text = "Enabled Mods";
@@ -1148,6 +1150,17 @@ namespace RSMods
             this.checkBox_PreventMidSongPause.Text = "Prevent Pause Mid Song";
             this.checkBox_PreventMidSongPause.UseVisualStyleBackColor = true;
             this.checkBox_PreventMidSongPause.CheckedChanged += new System.EventHandler(this.Save_PreventMidSongPause);
+            // 
+            // checkBox_Ultrawide
+            // 
+            this.checkBox_Ultrawide.AutoSize = true;
+            this.checkBox_Ultrawide.Location = new System.Drawing.Point(11, 468);
+            this.checkBox_Ultrawide.Name = "checkBox_Ultrawide";
+            this.checkBox_Ultrawide.Size = new System.Drawing.Size(140, 17);
+            this.checkBox_Ultrawide.TabIndex = 82;
+            this.checkBox_Ultrawide.Text = "Ultrawide (21:9 / 32:9)";
+            this.checkBox_Ultrawide.UseVisualStyleBackColor = true;
+            this.checkBox_Ultrawide.CheckedChanged += new System.EventHandler(this.Save_Ultrawide);
             // 
             // checkBox_DisplayCurrentAccuracy
             // 
@@ -7611,6 +7624,7 @@ namespace RSMods
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSaveFontSize;
         private System.Windows.Forms.CheckBox checkBox_PreventMidSongPause;
+        private System.Windows.Forms.CheckBox checkBox_Ultrawide;
         private System.Windows.Forms.GroupBox groupBox_ToggleFingerprints;
         private System.Windows.Forms.CheckBox checkBox_RemoveFingerprints;
     }
