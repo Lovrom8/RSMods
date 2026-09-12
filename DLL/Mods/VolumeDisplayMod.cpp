@@ -1,13 +1,26 @@
 #include "../stdafx.h"
 #include "VolumeDisplayMod.hpp"
 #include "VolumeControl.hpp"
-#include "../D3DOverlay.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::Numeric;
 namespace Setting = Settings::Setting;
+
+SettingDefs VolumeDisplayMod::Settings() const {
+	return {
+		Toggle(Setting::VolumeControlEnabled, "VolumeControl", "Volume Control"),
+		Numeric(Setting::VolumeControlInterval, "Volume Control Interval")
+			.Ini("Mod Settings", "VolumeControlInterval")
+			.Default("5")
+			.Range(1, 100)
+			.WithVisibleWhen(Setting::VolumeControlEnabled),
+	};
+}
 
 void VolumeDisplayMod::OnInitialize(ModContext& c) {
 	auto commands = c.Commands();
@@ -15,36 +28,32 @@ void VolumeDisplayMod::OnInitialize(ModContext& c) {
 
 	commands.BindSetting(Setting::Key::MutePlayer1, KeyEdge::Up,
 		Availability::Active,
-		[](ModContext&, const KeyEvent&) { ToggleMute(false); }, {}, "Mute Player 1");
+		[this](ModContext&, const KeyEvent&) { ToggleMute(false); }, {}, "Mute Player 1");
 
 	commands.BindSetting(Setting::Key::MutePlayer2, KeyEdge::Up,
 		Availability::Active,
-		[](ModContext&, const KeyEvent&) { ToggleMute(true); }, {}, "Mute Player 2");
+		[this](ModContext&, const KeyEvent&) { ToggleMute(true); }, {}, "Mute Player 2");
 
 	commands.BindSetting(Setting::Key::DisplayMixer, KeyEdge::Up,
 		Availability::Active,
-		[](ModContext&, const KeyEvent&) { GameOverlay::displayMixer = false; });
+		[this](ModContext&, const KeyEvent&) { showMixer = false; });
 
 	commands.BindSetting(Setting::Key::ChangedSelectedVolume, KeyEdge::Up,
 		Availability::Active,
-		[](ModContext&, const KeyEvent&) {
-			++GameOverlay::currentVolumeIndex;
-			if (GameOverlay::currentVolumeIndex >= GameOverlay::mixerChannels.size()) {
-				GameOverlay::currentVolumeIndex = 0;
-			}
+		[this](ModContext&, const KeyEvent&) {
+			currentIndex = (currentIndex + 1) % static_cast<int>(channels.size());
 		}, volumeEnabled);
 
 	commands.BindSetting(Setting::Key::DisplayMixer, KeyEdge::Down,
 		Availability::Active,
-		[](ModContext&, const KeyEvent&) { GameOverlay::displayMixer = true; },
+		[this](ModContext&, const KeyEvent&) { showMixer = true; },
 		volumeEnabled, "Display Mixer");
 
-	for (const auto& binding : volumeBindings) {
-		commands.BindSetting(binding.key, KeyEdge::Down,
+	for (int index = 0; index < static_cast<int>(channels.size()); ++index) {
+		commands.BindSetting(channels[index].key, KeyEdge::Down,
 			Availability::Active,
-			[channel = std::string(binding.channel), overlayIndex = binding.overlayIndex]
-			(ModContext& context, const KeyEvent& event) {
-				ChangeVolume(context, event, channel, overlayIndex);
+			[this, index](ModContext& context, const KeyEvent& event) {
+				ChangeVolume(context, event, index);
 			}, volumeEnabled);
 	}
 }
@@ -59,45 +68,77 @@ void VolumeDisplayMod::ToggleMute(bool player2) {
 		VolumeControl::MutePlayer(player2);
 	}
 
-	GameOverlay::displayCurrentVolume = true;
-	GameOverlay::displayVolumeStartTime = std::chrono::steady_clock::now();
-	GameOverlay::currentVolumeIndex = player2 ? 3 : 2;
+	RaisePopup(player2 ? 3 : 2); // Player 2 / Player 1 rows in `channels`.
 }
 
-void VolumeDisplayMod::ChangeVolume(const ModContext& c, const KeyEvent& event, std::string_view channel, int overlayIndex) {
+void VolumeDisplayMod::ChangeVolume(const ModContext& c, const KeyEvent& event, int index) {
 	const int interval = c.Int(Setting::VolumeControlInterval);
+	const std::string channel(channels[index].channel);
 
 	if (event.control) {
-		VolumeControl::DecreaseVolume(interval, std::string(channel));
+		VolumeControl::DecreaseVolume(interval, channel);
 	}
 	else {
-		VolumeControl::IncreaseVolume(interval, std::string(channel));
+		VolumeControl::IncreaseVolume(interval, channel);
 	}
 
-	GameOverlay::displayCurrentVolume = true;
-	GameOverlay::displayVolumeStartTime = std::chrono::steady_clock::now();
-	GameOverlay::currentVolumeIndex = overlayIndex;
+	RaisePopup(index);
+}
+
+void VolumeDisplayMod::RaisePopup(int index) {
+	currentIndex = index;
+	showPopup = true;
+	popupRaised = std::chrono::steady_clock::now();
 }
 
 void VolumeDisplayMod::OnMenuTick(ModContext& c) {
-	SyncDisplay(c);
+	SyncPopup(c);
+	SyncMixer(c);
 }
 
 void VolumeDisplayMod::OnSongTick(ModContext& c) {
-	SyncDisplay(c);
+	SyncPopup(c);
+	SyncMixer(c);
 }
 
-// The volume overlay is raised by the volume keybindings; hide it again once it has been up for 3s.
-void VolumeDisplayMod::SyncDisplay(ModContext& c) {
-	if (c.IsOn(Setting::VolumeControlEnabled) && MoreThanThreeSecondsPassed()) {
-		GameOverlay::displayCurrentVolume = false;
+// Published at order 0, above the mixer band.
+void VolumeDisplayMod::SyncPopup(ModContext& c) {
+	const bool enabled = c.IsOn(Setting::VolumeControlEnabled);
+
+	if (enabled && showPopup && PopupExpired()) {
+		showPopup = false;
+	}
+
+	Framework::HudText snapshot;
+	snapshot.visible = enabled && showPopup && !showMixer; // the held mixer already lists every channel
+	if (snapshot.visible) {
+		snapshot.text = LineFor(currentIndex);
+	}
+
+	c.Hud().Set("current-volume", { Framework::HudAnchor::TopLeft, 0 }, std::move(snapshot));
+}
+
+void VolumeDisplayMod::SyncMixer(ModContext& c) {
+	const bool visible = c.IsOn(Setting::VolumeControlEnabled) && showMixer;
+
+	for (int index = 0; index < static_cast<int>(channels.size()); ++index) {
+		Framework::HudText line;
+		line.visible = visible;
+		if (visible) {
+			line.text = LineFor(index);
+		}
+
+		c.Hud().Set("mixer-" + std::to_string(index), { Framework::HudAnchor::TopLeft, 10 + index }, std::move(line));
 	}
 }
 
-bool VolumeDisplayMod::MoreThanThreeSecondsPassed() const {
-	const auto currentTime = std::chrono::steady_clock::now();
+std::string VolumeDisplayMod::LineFor(int index) const {
+	const int volume = static_cast<int>(VolumeControl::CurrentVolume(channels[index].channel));
+	return std::string(channels[index].label) + std::to_string(volume) + "%";
+}
 
-	return currentTime - GameOverlay::displayVolumeStartTime > std::chrono::seconds(3);
+bool VolumeDisplayMod::PopupExpired() const {
+	return std::chrono::steady_clock::now() - popupRaised > std::chrono::seconds(3);
 }
 
 static Framework::ModRegistrar<VolumeDisplayMod> _volumeDisplayReg;

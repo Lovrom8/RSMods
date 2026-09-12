@@ -8,6 +8,7 @@ public:
 	MOD_ID(TwoRTCBypassMod)
 
 	bool IsEnabled(const Framework::ModContext& c) const override;
+	Framework::SettingDefs Settings() const override;
 
 	void OnEnabled(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;

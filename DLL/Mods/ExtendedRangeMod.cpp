@@ -2,14 +2,61 @@
 #include "ExtendedRangeMod.hpp"
 #include "Midi.hpp"
 #include "ExtendedRangeMode.hpp"
+#include "../D3D/D3D.hpp"
+#include "../D3D/D3DHelper.hpp"
+#include "../D3D/D3DHooks.hpp"
+#include "DrawMeshTags.hpp"
 
+using Framework::SettingDefs;
+using Framework::SettingDef;
+using Framework::Toggle;
+using Framework::Numeric;
+using Framework::String;
 using Framework::ModContext;
+using Framework::DrawContext;
+using Framework::DrawResult;
+using Framework::DrawOutcome;
+using Framework::DrawPath;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
 using Settings::StringColorMode;
 using Settings::NoteColorMode;
 namespace Setting = Settings::Setting;
+
+SettingDefs ExtendedRangeMod::Settings() const {
+	return {
+		Toggle(Setting::ExtendedRangeEnabled, "ExtendedRange", "Extended Range"),
+		Toggle(Setting::ExtendedRangeDropTuning, "ExtendedRangeDropTuning", "Extended Range Drop Tuning")
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Toggle(Setting::ExtendedRangeFixBassTuning, "ExtendedRangeFixBassTuning", "Fix Bass Tuning")
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Numeric(Setting::ExtendedRangeMode, "Extended Range Mode Threshold")
+			.Ini("Mod Settings", "ExtendedRangeModeAt")
+			.Default("-5")
+			.Range(-12, -2)
+			.WithVisibleWhen(Setting::ExtendedRangeEnabled),
+		Numeric(Setting::CustomStringColors, "Custom String Colors")
+			.Ini("Toggle Switches", "CustomStringColors")
+			.Default("0")
+			.Range(0, 2),
+		Toggle(Setting::SeparateNoteColors, "SeparateNoteColors", "Separate Note Colors"),
+		Numeric(Setting::SeparateNoteColorsMode, "Separate Note Colors Mode")
+			.Ini("Mod Settings", "SeparateNoteColorsMode")
+			.Default("0")
+			.Range(0, 2)
+			.WithVisibleWhen(Setting::SeparateNoteColors),
+		Toggle(Setting::RainbowStringsEnabled, "RainbowStrings", "Rainbow Strings"),
+		SettingDef{
+			"StringColorsCustomEditor",
+			{ "String Colors", "CustomEditor" },
+			Framework::SettingType::String,
+			"",
+			"String & Note Color Editor",
+			"Open the custom string and note color palette editor",
+		}.WithEditor("StringColors"),
+	};
+}
 
 void ExtendedRangeMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(
@@ -35,10 +82,78 @@ void ExtendedRangeMod::OnInitialize(ModContext& c) {
 		},
 		{},
 		"Toggle Extended Range");
+
+	// Priority 20: Extended Range / Custom Colors note head, stems, and tail coloring.
+	c.Draw().Register("ExtendedRangeNotes", 20, DrawPath::Both, [](DrawContext& ctx) -> DrawResult {
+		if (!ctx.inSong) return { DrawOutcome::Pass };
+		if (!ERMode::AttemptedERInThisSong || !ERMode::UseEROrColorsInThisSong) return { DrawOutcome::Pass };
+
+		LPDIRECT3DTEXTURE9 tex = s_noteTexture.load(std::memory_order_relaxed);
+		if (!tex) return { DrawOutcome::Pass };
+
+		if (ctx.path == DrawPath::Primitive) {
+			if (DrawMesh::IsNoteTail(ctx)) {
+				return { DrawOutcome::ReplaceTexture, 1, tex };
+			}
+			return { DrawOutcome::Pass };
+		}
+
+		// DrawPath::Indexed
+		if (DrawMesh::IsNoteHead(ctx)) {
+			return { DrawOutcome::ReplaceTexture, 1, tex };
+		}
+
+		// Note stems, bends, slides, and accents
+		if (DrawMesh::IsNoteStemOrAccent(ctx)) {
+			// If RainbowNotes is active, let RainbowNotes (Priority 10) own stems
+			if (ERMode::RainbowNotesEnabled.load(std::memory_order_relaxed) && ERMode::customNoteColorH.load(std::memory_order_relaxed) > 0) {
+				return { DrawOutcome::Pass };
+			}
+
+			if (DrawMesh::IsNoteStemCrc(ctx)) {
+				return { DrawOutcome::ReplaceTexture, 1, tex };
+			}
+		}
+
+		return { DrawOutcome::Pass };
+	});
+
+	c.Draw().RegisterTextureLifecycle(&ExtendedRangeMod::RegenerateTextures, &ExtendedRangeMod::ReleaseTextures);
+}
+
+void ExtendedRangeMod::OnEnabled(ModContext& c) {
+	s_active = true;
+	c.Draw().CancelTextureRelease();
+	D3DHooks::RecreateTextures = true;
+}
+
+void ExtendedRangeMod::OnDisabled(ModContext& c) {
+	s_active = false;
+	s_noteTexture.store(nullptr, std::memory_order_release);
+	D3DHooks::RecreateTextures = true;
+	c.Draw().RequestTextureRelease();
 }
 
 void ExtendedRangeMod::OnShutdown(ModContext&) {
+	s_active = false;
+	s_noteTexture.store(nullptr, std::memory_order_relaxed);
+	ReleaseTextures();
 	ERMode::StopRainbowThread();
+}
+
+void ExtendedRangeMod::RegenerateTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+
+	if (!s_active) {
+		ReleaseTextures();
+		return;
+	}
+
+	ERMode::RegenerateTextures(pDevice);
+}
+
+void ExtendedRangeMod::ReleaseTextures() {
+	ERMode::ReleaseTextures();
 }
 
 // Edge: this mod became active in a song.
@@ -48,7 +163,10 @@ void ExtendedRangeMod::OnSongEnter(ModContext& c) {
 	ERMode::UseERInTuner = false;
 	tunerSettleUntil.reset();
 
-	if (ERMode::AttemptedERInThisSong) return;
+	if (ERMode::AttemptedERInThisSong) {
+		UpdateNoteTexture(c);
+		return;
+	}
 
 	// Arm the tuning-settle wait; OnSongTick runs the detection once it expires.
 	songSettleUntil = SettleDeadline(c);
@@ -68,6 +186,8 @@ void ExtendedRangeMod::OnSongTick(ModContext& c) {
 		ERMode::AttemptedERInThisSong = true;
 	}
 
+	GameState::ToggleCB(ERMode::UseERExclusivelyInThisSong);
+	UpdateNoteTexture(c);
 	ApplyColors();
 }
 
@@ -96,11 +216,38 @@ void ExtendedRangeMod::OnMenuTick(ModContext& c) {
 // CleanupSongSpecificStates.
 void ExtendedRangeMod::OnSongExit(ModContext&) {
 	songSettleUntil.reset(); // The player may have backed out mid-settle.
+	s_noteTexture.store(nullptr, std::memory_order_relaxed);
 
 	if (ERMode::AttemptedERInThisSong) {
 		ERMode::UseERExclusivelyInThisSong = false;
 		ERMode::UseEROrColorsInThisSong = false;
 		ERMode::AttemptedERInThisSong = false;
+	}
+}
+
+void ExtendedRangeMod::OnSettingsChanged(ModContext& c) {
+	UpdateNoteTexture(c);
+}
+
+void ExtendedRangeMod::UpdateNoteTexture(const ModContext& c) {
+	if (!GameState::IsInSong() || !ERMode::AttemptedERInThisSong || !ERMode::UseEROrColorsInThisSong) {
+		s_noteTexture.store(nullptr, std::memory_order_relaxed);
+		return;
+	}
+
+	switch (c.NoteColorMode()) {
+		case NoteColorMode::SameAsStrings:
+			s_noteTexture.store(ERMode::customStringColorTexture, std::memory_order_relaxed);
+			break;
+		case NoteColorMode::Custom:
+			if (c.IsOn(Setting::SeparateNoteColors))
+				s_noteTexture.store(ERMode::customNoteColorTexture, std::memory_order_relaxed);
+			else
+				s_noteTexture.store(nullptr, std::memory_order_relaxed);
+			break;
+		default:
+			s_noteTexture.store(nullptr, std::memory_order_relaxed);
+			break;
 	}
 }
 

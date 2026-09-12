@@ -2,10 +2,20 @@
 #include "NonStopPlayTimerMod.hpp"
 
 using Framework::ModContext;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
 
-namespace {
-	constexpr double DefaultTimeLimit = 10.9899997711182; // The default pre-song timer for Non-Stop Play.
+SettingDefs NonStopPlayTimerMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::UseCustomNSPTimer, "UseCustomNSPTimer", "Use Custom Non-Stop Play Timer"),
+		SettingDef::Numeric(Setting::CustomNSPTimeLimit, "NSP Time Limit (seconds)")
+			.Ini("Mod Settings", "CustomNSPTimeLimit")
+			.Default("10000")
+			.Range(2000, 60000)
+			.Scale(0.001)
+			.WithVisibleWhen(Setting::UseCustomNSPTimer)
+	};
 }
 
 void NonStopPlayTimerMod::OnEnabled(ModContext& c) {

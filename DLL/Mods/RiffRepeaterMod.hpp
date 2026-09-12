@@ -2,7 +2,6 @@
 
 #include "../Framework/Framework.hpp"
 #include "RiffRepeater.hpp"
-#include "../Keybindings.hpp"
 
 // Consolidates the Riff Repeater features that used to live in ModManager:
 //   - LinearRiffRepeater: patches the RR speed logic to be linear, kept in sync with the setting.
@@ -18,11 +17,21 @@ public:
 	void OnTick(Framework::ModContext& c) override;     // Linear-speed patch sync (all phases, incl. startup/loading).
 	void OnMenuTick(Framework::ModContext& c) override; // Drop >100% time stretch outside the score menus.
 	void OnSongTick(Framework::ModContext& c) override; // Log the song id + apply >100% time stretch.
+	void OnSongExit(Framework::ModContext& c) override;
+	void OnDisabled(Framework::ModContext& c) override;
+
+	Framework::SettingDefs Settings() const override;
 
 private:
 	static void Rewind(const Framework::ModContext& c);
-	static void SetLoopStart(const Framework::KeyEvent& event);
-	static void SetLoopEnd(const Framework::KeyEvent& event);
+	void SetLoopStart(const Framework::KeyEvent& event);
+	void SetLoopEnd(const Framework::KeyEvent& event);
 	static void ChangeSpeed(const Framework::ModContext& c, const Framework::KeyEvent& event);
 	void SyncLinearSpeeds(Framework::ModContext& c);
+	void PublishHud(Framework::ModContext& c);
+	void UpdateLoopState(Framework::ModContext& c);
+
+	float loopStart = 0.f;
+	float roughLoopStart = 0.f;
+	float loopEnd = 0.f;
 };

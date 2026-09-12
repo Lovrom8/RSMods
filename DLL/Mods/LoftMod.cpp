@@ -1,13 +1,25 @@
 #include "../stdafx.h"
 #include "LoftMod.hpp"
 #include "Loft.hpp"
+#include "GreenScreenWallMod.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs LoftMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ToggleLoftEnabled, "ToggleLoft", "Toggle Loft"),
+		SettingDef::Enum(Setting::ToggleLoftWhen, "Toggle Loft Mode")
+			.Choices({ "manual", "song", "startup" }, "manual")
+			.WithVisibleWhen(Setting::ToggleLoftEnabled)
+	};
+}
 
 bool LoftMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::ToggleLoftEnabled);
@@ -30,7 +42,8 @@ void LoftMod::OnDisabled(ModContext&) {
 		Loft::ToggleLoft();
 		loftOff = false;
 	}
-	D3DHooks::GreenScreenWall = false;
+
+	GreenScreenWallMod::SetLessonWall(false);
 }
 
 void LoftMod::OnSongTick(ModContext& c) {
@@ -40,6 +53,7 @@ void LoftMod::OnSongTick(ModContext& c) {
 		}
 		loftOff = true;
 	}
+	
 	ApplyAlwaysOn(c);
 }
 
@@ -50,8 +64,9 @@ void LoftMod::OnMenuTick(ModContext& c) {
 			loftOff = false;
 		}
 		
-		if (!GameState::LessonMode) D3DHooks::GreenScreenWall = false;
+		if (!GameState::LessonMode) GreenScreenWallMod::SetLessonWall(false);
 	}
+
 	ApplyAlwaysOn(c);
 }
 
@@ -63,7 +78,7 @@ void LoftMod::ApplyAlwaysOn(ModContext& c) {
 			Loft::ToggleLoft();
 			loftOff = false;
 		}
-		D3DHooks::GreenScreenWall = false;
+		GreenScreenWallMod::SetLessonWall(false);
 		return;
 	}
 
@@ -72,13 +87,13 @@ void LoftMod::ApplyAlwaysOn(ModContext& c) {
 		if (loftOff)
 			Loft::ToggleLoft();
 		loftOff = false;
-		D3DHooks::GreenScreenWall = true;
+		GreenScreenWallMod::SetLessonWall(true);
 	}
 
 	if (!loftOff && !GameState::LessonMode && when == When::Startup) {
 		Loft::ToggleLoft();
 		loftOff = true;
-		D3DHooks::GreenScreenWall = false;
+		GreenScreenWallMod::SetLessonWall(false);
 	}
 }
 

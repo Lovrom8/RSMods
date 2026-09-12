@@ -1,11 +1,50 @@
 #include "../stdafx.h"
 #include "RiffRepeaterMod.hpp"
+#include "../SongTimer.hpp"
 
 using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::GamePhase;
+using Framework::HudText;
+using Framework::HudAnchor;
+using Framework::SettingDefs;
+using Framework::Toggle;
+using Framework::Numeric;
 namespace Setting = Settings::Setting;
+
+SettingDefs RiffRepeaterMod::Settings() const {
+	return {
+		Toggle(Setting::LinearRiffRepeater, "LinearRiffRepeater", "Linear Riff Repeater"),
+		Toggle(Setting::AllowRewind, "AllowRewind", "Allow Rewind"),
+		Numeric(Setting::RewindBy, "Rewind By (seconds)")
+			.Ini("Mod Settings", "RewindBy")
+			.Default("5000")
+			.Range(0, 90000)
+			.Scale(0.001)
+			.WithVisibleWhen(Setting::AllowRewind),
+		Numeric(Setting::RewindLeadup, "Rewind Leadup (seconds)")
+			.Ini("Mod Settings", "RewindLeadup")
+			.Default("2000")
+			.Range(0, 90000)
+			.Scale(0.001)
+			.WithVisibleWhen(Setting::AllowRewind),
+		Toggle(Setting::AllowLooping, "AllowLooping", "Allow Looping"),
+		Numeric(Setting::LoopingLeadUp, "Looping Leadup (seconds)")
+			.Ini("Mod Settings", "LoopingLeadUp")
+			.Default("0")
+			.Range(0, 5000)
+			.Scale(0.001)
+			.WithVisibleWhen(Setting::AllowLooping),
+		Toggle(Setting::RRSpeedAboveOneHundred, "RRSpeedAboveOneHundred", "Riff Repeater Speed Above 100%"),
+		Numeric(Setting::RRSpeedInterval, "RR Speed Interval")
+			.Ini("Mod Settings", "RRSpeedInterval")
+			.Default("2")
+			.Range(-50, 50)
+			.WithVisibleWhen(Setting::RRSpeedAboveOneHundred),
+	};
+}
 
 void RiffRepeaterMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(
@@ -21,7 +60,7 @@ void RiffRepeaterMod::OnInitialize(ModContext& c) {
 		Setting::Key::LoopStart,
 		KeyEdge::Down,
 		Availability::Active,
-		[](ModContext&, const KeyEvent& event) { SetLoopStart(event); },
+		[this](ModContext&, const KeyEvent& event) { SetLoopStart(event); },
 		[](const ModContext& context, const KeyEvent&) {
 			return context.IsOn(Setting::AllowLooping) && GameState::Menus::IsInModesWithAllowedFastRiffRepeater();
 		},
@@ -31,7 +70,7 @@ void RiffRepeaterMod::OnInitialize(ModContext& c) {
 		Setting::Key::LoopEnd,
 		KeyEdge::Down,
 		Availability::Active,
-		[](ModContext&, const KeyEvent& event) { SetLoopEnd(event); },
+		[this](ModContext&, const KeyEvent& event) { SetLoopEnd(event); },
 		[](const ModContext& context, const KeyEvent&) {
 			return context.IsOn(Setting::AllowLooping) && GameState::Menus::IsInModesWithAllowedFastRiffRepeater();
 		},
@@ -62,22 +101,34 @@ void RiffRepeaterMod::Rewind(const ModContext& c) {
 
 void RiffRepeaterMod::SetLoopStart(const KeyEvent& event) {
 	if (event.control) {
-		Keybindings::loopStart = Keybindings::loopEnd = NULL;
+		loopStart = loopEnd = 0.f;
 		return;
 	}
 
-	Keybindings::loopStart = SongTimer::SongTimer();
-	if (Keybindings::loopEnd <= Keybindings::loopStart) Keybindings::loopEnd = NULL;
+	loopStart = SongTimer::SongTimer();
+	if (loopEnd <= loopStart) loopEnd = 0.f;
 }
 
 void RiffRepeaterMod::SetLoopEnd(const KeyEvent& event) {
 	if (event.control) {
-		Keybindings::loopEnd = NULL;
+		loopEnd = 0.f;
 		return;
 	}
 
-	Keybindings::loopEnd = SongTimer::SongTimer();
-	if (Keybindings::loopEnd <= Keybindings::loopStart) Keybindings::loopEnd = NULL;
+	loopEnd = SongTimer::SongTimer();
+	if (loopEnd <= loopStart) loopEnd = 0.f;
+}
+
+void RiffRepeaterMod::OnSongExit(ModContext&) {
+	loopStart = 0.f;
+	roughLoopStart = 0.f;
+	loopEnd = 0.f;
+}
+
+void RiffRepeaterMod::OnDisabled(ModContext&) {
+	loopStart = 0.f;
+	roughLoopStart = 0.f;
+	loopEnd = 0.f;
 }
 
 void RiffRepeaterMod::ChangeSpeed(const ModContext& c, const KeyEvent& event) {
@@ -113,6 +164,9 @@ void RiffRepeaterMod::OnMenuTick(ModContext& c) {
 	if (!GameState::Menus::IsInScoreMenus() && RiffRepeater::currentlyEnabled_Above100) {
 		RiffRepeater::DisableTimeStretch();
 	}
+
+	UpdateLoopState(c);
+	PublishHud(c);
 }
 
 void RiffRepeaterMod::OnSongTick(ModContext& c) {
@@ -124,6 +178,79 @@ void RiffRepeaterMod::OnSongTick(ModContext& c) {
 	if (c.IsOn(Setting::RRSpeedAboveOneHundred)) {
 		RiffRepeater::EnableTimeStretch();
 	}
+
+	UpdateLoopState(c);
+	PublishHud(c);
+}
+
+void RiffRepeaterMod::UpdateLoopState(ModContext& c) {
+	if (!c.IsOn(Setting::AllowLooping) || (loopStart == 0.f && loopEnd == 0.f)) {
+		return;
+	}
+
+	if (GameState::Menus::IsInLearnASongModes()) {
+		if (c.phase == GamePhase::Song) {
+			// Prevent the user from creating a loop that starts at a negative timestamp.
+			const float leadUp = static_cast<float>(c.Int(Setting::LoopingLeadUp)) / 1000.f;
+			if (leadUp >= loopStart) {
+				roughLoopStart = 0.f;
+			}
+			else {
+				roughLoopStart = loopStart - leadUp;
+			}
+
+			// If we are paused, reset the grey note timer.
+			if (GameState::Menus::IsInLearnASongPauseModes()) {
+				// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
+				// Deactivated notes are greyed out, and do not register with note detection.
+				// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
+				if (SongTimer::GetGreyNoteTimer() != loopStart) {
+					SongTimer::SetGreyNoteTimer(loopStart);
+				}
+			}
+			// If not paused AND a full loop is armed, we are actively watching for the loop end. Ask for a
+			// tighter tick so the seek-back lands within a frame or two instead of up to one 250 ms tick;
+			// then seek once we reach the end. The request self-clears when the loop is cleared.
+			else if (loopStart != 0.f && loopEnd != 0.f) {
+				c.RequestFastTick();
+				if (SongTimer::SongTimer() >= loopEnd) {
+					Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + GameState::GetSongKey()).c_str(), 0x1234, static_cast<AkTimeMs>(roughLoopStart * 1000), false);
+				}
+			}
+		}
+	}
+	else if (GameState::Menus::IsInModesWithAllowedFastRiffRepeater()) {
+		// Reset loopStart and loopEnd to 0.f as the user wants to do a loop with RR, or is changing some settings.
+		loopStart = 0.f;
+		loopEnd = 0.f;
+	}
+}
+
+void RiffRepeaterMod::PublishHud(ModContext& c) {
+	const bool speedVisible = (c.IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID &&
+		(GameState::Menus::IsInModesWithAllowedFastRiffRepeater() || GameState::Menus::IsOnScoreScreens())) ||
+		RiffRepeater::currentlyEnabled_Above100;
+
+	HudText speedSnapshot;
+	speedSnapshot.visible = speedVisible;
+	if (speedVisible) {
+		const float speed = RiffRepeater::GetSpeed(true);
+		speedSnapshot.text = "Song Speed: " + std::to_string(static_cast<int>(roundf(speed))) + "%";
+	}
+	
+	c.Hud().Set("rr-speed", { HudAnchor::TopCenter, 0 }, std::move(speedSnapshot));
+
+	const bool loopVisible = c.IsOn(Setting::AllowLooping) &&
+		(loopStart != 0.f || loopEnd != 0.f) &&
+		GameState::Menus::IsInLearnASongModes();
+
+	HudText loopSnapshot;
+	loopSnapshot.visible = loopVisible;
+	if (loopVisible) {
+		loopSnapshot.text = "Loop: " + SongTimer::FormatTime(loopStart) + " - " + SongTimer::FormatTime(loopEnd);
+	}
+
+	c.Hud().Set("loop-timer", { HudAnchor::TopCenter, 10 }, std::move(loopSnapshot));
 }
 
 static Framework::ModRegistrar<RiffRepeaterMod> _riffRepeaterReg;

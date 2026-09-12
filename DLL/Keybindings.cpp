@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Keybindings.hpp"
+#include "Mods/RiffRepeater.hpp"
 
 namespace {
 	Framework::KeyEvent CaptureKeyEvent(WPARAM keyPressed, LPARAM lParam, Framework::KeyEdge edge) {

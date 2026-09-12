@@ -1,13 +1,12 @@
 #pragma once
 
-/// If changing this file, be sure to do a clean build, else some changes might not go into effect.
-
 #include <iostream>
 #include <string>
 #include <ctime>
 #include <sstream>
 #include <format>
 #include <mutex>
+#include <share.h>
 
 /// <summary>
 /// Classification of the logs level.
@@ -52,6 +51,27 @@ public:
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
 
+    ~Logger() {
+        std::lock_guard lock(mutex);
+        if (fileHandle) {
+            fclose(fileHandle);
+            fileHandle = nullptr;
+        }
+    }
+
+    /// <summary>
+    /// Open a log file on disk with full sharing permissions (_SH_DENYNO) so
+    /// external applications and users can view it while the game is running.
+    /// </summary>
+    void InitFile(const std::string& path) {
+        std::lock_guard lock(mutex);
+        if (fileHandle) {
+            fclose(fileHandle);
+            fileHandle = nullptr;
+        }
+        fileHandle = _fsopen(path.c_str(), "w", _SH_DENYNO);
+    }
+
     /// <summary>
     /// Log a message with automatic header generation.
     /// </summary>
@@ -60,6 +80,14 @@ public:
         std::lock_guard lock(mutex);
 
         std::string header = GenerateHeader(level);
+
+        if (fileHandle) {
+            std::ostringstream ss;
+            ss << header << message;
+            const std::string str = ss.str();
+            fwrite(str.data(), 1, str.size(), fileHandle);
+            fflush(fileHandle);
+        }
 
         std::cerr << header << message;
 
@@ -74,6 +102,14 @@ public:
     template <typename T>
     void LogNoHeader(const T& message) {
         std::lock_guard lock(mutex);
+
+        if (fileHandle) {
+            std::ostringstream ss;
+            ss << message;
+            const std::string str = ss.str();
+            fwrite(str.data(), 1, str.size(), fileHandle);
+            fflush(fileHandle);
+        }
 
         std::cerr << message;
 
@@ -112,6 +148,7 @@ private:
     }
 
     LogLevel currentLevel = LogSettings::defaultLogLevel;
+    FILE* fileHandle = nullptr;
     std::mutex mutex; 
 };
 

@@ -67,6 +67,12 @@
     <Filter Include="Main Headers\Structs">
       <UniqueIdentifier>{c933318d-bc01-4c38-adc2-0ccdeb45535d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Headers">
+      <UniqueIdentifier>{fa6ed996-22c5-4303-a764-fa6205ae892a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D\Headers">
+      <UniqueIdentifier>{f05ece22-f2cc-4201-a7d4-73b135062403}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -312,10 +318,22 @@
     <ClCompile Include="Mods\AutoLoadProfileMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\CalibrationMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomHighwayColorsMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Mods\MidiMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\SongAccuracyMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\ShowCurrentNoteMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
     <ClCompile Include="Mods\GuitarSpeakMod.cpp">
@@ -366,6 +384,12 @@
     <ClCompile Include="Framework\MainThreadInbox.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\HudRegistry.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\MenuRegistry.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
     <ClCompile Include="Framework\ModContext.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -377,6 +401,36 @@
     </ClCompile>
     <ClCompile Include="Framework\ResourceLedger.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\DrawRegistry.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControlMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\FretlessMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveInlaysMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveLaneMarkersMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\GreenScreenWallMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveFingerprintsMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\RainbowNotesMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mods\TwitchMod.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\SettingsSchema.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -451,15 +505,6 @@
     </ClInclude>
     <ClInclude Include="Lib\Detours\detours.h">
       <Filter>Main Headers\Detours</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3DHelper.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3DHooks.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D/D3D.hpp">
-      <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="CC\Effects\BigNoteheadEffect.hpp">
       <Filter>CrowdControl\Effects\EffectHeaders</Filter>
@@ -659,6 +704,27 @@
     <ClInclude Include="Mods\RemoveLyricsMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\FretlessMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RemoveInlaysMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\GreenScreenWallMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RemoveFingerprintsMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\RainbowNotesMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\TwitchMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\ShowSongTimerMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
@@ -674,10 +740,22 @@
     <ClInclude Include="Mods\AutoLoadProfileMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Mods\CalibrationMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\CustomHighwayColorsMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\MidiMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\SongAccuracyMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\ShowCurrentNoteMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\GuitarSpeakMod.hpp">
@@ -690,6 +768,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\MicrophoneVolumeOverrideMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\VoiceOverControlMod.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\AllowAudioInBackgroundMod.hpp">
@@ -722,6 +803,12 @@
     <ClInclude Include="Framework\IMod.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\HudRegistry.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MenuRegistry.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\MainThreadInbox.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -732,6 +819,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Framework.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DrawRegistry.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Resolution.h">
@@ -773,14 +863,68 @@
     <ClInclude Include="ModManager.hpp">
       <Filter>Main Headers</Filter>
     </ClInclude>
-    <ClInclude Include="D3D\GdiplusManager.hpp">
-      <Filter>D3D</Filter>
-    </ClInclude>
     <ClInclude Include="NoteData.h">
       <Filter>Main Headers\Structs</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\SettingsSchema.hpp">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandCollisionDiagnostics.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandTypes.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\CommandRouter.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ConflictResolver.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\DrawRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Framework.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\HudRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\IMod.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MainThreadInbox.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ModContext.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\MenuRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\ModRegistry.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="Framework\ResourceLedger.hpp">
-      <Filter>Framework</Filter>
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\GamePhase.hpp">
+      <Filter>Framework\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3D.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHelper.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D/D3DHooks.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DOverlay.hpp">
+      <Filter>D3D\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D\GdiplusManager.hpp">
+      <Filter>D3D\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -810,10 +954,5 @@
     <Library Include="Lib\DirectX\d3dx9.lib">
       <Filter>Libs</Filter>
     </Library>
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="syscalls.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
   </ItemGroup>
 </Project>

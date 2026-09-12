@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <d3d9.h>
 
 #include "../RSColor.h"
 
@@ -15,10 +16,22 @@ namespace ERMode {
 	void ResetString(int strIndex);
 	bool ResetAllStrings();
 	void SetCustomColors(int strIdx, const ColorMap& customColorMap);
+	void SetCustomColors();
+	ColorMap GetCustomColors(int strIdx, bool CB);
+	void GenerateStringTextures(IDirect3DDevice9* pDevice);
+	void GenerateNoteTextures(IDirect3DDevice9* pDevice);
+	void GenerateRainbowTextures(IDirect3DDevice9* pDevice);
+	void RegenerateTextures(IDirect3DDevice9* pDevice);
+	void ReleaseTextures();
 	void Initialize();
 	void InitStrings(std::vector<uintptr_t>& strings, int state);
 	void SetColors(std::vector<uintptr_t> strings, std::vector<RSColor> colors);
 	void SetColors(std::vector<uintptr_t> strings, const std::string& colorType);
+
+	inline LPDIRECT3DTEXTURE9 customStringColorTexture = nullptr;
+	inline LPDIRECT3DTEXTURE9 customNoteColorTexture = nullptr;
+	inline float rainbowSpeed = 2.f;
+	inline std::vector<LPDIRECT3DTEXTURE9> rainbowTextures((const unsigned int)(360.0f / rainbowSpeed));
 
 	inline bool Is7StringSong = false;
 

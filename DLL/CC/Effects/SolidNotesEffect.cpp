@@ -1,6 +1,8 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "SolidNotesEffect.hpp"
 #include "../../Framework/Framework.hpp"
+#include "../../D3D/D3DHooks.hpp"
+#include "../../Mods/TwitchMod.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -53,7 +55,7 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			D3DHooks::regenerateUserDefinedTexture = true;
+			D3DHooks::RecreateTextures = true;
 		});
 
 		SetDuration(request);
@@ -107,16 +109,20 @@ namespace CrowdControl::Effects {
 
 		LOG_INFO("SolidNotesRandomEffect - Colors Saved" << std::endl);
 		
-		static std::uniform_real_distribution<> urd(0, randomTextureCount - 1);
-		currentRandomTexture = urd(rng);
+		static std::uniform_real_distribution<> urd(0, TwitchMod::randomTextureCount - 1);
+		TwitchMod::currentRandomTexture = urd(rng);
 
-		LOG_INFO("SolidNotesRandomEffect - Picked color " << currentRandomTexture << "/" << randomTextureCount << std::endl);
+		LOG_INFO("SolidNotesRandomEffect - Picked color " << TwitchMod::currentRandomTexture << "/" << TwitchMod::randomTextureCount << std::endl);
 
 		// Set random solid color
 		ERMode::customSolidColor.clear();
-		ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
+		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextureColors.size()) {
+			ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, TwitchMod::randomTextureColors[TwitchMod::currentRandomTexture]);
+		}
 
-		twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+		if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextures.size()) {
+			TwitchMod::twitchUserDefinedTexture = TwitchMod::randomTextures[TwitchMod::currentRandomTexture];
+		}
 
 		Framework::Registry().EnqueueSettingsUpdate([] {
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
@@ -190,7 +196,7 @@ namespace CrowdControl::Effects {
 		Framework::Registry().EnqueueSettingsUpdate([hexColor] {
 			Settings::UpdateModSetting(Setting::SolidNoteColor, hexColor);
 			Settings::UpdateTwitchSetting(Setting::Twitch::SolidNotes, "on");
-			D3DHooks::regenerateUserDefinedTexture = true;
+			D3DHooks::RecreateTextures = true;
 		});
 
 		SetDuration(request);

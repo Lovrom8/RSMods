@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "CommandTypes.hpp"
 #include "IMod.hpp"
 
 namespace Framework {
@@ -34,7 +35,8 @@ namespace Framework {
 		void DispatchInitialize();
 		void DispatchCommands(GamePhase phase, bool gameLoaded);
 		void EnqueueSettingsUpdate(std::function<void()> apply);
-		void Tick(GamePhase phase);
+		bool Tick(GamePhase phase); // Returns whether any ticked mod requested a tighter next interval.
+		bool IsOwnerAvailable(const IMod* mod, Availability required = Availability::Active) const;
 		void Shutdown();
 
 	private:

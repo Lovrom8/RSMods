@@ -5,6 +5,14 @@
 #include <span>
 #include <string_view>
 
+#ifndef STATUS_SUCCESS
+#define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+#endif
+
+#ifndef STATUS_UNSUCCESSFUL
+#define STATUS_UNSUCCESSFUL ((NTSTATUS)0xC0000001L)
+#endif
+
 namespace MemUtil {
 	bool bCompare(const BYTE* pData, const byte* bMask, const char* szMask);
 	bool PatchAdr(VersioningStruct<uintptr_t>& address, LPCVOID changeToMake, size_t len, bool addBaseHandle = false);

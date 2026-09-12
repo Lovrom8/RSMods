@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <array>
 #include "ModManager.hpp"
 #include "Mods/Midi.hpp"
 
@@ -9,26 +10,27 @@ namespace {
 
 	/// <summary>
 	/// Read the IDirect3DDevice9 vTable out of a throwaway device.
-	/// Every device handed out by a given d3d9.dll shares one vTable, so the entries we find here are
-	/// the ones the game's real device calls through. Works the same on Microsoft's d3d9, WineD3D, and DXVK.
+	/// Copies the function pointers to a std::array so dummy device can be released immediately without leaks.
 	/// </summary>
 	/// <param name="d3d9Module"> - Handle of the d3d9.dll the game loaded.</param>
-	/// <returns>The device vTable, or NULL if we couldn't create a device to read it from.</returns>
-	void** GetD3D9DeviceVTable(HMODULE d3d9Module) {
+	/// <returns>std::array of device vTable function pointers, or empty array if failed.</returns>
+	std::array<void*, 119> GetD3D9DeviceVTable(HMODULE d3d9Module) {
+		std::array<void*, 119> vTable{};
+
 		// Resolve the entry point out of the module the game already loaded, rather than importing it.
 		// That keeps us from pulling d3d9.dll into the process earlier than the game would itself.
 		tDirect3DCreate9 direct3DCreate9 = (tDirect3DCreate9)GetProcAddress(d3d9Module, "Direct3DCreate9");
 
 		if (!direct3DCreate9) {
 			LOG_ERROR("d3d9.dll does not export Direct3DCreate9." << std::endl);
-			return NULL;
+			return vTable;
 		}
 
 		IDirect3D9* d3d9 = direct3DCreate9(D3D_SDK_VERSION);
 
 		if (!d3d9) {
 			LOG_ERROR("Direct3DCreate9 failed." << std::endl);
-			return NULL;
+			return vTable;
 		}
 
 		D3DPRESENT_PARAMETERS presentParameters{};
@@ -37,7 +39,11 @@ namespace {
 		presentParameters.hDeviceWindow = GetDesktopWindow();
 
 		IDirect3DDevice9* dummyDevice = NULL;
-		HRESULT result = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, presentParameters.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParameters, &dummyDevice);
+		HRESULT result = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, presentParameters.hDeviceWindow, D3DCREATE_HARDWARE_VERTEXPROCESSING, &presentParameters, &dummyDevice);
+
+		if (FAILED(result)) {
+			result = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, presentParameters.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParameters, &dummyDevice);
+		}
 
 		// DXVK's NULLREF support is unreliable, so it is only worth trying once HAL has already failed.
 		if (FAILED(result)) {
@@ -45,47 +51,20 @@ namespace {
 			result = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_NULLREF, presentParameters.hDeviceWindow, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &presentParameters, &dummyDevice);
 		}
 
-		void** vTable = NULL;
-
 		if (SUCCEEDED(result) && dummyDevice) {
-			vTable = *(void***)dummyDevice;
+			void** rawVTable = *(void***)dummyDevice;
+			if (rawVTable) {
+				memcpy(vTable.data(), rawVTable, sizeof(vTable));
+			}
 			dummyDevice->Release();
 		}
-		else
+		else {
 			LOG_ERROR("Could not create a D3D9 device to read the vTable from. Error: 0x" << std::hex << result << std::dec << std::endl);
+		}
 
 		d3d9->Release();
 
 		return vTable;
-	}
-
-	/// <summary>
-	/// Point a vTable entry at one of our hooks, handing back the entry we replaced so the hook can chain to it.
-	/// One pointer write, so it makes no assumptions about what the function it replaces looks like.
-	/// </summary>
-	/// <param name="vTable"> - Device vTable.</param>
-	/// <param name="index"> - Index of the function to hook (see D3DInfo).</param>
-	/// <param name="hook"> - Our replacement function.</param>
-	/// <param name="original"> - Receives the function we replaced.</param>
-	/// <returns>Was the hook installed?</returns>
-	template <typename TOriginal, typename THook>
-	bool HookVTableEntry(void** vTable, int index, THook hook, TOriginal& original) {
-		DWORD oldProtection;
-
-		// The vTable lives in read-only data, so it has to be made writable for the one pointer we swap.
-		NTSTATUS status = MemUtil::HookedVirtualProtect(&vTable[index], sizeof(void*), PAGE_READWRITE, oldProtection);
-		if (!NT_SUCCESS(status)) {
-			LOG_ERROR("Could not unprotect the vTable entry at index " << index << ". Status: 0x" << std::hex << status << std::dec << std::endl);
-			return false;
-		}
-
-		original = (TOriginal)vTable[index];
-		vTable[index] = (void*)hook;
-
-		DWORD backup;
-		MemUtil::HookedVirtualProtect(&vTable[index], sizeof(void*), oldProtection, backup);
-
-		return true;
 	}
 }
 
@@ -128,24 +107,26 @@ namespace ModManager {
 		while ((d3d9Module = GetModuleHandleA("d3d9.dll")) == NULL)
 			Sleep(500);
 
-		void** vTable = GetD3D9DeviceVTable(d3d9Module);
+		const auto vTable = GetD3D9DeviceVTable(d3d9Module);
 
-		if (!vTable) {
+		if (vTable[0] == nullptr) {
 			LOG_ERROR("Could not find D3D device's vTable address." << std::endl);
 			MessageBoxA(NULL, "Could not find D3D device's vTable address \n Restart the game and if you still get this error after a few tries, please report the error!", "Error", NULL);
 			return;
 		}
 
 		// Hook D3D functions to use for our own D3D work. Reference D3DHooks
-		HookVTableEntry(vTable, D3DInfo::SetVertexDeclaration_Index, D3DHooks::Hook_SetVertexDeclaration, oSetVertexDeclaration); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexdeclaration
-		HookVTableEntry(vTable, D3DInfo::SetVertexShaderConstantF_Index, D3DHooks::Hook_SetVertexShaderConstantF, oSetVertexShaderConstantF); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshaderconstantf
-		HookVTableEntry(vTable, D3DInfo::Reset_Index, D3DHooks::Hook_Reset, oReset); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-reset
-		HookVTableEntry(vTable, D3DInfo::SetVertexShader_Index, D3DHooks::Hook_SetVertexShader, oSetVertexShader); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshader
-		HookVTableEntry(vTable, D3DInfo::SetPixelShader_Index, D3DHooks::Hook_SetPixelShader, oSetPixelShader); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setpixelshader
-		HookVTableEntry(vTable, D3DInfo::SetStreamSource_Index, D3DHooks::Hook_SetStreamSource, oSetStreamSource); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setstreamsource
-		HookVTableEntry(vTable, D3DInfo::EndScene_Index, D3DHooks::Hook_EndScene, oEndScene); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-endscene
-		HookVTableEntry(vTable, D3DInfo::DrawIndexedPrimitive_Index, D3DHooks::Hook_DIP, oDrawIndexedPrimitive); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawindexedprimitive
-		HookVTableEntry(vTable, D3DInfo::DrawPrimitive_Index, D3DHooks::Hook_DP, oDrawPrimitive); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawprimitive
+		oSetVertexDeclaration = (tSetVertexDeclaration)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexDeclaration_Index], (byte*)D3DHooks::Hook_SetVertexDeclaration, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexdeclaration
+		oSetVertexShaderConstantF = (tSetVertexShaderConstantF)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexShaderConstantF_Index], (byte*)D3DHooks::Hook_SetVertexShaderConstantF, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshaderconstantf
+		oReset = (tReset)MemUtil::TrampHook((byte*)vTable[D3DInfo::Reset_Index], (byte*)D3DHooks::Hook_Reset, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-reset
+		oSetVertexShader = (tSetVertexShader)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetVertexShader_Index], (byte*)D3DHooks::Hook_SetVertexShader, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setvertexshader
+		oSetPixelShader = (tSetPixelShader)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetPixelShader_Index], (byte*)D3DHooks::Hook_SetPixelShader, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setpixelshader
+		oSetStreamSource = (tSetStreamSource)MemUtil::TrampHook((byte*)vTable[D3DInfo::SetStreamSource_Index], (byte*)D3DHooks::Hook_SetStreamSource, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-setstreamsource
+		oEndScene = (tEndScene)MemUtil::TrampHook((byte*)vTable[D3DInfo::EndScene_Index], (byte*)D3DHooks::Hook_EndScene, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-endscene
+		oDrawIndexedPrimitive = (tDrawIndexedPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawIndexedPrimitive_Index], (byte*)D3DHooks::Hook_DIP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawindexedprimitive
+		oDrawPrimitive = (tDrawPrimitive)MemUtil::TrampHook((byte*)vTable[D3DInfo::DrawPrimitive_Index], (byte*)D3DHooks::Hook_DP, 5); // https://docs.microsoft.com/en-us/windows/win32/api/d3d9helper/nf-d3d9helper-idirect3ddevice9-drawprimitive
+
+		D3DHooks::InitializeCrcProvider();
 	}
 
 	/// <summary>
@@ -202,13 +183,6 @@ namespace ModManager {
 		if (GameState::IsInSong())
 			return;
 
-		// Returning to a menu ends the song: drop the A/B loop markers so the next song starts fresh.
-		if (Settings::IsOn(Setting::AllowLooping)) {
-			Keybindings::loopStart = NULL;
-			Keybindings::loopEnd = NULL;
-		}
-
-		D3DHooks::UpdateHeadstockCacheForMenu();
 		GameState::previousMenu = GameState::currentMenu;
 	}
 

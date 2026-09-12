@@ -2,7 +2,6 @@
 #include <atomic>
 #include <format>
 
-#include "../Mods/ExtendedRangeMode.hpp"
 
 namespace D3DHooks {
 	inline UINT StartRegister;
@@ -27,12 +26,9 @@ namespace D3DHooks {
 
 	inline LPDIRECT3DVERTEXBUFFER9 Stream_Data;
 	inline UINT Offset = 0;
-	inline UINT vertexBufferSize;
 
 	inline bool debug = true;
 
-	inline std::atomic_bool regenerateUserDefinedTexture = false;
-	
 	inline HWND hThisWnd = NULL;
 	inline WNDPROC oWndProc = NULL;
 
@@ -48,44 +44,13 @@ namespace D3DHooks {
 	HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount);
 	HRESULT APIENTRY Hook_EndScene(IDirect3DDevice9* pDevice);
 
-	// Mod Settings
-	inline bool resetHeadstockCache = true; // Do we want to reset the headstock cache? Triggers when opening tuning menu
-	inline bool toggleSkyline = false; // Do we want to toggle the skyline right now? Triggers to false when turned on/ off
-	inline int EnumSliderVal = 10000; // Sleep every X ms for enumeration (1000 ms = 1s)
-	inline bool SkylineOff = false; // Is the skyline disabled right now? Toggles when skyline turns off (True - No Skyline, False - Skyline)
-	inline bool DrawSkylineInMenu = false; // If the user is in "Song" mode of Toggle Skyline, should we draw the skyline in this menu (True - Skyline, False - No Skyline)
-	
-	inline bool GreenScreenWall = false; // If true, set the Greenscreen wall up. This helps call it in Lesson mode for No-Loft users (True - Black wall, False - Loft)
-	inline bool RemoveLyrics = false; // If true, remove the lyrics from Learn A Song & Non-stop Play. (True - No Lyrics, False - Keep Lyrics)
-	
-	inline std::atomic<bool> RemoveHeadstockInThisMenu = false; // If true, the headstock of the guitar / bass will be disabled in this menu. (True - No Headstock, False - Keep Headstock)
-	inline bool showSongTimerOnScreen = false; // If true, the current song timer will be shown in the top-right of the screen. This will only work when inside a song. (True - Show, False - Hide)
-	inline bool DiscoModeEnabled = false; // If true, we do the trippy effects that disco mode is known for (True - Disco, False - Normal).
-	inline std::map<IDirect3DDevice9*, std::pair<DWORD, DWORD>> DiscoModeInitialSetting; // List of all the pDevices that have been affected by Disco Mode
-	inline bool ToggleOffLoftWhenDoneWithMod = false; // If true, we save this until after the mod is done and re-enable it.
-	inline bool PrideMode = false; // If true, the background will be cycle through colors.
-	inline bool RainbowNotes = false; // If true, the notes will turn rainbow along with the stems
-	inline bool AutomatedSelectedVolume = false; // If true, we will always show the selected volume.
-
-	inline std::atomic_bool RecreateTextures = false; // User has triggered an update, so we need to re-create textures.
-	inline std::atomic_bool RecreateTextureTimer = false; // If user spams recreating textures then we end up with a lot of memory usage. Limit how often we update textures.
+	inline std::atomic_bool RecreateTextures = true; // Initialized to true so textures generate on frame 1. Set to true whenever settings update.
 
 	// Dev Functions
 	inline bool startLogging = false; // Should we log what's happening in Hook_DIP? Logs to log.txt in your RS2014 directory
 
-	// Misc
-	inline bool setAllToNoteGradientTexture = false; // Should we override the 6-string note textures with the 7-string note textures?
-
-	/// <summary>
-	/// Convert time stored as a float of seconds, to h:m:s
-	/// </summary>
-	/// <param name="timeInSeconds"> - Float containing number of seconds elapsed.</param>
-	/// <returns>std::string of time in "h:m:s" format.</returns>
-	std::string ConvertFloatTimeToStringTime(float timeInSeconds);
-	void RegenerateTwitchNoteColors(IDirect3DDevice9* pDevice);
-
-	// Refreshes the headstock texture cache based on the current/previous menu. Call once per menu tick.
-	void UpdateHeadstockCacheForMenu();
+	void CheckRecreateTextures(IDirect3DDevice9* pDevice);
+	void InitializeCrcProvider();
 
 	inline HWND cachedGameHwnd = nullptr;
 	inline HWND GetGameWindow() {

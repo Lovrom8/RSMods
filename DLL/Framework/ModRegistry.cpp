@@ -6,15 +6,19 @@
 #include <iomanip>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "../Log.hpp"
 #include "ConflictResolver.hpp"
+#include "HudRegistry.hpp"
+#include "MenuRegistry.hpp"
 #include "MainThreadInbox.hpp"
 #include "ModContext.hpp"
 #include "ResourceLedger.hpp"
+#include "SettingsSchema.hpp"
 
 namespace Framework {
 	PendingRegistration* g_modPendingHead = nullptr;
@@ -101,6 +105,10 @@ namespace Framework {
 
 			record.state = ModState::Faulted;
 			Commands().RemoveMod(record.mod.get());
+			Hud().RemoveMod(record.mod.get());
+			Menus().RemoveMod(record.mod.get());
+			Draw().RemoveMod(record.mod.get());
+			SettingsSchema().RemoveMod(record.mod.get());
 		}
 
 		// Best-effort revert of live game state before a mod leaves Active.
@@ -118,9 +126,15 @@ namespace Framework {
 		void BeginTeardown(Record& record, DeactivationReason reason) {
 			Revert(record);
 
+			// Unlike command bindings, a HUD element is meaningless once the mod stops ticking,
+			// so drop it on every deactivation. The mod re-publishes on its next active tick.
+			Hud().RemoveMod(record.mod.get());
+
 			const ModState target = TeardownTargetState(reason);
 			if (target == ModState::Faulted) {
 				Commands().RemoveMod(record.mod.get());
+				Menus().RemoveMod(record.mod.get());
+				Draw().RemoveMod(record.mod.get());
 			}
 
 			record.state = target;
@@ -329,6 +343,26 @@ namespace Framework {
 			}
 		}
 
+		void PublishMenuAvailability() {
+			std::unordered_map<const IMod*, Availability> avail;
+			avail.reserve(records.size());
+			for (const auto& record : records) {
+				if (record.state == ModState::Active) {
+					avail.emplace(record.mod.get(), Availability::Active);
+				}
+				else if (record.state == ModState::Inactive) {
+					avail.emplace(record.mod.get(), Availability::Initialized);
+				}
+			}
+			Menus().PublishAvailability(std::move(avail));
+		}
+
+		void PublishDrawActive() {
+			Draw().RebuildActive([this](const IMod* mod) {
+				return IsOwnerAvailable(mod, Availability::Active);
+			});
+		}
+
 		std::vector<Record> records;
 		ModContext ctx;
 		bool resourceIndexDirty = false;
@@ -354,6 +388,13 @@ namespace Framework {
 			return;
 		}
 
+		const auto settings = mod->Settings();
+		std::string duplicateKey;
+		if (!settings.empty() && !SettingsSchema().Register(mod.get(), settings, &duplicateKey)) {
+			LOG_ERROR("[Framework] Duplicate setting key '" << duplicateKey << "' in mod '" << id << "' - registration rejected" << std::endl);
+			return;
+		}
+
 		LOG_INFO("[Framework] Registered mod: " << id << std::endl);
 		impl->records.push_back(Impl::Record{ .mod = std::move(mod) });
 		impl->resourceIndexDirty = true;
@@ -372,6 +413,8 @@ namespace Framework {
 		}
 
 		Commands().RefreshDiagnostics();
+		impl->PublishMenuAvailability();
+		impl->PublishDrawActive();
 	}
 
 	void ModRegistry::DispatchCommands(GamePhase phase, bool gameLoaded) {
@@ -390,8 +433,9 @@ namespace Framework {
 		Inbox().PostSettingsUpdate(std::move(apply));
 	}
 
-	void ModRegistry::Tick(GamePhase phase) {
+	bool ModRegistry::Tick(GamePhase phase) {
 		impl->ctx.phase = phase;
+		impl->ctx.fastTickRequested = false; // Reset before the pass; mods re-raise it from their tick hooks.
 
 		impl->HandleCommandFaults();
 		impl->DrainSettings();
@@ -407,9 +451,19 @@ namespace Framework {
 		// resource the outgoing mod hasn't released; reverts are synchronous, so one pass suffices.
 		impl->BeginOutgoingTeardowns(requestedActive, selectedActive);
 		impl->ActivateAndTickSelected(selectedActive, phase);
+		impl->PublishMenuAvailability();
+		impl->PublishDrawActive();
+
+		return impl->ctx.fastTickRequested; // Aggregate over the pass: did any mod ask for a tighter interval?
+	}
+
+	bool ModRegistry::IsOwnerAvailable(const IMod* mod, Availability required) const {
+		return impl->IsOwnerAvailable(mod, required);
 	}
 
 	void ModRegistry::Shutdown() {
+		Draw().RebuildActive([](const IMod*) { return false; });
+
 		for (auto& record : impl->records) {
 			if (record.state == ModState::Registered)
 				continue;
@@ -420,10 +474,15 @@ namespace Framework {
 
 			impl->Invoke(record, &IMod::OnShutdown, "OnShutdown");
 			Commands().RemoveMod(record.mod.get());
+			Hud().RemoveMod(record.mod.get());
+			Menus().RemoveMod(record.mod.get());
+			Draw().RemoveMod(record.mod.get());
+			SettingsSchema().RemoveMod(record.mod.get());
 		}
 
 		impl->records.clear();
 		Ledger().Release(&registryOwner);
+		Menus().PublishAvailability({});
 	}
 
 	ModRegistry& Registry() {

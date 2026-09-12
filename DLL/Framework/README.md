@@ -102,10 +102,25 @@ already-activated mod. `Tick` deactivates losers before activating winners; beca
 `OnDisabled` reverts synchronously, it releases its resources before any winner is activated, so a
 contested handoff can't double-acquire in a single pass.
 
-> **Rendering.** The framework has no render surface. Mods that draw contribute to the shared
-> `GameOverlay` HUD directly (as they do any other shared subsystem). A framework-owned per-frame
-> render-callback subsystem once existed and was removed as unused — see
-> [`docs/render-hooks.md`](docs/render-hooks.md) for what it was and the one condition to revive it.
+## On-screen display & in-game menus
+
+The framework manages two decoupled UI interaction surfaces for mods:
+- **HUD on-screen display (`ctx.Hud()`):** Snapshot-based text rendering anchored to semantic screen locations (`TopLeft`, `TopCenter`, `TopRight`, `TopTuning`, `HighwayLeft`, `MenuBanner`). The renderer copies snapshots on the D3D thread while mods publish on `MainThread`. See [`docs/hud-registry.md`](docs/hud-registry.md).
+- **In-game settings menu (`ctx.Menu()`):** Host-agnostic registry for ImGui settings drawers (`MidiMod`, `CalibrationMod`, `MicrophoneVolumeOverrideMod`, `VoiceOverControlMod`). Dispatched safely during `Hook_EndScene` with per-mod exception isolation. See [`docs/menu-registry.md`](docs/menu-registry.md).
+- **Procedural texture generation (`D3D::`):** Decoupled graphics utility layer for procedural texture generation (solid, gradient, CRC hashing). Mod-specific textures are owned by their respective mods (`ExtendedRangeMode`, `CustomHighwayColorsMod`) and regenerated at the `Hook_EndScene` frame boundary. See [`docs/texture-utilities.md`](docs/texture-utilities.md).
+
+> For historical context on a retired framework-owned generic render-hook callback subsystem, see
+> [`docs/render-hooks.md`](docs/render-hooks.md).
+
+The contributor-facing configuration seam is decoupled via **declarative settings schemas**: mods
+declare their configurable settings via `virtual SettingDefs Settings() const`, from which the DLL
+drives INI loading and defaults in `Settings.cpp`, and exports `mods.manifest.json` for the GUI.
+See [`docs/settings-schema.md`](docs/settings-schema.md).
+
+How third-party mods should be allowed to *ship* — out-of-tree repos vs. runtime binary loading vs. the
+trust boundary, and why review becomes a badge rather than a merge gate — is worked through in
+[`docs/plugin-distribution.md`](docs/plugin-distribution.md). Short version: the internal C++ API stays
+unfrozen; make the source surface zero-core-edit first, freeze a C ABI only once it stops moving.
 
 ## Main-thread inbox
 
@@ -183,8 +198,9 @@ reload path stays outside the lock.
 ## Testing
 
 The framework has no game or Windows dependencies, so it is unit-tested in isolation. `Tests/`
-holds four standalone console programs (`ConflictResolverTests`, `CommandRouterTests`,
-`MainThreadInboxTests`, `StateMachineTests`), each with its own `main()` that returns non-zero on failure.
+holds seven standalone console test suites (`ConflictResolverTests`, `ResourceLedgerTests`,
+`CommandRouterTests`, `MainThreadInboxTests`, `HudRegistryTests`, `MenuRegistryTests`,
+`StateMachineTests`), each with its own `main()` that returns non-zero on failure.
 
 Build and run them all with:
 

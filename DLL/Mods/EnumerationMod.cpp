@@ -5,8 +5,25 @@ using Framework::ModContext;
 using Framework::KeyEdge;
 using Framework::Availability;
 using Framework::KeyEvent;
+using Framework::SettingDefs;
+using Framework::Enum;
+using Framework::Numeric;
 using Settings::When;
 namespace Setting = Settings::Setting;
+
+SettingDefs EnumerationMod::Settings() const {
+	return {
+		Enum(Setting::ForceReEnumerationEnabled, "Force Enumeration")
+			.Ini("Toggle Switches", "ForceReEnumeration")
+			.Choices({ "off", "manual", "automatic" }, "off"),
+		Numeric(Setting::CheckForNewSongsInterval, "Song Scan Interval (seconds)")
+			.Ini("Mod Settings", "CheckForNewSongsInterval")
+			.Default("5000")
+			.Range(100, 100000000)
+			.Scale(0.001)
+			.WithVisibleWhen(Setting::ForceReEnumerationEnabled, "automatic"),
+	};
+}
 
 void EnumerationMod::OnInitialize(ModContext& c) {
 	c.Commands().BindSetting(
@@ -73,5 +90,6 @@ bool EnumerationMod::WaitFor(std::stop_token st, std::chrono::milliseconds durat
 	waitCondition.wait_for(lock, st, duration, [] { return false; });
 	return st.stop_requested();
 }
+
 
 static Framework::ModRegistrar<EnumerationMod> _enumerationReg;

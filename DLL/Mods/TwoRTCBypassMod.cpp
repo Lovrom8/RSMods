@@ -2,7 +2,15 @@
 #include "TwoRTCBypassMod.hpp"
 
 using Framework::ModContext;
+using Framework::SettingDef;
+using Framework::SettingDefs;
 namespace Setting = Settings::Setting;
+
+SettingDefs TwoRTCBypassMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::BypassTwoRTCMessageBox, "BypassTwoRTCMessageBox", "Bypass Two Real Tone Cables Warning")
+	};
+}
 
 bool TwoRTCBypassMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::BypassTwoRTCMessageBox);

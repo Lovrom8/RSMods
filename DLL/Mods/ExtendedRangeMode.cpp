@@ -1,5 +1,9 @@
 #include "../stdafx.h"
 #include "ExtendedRangeMode.hpp"
+#include "CollectColors.hpp"
+#include "../D3D/D3D.hpp"
+#include "../D3D/D3DHooks.hpp"
+#include "../Settings.hpp"
 #include "../StringState.h"
 
 #include <array>
@@ -68,6 +72,151 @@ void ERMode::Initialize() {
 
 void ERMode::SetCustomColors(int strIdx, const ColorMap& customColorMap) {
 	customColors[strIdx] = customColorMap;
+}
+
+ColorMap ERMode::GetCustomColors(int strIdx, bool CB) {
+	RSColor iniColor;
+	std::string ext = CB ? "_CB" : "_N";
+
+	// Get user-defined string color
+	iniColor = Settings::GetStringColors(CB)[strIdx];
+	int H;
+	float S;
+	float L;
+	CollectColors::RGB2HSL(iniColor.r, iniColor.g, iniColor.b, H, S, L);
+
+	// Create different colors from the user-defined color.
+	ColorMap customColorsMap = {
+		{"Ambient" + ext, CollectColors::GetAmbientStringColor(H, CB)},
+		{"Disabled" + ext, CollectColors::GetDisabledStringColor(H, S, L, CB)},
+		{"Enabled" + ext, iniColor},
+		{"Glow" + ext, CollectColors::GetGlowStringColor(H)},
+		{"PegsTuning" + ext, CollectColors::GetTuningPegColor(H)},
+		{"PegsReset" + ext, CollectColors::GetPegResetColor()},
+		{"PegsSuccess" + ext, CollectColors::GetPegSuccessColor(CB)},
+		{"PegsInTune" + ext, CollectColors::GetPegInTuneColor(H, CB)},
+		{"PegsOutTune" + ext, CollectColors::GetPegOutTuneColor()},
+		{"TextIndicator" + ext, CollectColors::GetRegTextIndicatorColor(H, CB)},
+		{"ForkParticles" + ext, CollectColors::GetRegForkParticlesColor(H, CB)},
+		{"NotewayNormal" + ext, CollectColors::GetNotewayNormalColor(H, S, L, CB)},
+		{"NotewayAccent" + ext, CollectColors::GetNotewayAccentColor(H, CB)},
+		{"NotewayPreview" + ext, CollectColors::GetNotewayPreviewColor(H, CB)},
+		{"GC_Main" + ext, CollectColors::GetGuitarcadeMainColor(H, strIdx, CB)},
+		{"GC_Add" + ext, CollectColors::GetGuitarcadeAdditiveColor(H, strIdx, CB)},
+		{"GC_UI" + ext, CollectColors::GetGuitarcadeUIColor(H, strIdx, CB)}
+	};
+
+	return customColorsMap;
+}
+
+void ERMode::SetCustomColors() {
+	if (customColors.size() < 6) {
+		customColors.resize(6);
+	}
+	for (int strIdx = 0; strIdx < 6; strIdx++) {
+		ColorMap customColorsFull;
+
+		ColorMap normalColors = GetCustomColors(strIdx, false);
+		ColorMap cbColors = GetCustomColors(strIdx, true);
+
+		customColorsFull.insert(normalColors.begin(), normalColors.end());
+		customColorsFull.insert(cbColors.begin(), cbColors.end());
+
+		ERMode::SetCustomColors(strIdx, customColorsFull);
+	}
+}
+
+namespace {
+	void ClampColorComponents(RSColor& c) {
+		auto clamp = [](float& value) {
+			if (value > 1.0f) value = value - (value - 1.0f);
+			if (value < 0.0f) value *= -1.0f;
+		};
+
+		clamp(c.r);
+		clamp(c.g);
+		clamp(c.b);
+	}
+
+	void GenerateColorTexture(IDirect3DDevice9* pDevice, IDirect3DTexture9** ppTexture, const ColorList& colorsNormal, const ColorList& colorsColorBlind) {
+		ColorList colorSet;
+		colorSet.reserve(colorsNormal.size() + colorsColorBlind.size());
+		colorSet.insert(colorSet.end(), colorsNormal.begin(), colorsNormal.end());
+		colorSet.insert(colorSet.end(), colorsColorBlind.begin(), colorsColorBlind.end());
+
+		D3D::GenerateGradientTexture(pDevice, ppTexture, colorSet);
+	}
+}
+
+void ERMode::GenerateStringTextures(IDirect3DDevice9* pDevice) {
+	if (!Settings::IsOn(Settings::Setting::ExtendedRangeEnabled) && Settings::GetStringColorMode() != Settings::StringColorMode::Custom) {
+		D3D::ReleaseTexture(&customStringColorTexture);
+		return;
+	}
+	GenerateColorTexture(pDevice, &customStringColorTexture, Settings::GetStringColors(false), Settings::GetStringColors(true));
+}
+
+void ERMode::GenerateNoteTextures(IDirect3DDevice9* pDevice) {
+	if (!Settings::IsOn(Settings::Setting::SeparateNoteColors) || Settings::GetNoteColorMode() != Settings::NoteColorMode::Custom) {
+		D3D::ReleaseTexture(&customNoteColorTexture);
+		return;
+	}
+	GenerateColorTexture(pDevice, &customNoteColorTexture, Settings::GetNoteColors(false), Settings::GetNoteColors(true));
+}
+
+void ERMode::GenerateRainbowTextures(IDirect3DDevice9* pDevice) {
+	if (!RainbowNotesEnabled && !Settings::IsOn(Settings::Setting::RainbowNotesEnabled)) {
+		for (auto& tex : rainbowTextures) {
+			D3D::ReleaseTexture(&tex);
+		}
+		return;
+	}
+
+	const size_t expectedCount = static_cast<size_t>(360.0f / rainbowSpeed);
+	if (rainbowTextures.size() != expectedCount) {
+		rainbowTextures.resize(expectedCount, nullptr);
+	}
+
+	int currTexture = 0;
+	constexpr float stringOffset = 20.0f;
+	constexpr int stringCount = 6;
+
+	for (float h = 0.0f; h < 360.0f; h += rainbowSpeed) {
+		ColorList colorsRainbow;
+		colorsRainbow.reserve(stringCount + 2);
+
+		for (int i = 0; i < stringCount; ++i) {
+			RSColor c;
+			c.setH(h + (stringOffset * i));
+			ClampColorComponents(c);
+			colorsRainbow.push_back(c);
+		}
+
+		colorsRainbow.insert(colorsRainbow.end(), 2, colorsRainbow.back());
+
+		ColorList colorSet;
+		colorSet.reserve(colorsRainbow.size() * 2);
+		colorSet.insert(colorSet.end(), colorsRainbow.begin(), colorsRainbow.end());
+		colorSet.insert(colorSet.end(), colorsRainbow.begin(), colorsRainbow.end());
+
+		D3D::GenerateGradientTexture(pDevice, &rainbowTextures[currTexture++], colorSet);
+	}
+}
+
+void ERMode::RegenerateTextures(IDirect3DDevice9* pDevice) {
+	if (!pDevice) return;
+	GenerateStringTextures(pDevice);
+	GenerateNoteTextures(pDevice);
+	GenerateRainbowTextures(pDevice);
+	SetCustomColors();
+}
+
+void ERMode::ReleaseTextures() {
+	D3D::ReleaseTexture(&customStringColorTexture);
+	D3D::ReleaseTexture(&customNoteColorTexture);
+	for (auto& tex : rainbowTextures) {
+		D3D::ReleaseTexture(&tex);
+	}
 }
 
 /// <summary>
@@ -267,6 +416,7 @@ void ERMode::ToggleRainbowMode() {
 /// </summary>
 void ERMode::ToggleRainbowNotes() {
 	RainbowNotesEnabled = !RainbowNotesEnabled.load();
+	D3DHooks::RecreateTextures = true;
 }
 
 /// <summary>

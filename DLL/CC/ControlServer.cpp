@@ -46,7 +46,6 @@ namespace CrowdControl {
 			const SOCKET socket = activeSocket.exchange(INVALID_SOCKET);
 			if (socket == INVALID_SOCKET) return;
 
-			shutdown(socket, SD_BOTH);
 			closesocket(socket);
 		}
 	}
@@ -91,8 +90,7 @@ namespace CrowdControl {
 	}
 
 	/// <summary>
-	/// Sends a response through the same socket it received the request from
-	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
+	/// Sends response to Crowd Control over TCP socket.
 	/// </summary>
 	void SendResponse(SOCKET socket, const Response& response) {
 		//Serialize response
@@ -103,32 +101,23 @@ namespace CrowdControl {
 		LOG_INFO("Responding: " << jsonstr.c_str() << std::endl);
 
 		//Send response
-		send(socket, jsonstr.c_str(), static_cast<int>(jsonstr.length()), 0);
-
-		//Send null terminator
-		char buffer[1] = { 0 };
-		send(socket, buffer, sizeof(buffer), 0);
+		send(socket, jsonstr.c_str(), jsonstr.length() + 1, 0); // Include null terminator for CC
 	}
 
 	/// <summary>
-	/// Waits for incoming requests, which are null terminated
-	/// If the client's connection is closed, recv returns and the connection worker reconnects.
-	/// When a request is received, parse it as JSON, run the corresponding effect if no incompatible effects are currently running 
+	/// Read the socket and perform the effects.
 	/// If the effect was started, it sends a Response with code 0 (Success), otherwise it sends a Response with code 3 (Retry)
 	/// </summary>
 	void ClientLoop(std::stop_token stop, SOCKET socket) {
 		LOG_INFO("Starting crowd control client loop" << std::endl);
 
-		std::array<char, 1024> buffer{};
-
+		std::array<char, 512> buffer{};
 		while (!stop.stop_requested()) {
-			std::size_t currentMessageLength = 0;
-
+			size_t currentMessageLength = 0;
 			while (currentMessageLength < buffer.size()) {
 				const int bytesRead = recv(socket, buffer.data() + currentMessageLength, 1, 0);
 				if (bytesRead <= 0) return;
 				if (buffer[currentMessageLength] == '\0') break;
-
 				++currentMessageLength;
 			}
 
@@ -191,8 +180,7 @@ namespace CrowdControl {
 			const SOCKET socket = ::socket(AF_INET, SOCK_STREAM, 0);
 			if (socket == INVALID_SOCKET) {
 				LOG_ERROR("Unable to open socket for crowd control" << std::endl);
-				if (WaitFor(stop, 5s)) return;
-				continue;
+				return;
 			}
 
 			activeSocket.store(socket);
@@ -204,10 +192,10 @@ namespace CrowdControl {
 			//Connect
 			const int connectErr = connect(socket, reinterpret_cast<const sockaddr*>(&server_address), sizeof(server_address));
 			if (connectErr == SOCKET_ERROR) {
-				LOG_ERROR("Unable to connect to crowd control - " << WSAGetLastError() << std::endl);
+				const int err = WSAGetLastError();
+				LOG_ERROR("Unable to connect to crowd control - " << err << std::endl);
 				CloseActiveSocket();
-				if (WaitFor(stop, 5s)) return;
-				continue;
+				return;
 			}
 
 			LOG_INFO("Connected to crowd control" << std::endl);
@@ -217,6 +205,7 @@ namespace CrowdControl {
 			CloseActiveSocket();
 
 			LOG_INFO("Disconnected from crowd control" << std::endl);
+			break;
 		}
 
 		LOG_INFO("Crowd control stopping" << std::endl);

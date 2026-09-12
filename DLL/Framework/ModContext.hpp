@@ -6,6 +6,9 @@
 
 #include "GamePhase.hpp"
 #include "CommandRouter.hpp"
+#include "HudRegistry.hpp"
+#include "MenuRegistry.hpp"
+#include "DrawRegistry.hpp"
 
 namespace Settings {
 	// Opaque declarations keep the framework core free of the whole of Settings.hpp; only ModContext.cpp pulls it in. 
@@ -36,12 +39,74 @@ namespace Framework {
 		}
 	};
 
+	struct HudBinder {
+		HudRegistry& hud;
+		const IMod* mod;
+
+		// Publish (or update) an on-screen text element keyed by `id` within this mod. Call it every
+		// tick with the current snapshot; publish `{ .visible = false }` to hide it. The element is torn
+		// down automatically when the mod deactivates or faults. `placement` brace-inits from a bare
+		// anchor (order 0) for single-occupant elements: Set("id", { HudAnchor::TopLeft }, snapshot).
+		void Set(std::string id, HudPlacement placement, HudText snapshot) const {
+			hud.Set(mod, std::move(id), placement, std::move(snapshot));
+		}
+	};
+
+	struct MenuBinder {
+		MenuRegistry& registry;
+		const IMod* mod;
+
+		void Register(std::string id, std::string title, int order, MenuDrawFn drawFn,
+			Availability availability = Availability::Active, bool standaloneWindow = false) const {
+			registry.Register(mod, std::move(id), std::move(title), order,
+				std::move(drawFn), availability, standaloneWindow);
+		}
+	};
+
+	struct DrawBinder {
+		DrawRegistry& draw;
+		const IMod* mod;
+
+		void Register(std::string id, int priority, DrawPath path, DrawInterceptor fn) const {
+			draw.Register(mod, std::move(id), priority, path, std::move(fn));
+		}
+
+		// Register regen + release together; preferred for mods that own D3D textures.
+		void RegisterTextureLifecycle(TextureRegenCallback regenFn, TextureReleaseCallback releaseFn) const {
+			draw.RegisterTextureLifecycle(mod, std::move(regenFn), std::move(releaseFn));
+		}
+
+		// Register regen-only (no deferred release); use when no D3D textures are owned.
+		void RegisterTextureRegen(TextureRegenCallback fn) const {
+			draw.RegisterTextureRegen(mod, std::move(fn));
+		}
+
+		// Queue a deferred release for this mod's textures. Safe to call from OnDisabled.
+		// Actual release runs at the next RunPendingReleases call (EndScene).
+		void RequestTextureRelease() const {
+			draw.RequestTextureRelease(mod);
+		}
+
+		// Cancel a pending deferred release (e.g. if re-enabled before EndScene).
+		void CancelTextureRelease() const {
+			draw.CancelTextureRelease(mod);
+		}
+	};
+
 	// Internal per-hook context
 	struct ModContext {
 		GamePhase phase = GamePhase::Loading;
 		const IMod* currentMod = nullptr; // Set by the registry before each hook call.
+		bool fastTickRequested = false; // Raised by a mod that needs a tighter tick this pass; the registry resets and consumes it.
+
+		// Ask the MainThread loop to shorten its next maintenance interval. Call it every pass the need
+		// persists (e.g. while watching a loop end for a seek-back); it self-clears when no mod requests it.
+		void RequestFastTick() { fastTickRequested = true; }
 
 		CommandBinder Commands() const { return { Framework::Commands(), currentMod }; }
+		HudBinder Hud() const { return { Framework::Hud(), currentMod }; }
+		MenuBinder Menu() const { return { Framework::Menus(), currentMod }; }
+		DrawBinder Draw() const { return { Framework::Draw(), currentMod }; }
 
 		// Defined in ModContext.cpp so this header stays free of Settings.hpp.
 		bool IsOn(std::string_view key) const;

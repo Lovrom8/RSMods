@@ -6,10 +6,14 @@
 # (no windows.h / stdafx), so each test compiles against only the handful of
 # framework translation units it actually uses.
 #
-# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1
+# Run locally:   pwsh DLL/Framework/Tests/BuildAndRun.ps1 [-DumpManifest]
 # CI entrypoint: appveyor.yml (the `test_script` step runs this script on the develop branch).
 #
 # Exits non-zero if any test fails to build or reports test failures.
+
+param (
+    [switch]$DumpManifest
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -18,19 +22,38 @@ $Framework = Split-Path $TestsDir -Parent            # ...\DLL\Framework
 $OutDir    = Join-Path $TestsDir 'bin'
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
+if ($DumpManifest) {
+    $dll = Join-Path $TestsDir '..\..\Installer\Resources\xinput1_3.dll'
+    if (Test-Path $dll) {
+        $manifestPath = (Resolve-Path (Join-Path $TestsDir '..\..\..\mods.manifest.json')).Path
+        Write-Host "=== Dumping mods.manifest.json ===" -ForegroundColor Cyan
+        & cmd /c "C:\Windows\SysWOW64\rundll32.exe `"$dll`",DumpManifest `"$manifestPath`""
+        Write-Host "Manifest successfully dumped to $manifestPath" -ForegroundColor Green
+        exit 0
+    }
+    else {
+        Write-Host "xinput1_3.dll not found; build DLL before dumping manifest." -ForegroundColor Red
+        exit 1
+    }
+}
+
 # Extra framework translation units each test must link against (besides its own .cpp).
 $Tests = @(
     @{ Name = 'ConflictResolverTests';  Sources = @() },  # header-only resolver
     @{ Name = 'ResourceLedgerTests';    Sources = @('ResourceLedger.cpp') },
     @{ Name = 'CommandRouterTests';     Sources = @('CommandRouter.cpp', 'CommandCollisionDiagnostics.cpp') },
     @{ Name = 'MainThreadInboxTests';   Sources = @('MainThreadInbox.cpp') },
-    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp') }
+    @{ Name = 'HudRegistryTests';       Sources = @('HudRegistry.cpp') },
+    @{ Name = 'MenuRegistryTests';      Sources = @('MenuRegistry.cpp') },
+    @{ Name = 'DrawRegistryTests';      Sources = @('DrawRegistry.cpp') },
+    @{ Name = 'SettingsSchemaTests';    Sources = @('SettingsSchema.cpp') },
+    @{ Name = 'StateMachineTests';      Sources = @('ModRegistry.cpp', 'ResourceLedger.cpp', 'CommandRouter.cpp', 'MainThreadInbox.cpp', 'CommandCollisionDiagnostics.cpp', 'HudRegistry.cpp', 'MenuRegistry.cpp', 'DrawRegistry.cpp', 'SettingsSchema.cpp') }
 )
 
 # Locate the MSVC developer environment (matches the DLL's v143 toolset).
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 if (-not (Test-Path $vswhere)) { throw "vswhere.exe not found; install Visual Studio with the 'Desktop development with C++' workload." }
-$vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$vsPath = & $vswhere -latest -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if (-not $vsPath) { throw "No Visual Studio install with the C++ toolset found." }
 $vcvars = Join-Path $vsPath 'VC\Auxiliary\Build\vcvars64.bat'
 if (-not (Test-Path $vcvars)) { throw "vcvars64.bat not found at $vcvars" }

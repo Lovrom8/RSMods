@@ -1,363 +1,258 @@
 #include "stdafx.h"
 #include "D3DOverlay.hpp"
+#include "Framework/HudRegistry.hpp"
+#include "GameState.hpp"
+
+#include <windows.h>
+#include <wrl/client.h>
+#include <algorithm>
+#include <unordered_map>
+
+using Microsoft::WRL::ComPtr;
 
 namespace Setting = Settings::Setting;
 
-/// <returns>Size of Rocksmith Window</returns>
-Resolution GameOverlay::GetWindowSize() {
-	RECT windowSize;
+namespace {
+	// Pixel band per anchor, derived from the live window size. Insets deliberately match the old
+	// hand-written overlays so single-occupant stacks land pixel-for-pixel where they always did.
+	struct AnchorLayout {
+		LONG left;
+		LONG right;
+		LONG top;
+		DWORD format;
+	};
 
-	Resolution currentSize;
-	if (GetWindowRect(D3DHooks::GetGameWindow(), &windowSize))
-	{
-		currentSize.width = windowSize.right - windowSize.left;
-		currentSize.height = windowSize.bottom - windowSize.top;
-	}
+	AnchorLayout AnchorStart(Framework::HudAnchor anchor, const Resolution& window) {
+		const float w = static_cast<float>(window.width);
+		const float h = static_cast<float>(window.height);
 
-	return currentSize;
-}
-
-/// <summary>
-/// Draw text on screen
-/// </summary>
-/// <param name="textToDraw"> - What text should be written?</param>
-/// <param name="textColorHex"> - What color? Given in hex in the AA,RR,GG,BB format.</param>
-/// <param name="topLeftX"> - top LEFT of textbox</param>
-/// <param name="topLeftY"> - TOP left of textbox</param>
-/// <param name="bottomRightX"> - bottom RIGHT of textbox</param>
-/// <param name="bottomRightY"> - BOTTOM right of textbox</param>
-/// <param name="pDevice"> - Device Pointer</param>
-/// <param name="setFontSize"> - Override font size</param>
-/// <param name="format"> - DrawText format</param>
-void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize, DWORD format)
-{
-	CComPtr<ID3DXFont> font;
-	bool useInputFontSize = setFontSize.height != 0;
-
-	if (useInputFontSize) {
-		int targetH = setFontSize.height;
-		const std::string face = Settings::ReturnSettingValue(Setting::OnScreenFont);
-		FontKey key = FontKey::Make(face, targetH, 0, FW_NORMAL, false);
-
-		if (!fontCache.Get(pDevice, key, font)) {
-			LOG_ERROR("Could not acquire custom-sized font." << std::endl);
-			return;
+		switch (anchor) {
+		case Framework::HudAnchor::TopRight:
+			return { static_cast<LONG>(w - w / 16.0f), static_cast<LONG>(w - w / 96.0f),
+					 static_cast<LONG>(h / 54.0f), DT_RIGHT | DT_NOCLIP };
+		case Framework::HudAnchor::TopCenter:
+			return { static_cast<LONG>(w / 2.0f - w / 38.4f), static_cast<LONG>(w / 2.0f + w / 38.4f),
+					 static_cast<LONG>(h / 54.0f), DT_CENTER | DT_NOCLIP };
+		case Framework::HudAnchor::TopTuning:
+			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.65f),
+					 static_cast<LONG>(h / 30.85f), DT_LEFT | DT_NOCLIP };
+		case Framework::HudAnchor::HighwayLeft:
+			return { static_cast<LONG>(w / 5.5f), static_cast<LONG>(w / 5.75f),
+					 static_cast<LONG>(h / 1.75f), DT_LEFT | DT_NOCLIP };
+		case Framework::HudAnchor::MenuBanner:
+			return { static_cast<LONG>(w / 3.87f), static_cast<LONG>(w / 4.0f),
+					 static_cast<LONG>(h / 30.85f), DT_LEFT | DT_NOCLIP };
+		case Framework::HudAnchor::TopLeft:
+		default:
+			return { static_cast<LONG>(w / 96.0f), static_cast<LONG>(w / 19.2f),
+					 static_cast<LONG>(h / 54.0f), DT_LEFT | DT_NOCLIP };
 		}
 	}
-	else {
-		if (cachedFont) {
-			font = cachedFont;
+
+	Resolution GetWindowSize() {
+		RECT windowSize;
+		Resolution currentSize{};
+		if (GetWindowRect(D3DHooks::GetGameWindow(), &windowSize))
+		{
+			currentSize.width = windowSize.right - windowSize.left;
+			currentSize.height = windowSize.bottom - windowSize.top;
+		}
+		return currentSize;
+	}
+
+	struct FontKey {
+		std::string face;
+		int height;
+		int width;
+		int weight;
+		bool italic;
+
+		static std::string NormalizeFace(std::string s) {
+			auto not_space = [](int c) { return !std::isspace(c); };
+			s.erase(s.begin(), std::find_if(s.begin(), s.end(), not_space));
+			s.erase(std::find_if(s.rbegin(), s.rend(), not_space).base(), s.end());
+			std::transform(s.begin(), s.end(), s.begin(),
+				[](unsigned char c) { return char(std::tolower(c)); });
+			return s;
+		}
+
+		bool operator==(const FontKey& o) const {
+			return height == o.height && weight == o.weight && italic == o.italic && face == o.face;
+		}
+
+		static FontKey Make(std::string face, int h, int w, int wt, bool it) {
+			return FontKey{ NormalizeFace(std::move(face)), h, w, wt, it };
+		}
+	};
+
+	struct FontKeyHash {
+		size_t operator()(const FontKey& k) const {
+			size_t h = std::hash<std::string>()(k.face);
+			h ^= static_cast<size_t>(k.height) + 0x9e3779b9 + (h << 6) + (h >> 2);
+			h ^= static_cast<size_t>(k.weight) + 0x9e3779b9 + (h << 6) + (h >> 2);
+			h ^= static_cast<size_t>(k.italic) + 0x9e3779b9 + (h << 6) + (h >> 2);
+			return h;
+		}
+	};
+
+	class FontCache {
+	public:
+		bool Get(IDirect3DDevice9* dev, const FontKey& key, ComPtr<ID3DXFont>& out) {
+			out.Reset();
+			if (auto it = cache.find(key); it != cache.end() && it->second) {
+				out = it->second;
+				return true;
+			}
+
+			ComPtr<ID3DXFont> font;
+			HRESULT hr = D3DXCreateFontA(dev, key.height, 0, key.weight, 1, key.italic,
+				DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+				DEFAULT_PITCH | FF_DONTCARE, key.face.c_str(), font.GetAddressOf());
+			if (FAILED(hr) || !font) return false;
+
+			auto [iter, inserted] = cache.try_emplace(key, font);
+			out = iter->second;
+
+			return true;
+		}
+
+		void OnLostDevice() const {
+			for (const auto& [key, fontPtr] : cache) if (fontPtr) fontPtr->OnLostDevice();
+		}
+
+		void OnResetDevice() const {
+			for (const auto& [key, fontPtr] : cache) if (fontPtr) fontPtr->OnResetDevice();
+		}
+	private:
+		std::unordered_map<FontKey, ComPtr<ID3DXFont>, FontKeyHash> cache;
+	};
+
+	FontCache fontCache;
+	std::string cachedFontName = "";
+	int cachedFontSize = 0;
+	ComPtr<ID3DXFont> cachedFont;
+
+	void DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize = { 0u, 0u }, DWORD format = DT_LEFT | DT_NOCLIP)
+	{
+		ComPtr<ID3DXFont> font;
+		bool useInputFontSize = setFontSize.height != 0;
+
+		if (useInputFontSize) {
+			int targetH = setFontSize.height;
+			const std::string face = Settings::ReturnSettingValue(Setting::OnScreenFont);
+			FontKey key = FontKey::Make(face, targetH, 0, FW_NORMAL, false);
+
+			if (!fontCache.Get(pDevice, key, font)) {
+				LOG_ERROR("Could not acquire custom-sized font." << std::endl);
+				return;
+			}
 		}
 		else {
-			LOG_ERROR("Default font is not cached!" << std::endl);
-			return;
-		}
-	}
-
-	RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
-
-	// Preload And Draw The Text (Supposed to reduce the performance hit (It's D3D/DX9 but still good practice))
-	font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
-	font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
-}
-
-void GameOverlay::DisplayMixer() {
-	// Display the whole mixer if displayMixer is true
-	if (Settings::IsOn(Setting::VolumeControlEnabled) && displayMixer) {
-
-		float offset = 0;
-		for (int volumeIndex = 0; volumeIndex < (int)mixerChannels.size(); ++volumeIndex) {
-
-			float volume = 0;
-			RTPCValue_type type = RTPCValue_GameObject;
-			Wwise::SoundEngine::Query::GetRTPCValue(mixerChannels[volumeIndex].channel, AK_INVALID_GAME_OBJECT, &volume, &type);
-
-			DX9DrawText(
-				std::string(mixerChannels[volumeIndex].label) + std::to_string(static_cast<int>(volume)) + "%",
-				whiteText,
-				static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
-				static_cast<int>(WindowSize.height / 54.0f + offset), // 20 pixels from top (plus an offset to display multiple values)
-				static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
-				static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
-				pDevice);
-
-			// Adjust the offset to display the next value
-			offset += WindowSize.height / 54.0f;
-		}
-	}
-	// Display just the current volume based on context (This will display the last volume that was adjusted for a few seconds after adjusting it)
-	else if (Settings::IsOn(Setting::VolumeControlEnabled) && displayCurrentVolume) {
-		float volume = 0;
-		RTPCValue_type type = RTPCValue_GameObject;
-		Wwise::SoundEngine::Query::GetRTPCValue(mixerChannels[currentVolumeIndex].channel, AK_INVALID_GAME_OBJECT, &volume, &type);
-
-		DX9DrawText(
-			std::string(mixerChannels[currentVolumeIndex].label) + std::to_string(static_cast<int>(volume)) + "%",
-			whiteText,
-			static_cast<int>(WindowSize.width / 96.0f),  // 20 pixels from left in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f), // 20 pixels from top 
-			static_cast<int>(WindowSize.width / 19.2f),  // 120 pixels from left
-			static_cast<int>(WindowSize.height / 16.0f), // 120 pixels from top
-			pDevice);
-	}
-}
-
-void GameOverlay::DisplaySongTimer()
-{
-	if (D3DHooks::showSongTimerOnScreen && SongTimer::SongTimer() != 0.f) {
-		DX9DrawText(
-			D3DHooks::ConvertFloatTimeToStringTime(SongTimer::SongTimer()),
-			whiteText,
-			static_cast<int>(WindowSize.width - WindowSize.width / 16.0f), // 120 pixels left from right edge in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f),                   // 20 pixels from top
-			static_cast<int>(WindowSize.width - WindowSize.width / 96.0f), // 20 left from right edge
-			static_cast<int>(WindowSize.height / 16.0f),                   // 120 pixels from top
-			pDevice,
-			{ NULL, NULL },
-			DT_RIGHT | DT_NOCLIP);
-	}
-}
-
-void GameOverlay::DisplayCurrentNote()
-{
-	if (Settings::IsOn(Setting::ShowCurrentNoteOnScreen) && GuitarSpeak::GetCurrentNoteName() != (std::string)"") {
-
-		if (GameState::IsInSong()) {
-			DX9DrawText(
-				GuitarSpeak::GetCurrentNoteName(),
-				whiteText,
-				static_cast<int>(WindowSize.width / 5.5),		// 349 pixels left of the center in 1920x1080 resolution.
-				static_cast<int>(WindowSize.height / 1.75),	// 617 pixels from the top
-				static_cast<int>(WindowSize.width / 5.75),		// 334 pixels right of center
-				static_cast<int>(WindowSize.height / 8),		// 135 pixels from the top
-				pDevice);
-		}
-		else { // Show outside of the song at the top of the screen.
-			DX9DrawText(
-				"Current Note: " + GuitarSpeak::GetCurrentNoteName(),
-				whiteText,
-				static_cast<int>(WindowSize.width / 3.87),		// 496 pixels left of the center in 1920x1080 resolution
-				static_cast<int>(WindowSize.height / 30.85),	// 35 pixels from the top
-				static_cast<int>(WindowSize.width / 4),		// 480 pixel right of the center
-				static_cast<int>(WindowSize.height / 8),		// 135 pixels from the top
-				pDevice);
-		}
-	}
-}
-
-void GameOverlay::DisplayRiffRepeaterOverHundredPercentSpeed()
-{
-	if (Settings::IsOn(Setting::RRSpeedAboveOneHundred) && RiffRepeater::loggedCurrentSongID &&
-		(GameState::Menus::IsInModesWithAllowedFastRiffRepeater() || GameState::Menus::IsOnScoreScreens()) || RiffRepeater::currentlyEnabled_Above100) {
-		realSongSpeed = RiffRepeater::GetSpeed(true); // While this should almost always be the same value, the user might enable riff repeater, which could cause this number to be wrong.
-
-		DX9DrawText(
-			"Song Speed: " + std::to_string(static_cast<int>(roundf(realSongSpeed))) + "%",
-			whiteText,
-			static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 54.0f),                          // 20 pixels from top
-			static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-			static_cast<int>(WindowSize.height / 16.0f),                          // 120 pixels from top
-			pDevice,
-			{ NULL, NULL },
-			DT_CENTER | DT_NOCLIP);
-	}
-}
-
-void GameOverlay::DisplayCurrentTuningForAutoTune()
-{
-	if (Settings::IsOn(Setting::AutoTuneForSong) && Settings::GetKeyBind(Setting::Key::TuningOffset) != NULL && GameState::Menus::IsInTuningMenus()) {
-		DX9DrawText(
-			"Auto Tune For: " + Midi::GetTuningOffsetName(Midi::tuningOffset),
-			whiteText,
-			static_cast<int>(WindowSize.width / 5.5),		// 349 pixels left of the center in 1920x1080 resolution
-			static_cast<int>(WindowSize.height / 30.85),	// 35 pixels from the top
-			static_cast<int>(WindowSize.width / 5.65),		// 339 pixels right of center
-			static_cast<int>(WindowSize.height / 8),		// 135 pixels from the top
-			pDevice);
-	}
-}
-
-void GameOverlay::DisplayLoopStartEndTimes(float loopStart, float loopEnd)
-{
-	DX9DrawText(
-		"Loop: " + D3DHooks::ConvertFloatTimeToStringTime(loopStart) + " - " + D3DHooks::ConvertFloatTimeToStringTime(loopEnd),
-		whiteText,
-		static_cast<int>(WindowSize.width / 2.0f - WindowSize.width / 38.4f), // 50 pixels left of center in 1920x1080 resolution
-		static_cast<int>(WindowSize.height / 21.6f),                          // 50 pixels from top
-		static_cast<int>(WindowSize.width / 2.0f + WindowSize.width / 38.4f), // 50 pixels right of center
-		static_cast<int>(WindowSize.height / 7.2f),                           // 150 pixels from top
-		pDevice,
-		{ NULL, NULL },
-		DT_CENTER | DT_NOCLIP);
-}
-
-void HandleLooping() {
-	if (Settings::IsOn(Setting::AllowLooping) && (Keybindings::loopStart != NULL || Keybindings::loopEnd != NULL)) {
-		// Only enable looping in learn a song modes (learn a song & non-stop play)
-		if (GameState::Menus::IsInLearnASongModes()) {
-			GameOverlay::DisplayLoopStartEndTimes(Keybindings::loopStart, Keybindings::loopEnd);
-
-			// Prevent the user from creating a loop that starts at a negative timestamp.
-			if ((Settings::GetModSetting(Setting::LoopingLeadUp) / 1000.f) >= Keybindings::loopStart) {
-				Keybindings::roughLoopStart = 0.f;
+			if (cachedFont) {
+				font = cachedFont;
 			}
 			else {
-				Keybindings::roughLoopStart = Keybindings::loopStart - (Settings::GetModSetting(Setting::LoopingLeadUp) / 1000.f);
+				LOG_ERROR("Default font is not cached!" << std::endl);
+				return;
+			}
+		}
+
+		RECT TextRectangle{ topLeftX, topLeftY, bottomRightX, bottomRightY }; // Left, Top, Right, Bottom
+
+		font->PreloadTextA(textToDraw.c_str(), textToDraw.length());
+		font->DrawTextA(nullptr, textToDraw.c_str(), -1, &TextRectangle, format, textColorHex);
+	}
+
+	void CheckCurrentFont(IDirect3DDevice9* device) {
+		const std::string currentFontName = Settings::ReturnSettingValue(Setting::OnScreenFont);
+		const int currentFontSize = Settings::GetModSetting(Setting::OnScreenFontSize);
+
+		if (cachedFontName != currentFontName || cachedFontSize != currentFontSize || !cachedFont) {
+			LOG_INFO("Font settings changed. Re-caching default font..." << std::endl);
+
+			FontKey newKey = FontKey::Make(currentFontName, currentFontSize, 0, FW_NORMAL, false);
+			ComPtr<ID3DXFont> newFont;
+
+			if (fontCache.Get(device, newKey, newFont)) {
+				cachedFont = newFont;
+				cachedFontName = currentFontName;
+				cachedFontSize = currentFontSize;
+			}
+			else {
+				LOG_ERROR("Failed to create and cache new default font!" << std::endl);
+			}
+		}
+	}
+
+	// SnapshotVisible() returns copies, so no lock is held across the DX9 draw calls and mod code
+	// is never re-entered on the render thread.
+	void DrawModHud(IDirect3DDevice9* device, const Resolution& windowSize) {
+		std::vector<Framework::HudElement> elements = Framework::Hud().SnapshotVisible();
+
+		// Deterministic stacking: by anchor, then order, then id; owner pointer only as a final stable tiebreak.
+		std::sort(elements.begin(), elements.end(),
+			[](const Framework::HudElement& a, const Framework::HudElement& b) {
+				if (a.anchor != b.anchor) return a.anchor < b.anchor;
+				if (a.order != b.order)   return a.order < b.order;
+				if (a.id != b.id)         return a.id < b.id;
+				return a.owner < b.owner;
+			});
+
+		const float defaultStep = windowSize.height / 54.0f; // legacy per-line spacing when no custom height
+		bool haveAnchor = false;
+		Framework::HudAnchor anchor{};
+		AnchorLayout layout{};
+		float cursorY = 0;
+
+		for (const Framework::HudElement& element : elements) {
+			if (!haveAnchor || element.anchor != anchor) {
+				layout = AnchorStart(element.anchor, windowSize);
+				cursorY = static_cast<float>(layout.top);
+				anchor = element.anchor;
+				haveAnchor = true;
 			}
 
-			// If we are paused, reset the grey note timer.
-			if (GameState::Menus::IsInLearnASongPauseModes()) {
-				// Resets grey note timer to loopStart. This makes it so notes in the loop are not deactivated.
-				// Deactivated notes are greyed out, and do not register with note detection.
-				// As an added bonus the game also automatically adds a bit of lead time so the player has some time to prepare.
-				if (SongTimer::GetGreyNoteTimer() != Keybindings::loopStart) {
-					SongTimer::SetGreyNoteTimer(Keybindings::loopStart);
+			const int fontHeight = element.snapshot.fontHeight;
+			float step = defaultStep;
+
+			if (fontHeight > 0) {
+				step = static_cast<float>(fontHeight);
+			}
+			else if (cachedFont) {
+				RECT r{ layout.left, 0, layout.right, 0 };
+				int h = cachedFont->DrawTextA(nullptr, element.snapshot.text.c_str(), -1, &r, layout.format | DT_CALCRECT, 0);
+				if (h <= 0) h = (r.bottom - r.top);
+				if (h > 0) {
+					int gap = (std::max)(1, h / 4);
+					step = (std::max)(defaultStep, static_cast<float>(h + 2 * gap));
 				}
 			}
 
-			// If not paused AND we are at the end of the loop, seek to the start of the loop.
-			else if (Keybindings::loopStart != NULL && Keybindings::loopEnd != NULL && (SongTimer::SongTimer() >= Keybindings::loopEnd)) {
-				Wwise::SoundEngine::SeekOnEvent(std::string("Play_" + GameState::GetSongKey()).c_str(), 0x1234, (AkTimeMs)(Keybindings::roughLoopStart * 1000), false);
-			}
-		}
-		// Difference between learnASongModes & fastRRModes is the inclusion of RR. This means that this check is only gets the RR menus.
-		else if (GameState::Menus::IsInModesWithAllowedFastRiffRepeater()) {
-			// Reset loopStart and loopEnd to NULL as the user wants to do a loop with RR, or is changing some settings.
-			Keybindings::loopStart = NULL;
-			Keybindings::loopEnd = NULL;
-		}
-	}
+			DX9DrawText(element.snapshot.text, element.snapshot.colorHex,
+				layout.left, static_cast<int>(cursorY), layout.right, static_cast<int>(cursorY + step),
+				device, { 0u, static_cast<unsigned int>(fontHeight) }, layout.format);
 
-}
-
-static int MeasureLineHeight(ID3DXFont* font, const std::string& text, const RECT& rect, DWORD fmt) {
-	RECT r = rect;
-	int h = font->DrawTextA(nullptr, text.c_str(), -1, &r, fmt | DT_CALCRECT, 0);
-	if (h <= 0) h = (r.bottom - r.top);
-	return h;
-}
-
-static float ReadAccuracy() {
-	const bool isLAS = GameState::Menus::IsInLearnASongModes();
-	const bool isSA = GameState::Menus::IsInScoreAttackModes();
-
-	uintptr_t addr = 0;
-	if (isLAS) {
-		addr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_noteData,
-			Offsets::ptr_noteDataOffsets);
-	}
-	else if (isSA) {
-		addr = MemUtil::FindDMAAddy(Offsets::baseHandle + Offsets::ptr_scoreAttackNoteData,
-			Offsets::ptr_scoreAttackNoteDataOffsets);
-	}
-	else {
-		return 0.0f;
-	}
-
-	if (!addr) return 0.0f;
-
-	if (isLAS) {
-		const LearnASongNoteData* data = reinterpret_cast<LearnASongNoteData*>(addr);
-
-		return data->getAccuracy();
-	}
-	else if (isSA) {
-		const ScoreAttackNoteData* data = reinterpret_cast<ScoreAttackNoteData*>(addr);
-		return data->getAccuracy();
-	}
-
-	return 0.0f;
-}
-
-void GameOverlay::DisplaySongAccuracy() {
-	if (Settings::IsOn(Setting::DisplayCurrentAccuracy) &&
-		GameState::IsInSong() && SongTimer::SongTimer() != 0.f) {
-		auto left = static_cast<int>(WindowSize.width - WindowSize.width / 16.0f);
-		auto right = static_cast<int>(WindowSize.width - WindowSize.width / 96.0f);
-		auto top = static_cast<int>(WindowSize.height / 54.0f);
-		auto bottom = static_cast<int>(WindowSize.height / 16.0f);
-		RECT baseRect{ left, top, right, bottom };
-
-		float accuracy = ReadAccuracy();
-		std::stringstream ss;
-		ss << std::fixed << std::setprecision(2) << accuracy << "%";
-		std::string accuracyText = ss.str();
-
-		if (cachedFont) {
-			int lh = MeasureLineHeight(cachedFont, accuracyText, baseRect, DT_RIGHT | DT_NOCLIP);
-			int gap = (std::max)(1, lh / 4);
-			top += lh + 2 * gap;
-			bottom += lh + 2 * gap;
-		}
-		else { //JIC
-			auto line = static_cast<int>(WindowSize.height / 54.0f);
-			top += line;
-			bottom += line;
-		}
-
-		DX9DrawText(
-			accuracyText,
-			whiteText,
-			left, top, right, bottom,
-			pDevice,
-			{ NULL, NULL },
-			DT_RIGHT | DT_NOCLIP);
-	}
-}
-
-void GameOverlay::CheckCurrentFont() {
-	const std::string currentFontName = Settings::ReturnSettingValue(Setting::OnScreenFont);
-	const int currentFontSize = Settings::GetModSetting(Setting::OnScreenFontSize);
-
-	if (cachedFontName != currentFontName || cachedFontSize != currentFontSize || !cachedFont) {
-		LOG_INFO("Font settings changed. Re-caching default font..." << std::endl);
-
-		FontKey newKey = FontKey::Make(currentFontName, currentFontSize, 0, FW_NORMAL, false);
-		CComPtr<ID3DXFont> newFont;
-
-		if (fontCache.Get(pDevice, newKey, newFont)) {
-			cachedFont = newFont;
-			cachedFontName = currentFontName;
-			cachedFontSize = currentFontSize;
-		}
-		else {
-			LOG_ERROR("Failed to create and cache new default font!" << std::endl);
+			cursorY += step;
 		}
 	}
 }
 
 // ID3DXFont holds a D3DPOOL_DEFAULT glyph atlas that must be released before an
 // IDirect3DDevice9::Reset and rebuilt after, or draws through it corrupt the frame once
-// the device is back (the Alt+Tab white-screen when "show current note" had drawn a glyph).
+// the device is back.
 void GameOverlay::OnLostDevice() {
-	if (DX9FontEncapsulation)
-		DX9FontEncapsulation->OnLostDevice();
 	fontCache.OnLostDevice();
 }
 
 void GameOverlay::OnResetDevice() {
-	if (DX9FontEncapsulation)
-		DX9FontEncapsulation->OnResetDevice();
 	fontCache.OnResetDevice();
 }
 
 void GameOverlay::RenderOverlay(IDirect3DDevice9* device) {
-	// Draw text on screen
-	// NOTE: NEVER USE SET VALUES. Always do division of WindowSize width AND heigh so every resolution should have the text in around the same spot.
+	// Always derive positions from windowSize fractions — never hardcode pixels — so every resolution places text consistently.
 	if (GameState::GameLoaded) {
-		WindowSize = GetWindowSize();
-		pDevice = device;
-
-		CheckCurrentFont();
-
-		DisplayMixer();
-		DisplaySongTimer();
-		DisplayRiffRepeaterOverHundredPercentSpeed();
-		DisplayCurrentNote();
-		DisplayCurrentTuningForAutoTune();
-		DisplaySongAccuracy();
-
-		HandleLooping();
+		const Resolution windowSize = GetWindowSize();
+		CheckCurrentFont(device);
+		DrawModHud(device, windowSize);
 	}
 }

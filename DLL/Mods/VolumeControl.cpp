@@ -53,6 +53,18 @@ void VolumeControl::DecreaseVolume(int amountToDecrease, std::string mixerToDecr
 }
 
 /// <summary>
+/// Reads the live Wwise volume (0-100) for a mixer channel.
+/// </summary>
+/// <param name="mixer"> - Name of the Mixer Value (see Settings::Setting::Channel).</param>
+float VolumeControl::CurrentVolume(const char* mixer) {
+	float volume = 0;
+	RTPCValue_type type = RTPCValue_GameObject;
+
+	Wwise::SoundEngine::Query::GetRTPCValue(mixer, AK_INVALID_GAME_OBJECT, &volume, &type);
+	return volume;
+}
+
+/// <summary>
 /// Disables the song previews when hovering over a song.
 /// </summary>
 void VolumeControl::DisableSongPreviewAudio() {

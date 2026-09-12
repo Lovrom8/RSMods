@@ -122,13 +122,25 @@
     <ClCompile Include="Framework\MainThreadInbox.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\HudRegistry.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Framework\ModContext.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Framework\MenuRegistry.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Framework\ModRegistry.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Framework\ResourceLedger.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Framework\DrawRegistry.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Framework\SettingsSchema.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Mods\AudioDevices.cpp">
@@ -171,6 +183,41 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\FretlessMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveInlaysMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveLaneMarkersMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\GreenScreenWallMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RemoveFingerprintsMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\RainbowNotesMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\TwitchMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\ShowSongTimerMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -196,12 +243,32 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\CalibrationMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\CustomHighwayColorsMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\AlternativeSampleRateMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\MidiMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\SongAccuracyMod.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\ShowCurrentNoteMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -262,6 +329,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Mods\VoiceOverControl.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Mods\VoiceOverControlMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -403,13 +475,24 @@
     <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
     <ClInclude Include="Mods\RemoveHeadstockMod.hpp" />
     <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
+    <ClInclude Include="Mods\FretlessMod.hpp" />
+    <ClInclude Include="Mods\RemoveInlaysMod.hpp" />
+    <ClInclude Include="Mods\RemoveLaneMarkersMod.hpp" />
+    <ClInclude Include="Mods\GreenScreenWallMod.hpp" />
+    <ClInclude Include="Mods\RemoveFingerprintsMod.hpp" />
+    <ClInclude Include="Mods\RainbowNotesMod.hpp" />
+    <ClInclude Include="Mods\TwitchMod.hpp" />
     <ClInclude Include="Mods\ShowSongTimerMod.hpp" />
     <ClInclude Include="Mods\NonStopPlayTimerMod.hpp" />
     <ClInclude Include="Mods\VolumeDisplayMod.hpp" />
     <ClInclude Include="Mods\RiffRepeaterMod.hpp" />
     <ClInclude Include="Mods\AutoLoadProfileMod.hpp" />
+    <ClInclude Include="Mods\CalibrationMod.hpp" />
+    <ClInclude Include="Mods\CustomHighwayColorsMod.hpp" />
     <ClInclude Include="Mods\AlternativeSampleRateMod.hpp" />
     <ClInclude Include="Mods\MidiMod.hpp" />
+    <ClInclude Include="Mods\SongAccuracyMod.hpp" />
+    <ClInclude Include="Mods\ShowCurrentNoteMod.hpp" />
     <ClInclude Include="Mods\GuitarSpeakMod.hpp" />
     <ClInclude Include="Mods\SongPreviewsMod.hpp" />
     <ClInclude Include="Mods\ScreenShotScoresMod.hpp" />
@@ -424,15 +507,20 @@
     <ClInclude Include="Framework\CommandTypes.hpp" />
     <ClInclude Include="Framework\ConflictResolver.hpp" />
     <ClInclude Include="Framework\IMod.hpp" />
+    <ClInclude Include="Framework\HudRegistry.hpp" />
+    <ClInclude Include="Framework\MenuRegistry.hpp" />
     <ClInclude Include="Framework\MainThreadInbox.hpp" />
     <ClInclude Include="Framework\ModContext.hpp" />
     <ClInclude Include="Framework\ModRegistry.hpp" />
     <ClInclude Include="Framework\ResourceLedger.hpp" />
     <ClInclude Include="Framework\Framework.hpp" />
+    <ClInclude Include="Framework\DrawRegistry.hpp" />
+    <ClInclude Include="Framework\SettingsSchema.hpp" />
     <ClInclude Include="Mods\Midi.hpp" />
     <ClInclude Include="Mods\RiffRepeater.hpp" />
     <ClInclude Include="Mods\TrueTuning.hpp" />
     <ClInclude Include="Mods\VoiceOverControl.hpp" />
+    <ClInclude Include="Mods\VoiceOverControlMod.hpp" />
     <ClInclude Include="Mods\VolumeControl.hpp" />
     <ClInclude Include="NoteData.h" />
     <ClInclude Include="ObjectUtil.hpp" />
@@ -608,9 +696,6 @@
     <Library Include="Lib\Detours\detours.lib" />
     <Library Include="Lib\DirectX\d3d9.lib" />
     <Library Include="Lib\DirectX\d3dx9.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="syscalls.asm" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E312CF39-2170-4C1A-AC11-3A9C1C2E7399}</ProjectGuid>

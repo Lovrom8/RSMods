@@ -3,7 +3,15 @@
 #include "../Keyboard.hpp"
 
 using Framework::ModContext;
+using Framework::SettingDefs;
+using Framework::SettingDef;
 namespace Setting = Settings::Setting;
+
+SettingDefs ScreenShotScoresMod::Settings() const {
+	return {
+		SettingDef::Toggle(Setting::ScreenShotScores, "ScreenShotScores", "Screenshot Scores")
+	};
+}
 
 bool ScreenShotScoresMod::IsEnabled(const ModContext& c) const {
 	return c.IsOn(Setting::ScreenShotScores);

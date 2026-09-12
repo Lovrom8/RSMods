@@ -1,26 +1,6 @@
 #include "stdafx.h"
 #include "MemUtil.hpp"
-
-typedef enum _MEMORY_INFORMATION_CLASS {
-	MemoryBasicInformation,
-	MemoryWorkingSetList,
-	MemorySectionName
-} MEMORY_INFORMATION_CLASS;
-
-EXTERN_C NTSTATUS NtQueryVirtualMemory(__in HANDLE ProcessHandle,
-	__in_opt PVOID BaseAddress,
-	__in MEMORY_INFORMATION_CLASS MemoryInformationClass,
-	__out PVOID MemoryInformation,
-	__in SIZE_T MemoryInformationLength,
-	__out_opt PSIZE_T ReturnLength);
-
-EXTERN_C NTSTATUS NtProtectVirtualMemory(
-	IN HANDLE ProcessHandle,
-	IN OUT PVOID* BaseAddress,
-	IN OUT PSIZE_T RegionSize,
-	IN ULONG NewProtect,
-	OUT PULONG OldProtect
-);
+#include "Lib/Detours/detours.h"
 
 /// <summary>
 /// Compares memory chunk to pattern. 
@@ -34,7 +14,7 @@ bool MemUtil::bCompare(const BYTE* pData, const byte* bMask, const char* szMask)
 		if (*szMask == 'x' && *pData != *bMask)
 			return 0;
 	}
-		
+
 	return (*szMask) == NULL;
 }
 
@@ -67,7 +47,7 @@ bool MemUtil::PatchAdr(LPVOID address, LPCVOID changeToMake, size_t len) {
 
 	// Save old Virtual Protect status, but allow us to Execute, Read, and Write to the executable's memory so we can place our hook.
 	ret = HookedVirtualProtect(address, len, PAGE_EXECUTE_READWRITE, dwOldProt);
-	if (!NT_SUCCESS(ret)) 
+	if (!NT_SUCCESS(ret))
 	{
 		printf_s("MemUtil::PatchAdr Failed 1: Addr: 0x%X | Status: 0x%08X | Time to run in sec: %f\n", (uintptr_t)address, ret, (float)(clock() - before) / CLOCKS_PER_SEC); // Can't use log here, need to use printf.
 		return false;
@@ -111,9 +91,9 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 	DWORD oldProtect;
 	DWORD ret;
 	clock_t before = clock();
-	
+
 	ret = HookedVirtualProtect(hookSpot, len, PAGE_EXECUTE_READWRITE, oldProtect);
-	if (!NT_SUCCESS(ret)) 
+	if (!NT_SUCCESS(ret))
 	{
 		printf_s("MemUtil::PlaceHook Failed 1: Addr: 0x%X | Status: 0x%08X | Time to run in sec: %f\n", (uintptr_t)hookSpot, ret, (float)(clock() - before) / CLOCKS_PER_SEC); // Can't use log here, need to use printf.
 		return false;
@@ -131,7 +111,7 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 
 	// Reset the virtual protect to the status we saved earlier in this function. 
 	DWORD backup;
-	
+
 	ret = HookedVirtualProtect(hookSpot, len, oldProtect, backup);
 	if (!NT_SUCCESS(ret))
 	{
@@ -151,37 +131,71 @@ bool MemUtil::PlaceHook(void* hookSpot, void* ourFunct, int len)
 /// <returns></returns>
 PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 {
-	if (len < 5)
+	if (!src || !dst)
 	{
 		return nullptr;
 	}
 
-	// Create the gateway (len + 5 for the overwritten bytes + the jmp)
-	auto gateway = (PBYTE)VirtualAlloc(nullptr, len + 5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	// Calculate safe instruction length without splitting instructions
+	unsigned int hookLen = 0;
+	while (hookLen < 5) {
+		PBYTE next = DetourCopyInstruction(nullptr, src + hookLen, nullptr);
+		if (!next || next <= src + hookLen) {
+			hookLen = (len >= 5) ? len : 5;
+			break;
+		}
+		hookLen = (unsigned int)(next - src);
+	}
+
+	if (len > hookLen) {
+		hookLen = len;
+	}
+
+	// Relocating the stolen prologue can make it grow (a short jump promotes to a
+	// near jump, and so on), so give the gateway generous headroom over hookLen.
+	const unsigned int gatewaySize = hookLen * 2 + 16;
+
+	// Create the gateway (relocated prologue + the jmp back to the original).
+	auto gateway = (PBYTE)VirtualAlloc(nullptr, gatewaySize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
 	// Makes sure gateway doesn't equal null
 	if (!gateway)
 	{
 		return nullptr;
 	}
-		
-	// Put the bytes that will be overwritten in the gateway
-	memcpy(gateway, src, len);
 
-	// Get the gateway to destination addy
-	auto gateJmpAddy = (uintptr_t)(src - gateway - 5);
+	// Copy the overwritten bytes into the gateway, relocating any relative instructions
+	// as we go, while keeping in mind any changes done by other tools (Steam, Rivatuner, ...). 
+	// DetourCopyInstructionEx rewrites each relative operand for the gateway's address, and
+	// reports via `extra` how many bytes the relocated instruction grew by.
+	PBYTE srcPos = src;
+	PBYTE dstPos = gateway;
+	while (srcPos < src + hookLen) {
+		PBYTE target = nullptr;
+		LONG extra = 0;
+		PBYTE srcNext = DetourCopyInstructionEx(dstPos, srcPos, &target, &extra);
+		if (!srcNext || srcNext <= srcPos) {
+			VirtualFree(gateway, 0, MEM_RELEASE);
+			return nullptr;
+		}
+		dstPos += (srcNext - srcPos) + extra;
+		srcPos = srcNext;
+	}
 
-	// Add the jmp opcode to the end of the gateway
-	*(gateway + len) = (unsigned char)0xE9;
+	// Jump from the end of the relocated prologue back into the original function,
+	// continuing at the first instruction boundary past the bytes we stole (srcPos).
+	*dstPos = (unsigned char)0xE9;
+	*(uint32_t*)(dstPos + 1) = (uint32_t)(srcPos - (dstPos + 5));
 
-	// Add the address to the jmp
-	*(uintptr_t*)(gateway + len + 1) = gateJmpAddy;
+	// The gateway is freshly written executable code; make sure no stale copy runs.
+	FlushInstructionCache(GetCurrentProcess(), gateway, gatewaySize);
 
 	// Place the hook at the destination
-	if (PlaceHook(src, dst, len))
+	if (PlaceHook(src, dst, hookLen))
 		return gateway;
-	else
-		return nullptr;
+
+	VirtualFree(gateway, 0, MEM_RELEASE);
+	return nullptr;
 }
 
 /// <summary>
@@ -189,7 +203,7 @@ PBYTE MemUtil::TrampHook(PBYTE src, PBYTE dst, unsigned int len)
 /// </summary>
 /// <param name="p"> - Pointer</param>
 /// <returns>True - Bad Pointer, do not read. False - Safe to read.</returns>
-bool MemUtil::IsBadReadPtr(void* pointer) 
+bool MemUtil::IsBadReadPtr(void* pointer)
 {
 	//NOTE: We are very aware this is not exactly the optimal (neither completely thread safe nor very fast) way to handle pointers to a non-initialized variable.
 	//      but for now it will have to do the job until we figure out a better current menu check.
@@ -276,31 +290,180 @@ bool MemUtil::IsRunningOnWine()
 	return isWine;
 }
 
-NTSTATUS MemUtil::HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection)
-{
-	if (IsRunningOnWine()) {
-		DWORD oldProtect = 0;
-		if (VirtualProtect(address, len, newProtection, &oldProtect)) {
-			oldProtection = oldProtect;
-			return 0; // STATUS_SUCCESS
+namespace MemUtil {
+	namespace Detail {
+		static uint32_t ssnProtect = 0x50;
+		static uint32_t ssnQuery = 0x23;
+
+		static std::vector<BYTE> ReadNtdllFromDisk() {
+			char sysDir[MAX_PATH];
+			if (!GetSystemDirectoryA(sysDir, MAX_PATH)) return {};
+
+			std::string ntdllPath = std::string(sysDir) + "\\ntdll.dll";
+			HANDLE hFile = CreateFileA(ntdllPath.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
+			if (hFile == INVALID_HANDLE_VALUE) return {};
+
+			DWORD fileSize = GetFileSize(hFile, NULL);
+			if (fileSize == 0 || fileSize > 50 * 1024 * 1024) {
+				CloseHandle(hFile);
+				return {};
+			}
+
+			std::vector<BYTE> buf(fileSize);
+			DWORD bytesRead = 0;
+			if (!ReadFile(hFile, buf.data(), fileSize, &bytesRead, NULL) || bytesRead != fileSize) {
+				CloseHandle(hFile);
+				return {};
+			}
+			CloseHandle(hFile);
+			return buf;
 		}
-		return 0xC0000001; // STATUS_UNSUCCESSFUL
+
+		static uint32_t ExtractSyscallFromPE(const std::vector<BYTE>& buf, const char* funcName) {
+			if (buf.empty()) return 0;
+
+			auto dos = (PIMAGE_DOS_HEADER)buf.data();
+			if (dos->e_magic != IMAGE_DOS_SIGNATURE) return 0;
+
+			auto nt = (PIMAGE_NT_HEADERS)(buf.data() + dos->e_lfanew);
+			if (nt->Signature != IMAGE_NT_SIGNATURE) return 0;
+
+			DWORD exportRva = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+			if (!exportRva) return 0;
+
+			auto RvaToRaw = [&](DWORD rva) -> DWORD {
+				PIMAGE_SECTION_HEADER sec = IMAGE_FIRST_SECTION(nt);
+				for (WORD i = 0; i < nt->FileHeader.NumberOfSections; i++, sec++) {
+					if (rva >= sec->VirtualAddress && rva < sec->VirtualAddress + sec->Misc.VirtualSize) {
+						return rva - sec->VirtualAddress + sec->PointerToRawData;
+					}
+				}
+				return 0;
+				};
+
+			DWORD expOffset = RvaToRaw(exportRva);
+			if (!expOffset) return 0;
+
+			auto exp = (PIMAGE_EXPORT_DIRECTORY)(buf.data() + expOffset);
+			DWORD* names = (DWORD*)(buf.data() + RvaToRaw(exp->AddressOfNames));
+			WORD* ords = (WORD*)(buf.data() + RvaToRaw(exp->AddressOfNameOrdinals));
+			DWORD* funcs = (DWORD*)(buf.data() + RvaToRaw(exp->AddressOfFunctions));
+
+			for (DWORD i = 0; i < exp->NumberOfNames; i++) {
+				const char* name = (const char*)(buf.data() + RvaToRaw(names[i]));
+				if (strcmp(name, funcName) == 0) {
+					DWORD funcRva = funcs[ords[i]];
+					BYTE* code = (BYTE*)(buf.data() + RvaToRaw(funcRva));
+					if (code[0] == 0xB8) { // mov eax, <SSN>
+						return *(uint32_t*)(code + 1);
+					}
+					break;
+				}
+			}
+
+			return 0;
+		}
+
+		static uint32_t GetSyscallNumber(const char* funcName, uint32_t fallbackSSN) {
+			HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
+			if (hNtdll) {
+				BYTE* pFunc = (BYTE*)GetProcAddress(hNtdll, funcName);
+				if (pFunc && pFunc[0] == 0xB8) {
+					return *(uint32_t*)(pFunc + 1);
+				}
+			}
+
+			// If memory was modified/hooked by VMProtect, parse fresh unhooked ntdll from disk
+			static const std::vector<BYTE> ntdllDiskBuf = ReadNtdllFromDisk();
+			uint32_t diskSsn = ExtractSyscallFromPE(ntdllDiskBuf, funcName);
+			if (diskSsn != 0) {
+				return diskSsn;
+			}
+
+			return fallbackSSN;
+		}
+
+		static __declspec(naked) NTSTATUS NTAPI Syscall_NtProtectVirtualMemory(HANDLE ProcessHandle, PVOID* BaseAddress, PSIZE_T RegionSize, ULONG NewProtect, PULONG OldProtect)
+		{
+			__asm {
+				mov eax, ssnProtect
+				mov edx, fs: [0C0h]
+				test edx, edx
+				jnz is_wow64
+				mov edx, 7FFE0300h
+				call dword ptr[edx]
+				ret 14h
+				is_wow64 :
+				call edx
+					ret 14h
+			}
+		}
+
+		static __declspec(naked) NTSTATUS NTAPI Syscall_NtQueryVirtualMemory(HANDLE ProcessHandle, PVOID BaseAddress, ULONG MemoryInformationClass, PVOID MemoryInformation, SIZE_T MemoryInformationLength, PSIZE_T ReturnLength)
+		{
+			__asm {
+				mov eax, ssnQuery
+				mov edx, fs: [0C0h]
+				test edx, edx
+				jnz is_wow64
+				mov edx, 7FFE0300h
+				call dword ptr[edx]
+				ret 18h
+				is_wow64 :
+				call edx
+					ret 18h
+			}
+		}
 	}
 
-	return NtProtectVirtualMemory(GetCurrentProcess(), &address, &len, newProtection, &oldProtection);
-}
-
-NTSTATUS MemUtil::HookedQueryVirtualMemory(LPVOID address, PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength)
-{
-	if (IsRunningOnWine()) {
-		if (VirtualQuery(address, memoryBuffer, dwLength) != 0) {
-			return 0; // STATUS_SUCCESS
+	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection)
+	{
+		if (IsRunningOnWine()) {
+			DWORD oldProt = 0;
+			if (VirtualProtect(address, len, newProtection, &oldProt)) {
+				oldProtection = oldProt;
+				return STATUS_SUCCESS;
+			}
+			return STATUS_UNSUCCESSFUL;
 		}
-		return 0xC0000001; // STATUS_UNSUCCESSFUL
+
+		static bool initialized = false;
+		if (!initialized) {
+			Detail::ssnProtect = Detail::GetSyscallNumber("NtProtectVirtualMemory", 0x50);
+			initialized = true;
+		}
+
+		PVOID baseAddress = address;
+		SIZE_T regionSize = len;
+		ULONG oldProt = 0;
+		NTSTATUS status = Detail::Syscall_NtProtectVirtualMemory(GetCurrentProcess(), &baseAddress, &regionSize, newProtection, &oldProt);
+
+		if (NT_SUCCESS(status)) {
+			oldProtection = oldProt;
+			return status;
+		}
+
+		return status;
 	}
 
-	SIZE_T returnLength = 0;
-	return NtQueryVirtualMemory(GetCurrentProcess(), address, MemoryBasicInformation, memoryBuffer, dwLength, &returnLength);
+	NTSTATUS HookedQueryVirtualMemory(LPVOID address, PMEMORY_BASIC_INFORMATION memoryBuffer, SIZE_T dwLength)
+	{
+		if (IsRunningOnWine()) {
+			if (VirtualQuery(address, memoryBuffer, dwLength) != 0) {
+				return STATUS_SUCCESS;
+			}
+			return STATUS_UNSUCCESSFUL;
+		}
+
+		static bool initialized = false;
+		if (!initialized) {
+			Detail::ssnQuery = Detail::GetSyscallNumber("NtQueryVirtualMemory", 0x23);
+			initialized = true;
+		}
+
+		SIZE_T returnLength = 0;
+		return Detail::Syscall_NtQueryVirtualMemory(GetCurrentProcess(), address, 0 /* MemoryBasicInformation */, memoryBuffer, dwLength, &returnLength);
+	}
 }
 
 uint32_t MemUtil::GetTextSectionAddress() {

@@ -9,6 +9,7 @@ class AutoLoadProfileMod : public Framework::IMod {
 public:
 	MOD_ID(AutoLoadProfileMod)
 	bool IsEnabled(const Framework::ModContext& c) const override;
+	Framework::SettingDefs Settings() const override;
 
 	void OnTick(Framework::ModContext& c) override;
 

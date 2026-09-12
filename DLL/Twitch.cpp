@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Twitch.hpp"
 #include "Framework/Framework.hpp"
+#include "D3D/D3DHooks.hpp"
+#include "Mods/TwitchMod.hpp"
 
 namespace Setting = Settings::Setting;
 
@@ -31,18 +33,22 @@ namespace Twitch {
 			if (type == "enable") {
 				if (Contains(currMsg, "Random")) {
 					static std::uniform_real_distribution<> urd(0, 9);
-					currentRandomTexture = (int)urd(rng);
+					TwitchMod::currentRandomTexture = (int)urd(rng);
 
 					ERMode::customSolidColor.clear();
-					ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, randomTextureColors[currentRandomTexture]);
+					if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextureColors.size()) {
+						ERMode::customSolidColor.insert(ERMode::customSolidColor.begin(), 6, TwitchMod::randomTextureColors[TwitchMod::currentRandomTexture]);
+					}
 
-					twitchUserDefinedTexture = randomTextures[currentRandomTexture];
+					if (TwitchMod::currentRandomTexture >= 0 && TwitchMod::currentRandomTexture < (int)TwitchMod::randomTextures.size()) {
+						TwitchMod::twitchUserDefinedTexture = TwitchMod::randomTextures[TwitchMod::currentRandomTexture];
+					}
 				}
 				else {
 					Framework::Registry().EnqueueSettingsUpdate([currMsg, type] {
 						Settings::ParseSolidColorsMessage(currMsg);
 						Settings::ParseTwitchToggle(currMsg, type);
-						D3DHooks::regenerateUserDefinedTexture = true;
+						D3DHooks::RecreateTextures = true;
 					});
 					return true;
 				}

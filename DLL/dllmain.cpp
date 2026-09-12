@@ -1,10 +1,9 @@
 #include "stdafx.h"
-#include <io.h>
-#include <share.h>
 #include "Proxy.hpp"
 #include "ModManager.hpp"
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
+#include "Mods/TwitchMod.hpp"
 #include "D3DOverlay.hpp"
 
 namespace Setting = Settings::Setting;
@@ -31,17 +30,7 @@ bool wwiseLogging = false;
 /// </summary>
 /// <returns>NULL. Loops while game is open.</returns>
 unsigned WINAPI MidiThread() {
-	// Initial some values.
-	int currentCount = 0;
-
 	while (!GameState::GameClosing) {
-		// If this is the 32nd loop, remake the D3D textures.
-		// This allows us to have real-time updates to textures.
-		if (currentCount == 31) {
-			currentCount = 0;
-			D3DHooks::RecreateTextureTimer = true;
-		}
-
 		// If we have sent a Midi PC/CC value to this thread, send the Midi value.
 		if (Midi::sendPC)
 			Midi::SendProgramChange(Midi::dataToSendPC);
@@ -50,7 +39,6 @@ unsigned WINAPI MidiThread() {
 			Midi::SendControlChange(Midi::dataToSendCC);
 
 		Sleep(Midi::sleepFor);
-		currentCount++;
 	}
 
 	return 0;
@@ -183,10 +171,12 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 
 	Menu::Init(pDevice, (LONG_PTR)WndProc);
 	Menu::RenderImGuiMenu();
-	Menu::UpdateStringTextures(pDevice);
+	D3D::LoadTextures(pDevice);
+	D3DHooks::CheckRecreateTextures(pDevice);
+	Framework::Draw().RunPendingReleases();
+	TwitchMod::RunPerFrameEffects(pDevice);
 	UpdateGameWindowStacking();
 	GameOverlay::RenderOverlay(pDevice);
-	D3DHooks::RegenerateTwitchNoteColors(pDevice);
 
 	return originalReturn;
 }
@@ -215,8 +205,8 @@ unsigned WINAPI MainThread() {
 
 	Keybindings::InitializeCommands();
 	ModManager::InitializeConfiguration();
-	ModManager::InitializeMods(debug);
 	Framework::Registry().InstantiatePending();
+	ModManager::InitializeMods(debug);
 	ModManager::ApplyStartupMods();
 	Framework::Registry().DispatchInitialize();
 
@@ -235,17 +225,21 @@ unsigned WINAPI MainThread() {
 		const auto now = std::chrono::steady_clock::now();
 		if (now < nextModTick) continue;
 
+		bool wantsFastTick = false;
 		if (GameState::GameLoaded) {
 			ModManager::HandlePostGameLoadedMods();
-			Framework::Registry().Tick(GameState::IsInSong() ? Framework::GamePhase::Song : Framework::GamePhase::Menu);
+			wantsFastTick = Framework::Registry().Tick(GameState::IsInSong() ? Framework::GamePhase::Song : Framework::GamePhase::Menu);
 		}
 		else {
 			ModManager::UpdateGameLoadingState();
 			Framework::Registry().Tick(Framework::GamePhase::Loading);
 		}
 
-		// Missed maintenance deadlines are not replayed as a burst of catch-up ticks.
-		nextModTick = std::chrono::steady_clock::now() + std::chrono::milliseconds(250);
+		// Adaptive maintenance cadence: tighten only while a mod is actively watching a deadline (e.g. a
+		// loop end), otherwise idle at 250 ms. Missed deadlines are not replayed as a burst of catch-up ticks.
+		const auto maintenanceInterval = wantsFastTick ? std::chrono::milliseconds(33)   // ~30 Hz while looping
+														: std::chrono::milliseconds(250);
+		nextModTick = std::chrono::steady_clock::now() + maintenanceInterval;
 	}
 
 	CrowdControl::StopServer();
@@ -268,9 +262,30 @@ void Initialize() {
 	std::thread(RiffRepeaterThread).detach(); // RR Speed Above 100% Log
 }
 
+/// <summary>
+/// Build an absolute path to a file sitting next to the game executable.
+/// SetupLogging() runs under the loader lock at DLL_PROCESS_ATTACH, where the
+/// process working directory is not yet guaranteed to be the Rocksmith folder,
+/// so a bare relative filename would resolve against the wrong directory.
+/// </summary>
+static std::string PathNextToExecutable(const std::string& fileName) {
+	char executable[MAX_PATH]{};
+	GetModuleFileNameA(NULL, executable, MAX_PATH);
+
+	std::string path(executable);
+	const size_t slash = path.find_last_of("\\/");
+	if (slash != std::string::npos)
+		path.resize(slash + 1);
+	else
+		path.clear();
+
+	return path + fileName;
+}
+
 void SetupLogging() {
 	// Opt-in: only log to file if RSMods_debug.txt already exists (same as before).
-	const bool debugLogPresent = std::ifstream("RSMods_debug.txt").good();
+	const std::string debugLogPath = PathNextToExecutable("RSMods_debug.txt");
+	const bool debugLogPresent = std::ifstream(debugLogPath).good();
 
 	if (debug) {
 		AllocConsole();
@@ -282,23 +297,18 @@ void SetupLogging() {
 		freopen_s(&streamConsole, "CONOUT$", "w", stdout);
 	}
 
-	// Create log file to both help with debugging release builds,
-	// and allow the user to examine their debug logs after a crash.
 	if (debugLogPresent) {
-		// freopen_s / fopen_s open with exclusive (no share) mode, which blocks
-		// external tools from reading the log while the game is running.
-		// Open with _SH_DENYWR so others can read; deny concurrent writers.
-		// Mode "w" truncates so we start clean each launch (same as before).
-		FILE* debugLog = _fsopen("RSMods_debug.txt", "w", _SH_DENYWR);
-		if (debugLog) {
-			// Point stderr's fd at the share-read handle. Logger writes via std::cerr.
-			if (_dup2(_fileno(debugLog), _fileno(stderr)) == 0) {
-				// Unbuffered so external readers see new lines promptly.
-				setvbuf(stderr, nullptr, _IONBF, 0);
-			}
-			// Keep debugLog open for process lifetime (handle must stay valid).
-		}
+		Logger::GetInstance().InitFile(debugLogPath);
 	}
+}
+
+static bool IsRunningUnderGame() {
+	char executable[MAX_PATH]{};
+	GetModuleFileNameA(NULL, executable, MAX_PATH);
+	std::string path(executable);
+	std::string lower;
+	for (char c : path) lower += static_cast<char>(tolower(c));
+	return lower.find("rocksmith2014") != std::string::npos;
 }
 
 /// <summary>
@@ -311,12 +321,19 @@ void SetupLogging() {
 BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
-			SetupLogging();
 			DisableThreadLibraryCalls(hModule); // Disables the DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications. | https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-disablethreadlibrarycalls
+			if (!IsRunningUnderGame()) {
+				// Running under rundll32 or a generator tool: do not hook the host process
+				return TRUE;
+			}
+			SetupLogging();
 			Proxy::Init(); // Proxy all real XInput commands to the actual xinput1_3.dll.
 			Initialize(); // Inject our mod code.
 			return TRUE;
 		case DLL_PROCESS_DETACH:
+			if (!IsRunningUnderGame()) {
+				return TRUE;
+			}
 			Proxy::Shutdown(); // Kill Proxy to xinput1_3.dll
 
 			if (Menu::ImGuiInit)
@@ -332,4 +349,20 @@ BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
 	}
 	
 	return TRUE;
+}
+
+/// <summary>
+/// Rundll32-compatible entrypoint to dump the aggregate mod schema manifest to a JSON file.
+/// Usage: rundll32 RSMods.dll,DumpManifest [path\to\mods.manifest.json]
+/// </summary>
+extern "C" __declspec(dllexport) void CALLBACK DumpManifest(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
+	Framework::Registry().InstantiatePending();
+	std::string outputPath = (lpszCmdLine && *lpszCmdLine) ? lpszCmdLine : "mods.manifest.json";
+	if (outputPath.size() >= 2 && outputPath.front() == '"' && outputPath.back() == '"') {
+		outputPath = outputPath.substr(1, outputPath.size() - 2);
+	}
+	std::ofstream out(outputPath);
+	if (out.is_open()) {
+		out << Framework::SettingsSchema().DumpManifestJson() << std::endl;
+	}
 }
