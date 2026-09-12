@@ -948,6 +948,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Version.h">
+      <Filter>Main Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Library Include="Lib\Detours\detours.lib">
       <Filter>Main Headers\Detours</Filter>
     </Library>

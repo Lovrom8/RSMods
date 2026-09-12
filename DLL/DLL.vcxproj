@@ -573,6 +573,12 @@
     <ClInclude Include="Lib\DirectX\d3dx9tex.h" />
     <ClInclude Include="Lib\DirectX\d3dx9xof.h" />
     <ClInclude Include="Lib\DirectX\d3d9types.h" />
+    <ClInclude Include="Version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Version.rc">
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Detours\detours.h" />
@@ -696,6 +702,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessToFile>false</PreprocessToFile>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -732,6 +739,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -760,7 +768,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSMODS_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>SDK Path\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);SDK Path\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
@@ -795,7 +803,7 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RSMODS_EXPORTS;%(PreprocessorDefinitions);__WINDOWS_MM__;_WWISE_LOGS</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>SDK Path\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);SDK Path\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -821,6 +829,25 @@ IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\Rocksmith2014" copy /Y "
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="GenerateGitVersionHeader" BeforeTargets="ClCompile;ResourceCompile">
+    <Exec Command="git -C &quot;$(ProjectDir)..&quot; rev-parse HEAD 2&gt;NUL" Condition="'$(GitCommitHashFull)' == ''" ConsoleToMSBuild="true" StandardOutputImportance="Low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="DetectedGitCommitHashFull" />
+    </Exec>
+    <PropertyGroup>
+      <GitCommitHashFull Condition="'$(GitCommitHashFull)' == '' and '$(DetectedGitCommitHashFull)' != ''">$(DetectedGitCommitHashFull)</GitCommitHashFull>
+      <GitCommitHashFull Condition="'$(GitCommitHashFull)' == ''">unknown</GitCommitHashFull>
+      <GitCommitHash Condition="'$(GitCommitHash)' == '' and '$(GitCommitHashFull)' != 'unknown'">$([System.String]::Copy('$(GitCommitHashFull)').Substring(0, 8))</GitCommitHash>
+      <GitCommitHash Condition="'$(GitCommitHash)' == ''">unknown</GitCommitHash>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(IntDir)GitVersion.h" Lines="#define RSMODS_GIT_HASH &quot;$(GitCommitHash)&quot;;#define RSMODS_GIT_HASH_FULL &quot;$(GitCommitHashFull)&quot;" Overwrite="true" />
+  </Target>
+  <Target Name="ApplyGitVersionToLinker" BeforeTargets="ComputeLinkSwitches" DependsOnTargets="GenerateGitVersionHeader">
+    <ItemGroup>
+      <Link>
+        <AdditionalOptions>/PDBALTPATH:rsmods\$(GitCommitHashFull)\xinput1_3.pdb %(Link.AdditionalOptions)</AdditionalOptions>
+      </Link>
+    </ItemGroup>
+  </Target>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>

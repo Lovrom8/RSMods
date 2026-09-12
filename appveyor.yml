@@ -16,9 +16,11 @@
 
         [xml] $installerProject = Get-Content "$root\Installer\Installer.csproj"
         $env:releaseVersion = $installerProject.Project.PropertyGroup.Version
-  # Explicit release build order (docs/winforms-retirement-plan.md, Slice 5). We do NOT let AppVeyor's
-  # implicit solution build pick a configurator through legacy solution mappings. Each release input is
-  # produced by name, and any missing publish/payload step fails the build.
+
+        $gitCommitHashFull = $env:APPVEYOR_REPO_COMMIT
+        $gitCommitHash = $gitCommitHashFull.Substring(0, 8)
+        Set-AppveyorBuildVariable -Name GitCommitHash -Value $gitCommitHash
+        Set-AppveyorBuildVariable -Name GitCommitHashFull -Value $gitCommitHashFull
   build_script:
     - ps: |
         $ErrorActionPreference = 'Stop'
@@ -30,32 +32,26 @@
             if ($LASTEXITCODE -ne 0) { throw "$name failed (exit $LASTEXITCODE)." }
         }
 
-        # Build and test both UI-free cores in Release.
         Invoke-Step 'Test GUI.Core' { dotnet test "$root\GUI.Core.Tests\GUI.Core.Tests.csproj" -c Release --nologo }
 
-        # 3. Publish the Avalonia configurator (win-x64, self-contained).
         Invoke-Step 'Publish configurator' { & "$root\Build\Publish-Configurator.ps1" }
 
-        # 4. Create and validate the single installer payload (the script self-verifies every hash).
         Invoke-Step 'Create payload' { & "$root\Build\New-ConfiguratorPayload.ps1" }
 
         Invoke-Step 'Test Installer.Core' { dotnet test "$root\Installer.Core.Tests\Installer.Core.Tests.csproj" -c Release --nologo }
 
-        # Mod-framework unit tests (see DLL/Framework/README.md): standalone MSVC console programs with
-        # no game or Windows dependencies, kept in CI so they cannot rot out of compilation.
         Invoke-Step 'Test mod framework' { & "$root\DLL\Framework\Tests\BuildAndRun.ps1" }
 
-        # 5. Build the native mod DLL (Win32). Its output is written into Installer\Resources\, so it must
-        #    run before the installer. SolutionDir is required when building the project standalone.
         Invoke-Step 'Build native DLL' { msbuild "$root\DLL\DLL.vcxproj" /t:Build /p:Configuration=Release /p:Platform=Win32 /p:SolutionDir="$root\" /v:minimal /nologo }
 
-        # Verify that committed mods.manifest.json exactly matches the DLL's DumpManifest export.
         Invoke-Step 'Verify manifest currency' { & "$root\DLL\Framework\Tests\BuildAndRun.ps1" -VerifyManifest }
 
-        # Publish the Avalonia installer as the self-contained, single-file release artifact.
         Invoke-Step 'Publish installer' { & "$root\Build\Publish-Installer.ps1" }
-  # 7. Publish artifacts: the installer executable is the user-facing release; the payload manifest is a
-  #    diagnostic artifact (its file list + hashes describe exactly what shipped).
+  build:
+      parallel: true
+      verbosity: quiet
+  test_script:
+    - ps: .\DLL\Framework\Tests\BuildAndRun.ps1
   artifacts:
   - path: 'Build/Artifacts/installer-publish/win-x64/RS2014-Mod-Installer.exe'
     name: Installer
