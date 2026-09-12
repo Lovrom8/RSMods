@@ -55,7 +55,6 @@ namespace ObjectUtil {
 
 		for (auto child : children)
 		{
-			if (!child->className || MemUtil::IsBadReadPtr(child->className))
 			if (!child || !child->className || MemUtil::IsBadReadPtr(child->className))
 			{
 				continue;
