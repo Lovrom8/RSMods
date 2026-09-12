@@ -4,6 +4,8 @@
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
 #include "D3DOverlay.hpp"
+#include "Version.h"
+#include "GitVersion.h"
 
 namespace Setting = Settings::Setting;
 
@@ -20,7 +22,7 @@ bool wwiseLogging = false;
 #endif
 
 #ifndef _RSMODS_VERSION
-#define _RSMODS_VERSION "RSMODS Version: 1.2.8.4 SRC. DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
+#define _RSMODS_VERSION "RSMODS Version: " RSMODS_BUILD_VERSION_STRING ". DEBUG: " << std::boolalpha << debug << ". Wwise Logs: " << std::boolalpha << wwiseLogging << "."
 #endif
 
 /// <summary>
