@@ -326,6 +326,10 @@ namespace RSMods
 
         private void ReportInvalid(string section, string key, string rawValue, string defaultValue, string reason)
         {
+            // Self-heal: overwrite the invalid raw value with the default in memory so the next
+            // Save() persists the correction.
+            GetOrCreateSection(_data, section)[key] = defaultValue;
+
             ValidationWarning?.Invoke(new IniValidationWarning(
                 filePath,
                 section,
