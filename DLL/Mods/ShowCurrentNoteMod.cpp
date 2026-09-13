@@ -9,12 +9,15 @@ namespace Setting = Settings::Setting;
 
 SettingDefs ShowCurrentNoteMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::ShowCurrentNoteOnScreen, "ShowCurrentNoteOnScreen", "Show Current Note"),
+		SettingDef::Toggle(Setting::ShowCurrentNoteOnScreen, "ShowCurrentNoteOnScreen", "Show Current Note")
+			.Hint("Shows the note you are currently playing on screen."),
 		SettingDef::String(Setting::OnScreenFont, "On-Screen Font")
+			.Hint("If RSMods needs to show text in game, what font should we use?")
 			.Default("Arial")
 			.ChoicesSource("SystemFonts")
 			.WithVisibleWhen(Setting::ShowCurrentNoteOnScreen),
 		SettingDef::Numeric(Setting::OnScreenFontSize, "On-Screen Font Size")
+			.Hint("Size of the on-screen text RSMods draws in game.")
 			.Ini("Mod Settings", "OnScreenFontSize")
 			.Default("24")
 			.Range(8, 80)

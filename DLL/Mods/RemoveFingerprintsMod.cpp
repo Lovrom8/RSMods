@@ -16,6 +16,7 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveFingerprintsMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveFingerprints, "RemoveFingerprints", "Remove Fingerprints")
+			.Hint("Removes the fingerprint smudges drawn on the guitar neck.")
 	};
 }
 

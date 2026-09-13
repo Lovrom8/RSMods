@@ -21,6 +21,7 @@ namespace Setting = Settings::Setting;
 SettingDefs RainbowNotesMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RainbowNotesEnabled, "RainbowNotes", "Rainbow Notes")
+			.Hint("Experimental.\nHow Pro are you? This makes all the notes constantly cycle through colors.")
 	};
 }
 

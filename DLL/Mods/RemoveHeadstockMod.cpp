@@ -18,8 +18,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs RemoveHeadstockMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::RemoveHeadstockEnabled, "Headstock", "Remove Headstock"),
+		SettingDef::Toggle(Setting::RemoveHeadstockEnabled, "Headstock", "Remove Headstock")
+			.Hint("Stops the headstock of the guitar being drawn.\n\"Headless\" guitar mode. Just cleans up some more of the UI."),
 		SettingDef::Enum(Setting::RemoveHeadstockWhen, "Remove Headstock Mode")
+			.Hint("When to hide the headstock: always, only in a song, or toggled by a hotkey.")
 			.Choices({ "song", "startup" }, "song")
 			.WithVisibleWhen(Setting::RemoveHeadstockEnabled)
 	};

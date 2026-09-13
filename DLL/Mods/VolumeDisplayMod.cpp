@@ -13,8 +13,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs VolumeDisplayMod::Settings() const {
 	return {
-		Toggle(Setting::VolumeControlEnabled, "VolumeControl", "Volume Control"),
+		Toggle(Setting::VolumeControlEnabled, "VolumeControl", "Volume Control")
+			.Hint("Allows you to control how loud the game is using the in-game mixer without needing to open it.\nAlso includes a hidden \"Master Volume\" control."),
 		Numeric(Setting::VolumeControlInterval, "Volume Control Interval")
+			.Hint("How many volume steps each key press adjusts the volume by.")
 			.Ini("Mod Settings", "VolumeControlInterval")
 			.Default("5")
 			.Range(1, 100)

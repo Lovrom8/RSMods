@@ -15,8 +15,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs RemoveSkylineMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::RemoveSkylineEnabled, "Skyline", "Remove Skyline"),
+		SettingDef::Toggle(Setting::RemoveSkylineEnabled, "Skyline", "Remove Skyline")
+			.Hint("Removes the purple and orange bars from the top of the display in LAS.\nUse in conjunction with No Loft for a cleaner UI.\nOptions for always off, only off when in a song, or only when toggled by key press."),
 		SettingDef::Enum(Setting::ToggleSkylineWhen, "Remove Skyline Mode")
+			.Hint("Turn the skyline (purple and orange DD level bars) off as soon as the game starts up, or only when in a song.")
 			.Choices({ "song", "startup" }, "song")
 			.WithVisibleWhen(Setting::RemoveSkylineEnabled)
 	};

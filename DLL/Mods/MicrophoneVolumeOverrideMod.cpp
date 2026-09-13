@@ -12,11 +12,14 @@ namespace Setting = Settings::Setting;
 
 SettingDefs MicrophoneVolumeOverrideMod::Settings() const {
 	return {
-		Toggle(Setting::OverrideInputVolumeEnabled, "OverrideInputVolumeEnabled", "Override Microphone Volume"),
+		Toggle(Setting::OverrideInputVolumeEnabled, "OverrideInputVolumeEnabled", "Override Microphone Volume")
+			.Hint("Override the microphone input volume used by Rocksmith."),
 		String(Setting::OverrideInputVolumeDevice, "Microphone Device")
+			.Hint("The microphone device whose volume will be overridden.")
 			.ChoicesSource("microphones")
 			.WithVisibleWhen(Setting::OverrideInputVolumeEnabled),
 		Numeric(Setting::OverrideInputVolume, "Microphone Volume")
+			.Hint("Target microphone volume, from 0 to 100.")
 			.Ini("Mod Settings", "OverrideInputVolume")
 			.Default("17")
 			.Range(0, 100)

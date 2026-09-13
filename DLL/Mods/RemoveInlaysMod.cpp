@@ -15,6 +15,7 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveInlaysMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveInlaysEnabled, "Inlays", "Remove Inlays")
+			.Hint("Disables the guitar neck inlay display entirely.\nNote: this only works with the standard dot inlays.")
 	};
 }
 

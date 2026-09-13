@@ -9,8 +9,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs AlternativeSampleRateMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::AltOutputSampleRate, "AltOutputSampleRate", "Alternative Output Sample Rate"),
+		SettingDef::Toggle(Setting::AltOutputSampleRate, "AltOutputSampleRate", "Alternative Output Sample Rate")
+			.Hint("Force Rocksmith to output audio at an alternative sample rate."),
 		SettingDef::Enum(Setting::AlternativeOutputSampleRate, "Output Sample Rate")
+			.Hint("The output sample rate to use when the override is enabled.")
 			.Ini("Mod Settings", "AlternativeOutputSampleRate")
 			.Choices({ "44100", "48000", "88200", "96000", "176400", "192000" }, "48000")
 			.WithVisibleWhen(Setting::AltOutputSampleRate)

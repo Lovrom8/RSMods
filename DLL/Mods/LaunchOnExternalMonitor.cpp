@@ -10,12 +10,15 @@ bool LaunchOnExternalMonitorMod::IsEnabled(const ModContext& c) const {
 
 Framework::SettingDefs LaunchOnExternalMonitorMod::Settings() const {
 	return {
-		Framework::SettingDef::Toggle(Setting::SecondaryMonitor, "SecondaryMonitor", "Launch on Secondary Monitor"),
+		Framework::SettingDef::Toggle(Setting::SecondaryMonitor, "SecondaryMonitor", "Launch on Secondary Monitor")
+			.Hint("Check this if you want Rocksmith to run on your second monitor.\nThis only works in WINDOWED MODE inside Rocksmith.\nSet Rocksmith to the full resolution of the monitor but keep it in windowed mode.\nYou will still need to set the location below."),
 		Framework::SettingDef::Numeric(Setting::SecondaryMonitorXPosition, "Secondary Monitor X Position")
+			.Hint("X position (in pixels) where Rocksmith launches on your secondary monitor.\nUse the capture helper on the Mod Settings page to fill this in.")
 			.Ini("Mod Settings", "SecondaryMonitorXPosition")
 			.Default("0")
 			.WithVisibleWhen(Setting::SecondaryMonitor),
 		Framework::SettingDef::Numeric(Setting::SecondaryMonitorYPosition, "Secondary Monitor Y Position")
+			.Hint("Y position (in pixels) where Rocksmith launches on your secondary monitor.\nUse the capture helper on the Mod Settings page to fill this in.")
 			.Ini("Mod Settings", "SecondaryMonitorYPosition")
 			.Default("0")
 			.WithVisibleWhen(Setting::SecondaryMonitor)

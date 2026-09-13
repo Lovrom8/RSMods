@@ -15,6 +15,7 @@ namespace Setting = Settings::Setting;
 SettingDefs RemoveLaneMarkersMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::RemoveLaneMarkersEnabled, "LaneMarkers", "Remove Lane Markers")
+			.Hint("Removes the additional lane marker lines seen in the display.\nWhen used with No Loft, provides a cleaner Luma Key.")
 	};
 }
 

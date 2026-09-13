@@ -18,8 +18,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs RemoveLyricsMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::RemoveLyricsEnabled, "Lyrics", "Remove Lyrics"),
+		SettingDef::Toggle(Setting::RemoveLyricsEnabled, "Lyrics", "Remove Lyrics")
+			.Hint("Disables the display of song lyrics while in Learn-A-Song mode."),
 		SettingDef::Enum(Setting::RemoveLyricsWhen, "Remove Lyrics Mode")
+			.Hint("How or when do you want the lyric display disabled: always, or toggled by a hotkey only?")
 			.Choices({ "manual", "startup" }, "manual")
 			.WithVisibleWhen(Setting::RemoveLyricsEnabled)
 	};

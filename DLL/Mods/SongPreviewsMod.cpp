@@ -9,6 +9,7 @@ namespace Setting = Settings::Setting;
 SettingDefs SongPreviewsMod::Settings() const {
     return {
         SettingDef::Toggle(Setting::SongPreviews, "SongPreviews", "Song Previews")
+            .Hint("Plays a short audio preview of a song while it is highlighted in the song list.")
     };
 }
 

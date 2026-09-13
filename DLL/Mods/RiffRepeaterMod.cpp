@@ -16,29 +16,37 @@ namespace Setting = Settings::Setting;
 
 SettingDefs RiffRepeaterMod::Settings() const {
 	return {
-		Toggle(Setting::LinearRiffRepeater, "LinearRiffRepeater", "Linear Riff Repeater"),
-		Toggle(Setting::AllowRewind, "AllowRewind", "Allow Rewind"),
+		Toggle(Setting::LinearRiffRepeater, "LinearRiffRepeater", "Linear Riff Repeater")
+			.Hint("Raises the Riff Repeater speed by a fixed amount each pass instead of scaling it."),
+		Toggle(Setting::AllowRewind, "AllowRewind", "Allow Rewind")
+			.Hint("Enables rewinding the current song with the Rewind keybind."),
 		Numeric(Setting::RewindBy, "Rewind By (seconds)")
+			.Hint("How many seconds the Rewind key jumps back.")
 			.Ini("Mod Settings", "RewindBy")
 			.Default("5000")
 			.Range(0, 90000)
 			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowRewind),
 		Numeric(Setting::RewindLeadup, "Rewind Leadup (seconds)")
+			.Hint("Extra seconds replayed before the rewind point so you can prepare.")
 			.Ini("Mod Settings", "RewindLeadup")
 			.Default("2000")
 			.Range(0, 90000)
 			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowRewind),
-		Toggle(Setting::AllowLooping, "AllowLooping", "Allow Looping"),
+		Toggle(Setting::AllowLooping, "AllowLooping", "Allow Looping")
+			.Hint("Enables setting loop start and end points with keybinds."),
 		Numeric(Setting::LoopingLeadUp, "Looping Leadup (seconds)")
+			.Hint("Lead-up replayed before the loop restarts, in milliseconds.")
 			.Ini("Mod Settings", "LoopingLeadUp")
 			.Default("0")
 			.Range(0, 5000)
 			.Scale(0.001)
 			.WithVisibleWhen(Setting::AllowLooping),
-		Toggle(Setting::RRSpeedAboveOneHundred, "RRSpeedAboveOneHundred", "Riff Repeater Speed Above 100%"),
+		Toggle(Setting::RRSpeedAboveOneHundred, "RRSpeedAboveOneHundred", "Riff Repeater Speed Above 100%")
+			.Hint("Allow you to play a song faster than 100% speed in Riff Repeater."),
 		Numeric(Setting::RRSpeedInterval, "RR Speed Interval")
+			.Hint("Note this interval is what the internal value is set to.\nFor the most control, set the interval to 2.")
 			.Ini("Mod Settings", "RRSpeedInterval")
 			.Default("2")
 			.Range(-50, 50)

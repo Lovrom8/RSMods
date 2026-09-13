@@ -14,8 +14,10 @@ namespace Setting = Settings::Setting;
 
 SettingDefs LoftMod::Settings() const {
 	return {
-		SettingDef::Toggle(Setting::ToggleLoftEnabled, "ToggleLoft", "Toggle Loft"),
+		SettingDef::Toggle(Setting::ToggleLoftEnabled, "ToggleLoft", "Toggle Loft")
+			.Hint("Disables the game background, amps and noise-reactive speaker rings.\nBest used with Venue Mode off (setting in game).\nUsed by a lot of Rocksmith streamers to make it easy to Luma Key out the game background.\nThe player just sees an all-black background when this is enabled.\nOptions for turning the loft off only when in a song, when the game first starts up, or on a key press."),
 		SettingDef::Enum(Setting::ToggleLoftWhen, "Toggle Loft Mode")
+			.Hint("Turn the loft off via hotkey, as soon as the game starts up, or only when in a song.")
 			.Choices({ "manual", "song", "startup" }, "manual")
 			.WithVisibleWhen(Setting::ToggleLoftEnabled)
 	};

@@ -11,6 +11,7 @@ namespace Setting = Settings::Setting;
 SettingDefs SongAccuracyMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::DisplayCurrentAccuracy, "DisplayCurrentAccuracy", "Display Current Accuracy")
+			.Hint("Shows your current note-hit accuracy percentage on screen while playing.")
 	};
 }
 

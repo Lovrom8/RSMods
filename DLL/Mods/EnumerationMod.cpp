@@ -14,9 +14,11 @@ namespace Setting = Settings::Setting;
 SettingDefs EnumerationMod::Settings() const {
 	return {
 		Enum(Setting::ForceReEnumerationEnabled, "Force Enumeration")
+			.Hint("Game will automatically start an enumeration sequence when a new psarc (CDLC) file is detected in the dlc folder.\nNot necessary to enable if you are already using Rocksniffer to do the same thing.")
 			.Ini("Toggle Switches", "ForceReEnumeration")
 			.Choices({ "off", "manual", "automatic" }, "off"),
 		Numeric(Setting::CheckForNewSongsInterval, "Song Scan Interval (seconds)")
+			.Hint("How often (in seconds) to scan for new CDLC when automatic enumeration is enabled.")
 			.Ini("Mod Settings", "CheckForNewSongsInterval")
 			.Default("5000")
 			.Range(100, 100000000)

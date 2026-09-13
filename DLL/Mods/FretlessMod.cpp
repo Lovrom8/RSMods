@@ -15,6 +15,7 @@ namespace Setting = Settings::Setting;
 SettingDefs FretlessMod::Settings() const {
 	return {
 		SettingDef::Toggle(Setting::FretlessModeEnabled, "Fretless", "Fretless Mode")
+			.Hint("Removes the fret wire from the neck, making your instrument appear to be fretless.")
 	};
 }
 
