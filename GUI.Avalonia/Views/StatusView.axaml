@@ -7,10 +7,10 @@
 
     <ScrollViewer>
         <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Migration status" />
+            <TextBlock Classes="h1" Text="Migration status" />
             <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Resolved locations" />
                     <TextBlock Text="{Binding RocksmithFolder, StringFormat='Rocksmith: {0}', TargetNullValue='Rocksmith: resolving…'}" TextWrapping="Wrap" />

@@ -5,16 +5,40 @@
     RequestedThemeVariant="Default">
 
     <Application.Resources>
-        <!-- Shell chrome brushes that track the theme variant so the header/nav don't stay dark on light. -->
+        <!-- Shell + surface brushes that track the theme variant so chrome, panels and dividers
+             stay legible in both light and dark. Accent shades come from FluentTheme's
+             SystemAccentColor* resources (themeable via ThemeService), so anything that binds them
+             follows the user's chosen accent automatically. -->
         <ResourceDictionary>
+            <!-- Brush wrappers over FluentTheme's accent Colors. SystemAccentColor* are Colors, not
+                 Brushes, so binding them straight into Background/Foreground would silently no-op.
+                 DynamicResource on .Color keeps these tracking the user's chosen accent (ThemeService). -->
+            <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="AccentBrushLight1" Color="{DynamicResource SystemAccentColorLight1}" />
+            <SolidColorBrush x:Key="AccentBrushDark1" Color="{DynamicResource SystemAccentColorDark1}" />
+
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#20242B" />
-                    <SolidColorBrush x:Key="ShellNavBrush" Color="#181B20" />
+                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#1C1F25" />
+                    <SolidColorBrush x:Key="ShellNavBrush" Color="#16181D" />
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#22262D" />
+                    <SolidColorBrush x:Key="SurfaceBrush" Color="#2A2F37" />
+                    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#31373F" />
+                    <SolidColorBrush x:Key="CardBorderBrush" Color="#3A414B" />
+                    <SolidColorBrush x:Key="SubtleFillBrush" Color="#15181C" />
+                    <SolidColorBrush x:Key="NavHoverBrush" Color="#252A31" />
+                    <SolidColorBrush x:Key="NavCaptionBrush" Color="#7C838D" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#E8EAED" />
+                    <SolidColorBrush x:Key="ShellHeaderBrush" Color="#ECEEF1" />
                     <SolidColorBrush x:Key="ShellNavBrush" Color="#F3F4F6" />
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FAFBFC" />
+                    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F1F3F5" />
+                    <SolidColorBrush x:Key="CardBorderBrush" Color="#DDE1E6" />
+                    <SolidColorBrush x:Key="SubtleFillBrush" Color="#EDEFF2" />
+                    <SolidColorBrush x:Key="NavHoverBrush" Color="#E6E8EC" />
+                    <SolidColorBrush x:Key="NavCaptionBrush" Color="#8A9099" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -23,5 +47,87 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+
+        <!-- ============================ Typography ============================ -->
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.h2">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.caption">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="TextBlock.eyebrow">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- ============================ Cards ============================ -->
+        <!-- A raised surface panel. Replaces the flat hairline-bordered borders so panels
+             lift off the page instead of stacking as identical rectangles. -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="BoxShadow" Value="0 2 10 0 #22000000" />
+        </Style>
+
+        <!-- A small inset "stat" tile: heavier fill, used for at-a-glance status chips. -->
+        <Style Selector="Border.tile">
+            <Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- ============================ Sidebar nav ============================ -->
+        <Style Selector="Button.nav">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource NavHoverBrush}" />
+        </Style>
+        <!-- Active item: accent wash + accent text so the current section reads at a glance. -->
+        <Style Selector="Button.nav.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        </Style>
+        <Style Selector="Button.nav.active">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.nav.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrushLight1}" />
+        </Style>
+
+        <!-- ============================ Accent buttons ============================ -->
+        <!-- Primary action (Save, connect, etc.): filled with the accent. -->
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.accent:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrushLight1}" />
+            <Setter Property="TextBlock.Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.accent:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrushDark1}" />
+            <Setter Property="TextBlock.Foreground" Value="White" />
+        </Style>
     </Application.Styles>
 </Application>

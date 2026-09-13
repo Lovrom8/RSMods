@@ -7,7 +7,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="36" MaxWidth="760" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Profiles" />
+            <TextBlock Classes="h1" Text="Profiles" />
             <TextBlock
                 FontSize="13"
                 Opacity="0.7"
@@ -20,7 +20,7 @@
             </StackPanel>
 
             <!-- Profile selection -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Profile" />
                     <StackPanel Orientation="Horizontal" Spacing="10">
@@ -35,7 +35,7 @@
             </Border>
 
             <!-- Song lists -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+            <Border Classes="card"
                     IsVisible="{Binding HasSelectedProfile}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Song lists" />
@@ -54,7 +54,7 @@
             </Border>
 
             <!-- Rewards -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+            <Border Classes="card"
                     IsVisible="{Binding HasSelectedProfile}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Rewards" />
@@ -69,7 +69,7 @@
             </Border>
 
             <!-- Import tones -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+            <Border Classes="card"
                     IsVisible="{Binding HasSelectedProfile}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Import tones" />
@@ -85,7 +85,7 @@
             </Border>
 
             <!-- Song lists / Favorites grid -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+            <Border Classes="card"
                     IsVisible="{Binding HasSelectedProfile}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Song list &amp; Favorites editor" />
@@ -114,7 +114,7 @@
             </Border>
 
             <!-- Backups -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Backups" />
                     <TextBlock

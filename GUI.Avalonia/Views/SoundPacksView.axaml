@@ -8,7 +8,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="36" MaxWidth="820" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="SoundPacks" />
+            <TextBlock Classes="h1" Text="SoundPacks" />
             <TextBlock
                 FontSize="13"
                 Opacity="0.7"
@@ -28,7 +28,7 @@
             </StackPanel>
 
             <!-- Not unpacked: prompt to unpack -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8"
+            <Border Classes="card"
                     IsVisible="{Binding ShowUnpackPrompt}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Unpack audio.psarc" />
@@ -43,7 +43,7 @@
             <StackPanel Spacing="18" IsVisible="{Binding IsUnpacked}">
 
                 <!-- Replace voice lines -->
-                <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Classes="card">
                     <StackPanel Spacing="10">
                         <TextBlock FontWeight="SemiBold" Text="Replace result voice lines" />
                         <TextBlock
@@ -67,7 +67,7 @@
                 </Border>
 
                 <!-- Repack / pack management -->
-                <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Classes="card">
                     <StackPanel Spacing="10">
                         <TextBlock FontWeight="SemiBold" Text="Apply &amp; manage" />
                         <TextBlock
@@ -85,7 +85,7 @@
             </StackPanel>
 
             <!-- Preview result voice-overs -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Preview in-game" />
                     <TextBlock
@@ -100,7 +100,7 @@
             </Border>
 
             <!-- Tools -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Tools" />
                     <TextBlock

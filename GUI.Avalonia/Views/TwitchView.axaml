@@ -9,7 +9,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="36" MaxWidth="1080" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Twitch" />
+            <TextBlock Classes="h1" Text="Twitch" />
             <TextBlock
                 FontSize="13"
                 Opacity="0.7"
@@ -17,19 +17,19 @@
                 Text="Authorize a streamer account, listen for Twitch events, monitor the Rocksmith effect connection, and configure which effects run for subscriptions, Bits, and Channel Points." />
 
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                <Border Grid.Column="0" Padding="16" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Grid.Column="0" Classes="card">
                     <StackPanel Spacing="6">
                         <TextBlock FontSize="12" Opacity="0.7" Text="TWITCH ACCOUNT" />
                         <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding AuthenticationStatus}" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Padding="16" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Grid.Column="1" Classes="card">
                     <StackPanel Spacing="6">
                         <TextBlock FontSize="12" Opacity="0.7" Text="EVENTSUB" />
                         <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding EventSubStatus}" />
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="2" Padding="16" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Grid.Column="2" Classes="card">
                     <StackPanel Spacing="6">
                         <TextBlock FontSize="12" Opacity="0.7" Text="ROCKSMITH" />
                         <TextBlock FontSize="18" FontWeight="SemiBold" Text="{Binding RocksmithStatus}" />
@@ -45,7 +45,7 @@
             </TextBlock>
             <TextBlock Opacity="0.75" Text="{Binding StatusDetail}" TextWrapping="Wrap" />
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Authorization and listening" />
                     <WrapPanel>
@@ -76,7 +76,7 @@
                 Text="Choose an effect and trigger to add a rule. Edit the enabled rules, then save to update both the running listener and the shared TwitchEnabledEffects.xml file." />
 
             <Grid ColumnDefinitions="300,*" ColumnSpacing="14">
-                <Border Grid.Column="0" Padding="14" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Grid.Column="0" Classes="card">
                     <Grid RowDefinitions="Auto,300,Auto,Auto" RowSpacing="10">
                         <TextBlock FontWeight="SemiBold" Text="Effect catalog" />
                         <ListBox Grid.Row="1" ItemsSource="{Binding CatalogEffects}" SelectedItem="{Binding SelectedCatalogEffect}">
@@ -94,7 +94,7 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Column="1" Padding="14" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                <Border Grid.Column="1" Classes="card">
                     <Grid RowDefinitions="Auto,360,Auto,Auto,Auto" RowSpacing="10">
                         <TextBlock FontWeight="SemiBold" Text="Enabled rules" />
                         <DataGrid
@@ -147,7 +147,7 @@
                                     <Border
                                         Width="28"
                                         Height="28"
-                                        BorderBrush="#808080"
+                                        BorderBrush="{DynamicResource CardBorderBrush}"
                                         BorderThickness="1"
                                         Background="{Binding SelectedRule.SwatchHex, Converter={x:Static conv:HexToBrushConverter.Instance}}" />
                                 </StackPanel>
@@ -166,14 +166,14 @@
                                 <Button Margin="0,0,8,0" Command="{Binding RemoveRuleCommand}" Content="Remove" />
                                 <Button Margin="0,0,8,0" Command="{Binding TestRuleCommand}" Content="Test reward" />
                                 <Button Margin="0,0,8,0" Command="{Binding RevertRulesCommand}" Content="Revert" />
-                                <Button Command="{Binding SaveRulesCommand}" Content="Save" />
+                                <Button Classes="accent" Command="{Binding SaveRulesCommand}" Content="Save" />
                             </WrapPanel>
                         </Grid>
                     </Grid>
                 </Border>
             </Grid>
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <Grid RowDefinitions="Auto,260,Auto" RowSpacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Runtime log" />
                     <ListBox Grid.Row="1" ItemsSource="{Binding LogEntries}" SelectedItem="{Binding SelectedLogEntry}">

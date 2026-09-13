@@ -5,7 +5,7 @@
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     x:DataType="vm:ModSettingsViewModel">
 
-    <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+    <Border Classes="card">
         <StackPanel Spacing="12">
             <TextBlock FontWeight="SemiBold" Text="Keybindings" />
             <TextBlock

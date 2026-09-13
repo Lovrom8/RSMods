@@ -6,22 +6,24 @@
     x:DataType="vm:AsioSettingsViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="36" MaxWidth="820" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="RS_ASIO settings" />
+        <StackPanel Margin="36,28,36,36" Spacing="18">
+            <TextBlock Classes="h1" Text="RS_ASIO settings" />
             <TextBlock
+                MaxWidth="820" HorizontalAlignment="Left"
                 FontSize="13"
                 Opacity="0.7"
                 TextWrapping="Wrap"
                 Text="RS_ASIO.ini — low-latency ASIO/WASAPI routing. Disabling a channel blanks its driver (Input 1 is commented out so its value is kept). Saving preserves comments and unknown entries." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
                 <Button Command="{Binding RevertCommand}" Content="Revert" />
                 <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
             </StackPanel>
 
+            <WrapPanel Orientation="Horizontal">
             <!-- Config -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card" Width="480" Margin="0,0,18,18" VerticalAlignment="Top">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Config" />
                     <Grid ColumnDefinitions="220,*" RowDefinitions="Auto">
@@ -38,7 +40,7 @@
             </Border>
 
             <!-- Buffer -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card" Width="480" Margin="0,0,18,18" VerticalAlignment="Top">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Buffer" />
                     <Grid ColumnDefinitions="220,*" RowDefinitions="Auto,Auto">
@@ -62,7 +64,7 @@
             </Border>
 
             <!-- Output -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card" Width="520" Margin="0,0,18,18" VerticalAlignment="Top">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Output" />
                     <CheckBox Content="Enabled" IsChecked="{Binding OutputEnabled}" />
@@ -94,12 +96,18 @@
                     <CheckBox Content="Enable ref-count hack" IsChecked="{Binding OutputRefCountHack}" />
                 </StackPanel>
             </Border>
+            </WrapPanel>
 
             <!-- Inputs -->
             <ItemsControl ItemsSource="{Binding Inputs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:AsioInputViewModel">
-                        <Border Margin="0,0,0,18" Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+                        <Border Width="520" Margin="0,0,18,18" Classes="card" VerticalAlignment="Top">
                             <StackPanel Spacing="10">
                                 <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
                                 <CheckBox Content="Enabled" IsChecked="{Binding Enabled}" />

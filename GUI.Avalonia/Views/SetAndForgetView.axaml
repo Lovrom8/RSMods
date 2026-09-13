@@ -8,7 +8,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="36" MaxWidth="860" HorizontalAlignment="Left" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Set &amp; Forget" />
+            <TextBlock Classes="h1" Text="Set &amp; Forget" />
             <TextBlock
                 FontSize="13"
                 Opacity="0.7"
@@ -26,12 +26,7 @@
                 IsVisible="{Binding !IsBusy}"
                 Text="{Binding StatusMessage}" />
 
-            <Border
-                Padding="18"
-                BorderBrush="#4A5361"
-                BorderThickness="1"
-                CornerRadius="8"
-                IsEnabled="{Binding !IsBusy}">
+            <Border Classes="card" IsEnabled="{Binding !IsBusy}">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Custom tunings editor" />
                     <TextBlock
@@ -89,7 +84,7 @@
                                                     Height="16"
                                                     VerticalAlignment="Center"
                                                     Background="{Binding ColorHex, Converter={x:Static converters:HexToBrushConverter.Instance}}"
-                                                    BorderBrush="#77808D"
+                                                    BorderBrush="{DynamicResource CardBorderBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="3" />
                                                 <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Label}" />
@@ -120,7 +115,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Songs by tuning" />
                     <TextBlock
@@ -176,12 +171,7 @@
                 </StackPanel>
             </Border>
 
-            <Border
-                Padding="18"
-                BorderBrush="#4A5361"
-                BorderThickness="1"
-                CornerRadius="8"
-                IsEnabled="{Binding !IsBusy}">
+            <Border Classes="card" IsEnabled="{Binding !IsBusy}">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Default &amp; Guitarcade tones" />
                     <TextBlock
@@ -205,7 +195,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Spacing="14">
-                            <Border Padding="12" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="6">
+                            <Border Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="6">
                                 <StackPanel Spacing="8">
                                     <TextBlock FontWeight="SemiBold" Text="Default tone" />
                                     <TextBlock
@@ -228,7 +218,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Padding="12" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="6">
+                            <Border Padding="12" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="6">
                                 <StackPanel Spacing="8">
                                     <TextBlock FontWeight="SemiBold" Text="Guitarcade tone" />
                                     <TextBlock
@@ -255,7 +245,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="One-click cache mods" />
                     <TextBlock
@@ -305,7 +295,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="Cache management" />
                     <TextBlock

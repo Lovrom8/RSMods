@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:RSMods.ViewModels"
     xmlns:views="clr-namespace:RSMods.Views"
+    xmlns:conv="clr-namespace:RSMods.Converters"
     x:DataType="vm:MainWindowViewModel"
     Title="RSMods"
     Width="1360"
@@ -46,31 +47,62 @@
     </Window.DataTemplates>
 
     <Grid RowDefinitions="Auto,*">
-        <Border Padding="24,18" Background="{DynamicResource ShellHeaderBrush}">
-            <StackPanel Spacing="3">
-                <TextBlock FontSize="24" FontWeight="SemiBold" Text="RSMods" />
-                <TextBlock Opacity="0.7" Text="Rocksmith 2014 Mod Configurator" />
-            </StackPanel>
+        <!-- Header: accent app-mark + title, with a thin accent rule underneath to anchor the chrome. -->
+        <Border Background="{DynamicResource ShellHeaderBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="0,0,0,1">
+            <Grid RowDefinitions="Auto,2">
+                <StackPanel Margin="22,16" Orientation="Horizontal" Spacing="14">
+                    <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource AccentBrush}">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontSize="18" FontWeight="Bold" Foreground="White" Text="RS" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                        <TextBlock FontSize="22" FontWeight="SemiBold" Text="RSMods" />
+                        <TextBlock Opacity="0.65" FontSize="12" Text="Rocksmith 2014 Mod Configurator" />
+                    </StackPanel>
+                </StackPanel>
+                <Border Grid.Row="1" Height="2" Background="{DynamicResource AccentBrush}" Opacity="0.85" />
+            </Grid>
         </Border>
 
-        <Grid Grid.Row="1" ColumnDefinitions="220,*">
-            <Border Padding="18" Background="{DynamicResource ShellNavBrush}">
-                <StackPanel Spacing="10">
-                    <TextBlock Margin="4,0,0,8" FontWeight="SemiBold" Text="Sections" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowStatusCommand}" Content="Status" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowModSettingsCommand}" Content="Mod Settings" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowColorsCommand}" Content="Custom Colors" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowRocksmithCommand}" Content="Rocksmith" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowAsioCommand}" Content="RS_ASIO" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowProfilesCommand}" Content="Profiles" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowSetAndForgetCommand}" Content="Set &amp; Forget" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowSoundPacksCommand}" Content="SoundPacks" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowTwitchCommand}" Content="Twitch" />
-                    <Button HorizontalContentAlignment="Left" Command="{Binding ShowThemesCommand}" Content="Appearance" />
-                </StackPanel>
+        <Grid Grid.Row="1" ColumnDefinitions="228,*">
+            <Border Background="{DynamicResource ShellNavBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="0,0,1,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="14,16" Spacing="4">
+                        <Button Classes="nav" Command="{Binding ShowStatusCommand}" Content="Status"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Status}" />
+
+                        <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="CONFIGURATION" />
+                        <Button Classes="nav" Command="{Binding ShowModSettingsCommand}" Content="Mod Settings"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=ModSettings}" />
+                        <Button Classes="nav" Command="{Binding ShowColorsCommand}" Content="Custom Colors"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Colors}" />
+                        <Button Classes="nav" Command="{Binding ShowRocksmithCommand}" Content="Rocksmith"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Rocksmith}" />
+                        <Button Classes="nav" Command="{Binding ShowProfilesCommand}" Content="Profiles"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Profiles}" />
+                        <Button Classes="nav" Command="{Binding ShowSetAndForgetCommand}" Content="Set &amp; Forget"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=SetAndForget}" />
+
+                        <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="AUDIO" />
+                        <Button Classes="nav" Command="{Binding ShowAsioCommand}" Content="RS_ASIO"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Asio}" />
+                        <Button Classes="nav" Command="{Binding ShowSoundPacksCommand}" Content="SoundPacks"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=SoundPacks}" />
+
+                        <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="INTEGRATIONS" />
+                        <Button Classes="nav" Command="{Binding ShowTwitchCommand}" Content="Twitch"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Twitch}" />
+
+                        <TextBlock Classes="eyebrow" Margin="12,14,0,4" Text="APP" />
+                        <Button Classes="nav" Command="{Binding ShowThemesCommand}" Content="Appearance"
+                                Classes.active="{Binding ActiveSection, Converter={x:Static conv:StringEqualsConverter.Instance}, ConverterParameter=Themes}" />
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
-            <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
+            <Border Grid.Column="1" Background="{DynamicResource AppBackgroundBrush}">
+                <ContentControl Content="{Binding CurrentPage}" />
+            </Border>
         </Grid>
     </Grid>
 </Window>

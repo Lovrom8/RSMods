@@ -26,6 +26,10 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private ObservableObject _currentPage;
 
+    /// <summary>Key of the section currently shown; drives the active sidebar highlight.</summary>
+    [ObservableProperty]
+    private string _activeSection = "Status";
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(
         nameof(ShowModSettingsCommand), nameof(ShowColorsCommand), nameof(ShowRocksmithCommand),
@@ -145,10 +149,18 @@ internal sealed partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowStatus() => CurrentPage = _status;
+    private void ShowStatus()
+    {
+        CurrentPage = _status;
+        ActiveSection = "Status";
+    }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private void ShowModSettings() => CurrentPage = _modSettings;
+    private void ShowModSettings()
+    {
+        CurrentPage = _modSettings;
+        ActiveSection = "ModSettings";
+    }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
     private async Task ShowColorsAsync()
@@ -156,6 +168,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Colours live in the already-loaded RSMods.ini store; the snapshot is built on first navigation.
         await _colors.InitializeAsync();
         CurrentPage = _colors;
+        ActiveSection = "Colors";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -164,6 +177,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Rocksmith.ini is loaded lazily on first navigation; presents its own validation warnings.
         await _rocksmith.InitializeAsync();
         CurrentPage = _rocksmith;
+        ActiveSection = "Rocksmith";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -172,6 +186,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // RS_ASIO.ini + device enumeration are loaded lazily on first navigation.
         await _asio.InitializeAsync();
         CurrentPage = _asio;
+        ActiveSection = "Asio";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -180,6 +195,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Appearance reads the already-loaded GUI settings; the snapshot is built on first navigation.
         await _themes.InitializeAsync();
         CurrentPage = _themes;
+        ActiveSection = "Themes";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -188,6 +204,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Profiles enumerate from the resolved save folder; the lists are built on first navigation.
         await _profiles.InitializeAsync();
         CurrentPage = _profiles;
+        ActiveSection = "Profiles";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -196,6 +213,7 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // SoundPacks reads its unpacked state from the resolved Rocksmith folder on first navigation.
         await _soundPacks.InitializeAsync();
         CurrentPage = _soundPacks;
+        ActiveSection = "SoundPacks";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
@@ -204,8 +222,13 @@ internal sealed partial class MainWindowViewModel : ObservableObject
         // Stock cache-mod files and the tuning database are prepared on first navigation.
         await _setAndForget.InitializeAsync();
         CurrentPage = _setAndForget;
+        ActiveSection = "SetAndForget";
     }
 
     [RelayCommand(CanExecute = nameof(SectionsEnabled))]
-    private void ShowTwitch() => CurrentPage = _twitch;
+    private void ShowTwitch()
+    {
+        CurrentPage = _twitch;
+        ActiveSection = "Twitch";
+    }
 }

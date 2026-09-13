@@ -14,7 +14,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="32,24" HorizontalAlignment="Stretch" Spacing="18">
-            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Mod Settings" />
+            <TextBlock Classes="h1" Text="Mod Settings" />
             <TextBlock
                 FontSize="13"
                 Opacity="0.7"
@@ -22,7 +22,7 @@
                 Text="Mod settings driven by the DLL schema manifest. Editing a value marks the page unsaved; Save writes back to RSMods.ini while preserving comments and unknown entries." />
 
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Classes="accent" Command="{Binding SaveCommand}" Content="Save" />
                 <Button Command="{Binding RevertCommand}" Content="Revert" />
                 <TextBlock VerticalAlignment="Center" Opacity="0.8" Text="{Binding StatusMessage}" />
             </StackPanel>
@@ -32,11 +32,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="settings:SettingGroupViewModel">
                         <Border
+                            Classes="card"
                             Margin="0,0,0,18"
-                            Padding="18"
-                            BorderBrush="#4A5361"
-                            BorderThickness="1"
-                            CornerRadius="8"
                             IsVisible="{Binding HasVisibleFields}">
                             <StackPanel Spacing="14">
                                 <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Title}" />
@@ -149,10 +146,10 @@
             </ItemsControl>
 
             <!-- On-screen text font preview helper -->
-            <Border Padding="18" BorderBrush="#4A5361" BorderThickness="1" CornerRadius="8">
+            <Border Classes="card">
                 <StackPanel Spacing="12">
                     <TextBlock FontWeight="SemiBold" Text="On-screen text font preview" />
-                    <Border Padding="12" Background="#181B20" CornerRadius="4">
+                    <Border Padding="12" Background="{DynamicResource SubtleFillBrush}" CornerRadius="4">
                         <TextBlock
                             FontFamily="{Binding OnScreenFontPreview}"
                             FontSize="22"
@@ -163,10 +160,7 @@
 
             <!-- Secondary monitor position capture helper -->
             <Border
-                Padding="18"
-                BorderBrush="#4A5361"
-                BorderThickness="1"
-                CornerRadius="8"
+                Classes="card"
                 IsVisible="{Binding ShowSecondaryMonitor}">
                 <StackPanel Spacing="10">
                     <TextBlock FontWeight="SemiBold" Text="Secondary Monitor Position Helper" />
