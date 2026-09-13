@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Menu.hpp"
 #include "Framework/Framework.hpp"
+#include "D3DOverlay.hpp"
 
 namespace Menu {
 	/// <summary>
@@ -16,6 +17,8 @@ namespace Menu {
 	/// Renders the ImGui frame, including the main mod menu.
 	/// </summary>
 	void RenderImGuiMenu() {
+		GameOverlay::PrepareImGuiHud(); // bake/rebuild HUD fonts before NewFrame recreates the atlas texture
+
 		ImGui_ImplDX9_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -58,6 +61,8 @@ namespace Menu {
 				ImGui::End();
 			}
 		}
+
+		GameOverlay::DrawImGuiHud(); // HUD draws regardless of whether the settings menu is open
 
 		ImGui::EndFrame();
 		ImGui::Render();

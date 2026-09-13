@@ -4,7 +4,6 @@
 #include "Framework/Framework.hpp"
 #include "Mods/Midi.hpp"
 #include "Mods/TwitchMod.hpp"
-#include "D3DOverlay.hpp"
 #include "Version.h"
 #include "GitVersion.h"
 
@@ -178,7 +177,7 @@ HRESULT APIENTRY D3DHooks::Hook_EndScene(IDirect3DDevice9* pDevice) {
 	Framework::Draw().RunPendingReleases();
 	TwitchMod::RunPerFrameEffects(pDevice);
 	UpdateGameWindowStacking();
-	GameOverlay::RenderOverlay(pDevice);
+	// The mod HUD is drawn inside Menu::RenderImGuiMenu's ImGui frame (PrepareImGuiHud/DrawImGuiHud).
 
 	return originalReturn;
 }

@@ -1,7 +1,6 @@
 #include "../stdafx.h"
 #include "D3DHooks.hpp"
 #include "../Framework/Framework.hpp"
-#include "../D3DOverlay.hpp"
 using Framework::DrawContext;
 using Framework::DrawResult;
 using Framework::DrawOutcome;
@@ -134,9 +133,9 @@ HRESULT APIENTRY D3DHooks::Hook_SetStreamSource(LPDIRECT3DDEVICE9 pDevice, UINT 
 /// <param name="pPresentationParameters"> - Pointer to a D3DPRESENT_PARAMETERS structure, describing the new presentation parameters. This value cannot be NULL.</param>
 /// <returns>Possible return values include: D3D_OK, D3DERR_DEVICELOST, D3DERR_DEVICEREMOVED, D3DERR_DRIVERINTERNALERROR, or D3DERR_OUTOFVIDEOMEMORY.</returns>
 HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) {
-	// Lost Device - release device-dependent resources before Reset.
+	// Release device-dependent resources before Reset. The ImGui backend owns the HUD font texture now,
+	// so invalidating it is all the overlay needs.
 	ImGui_ImplDX9_InvalidateDeviceObjects();
-	GameOverlay::OnLostDevice();
 
 	// Reset Device. Call original Reset.
 	HRESULT ResetReturn = oReset(pDevice, pPresentationParameters);
@@ -146,7 +145,6 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 	// retries Reset next frame; recreating against a lost device leaves a broken frame.
 	if (SUCCEEDED(ResetReturn)) {
 		ImGui_ImplDX9_CreateDeviceObjects();
-		GameOverlay::OnResetDevice();
 	}
 
 	return ResetReturn;

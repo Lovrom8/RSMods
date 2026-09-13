@@ -384,6 +384,9 @@
     <ClCompile Include="D3DOverlay.cpp">
       <Filter>D3D</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuiFontManager.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -786,6 +789,9 @@
       <Filter>Main Headers</Filter>
     </ClInclude>
     <ClInclude Include="D3DOverlay.hpp">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiFontManager.hpp">
       <Filter>D3D</Filter>
     </ClInclude>
     <ClInclude Include="Framework\GamePhase.hpp">

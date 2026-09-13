@@ -98,6 +98,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="D3DOverlay.cpp" />
+    <ClCompile Include="ImGuiFontManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Keybindings.cpp" />
     <ClCompile Include="Keyboard.cpp" />
@@ -391,6 +392,7 @@
     <ClInclude Include="CC\Effects\HighwayScrollSpeedEffect.hpp" />
     <ClInclude Include="D3DInfo.h" />
     <ClInclude Include="D3DOverlay.hpp" />
+    <ClInclude Include="ImGuiFontManager.hpp" />
     <ClInclude Include="D3D\GdiplusManager.hpp" />
     <ClInclude Include="GameState.hpp" />
     <ClInclude Include="Keybindings.hpp" />
