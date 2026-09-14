@@ -68,6 +68,37 @@ static void Test_ClipXScale() {
 	Expect(AspectRatio::ClipXScale(1024, 768) > 1.0f, "4:3 produces a scale above 1.0");
 }
 
+// A scale above 1.0 is not correctable by this mod: widening the frustum and remapping the
+// viewport both run off the edge of the backbuffer. Only wider-than-16:9 displays qualify.
+static void Test_IsWiderThanReference() {
+	Expect(AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(3440, 1440)), "21:9 qualifies");
+	Expect(AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(2560, 1080)), "2560x1080 qualifies");
+	Expect(AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(5120, 1440)), "32:9 qualifies");
+
+	Expect(!AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(1920, 1080)), "16:9 does not qualify");
+	Expect(!AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(1024, 768)), "4:3 does not qualify");
+	Expect(!AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(1920, 1200)), "16:10 does not qualify");
+	Expect(!AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(1280, 1024)), "5:4 does not qualify");
+
+	Expect(!AspectRatio::IsWiderThanReference(AspectRatio::ClipXScale(1920, 0)), "a zero-height no-op does not qualify");
+	Expect(!AspectRatio::IsWiderThanReference(0.0f), "a zero scale does not qualify");
+	Expect(!AspectRatio::IsWiderThanReference(-1.0f), "a negative scale does not qualify");
+}
+
+// The path a narrow display would have taken: RemapHorizontal drives the left edge negative,
+// which becomes an enormous DWORD once assigned to D3DVIEWPORT9::X.
+static void Test_NarrowDisplayWouldRunOffTheSurface() {
+	const float narrow = AspectRatio::ClipXScale(1920, 1200);
+
+	int left = 0;
+	int right = 1920;
+	AspectRatio::RemapHorizontal(left, right, 1920, narrow);
+
+	Expect(left < 0, "16:10 remap drives the left edge negative");
+	Expect(right > 1920, "16:10 remap drives the right edge past the surface");
+	Expect(!AspectRatio::IsWiderThanReference(narrow), "so the gate must reject it before it is used");
+}
+
 static void Test_SameAspect() {
 	Expect(AspectRatio::SameAspect(3440, 1440, 3440, 1440), "the scene target itself");
 	Expect(AspectRatio::SameAspect(1720, 720, 3440, 1440), "the half-size depth-of-field pass");
@@ -210,6 +241,8 @@ int main() {
 	std::printf("=== AspectRatioTests ===\n");
 
 	Test_ClipXScale();
+	Test_IsWiderThanReference();
+	Test_NarrowDisplayWouldRunOffTheSurface();
 	Test_SameAspect();
 	Test_TheTwoHalvesCancel();
 	Test_IsAffine();

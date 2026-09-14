@@ -131,8 +131,13 @@ void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
 
 	ultrawideActive.store(active, std::memory_order_relaxed);
 
-	if (ultrawideBackBufferValid && ultrawideBackBufferHeight)
-		UltrawideMod::SetDisplayAspect(static_cast<double>(ultrawideBackBufferWidth) / ultrawideBackBufferHeight);
+	// Publish the backbuffer aspect only while the correction applies. Otherwise the game must
+	// keep building its stock 16:9 frustum: the viewport and HUD paths are inert on a display
+	// the gate rejected, and a camera that follows the display alone would drift from them.
+	const double displayAspect = active && ultrawideBackBufferHeight
+		? static_cast<double>(ultrawideBackBufferWidth) / ultrawideBackBufferHeight
+		: AspectRatio::referenceAspect;
+	UltrawideMod::SetDisplayAspect(displayAspect);
 
 	if (ultrawideBackBufferValid || !pDevice)
 		return;
