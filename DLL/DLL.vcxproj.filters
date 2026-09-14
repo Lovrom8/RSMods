@@ -294,6 +294,9 @@
     <ClCompile Include="Mods\UltrawideMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
+    <ClCompile Include="Mods\UltrawideRRDim.cpp">
+      <Filter>Mods</Filter>
+    </ClCompile>
     <ClCompile Include="Mods\RemoveHeadstockMod.cpp">
       <Filter>Mods</Filter>
     </ClCompile>
@@ -663,6 +666,9 @@
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\UltrawideMod.hpp">
+      <Filter>Mods\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods\UltrawideRRDim.hpp">
       <Filter>Mods\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mods\RemoveHeadstockMod.hpp">

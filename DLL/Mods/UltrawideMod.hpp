@@ -6,9 +6,14 @@ class UltrawideMod : public Framework::IMod {
 public:
 	MOD_ID(UltrawideMod)
 	bool IsEnabled(const Framework::ModContext& c) const override;
+	std::vector<std::string_view> ClaimsExclusive() const override {
+		return { "loft-post-effects-state" };
+	}
 
 	void OnEnabled(Framework::ModContext& c) override;
 	void OnDisabled(Framework::ModContext& c) override;
+	void OnTick(Framework::ModContext& c) override;
+	void OnShutdown(Framework::ModContext& c) override;
 
 	static void SetDisplayAspect(double aspect);
 

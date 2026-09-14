@@ -15,6 +15,10 @@ namespace Offsets {
 
 	// Current Tuning
 	inline VersioningStruct<uintptr_t> ptr_tuning;
+
+	// Ultrawide: Riff Repeater post-effects state substitution (Mods/UltrawideRRDim.cpp).
+	inline VersioningStruct<uintptr_t> hook_loftPostFxSetState;   // CALL rel32 inside LoftManager::SetLoftState
+	inline VersioningStruct<uintptr_t> func_loftPostFxSetState;   // LoftPostEffectsManager::SetLoftState, the call's target
 	extern std::vector<unsigned int> ptr_tuningOffsets;
 
 	// True Tuning

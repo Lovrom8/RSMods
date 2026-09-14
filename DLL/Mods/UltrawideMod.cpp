@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "UltrawideMod.hpp"
+#include "UltrawideRRDim.hpp"
 
 using Framework::ModContext;
 namespace Setting = Settings::Setting;
@@ -32,11 +33,25 @@ bool UltrawideMod::IsEnabled(const ModContext& c) const {
 void UltrawideMod::OnEnabled(ModContext&) {
 	D3DHooks::ultrawideSettingOn = true;
 	SetPatched(true);
+	// Installed once and left in place; the gate below makes it inert when the correction
+	// is not active, so toggling the setting never rewrites game code.
+	UltrawideRRDim::Install();
 }
 
 void UltrawideMod::OnDisabled(ModContext&) {
 	D3DHooks::ultrawideSettingOn = false;
 	SetPatched(false);
+	UltrawideRRDim::SetActive(false);
+}
+
+void UltrawideMod::OnTick(ModContext&) {
+	// ultrawideActive is decided per frame on the render thread from the setting and the
+	// backbuffer aspect, so it is the one flag that already means "corrections apply".
+	UltrawideRRDim::SetActive(D3DHooks::ultrawideActive.load(std::memory_order_relaxed));
+}
+
+void UltrawideMod::OnShutdown(ModContext&) {
+	UltrawideRRDim::Uninstall();
 }
 
 void UltrawideMod::SetPatched(bool enable) {

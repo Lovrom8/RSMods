@@ -166,6 +166,11 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Mods\UltrawideRRDim.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Mods\RemoveHeadstockMod.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug with Wwise Logging|Win32'">../stdafx.h</PrecompiledHeaderFile>
@@ -408,6 +413,7 @@
     <ClInclude Include="Mods\EnumerationMod.hpp" />
     <ClInclude Include="Mods\RemoveSkylineMod.hpp" />
     <ClInclude Include="Mods\UltrawideMod.hpp" />
+    <ClInclude Include="Mods\UltrawideRRDim.hpp" />
     <ClInclude Include="Mods\RemoveHeadstockMod.hpp" />
     <ClInclude Include="Mods\RemoveLyricsMod.hpp" />
     <ClInclude Include="Mods\ShowSongTimerMod.hpp" />
