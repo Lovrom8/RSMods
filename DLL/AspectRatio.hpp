@@ -70,6 +70,13 @@ namespace AspectRatio {
 		if (destination.Width() >= static_cast<int>(surfaceWidth))
 			return false;
 
+		// The band the game composites its 16:9 frame into is 16:9 by construction. Anything
+		// else that happens to be centred and full height is not the scene and stays as it
+		// was drawn. One pixel of rounding in either dimension is allowed.
+		const int aspectError = destination.Width() * 9 - destination.Height() * 16;
+		if (aspectError > 9 + 16 || aspectError < -(9 + 16))
+			return false;
+
 		const int span = destination.left * 2 + destination.Width();
 		const int surface = static_cast<int>(surfaceWidth);
 

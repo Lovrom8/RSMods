@@ -41,6 +41,12 @@ namespace D3DHooks {
 
 	// Ultrawide aspect correction.
 	inline std::atomic<bool> ultrawideActive = false;   // The setting is on and the backbuffer is wider than 16:9: corrections apply.
+
+	// True while a Guitarcade minigame is being played or paused. Evaluated once
+	// per frame in UpdateUltrawideState because the underlying GameState query is
+	// a string comparison and the draw path reads this per draw.
+	inline std::atomic<bool> ultrawideInGuitarcade = false;
+	inline std::atomic<bool> ultrawideInVideoPlayer = false; // The video player composites at its own aspect.
 	inline std::atomic<bool> ultrawideSettingOn = false; // Published by UltrawideMod (mod thread) from the Ultrawide setting. The source of the flag above.
 	inline float ultrawideClipXScale = 1.0f; // (16/9) / the display aspect: how far the interface has to be squeezed back in.
 	inline std::unordered_map<void*, std::pair<UINT, UINT>> ultrawideRenderTargetTextures; // Render thread only: every texture that has been a render target, with its size. Scene-aspect ones mark post-processing draws; off-aspect ones (text strips) mark 16:9 UI.
@@ -62,6 +68,7 @@ namespace D3DHooks {
 	HRESULT APIENTRY Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters);
 	HRESULT APIENTRY Hook_StretchRect(LPDIRECT3DDEVICE9 pDevice, IDirect3DSurface9* pSourceSurface, const RECT* pSourceRect, IDirect3DSurface9* pDestSurface, const RECT* pDestRect, D3DTEXTUREFILTERTYPE Filter);
 	HRESULT APIENTRY Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget);
+	HRESULT APIENTRY Hook_SetTexture(LPDIRECT3DDEVICE9 pDevice, DWORD Stage, IDirect3DBaseTexture9* pTexture);
 	HRESULT APIENTRY Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimCount);
 	HRESULT APIENTRY Hook_DrawPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT PrimCount, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride);
 	HRESULT APIENTRY Hook_DrawIndexedPrimitiveUP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE PrimType, UINT MinVertexIndex, UINT NumVertices, UINT PrimCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, UINT VertexStreamZeroStride);

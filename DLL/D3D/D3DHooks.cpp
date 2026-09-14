@@ -131,6 +131,11 @@ void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
 
 	ultrawideActive.store(active, std::memory_order_relaxed);
 
+	// Once per frame: the query compares strings, and the draw path reads the
+	// result per draw.
+	ultrawideInGuitarcade.store(GameState::Menus::IsInGuitarcadeGame(), std::memory_order_relaxed);
+	ultrawideInVideoPlayer.store(GameState::currentMenu == "VideoPlayer", std::memory_order_relaxed);
+
 	// Publish the backbuffer aspect only while the correction applies. Otherwise the game must
 	// keep building its stock 16:9 frustum: the viewport and HUD paths are inert on a display
 	// the gate rejected, and a camera that follows the display alone would drift from them.
@@ -154,6 +159,10 @@ void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
 		ultrawideBackBufferWidth = presentParameters.BackBufferWidth;
 		ultrawideBackBufferHeight = presentParameters.BackBufferHeight;
 		ultrawideBackBufferValid = true;
+
+		// Stage verdicts compare a target's size against the backbuffer aspect, so any cached
+		// before this point was known was decided on the wrong comparison.
+		UltrawideShaders::TextureStages::Invalidate();
 	}
 
 	swapChain->Release();
@@ -163,7 +172,9 @@ void D3DHooks::UpdateUltrawideState(IDirect3DDevice9* pDevice) {
 /// IDirect3DDevice9::StretchRect Middleware.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_StretchRect(LPDIRECT3DDEVICE9 pDevice, IDirect3DSurface9* pSourceSurface, const RECT* pSourceRect, IDirect3DSurface9* pDestSurface, const RECT* pDestRect, D3DTEXTUREFILTERTYPE Filter) {
-	if (ultrawideActive.load(std::memory_order_relaxed) && pDestRect && pDestSurface) {
+	// The video player composites its frame through the same path at its own aspect; leave it.
+	if (ultrawideActive.load(std::memory_order_relaxed) && !ultrawideInVideoPlayer.load(std::memory_order_relaxed)
+		&& pDestRect && pDestSurface) {
 		D3DSURFACE_DESC destinationDescription{};
 
 		if (SUCCEEDED(pDestSurface->GetDesc(&destinationDescription))) {
@@ -181,19 +192,45 @@ HRESULT APIENTRY D3DHooks::Hook_StretchRect(LPDIRECT3DDEVICE9 pDevice, IDirect3D
 	return oStretchRect(pDevice, pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
 }
 
+// IDirect3DDevice9::SetTexture Middleware. Records the binding for the ultrawide texture-stage
+// mirror; classification happens lazily on the draw path.
+HRESULT APIENTRY D3DHooks::Hook_SetTexture(LPDIRECT3DDEVICE9 pDevice, DWORD Stage, IDirect3DBaseTexture9* pTexture) {
+	// Bind first, mirror after: a rejected bind leaves the device on its previous texture.
+	const HRESULT result = oSetTexture(pDevice, Stage, pTexture);
+	if (SUCCEEDED(result))
+		UltrawideShaders::TextureStages::OnTextureBound(Stage, pTexture);
+
+	return result;
+}
+
 /// <summary>
 /// IDirect3DDevice9::SetRenderTarget Middleware. Tracks whether the scene target is bound, so the
 /// aspect correction can confine itself to draws that actually reach the screen.
 /// </summary>
 HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD RenderTargetIndex, IDirect3DSurface9* pRenderTarget) {
-	if (RenderTargetIndex == 0) {
+	// Bind first, classify after: a rejected target keeps the previous one bound, and the draw
+	// path must keep reading that one's classification.
+	const HRESULT result = oSetRenderTarget(pDevice, RenderTargetIndex, pRenderTarget);
 
-		if (pRenderTarget) {
-			D3DSURFACE_DESC targetDescription{};
+	if (RenderTargetIndex == 0 && SUCCEEDED(result)) {
+
+		// One GetDesc serves both the render-target registry below and the scene test after it.
+		D3DSURFACE_DESC targetDescription{};
+		const bool haveDescription = pRenderTarget && SUCCEEDED(pRenderTarget->GetDesc(&targetDescription));
+
+		if (haveDescription) {
 			IDirect3DTexture9* container = nullptr;
-			if (SUCCEEDED(pRenderTarget->GetDesc(&targetDescription))
-				&& SUCCEEDED(pRenderTarget->GetContainer(__uuidof(IDirect3DTexture9), reinterpret_cast<void**>(&container))) && container) {
-				ultrawideRenderTargetTextures[container] = { targetDescription.Width, targetDescription.Height };
+			if (SUCCEEDED(pRenderTarget->GetContainer(__uuidof(IDirect3DTexture9), reinterpret_cast<void**>(&container))) && container) {
+				const auto existing = ultrawideRenderTargetTextures.find(container);
+				const std::pair<UINT, UINT> size{ targetDescription.Width, targetDescription.Height };
+
+				// A texture only just discovered to be a render target may already be sitting in a
+				// texture stage classified as an ordinary texture, so retire the cached verdicts.
+				if (existing == ultrawideRenderTargetTextures.end() || existing->second != size) {
+					ultrawideRenderTargetTextures[container] = size;
+					UltrawideShaders::TextureStages::Invalidate();
+				}
+
 				container->Release();
 			}
 		}
@@ -202,15 +239,11 @@ HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD
 		UINT width = 0;
 		UINT height = 0;
 
-		if (pRenderTarget && ultrawideBackBufferValid) {
-			D3DSURFACE_DESC description{};
+		if (haveDescription && ultrawideBackBufferValid) {
+			width = targetDescription.Width;
+			height = targetDescription.Height;
 
-			if (SUCCEEDED(pRenderTarget->GetDesc(&description))) {
-				width = description.Width;
-				height = description.Height;
-
-				isScene = AspectRatio::SameAspect(width, height, ultrawideBackBufferWidth, ultrawideBackBufferHeight);
-			}
+			isScene = AspectRatio::SameAspect(width, height, ultrawideBackBufferWidth, ultrawideBackBufferHeight);
 		}
 
 		ultrawideRenderTargetIsScene = isScene;
@@ -218,7 +251,7 @@ HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD
 		ultrawideRenderTargetHeight = height;
 	}
 
-	return oSetRenderTarget(pDevice, RenderTargetIndex, pRenderTarget);
+	return result;
 }
 
 /// <summary>
@@ -233,10 +266,12 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 		vShader->GetFunction(NULL, &vSize);
 	}
 
-	UltrawideShaders::OnVertexShaderBound(veShader);
+	// Bind first, publish after: a rejected bind leaves the previous shader current.
+	const HRESULT result = oSetVertexShader(pDevice, veShader);
+	if (SUCCEEDED(result))
+		UltrawideShaders::OnVertexShaderBound(veShader);
 
-	// Call the original SetVertexShader.
-	return oSetVertexShader(pDevice, veShader);
+	return result;
 }
 
 /// <summary>
@@ -301,6 +336,7 @@ HRESULT APIENTRY D3DHooks::Hook_Reset(IDirect3DDevice9* pDevice, D3DPRESENT_PARA
 		ultrawideBackBufferValid = false; // Resolution may have changed; recompute the scale lazily.
 		ultrawideRenderTargetTextures.clear(); // Targets are recreated after a reset; stale pointers must not match new textures.
 		UltrawideShaders::Forget(); // Same hazard: shaders are released across a reset too.
+		UltrawideShaders::TextureStages::Forget(); // Textures are released too, and the stage mirror is keyed by raw pointer as well.
 	}
 
 	return ResetReturn;

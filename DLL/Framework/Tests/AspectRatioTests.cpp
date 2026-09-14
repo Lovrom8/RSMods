@@ -235,6 +235,9 @@ static void Test_WidenLetterbox() {
 	Expect(!AspectRatio::WidenLetterbox({ 440, 0, 3000, 1440 }, 0, 0, widened), "rejects a zero-sized surface");
 	Expect(!AspectRatio::WidenLetterbox({ 3000, 0, 440, 1440 }, 3440, 1440, widened), "rejects an inverted rectangle");
 	Expect(AspectRatio::WidenLetterbox({ 440, 0, 2999, 1439 }, 3439, 1439, widened), "tolerates one pixel of centring error on an odd width");
+	Expect(!AspectRatio::WidenLetterbox({ 720, 0, 2720, 1440 }, 3440, 1440, widened), "leaves a centred full-height band that is not 16:9 alone");
+	Expect(AspectRatio::WidenLetterbox({ 640, 0, 1920, 720 }, 2560, 720, widened) && widened == AspectRatio::Rect{ 0, 0, 2560, 720 },
+		"recognises the 32:9 test rig's 1280x720 band");
 }
 
 int main() {
