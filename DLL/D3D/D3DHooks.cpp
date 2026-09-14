@@ -261,10 +261,8 @@ HRESULT APIENTRY D3DHooks::Hook_SetRenderTarget(LPDIRECT3DDEVICE9 pDevice, DWORD
 /// <param name="veShader"> - Vertex shader interface.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DVertexShader9* veShader) {
-	if (veShader != NULL) {
+	if (veShader != NULL)
 		vShader = veShader;
-		vShader->GetFunction(NULL, &vSize);
-	}
 
 	// Bind first, publish after: a rejected bind leaves the previous shader current.
 	const HRESULT result = oSetVertexShader(pDevice, veShader);
@@ -281,10 +279,8 @@ HRESULT APIENTRY D3DHooks::Hook_SetVertexShader(LPDIRECT3DDEVICE9 pDevice, IDire
 /// <param name="piShader"> - Pixel shader interface.</param>
 /// <returns>If the method succeeds, the return value is D3D_OK. If the method fails, the return value can be D3DERR_INVALIDCALL.</returns>
 HRESULT APIENTRY D3DHooks::Hook_SetPixelShader(LPDIRECT3DDEVICE9 pDevice, IDirect3DPixelShader9* piShader) {
-	if (piShader != NULL) {
+	if (piShader != NULL)
 		pShader = piShader;
-		pShader->GetFunction(NULL, &pSize);
-	}
 
 	// Call the original SetPixelShader.
 	return oSetPixelShader(pDevice, piShader);
@@ -382,7 +378,9 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 	Mesh current(Stride, PrimCount, NumVertices);
 	ThiccMesh currentThicc(Stride, PrimCount, NumVertices, StartIndex, StartRegister, PrimType, decl->Type, VectorCount, NumElements);
 
-	// Debugging of DIP.
+	// Debugging of DIP. Compiled out of Release: `debug` is false there anyway, and the mesh
+	// logger is an investigation tool the draw path should not carry.
+	#ifdef _DEBUG
 	if (debug) {
 		if (GetAsyncKeyState(VK_PRIOR) & 1 && currIdx < std::size(allMeshes) - 1)// Page up
 			currIdx++;
@@ -448,6 +446,7 @@ HRESULT APIENTRY D3DHooks::Hook_DIP(IDirect3DDevice9* pDevice, D3DPRIMITIVETYPE 
 		if (IsExtraRemoved(removedMeshes, currentThicc))
 			return REMOVE_TEXTURE;
 	}
+	#endif
 
 	// Mods
 

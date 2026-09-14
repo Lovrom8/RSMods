@@ -17,10 +17,8 @@ namespace D3DHooks {
 	inline UINT NumElements;
 
 	inline IDirect3DVertexShader9* vShader;
-	inline UINT vSize;
 
 	inline IDirect3DPixelShader9* pShader;
-	inline UINT pSize;
 
 	inline IDirect3DTexture9* texture;
 	inline D3DSURFACE_DESC sDesc;
