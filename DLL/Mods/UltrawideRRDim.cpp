@@ -24,20 +24,6 @@ namespace {
 	bool installed = false;
 	unsigned char originalBytes[callLength] = {};
 
-	template <typename T>
-	bool ProbeRead(uintptr_t address, T& out) {
-		if (!address)
-			return false;
-
-		__try {
-			out = *reinterpret_cast<const T*>(address);
-			return true;
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER) {
-			return false;
-		}
-	}
-
 	#ifdef _DEBUG
 	// One line per SetLoftState call, which runs once per transition.
 	void Report(const char* outcome, void* requested, unsigned int requestedId, void* substitute, unsigned int substituteId) {
@@ -57,19 +43,19 @@ namespace {
 			return requested;
 
 		unsigned int requestedId = ~0u;
-		if (!ProbeRead(reinterpret_cast<uintptr_t>(requested) + off_state_id, requestedId))
+		if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(requested) + off_state_id, requestedId))
 			return requested;
 		if (requestedId != riffRepeaterStateId)
 			return requested;
 
 		void* previous = nullptr;
-		if (!ProbeRead(reinterpret_cast<uintptr_t>(manager) + off_manager_fromState, previous) || !previous) {
+		if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(manager) + off_manager_fromState, previous) || !previous) {
 			Report("passthrough, no previous state", requested, requestedId, previous, ~0u);
 			return requested;
 		}
 
 		unsigned int previousId = ~0u;
-		if (!ProbeRead(reinterpret_cast<uintptr_t>(previous) + off_state_id, previousId)) {
+		if (!MemUtil::TryRead(reinterpret_cast<uintptr_t>(previous) + off_state_id, previousId)) {
 			Report("passthrough, previous state unreadable", requested, requestedId, previous, ~0u);
 			return requested;
 		}
@@ -100,20 +86,11 @@ namespace {
 		}
 	}
 
-	bool BytesMatch(uintptr_t address, const unsigned char* expected, size_t length) {
-		for (size_t i = 0; i < length; ++i) {
-			unsigned char actual = 0;
-			if (!ProbeRead(address + i, actual) || actual != expected[i])
-				return false;
-		}
-		return true;
-	}
-
 	// Require a CALL rel32 that resolves to the expected target.
 	bool ValidateSite(uintptr_t site, uintptr_t expectedTarget) {
 		unsigned char opcode = 0;
 		int32_t rel = 0;
-		if (!ProbeRead(site, opcode) || !ProbeRead(site + 1, rel))
+		if (!MemUtil::TryRead(site, opcode) || !MemUtil::TryRead(site + 1, rel))
 			return false;
 		if (opcode != opcode_callRel32)
 			return false;
@@ -130,8 +107,8 @@ namespace {
 		static constexpr unsigned char expectedReturn[] = { 0xC2, 0x08, 0x00 };
 
 		return ValidateSite(site, target)
-			&& BytesMatch(target, expectedTarget, sizeof(expectedTarget))
-			&& BytesMatch(target + 0x2A9, expectedReturn, sizeof(expectedReturn));
+			&& MemUtil::MatchesBytes(target, expectedTarget)
+			&& MemUtil::MatchesBytes(target + 0x2A9, expectedReturn);
 	}
 }
 
@@ -182,7 +159,7 @@ void UltrawideRRDim::Uninstall() {
 		return;
 	InterlockedExchange(&gateActive, 0);
 	const uintptr_t site = Offsets::hook_loftPostFxSetState.GetValue();
-	if (BytesMatch(site, originalBytes, callLength)) {
+	if (MemUtil::MatchesBytes(site, originalBytes)) {
 		installed = false;
 		return;
 	}

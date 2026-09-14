@@ -222,6 +222,16 @@ bool MemUtil::IsBadReadPtr(void* pointer)
 	return true;
 }
 
+bool MemUtil::MatchesBytes(uintptr_t address, std::span<const unsigned char> expected) {
+	for (size_t i = 0; i < expected.size(); ++i) {
+		unsigned char actual = 0;
+		if (!TryRead(address + i, actual) || actual != expected[i])
+			return false;
+	}
+
+	return true;
+}
+
 /// <summary>
 /// Get memory address from base pointer and offsets (often used with values found in Cheat Engine).
 /// </summary>
