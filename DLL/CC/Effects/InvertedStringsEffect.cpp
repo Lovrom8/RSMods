@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "InvertedStringsEffect.hpp"
 
 using namespace CrowdControl::Enums;
@@ -22,7 +22,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus InvertedStringsEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus InvertedStringsEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("InvertedStringsEffect::Test()" << std::endl);
 

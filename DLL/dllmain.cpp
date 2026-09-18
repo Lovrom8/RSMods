@@ -44,10 +44,10 @@ unsigned WINAPI MidiThread() {
 
 		// If we have sent a Midi PC/CC value to this thread, send the Midi value.
 		if (Midi::sendPC)
-			Midi::SendProgramChange(Midi::dataToSendPC);
+			Midi::SendProgramChange(Midi::AsMidiByte(Midi::dataToSendPC));
 
 		if (Midi::sendCC)
-			Midi::SendControlChange(Midi::dataToSendCC);
+			Midi::SendControlChange(Midi::AsMidiByte(Midi::dataToSendCC));
 
 		Sleep(Midi::sleepFor);
 		currentCount++;
@@ -138,8 +138,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM keyPressed, LPARAM lParam) {
 			POINT mPos;
 			GetCursorPos(&mPos);
 			ScreenToClient(hWnd, &mPos);
-			ImGui::GetIO().MousePos.x = mPos.x;
-			ImGui::GetIO().MousePos.y = mPos.y;
+			ImGui::GetIO().MousePos.x = static_cast<float>(mPos.x);
+			ImGui::GetIO().MousePos.y = static_cast<float>(mPos.y);
 			break;
 	}
 
@@ -315,7 +315,7 @@ void SetupLogging() {
 /// <param name="dwReason"></param>
 /// <param name="lpReserved"></param>
 /// <returns>Always returns TRUE</returns>
-BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID lpReserved) {
+BOOL APIENTRY DllMain(HMODULE hModule, uint32_t dwReason, LPVOID) {
 	switch (dwReason) {
 		case DLL_PROCESS_ATTACH:
 			SetupLogging();

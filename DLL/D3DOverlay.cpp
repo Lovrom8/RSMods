@@ -29,7 +29,7 @@ Resolution GameOverlay::GetWindowSize() {
 /// <param name="pDevice"> - Device Pointer</param>
 /// <param name="setFontSize"> - Override font size</param>
 /// <param name="format"> - DrawText format</param>
-void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 pDevice, Resolution setFontSize, DWORD format)
+void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, LPDIRECT3DDEVICE9 overlayDevice, Resolution setFontSize, DWORD format)
 {
 	CComPtr<ID3DXFont> font;
 	bool useInputFontSize = setFontSize.height != 0;
@@ -39,7 +39,7 @@ void GameOverlay::DX9DrawText(const std::string& textToDraw, int textColorHex, i
 		const std::string face = Settings::ReturnSettingValue(Setting::OnScreenFont);
 		FontKey key = FontKey::Make(face, targetH, 0, FW_NORMAL, false);
 
-		if (!fontCache.Get(pDevice, key, font)) {
+		if (!fontCache.Get(overlayDevice, key, font)) {
 			LOG_ERROR("Could not acquire custom-sized font." << std::endl);
 			return;
 		}

@@ -383,6 +383,8 @@ namespace MemUtil {
 			return fallbackSSN;
 		}
 
+#pragma warning(push)
+#pragma warning(disable: 4100)
 		static __declspec(naked) NTSTATUS NTAPI Syscall_NtProtectVirtualMemory(HANDLE ProcessHandle, PVOID* BaseAddress, PSIZE_T RegionSize, ULONG NewProtect, PULONG OldProtect)
 		{
 			__asm {
@@ -414,6 +416,7 @@ namespace MemUtil {
 					ret 18h
 			}
 		}
+#pragma warning(pop)
 	}
 
 	NTSTATUS HookedVirtualProtect(LPVOID address, SIZE_T len, ULONG newProtection, ULONG& oldProtection)

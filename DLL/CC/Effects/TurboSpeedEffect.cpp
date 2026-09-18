@@ -1,4 +1,4 @@
-﻿#include "../../stdafx.h"
+#include "../../stdafx.h"
 #include "TurboSpeedEffect.hpp"
 
 using namespace CrowdControl::Enums;
@@ -10,7 +10,7 @@ namespace CrowdControl::Effects {
 	/// </summary>
 	/// <param name="request"> - JSON Request</param>
 	/// <returns>Enums::EffectStatus::Success if test completed without any issues. Enums::EffectStatus::Retry if we have to retry.</returns>
-	Enums::EffectStatus TurboSpeedEffect::Test(const Structs::Request& request)
+	Enums::EffectStatus TurboSpeedEffect::Test(const Structs::Request&)
 	{
 		LOG_INFO("TurboSpeedEffect::Test()" << std::endl);
 

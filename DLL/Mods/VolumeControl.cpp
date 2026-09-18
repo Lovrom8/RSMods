@@ -91,8 +91,6 @@ void VolumeControl::MutePlayer(bool player2) {
 
 void VolumeControl::UnmutePlayer(bool player2)
 {
-	RTPCValue_type type = RTPCValue_GameObject;
-
 	const char* mixer = player2 ? Setting::Channel::Player2 : Setting::Channel::Player1;
 
 	// Unmute
