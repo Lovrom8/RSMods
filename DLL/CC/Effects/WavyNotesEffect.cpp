@@ -4,8 +4,13 @@
 using namespace CrowdControl::Enums;
 
 namespace CrowdControl::Effects {
-#pragma warning(push)
-#pragma warning(disable: 4740)
+	extern "C" static void ApplyWavyNotes()
+	{
+		if (wavyNotesEnabled && vec->y > -5.0f) {
+			vec->y = vec->y + (sin(vec->z / 40.0f) * 4.0f);
+		}
+	}
+
 	void __declspec(naked) NotePositionHook()
 	{
 		/*
@@ -22,23 +27,11 @@ namespace CrowdControl::Effects {
 			007AE0CF | D94424 2C	| fld st(0),dword ptr ss:[esp+2C]	| load y from tmp
 			007AE0D3 | D95B 78		| fstp dword ptr ds:[ebx+78],st(0)	| store y to object
 		*/
-		// Get the vector
 		__asm {
 			mov vec, eax
-			pushad // save all registers
-		}
-
-		// Mess with the vector
-		if(wavyNotesEnabled)
-		{
-			if (vec->y > -5.0f) {
-				vec->y = vec->y + (sin(vec->z / 40.0f) * 4.0f);
-			}
-		}
-
-		// Carry on as usual
-		__asm {
-			popad // restore all registers
+			pushad
+			call ApplyWavyNotes
+			popad
 			fld dword ptr[eax]
 			fstp dword ptr[esp + 0x24]
 			fld dword ptr[eax + 0x04]
@@ -63,7 +56,6 @@ namespace CrowdControl::Effects {
 			jmp [Offsets::runtimeVersionStructValue]
 		}
 	}
-#pragma warning(pop)
 
 	Enums::EffectStatus WavyNotesEffect::Test(const Structs::Request&)
 	{
